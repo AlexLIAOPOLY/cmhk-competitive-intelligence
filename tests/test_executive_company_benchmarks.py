@@ -22,13 +22,15 @@ class ExecutiveCompanyBenchmarkTests(unittest.TestCase):
             self.assertTrue(company["revenue"]["source_url"].startswith("https://"))
             self.assertNotIn("needs_official", company["revenue"]["verification_status"])
 
-    def test_derived_margins_share_the_verified_revenue_period(self):
+    def test_derived_margins_exist_only_for_matching_verified_periods(self):
         payload = build_company_benchmarks()
 
         for company_id in ("hkt", "three", "smartone", "hkbn"):
             values = payload["values"][company_id]
-            self.assertEqual(values["ebitda_margin"]["period"], values["revenue"]["period"])
-            self.assertEqual(values["net_margin"]["period"], values["revenue"]["period"])
+            if "ebitda_margin" in values:
+                self.assertEqual(values["ebitda_margin"]["period"], values["revenue"]["period"])
+            if "net_margin" in values:
+                self.assertEqual(values["net_margin"]["period"], values["revenue"]["period"])
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import executive_intelligence_pipeline as pipeline
+import cmhk.intelligence.executive as executive
 from cmhk.intelligence.executive import build_executive_intelligence_snapshot
 
 
@@ -15,6 +16,29 @@ class RequestedOverview010304Tests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.snapshot = build_executive_intelligence_snapshot()
         cls.domains = {domain["id"]: domain for domain in cls.snapshot["domains"]}
+
+    def _aligned_snapshot(self):
+        evidence = pipeline._analysis_input_snapshot()
+        model_analysis = {
+            "generated_at_hkt": "2026-08-30T00:00:00+08:00",
+            "model": "deterministic-test",
+            "summaries": pipeline._deterministic_domain_summaries(evidence),
+            "discoveries": pipeline._deterministic_discoveries(evidence),
+            "evidence_hash": pipeline._content_hash(evidence),
+            "insight_format": pipeline.INSIGHT_FORMAT_VERSION,
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "ai_analysis.json"
+            path.write_text(
+                json.dumps({"model_analysis": model_analysis}, ensure_ascii=False),
+                encoding="utf-8",
+            )
+            with patch.object(executive, "AI_ANALYSIS_PATH", path):
+                executive._build_cached.cache_clear()
+                try:
+                    return executive.build_executive_intelligence_snapshot()
+                finally:
+                    executive._build_cached.cache_clear()
 
     def test_domain_order_and_short_tabs_match_request(self):
         self.assertEqual(
@@ -193,11 +217,12 @@ class RequestedOverview010304Tests(unittest.TestCase):
         discoveries = pipeline._deterministic_discoveries(evidence)
         self.assertEqual([summary["domain"] for summary in summaries], ["local", "international", "mainland", "cloud"])
         self.assertEqual(len(discoveries), 4)
-        self.assertTrue(self.snapshot["ai"]["model_analysis_fresh"])
-        self.assertTrue(all(focus.get("ai_summary") for domain in self.snapshot["domains"] for focus in domain["focuses"]))
+        snapshot = self._aligned_snapshot()
+        self.assertTrue(snapshot["ai"]["model_analysis_fresh"])
+        self.assertTrue(all(focus.get("ai_summary") for domain in snapshot["domains"] for focus in domain["focuses"]))
 
     def test_runtime_contract_proves_the_daily_summary_matches_the_current_ui(self):
-        contract = self.snapshot["ui_contract"]
+        contract = self._aligned_snapshot()["ui_contract"]
         self.assertEqual(contract["domain_ids"], ["local", "international", "mainland", "cloud"])
         self.assertEqual(contract["summary_domain_ids"], contract["domain_ids"])
         self.assertEqual(contract["focuses_expected"], 15)

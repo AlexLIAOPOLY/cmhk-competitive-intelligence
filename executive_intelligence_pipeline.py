@@ -2990,6 +2990,14 @@ def generate_model_focus_insight(
                 headline = financial_headlines[(regeneration_index - 1 + attempt) % len(financial_headlines)]
             if "分散" in headline and any(term in analysis for term in ("集中", "头部三家", "主要来自头部")):
                 raise ValueError(f"AI洞察标题与正文判断相反：{headline}")
+            unsupported_headline_causal = tuple(
+                term for term in ("导致", "造成", "推动", "带来", "源于", "驱动")
+                if term in headline
+            )
+            if unsupported_headline_causal:
+                raise ValueError(
+                    f"AI洞察标题使用了未经证据支持的因果词{unsupported_headline_causal}：{headline}"
+                )
             headline_similarities = [
                 difflib.SequenceMatcher(None, previous, headline).ratio()
                 for previous in recent_headlines
@@ -3114,6 +3122,14 @@ def generate_model_focus_insight(
                 **({"repaired": True} if analysis_repaired else {}),
             },
         }
+    safe_fallback = _safe_focus_regeneration_fallback(
+        domain_id,
+        focus,
+        regeneration_index=regeneration_index,
+        recent_insights=recent_insights,
+    )
+    if safe_fallback:
+        return safe_fallback
     grounded_repair = _final_grounded_focus_repair(
         domain_id,
         focus,
@@ -3197,14 +3213,6 @@ def generate_model_focus_insight(
                 "origin": "evidence_rule",
             },
         }
-    safe_fallback = _safe_focus_regeneration_fallback(
-        domain_id,
-        focus,
-        regeneration_index=regeneration_index,
-        recent_insights=recent_insights,
-    )
-    if safe_fallback:
-        return safe_fallback
     raise last_error or ValueError("AI洞察生成失败")
 
 

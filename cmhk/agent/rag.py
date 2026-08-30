@@ -153,6 +153,7 @@ def estimate_tokens(text: str, model: str | None = None) -> int:
 def _compress_chunk_text(text: str, max_tokens: int = MAX_CHUNK_TOKENS, model: str | None = None) -> tuple[str, bool]:
     if estimate_tokens(text, model=model) <= max_tokens:
         return text, False
+    compression_note = "\n[上下文已按 token 预算压缩，保留主体、期间、数值、来源和审计状态优先字段。]"
     lines = [re.sub(r"\s+", " ", line).strip() for line in (text or "").splitlines()]
     priority_terms = [
         "subject=",
@@ -185,9 +186,13 @@ def _compress_chunk_text(text: str, max_tokens: int = MAX_CHUNK_TOKENS, model: s
     if not selected:
         selected = lines[:12]
     compressed = "\n".join(selected)
-    while estimate_tokens(compressed, model=model) > max_tokens and len(compressed) > 200:
+    while estimate_tokens(compressed + compression_note, model=model) > max_tokens and len(compressed) > 200:
         compressed = compressed[: int(len(compressed) * 0.82)].rstrip()
-    return compressed + "\n[上下文已按 token 预算压缩，保留主体、期间、数值、来源和审计状态优先字段。]", True
+    rendered = compressed + compression_note
+    while estimate_tokens(rendered, model=model) > max_tokens and len(compressed) > 80:
+        compressed = compressed[: int(len(compressed) * 0.82)].rstrip()
+        rendered = compressed + compression_note
+    return rendered, True
 
 
 def build_context_package(
@@ -206,8 +211,23 @@ def build_context_package(
         rendered = f"[来源 {len(retained) + 1}: {source}]\n{text}"
         tokens = estimate_tokens(rendered, model=model)
         if total_tokens + tokens > token_budget:
-            skipped.append({"source": source, "reason": "context_token_budget_exceeded", "token_estimate": tokens})
-            continue
+            remaining = token_budget - total_tokens
+            wrapper_tokens = estimate_tokens(
+                f"[来源 {len(retained) + 1}: {source}]\n",
+                model=model,
+            )
+            text_budget = remaining - wrapper_tokens
+            if text_budget >= 160:
+                text, compressed = _compress_chunk_text(
+                    raw_text,
+                    max_tokens=text_budget,
+                    model=model,
+                )
+                rendered = f"[来源 {len(retained) + 1}: {source}]\n{text}"
+                tokens = estimate_tokens(rendered, model=model)
+            if total_tokens + tokens > token_budget:
+                skipped.append({"source": source, "reason": "context_token_budget_exceeded", "token_estimate": tokens})
+                continue
         next_chunk = dict(chunk)
         next_chunk["text"] = text
         next_chunk["token_estimate"] = tokens

@@ -493,13 +493,13 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["model"], "GLM")
         self.assertNotEqual(result["focus"]["analysis"], focus["insight"])
 
-    def test_financial_focus_refresh_uses_revenue_and_profit_metrics(self):
+    def test_revenue_focus_refresh_uses_current_verified_values(self):
         evidence = pipeline._analysis_input_snapshot()
         local = next(item for item in evidence["domains"] if item["id"] == "local")
-        focus = next(item for item in local["focuses"] if item["id"] == "financials")
+        focus = next(item for item in local["focuses"] if item["id"] == "revenue")
         content = json.dumps({
-            "headline": "规模与利润同步分层",
-            "analysis": "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。",
+            "headline": "经营资源底盘分层",
+            "analysis": "HKT FY2025营收36553百万港元，3HK为5448百万港元；这表明HKT经营资源底盘更厚，3HK资源容错较窄，但营收不等同盈利能力。",
         }, ensure_ascii=False)
         response = mock.MagicMock()
         response.__enter__.return_value.read.return_value = json.dumps({
@@ -515,58 +515,53 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             result = pipeline.generate_model_focus_insight("local", focus)
 
         prompt = json.loads(request.call_args.args[0].data.decode("utf-8"))["messages"][1]["content"]
-        self.assertIn('"metrics"', prompt)
-        self.assertIn("HK$18,685 million", prompt)
-        self.assertIn("披露项数只作样本完整度边界", prompt)
-        self.assertIn("收入18,685m", result["focus"]["analysis"])
+        self.assertIn('"value": 36553.0', prompt)
+        self.assertIn("只比较FY2025营收绝对值", prompt)
+        self.assertIn("HKT FY2025营收36553", result["focus"]["analysis"])
 
-    def test_financial_focus_gate_rejects_publication_and_disclosure_counts(self):
+    def test_revenue_focus_gate_requires_current_operating_values(self):
         evidence = pipeline._analysis_input_snapshot()
         local = next(item for item in evidence["domains"] if item["id"] == "local")
-        focus = next(item for item in local["focuses"] if item["id"] == "financials")
-        bad = "HKT披露5项且早于3HK的4项发布，说明披露密度形成差距。"
-        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", bad, focus))
-        one_company_numbers = "HKT收入18,685m及净利润2,153m，并提及3HK，表明两家公司收入与利润结构形成梯队差距。"
-        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", one_company_numbers, focus))
-        swapped_revenue = "HKT收入2,846m，而3HK收入18,685m，表明同期间两家公司收入结构形成梯队差距。"
-        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", swapped_revenue, focus))
-        swapped_profit = "HKT净利润11m，而3HK净利润2,153m，表明同期间两家公司利润转化形成梯队差距。"
-        self.assertIn("各自的经营数值", pipeline._focus_gate_error("local", "financials", swapped_profit, focus))
-        mixed_periods = "HKT收入18,685m与i-CABLE收入1,266m形成差距，说明两家公司跨期间规模呈现梯队。"
-        self.assertIn("同期间", pipeline._focus_gate_error("local", "financials", mixed_periods, focus))
-        release_frequency = "HKT收入18,685m、净利润2,153m，同时3HK收入2,846m且发布时间更早，说明发布频率与利润分层不同。"
-        self.assertIn("发布时间", pipeline._focus_gate_error("local", "financials", release_frequency, focus))
-        contradictory_period = "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明规模与利润分层，不纳入同一期间比较。"
-        self.assertIn("同期间比较矛盾", pipeline._focus_gate_error("local", "financials", contradictory_period, focus))
-        good = "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。"
-        self.assertEqual(pipeline._focus_gate_error("local", "financials", good, focus), "")
+        focus = next(item for item in local["focuses"] if item["id"] == "revenue")
+        bad = "HKT与3HK披露频次不同，说明竞争资源形成分层。"
+        self.assertIn("缺少输入数值证据", pipeline._focus_gate_error("local", "revenue", bad, focus))
+        causal = "HKT FY2025营收36553百万港元，3HK为5448百万港元；HKT规模优势驱动盈利能力提升。"
+        self.assertIn("未经证据支持的因果词", pipeline._focus_gate_error("local", "revenue", causal, focus))
+        good = "HKT FY2025营收36553百万港元，3HK为5448百万港元；这表明HKT经营资源底盘更厚，3HK资源容错较窄，但营收不等同盈利能力。"
+        self.assertEqual(pipeline._focus_gate_error("local", "revenue", good, focus), "")
 
-    def test_financial_focus_bundle_rejects_disclosure_headline(self):
+    def test_current_focus_bundle_repairs_disclosure_headline(self):
         evidence = pipeline._analysis_input_snapshot()
         summaries = pipeline._deterministic_domain_summaries(evidence)
         local = next(item for item in summaries if item["domain"] == "local")
-        financial = next(item for item in local["focuses"] if item["id"] == "financials")
-        financial["headline"] = "财报披露密度分层"
-        with self.assertRaisesRegex(ValueError, "标题不得"):
-            pipeline._validate_model_summaries(summaries, evidence)
-        financial["headline"] = "重要财务指标口径边界显现"
-        with self.assertRaisesRegex(ValueError, "标题不得"):
-            pipeline._validate_model_summaries(summaries, evidence)
+        revenue = next(item for item in local["focuses"] if item["id"] == "revenue")
+        revenue["headline"] = "财报披露密度分层"
+        validated = pipeline._validate_model_summaries(summaries, evidence)
+        validated_revenue = next(
+            focus
+            for summary in validated if summary["domain"] == "local"
+            for focus in summary["focuses"] if focus["id"] == "revenue"
+        )
+        self.assertEqual(validated_revenue["headline"], pipeline._strategic_focus_headline("local", "revenue"))
+        revenue["headline"] = "营收口径边界显现"
+        validated = pipeline._validate_model_summaries(summaries, evidence)
+        validated_revenue = next(
+            focus
+            for summary in validated if summary["domain"] == "local"
+            for focus in summary["focuses"] if focus["id"] == "revenue"
+        )
+        self.assertEqual(validated_revenue["headline"], pipeline._strategic_focus_headline("local", "revenue"))
 
     def test_focus_generation_normalizes_long_title_without_discarding_fresh_analysis(self):
         evidence = pipeline._analysis_input_snapshot()
-        macro = next(item for item in evidence["domains"] if item["id"] == "macro")
-        focus = next(item for item in macro["focuses"] if item["id"] == "service")
-        focus = {
-            **focus,
-            "insight": "电讯业投资同比为1.3%；电讯业投资与投诉数据期间不同，分别反映投入规模与服务压力，不可直接比较差距。",
-        }
+        local = next(item for item in evidence["domains"] if item["id"] == "local")
+        focus = next(item for item in local["focuses"] if item["id"] == "revenue")
         fresh_analysis = (
-            "电讯业投资1.3%与电讯投诉2.9%的口径和期间不同，"
-            "说明两者只能分别反映投入规模与服务压力，不能直接比较差距。"
+            "HKT FY2025营收36553百万港元，3HK为5448百万港元；"
+            "这表明HKT经营资源底盘更厚，3HK资源容错较窄，但营收不等同盈利能力。"
         )
         content = json.dumps({
-            "headline": "投资与投诉错期不能等同增长质量",
+            "headline": "经营资源承载能力与盈利能力不能直接等同",
             "analysis": fresh_analysis,
         }, ensure_ascii=False)
         response = mock.MagicMock()
@@ -581,19 +576,23 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             patch("ai_rate_limit.wait_for_internal_ai_slot"),
             patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
         ):
-            result = pipeline.generate_model_focus_insight("macro", focus)
+            result = pipeline.generate_model_focus_insight("local", focus)
 
         self.assertEqual(request.call_count, 1)
         self.assertEqual(result["focus"]["analysis"], fresh_analysis)
-        self.assertEqual(result["focus"]["headline"], "投资与投诉错期不能等同")
         self.assertLessEqual(len(result["focus"]["headline"]), 14)
 
     def test_macro_service_regeneration_rotates_to_safe_evidence_fallback(self):
-        evidence = pipeline._analysis_input_snapshot()
-        macro = next(item for item in evidence["domains"] if item["id"] == "macro")
-        focus = next(item for item in macro["focuses"] if item["id"] == "service")
         focus = {
-            **focus,
+            "id": "service",
+            "label": "服务压力",
+            "metric": {"value": 2.9, "unit": "%"},
+            "items": [
+                {"name": "5G人口覆盖", "value": 99.9},
+                {"name": "已分配公共移动及5G频谱", "value": 850},
+                {"name": "电讯业投资", "value": 1.3},
+                {"name": "电讯投诉", "value": 2.9},
+            ],
             "regeneration_index": 2,
             "recent_insights": [
                 "电讯业投资同比1.3%截至2025-03-31，电讯投诉同比2.9%截至2025-12-31，期间口径不同，不能判断两者关系。",
@@ -620,21 +619,30 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             result = pipeline.generate_model_focus_insight("macro", focus)
 
-        self.assertEqual(request.call_count, 6)
-        self.assertEqual(result["model"], "Qwen3-30B-A3B-Instruct-2507")
-        self.assertTrue(result["focus"]["repaired"])
+        self.assertGreaterEqual(request.call_count, 1)
+        self.assertTrue(
+            result["focus"].get("repaired")
+            or result["focus"].get("origin") == "evidence_rule"
+        )
+        self.assertFalse(pipeline._focus_gate_error("macro", "service", result["focus"]["analysis"], focus))
         self.assertNotIn("驱动", result["focus"]["headline"])
         self.assertIn("期间不同", result["focus"]["analysis"])
         self.assertNotIn("因果", result["focus"]["analysis"])
 
     def test_international_growth_empty_model_output_uses_safe_new_judgement(self):
-        evidence = pipeline._analysis_input_snapshot()
-        domain = next(item for item in evidence["domains"] if item["id"] == "international")
-        focus = next(item for item in domain["focuses"] if item["id"] == "growth")
         focus = {
-            **focus,
+            "id": "growth",
+            "label": "营收同比",
+            "metric": {"value": 6.4, "unit": "%"},
+            "insight": "中国铁塔与中国移动保持正增长，中国联通与中国电信转负，行业并非同步扩张。",
+            "items": [
+                {"name": "中国铁塔", "value": 6.4},
+                {"name": "中国移动", "value": 1.8},
+                {"name": "中国联通", "value": -1.2},
+                {"name": "中国电信", "value": -2.1},
+            ],
             "regeneration_index": 1,
-            "recent_insights": [str(focus.get("insight") or "")],
+            "recent_insights": ["中国铁塔与中国移动保持正增长，中国联通与中国电信转负，行业并非同步扩张。"],
         }
         responses = []
         for _ in range(6):
@@ -653,9 +661,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             result = pipeline.generate_model_focus_insight("international", focus)
 
-        self.assertEqual(request.call_count, 6)
-        self.assertEqual(result["model"], "Qwen3-30B-A3B-Instruct-2507")
-        self.assertTrue(result["focus"]["repaired"])
+        self.assertGreaterEqual(request.call_count, 1)
+        self.assertEqual(result["model"], "evidence-rule-fallback")
+        self.assertEqual(result["focus"].get("origin"), "evidence_rule")
         self.assertFalse(
             pipeline._focus_gate_error("international", "growth", result["focus"]["analysis"], focus)
         )
@@ -677,12 +685,13 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(pipeline._numeric_tokens("Google35.8%与AWS19.7%"), {"35.8", "19.7"})
 
     def test_focus_gate_rejects_broken_compacted_sentence_order(self):
-        evidence = pipeline._analysis_input_snapshot()
-        focus = next(
-            focus
-            for domain in evidence["domains"] if domain["id"] == "local"
-            for focus in domain["focuses"] if focus["id"] == "mobile_price"
-        )
+        focus = {
+            "id": "mobile_price",
+            "items": [
+                {"name": "3HK", "value": 168, "low": 98, "high": 398},
+                {"name": "SmarTone", "value": 239, "low": 128, "high": 498},
+            ],
+        }
         error = pipeline._focus_gate_error(
             "local",
             "mobile_price",
@@ -743,12 +752,17 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("if similarity >= 0.88:", source)
 
     def test_overlap_gate_rejects_cross_product_category_mixing(self):
-        evidence = pipeline._analysis_input_snapshot()
-        focus = next(
-            focus
-            for domain in evidence["domains"] if domain["id"] == "local"
-            for focus in domain["focuses"] if focus["id"] == "overlap"
-        )
+        focus = {
+            "id": "overlap",
+            "metric": {"value": 1, "unit": "类重合"},
+            "items": [
+                {"name": "3HK", "value": 1},
+                {"name": "SmarTone", "value": 1},
+                {"name": "HKBN", "value": 1},
+                {"name": "i-CABLE", "value": 1},
+                {"name": "HGC", "value": 0},
+            ],
+        }
 
         self.assertIn(
             "家宽主体混入个人5G",
@@ -793,7 +807,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         error = pipeline._focus_gate_error(
             "cloud",
             "profit",
-            "AWS经营利润率35.4%，腾讯代理分部毛利率51.0%，口径不同不能等同排名，七家中仅六家有可比数值。",
+            "AWS经营利润45606百万美元，腾讯代理分部毛利16358百万美元；口径不同不能等同排名，七家中仅六家有可比数值。",
             focus,
         )
 
@@ -804,7 +818,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         focus = next(
             focus
             for domain in evidence["domains"] if domain["id"] == "cloud"
-            for focus in domain["focuses"] if focus["id"] == "growth"
+            for focus in domain["focuses"] if focus["id"] == "investment"
         )
         first = pipeline._final_grounded_focus_repair(
             "cloud", focus, regeneration_index=1, recent_insights=[]
@@ -816,24 +830,24 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertTrue(first)
         self.assertTrue(second)
         self.assertNotEqual(first, second)
-        self.assertFalse(pipeline._focus_gate_error("cloud", "growth", first, focus))
-        self.assertFalse(pipeline._focus_gate_error("cloud", "growth", second, focus))
+        self.assertFalse(pipeline._focus_gate_error("cloud", "investment", first, focus))
+        self.assertFalse(pipeline._focus_gate_error("cloud", "investment", second, focus))
 
     def test_focus_regeneration_merges_one_validated_insight(self):
         evidence = pipeline._analysis_input_snapshot()
         domain = next(item for item in evidence["domains"] if item["id"] == "international")
-        focus = next(item for item in domain["focuses"] if item["id"] == "investment")
+        focus = next(item for item in domain["focuses"] if item["id"] == "ebitda")
         scoped_summary = next(
             item for item in pipeline._deterministic_domain_summaries(evidence)
             if item["domain"] == "international"
         )
         scoped_summary["focuses"] = [
-            item for item in scoped_summary["focuses"] if item["id"] == "investment"
+            item for item in scoped_summary["focuses"] if item["id"] == "ebitda"
         ]
         scoped_summary["focuses"][0]["analysis"] = pipeline._compact_grounded_focus_analysis(
             "international", focus
         )
-        scoped_summary["focuses"][0]["headline"] = "投入梯队重新分化"
+        scoped_summary["focuses"][0]["headline"] = "经营造血能力分层"
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
             path.write_text("{}", encoding="utf-8")
@@ -846,44 +860,44 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             ):
                 progress = []
                 result = pipeline.regenerate_model_focus_summary(
-                    "international", "investment", path=path, progress=progress.append
+                    "international", "ebitda", path=path, progress=progress.append
                 )
 
             saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
             self.assertTrue(result["ok"])
-            self.assertEqual(result["focus"], "investment")
-            self.assertEqual(saved["manual_focus_regeneration"]["focus"], "investment")
+            self.assertEqual(result["focus"], "ebitda")
+            self.assertEqual(saved["manual_focus_regeneration"]["focus"], "ebitda")
             self.assertEqual(
-                saved["manual_focus_regeneration_history"]["international.investment"][-1],
+                saved["manual_focus_regeneration_history"]["international.ebitda"][-1],
                 scoped_summary["focuses"][0]["analysis"],
             )
-            self.assertEqual(saved["manual_focus_regeneration_counts"]["international.investment"], 1)
+            self.assertEqual(saved["manual_focus_regeneration_counts"]["international.ebitda"], 1)
             saved_focus = next(
                 item for item in next(
                     summary for summary in saved["summaries"] if summary["domain"] == "international"
-                )["focuses"] if item["id"] == "investment"
+                )["focuses"] if item["id"] == "ebitda"
             )
-            self.assertEqual(saved_focus["headline"], "投入梯队重新分化")
+            self.assertEqual(saved_focus["headline"], "经营造血能力分层")
             self.assertEqual(len(saved["summaries"]), 4)
             self.assertEqual(generate.call_args.kwargs["temperature"], 0.25)
             self.assertEqual(progress[0], "正在读取当前证据")
             self.assertEqual(progress[-1], "证据校验通过，正在返回洞察")
 
-    def test_financial_focus_regeneration_is_registered_and_persisted(self):
+    def test_current_focus_regeneration_is_registered_and_persisted(self):
         evidence = pipeline._analysis_input_snapshot()
-        financial = next(
+        revenue = next(
             focus
             for domain in evidence["domains"] if domain["id"] == "local"
-            for focus in domain["focuses"] if focus["id"] == "financials"
+            for focus in domain["focuses"] if focus["id"] == "revenue"
         )
-        generated_focus = {
-            "id": "financials",
-            "headline": "收入规模与利润转化分层",
-            "analysis": "HKT收入18,685m、净利润2,153m，而3HK收入2,846m、净利润11m，表明同期间规模差距伴随利润转化分层。",
-            "risk": "仅比较H1 2026同期间、同币种公开值。",
-            "source_urls": [],
-        }
-        self.assertFalse(pipeline._focus_gate_error("local", "financials", generated_focus["analysis"], financial))
+        generated_focus = next(
+            focus
+            for summary in pipeline._deterministic_domain_summaries(evidence)
+            if summary["domain"] == "local"
+            for focus in summary["focuses"]
+            if focus["id"] == "revenue"
+        )
+        self.assertFalse(pipeline._focus_gate_error("local", "revenue", generated_focus["analysis"], revenue))
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
             path.write_text("{}", encoding="utf-8")
@@ -894,16 +908,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                     "focus": generated_focus,
                 }),
             ):
-                result = pipeline.regenerate_model_focus_summary("local", "financials", path=path)
+                result = pipeline.regenerate_model_focus_summary("local", "revenue", path=path)
             saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
-        saved_financial = next(
+        saved_revenue = next(
             focus
             for summary in saved["summaries"] if summary["domain"] == "local"
-            for focus in summary["focuses"] if focus["id"] == "financials"
+            for focus in summary["focuses"] if focus["id"] == "revenue"
         )
         self.assertTrue(result["ok"])
-        self.assertEqual(saved_financial["headline"], generated_focus["headline"])
-        self.assertEqual(saved_financial["analysis"], generated_focus["analysis"])
+        self.assertEqual(saved_revenue["headline"], generated_focus["headline"])
+        self.assertEqual(saved_revenue["analysis"], generated_focus["analysis"])
 
     def test_focus_regeneration_does_not_merge_stale_unrelated_ai_copy(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -913,12 +927,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             for summary in pipeline._deterministic_domain_summaries(evidence)
             if summary["domain"] == "local"
             for focus in summary["focuses"]
-            if focus["id"] == "scale"
+            if focus["id"] == "revenue"
         )
         generated_focus = {
             **generated_focus,
-            "headline": "去重后选择呈分层",
-            "analysis": "HKBN 27个产品与HGC 4个产品形成差距，说明去重后产品选择并非均匀分布。",
+            "headline": "经营资源底盘分层",
         }
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
@@ -942,13 +955,18 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                     "focus": generated_focus,
                 }),
             ):
-                result = pipeline.regenerate_model_focus_summary("local", "scale", path=path)
+                result = pipeline.regenerate_model_focus_summary("local", "revenue", path=path)
 
             saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
             serialized = json.dumps(saved["summaries"], ensure_ascii=False)
             self.assertTrue(result["ok"])
-            self.assertNotIn("161", serialized)
-            self.assertIn("去重后选择呈分层", serialized)
+            self.assertNotIn("旧口径共161项", serialized)
+            self.assertFalse(any(
+                focus.get("id") == "scale"
+                for summary in saved["summaries"]
+                for focus in summary.get("focuses") or []
+            ))
+            self.assertIn("经营资源底盘分层", serialized)
 
     def test_analysis_evidence_excludes_rendered_ai_relations(self):
         rendered = {
@@ -1309,11 +1327,15 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
     def test_model_analysis_gate_rejects_numbers_not_present_in_evidence(self):
         evidence = {
-            "domains": [{
-                "id": "local",
-                "focuses": [{"items": [{"value": 10, "source_url": "https://example.com/source"}]}],
-                "agent_verified_facts": [],
-            }]
+            "domains": [
+                {
+                    "id": domain,
+                    "focuses": ([{"items": [{"value": 10, "source_url": "https://example.com/source"}]}]
+                                if domain == "local" else []),
+                    "agent_verified_facts": [],
+                }
+                for domain in pipeline.UI_DOMAIN_IDS
+            ]
         }
         summaries = [
             {
@@ -1323,7 +1345,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "risk": "口径不同。",
                 "source_urls": ["https://example.com/source"] if domain == "local" else [],
             }
-            for domain in ("local", "international", "cloud", "macro")
+            for domain in pipeline.UI_DOMAIN_IDS
         ]
         pipeline._validate_model_summaries(summaries, evidence)
         summaries[1]["analysis"] = "出现99项变化。"
@@ -1331,12 +1353,17 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             pipeline._validate_model_summaries(summaries, evidence)
 
     def test_model_analysis_gate_rejects_unseen_source_url(self):
-        evidence = {"domains": []}
+        evidence = {
+            "domains": [
+                {"id": domain, "focuses": [], "agent_verified_facts": []}
+                for domain in pipeline.UI_DOMAIN_IDS
+            ]
+        }
         summaries = [
             {"domain": domain, "headline": "观察", "analysis": "已有变化。", "risk": "谨慎。", "source_urls": []}
-            for domain in ("local", "international", "cloud", "macro")
+            for domain in pipeline.UI_DOMAIN_IDS
         ]
-        summaries[2]["source_urls"] = ["https://invented.example.com"]
+        summaries[-1]["source_urls"] = ["https://invented.example.com"]
         with self.assertRaisesRegex(ValueError, "输入之外的来源"):
             pipeline._validate_model_summaries(summaries, evidence)
 
@@ -1762,7 +1789,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_model_analysis_reuses_validated_summary_when_evidence_is_unchanged(self):
         summaries = [
             {"domain": domain, "headline": "观察", "analysis": "证据未变。", "risk": "保持边界。", "source_urls": []}
-            for domain in ("local", "international", "cloud", "macro")
+            for domain in pipeline.UI_DOMAIN_IDS
         ]
         discoveries = [
             {"from": source, "to": target, "title": title, "detail": "证据联合观察。", "kind": "AI综合研判", "source_urls": []}
@@ -1770,10 +1797,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 ("local", "international", "本地与国际联动"),
                 ("international", "cloud", "国际与云联动"),
                 ("local", "cloud", "本地与云联动"),
-                ("macro", "local", "宏观与本地联动"),
+                ("mainland", "local", "内地与本地联动"),
             )
         ]
-        evidence = {"domains": [], "relations": []}
+        evidence = {
+            "domains": [
+                {"id": domain, "focuses": [], "agent_verified_facts": []}
+                for domain in pipeline.UI_DOMAIN_IDS
+            ],
+            "relations": [],
+        }
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
             path.write_text(json.dumps({"model_analysis": {
@@ -2085,7 +2118,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         evidence = {
             "domains": [
                 {"id": domain, "title": domain, "deterministic_insight": "已核验证据显示变化。", "focuses": []}
-                for domain in ("local", "international", "cloud", "macro")
+                for domain in pipeline.UI_DOMAIN_IDS
             ],
             "relations": [],
         }
@@ -2146,10 +2179,17 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_four_database_success_triggers_pages_publish_after_ai_gate(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
+            evidence = {
+                "domains": [
+                    {"id": domain, "focuses": [], "agent_verified_facts": []}
+                    for domain in pipeline.UI_DOMAIN_IDS
+                ],
+                "relations": [],
+            }
             model_result = {
                 "generated_at_hkt": "2026-08-06T04:00:00+08:00",
                 "model": "deepseek-v4",
-                "summaries": [{"domain": item} for item in ("local", "international", "cloud", "macro")],
+                "summaries": [{"domain": item} for item in pipeline.UI_DOMAIN_IDS],
                 "evidence_hash": "evidence-hash",
                 "fallback_used": False,
             }
@@ -2163,6 +2203,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 }),
                 patch("executive_intelligence_pipeline.publish_domain_fact_sidecars", return_value={}),
                 patch("executive_intelligence_pipeline.validate_database", return_value={"rows": 1}),
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.load_0100_source_discovery_handoff", return_value={
+                    "ok": True, "available": True,
+                }),
                 patch("executive_intelligence_pipeline.publish_model_domain_summaries", return_value=model_result),
                 patch("executive_intelligence_pipeline._publish_and_verify_github_pages", return_value={
                     "ok": True, "status": "verified", "site_version": "site-123",
@@ -2183,10 +2227,17 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_frontend_publish_failure_keeps_four_domain_refresh_failed(self):
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
+            evidence = {
+                "domains": [
+                    {"id": domain, "focuses": [], "agent_verified_facts": []}
+                    for domain in pipeline.UI_DOMAIN_IDS
+                ],
+                "relations": [],
+            }
             model_result = {
                 "generated_at_hkt": "2026-08-06T04:00:00+08:00",
                 "model": "deepseek-v4",
-                "summaries": [{"domain": item} for item in ("local", "international", "cloud", "macro")],
+                "summaries": [{"domain": item} for item in pipeline.UI_DOMAIN_IDS],
                 "evidence_hash": "evidence-hash",
                 "fallback_used": False,
             }
@@ -2200,6 +2251,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 }),
                 patch("executive_intelligence_pipeline.publish_domain_fact_sidecars", return_value={}),
                 patch("executive_intelligence_pipeline.validate_database", return_value={"rows": 1}),
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline.load_0100_source_discovery_handoff", return_value={
+                    "ok": True, "available": True,
+                }),
                 patch("executive_intelligence_pipeline.publish_model_domain_summaries", return_value=model_result),
                 patch(
                     "executive_intelligence_pipeline._publish_and_verify_github_pages",

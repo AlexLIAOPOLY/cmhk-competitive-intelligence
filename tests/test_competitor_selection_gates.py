@@ -111,7 +111,6 @@ class CompetitorSelectionGateTests(unittest.TestCase):
 
     def test_three_local_competitors_have_ten_years_where_a_numeric_series_exists(self):
         complete = {
-            "5g_penetration",
             "overview_01_ebitda",
             "overview_01_net_profit",
             "overview_01_revenue",
@@ -122,10 +121,24 @@ class CompetitorSelectionGateTests(unittest.TestCase):
                     cell["year"] for cell in DATA["cells"]
                     if cell["company"] == company and cell["metric"] == metric
                 }
-                expected = set(range(2016, 2026))
-                if company == "SmarTone" and metric == "5g_penetration":
-                    expected.remove(2020)
-                self.assertEqual(years, expected, f"{company}:{metric}")
+                self.assertEqual(years, set(range(2016, 2026)), f"{company}:{metric}")
+        expected_5g_years = {
+            "3HK": set(range(2020, 2026)),
+            "HKT": set(range(2020, 2026)),
+            "SmarTone": set(range(2021, 2026)),
+        }
+        for company, expected in expected_5g_years.items():
+            years = {
+                cell["year"] for cell in DATA["cells"]
+                if cell["company"] == company and cell["metric"] == "5g_penetration"
+            }
+            self.assertEqual(years, expected, company)
+            pre_launch_years = set(range(2016, min(expected)))
+            audited_gaps = {
+                gap["year"] for gap in DATA["gaps"]
+                if gap["company"] == company and gap["metric"] == "5g_penetration"
+            }
+            self.assertTrue(pre_launch_years.issubset(audited_gaps), company)
         for company in ("3HK", "HKT"):
             years = {
                 cell["year"] for cell in DATA["cells"]

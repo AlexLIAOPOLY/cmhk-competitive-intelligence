@@ -36,9 +36,14 @@ audio/
 models/tts/
 .venv/
 .venv_tts/
+node_modules/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+junit*.xml
 evidence_cache/
 tmp/
 agent_runs/
@@ -63,8 +68,14 @@ curation_data/cache_backups/
 curation_data/runs/
 curation_data/checkpoints.sqlite-shm
 curation_data/checkpoints.sqlite-wal
+curation_data/checkpoints.sqlite
 agent_knowledge/**/crawl_cache/
 agent_knowledge/crawl_run_logs/runs/
+agent_knowledge/**/* 2.*
+data/**/http_cache/
+data/quarterly_sources/**/*.pdf
+web/static/report-previews/
+/artifacts/ui-qa/
 weekly_report_*_cache.json
 weekly_report_human_examples.json
 weekly_report_ai_quality_audit.json

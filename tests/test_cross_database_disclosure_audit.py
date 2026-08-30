@@ -158,10 +158,14 @@ class StrictSourceDocumentCountTest(unittest.TestCase):
     def test_quarterly_exact_context_exposes_strict_status(self) -> None:
         chunks = retrieve_context(
             "3HK H1 2021资本开支",
-            limit=3,
+            limit=6,
             dataset_ids={"quarterly_competitor_metrics_2026-06-18"},
         )
-        exact = next(chunk["text"] for chunk in chunks if "精确季度指标行" in chunk["text"])
+        exact = next(
+            chunk["text"]
+            for chunk in chunks
+            if "period=H1 2021; metric_key=capital_expenditures" in chunk["text"]
+        )
         self.assertIn("verification_count=3", exact)
         self.assertIn("distinct_source_document_count=1", exact)
         self.assertIn("triple_source_status=below_three_source_threshold", exact)

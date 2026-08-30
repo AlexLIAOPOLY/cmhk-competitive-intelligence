@@ -76,7 +76,15 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
                 for item in focus["items"]:
                     self.assertTrue(item["analysis"])
                     if item.get("value") is not None:
-                        self.assertTrue(item["source_url"].startswith(("https://", "http://")))
+                        has_public_source = item["source_url"].startswith(("https://", "http://"))
+                        has_internal_reference = (
+                            item.get("verification_count", 0) > 0
+                            and "用户提供参考PPT" in str(item.get("detail") or "")
+                        )
+                        self.assertTrue(
+                            has_public_source or has_internal_reference,
+                            f"{domain['id']}:{focus['id']}:{item['name']}",
+                        )
 
     @unittest.skip("旧产品资费四象限已由用户指定的01/03/04指标替代")
     def test_focuses_preserve_their_real_measurement_semantics(self):
@@ -286,7 +294,14 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
         visible = json.dumps(requested, ensure_ascii=False)
 
         self.assertNotIn("百分点", visible)
-        self.assertNotIn('"unit": "%"', visible)
+        primary_units = {
+            item.get("unit")
+            for domain in requested
+            for focus in domain["focuses"]
+            for item in focus["items"]
+            if item.get("value") is not None
+        }
+        self.assertNotIn("%", primary_units)
 
 
 if __name__ == "__main__":

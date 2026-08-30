@@ -454,13 +454,17 @@ def audio_info_for_report(report_path: Path) -> dict:
             timing_payload = json.loads(timing_path.read_text(encoding="utf-8"))
         except Exception:
             timing_payload = {}
+    audio_stat = audio_path.stat()
     result = {
         "exists": True,
         "name": audio_path.name,
-        "url": f"/audio/{quote(audio_path.name)}",
-        "size": audio_path.stat().st_size,
-        "mtime": audio_path.stat().st_mtime,
-        "mtimeText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(audio_path.stat().st_mtime)),
+        # A report can be regenerated in place with the same file name. Version
+        # the media URL so fresh subtitle cues can never be paired with a stale
+        # browser-cached audio response.
+        "url": f"/audio/{quote(audio_path.name)}?v={audio_stat.st_mtime_ns}",
+        "size": audio_stat.st_size,
+        "mtime": audio_stat.st_mtime,
+        "mtimeText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(audio_stat.st_mtime)),
         "summary": summary_text,
     }
     cues = timing_payload.get("cues")
@@ -534,11 +538,13 @@ def normalize_for_speech(value: str) -> str:
         text = text.replace(source, target)
     for source, target in {
         "SmarTone": "数码通",
+        "3HK香港": "Three香港",
         "3HK": "Three香港",
         "HKBN": "香港宽频",
         "MoU": "合作备忘录",
     }.items():
         text = text.replace(source, target)
+    text = text.replace("Three香港香港", "Three香港")
     text = re.sub(r"(?<!\d)5G-Advanced(?![A-Za-z])", "五G增强版", text, flags=re.IGNORECASE)
     text = re.sub(r"(?<!\d)5G-A(?![A-Za-z])", "五G增强版", text, flags=re.IGNORECASE)
     text = re.sub(r"(?<!\d)5G(?![A-Za-z])", "五 G", text, flags=re.IGNORECASE)
@@ -1029,6 +1035,7 @@ def prepare_tts_text(value: str) -> str:
         (r"(?<!\d)5G-Advanced(?![A-Za-z])", "五G增强版"),
         (r"(?<!\d)5G-A(?![A-Za-z])", "五G增强版"),
         (r"(?<!\d)5G(?![A-Za-z])", "五G"),
+        (r"3HK\s*香港", "Three香港"),
         (r"3HK", "Three香港"),
         (r"SmarTone", "数码通"),
         (r"HKBN", "香港宽频"),
@@ -1041,6 +1048,7 @@ def prepare_tts_text(value: str) -> str:
     ]
     for pattern, replacement in spoken_terms:
         text = re.sub(pattern, replacement, text, flags=re.IGNORECASE)
+    text = re.sub(r"Three\s*香港香港", "Three香港", text, flags=re.IGNORECASE)
     text = text.replace("：", "，").replace("；", "。").replace("、", "，")
     
     # 1. Convert time format (e.g. 17:30 -> 十七时三十分)

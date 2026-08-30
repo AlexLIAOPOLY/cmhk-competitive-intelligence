@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -eu
 
 blocked="$(git diff --cached --name-only --diff-filter=ACMR | awk '
@@ -9,11 +9,19 @@ blocked="$(git diff --cached --name-only --diff-filter=ACMR | awk '
   /^weekly_report_render\// { print; next }
   /^audio\// { print; next }
   /^evidence_cache\// { print; next }
+  /^artifacts\/ui-qa\// { print; next }
+  /^curation_data\/(backups|cache_backups|runs)\// { print; next }
+  /^data\/quarterly_sources\/http_cache\// { print; next }
+  /^data\/quarterly_sources\/.*\.pdf$/ { print; next }
+  /^web\/static\/report-previews\// { print; next }
+  /^agent_knowledge\/.* 2\./ { print; next }
   /\.log$/ { print; next }
   /\.pid$/ { print; next }
   /\.wav$/ { print; next }
   /\.aiff$/ { print; next }
   /\.mp3$/ { print; next }
+  /\.sqlite(-shm|-wal)?$/ { print; next }
+  /\.pdf$/ { print; next }
   /\.xlsx$/ { print; next }
   /\.docx$/ && $0 !~ /(^|\/)(weekly_report_template|carrier_performance_template|weekly_report_from_word_template)\.docx$/ { print; next }
 ')"
@@ -23,5 +31,21 @@ if [ -n "$blocked" ]; then
   echo "$blocked" >&2
   echo "" >&2
   echo "If these are intentional source artifacts, update .githooks/pre-commit and docs/VERSION_CONTROL.md first." >&2
+  exit 1
+fi
+
+oversized="$(
+  while IFS= read -r -d '' path; do
+    size="$(git cat-file -s ":$path" 2>/dev/null || printf '0')"
+    if [[ "$size" -gt 26214400 ]]; then
+      printf '%s (%s bytes)\n' "$path" "$size"
+    fi
+  done < <(git diff --cached --name-only --diff-filter=ACMR -z)
+)"
+
+if [[ -n "$oversized" ]]; then
+  echo "Blocked files larger than 25 MiB from commit:" >&2
+  echo "$oversized" >&2
+  echo "Store operational binaries outside the normal development branch." >&2
   exit 1
 fi

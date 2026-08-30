@@ -243,12 +243,12 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('grid.innerHTML = domains.map(renderDomainCard).join("")', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=276"', html)
+        self.assertIn('href="/static/styles.css?v=287"', html)
         self.assertIn('Log and audit surfaces: complete dark-theme coverage v252', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=311"', html)
+        self.assertIn('src="/static/app.js?v=312"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -284,13 +284,13 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('entity.ai_summary?.analysis || entity.analysis', app)
         self.assertNotIn('<p>${safe(entityAnalysis)}</p>', app)
         self.assertIn('class="intelligence-entity-components"', app)
-        self.assertIn('components.slice(0, 6)', app)
+        self.assertIn('components.slice(0, 8)', app)
         self.assertIn('component.detail ? `<small>${safe(component.detail)}</small>`', app)
         self.assertNotIn('class="intelligence-entity-data-time"', app)
         self.assertNotIn('数据采集时间：', app)
         self.assertNotIn('.intelligence-entity-data-time {', styles)
-        self.assertIn('width: min(100%, 760px);', leadership_styles)
-        self.assertIn('.intelligence-domain-local .intelligence-focus-tabs {\n    width: fit-content;\n    max-width: 100%;', leadership_styles)
+        self.assertIn('width: min(720px, 58vw);', leadership_styles)
+        self.assertIn('.intelligence-domain-local .intelligence-focus-tabs {\n    width: auto;\n    max-width: 100%;', leadership_styles)
         self.assertIn('.intelligence-domain-metric em {', leadership_styles)
         self.assertNotIn('.intelligence-domain-metric em,\n.intelligence-viz-rows', leadership_styles)
         self.assertIn('grid-template-columns: minmax(190px, auto) minmax(58px, 1fr) minmax(210px, auto);', leadership_styles)
@@ -314,7 +314,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('模型本次未返回有效内容，已安全保留当前版本，请点击重试', app)
         self.assertIn('Expecting value|JSON|line \\d+ column \\d+|char \\d+', app)
         self.assertNotIn('insightRefreshState.delete(key);\n        const latestDomain = domainById(domainId);\n        if (latestDomain) replaceDomainCard(latestDomain);\n      }, 5000);', app)
-        self.assertIn('src="/static/app.js?v=311"', html)
+        self.assertIn('src="/static/app.js?v=312"', html)
         self.assertIn('.ai-insight-label.is-loading', leadership_styles)
         self.assertIn('white-space: nowrap !important;', leadership_styles)
         self.assertIn('overflow-wrap: normal;', leadership_styles)
@@ -358,7 +358,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('intelligence-viz-trends', app)
         self.assertIn('intelligence-viz-disclosure', app)
         self.assertIn('competitive-intelligence-radar-v3.webp', styles)
-        self.assertEqual(leadership_styles.count('competitive-intelligence-radar-v3.webp'), 4)
+        self.assertEqual(leadership_styles.count('competitive-intelligence-radar-v3.webp'), 5)
         self.assertIn('Executive intelligence visual refinement v2', styles)
         self.assertIn('Xiaojing AI high-contrast dark workspace v2', styles)
         self.assertIn('--chat-canvas: #071a25;', styles)
@@ -895,7 +895,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
         self.assertIn('href="/static/leadership-board.css?v=19"', html)
-        self.assertIn('src="/static/app.js?v=311"', html)
+        self.assertIn('src="/static/app.js?v=312"', html)
         self.assertIn('self.send_header("Cache-Control", "no-store")', server)
         self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)
         self.assertNotIn('["pointerenter", "focusin", "touchstart"]', snapshot_builder)
@@ -2287,7 +2287,11 @@ class AgentWebSearchToggleTests(unittest.TestCase):
                 captured["stream_mode"] = stream_mode
                 return iter(())
 
-        with mock.patch("agent.get_agent", return_value=FakeAgent()):
+        with (
+            mock.patch("agent.get_agent", return_value=FakeAgent()),
+            mock.patch("agent.auto_capture_user_memory", return_value=None),
+            mock.patch("agent.memory_context", return_value=""),
+        ):
             events = list(agent.stream_agent("搜一下中国移动最新收入", force_web_search=True))
 
         self.assertEqual(events[-1], {"type": "done"})

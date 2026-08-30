@@ -24,7 +24,7 @@ class RequestedOverviewProvenanceTest(unittest.TestCase):
         with FACTS.open(encoding="utf-8-sig", newline="") as handle:
             cls.rows = list(csv.DictReader(handle))
 
-    def test_candidate_documents_do_not_inflate_exact_verification_count(self):
+    def test_exact_official_sources_define_the_verification_count(self):
         row = next(
             item
             for item in self.rows
@@ -32,9 +32,11 @@ class RequestedOverviewProvenanceTest(unittest.TestCase):
             and item["metric"] == "postpaid"
             and item["period"] == "FY2022"
         )
-        self.assertEqual(row["source_count"], "0")
-        self.assertEqual(row["verification_status"], "official_single_source")
-        self.assertEqual(len(json.loads(row["source_urls"])), 3)
+        source_urls = json.loads(row["source_urls"])
+        self.assertEqual(int(row["source_count"]), len(source_urls))
+        self.assertEqual(row["source_count"], "3")
+        self.assertEqual(row["verification_status"], "official_multi_source_verified")
+        self.assertTrue(all(url.startswith("https://www.chinaunicom.com.hk/") for url in source_urls))
         self.assertTrue(row["scope_note"].startswith("FY2022歷史點；"))
 
 
