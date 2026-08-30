@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "496b93753a4242b61e266a18",
+      "task_id": "incident:496b93753a4242b61e266a18",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败状态。推断整体任务可能未完全完成，部分结果可能丢失或需恢复，但最终影响需结合任务归档判断。",
+      "suggestions": [
+        "",
+        "关联任务归档与候选ID：根据日志时间戳查询对应任务归档记录和候选ID，确认哪些步骤失败、是否已回退成功或进入待恢复队列。",
+        "恢复失败步骤：若条目进入待恢复队列，保留已有处理结果，仅重新执行失败步骤，并监控执行过程确保无新错误。",
+        "验证任务完成状态：在恢复或修复后，检查任务归档的最终状态，确认所有步骤成功完成且无数据丢失。"
+      ],
+      "occurred_at_hkt": "2026-08-30T17:49:35+08:00",
+      "started_at_hkt": "2026-08-30T17:49:35+08:00",
+      "heartbeat_at_hkt": "2026-08-30T17:49:35+08:00",
+      "completed_at_hkt": "2026-08-30T17:50:19+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "3bcfb40b11e684600bba21ab",
       "task_id": "incident:3bcfb40b11e684600bba21ab",
       "title": "主项目Web后台",
@@ -2552,14 +2578,16 @@
       "severity": "P3",
       "severity_label": "中",
       "summary": "本轮有数据被质量门禁拒绝，未进入数据库",
-      "impact": "这些行没有污染数据库；对应指标继续保留旧值或明确为未披露。",
+      "impact": "已确认：25行数据未进入数据库，未造成数据污染。推断：对应指标可能保留旧值或显示为未披露，对下游分析影响较小。",
       "suggestions": [
-        "查看质量门禁拒绝原因，只针对缺失的官方原文或字段补证。",
-        "禁止用搜索摘要、行业代理值或插值填充未通过的指标。"
+        "检查质量门禁日志，确认25行数据的具体拒绝原因。",
+        "针对缺失的官方原文或字段，从官方来源补证数据后重新提交。",
+        "验证补证后的数据通过质量门禁并成功入库。",
+        "若无法补证，记录未披露指标并通知下游系统。"
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T17:26:33+08:00",
-      "heartbeat_at_hkt": "2026-08-30T17:46:04+08:00",
+      "heartbeat_at_hkt": "2026-08-30T17:51:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12064,30 +12092,6 @@
       "started_at_hkt": "2026-08-27T07:43:10+08:00",
       "heartbeat_at_hkt": "2026-08-27T07:43:10+08:00",
       "completed_at_hkt": "2026-08-27T07:44:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "9619efa8b637aa8233ccfeca",
-      "task_id": "incident:9619efa8b637aa8233ccfeca",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "检查 Agent run_id、节点完整性、超时和待恢复状态。",
-        "保留抓取结果，只恢复审核阶段，不重新触发已完成抓取。"
-      ],
-      "occurred_at_hkt": "2026-08-27T07:40:36+08:00",
-      "started_at_hkt": "2026-08-27T07:40:40+08:00",
-      "heartbeat_at_hkt": "2026-08-27T07:41:10+08:00",
-      "completed_at_hkt": "2026-08-27T07:41:40+08:00",
       "handled_at_hkt": ""
     }
   ],
