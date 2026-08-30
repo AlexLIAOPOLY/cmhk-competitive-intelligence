@@ -145,8 +145,14 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(len(writes), 2)
         self.assertEqual(writes[0]["sheet_id"], "sheet-1")
         self.assertEqual(writes[0]["cells"][0][0]["value"], "接受")
-        self.assertTrue(lark.call_args.kwargs["retry_transient"])
+        self.assertFalse(lark.call_args.kwargs["retry_transient"])
         self.assertEqual(lark.call_args.kwargs["identity_override"], "bot")
+
+    def test_single_write_disables_blind_transient_retry(self):
+        with mock.patch.object(review_sheet, "_lark") as lark:
+            review_sheet._write("sheet-1", "A2:A2", [["接受"]])
+
+        self.assertFalse(lark.call_args.kwargs["retry_transient"])
 
     def test_lark_read_does_not_retry_permission_error(self):
         forbidden = self._lark_result(
@@ -648,6 +654,53 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertFalse(any(sheet.rows[1]))
         self.assertEqual(sheet.rows[2][6], "历史新闻")
 
+    def test_sorted_rows_keep_the_matching_selector_item_identity(self):
+        older = self._new_item()
+        newer = {
+            **self._new_item(),
+            "news_id": review_sheet._news_item_id(
+                "https://example.com/newer",
+                "较新候选",
+            ),
+            "url": "https://example.com/newer",
+            "ai_title": "较新候选",
+            "ai_summary": "日期较新的候选应排在前面且保持同一 news_id。",
+            "source_date": "2026-07-23",
+            "search_date": "2026-07-23",
+        }
+        sheet = self._LiveSheet([self._existing_row()])
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=sheet.read),
+            mock.patch.object(review_sheet, "_write", side_effect=sheet.write),
+            mock.patch.object(review_sheet, "_insert_rows", side_effect=sheet.insert),
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "curate_news_items",
+                side_effect=lambda items: (items, {}),
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "polish_candidates_before_review",
+                side_effect=lambda items, **_kwargs: items,
+            ),
+            mock.patch.object(
+                strategic_briefing,
+                "agent_semantic_deduplicate_candidates",
+                side_effect=self._semantic_keep,
+            ),
+        ):
+            result = review_sheet.sync_candidates([older, newer])
+
+        written_rows = sheet.writes[0][1]
+        self.assertEqual([row[6] for row in written_rows], ["较新候选", "今日新新闻"])
+        self.assertEqual(
+            [item["news_id"] for item in result["new_items"]],
+            [newer["news_id"], older["news_id"]],
+        )
+
     def test_sync_does_not_rewrite_existing_duplicate_rows(self):
         pending = self._existing_row()
         pending[0] = "待审核"
@@ -929,7 +982,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                     "candidate_count": 471,
                     "readback_verified": True,
                     "new_count": 3,
-                    "new_items": [{"title": "new"}],
+                    "new_items": [{"news_id": "NEWS-NEW", "title": "new"}],
                 },
             ),
             mock.patch.object(
@@ -941,6 +994,12 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             result = review_sheet.run_cycle(schedule_dashboard_publish=False)
 
         self.assertTrue(result["readback_verified"])
+        self.assertEqual(result["selection_batch_key"], "2026-08-06@09:00")
+        self.assertTrue(result["selection_agent_pending"])
+        self.assertIn(
+            "2026-08-06@09:00",
+            state_holder["value"][review_sheet.PENDING_SELECTION_BATCHES_STATE_KEY],
+        )
         receipts = state_holder["value"][
             review_sheet.SUCCESSFUL_CYCLE_RESULTS_STATE_KEY
         ]
@@ -948,6 +1007,73 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertNotIn(
             review_sheet.PENDING_CYCLE_STATE_KEY,
             state_holder["value"],
+        )
+
+    def test_pending_selection_receipts_are_not_silently_evicted(self):
+        state_holder = {"value": {}}
+
+        def read_state(_path, _default):
+            return dict(state_holder["value"])
+
+        def write_state(_path, payload):
+            state_holder["value"] = dict(payload)
+
+        with (
+            mock.patch.object(review_sheet, "_read_json", side_effect=read_state),
+            mock.patch.object(review_sheet, "_write_json", side_effect=write_state),
+        ):
+            for index in range(review_sheet.MAX_PENDING_SELECTION_BATCHES + 1):
+                review_sheet._register_pending_selection_batch(
+                    new_items=[{"news_id": f"NEWS-{index}"}],
+                    sheet_id="sheet",
+                    generated_at="2026-08-30T10:00:00+08:00",
+                )
+
+        batches = state_holder["value"][
+            review_sheet.PENDING_SELECTION_BATCHES_STATE_KEY
+        ]
+        self.assertEqual(len(batches), review_sheet.MAX_PENDING_SELECTION_BATCHES + 1)
+
+    def test_pending_selection_receipt_requires_verified_completion(self):
+        state_holder = {"value": {}}
+
+        def read_state(_path, _default):
+            return dict(state_holder["value"])
+
+        def write_state(_path, payload):
+            state_holder["value"] = dict(payload)
+
+        with (
+            mock.patch.object(review_sheet, "_read_json", side_effect=read_state),
+            mock.patch.object(review_sheet, "_write_json", side_effect=write_state),
+        ):
+            batch_key = review_sheet._register_pending_selection_batch(
+                new_items=[{"news_id": "NEWS-1"}],
+                sheet_id="sheet",
+                generated_at="2026-08-30T10:00:00+08:00",
+            )
+            review_sheet.fail_selection_batch(
+                batch_key,
+                "temporary failure",
+                attempted_at="2026-08-30T10:01:00+08:00",
+            )
+            pending = review_sheet.pending_selection_batches(limit=1)[0]
+            self.assertEqual(pending["status"], "retry_pending")
+            self.assertEqual(pending["attempt_count"], 1)
+            with self.assertRaisesRegex(ValueError, "未完成回读"):
+                review_sheet.complete_selection_batch(
+                    batch_key,
+                    {"status": "completed", "readback_verified": False},
+                )
+            review_sheet.complete_selection_batch(
+                batch_key,
+                {"status": "completed", "readback_verified": True},
+            )
+
+        self.assertEqual(review_sheet.PENDING_SELECTION_BATCHES_STATE_KEY in state_holder["value"], True)
+        self.assertEqual(
+            state_holder["value"][review_sheet.PENDING_SELECTION_BATCHES_STATE_KEY],
+            {},
         )
 
     def test_legacy_notice_builder_does_not_sync_candidates_twice(self):
@@ -1150,6 +1276,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         accepted[0] = "接受"
         accepted[2] = "已纳入"
         writes = []
+
+        def write_many(sheet, regions, **_kwargs):
+            writes.extend((sheet, cell_range, values) for cell_range, values in regions)
+            accepted[2] = "同步失败"
+
         with (
             mock.patch.object(review_sheet, "_read_rows", return_value=[accepted]),
             mock.patch.object(
@@ -1165,10 +1296,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             ),
             mock.patch.object(
                 review_sheet,
-                "_write",
-                side_effect=lambda sheet, cell_range, values: writes.append(
-                    (sheet, cell_range, values)
-                ),
+                "_write_many",
+                side_effect=write_many,
             ),
         ):
             result = review_sheet.apply_reviews("sheet")
@@ -1193,6 +1322,10 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         metadata_key = review_sheet._gate_metadata_key(accepted[10])
         writes = []
         published_payloads = []
+
+        def write_many(sheet, regions, **_kwargs):
+            writes.extend((sheet, cell_range, values) for cell_range, values in regions)
+            accepted[2] = "已纳入"
 
         def read_json(path, default):
             if path == review_sheet.STATE_PATH:
@@ -1220,10 +1353,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             ),
             mock.patch.object(
                 review_sheet,
-                "_write",
-                side_effect=lambda sheet, cell_range, values: writes.append(
-                    (sheet, cell_range, values)
-                ),
+                "_write_many",
+                side_effect=write_many,
             ),
         ):
             result = review_sheet.apply_reviews("sheet")
@@ -1241,6 +1372,91 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "2026-07-29T17:16:00+08:00",
         )
         self.assertEqual(published["items"][0]["approval_sheet_id"], "sheet")
+
+    def test_apply_reviews_reconciles_timeout_that_already_landed_before_publishing(self):
+        accepted = self._existing_row()
+        accepted[0] = "接受"
+        accepted[2] = "未同步"
+        events = []
+
+        def read_rows(*_args, **_kwargs):
+            events.append(("read", accepted[2]))
+            return [list(accepted)]
+
+        def write_many(*_args, **_kwargs):
+            events.append(("write", accepted[2]))
+            accepted[2] = "已纳入"
+            raise RuntimeError("request timeout")
+
+        def write_json(path, _payload):
+            if path == review_sheet.PUBLISHED_PATH:
+                events.append(("publish", accepted[2]))
+
+        with (
+            mock.patch.object(review_sheet, "_read_rows", side_effect=read_rows),
+            mock.patch.object(
+                review_sheet,
+                "_read_json",
+                return_value={"items": []},
+            ),
+            mock.patch.object(review_sheet, "_write_json", side_effect=write_json),
+            mock.patch.object(
+                review_sheet,
+                "_review_news_candidate",
+                return_value=(True, "通过"),
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_write_many",
+                side_effect=write_many,
+            ) as write,
+            mock.patch.object(review_sheet.time, "sleep") as sleep,
+        ):
+            result = review_sheet.apply_reviews("sheet")
+
+        write.assert_called_once()
+        sleep.assert_not_called()
+        self.assertTrue(result["sync_status_readback_verified"])
+        self.assertEqual(result["sync_status_verified_count"], 1)
+        self.assertEqual(events[-1], ("publish", "已纳入"))
+        self.assertEqual([event[0] for event in events], ["read", "write", "read", "publish"])
+
+    def test_apply_reviews_stops_on_sync_status_conflict_without_local_publish(self):
+        accepted = self._existing_row()
+        accepted[0] = "接受"
+        accepted[2] = "未同步"
+
+        def write_many(*_args, **_kwargs):
+            accepted[2] = "人工覆盖"
+            raise RuntimeError("request timeout")
+
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=lambda *_args, **_kwargs: [list(accepted)],
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_read_json",
+                return_value={"items": []},
+            ),
+            mock.patch.object(review_sheet, "_write_json") as write_json,
+            mock.patch.object(
+                review_sheet,
+                "_review_news_candidate",
+                return_value=(True, "通过"),
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_write_many",
+                side_effect=write_many,
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "被其他操作修改"):
+                review_sheet.apply_reviews("sheet")
+
+        write_json.assert_not_called()
 
     def test_apply_reviews_preserves_pre_rollover_ticker_items(self):
         published_payloads = []

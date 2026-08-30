@@ -833,6 +833,10 @@ class StrategicBriefingTests(unittest.TestCase):
                     "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
                     return_value=recovered,
                 ) as run_selection,
+                mock.patch(
+                    "cmhk.intelligence.news_review_sheet.pending_selection_batches",
+                    return_value=[],
+                ),
                 mock.patch.object(briefing, "_run_scan") as run_scan,
                 mock.patch.object(briefing, "_send_scan_message") as send_message,
             ):
@@ -855,6 +859,190 @@ class StrategicBriefingTests(unittest.TestCase):
                 updated["selection_agent_recovery"]["no_notification_replay"]
             )
             amend.assert_called_once()
+
+    def test_background_review_batch_runs_selector_without_crawl_or_message_replay(self):
+        now = datetime(2026, 8, 30, 10, 0, tzinfo=briefing.HKT)
+        batch = {
+            "status": "pending",
+            "idempotency_key": "2026-08-30@review-test",
+            "sheet_id": "sheet-1",
+            "new_items": [{"news_id": "NEWS-1"}],
+            "attempt_count": 0,
+        }
+        completed = {
+            "status": "completed",
+            "task_run_id": "selection-background",
+            "candidate_count": 1,
+            "verified_field_count": 2,
+            "newly_written_count": 2,
+            "readback_verified": True,
+        }
+        state = {}
+        with (
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.pending_selection_batches",
+                return_value=[batch],
+            ),
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.complete_selection_batch",
+            ) as acknowledge,
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.fail_selection_batch",
+            ) as fail,
+            mock.patch(
+                "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
+                return_value=completed,
+            ) as run_selection,
+            mock.patch.object(briefing, "_append_event"),
+            mock.patch.object(briefing, "_run_scan") as run_scan,
+            mock.patch.object(briefing, "_send_scan_message") as send_message,
+        ):
+            result = briefing._recover_pending_review_selection_batches(
+                state,
+                now=now,
+            )
+
+        run_selection.assert_called_once_with(
+            new_items=[{"news_id": "NEWS-1"}],
+            sheet_id="sheet-1",
+            parent_crawl_run_id="",
+            idempotency_key="2026-08-30@review-test",
+        )
+        acknowledge.assert_called_once_with("2026-08-30@review-test", completed)
+        fail.assert_not_called()
+        run_scan.assert_not_called()
+        send_message.assert_not_called()
+        self.assertEqual(result[0]["status"], "completed")
+        self.assertTrue(result[0]["no_crawl_replay"])
+        self.assertTrue(result[0]["no_notification_replay"])
+
+    def test_background_review_batch_honors_retry_cooldown(self):
+        now = datetime(2026, 8, 30, 10, 5, tzinfo=briefing.HKT)
+        batch = {
+            "status": "retry_pending",
+            "idempotency_key": "2026-08-30@review-test",
+            "sheet_id": "sheet-1",
+            "new_items": [{"news_id": "NEWS-1"}],
+            "attempt_count": 1,
+            "last_attempt_at": "2026-08-30T10:00:00+08:00",
+        }
+        with (
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.pending_selection_batches",
+                return_value=[batch],
+            ),
+            mock.patch(
+                "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
+            ) as run_selection,
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.complete_selection_batch",
+            ) as acknowledge,
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.fail_selection_batch",
+            ) as fail,
+        ):
+            result = briefing._recover_pending_review_selection_batches(
+                {},
+                now=now,
+            )
+
+        self.assertEqual(result, [])
+        run_selection.assert_not_called()
+        acknowledge.assert_not_called()
+        fail.assert_not_called()
+
+    def test_cooling_retry_does_not_block_a_fresh_background_batch(self):
+        now = datetime(2026, 8, 30, 10, 5, tzinfo=briefing.HKT)
+        cooling = {
+            "status": "retry_pending",
+            "idempotency_key": "2026-08-30@cooling",
+            "sheet_id": "sheet-1",
+            "new_items": [{"news_id": "NEWS-OLD"}],
+            "attempt_count": 1,
+            "last_attempt_at": "2026-08-30T10:00:00+08:00",
+        }
+        fresh = {
+            "status": "pending",
+            "idempotency_key": "2026-08-30@fresh",
+            "sheet_id": "sheet-1",
+            "new_items": [{"news_id": "NEWS-NEW"}],
+            "attempt_count": 0,
+        }
+        completed = {
+            "status": "completed",
+            "task_run_id": "selection-fresh",
+            "candidate_count": 1,
+            "verified_field_count": 2,
+            "newly_written_count": 2,
+            "readback_verified": True,
+        }
+        with (
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.pending_selection_batches",
+                return_value=[cooling, fresh],
+            ),
+            mock.patch(
+                "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
+                return_value=completed,
+            ) as run_selection,
+            mock.patch(
+                "cmhk.intelligence.news_review_sheet.complete_selection_batch",
+            ) as acknowledge,
+            mock.patch.object(briefing, "_append_event"),
+        ):
+            result = briefing._recover_pending_review_selection_batches(
+                {},
+                now=now,
+            )
+
+        self.assertEqual(result[0]["idempotency_key"], "2026-08-30@fresh")
+        self.assertEqual(
+            run_selection.call_args.kwargs["new_items"],
+            [{"news_id": "NEWS-NEW"}],
+        )
+        acknowledge.assert_called_once_with("2026-08-30@fresh", completed)
+
+    def test_remaining_selection_error_survives_another_batch_recovery(self):
+        now = datetime(2026, 8, 30, 10, 0, tzinfo=briefing.HKT)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            recovered_path = root / "recovered.json"
+            failed_path = root / "still-failed.json"
+            recovered_path.write_text(
+                json.dumps(
+                    {
+                        "status": "completed",
+                        "slot": "2026-08-30@07:30",
+                        "completed_at": "2026-08-30T09:30:00+08:00",
+                        "selection_agent": {"status": "completed"},
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            failed_path.write_text(
+                json.dumps(
+                    {
+                        "status": "completed",
+                        "slot": "2026-08-30@09:20",
+                        "completed_at": "2026-08-30T09:40:00+08:00",
+                        "selection_agent": {
+                            "status": "retry_pending",
+                            "error": "another batch still pending",
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            error = briefing._remaining_selection_agent_error(
+                [recovered_path, failed_path],
+                cutoff=now - timedelta(hours=1),
+            )
+
+        self.assertIn("2026-08-30@09:20", error)
+        self.assertIn("another batch still pending", error)
 
     def test_incomplete_archive_does_not_block_retry(self):
         slot_key = "2026-07-30@07:30"

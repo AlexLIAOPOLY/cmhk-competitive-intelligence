@@ -86,6 +86,8 @@ LARK_TRANSIENT_MESSAGE_MARKERS = (
 SUCCESSFUL_CYCLE_RESULTS_STATE_KEY = "successful_cycle_results"
 PENDING_CYCLE_STATE_KEY = "pending_cycle"
 MAX_SUCCESSFUL_CYCLE_RESULTS = 32
+PENDING_SELECTION_BATCHES_STATE_KEY = "pending_selection_batches"
+MAX_PENDING_SELECTION_BATCHES = 32
 
 HEADERS = [
     "纳入滚动栏",
@@ -207,6 +209,186 @@ def _write_json(path: Path, payload: Any) -> None:
 
 def _text(value: Any, limit: int = 4000) -> str:
     return " ".join(str(value or "").replace("\x00", " ").split())[:limit]
+
+
+def _selection_batch_key(
+    new_items: list[dict[str, Any]],
+    *,
+    generated_at: str = "",
+    preferred_key: str = "",
+) -> str:
+    if preferred_key:
+        return _text(preferred_key, 120)
+    news_ids = sorted(
+        _text(item.get("news_id"), 80)
+        for item in new_items
+        if isinstance(item, dict) and _text(item.get("news_id"), 80)
+    )
+    if not news_ids:
+        return ""
+    date_match = re.match(r"(\d{4}-\d{2}-\d{2})", _text(generated_at, 80))
+    selection_date = date_match.group(1) if date_match else _now_iso()[:10]
+    digest = hashlib.sha256("\n".join(news_ids).encode("utf-8")).hexdigest()[:16]
+    return f"{selection_date}@review-{digest}"
+
+
+def _register_pending_selection_batch(
+    *,
+    new_items: list[dict[str, Any]],
+    sheet_id: str,
+    generated_at: str = "",
+    preferred_key: str = "",
+) -> str:
+    batch_key = _selection_batch_key(
+        new_items,
+        generated_at=generated_at,
+        preferred_key=preferred_key,
+    )
+    if not batch_key:
+        return ""
+    state = _read_json(STATE_PATH, {})
+    if not isinstance(state, dict):
+        state = {}
+    batches = state.get(PENDING_SELECTION_BATCHES_STATE_KEY)
+    if not isinstance(batches, dict):
+        batches = {}
+    existing = batches.pop(batch_key, None)
+    existing = dict(existing) if isinstance(existing, dict) else {}
+    existing_status = _text(existing.get("status"), 40)
+    batches[batch_key] = {
+        **existing,
+        "status": (
+            existing_status
+            if existing_status in {"retry_pending", "exhausted"}
+            else "pending"
+        ),
+        "idempotency_key": batch_key,
+        "sheet_id": _text(sheet_id, 120),
+        "source_generated_at": _text(generated_at, 80),
+        "created_at": existing.get("created_at") or _now_iso(),
+        "updated_at": _now_iso(),
+        "new_items": [dict(item) for item in new_items if isinstance(item, dict)],
+    }
+    # Unresolved batches are recovery receipts. Never evict an older receipt
+    # merely because a later batch arrived; completed entries are removed.
+    state[PENDING_SELECTION_BATCHES_STATE_KEY] = dict(batches)
+    _write_json(STATE_PATH, state)
+    return batch_key
+
+
+def pending_selection_batches(*, limit: int | None = 1) -> list[dict[str, Any]]:
+    """Return durable post-write batches still awaiting automatic selection."""
+    state = _read_json(STATE_PATH, {})
+    batches = (
+        state.get(PENDING_SELECTION_BATCHES_STATE_KEY)
+        if isinstance(state, dict)
+        and isinstance(state.get(PENDING_SELECTION_BATCHES_STATE_KEY), dict)
+        else {}
+    )
+    pending = []
+    for stored_key, batch in batches.items():
+        if not isinstance(batch, dict) or batch.get("status") not in {
+            "pending",
+            "retry_pending",
+        }:
+            continue
+        item = dict(batch)
+        item["idempotency_key"] = (
+            _text(item.get("idempotency_key"), 120)
+            or _text(stored_key, 120)
+        )
+        pending.append(item)
+    if limit is None:
+        return pending
+    return pending[: max(0, int(limit))]
+
+
+def pending_selection_batch_error() -> str:
+    state = _read_json(STATE_PATH, {})
+    batches = (
+        state.get(PENDING_SELECTION_BATCHES_STATE_KEY)
+        if isinstance(state, dict)
+        and isinstance(state.get(PENDING_SELECTION_BATCHES_STATE_KEY), dict)
+        else {}
+    )
+    for batch in batches.values():
+        if not isinstance(batch, dict) or batch.get("status") not in {
+            "retry_pending",
+            "exhausted",
+        }:
+            continue
+        batch_key = _text(batch.get("idempotency_key"), 120)
+        error = _text(batch.get("last_error"), 600) or "待自动续写"
+        return f"{batch_key} 新闻自动初筛未完成：{error}"
+    return ""
+
+
+def complete_selection_batch(
+    batch_key: str,
+    result: dict[str, Any],
+) -> None:
+    """Acknowledge one durable batch only after the selector's readback proof."""
+    if result.get("status") != "completed" or result.get("readback_verified") is not True:
+        raise ValueError("新闻自动初筛未完成回读，不能核销待选批次")
+    with _LOCK:
+        state = _read_json(STATE_PATH, {})
+        if not isinstance(state, dict):
+            state = {}
+        batches = state.get(PENDING_SELECTION_BATCHES_STATE_KEY)
+        batches = dict(batches) if isinstance(batches, dict) else {}
+        batches.pop(batch_key, None)
+        state[PENDING_SELECTION_BATCHES_STATE_KEY] = batches
+        state["last_selection_agent"] = {
+            "idempotency_key": batch_key,
+            "completed_at": _now_iso(),
+            **{
+                key: value
+                for key, value in result.items()
+                if key not in {"new_items"}
+            },
+        }
+        successful = state.get(SUCCESSFUL_CYCLE_RESULTS_STATE_KEY)
+        if isinstance(successful, dict) and isinstance(successful.get(batch_key), dict):
+            cached = dict(successful[batch_key])
+            cached["selection_agent"] = dict(result)
+            cached["selection_agent_pending"] = False
+            successful[batch_key] = cached
+            state[SUCCESSFUL_CYCLE_RESULTS_STATE_KEY] = successful
+        _write_json(STATE_PATH, state)
+
+
+def fail_selection_batch(
+    batch_key: str,
+    error: Any,
+    *,
+    exhausted: bool = False,
+    attempted_at: str = "",
+) -> None:
+    """Keep one post-write batch durable for a later selector retry."""
+    with _LOCK:
+        state = _read_json(STATE_PATH, {})
+        if not isinstance(state, dict):
+            state = {}
+        batches = state.get(PENDING_SELECTION_BATCHES_STATE_KEY)
+        batches = dict(batches) if isinstance(batches, dict) else {}
+        batch = batches.get(batch_key)
+        if not isinstance(batch, dict):
+            return
+        batch = dict(batch)
+        attempt_time = _text(attempted_at, 80) or _now_iso()
+        batch.update(
+            {
+                "status": "exhausted" if exhausted else "retry_pending",
+                "updated_at": attempt_time,
+                "last_attempt_at": attempt_time,
+                "attempt_count": int(batch.get("attempt_count") or 0) + 1,
+                "last_error": _text(error, 700),
+            }
+        )
+        batches.pop(batch_key, None)
+        batches[batch_key] = batch
+        state[PENDING_SELECTION_BATCHES_STATE_KEY] = dict(batches)
+        _write_json(STATE_PATH, state)
 
 
 def _cell_link(value: Any, limit: int = 1800) -> str:
@@ -741,7 +923,10 @@ def _write(
         cell_range,
         "--cells",
         json.dumps(cells, ensure_ascii=False),
-        retry_transient=True,
+        # A timed-out write may already have reached Feishu. Retrying the same
+        # mutation here would be blind; callers must read the live cells first
+        # and resend only values that are still unchanged from their snapshot.
+        retry_transient=False,
         identity_override=identity,
         profile_override=profile,
     )
@@ -777,7 +962,9 @@ def _write_many(
             SPREADSHEET_TOKEN,
             "--writes",
             json.dumps(batch, ensure_ascii=False),
-            retry_transient=True,
+            # Never blindly replay an ambiguous write. The A/B and C-column
+            # callers reconcile live values before retrying a pending subset.
+            retry_transient=False,
             identity_override=identity,
             profile_override=profile,
         )
@@ -1914,7 +2101,16 @@ def sync_candidates(
             )
             new_values.append(value)
             existing_status[news_id] = (value[0], value[2])
-        new_values.sort(key=lambda row: str(row[3] or ""), reverse=True)
+        # Keep each returned selector item paired with the exact row that will
+        # be written. Sorting only new_values can make a concurrent duplicate
+        # check drop one item while retaining a different row.
+        sorted_new_pairs = sorted(
+            zip(new_values, new_items),
+            key=lambda pair: str(pair[0][3] or ""),
+            reverse=True,
+        )
+        new_values = [pair[0] for pair in sorted_new_pairs]
+        new_items = [pair[1] for pair in sorted_new_pairs]
         live_sheet = _refresh_live_review_sheet(
             sheet_id,
             existing_rows_by_id,
@@ -2578,16 +2774,14 @@ def apply_reviews(
             and isinstance(state.get(GATE_METADATA_STATE_KEY), dict)
             else {}
         )
+        sheet_rows = _read_rows(
+            sheet_id,
+            identity=identity,
+            profile=profile,
+        )
         rows = [
             _row_dict(row, index)
-            for index, row in enumerate(
-                _read_rows(
-                    sheet_id,
-                    identity=identity,
-                    profile=profile,
-                ),
-                start=2,
-            )
+            for index, row in enumerate(sheet_rows, start=2)
             if row and any(_text(value, 80) for value in row[:2])
         ]
         payload = _read_json(PUBLISHED_PATH, {"items": []})
@@ -2718,11 +2912,8 @@ def apply_reviews(
         new_payload = {"updated_at": now_text, "items": combined[:100]}
         old_comparable = json.dumps(payload, ensure_ascii=False, sort_keys=True)
         new_comparable = json.dumps(new_payload, ensure_ascii=False, sort_keys=True)
-        if old_comparable != new_comparable:
-            _write_json(PUBLISHED_PATH, new_payload)
-
         changed_rows = 0
-        sync_writes: list[tuple[str, list[list[Any]]]] = []
+        sync_changes: list[dict[str, Any]] = []
         blocked_reviews: list[dict[str, Any]] = []
         for row in rows:
             blocked_reason = blocked_rows.get(row["row_number"])
@@ -2736,11 +2927,13 @@ def apply_reviews(
                     }
                 )
                 if row["sync_status"] != "同步失败":
-                    sync_writes.append(
-                        (
-                            f"C{row['row_number']}:C{row['row_number']}",
-                            [["同步失败"]],
-                        )
+                    sync_changes.append(
+                        {
+                            "rowNumber": row["row_number"],
+                            "columnIndex": 2,
+                            "before": row["sync_status"],
+                            "value": "同步失败",
+                        }
                     )
                     changed_rows += 1
                 continue
@@ -2752,24 +2945,62 @@ def apply_reviews(
             elif row["news_id"] in existing_sheet:
                 desired_sync = "已移除"
             if desired_sync != row["sync_status"]:
-                sync_writes.append(
-                    (
-                        f"C{row['row_number']}:C{row['row_number']}",
-                        [[desired_sync]],
-                    )
+                sync_changes.append(
+                    {
+                        "rowNumber": row["row_number"],
+                        "columnIndex": 2,
+                        "before": row["sync_status"],
+                        "value": desired_sync,
+                    }
                 )
                 changed_rows += 1
-        if sync_writes:
-            if identity or profile:
+
+        pending_sync = list(sync_changes)
+        last_sync_error: Exception | None = None
+        for reconciliation_attempt in range(1, LARK_READ_MAX_ATTEMPTS + 1):
+            if not pending_sync:
+                break
+            try:
                 _write_many(
                     sheet_id,
-                    sync_writes,
+                    _cell_change_regions(pending_sync),
                     identity=identity,
                     profile=profile,
                 )
-            else:
-                for cell_range, values in sync_writes:
-                    _write(sheet_id, cell_range, values)
+                last_sync_error = None
+            except Exception as exc:
+                # The request may have landed despite a timeout. Re-read C and
+                # retry only cells whose live value is still the old snapshot.
+                last_sync_error = exc
+            sheet_rows = _read_rows(
+                sheet_id,
+                identity=identity,
+                profile=profile,
+            )
+            pending_sync, conflicts = _changed_cell_readback(
+                sheet_rows,
+                pending_sync,
+            )
+            if conflicts:
+                first = conflicts[0]
+                raise RuntimeError(
+                    f"第 {first['rowNumber']} 行“{HEADERS[2]}”"
+                    "在同步回读期间被其他操作修改，已停止续写"
+                )
+            if not pending_sync:
+                break
+            if reconciliation_attempt >= LARK_READ_MAX_ATTEMPTS:
+                detail = f"；最后错误：{last_sync_error}" if last_sync_error else ""
+                raise RuntimeError(
+                    f"同步状态回读后仍有 {len(pending_sync)} 格未生效{detail}"
+                )
+            time.sleep(2 ** (reconciliation_attempt - 1))
+
+        # Do not publish local ticker state until every derived Feishu C cell
+        # has been proved. Otherwise a failed sync can leave local and Feishu
+        # views claiming different business outcomes.
+        if old_comparable != new_comparable:
+            _write_json(PUBLISHED_PATH, new_payload)
         return {
             "accepted_count": len(accepted_items),
             "requested_accept_count": len(accepted_rows),
@@ -2786,6 +3017,8 @@ def apply_reviews(
             ),
             "published_count": len(combined),
             "changed_rows": changed_rows,
+            "sync_status_verified_count": len(sync_changes),
+            "sync_status_readback_verified": True,
         }
 
 def _crawl_item_id(*parts: Any) -> str:
@@ -3356,6 +3589,24 @@ def run_cycle(
             "source_candidate_count": int(latest.get("candidate_count") or 0),
             "sheet_candidate_count": int(sync_result.get("candidate_count") or 0),
         }
+        selection_batch_key = ""
+        if (
+            cycle_result.get("readback_verified") is True
+            and isinstance(sync_result.get("new_items"), list)
+            and sync_result.get("new_items")
+        ):
+            selection_batch_key = _register_pending_selection_batch(
+                new_items=[
+                    item
+                    for item in sync_result["new_items"]
+                    if isinstance(item, dict)
+                ],
+                sheet_id=_text(sync_result.get("sheet_id"), 120),
+                generated_at=_text(latest.get("generated_at"), 80),
+                preferred_key=cycle_key,
+            )
+        cycle_result["selection_batch_key"] = selection_batch_key
+        cycle_result["selection_agent_pending"] = bool(selection_batch_key)
         if cycle_key and cycle_result.get("readback_verified") is True:
             state = _read_json(STATE_PATH, {})
             successful_cycles = state.get(SUCCESSFUL_CYCLE_RESULTS_STATE_KEY)

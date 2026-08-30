@@ -573,6 +573,15 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("错误定位与完整明细", SCRIPT)
         self.assertIn("newsRunErrors", SCRIPT)
         self.assertIn("查看完整错误原文", SCRIPT)
+
+    def test_news_selection_summary_distinguishes_verified_and_new_writes(self):
+        self.assertIn("summary.verifiedCells", SCRIPT)
+        self.assertIn("summary.newCells", SCRIPT)
+        self.assertIn("summary.alreadyAppliedCells", SCRIPT)
+        self.assertIn("飞书机器人验证", SCRIPT)
+        self.assertIn("本次新写", SCRIPT)
+        self.assertIn("写前已有", SCRIPT)
+        self.assertNotIn("飞书机器人写入 ${number(selectionSummary.cells)} 格", SCRIPT)
         self.assertIn("本节点无直接错误；异常来自关联运行的其他环节", SCRIPT)
         self.assertIn(".news-lineage-error-list", STYLE)
         self.assertIn("news-lineage-pulse", STYLE)

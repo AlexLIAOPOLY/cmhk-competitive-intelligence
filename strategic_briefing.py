@@ -859,6 +859,30 @@ def _selection_recovery_parent_run_id(slot_key: str) -> str:
     return ""
 
 
+def _remaining_selection_agent_error(
+    paths: list[Path],
+    *,
+    cutoff: datetime,
+) -> str:
+    """Return one truthful unresolved selection error after a recovery turn."""
+    for path in paths:
+        archive = _read_json(path, {})
+        if not isinstance(archive, dict) or archive.get("status") != "completed":
+            continue
+        selection = archive.get("selection_agent")
+        if not isinstance(selection, dict):
+            continue
+        if str(selection.get("status") or "") not in {"failed", "retry_pending"}:
+            continue
+        completed_at = _crawl_record_time(archive, "completed_at", "scanned_at")
+        if completed_at is not None and completed_at < cutoff:
+            continue
+        slot_key = _clean_text(archive.get("slot"), 120)
+        error = _clean_text(selection.get("error"), 600) or "待自动续写"
+        return f"{slot_key} 新闻自动初筛未完成：{error}"
+    return ""
+
+
 def _recover_pending_selection_agents(
     now: datetime,
     state: dict[str, Any],
@@ -948,6 +972,7 @@ def _recover_pending_selection_agents(
                 idempotency_key=slot_key,
                 recover_unlogged_applied=recover_legacy_partial_write,
             )
+            finished_at = datetime.now(HKT)
             previous = dict(selection)
             archive["selection_agent"] = result
             review["selection_agent"] = result
@@ -955,7 +980,7 @@ def _recover_pending_selection_agents(
             archive["selection_agent_recovery"] = {
                 "status": "completed",
                 "attempts": attempts,
-                "completed_at": _now_iso(now),
+                "completed_at": _now_iso(finished_at),
                 "previous_status": previous.get("status") or "",
                 "previous_error": previous.get("error") or "",
                 "no_crawl_replay": True,
@@ -980,7 +1005,7 @@ def _recover_pending_selection_agents(
                             "selection_agent_recovery_task_run_id": (
                                 result.get("task_run_id") or ""
                             ),
-                            "selection_agent_recovered_at": _now_iso(now),
+                            "selection_agent_recovered_at": _now_iso(finished_at),
                             "message_ids": list(
                                 archive.get("message_ids")
                                 or ([archive.get("message_id")] if archive.get("message_id") else [])
@@ -1005,12 +1030,24 @@ def _recover_pending_selection_agents(
             entry.update(
                 {
                     "status": "completed",
-                    "completed_at": _now_iso(now),
+                    "completed_at": _now_iso(finished_at),
                     "task_run_id": result.get("task_run_id") or "",
                     "error": "",
                 }
             )
-            state["last_selection_agent_error"] = ""
+            try:
+                from cmhk.intelligence import news_review_sheet
+
+                queued_keys = {
+                    _clean_text(batch.get("idempotency_key"), 120)
+                    for batch in news_review_sheet.pending_selection_batches(
+                        limit=None
+                    )
+                }
+                if slot_key in queued_keys:
+                    news_review_sheet.complete_selection_batch(slot_key, result)
+            except Exception:
+                logging.exception("选材恢复完成后未能核销通用待选批次")
             recovery = {
                 "slot": slot_key,
                 "status": "completed",
@@ -1051,7 +1088,6 @@ def _recover_pending_selection_agents(
                 "no_notification_replay": True,
             }
             _atomic_write_json(path, archive)
-            state["last_selection_agent_error"] = error
             recovery = {
                 "slot": slot_key,
                 "status": "retry_pending",
@@ -1066,7 +1102,109 @@ def _recover_pending_selection_agents(
         state["selection_agent_retries"] = retry_state
         # Limit each monitor cycle to one potentially expensive recovery task.
         break
+    state["last_selection_agent_error"] = _remaining_selection_agent_error(
+        paths,
+        cutoff=cutoff,
+    )
     return recoveries
+
+
+def _recover_pending_review_selection_batches(
+    state: dict[str, Any],
+    *,
+    now: datetime | None = None,
+) -> list[dict[str, Any]]:
+    """Run one durable selector batch created by a non-scan review cycle."""
+    from cmhk.intelligence import news_review_sheet
+
+    current = now or datetime.now(HKT)
+    batches = news_review_sheet.pending_selection_batches(limit=None)
+    if not batches:
+        return []
+    batch: dict[str, Any] | None = None
+    for candidate in batches:
+        last_attempt_at = _crawl_record_time(
+            candidate,
+            "last_attempt_at",
+            "updated_at",
+        )
+        if (
+            candidate.get("status") == "retry_pending"
+            and last_attempt_at is not None
+            and current - last_attempt_at
+            < timedelta(minutes=SELECTION_RECOVERY_INTERVAL_MINUTES)
+        ):
+            continue
+        batch = candidate
+        break
+    if batch is None:
+        return []
+    batch_key = _clean_text(batch.get("idempotency_key"), 120)
+    sheet_id = _clean_text(batch.get("sheet_id"), 120)
+    new_items = [
+        item for item in (batch.get("new_items") or []) if isinstance(item, dict)
+    ]
+    attempts = int(batch.get("attempt_count") or 0)
+    if not batch_key or not sheet_id or not new_items:
+        error = "待选批次缺少幂等键、工作表或新增候选"
+        news_review_sheet.fail_selection_batch(
+            batch_key,
+            error,
+            exhausted=True,
+            attempted_at=_now_iso(current),
+        )
+        state["last_selection_agent_error"] = error
+        return [{"status": "exhausted", "idempotency_key": batch_key, "error": error}]
+    if attempts >= SELECTION_RECOVERY_MAX_ATTEMPTS:
+        error = f"{batch_key} 自动初筛续写已达 {attempts} 次上限"
+        news_review_sheet.fail_selection_batch(
+            batch_key,
+            error,
+            exhausted=True,
+            attempted_at=_now_iso(current),
+        )
+        state["last_selection_agent_error"] = error
+        return [{"status": "exhausted", "idempotency_key": batch_key, "error": error}]
+    try:
+        from cmhk.intelligence.news_selection_agent import run_news_selection_agent
+
+        result = run_news_selection_agent(
+            new_items=new_items,
+            sheet_id=sheet_id,
+            parent_crawl_run_id="",
+            idempotency_key=batch_key,
+        )
+        news_review_sheet.complete_selection_batch(batch_key, result)
+        recovery = {
+            "status": "completed",
+            "idempotency_key": batch_key,
+            "candidate_count": int(result.get("candidate_count") or 0),
+            "verified_field_count": int(result.get("verified_field_count") or 0),
+            "newly_written_count": int(result.get("newly_written_count") or 0),
+            "task_run_id": result.get("task_run_id") or "",
+            "no_crawl_replay": True,
+            "no_notification_replay": True,
+        }
+        _append_event({"type": "review_selection_batch_completed", **recovery})
+        return [recovery]
+    except Exception as exc:
+        error = _clean_text(exc, 600)
+        news_review_sheet.fail_selection_batch(
+            batch_key,
+            error,
+            attempted_at=_now_iso(current),
+        )
+        state["last_selection_agent_error"] = error
+        recovery = {
+            "status": "retry_pending",
+            "idempotency_key": batch_key,
+            "error": error,
+            "no_crawl_replay": True,
+            "no_notification_replay": True,
+        }
+        _append_event({"type": "review_selection_batch_failed", **recovery})
+        logging.exception("后台补回候选自动初筛失败")
+        return [recovery]
 
 
 def _mark_scan_archive_notification_sent(
@@ -3017,6 +3155,17 @@ def _run_scan_impl(
             parent_crawl_run_id=crawl_run_id,
             idempotency_key=slot_key,
         )
+        selection_batch_key = _clean_text(
+            review_result.get("selection_batch_key"), 120
+        )
+        if selection_batch_key:
+            try:
+                news_review_sheet.complete_selection_batch(
+                    selection_batch_key,
+                    selection_agent_result,
+                )
+            except Exception:
+                logging.exception("选材完成后未能核销通用待选批次，下轮将幂等复用")
         state["last_selection_agent_error"] = ""
         _strategic_task_progress(
             crawl_run_id,
@@ -3026,7 +3175,8 @@ def _run_scan_impl(
                 f"独立任务 {selection_agent_result.get('task_run_id') or '已归档'}；"
                 f"学习人工样本 {int(selection_agent_result.get('human_example_count') or 0)} 条，"
                 f"处理本轮候选 {int(selection_agent_result.get('candidate_count') or 0)} 条，"
-                f"自动写入 {int(selection_agent_result.get('changed_count') or 0)} 格，"
+                f"验证 {int(selection_agent_result.get('verified_field_count') or 0)} 格，"
+                f"本次新写 {int(selection_agent_result.get('newly_written_count') or 0)} 格，"
                 "逐格回读已确认。"
             ),
         )
@@ -3037,6 +3187,17 @@ def _run_scan_impl(
             "readback_verified": False,
             "recovery": "scheduled_without_resending_scan",
         }
+        selection_batch_key = _clean_text(
+            review_result.get("selection_batch_key"), 120
+        )
+        if selection_batch_key:
+            try:
+                news_review_sheet.fail_selection_batch(
+                    selection_batch_key,
+                    selection_agent_result["error"],
+                )
+            except Exception:
+                logging.exception("选材失败后未能更新通用待选批次")
         state["last_selection_agent_error"] = selection_agent_result["error"]
         logging.exception("新闻自动初筛失败，原新闻爬虫结果仍保留")
         _strategic_task_progress(
@@ -7225,6 +7386,21 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
             now if fixed_now else datetime.now(HKT),
             state,
         )
+        result["review_selection_recoveries"] = (
+            _recover_pending_review_selection_batches(
+                state,
+                now=now if fixed_now else datetime.now(HKT),
+            )
+        )
+        try:
+            from cmhk.intelligence import news_review_sheet
+
+            state["last_selection_agent_error"] = (
+                state.get("last_selection_agent_error")
+                or news_review_sheet.pending_selection_batch_error()
+            )
+        except Exception:
+            logging.exception("未能读取通用待选批次错误状态")
         result["replayed_notifications"] = _flush_pending_scan_notifications(
             now,
             state,
