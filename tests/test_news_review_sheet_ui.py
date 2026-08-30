@@ -390,6 +390,69 @@ class NewsReviewActorTests(unittest.TestCase):
         self.assertEqual(result["rows"][0]["reviewer"]["avatarUrl"], "https://example.com/new.png")
         self.assertEqual(result["rows"][1]["reviewer"]["name"], "旧复核人")
 
+    def test_reviewer_uses_full_audit_and_machine_effective_time(self) -> None:
+        snapshot = {
+            "rows": [{
+                "rowNumber": 2,
+                "recordId": "NEWS-HUMAN-FINAL",
+                "values": sheet_row(
+                    "接受", "待审核", "已纳入", "", "", "", "人工最终复核"
+                ),
+            }]
+        }
+        events = [
+            {
+                "at": "2026-08-30T15:00:00+08:00",
+                "actor_id": "news-auto-screening-bot",
+                "actor_name": "新闻自动初筛机器人",
+                "actor_role": "SYSTEM",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {
+                    "news_id": "NEWS-HUMAN-FINAL",
+                    "target_label": "人工最终复核",
+                    "field": "纳入滚动栏",
+                    "before": "待审核",
+                    "after": "不接受",
+                    "agent_run_id": "agent-old",
+                    "agent_recorded_at": "2026-08-28T07:00:00+08:00",
+                },
+            },
+            {
+                "at": "2026-08-28T08:00:00+08:00",
+                "actor_id": "human-final",
+                "actor_name": "人工最终复核人",
+                "actor_role": "EXTERNAL",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {
+                    "news_id": "NEWS-HUMAN-FINAL",
+                    "target_label": "人工最终复核",
+                    "field": "纳入滚动栏",
+                    "before": "不接受",
+                    "after": "接受",
+                },
+            },
+        ]
+        with (
+            mock.patch.object(web_app, "refresh_news_review_actor_overrides"),
+            mock.patch.object(web_app.AUTH, "_read", return_value={}),
+            mock.patch.object(
+                web_app.AUTH, "operation_audit", return_value=events
+            ) as operation_audit,
+        ):
+            result = web_app.attach_news_review_actors(snapshot)
+
+        operation_audit.assert_called_once_with(limit=None)
+        self.assertEqual(
+            result["rows"][0]["reviewers"]["纳入滚动栏"]["name"],
+            "人工最终复核人",
+        )
+        self.assertEqual(
+            result["rows"][0]["reviewer"]["reviewedAt"],
+            "2026-08-28T08:00:00+08:00",
+        )
+
     def test_reviewer_is_not_borrowed_by_a_new_title_inserted_at_the_same_row(self) -> None:
         snapshot = {"rows": [
             {"rowNumber": 8, "values": sheet_row("待审核", "待审核", "未同步", "", "", "", "新插入新闻")},

@@ -4539,6 +4539,38 @@ def _news_review_field_label(value: object) -> str:
     }.get(str(value or "").strip(), str(value or "").strip())
 
 
+def _news_review_event_effective_at(event: dict) -> str:
+    details = event.get("details") if isinstance(event.get("details"), dict) else {}
+    if details.get("agent_recorded_at") and (
+        details.get("agent_run_id")
+        or str(event.get("actor_role") or "").upper() == "SYSTEM"
+        or str(event.get("actor_id") or "") == "news-auto-screening-bot"
+    ):
+        return str(details.get("agent_recorded_at") or "")
+    return str(event.get("at") or "")
+
+
+def _news_review_event_rank(event: dict, original_index: int) -> tuple[float, int, int]:
+    try:
+        effective_timestamp = datetime.fromisoformat(
+            _news_review_event_effective_at(event).replace("Z", "+00:00")
+        ).timestamp()
+    except ValueError:
+        effective_timestamp = 0.0
+    details = event.get("details") if isinstance(event.get("details"), dict) else {}
+    actor_id = str(event.get("actor_id") or "")
+    actor_role = str(event.get("actor_role") or "").upper()
+    if actor_id == "news-auto-screening-bot" or actor_role == "SYSTEM" or details.get("agent_run_id"):
+        actor_priority = 2
+    elif not actor_id or actor_id == "feishu-review-sheet-collaborator":
+        actor_priority = 1
+    else:
+        actor_priority = 0
+    # operation_audit is newest-first, so a lower original index wins the
+    # final tie after effective time and fail-closed actor priority.
+    return effective_timestamp, actor_priority, -original_index
+
+
 def attach_news_review_actors(snapshot: dict) -> dict:
     """Attach the latest verified human or robot reviewer to each reviewed row."""
     refresh_news_review_actor_overrides()
@@ -4552,7 +4584,16 @@ def attach_news_review_actors(snapshot: dict) -> dict:
     reviewers_by_title_field: dict[tuple[str, str], dict[str, str]] = {}
     reviewers_by_record_field: dict[tuple[str, str], dict[str, str]] = {}
     reviewers_without_title_field: dict[tuple[int, str], dict[str, str]] = {}
-    for event in AUTH.operation_audit(limit=1000):
+    audit_events = AUTH.operation_audit(limit=None)
+    ranked_events = [
+        event
+        for original_index, event in sorted(
+            enumerate(audit_events),
+            key=lambda item: _news_review_event_rank(item[1], item[0]),
+            reverse=True,
+        )
+    ]
+    for event in ranked_events:
         if event.get("action") != "news_review.update" or event.get("result") != "success":
             continue
         override = overrides.get(str(event.get("id") or ""))
@@ -4569,7 +4610,7 @@ def attach_news_review_actors(snapshot: dict) -> dict:
             "name": str((override or {}).get("name") or event.get("actor_name") or "未知用户"),
             "avatarUrl": str((override or {}).get("avatar_url") or event.get("actor_avatar_url") or ""),
             "role": str(event.get("actor_role") or ""),
-            "reviewedAt": str(event.get("at") or ""),
+            "reviewedAt": _news_review_event_effective_at(event),
         }
         if reviewed_record_id:
             reviewers_by_record.setdefault(reviewed_record_id, reviewer)
