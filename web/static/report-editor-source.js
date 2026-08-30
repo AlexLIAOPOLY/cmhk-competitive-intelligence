@@ -251,6 +251,23 @@ function renderPage(page = {}) {
   return mount.querySelector("#reportEditorContent");
 }
 
+function applyZoom(value) {
+  const minimum = Number(zoomInput?.min) || 35;
+  const maximum = Number(zoomInput?.max) || 150;
+  const safeValue = Math.max(minimum, Math.min(maximum, Number(value) || 100));
+  if (zoomInput) zoomInput.value = String(safeValue);
+  shell?.style.setProperty("--report-editor-zoom", String(safeValue / 100));
+  const output = zoomInput?.closest("label")?.querySelector("output");
+  if (output) output.textContent = `${safeValue}%`;
+}
+
+function preferredZoom(page = {}) {
+  if (window.innerWidth > 760) return 100;
+  const pageWidthPixels = (Number(page.widthIn) || 8.27) * 96;
+  const availableWidth = Math.max(240, window.innerWidth - 24);
+  return Math.max(35, Math.min(100, Math.floor((availableWidth / pageWidthPixels) * 20) * 5));
+}
+
 async function confirmAction(options) {
   if (window.CMHKDialog?.confirm) return window.CMHKDialog.confirm(options);
   return window.confirm(`${options.title}\n\n${options.message || ""}\n${options.detail || ""}`);
@@ -286,6 +303,7 @@ async function open(path) {
     dirty = false;
     const content = await restoreDraftIfWanted(payload);
     const element = renderPage(payload.page);
+    applyZoom(preferredZoom(payload.page));
     editor = new Editor({
       element,
       extensions: editorExtensions(),
@@ -472,10 +490,7 @@ saveButton?.addEventListener("click", () => save("update"));
 copyButton?.addEventListener("click", () => save("copy"));
 closeButton?.addEventListener("click", close);
 zoomInput?.addEventListener("input", () => {
-  const value = Number(zoomInput.value) || 100;
-  shell?.style.setProperty("--report-editor-zoom", String(value / 100));
-  const output = zoomInput.closest("label")?.querySelector("output");
-  if (output) output.textContent = `${value}%`;
+  applyZoom(zoomInput.value);
 });
 imageInput?.addEventListener("change", () => {
   const file = imageInput.files?.[0];
