@@ -1,6 +1,69 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260830_141310_112490": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260830_141310_112490",
+        "task_run_id": "20260830_141310_112490",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-08-30@14:00）",
+        "run_status": "failed",
+        "phase": "已中断",
+        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-30T14:13:11+08:00；最后进度：[2026-08-30 14:13:11] LangChain 分批判断：正在处理第 1/1 批，本批 5 条当天候选。",
+        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-08-30T14:13:11+08:00；最后进度：[2026-08-30 14:13:11] LangChain 分批判断：正在处理第 1/1 批，本批 5 条当天候选。",
+        "started_at_hkt": "2026-08-30T14:13:10+08:00",
+        "heartbeat_at_hkt": "2026-08-30T14:13:11+08:00",
+        "completed_at_hkt": "2026-08-30T14:13:11+08:00",
+        "duration_ms": 1484,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260830_140724_592726": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260830_140724_592726",
+        "task_run_id": "20260830_140724_592726",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-08-30@14:00）",
+        "run_status": "failed",
+        "phase": "失败",
+        "progress_detail": "新闻自动初筛失败：LangChain 多轮补判后仍遗漏 2 条候选：NEWS-1E0FC84F90D5C0, NEWS-E12878F8AC9FE0",
+        "status_detail": "新闻自动初筛失败：LangChain 多轮补判后仍遗漏 2 条候选：NEWS-1E0FC84F90D5C0, NEWS-E12878F8AC9FE0",
+        "started_at_hkt": "2026-08-30T14:07:24+08:00",
+        "heartbeat_at_hkt": "2026-08-30T14:13:00+08:00",
+        "completed_at_hkt": "2026-08-30T14:13:00+08:00",
+        "duration_ms": 336163,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260830_140056_625596": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260830_140056_625596",
+        "task_run_id": "20260830_140056_625596",
+        "title": "战略新闻定时爬虫",
+        "kind": "strategic-news",
+        "kind_label": "新闻爬虫",
+        "scope": "午后扫描（2026-08-30@14:00）",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 18 条，AI保留 5 条，历史重复 0 条，新增 5 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 18 条，AI保留 5 条，历史重复 0 条，新增 5 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+        "started_at_hkt": "2026-08-30T14:00:56+08:00",
+        "heartbeat_at_hkt": "2026-08-30T14:13:10+08:00",
+        "completed_at_hkt": "2026-08-30T14:13:10+08:00",
+        "duration_ms": 733441,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260830_115734_943432": {
       "ok": true,
       "run": {
@@ -967,48 +1030,6 @@
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
-    "crawl:20260828_142150_500452": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260828_142150_500452",
-        "task_run_id": "20260828_142150_500452",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-28@14:00）",
-        "run_status": "failed",
-        "phase": "失败",
-        "progress_detail": "新闻自动初筛失败：LangChain 模型路由全部失败；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；deepseek-v4-free: Expecting ',' delimiter: line 60 column 6 (char 1919)",
-        "status_detail": "新闻自动初筛失败：LangChain 模型路由全部失败；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；DeepSeek-V4-Pro: Expecting ',' delimiter: line 60 column 6 (char 1919)；deepseek-v4-free: Expecting ',' delimiter: line 60 column 6 (char 1919)",
-        "started_at_hkt": "2026-08-28T14:21:50+08:00",
-        "heartbeat_at_hkt": "2026-08-28T14:22:38+08:00",
-        "completed_at_hkt": "2026-08-28T14:22:38+08:00",
-        "duration_ms": 47864,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260828_141216_357458": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260828_141216_357458",
-        "task_run_id": "20260828_141216_357458",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-28@14:00）",
-        "run_status": "failed",
-        "phase": "失败",
-        "progress_detail": "新闻偏好学习 Agent 失败：后台战略新闻任务正在更新飞书审核表，请稍后刷新",
-        "status_detail": "新闻偏好学习 Agent 失败：后台战略新闻任务正在更新飞书审核表，请稍后刷新",
-        "started_at_hkt": "2026-08-28T14:12:16+08:00",
-        "heartbeat_at_hkt": "2026-08-28T14:12:17+08:00",
-        "completed_at_hkt": "2026-08-28T14:12:17+08:00",
-        "duration_ms": 1047,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
     "crawl:20260828_140003_972611": {
       "ok": true,
       "run": {
@@ -1026,27 +1047,6 @@
         "heartbeat_at_hkt": "2026-08-28T14:12:23+08:00",
         "completed_at_hkt": "2026-08-28T14:12:23+08:00",
         "duration_ms": 739704,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260828_120152_318124": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260828_120152_318124",
-        "task_run_id": "20260828_120152_318124",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-28@07:30）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "新闻偏好学习与自动勾选完成：只处理2026-08-28当天、本轮新增的154条新闻；由独立飞书机器人写入307格，APP接受3条/不接受150条，双周报接受3条/不接受151条；历史新闻修改0条，保留原人工APP决定1格，逐格回读307/307通过。",
-        "status_detail": "新闻偏好学习与自动勾选完成：只处理2026-08-28当天、本轮新增的154条新闻；由独立飞书机器人写入307格，APP接受3条/不接受150条，双周报接受3条/不接受151条；历史新闻修改0条，保留原人工APP决定1格，逐格回读307/307通过。",
-        "started_at_hkt": "2026-08-28T12:01:52+08:00",
-        "heartbeat_at_hkt": "2026-08-28T12:36:04+08:00",
-        "completed_at_hkt": "2026-08-28T12:36:04+08:00",
-        "duration_ms": 404298,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"

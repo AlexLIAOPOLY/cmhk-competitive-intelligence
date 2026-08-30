@@ -1,4 +1,66 @@
 {
+  "20260830_140056_625596": [
+    {
+      "newsId": "NEWS-1E0FC84F90D5C0",
+      "title": "3香港推$143月费计划送HONOR 5G手机",
+      "summary": "3香港推出月费143港元套餐，含100GB本地数据及8GB内地澳门数据，并赠送HONOR 5G手机。",
+      "category": "竞对动态",
+      "region": "香港本地",
+      "source": "ePrice.HK",
+      "publishedAt": "2026-08-30T09:49:03+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiYEFVX3lxTE9SUkFCc3pqeUpXUFdzeWZLcVU5NVRxZFM1NVBtOWl6QThEVGpqZ2NvOVZSTDFXUGxxaUd2NlUtVWE5WTVNN2h1RVFUa09seUhpUW04bFM4ZnhDMUcyNV9DUA?oc=5",
+      "inclusionReason": "3香港推出含5G手机的低价月费套餐，涉及竞对产品资费与促销策略，可用于对标分析。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-C1A57E25ED054F",
+      "title": "美伊局势更新：林肯号航母经新加坡从中东返航",
+      "summary": "霍尔木兹海峡仍是美伊对峙核心战场，德黑兰正拟定重新开放该关键水道的条件，华盛顿则坚称水道已开放。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "Times Now",
+      "publishedAt": "2026-08-30T06:31:00+08:00",
+      "url": "https://www.timesnownews.com/world/middle-east/iran-war-live-updates-donald-trumps-latest-moves-on-the-strait-of-hormuz-latest-developments-in-tehran-oman-talks-liveblog-155999140",
+      "inclusionReason": "霍尔木兹海峡局势涉及全球能源供应链与地缘风险，可能间接影响航运、贸易成本及宏观经济稳定。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-A7514BB409B3BB",
+      "title": "印度前十企业七家市值蒸发1.13万亿卢比，Airtel与信实领跌",
+      "summary": "Bharti Airtel市值蒸发约4050亿卢比至11.74万亿卢比，信实工业市值蒸发约4005.6亿卢比至17.38万亿卢比。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "NDTV Profit on MSN",
+      "publishedAt": "2026-08-30T06:34:39+08:00",
+      "url": "https://www.msn.com/en-in/money/top-stocks/mcap-of-seven-of-top-10-most-valued-firms-erodes-rs-1-13-lakh-crore-airtel-ril-worst-hit/ar-AA2bc15a",
+      "inclusionReason": "Bharti Airtel市值大幅波动，反映竞对在资本市场的表现，可用于对标分析。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-8C5659BD4C7B31",
+      "title": "德国电信股价回稳，Sprint时代遗留风险仍受关注",
+      "summary": "德国电信股价周五回升1.8%至28.55欧元，此前因Sprint相关担忧承压。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "Ad Hoc News",
+      "publishedAt": "2026-08-30T06:41:00+08:00",
+      "url": "https://www.ad-hoc-news.de/boerse/news/unternehmensnachrichten/telekom-s-share-price-finds-its-footing-but-the-sprint-era-sword-of/70022503",
+      "inclusionReason": "德国电信股价回升及Sprint遗留风险，属竞对资本市场动态，可用于对标资本配置。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-E12878F8AC9FE0",
+      "title": "陈茂波：北都洪水桥片区公私合营模式具里程碑意义",
+      "summary": "财政司司长陈茂波表示，北部都会区洪水桥片区将创造逾6000个就业机会，公私营合作模式具里程碑意义，将适时为其他片区招标。",
+      "category": "行业动态",
+      "region": "香港本地",
+      "source": "星島頭條",
+      "publishedAt": "2026-08-30T12:22:24+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiswRBVV95cUxOeGtvMFMzRnZJS0t4ZDBUUjFlSkFqWHBENnZkNUVHcEY0OThKVGM5b2doYU9jQjRaVkNCSld4MVJRTEdNX3lIekRULTk1ejZGeDhwaXhnTk42dGhVZ1lpdU93OE1qYW1QZElsTEVzaElIcl94dEdvcUlGSjZLNnd1MmZIdGhPOURmcWtaS0t6LWliUTRqeVVJODBUajFLd2gwLXJWMW40U2tLTmx1MksyVXJBcjhlNjBZcUp1MUxIb1pYNXN6Mk05ZDh4X0dpRlJ4OVFOUW0waHZpWlJPQUxkejBSQ3FzRVl6a25OVWNZVjltLXhXRlNacDdoM1BOVmZldTNLcjBpaVBxekNsczZNZFd2dkU1amNocEFkbHBvcUE5Vy10bTlQcEgxUkRPcTRKX3pRSnNYdk5iVmROalNNWHBWbGItYm1SVFd1VDNuZ2txc2c0T2FqM185T1ZZdzhKcXg1LU9GYzlHaGFEazREOWpmSlRsckFsSHhLSE91TWNZM0hTelRmcWxrbnV3ZVk1dkJUNlVaWV9yajgxTW13Mi1xQWRVNUt6YkFidi01ZjRWWXZ3amk2cm9XYThpeFJfX0xnbE82dzAyQm1uakx5WWJNY2JJanZZeEtDOFZXN0xDYTJHMnRzWjNyWFBjUG1UekRvRkhpTGtlQmlZV3p2ZDdwV0pieW1aUkU3T0ZKRkcwekhjZko2ZmlabjdjaU5nN05YUGZmVlJHckVSSXNaYlVsSQ?oc=5",
+      "inclusionReason": "北都洪水桥片区开发涉及大规模土地与基建规划，将带动香港本地网络基础设施部署需求和企业客户需求变化。",
+      "businessImpact": "网络与运营"
+    }
+  ],
   "20260830_073032_883660": [
     {
       "newsId": "NEWS-FB4FF1B8E06237",
