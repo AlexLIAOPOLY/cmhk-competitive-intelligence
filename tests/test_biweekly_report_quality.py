@@ -271,6 +271,34 @@ class PublicationLabelTests(unittest.TestCase):
         self.assertIn("香港微电子研发院", agreement_detail)
         self.assertTrue(report.summary_has_reference_density(agreement_detail))
 
+    def test_latest_report_short_items_recover_from_verified_supplemental_evidence(self) -> None:
+        titles = [
+            "香港外贸连涨29个月超预期",
+            "网上行推出全港首个符合F5G-A标准的宽频网络",
+            "HKT.AI化身家居与伴学智囊",
+            "丰田、KDDI等加盟高通日本机器人中心，加速实体AI布局",
+            "新田科技城以弹性地价吸引高新龙头先进制造企业进驻",
+            "新田科技城地价「有得倾」冀吸引芯片无人机企业落户",
+            "金管局：57家企业参与GenAI测试反诈骗等应用",
+            "香港网约车牌照历经11年终合法化并接受申请",
+            "通讯办守护无线电频谱并支援5G建设",
+            "5G服务计划月费98港元享30GB本地数据",
+            "中国移动CMHK推5G两地共享数据月费优惠",
+            "CSL Mobile独家联乘顶尖网络商推全方位漫游服务",
+            "香港电讯参与GenA.I.沙盒 开发AI代理身份验证方案",
+        ]
+
+        for index, title in enumerate(titles, start=1):
+            with self.subTest(title=title):
+                item = make_item(f"W{index:03d}", index, title=title)
+                item["originalTitle"] = title
+                item["rawDetail"] = title
+                item["detail"] = title
+                item["webResearch"] = {"results": []}
+                repaired = report.deterministic_limited_weekly_detail(item)
+                self.assertTrue(report.summary_has_publishable_explanation(repaired))
+                self.assertGreaterEqual(report.weekly_detail_sentence_count(repaired), 2)
+
     def test_overlong_detail_is_trimmed_only_at_a_complete_sentence(self) -> None:
         detail = (
             "据测试来源于2026年7月12日发布的信息，测试主体公布第一项可核验进展。"
@@ -299,6 +327,7 @@ class PublicationLabelTests(unittest.TestCase):
             "首阶段已经完成测试并进入商用准备，后续建设将按已公布计划分批实施。"
         )
         self.assertTrue(report.summary_has_reference_density(dense))
+        self.assertTrue(report.summary_has_publishable_explanation(dense))
         self.assertFalse(report.summary_has_reference_density("主体公布关键方案，覆盖三类业务场景。"))
         self.assertTrue(
             report.summary_has_reference_density(
@@ -308,9 +337,72 @@ class PublicationLabelTests(unittest.TestCase):
 
         item = make_item("W001", 1)
         item["detail"] = "第一句交代主体动作。第二句补充关键数字。第三句继续搬运活动背景。"
-        # Length is a diagnostic comparison with the human corpus, not a
-        # publication blocker. Editorial quality comes from the examples.
+        with self.assertRaisesRegex(ValueError, "正文信息量低于人工内参样本"):
+            report.validate_human_template_content(make_model(item))
+
+        item["detail"] = dense
         report.validate_human_template_content(make_model(item))
+
+    def test_latest_report_one_sentence_explanations_are_rejected(self) -> None:
+        one_sentence_items = {
+            "香港外贸连涨29个月超预期": "香港外贸连续29个月增长并超出预期，市场关注下半年预测是否上调。",
+            "网上行推出全港首个符合F5G-A标准的宽频网络": "网上行宣布其宽频网络成为全港首个符合F5G-A标准，主打智慧家居应用。",
+            "HKT.AI化身家居与伴学智囊": "HKT.AI化身家居与伴学智囊 信报网站。",
+            "丰田、KDDI等加盟高通日本机器人中心，加速实体AI布局": (
+                "丰田、KDDI等日本产学巨头加盟高通在日本设立的Qualcomm Japan Robotics Center，"
+                "共同推进实体AI与机器人技术发展。"
+            ),
+        }
+
+        for title, detail in one_sentence_items.items():
+            with self.subTest(title=title):
+                item = make_item("W001", 1, title=title)
+                item["detail"] = detail
+                self.assertEqual(report.weekly_detail_sentence_count(detail), 1)
+                self.assertFalse(report.summary_has_publishable_explanation(detail))
+                self.assertTrue(
+                    any("正文只有一句" in error for error in report.human_template_item_errors(item))
+                )
+
+    def test_long_single_sentence_still_fails_but_two_fact_sentences_pass(self) -> None:
+        one_long_sentence = (
+            "测试主体公布新一轮网络建设方案并披露合作对象、技术路线、覆盖范围、投资安排、实施批次、"
+            "当前进展及预期结果，同时说明项目将覆盖香港主要商业区、交通枢纽和重点住宅区域，并已安排"
+            "跨部门团队负责后续验收、运营监测和分阶段扩容工作。"
+        )
+        two_sentences = (
+            "测试主体公布新一轮网络建设方案，覆盖香港主要商业区、交通枢纽及重点住宅区域。"
+            "项目采用多频段协同和智能节能技术，已经完成首阶段测试并进入商用准备，后续建设将按计划分批实施，"
+            "同时由跨部门团队负责验收、运营监测和分阶段扩容。"
+        )
+
+        self.assertTrue(report.summary_has_reference_density(one_long_sentence))
+        self.assertEqual(report.weekly_detail_sentence_count(one_long_sentence), 1)
+        self.assertFalse(report.summary_has_publishable_explanation(one_long_sentence))
+        self.assertEqual(report.weekly_detail_sentence_count(two_sentences), 2)
+        self.assertTrue(report.summary_has_publishable_explanation(two_sentences))
+
+    def test_one_pass_writer_result_requires_two_substantive_sentences(self) -> None:
+        source_item = make_item("W001", 1, title="测试主体公布网络升级")
+        one_sentence = (
+            "测试主体公布网络升级并披露合作对象、技术路线、覆盖范围、实施批次、当前进展及后续安排，"
+            "项目将覆盖香港主要商业区、交通枢纽和重点住宅区域，并已安排跨部门团队负责后续验收、"
+            "运营监测和分阶段扩容工作。"
+        )
+        valid_detail = detailed_text("测试主体公布网络升级。")
+
+        self.assertIsNone(
+            report._usable_one_pass_weekly_result(
+                {"status": "ok", "title": "测试主体启动网络升级", "detail": one_sentence},
+                source_item,
+            )
+        )
+        self.assertIsNotNone(
+            report._usable_one_pass_weekly_result(
+                {"status": "ok", "title": "测试主体启动网络升级", "detail": valid_detail},
+                source_item,
+            )
+        )
 
 
 class StrategicReferenceDocxStructureTests(unittest.TestCase):
@@ -349,6 +441,40 @@ class StrategicReferenceDocxStructureTests(unittest.TestCase):
 
 
 class IndependentReviewerTests(unittest.TestCase):
+    def test_single_editor_pass_cannot_shrink_body_to_one_sentence(self) -> None:
+        item = make_item("W001", 1, title="测试主体公布网络升级")
+        writer_detail = detailed_text("测试主体公布网络升级。")
+        item["detail"] = writer_detail
+        one_sentence_revision = (
+            "测试主体公布网络升级并披露合作对象、技术路线、覆盖范围、实施批次、当前进展及后续安排，"
+            "项目覆盖香港主要商业区、交通枢纽和重点住宅区域，并安排跨部门团队负责验收和扩容工作。"
+        )
+        response = {
+            "items": [
+                {
+                    "id": "W001",
+                    "decision": "revise",
+                    "title": "测试主体启动网络升级",
+                    "detail": one_sentence_revision,
+                    "reason": "编辑压缩正文",
+                }
+            ]
+        }
+
+        with (
+            patch.object(report, "_call_weekly_reviewer_llm", return_value=response),
+            patch.object(report, "load_ai_config", return_value={"model": "test-model"}),
+        ):
+            edited, audit = report.edit_weekly_items_once(
+                [item],
+                progress=lambda _message: None,
+            )
+
+        self.assertEqual(edited[0]["detail"], writer_detail)
+        self.assertEqual(edited[0]["reviewDecision"], "editor_keep")
+        self.assertEqual(audit["editorKeptItems"], 1)
+        self.assertTrue(report.summary_has_publishable_explanation(edited[0]["detail"]))
+
     def test_report_with_too_few_items_fails_before_publication(self) -> None:
         model = make_model(make_item("W001", 1))
 
@@ -943,6 +1069,7 @@ class QualitySidecarTests(unittest.TestCase):
         self.assertEqual(payload["periodStatus"], "draft")
         self.assertEqual(payload["issueDate"], "2026-07-17")
         self.assertEqual(payload["items"][0]["reviewDecision"], "approve")
+        self.assertGreaterEqual(payload["items"][0]["detailSentences"], 2)
 
     def test_limited_report_writes_an_honest_quality_sidecar(self) -> None:
         model = make_model()
@@ -980,7 +1107,11 @@ class QualitySidecarTests(unittest.TestCase):
 
         model = report.finalize_weekly_limited_model(make_model(item))
 
-        self.assertTrue(report.summary_has_reference_density(model["sections"][0]["items"][0]["detail"]))
+        self.assertTrue(
+            report.summary_has_publishable_explanation(
+                model["sections"][0]["items"][0]["detail"]
+            )
+        )
         report.validate_human_template_content(model)
 
     def test_limited_mode_recovers_previously_validated_writer_cache(self) -> None:
@@ -1249,7 +1380,9 @@ class HumanReferencePromptTests(unittest.TestCase):
         for body in captured_requests:
             self.assertIn(marker, body["messages"][0]["content"])
         self.assertIn("真正重要的变化", captured_requests[0]["messages"][0]["content"])
+        self.assertIn("至少写成两句", captured_requests[0]["messages"][0]["content"])
         self.assertIn("像同一位人类编辑", captured_requests[1]["messages"][0]["content"])
+        self.assertIn("至少包含两句", captured_requests[1]["messages"][0]["content"])
 
 
 if __name__ == "__main__":
