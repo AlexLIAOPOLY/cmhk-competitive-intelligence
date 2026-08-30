@@ -2,6 +2,23 @@
   "ok": true,
   "tasks": [
     {
+      "task_id": "crawl:20260831_030014_019556",
+      "task_run_id": "20260831_030014_019556",
+      "title": "定时爬虫",
+      "kind": "crawl",
+      "kind_label": "爬虫",
+      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第13行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第21行、第22行、第24行、第25行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
+      "run_status": "running",
+      "phase": "任务启动",
+      "progress_detail": "后台已接收爬虫任务，正在准备执行。",
+      "status_detail": "",
+      "started_at_hkt": "2026-08-31T03:00:14+08:00",
+      "heartbeat_at_hkt": "2026-08-31T03:00:14+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 0,
+      "retry_index": 0
+    },
+    {
       "task_id": "crawl:20260831_010008_824724",
       "task_run_id": "20260831_010008_824724",
       "title": "每日01:00四库资料搜索",
@@ -798,23 +815,6 @@
       "heartbeat_at_hkt": "2026-08-29T05:07:43+08:00",
       "completed_at_hkt": "2026-08-29T05:07:43+08:00",
       "duration_ms": 850,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260829_045907_135074",
-      "task_run_id": "20260829_045907_135074",
-      "title": "季度竞对数据发布",
-      "kind": "quarterly-data-release",
-      "kind_label": "季度数据发布",
-      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
-      "run_status": "completed",
-      "phase": "已完成",
-      "progress_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
-      "status_detail": "发布 qcm_fcee5a6c77b3c1c3851dc044 完成，共 3051 行；数据截至 2026-06-30。",
-      "started_at_hkt": "2026-08-29T04:59:07+08:00",
-      "heartbeat_at_hkt": "2026-08-29T04:59:08+08:00",
-      "completed_at_hkt": "2026-08-29T04:59:08+08:00",
-      "duration_ms": 856,
       "retry_index": 0
     },
     {
