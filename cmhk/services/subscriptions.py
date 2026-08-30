@@ -59,6 +59,9 @@ VALID_REPORT_MODES = frozenset(REPORT_MODE_LABELS)
 REPORT_CADENCE_LABEL = "按后台月度排期自动生成并推送"
 REPORT_SCHEDULE_DEFAULT_DAYS = (15, 30)
 REPORT_SCHEDULE_DEFAULT_TIME = "09:00"
+WEEKLY_DELIVERY_MIN_ITEMS = 4
+WEEKLY_DELIVERY_MIN_DETAIL_CHARS = 90
+WEEKLY_DELIVERY_MIN_DETAIL_SENTENCES = 2
 STRATEGIC_SCAN_TIMES_DEFAULT = ("07:30", "14:00")
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
@@ -1464,6 +1467,75 @@ class SubscriptionService:
         )
         return {**schedule, "due": due, "slot": slot if due else ""}
 
+    def _validate_weekly_delivery_artifact(self, report_path: Path) -> dict[str, Any]:
+        """Fail closed unless the exact Word file has a publishable quality audit."""
+        sidecar_path = Path(str(report_path) + ".quality.json")
+        if not sidecar_path.exists():
+            raise RuntimeError(
+                f"周报发布质量门禁失败：{report_path.name} 缺少同名质量审计文件，已停止推送"
+            )
+        try:
+            payload = json.loads(sidecar_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise RuntimeError(
+                f"周报发布质量门禁失败：{sidecar_path.name} 无法读取，已停止推送"
+            ) from exc
+        if not isinstance(payload, dict):
+            raise RuntimeError("周报发布质量门禁失败：质量审计不是 JSON 对象，已停止推送")
+
+        report_sha256 = hashlib.sha256(report_path.read_bytes()).hexdigest()
+        if str(payload.get("reportFile") or "") != report_path.name:
+            raise RuntimeError("周报发布质量门禁失败：质量审计绑定的文件名与待推送 Word 不一致")
+        if str(payload.get("reportSha256") or "").lower() != report_sha256:
+            raise RuntimeError("周报发布质量门禁失败：质量审计哈希与待推送 Word 不一致")
+        if int(payload.get("reportBytes") or -1) != report_path.stat().st_size:
+            raise RuntimeError("周报发布质量门禁失败：质量审计记录的文件大小与待推送 Word 不一致")
+        if str(payload.get("reviewStatus") or "").lower() != "passed":
+            raise RuntimeError("周报发布质量门禁失败：独立审稿未通过")
+        if str(payload.get("generationMode") or "").lower() != "normal":
+            raise RuntimeError("周报发布质量门禁失败：本轮处于受限生成模式")
+        if payload.get("limitations") or payload.get("qualityWarnings"):
+            raise RuntimeError("周报发布质量门禁失败：质量审计仍有局限或警告")
+
+        items = payload.get("items")
+        if not isinstance(items, list) or len(items) < WEEKLY_DELIVERY_MIN_ITEMS:
+            raise RuntimeError(
+                f"周报发布质量门禁失败：合格条目少于 {WEEKLY_DELIVERY_MIN_ITEMS} 篇"
+            )
+        if payload.get("included") != len(items):
+            raise RuntimeError("周报发布质量门禁失败：质量审计条目计数不一致")
+        weak_items: list[str] = []
+        for index, item in enumerate(items, start=1):
+            if not isinstance(item, dict):
+                weak_items.append(f"W{index:03d}")
+                continue
+            detail_chars = item.get("detailChars")
+            detail_sentences = item.get("detailSentences")
+            if (
+                not isinstance(detail_chars, int)
+                or isinstance(detail_chars, bool)
+                or detail_chars < WEEKLY_DELIVERY_MIN_DETAIL_CHARS
+                or not isinstance(detail_sentences, int)
+                or isinstance(detail_sentences, bool)
+                or detail_sentences < WEEKLY_DELIVERY_MIN_DETAIL_SENTENCES
+            ):
+                weak_items.append(str(item.get("id") or f"W{index:03d}"))
+        if weak_items:
+            examples = "、".join(weak_items[:8])
+            suffix = "等" if len(weak_items) > 8 else ""
+            raise RuntimeError(
+                "周报发布质量门禁失败："
+                f"{examples}{suffix} 未达到每篇至少 {WEEKLY_DELIVERY_MIN_DETAIL_CHARS} 字且 "
+                f"{WEEKLY_DELIVERY_MIN_DETAIL_SENTENCES} 句完整事实的正式版标准"
+            )
+        return {
+            "report_sha256": report_sha256,
+            "quality_sidecar": sidecar_path.name,
+            "included": len(items),
+            "min_detail_chars": min(int(item["detailChars"]) for item in items),
+            "min_detail_sentences": min(int(item["detailSentences"]) for item in items),
+        }
+
     def run_due_weekly_report(self, *, now: datetime | None = None, dry_run: bool = False) -> dict[str, Any]:
         current = (now or datetime.now(HKT)).astimezone(HKT)
         due = self.report_schedule_due(now=current)
@@ -1518,8 +1590,9 @@ class SubscriptionService:
             ]
             if not candidates:
                 raise RuntimeError("周报生成完成但未找到本轮新生成的当天 Word 周报，已停止推送")
-            report_path = max(candidates, key=lambda item: item.stat().st_mtime_ns)
+            report_path = max(candidates, key=lambda item: (item.stat().st_mtime_ns, item.name))
             relative_path = report_path.relative_to(self.runtime_root).as_posix()
+            quality_gate = self._validate_weekly_delivery_artifact(report_path)
             if any(item.get("report_mode") in {"audio", "pdf_audio"} for item in subscribers):
                 try:
                     from tts_service import synthesize_report_audio
@@ -1529,13 +1602,16 @@ class SubscriptionService:
                         raise RuntimeError(str(audio_result.get("error") or "周报语音生成失败"))
                 except Exception as exc:
                     raise RuntimeError(f"周报已生成，但订阅语音生成失败：{exc}") from exc
+            rechecked_quality_gate = self._validate_weekly_delivery_artifact(report_path)
+            if rechecked_quality_gate["report_sha256"] != quality_gate["report_sha256"]:
+                raise RuntimeError("周报发布质量门禁失败：语音生成期间 Word 已变化，已停止推送")
             delivery = self.push(
                 service="weekly",
                 mode="pdf_audio",
                 path=relative_path,
                 confirm_bulk=True,
                 queue_failures=True,
-                batch_key=f"weekly-schedule:{slot}",
+                batch_key=f"weekly-schedule:{slot}:{quality_gate['report_sha256']}",
             )
             final_status = "queued" if delivery["queued_count"] else "verified"
             completed_at = _now_hkt()
@@ -1546,7 +1622,14 @@ class SubscriptionService:
                        WHERE service='weekly' AND last_slot=?""",
                     (final_status, relative_path, completed_at, completed_at, slot),
                 )
-            return {"ok": True, "slot": slot, "status": final_status, "report_path": relative_path, "delivery": delivery}
+            return {
+                "ok": True,
+                "slot": slot,
+                "status": final_status,
+                "report_path": relative_path,
+                "quality_gate": quality_gate,
+                "delivery": delivery,
+            }
         except Exception as exc:
             completed_at = _now_hkt()
             with closing(self._connect()) as db, db:

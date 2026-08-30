@@ -1,4 +1,6 @@
+import hashlib
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -101,6 +103,38 @@ class SubscriptionServiceTests(unittest.TestCase):
 
     def tearDown(self):
         self.temp.cleanup()
+
+    def _write_weekly_quality_sidecar(
+        self,
+        report_path: Path,
+        *,
+        item_count: int = 4,
+        detail_chars: int = 96,
+        detail_sentences: int | None = 2,
+        report_sha256: str = "",
+    ) -> Path:
+        payload = {
+            "schemaVersion": 1,
+            "reportFile": report_path.name,
+            "reportSha256": report_sha256 or hashlib.sha256(report_path.read_bytes()).hexdigest(),
+            "reportBytes": report_path.stat().st_size,
+            "reviewStatus": "passed",
+            "generationMode": "normal",
+            "limitations": [],
+            "qualityWarnings": [],
+            "included": item_count,
+            "items": [
+                {
+                    "id": f"W{index:03d}",
+                    "detailChars": detail_chars,
+                    "detailSentences": detail_sentences,
+                }
+                for index in range(1, item_count + 1)
+            ],
+        }
+        sidecar_path = Path(str(report_path) + ".quality.json")
+        sidecar_path.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        return sidecar_path
 
     def test_card_is_card_2_form_with_three_services(self):
         card = subscription_entry_card(
@@ -879,7 +913,9 @@ class SubscriptionServiceTests(unittest.TestCase):
 
         def run_with_generated_report(argv, timeout=45):
             if any("generate_weekly_report.py" in item for item in argv):
-                (self.root / "8月30日周报.docx").write_bytes(b"generated")
+                report_path = self.root / "8月30日周报.docx"
+                report_path.write_bytes(b"generated")
+                self._write_weekly_quality_sidecar(report_path)
                 return subprocess.CompletedProcess(argv, 0, "generated", "")
             return self.lark(argv, timeout=timeout)
 
@@ -891,8 +927,109 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertTrue(first["ok"])
         self.assertEqual(first["status"], "verified")
         self.assertEqual(first["report_path"], "8月30日周报.docx")
+        self.assertEqual(first["quality_gate"]["included"], 4)
+        self.assertEqual(first["quality_gate"]["min_detail_sentences"], 2)
         self.assertFalse(second["due"])
         self.assertEqual(self.service.report_schedule_snapshot(now=now)["last_slot"], "2026-08-30@09:30")
+
+    def test_due_report_selects_the_newest_generated_quality_gated_version(self):
+        from datetime import datetime
+
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["weekly"], report_mode="pdf")
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+
+        def run_with_two_generated_reports(argv, timeout=45):
+            if any("generate_weekly_report.py" in item for item in argv):
+                first = self.root / "8月30日周报.docx"
+                latest = self.root / "8月30日周报 (1).docx"
+                first.write_bytes(b"first")
+                latest.write_bytes(b"latest")
+                self._write_weekly_quality_sidecar(first)
+                self._write_weekly_quality_sidecar(latest, detail_chars=110)
+                first_mtime = first.stat().st_mtime_ns
+                os.utime(latest, ns=(first_mtime + 1_000_000, first_mtime + 1_000_000))
+                return subprocess.CompletedProcess(argv, 0, "generated", "")
+            return self.lark(argv, timeout=timeout)
+
+        self.service.command_runner = run_with_two_generated_reports
+        with mock.patch.object(self.service, "_deliver_one", return_value=["om_latest123"]):
+            result = self.service.run_due_weekly_report(
+                now=datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+            )
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["report_path"], "8月30日周报 (1).docx")
+        self.assertEqual(result["quality_gate"]["min_detail_chars"], 110)
+
+    def test_due_report_rejects_generated_word_without_a_bound_quality_audit(self):
+        from datetime import datetime
+
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["weekly"], report_mode="pdf")
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+
+        def run_without_sidecar(argv, timeout=45):
+            if any("generate_weekly_report.py" in item for item in argv):
+                (self.root / "8月30日周报.docx").write_bytes(b"unreviewed")
+                return subprocess.CompletedProcess(argv, 0, "generated", "")
+            return self.lark(argv, timeout=timeout)
+
+        self.service.command_runner = run_without_sidecar
+        with mock.patch.object(self.service, "_deliver_one") as deliver:
+            result = self.service.run_due_weekly_report(
+                now=datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+            )
+        self.assertFalse(result["ok"])
+        self.assertIn("缺少同名质量审计", result["error"])
+        deliver.assert_not_called()
+
+    def test_due_report_rejects_legacy_one_sentence_audit_even_if_marked_passed(self):
+        from datetime import datetime
+
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["weekly"], report_mode="pdf")
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+
+        def run_with_legacy_sidecar(argv, timeout=45):
+            if any("generate_weekly_report.py" in item for item in argv):
+                report_path = self.root / "8月30日周报.docx"
+                report_path.write_bytes(b"legacy")
+                self._write_weekly_quality_sidecar(
+                    report_path,
+                    detail_chars=20,
+                    detail_sentences=None,
+                )
+                return subprocess.CompletedProcess(argv, 0, "generated", "")
+            return self.lark(argv, timeout=timeout)
+
+        self.service.command_runner = run_with_legacy_sidecar
+        with mock.patch.object(self.service, "_deliver_one") as deliver:
+            result = self.service.run_due_weekly_report(
+                now=datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+            )
+        self.assertFalse(result["ok"])
+        self.assertIn("至少 90 字且 2 句完整事实", result["error"])
+        deliver.assert_not_called()
+
+    def test_due_report_rejects_quality_audit_bound_to_different_word_bytes(self):
+        from datetime import datetime
+
+        self.service.save_subscriptions("ou_delivery123", "测试用户", ["weekly"], report_mode="pdf")
+        self.service.update_report_schedule(days=[30], time_hm="09:30", enabled=True)
+
+        def run_with_stale_sidecar(argv, timeout=45):
+            if any("generate_weekly_report.py" in item for item in argv):
+                report_path = self.root / "8月30日周报.docx"
+                report_path.write_bytes(b"latest")
+                self._write_weekly_quality_sidecar(report_path, report_sha256="0" * 64)
+                return subprocess.CompletedProcess(argv, 0, "generated", "")
+            return self.lark(argv, timeout=timeout)
+
+        self.service.command_runner = run_with_stale_sidecar
+        with mock.patch.object(self.service, "_deliver_one") as deliver:
+            result = self.service.run_due_weekly_report(
+                now=datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+            )
+        self.assertFalse(result["ok"])
+        self.assertIn("哈希与待推送 Word 不一致", result["error"])
+        deliver.assert_not_called()
 
     def test_due_report_does_not_generate_without_an_active_weekly_subscriber(self):
         from datetime import datetime
