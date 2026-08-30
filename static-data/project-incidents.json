@@ -735,7 +735,7 @@
       ],
       "occurred_at_hkt": "2026-08-31 03:09:47",
       "started_at_hkt": "2026-08-31T03:10:04+08:00",
-      "heartbeat_at_hkt": "2026-08-31T06:34:12+08:00",
+      "heartbeat_at_hkt": "2026-08-31T06:39:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -7771,7 +7771,7 @@
       "scope": "web-app",
       "incident_status": "resolved",
       "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
+      "phase": "服务重启后恢复",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主项目后台日志出现业务处理错误",
