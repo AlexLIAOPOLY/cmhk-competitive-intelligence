@@ -2,6 +2,43 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_093219_771737",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_3ed3249db23220b9e37760c1 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_3ed3249db23220b9e37760c1 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T09:34:54+08:00",
+      "started_at_hkt": "2026-08-30T09:32:19+08:00",
+      "completed_at_hkt": "2026-08-30T09:34:54+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 154819,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_3ed3249db23220b9e37760c1",
+        "content_sha256": "3ed3249db23220b9e37760c18b6d12fbc21c8a34f214df643c1500bc80a76c9c",
+        "release_manifest_sha256": "c1d629cf3072601070a32035bb58321d779f8a3eaacf26de9af041f1a4537c57",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": true,
+        "parent_crawl_run_id": "",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 8474,
+        "feishu_written": 7776,
+        "feishu_readback_verified": true,
+        "feishu_readback_scope": "all_rows_all_core_fields",
+        "feishu_readback_sha256": "2a1d445f943cd2a6461af27864994400ecf66496df1c42ef08fe8c0adb120259",
+        "feishu_coverage_ratio": 1.0,
+        "feishu_active_row_count": 7776,
+        "feishu_tombstone_row_count": 698,
+        "feishu_pre_publish_written": 0
+      }
+    },
+    {
       "crawl_run_id": "20260830_085914_859613",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-08-30@07:30）",
@@ -72019,6 +72056,6 @@
       }
     }
   ],
-  "total": 288,
+  "total": 289,
   "truncated": false
 }
