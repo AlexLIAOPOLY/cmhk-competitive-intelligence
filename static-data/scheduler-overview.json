@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-30T09:51:43+08:00",
+  "checked_at_hkt": "2026-08-30T09:56:43+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -688,7 +688,7 @@
       "backend_pid": 40793,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 503 条，AI保留 171 条，历史重复 78 条，新增 93 条。",
+      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 186 格，未重跑爬虫或重复发送群消息。",
       "heartbeat_at_hkt": "2026-08-30T09:12:36+08:00",
       "started_at_hkt": "2026-08-30T07:30:32+08:00",
       "completed_at_hkt": "2026-08-30T09:12:36+08:00",
@@ -699,14 +699,14 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260830_073032_883660.jsonl"
       },
       "stream_log": {
-        "bytes": 80410,
-        "lines": 458
+        "bytes": 80646,
+        "lines": 459
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 503 条，AI保留 171 条，历史重复 78 条，新增 93 条。",
+      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 186 格，未重跑爬虫或重复发送群消息。",
       "failure_stage": "",
       "operational_summary": {
         "slot": "2026-08-30@07:30",
@@ -717,9 +717,18 @@
         "readback_verified": true,
         "notification_status": "sent",
         "message_id": "om_x100b660c76e2f8a4b4b73a3a1c57181",
-        "selection_agent_status": "failed",
-        "selection_agent_changed": 0
-      }
+        "selection_agent_status": "completed",
+        "selection_agent_changed": 186,
+        "selection_agent_recovered": true,
+        "selection_agent_recovery_task_run_id": "20260830_095511_056494",
+        "selection_agent_recovered_at": "2026-08-30T09:55:11+08:00",
+        "message_ids": [
+          "om_x100b660c76e2f8a4b4b73a3a1c57181",
+          "om_x100b660c76f318acb240e354b85ac18"
+        ],
+        "notification_destination_count": 2
+      },
+      "amended_at_hkt": "2026-08-30T09:55:28+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260830_042855_439139",

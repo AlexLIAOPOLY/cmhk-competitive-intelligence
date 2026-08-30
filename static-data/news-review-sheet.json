@@ -24,7 +24,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-30T09:51:31+08:00",
+  "updatedAt": "2026-08-30T09:56:32+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -449,7 +449,30 @@
         "",
         "香港法律界集体签署AI应用倡议，反映AI在香港专业服务领域的落地与规范趋势，可能影响本地企业客户对AI合规与数字服务的需求。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 25,
@@ -468,7 +491,30 @@
         "",
         "中国5G CPE厂商出海拓展APEC市场，涉及5G终端设备在全球的部署与需求，与retrieval_query_context中5G专网、企业方案、合作等监控方向存在语义关联，反映5G终端供应链与海外市场需求变化。",
         "Agentic Search 缺口复查（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 26,
@@ -487,7 +533,30 @@
         "算力",
         "24亿美元GPU融资落地，反映AI算力基础设施的资本投入与资产化趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 27,
@@ -506,7 +575,30 @@
         "中国移动",
         "中国移动服务器集采开标，涉及现网系统部件焕新与算力基础设施投入，属本公司集团经营动作。",
         "飞书监测表关键词（模块：竞争对手；命中：中国移动） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 28,
@@ -525,7 +617,30 @@
         "Data center",
         "美国佛罗里达州新数据中心项目取代原冲浪公园，反映数据中心基础设施需求持续增长。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 29,
@@ -544,7 +659,30 @@
         "Deutsche Telekom",
         "Deutsche Telekom作为正式监控竞对，该报道分析其在AI浪潮下的企业网络战略布局，属于竞对经营动作。",
         "后台固定战略词库（模块：竞争对手；命中：Deutsche Telekom） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 30,
@@ -563,7 +701,30 @@
         "AT&T",
         "AT&T作为正式监控竞对，该报道涉及其在AI驱动的数据竞争中的估值与市场定位变化，属于竞对经营动作。",
         "后台固定战略词库（模块：竞争对手；命中：AT&T） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 31,
@@ -582,7 +743,30 @@
         "AT&T",
         "AT&T股价三年上涨108%并讨论估值，属竞对资本市场表现，可用于对标。",
         "后台固定战略词库（模块：竞争对手；命中：AT&T） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 32,
@@ -601,7 +785,30 @@
         "",
         "非洲即时支付监管协调是数字支付转型的具体监管事件，可观察数字金融监管趋势。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 33,
@@ -620,7 +827,30 @@
         "5G",
         "伊拉克5G商用部署协调出现具体进展，涉及运营商网络部署节奏与监管协调。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 34,
@@ -639,7 +869,30 @@
         "",
         "英国5G网络性能排名落后于欧盟及G7国家，可作为运营商网络质量与竞争格局的对标信号。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 35,
@@ -658,7 +911,30 @@
         "Data center",
         "加州就数据中心能源使用达成监管立法，影响数据中心运营成本与合规要求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 36,
@@ -677,7 +953,30 @@
         "Data center",
         "数据中心反对声浪涉及具体选址与税收争议，反映数据中心基础设施部署面临的地方阻力。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 37,
@@ -696,7 +995,30 @@
         "",
         "H200芯片运抵中国配额及香港中转安排是具体供应链事件，影响AI算力基础设施供应。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 38,
@@ -715,7 +1037,30 @@
         "",
         "香港整体固网市场用户数据变化，反映本地电信需求趋势，可用于评估市场容量和竞争格局。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 39,
@@ -734,7 +1079,30 @@
         "Deutsche Telekom",
         "德意志电信为正式监控竞对，获评级上调及估值重估，属于资本市场动态，可用于对标分析。",
         "后台固定战略词库（模块：竞争对手；命中：Deutsche Telekom） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 40,
@@ -753,7 +1121,30 @@
         "",
         "日本开设共享AI机器人训练中心是AI基础设施的具体部署事件，涉及物理AI训练数据与机器人产业，可作为关键技术趋势参考。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 41,
@@ -772,7 +1163,30 @@
         "War",
         "伊朗战争背景下中国石油储备的地缘政治影响，涉及能源供应与宏观地缘格局变化，可能间接影响全球供应链与运营成本。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：War） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 42,
@@ -791,7 +1205,30 @@
         "",
         "OpenAI切断Cursor模型访问的具体事件，反映AI大模型竞争格局变化，可影响AI工具与算力需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 43,
@@ -810,7 +1247,30 @@
         "",
         "Harvey转向中国Kimi K3开源模型的具体事件，反映中国开源大模型商业化与竞争格局变化。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 44,
@@ -829,7 +1289,30 @@
         "Data center",
         "PPL取得土地用于数据中心电厂的具体事件，反映数据中心电力基础设施扩张。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 45,
@@ -848,7 +1331,30 @@
         "AI",
         "Parallels Desktop 27通过Metal图形驱动提升本地AI处理性能，属于AI基础设施与软件生态的具体技术进展，可能影响企业AI工作负载的部署方式。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 46,
@@ -867,7 +1373,30 @@
         "T-Mobile",
         "T-Mobile波兰推出三星新机促销活动，属于竞对终端产品资费与渠道动作，可用于对标竞对终端销售策略。",
         "后台固定战略词库（模块：竞争对手；命中：T-Mobile） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 47,
@@ -886,7 +1415,30 @@
         "",
         "西班牙大规模投资AI基础设施，涉及算力部署和欧盟AI产业布局，可能影响全球AI供应链和电信运营商的云与数据中心战略。",
         "后台固定战略词库（模块：竞争对手） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 48,
@@ -905,7 +1457,30 @@
         "",
         "Starlink在非洲市场的快速扩张构成卫星互联网对传统电信运营商的竞争压力，具体市场数据可用于对标分析。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 49,
@@ -924,7 +1499,30 @@
         "",
         "英伟达B300服务器获批量订单并进入澳大利亚市场，反映AI算力基础设施需求持续扩张，可能影响数据中心部署与供应链。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 50,
@@ -943,7 +1541,30 @@
         "T-Mobile",
         "T-Mobile推行门店数字化签到新规，反映竞对在客户服务与渠道数字化方面的经营动作。",
         "后台固定战略词库（模块：竞争对手；命中：T-Mobile） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 51,
@@ -962,7 +1583,30 @@
         "Data center",
         "加州推进多项数据中心监管法案，大型科技公司投入资金游说，影响数据中心建设合规与成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：Data center） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 52,
@@ -981,7 +1625,30 @@
         "Vodafone",
         "Vodafone爱尔兰宽带发生大规模服务中断，涉及网络运营与客户服务质量，可作为竞对网络稳定性对标参考。",
         "后台固定战略词库（模块：竞争对手；命中：Vodafone） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 53,
@@ -1000,7 +1667,30 @@
         "",
         "香港签证政策带动外籍短期就业人数增加，反映本地劳动力与需求变化，可能影响客户基础。",
         "后台固定战略词库（模块：宏观经济） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 54,
@@ -1019,7 +1709,30 @@
         "人民币",
         "人民币跨境支付系统扩容是具体金融基础设施变化，可能影响跨境资金流动、贸易结算及香港离岸人民币业务需求。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：人民币） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 55,
@@ -1038,7 +1751,30 @@
         "算力",
         "中国集成电路出口高速增长，反映算力与芯片供给扩张，影响供应链与成本。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 56,
@@ -1057,7 +1793,30 @@
         "CPU",
         "新机CPU规格泄露显示芯片性能提升，反映终端芯片技术演进。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：CPU） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 57,
@@ -1076,7 +1835,30 @@
         "",
         "香港本地学校与AI企业合作共建AI课室，涉及人工智能在教育场景的具体部署，反映香港AI教育需求落地。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 58,
@@ -1095,7 +1877,30 @@
         "",
         "美伊冲突持续影响中东地缘格局，可能间接影响能源价格、全球供应链稳定及技术制裁走向。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 59,
@@ -1114,7 +1919,30 @@
         "",
         "网约车规管涉及香港本地交通政策与牌照管理，与retrieval_query_context中的牌照、频谱等监管关键词存在语义关联，可能影响出行服务市场的竞争格局与合规要求。",
         "飞书监测表关键词（模块：政策/法规类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 60,
@@ -1133,7 +1961,30 @@
         "",
         "OpenAI Codex持续模式代表AI代理从被动问答向自主运行演进，涉及算力、服务器等基础设施需求变化，可能影响电信行业AI部署和算力需求格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 61,
@@ -1152,7 +2003,30 @@
         "中国移动",
         "中国移动在应急场景下快速部署并维护5G基站，展示了其网络应急响应能力和5G700兆覆盖优势，可作为本公司网络应急部署的对标参考。",
         "飞书监测表关键词（模块：竞争对手；命中：中国移动） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 62,
@@ -1171,7 +2045,30 @@
         "AI",
         "AI转型存在具体数据与案例，反映企业AI部署的成本与效率风险。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 63,
@@ -1190,7 +2087,30 @@
         "",
         "AI行业薪酬变化影响香港本地人才流向与选科趋势，反映AI产业对香港劳动力市场的具体影响，与人工智能监控词实质相关。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 64,
@@ -1209,7 +2129,30 @@
         "港澳",
         "香港两律师会对港澳律师大湾区执业修法的回应，与港澳监控词实质相关，反映香港法律界对跨境执业政策的态度。",
         "飞书监测表关键词（模块：香港本地新闻；命中：港澳） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 65,
@@ -1228,7 +2171,30 @@
         "新田科技城",
         "新田科技城地价协商政策旨在吸引芯片和无人机企业落户，涉及香港本地创科基础设施和产业政策，可能影响数据中心、网络基建及企业客户需求。",
         "飞书监测表关键词（模块：香港本地新闻；命中：新田科技城） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 66,
@@ -1247,7 +2213,30 @@
         "中國移動",
         "前7月中国移动流量增17.6%，三大电信商算力投资逆势飙升逾八成显示正式监控竞对发生具体经营事件，影响竞争格局。",
         "后台固定竞对词库（China Mobile；命中：中國移動） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 67,
@@ -1266,7 +2255,30 @@
         "AI",
         "前7月营收年增128%!这大厂吃下AI、HPC测试红利 3大市场拓展版图属于可验证的关键技术事件，影响收入与需求。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 68,
@@ -1285,7 +2297,30 @@
         "AI",
         "员工窃取生成式AI软件并牟利被罚，反映AI知识产权保护与合规风险的具体事件。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 69,
@@ -1304,7 +2339,30 @@
         "",
         "中国电信作为被监测竞对，其客户服务承诺未兑现事件反映了竞对在服务质量和消费者权益方面的经营问题，可关注其客户关系管理风险。",
         "Agentic Search 缺口复查（模块：市场/产品类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 70,
@@ -1323,7 +2381,30 @@
         "",
         "涉及多个大模型的使用成本与接入方案，反映AI模型服务市场的最新动态，与算力、token等监控关键词存在实质关联，可影响企业对AI基础设施的选型与成本评估。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 71,
@@ -1342,7 +2423,30 @@
         "数据中心",
         "微软披露数据中心能效改善和可再生能源建设计划，涉及数据中心运营效率与可持续性，可为行业数据中心建设提供对标参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：数据中心） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 72,
@@ -1361,7 +2465,30 @@
         "",
         "荷莫兹海峡是全球能源运输关键通道，持续封锁影响能源供应和价格，可能间接影响电信行业运营成本和全球供应链稳定性。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 73,
@@ -1380,7 +2507,30 @@
         "",
         "全球智能手机均价大幅上涨反映终端设备成本变化，可能影响运营商终端补贴策略、用户换机周期及5G终端渗透节奏。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 74,
@@ -1399,7 +2549,30 @@
         "人工智能",
         "教宗就AI伦理发表正式讲话，涉及AI治理与监管方向，可能影响全球AI政策框架和电信行业AI应用合规。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：人工智能） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 75,
@@ -1418,7 +2591,30 @@
         "香港",
         "香港eVTOL首航成功，涉及低空经济、自动驾驶飞行器商业化及监管沙盒，可影响香港智慧交通和低空经济基础设施需求。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 76,
@@ -1437,7 +2633,30 @@
         "新田科技城",
         "新田科技城地价政策与产业定位明确，将影响香港本地数据中心、科技企业需求和网络基础设施布局。",
         "飞书监测表关键词（模块：香港本地新闻；命中：新田科技城） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 77,
@@ -1456,7 +2675,30 @@
         "皇崗口岸",
         "新皇岗口岸通关演练涉及跨境基础设施进展和客流管理，将影响跨境通信需求、网络覆盖规划和本地运营商服务部署。",
         "后台固定战略词库（模块：香港本地新闻；命中：皇崗口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 78,
@@ -1475,7 +2717,30 @@
         "口岸",
         "新皇岗口岸通关测试进展及e道证件便利化安排，涉及跨境基础设施运营和客流效率，将影响跨境通信需求和网络服务部署。",
         "飞书监测表关键词（模块：香港本地新闻；命中：口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 79,
@@ -1494,7 +2759,30 @@
         "香港、皇崗口岸",
         "新皇岗口岸缺乏香港电话讯号覆盖，政府Wi-Fi网速不佳，直接影响香港用户跨境通讯体验，涉及网络覆盖与基础设施部署。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港、皇崗口岸） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 80,
@@ -1513,7 +2801,30 @@
         "",
         "智谱开源GLM-5.3模型权重，主打智能体编程与网络防御属于可验证的关键技术事件，影响网络与运营。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 81,
@@ -1532,7 +2843,30 @@
         "",
         "有片｜前海港人港企服务中心正式揭牌 深港社会服务协同开启新篇章属于可验证的市场需求事件，影响客户与渠道。",
         "飞书监测表关键词（模块：香港本地新闻） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 82,
@@ -1551,7 +2885,30 @@
         "",
         "杭州「六小龙」携手「新八骏」 第五届数贸会前沿创新成果集中首秀- 神州属于可验证的关键技术事件，影响竞争格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 83,
@@ -1570,7 +2927,30 @@
         "香港",
         "民建联考察莲塘口岸 提出智慧通关、延长服务等建议属于可验证的基础设施事件，影响客户与渠道。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 84,
@@ -1589,7 +2969,30 @@
         "港澳",
         "深耕津港澳务实合作擘画「十五五」提质新篇天津召开港澳工作联席会半年专题会议- 各地动态属于可验证的宏观与地缘事件，影响收入与需求。",
         "飞书监测表关键词（模块：香港本地新闻；命中：港澳） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 85,
@@ -1608,7 +3011,30 @@
         "打仗",
         "美国对伊朗战争导致海军财政危机，涉及军费开支与军事行动对财政的影响，属于地缘政治与宏观经济的实质事件。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：打仗） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 86,
@@ -1627,7 +3053,30 @@
         "無人駕駛",
         "中国修订道路交通法为无人驾驶提供法律框架，涉及自动驾驶监管政策变化，可能影响相关产业准入与运营。",
         "后台固定战略词库（模块：香港本地新闻；命中：無人駕駛） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 87,
@@ -1646,7 +3095,30 @@
         "token",
         "AI计费模式从固定转向按Token计量收费，影响企业AI使用成本与预算规划，涉及云和AI服务定价趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：token） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 88,
@@ -1665,7 +3137,30 @@
         "算力",
         "AI芯片需求飙升与关税政策变化正在重塑算力基础设施竞争格局，涉及芯片供需、投资流向与行业结构变化，属于关键技术领域的市场趋势信号。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 89,
@@ -1684,7 +3179,30 @@
         "业绩、5G",
         "光纤光缆行业量价齐升，数据中心取代电信运营商成为核心增长极，反映网络基础设施需求结构变化。",
         "Agentic Search 缺口复查（模块：竞争对手；命中：业绩、5G） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 90,
@@ -1703,7 +3221,30 @@
         "AI",
         "讨论网络互联作为AI基础设施关键层的技术趋势，涉及AI算力网络架构演进，对电信运营商网络规划和数据中心互联有参考价值。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 91,
@@ -1722,7 +3263,30 @@
         "AI",
         "AI热潮推动美股逼近历史高点，博通财报即将登场检验AI相关半导体需求，反映AI驱动的市场趋势与资本配置动向，对电信行业AI基础设施投资有参考意义。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 92,
@@ -1741,7 +3305,30 @@
         "",
         "贸易战重启涉及关税与贸易政策变化，可能影响电信供应链成本、设备采购及国际运营环境，属于宏观与地缘战略信号。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 93,
@@ -1760,7 +3347,30 @@
         "",
         "北都大学城3幅用地开放给内地及海外院校合作，涉及人才与北部都会区发展，可带动本地企业客户需求与基础设施投资。",
         "飞书监测表关键词（模块：香港本地新闻） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 94,
@@ -1779,7 +3389,30 @@
         "",
         "报道描述了贵州算力基础设施中算力、存力、运力、电力四要素协同发展的具体实践，涉及数据中心建设与能源保障，可为行业基础设施规划提供参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 95,
@@ -1798,7 +3431,30 @@
         "",
         "国家数据局关于词元市场需求爆发式增长的判断，反映大模型驱动的算力和存储需求趋势，属于行业需求信号。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 96,
@@ -1817,7 +3473,30 @@
         "",
         "贵州电网以数智化手段推动算电融合，直接服务于数据中心和算力基础设施的能源保障，涉及算力基础设施的供电模式创新。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 97,
@@ -1836,7 +3515,30 @@
         "AI",
         "AI关键词命中，报道讨论了AI成本、半导体供应链价格与超大规模云服务商营收增长的具体数据，反映AI基础设施投入与回报的行业趋势。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 98,
@@ -1855,7 +3557,30 @@
         "AI",
         "香港议员提出发展AI及创科的具体政策建议，涉及本地产业政策方向，可能影响香港数字经济需求、基础设施投资及企业客户市场。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 99,
@@ -1874,7 +3599,30 @@
         "token",
         "Valon限制新员工使用AI以降低token支出，反映AI应用的成本与效率管理实践。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：token） → Bing News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 100,
@@ -1893,7 +3641,30 @@
         "",
         "AI数据中心建设半数搁浅，反映数据中心基础设施供给与建设进度变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 101,
@@ -1912,7 +3683,30 @@
         "口岸",
         "新皇岗口岸开通将改变港深通关格局，影响跨境客流、物流及口岸配套网络基础设施需求，与口岸通关监控词实质相关。",
         "飞书监测表关键词（模块：香港本地新闻；命中：口岸） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 102,
@@ -1931,7 +3725,30 @@
         "存储",
         "长鑫存储起诉美国国防部涉及存储芯片供应链与地缘政治，可能影响存储芯片供应格局。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：存储） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 103,
@@ -1950,14 +3767,37 @@
         "牌照",
         "香港网约车牌照政策变化可能影响本地出行市场需求、车联网及通信服务使用场景。",
         "飞书监测表关键词（模块：政策/法规类；命中：牌照） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:55:18+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:55:18+00:00"
+        }
+      }
     },
     {
       "rowNumber": 104,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -1969,14 +3809,37 @@
         "算力",
         "韩国政府投入10兆韩元建设AI算力并推出全民免费代币，反映算力基础设施供给与AI投入变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 105,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -1988,14 +3851,37 @@
         "算力",
         "太空算力与AI产业链新方向，反映算力基础设施与竞争格局变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：算力） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 106,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -2007,14 +3893,37 @@
         "AI",
         "AI引发记忆体短缺影响NVIDIA营收，反映AI基础设施供应链紧张。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 107,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2026,14 +3935,37 @@
         "",
         "a16z募资11亿美元投向AI硬件基础设施，反映算力、数据中心与电力资本投入增加。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 108,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -2045,14 +3977,37 @@
         "5G",
         "通讯办守护频谱、监测干扰并支援5G建设，影响本港营办商的频谱合规与网络部署。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 109,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -2064,14 +4019,37 @@
         "AI",
         "AI需求推动基础设施投资资金流入，反映AI产业链向基建延伸的市场趋势，影响数据中心、网络等电信基础设施资本配置。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 110,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -2083,14 +4061,37 @@
         "",
         "AI晶片需求持续升温反映算力基础设施上游供需趋势，影响数据中心部署成本和电信运营商AI基础设施投资节奏。",
         "飞书监测表关键词（模块：基础设施/网络/技术类） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 111,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -2102,14 +4103,37 @@
         "AI",
         "滴滴无人的士Robotaxi R2登场 全AI语音操控 开口即调冷气灯光属于可验证的关键技术事件，影响产品与定价。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 112,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -2121,14 +4145,37 @@
         "人工智能",
         "厦洽会人工智能板块展示机器人等前沿科技成果，反映AI产业化落地趋势，可影响电信行业AI应用与合作方向。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：人工智能） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 113,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "行业动态",
@@ -2140,14 +4187,37 @@
         "人工智能",
         "大学城聚焦人工智能等高端产业布局，反映AI产业规划与资源投入趋势，可为电信行业AI基础设施需求提供参考。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：人工智能） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 114,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
@@ -2159,14 +4229,37 @@
         "",
         "美伊战争及经济制裁涉及地缘政治局势变化，可能影响全球供应链、能源价格及国际电信设备贸易环境。",
         "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 115,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "市场/产品类",
@@ -2178,14 +4271,37 @@
         "5G",
         "5G路由器新产品针对香港村屋宽带覆盖不足场景，反映本地5G固定无线接入市场需求和产品创新。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 116,
       "values": [
-        "待审核",
-        "待审核",
-        "未同步",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "国际/行业",
         "政策监管",
@@ -2197,7 +4313,30 @@
         "AI",
         "韩国政府选定三大财团运营全民AI，以公共事业模式推进AI主权，反映AI基础设施与政策部署的具体变化。",
         "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Google News搜索"
-      ]
+      ],
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-08-30T01:56:33+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-08-30T01:56:33+00:00"
+        }
+      }
     },
     {
       "rowNumber": 119,
