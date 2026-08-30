@@ -59,6 +59,10 @@ PUBLIC_VENDOR_FILES = (
     "marked-15.0.12-LICENSE.md",
     "cytoscape-3.34.0.min.js",
 )
+INTERNAL_ONLY_STATIC_FILES = (
+    "report-editor.css",
+    "vendor/tiptap-report-editor-3.30.5.min.js",
+)
 
 PUBLIC_EARLY_SHELL = r'''<script data-public-early-shell>
 (() => {
@@ -896,9 +900,36 @@ def _build_site(
     html = html.replace('href="/executive-dashboard-demo.html', 'href="./executive-dashboard-demo.html')
     html = html.replace('src="/executive-dashboard-demo.html', 'src="./executive-dashboard-demo.html')
     html = html.replace('class="brand-mark" href="/"', 'class="brand-mark" href="./"')
-    html = html.replace(
-        'data-src="./static/subscription-admin.html?v=12"',
+    html = re.sub(
+        r'data-src="\./static/subscription-admin\.html\?v=[^"]+"',
         'data-src="./static/public-subscriptions.html"',
+        html,
+    )
+    html = re.sub(
+        r'\s*<link rel="stylesheet" href="\./static/report-editor\.css\?v=[^"]+"\s*/>',
+        '',
+        html,
+    )
+    html = re.sub(
+        r'\s*<script defer src="\./static/vendor/tiptap-report-editor-[^"]+"></script>',
+        '',
+        html,
+    )
+    html = re.sub(
+        r'\s*<section class="report-editor-modal".*?</section>\s*(?=</main>)',
+        '\n',
+        html,
+        flags=re.S,
+    )
+    html = html.replace(
+        '<body class="dashboard-page">',
+        '<body class="dashboard-page public-readonly">',
+        1,
+    )
+    html = html.replace(
+        '</head>',
+        '<style>.public-readonly .edit-report-button,.public-readonly [data-report-editor-path]{display:none!important}</style>\n  </head>',
+        1,
     )
     html = re.sub(
         r'src="\./static/workspace-tabs\.js\?v=[^"]+"',

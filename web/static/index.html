@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="/static/leadership-board.css?v=19" />
   <link rel="stylesheet" href="/static/news-review-sheet.css?v=5" />
   <link rel="stylesheet" href="/static/workspace-tabs.css?v=132" />
+  <link rel="stylesheet" href="/static/report-editor.css?v=1" />
   <link rel="stylesheet" href="/static/intelligence-map.css?v=13" />
   <link rel="stylesheet" href="/static/organization-admin.css?v=26" />
   </head>
@@ -288,7 +289,7 @@
       <section class="workspace-module-shell" id="workspace-panel-weekly" role="tabpanel" aria-labelledby="workspace-tab-weekly" data-workspace-panel="weekly" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-performance" role="tabpanel" aria-labelledby="workspace-tab-performance" data-workspace-panel="performance" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-review" role="tabpanel" aria-labelledby="workspace-tab-review" data-workspace-panel="review" hidden></section>
-      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe data-src="/static/subscription-admin.html?v=12" title="订阅与推送" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
+      <section class="workspace-module-shell" id="workspace-panel-subscriptions" role="tabpanel" aria-labelledby="workspace-tab-subscriptions" data-workspace-panel="subscriptions" hidden><iframe data-src="/static/subscription-admin.html?v=13" title="订阅与推送" style="display:block;width:100%;height:100%;border:0" loading="lazy"></iframe></section>
       <section class="workspace-module-shell" id="workspace-panel-ai" role="tabpanel" aria-labelledby="workspace-tab-ai" data-workspace-panel="ai" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-log" role="tabpanel" aria-labelledby="workspace-tab-log" data-workspace-panel="log" hidden></section>
       <section class="workspace-module-shell" id="workspace-panel-fault" role="tabpanel" aria-labelledby="workspace-tab-fault" data-workspace-panel="fault" hidden></section>
@@ -561,6 +562,39 @@
           </footer>
         </form>
       </section>
+
+      <section class="report-editor-modal" id="reportEditorModal" role="dialog" aria-modal="true" aria-labelledby="reportEditorFileName" hidden>
+        <header class="report-editor-titlebar">
+          <div class="report-editor-brand">
+            <span class="report-editor-brand-mark" aria-hidden="true">W</span>
+            <div><strong id="reportEditorFileName">报告全屏编辑器</strong><small>CMHK REPORT EDITOR · Word 版式</small></div>
+          </div>
+          <div class="report-editor-title-actions">
+            <button id="reportEditorSaveCopy" type="button">另存编辑稿</button>
+            <button class="primary" id="reportEditorSave" type="button">保存为编辑稿</button>
+            <button class="report-editor-close" id="reportEditorClose" type="button" aria-label="关闭全屏编辑器" title="关闭">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+            </button>
+          </div>
+        </header>
+        <nav class="report-editor-ribbon" id="reportEditorRibbon" aria-label="Word 编辑功能区"></nav>
+        <div class="report-editor-workspace">
+          <div class="report-editor-canvas" id="reportEditorMount"></div>
+        </div>
+        <footer class="report-editor-statusbar">
+          <span id="reportEditorStatus" role="status" aria-live="polite">准备打开报告</span>
+          <span id="reportEditorWordCount">0 字词 · 0 字符</span>
+          <label class="report-editor-zoom">缩放 <input id="reportEditorZoom" type="range" min="55" max="150" step="5" value="100" aria-label="编辑页面缩放"><output>100%</output></label>
+        </footer>
+        <input id="reportEditorImageInput" type="file" accept="image/png,image/jpeg,image/gif,image/webp" hidden>
+        <dialog class="report-editor-link-dialog" id="reportEditorLinkDialog">
+          <form>
+            <h2>插入或编辑链接</h2>
+            <label>链接地址<input name="href" type="text" inputmode="url" placeholder="https://example.com" autocomplete="off"></label>
+            <div class="report-editor-link-actions"><button type="button" data-link-remove>移除链接</button><button type="button" data-link-cancel>取消</button><button type="submit">应用</button></div>
+          </form>
+        </dialog>
+      </section>
     </main>
 
     <div id="globalAudioPlayer" class="audio-player-global" hidden>
@@ -592,13 +626,14 @@
     </div>    <script defer src="/static/auth-client.js?v=3"></script>
     <script defer src="/static/vendor/chart-4.4.0.umd.js?v=1"></script>
     <script defer src="/static/vendor/cytoscape-3.34.0.min.js?v=1"></script>
-    <script defer src="/static/workspace-tabs.js?v=153"></script>
+    <script defer src="/static/workspace-tabs.js?v=154"></script>
     <script defer src="/static/intelligence-map.js?v=21"></script>
     <script defer src="/static/vendor/chartjs-plugin-datalabels-2.2.0.min.js?v=1"></script>
     <script defer src="/static/vendor/marked-15.0.12.umd.js?v=1"></script>
     <script defer src="/static/confirm-dialog.js?v=3"></script>
     <script defer src="/static/custom-select.js?v=2"></script>
-    <script defer src="/static/app.js?v=312"></script>
+    <script defer src="/static/vendor/tiptap-report-editor-3.30.5.min.js?v=1"></script>
+    <script defer src="/static/app.js?v=313"></script>
     <script defer src="/static/news-review-sheet.js?v=8"></script>
     <script defer src="/static/organization-admin.js?v=32"></script>
   </body>

@@ -84,6 +84,10 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table th:nth-child(6) { width: 8%; }
 .subscriber-table th:nth-child(7) { width: 11%; }
 .subscriber-table td select { min-width: 0; }
+.manual-report-sendbar { display: grid; grid-template-columns: minmax(280px, .88fr) minmax(260px, 1.12fr); align-items: end; gap: 12px; padding: 9px 16px 10px; border-bottom: 1px solid rgba(92,158,178,.18); background: rgba(8,34,44,.58); }
+.manual-report-sendbar label { gap: 4px; color: #94abb3; font-size: 10px; }
+.manual-report-sendbar select { height: 32px; padding-right: 28px; color: #dbe8eb; font-size: 10px; }
+.manual-report-sendbar p { align-self: center; color: #708891; font-size: 9px; line-height: 1.5; }
 .table-person { display: flex; min-width: 0; align-items: center; gap: 9px; }
 .table-person-copy { min-width: 0; }
 .table-person-name, .table-person-id { display: block; white-space: nowrap; }
@@ -115,6 +119,10 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .manual-push-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .manual-push-heading h3 { color: #dcebee; font-size: 11px; font-weight: 650; }
 .manual-push-heading p { color: #728d97; font-size: 8px; }
+.weekly-schedule-heading { align-items: center; }
+.weekly-schedule-heading > div { min-width: 0; }
+.weekly-schedule-heading .report-schedule-countdown { flex: 0 0 auto; margin: 0; color: #7c8d94; font-size: 10px; font-weight: 400; white-space: nowrap; }
+.weekly-schedule-heading .report-schedule-countdown::before { margin-right: 5px; color: #738990; content: "◷"; }
 .workflow-tabs { display: flex; min-height: 48px; align-items: end; gap: 22px; padding: 0 22px; border-bottom: 1px solid rgba(92,158,178,.22); background: rgba(14,46,58,.45); }
 .workflow-tabs button { position: relative; height: 48px; padding: 0 2px; border: 0; color: #78949e; background: transparent; font-size: 11px; font-weight: 600; }
 .workflow-tabs button.is-active { color: #eff8fa; }
@@ -209,7 +217,7 @@ h1 { font-size: 20px; }
 .table-person-id, .person-copy small, .invite-meta small { font-size: 10px; }
 table { font-size: 11px; }
 th, .status, .result-section-label, .result-type { font-size: 10px; }
-[data-outgoing-names], .schedule-form small, .schedule-meta, .manual-push-heading p { font-size: 10px; }
+[data-outgoing-names], .schedule-form small, .schedule-meta, .manual-push-heading p, .manual-report-sendbar p { font-size: 10px; }
 .manual-push-heading h3, .drawer-tabs button, .drawer-summary, .empty.compact { font-size: 11px; }
 @media (max-width: 1100px) {
   .upper-grid { grid-template-columns: 1fr; }
@@ -218,6 +226,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .schedule-form { grid-template-columns: 1fr 1fr; }
   .news-schedule-form { grid-template-columns: 1fr auto; }
   .news-schedule-form .schedule-meta { grid-column: 1 / -1; }
+  .manual-report-sendbar { grid-template-columns: 1fr; align-items: start; }
   .push-workbench { max-width: none; padding: 0 18px; }
 }
 @media (max-width: 560px) {
@@ -239,6 +248,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .schedule-form { grid-template-columns: 1fr; }
   .news-schedule-form { grid-template-columns: 1fr; }
   .manual-push-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
+  .weekly-schedule-heading .report-schedule-countdown { white-space: normal; }
+  .manual-report-sendbar { padding: 9px 12px; }
   .invite-list-main { padding: 4px 10px 14px; }
   .form-row { grid-template-columns: 1fr; }
   .invite-row { grid-template-columns: auto auto minmax(0,1fr); }

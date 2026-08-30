@@ -46,7 +46,10 @@ class DashboardPagesPublishTests(unittest.TestCase):
         published_assets = set(publisher.PUBLIC_STATIC_FILES) | {
             f"vendor/{name}" for name in publisher.PUBLIC_VENDOR_FILES
         }
-        self.assertEqual(referenced - published_assets, set())
+        self.assertEqual(
+            referenced - published_assets - set(publisher.INTERNAL_ONLY_STATIC_FILES),
+            set(),
+        )
 
         source = SCRIPT_PATH.read_text(encoding="utf-8")
         self.assertIn('["/api/auth/me", {', source)
@@ -876,12 +879,15 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertLess(
                 html.index('src="./static/workspace-tabs.js?v=public-8"'),
-                html.index('src="./static/app.js?v=312"'),
+                html.index('src="./static/app.js?v=313"'),
             )
             self.assertNotRegex(html, r'<script(?![^>]*\bdefer\b)[^>]+src=')
             self.assertIn('data-workspace-tab="subscriptions"', html)
             self.assertIn('data-workspace-tab="ai"', html)
             self.assertIn('data-src="./static/public-subscriptions.html"', html)
+            self.assertNotIn("reportEditorModal", html)
+            self.assertNotIn("tiptap-report-editor", html)
+            self.assertNotIn("report-editor.css", html)
             self.assertIn("CMHK_PUBLIC_SNAPSHOT", bootstrap)
             self.assertIn("公开网页是只读快照", bootstrap)
             self.assertIn("subscriptions: true, ai: true", bootstrap)

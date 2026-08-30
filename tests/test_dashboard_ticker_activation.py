@@ -18,7 +18,7 @@ class DashboardTickerActivationTests(unittest.TestCase):
         self.assertIn("pauseScroll();", listener[:500])
 
     def test_app_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/app.js?v=312', INDEX)
+        self.assertIn('/static/app.js?v=313', INDEX)
 
 
 if __name__ == "__main__":

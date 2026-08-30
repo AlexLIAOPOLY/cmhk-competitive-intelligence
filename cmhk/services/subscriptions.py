@@ -1545,6 +1545,56 @@ class SubscriptionService:
             "min_detail_sentences": min(int(item["detailSentences"]) for item in items),
         }
 
+    def _validate_user_edited_weekly_artifact(self, report_path: Path) -> dict[str, Any]:
+        """Allow an explicitly selected editor copy only when its formal source is auditable."""
+        metadata_path = self.runtime_root / "data" / "reporting" / "report_file_metadata.json"
+        try:
+            metadata_payload = json.loads(metadata_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError, TypeError, json.JSONDecodeError) as exc:
+            raise RuntimeError("周报编辑稿来源校验失败：无法读取报告编辑记录，已停止推送") from exc
+        if not isinstance(metadata_payload, dict):
+            raise RuntimeError("周报编辑稿来源校验失败：报告编辑记录格式无效，已停止推送")
+
+        try:
+            report_key = report_path.resolve().relative_to(self.runtime_root.resolve()).as_posix()
+        except ValueError as exc:
+            raise RuntimeError("周报编辑稿来源校验失败：文件不在受控报告目录中") from exc
+        metadata = metadata_payload.get(report_key)
+        metadata = metadata if isinstance(metadata, dict) else {}
+        source_key = str(metadata.get("sourcePath") or "").strip()
+        if (
+            not metadata.get("isEdited")
+            or str(metadata.get("reportType") or "") != "weekly"
+            or int(metadata.get("editorRevision") or 0) < 1
+            or not source_key
+            or source_key == report_key
+        ):
+            raise RuntimeError("周报编辑稿来源校验失败：所选文件不是页面编辑器保存的周报版本")
+
+        source_path = (self.runtime_root / source_key).resolve()
+        if self.runtime_root.resolve() not in source_path.parents or not source_path.is_file():
+            raise RuntimeError("周报编辑稿来源校验失败：对应的正式源周报不存在")
+        source_gate = self._validate_weekly_delivery_artifact(source_path)
+        recorded_source_sha = str(metadata.get("sourceSha256") or "").lower()
+        if recorded_source_sha and recorded_source_sha != source_gate["report_sha256"]:
+            raise RuntimeError("周报编辑稿来源校验失败：正式源周报已变化，请重新打开并保存编辑稿")
+
+        try:
+            report_text = self._report_text(report_path)
+        except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as exc:
+            raise RuntimeError("周报编辑稿校验失败：Word 正文无法解析") from exc
+        if not report_text.strip():
+            raise RuntimeError("周报编辑稿校验失败：Word 正文为空")
+        if weekly_text_has_navigation_noise(report_text):
+            raise RuntimeError("周报编辑稿校验失败：正文含网页排序、导航或营销按钮噪声")
+        return {
+            **source_gate,
+            "user_edited": True,
+            "edited_report_sha256": hashlib.sha256(report_path.read_bytes()).hexdigest(),
+            "source_report_path": source_key,
+            "editor_revision": int(metadata.get("editorRevision") or 0),
+        }
+
     def run_due_weekly_report(self, *, now: datetime | None = None, dry_run: bool = False) -> dict[str, Any]:
         current = (now or datetime.now(HKT)).astimezone(HKT)
         due = self.report_schedule_due(now=current)
@@ -2861,6 +2911,7 @@ class SubscriptionService:
         confirm_bulk: bool = False,
         queue_failures: bool = False,
         batch_key: str = "",
+        allow_user_edited: bool = False,
     ) -> dict[str, Any]:
         if service not in VALID_SERVICES or mode not in VALID_DELIVERY_MODES:
             raise ValueError("推送服务或交付方式无效")
@@ -2896,7 +2947,10 @@ class SubscriptionService:
         if service in {"weekly", "performance"}:
             report_path, content_ref = self._resolve_report(path)
             if service == "weekly":
-                self._validate_weekly_delivery_artifact(report_path)
+                if allow_user_edited:
+                    self._validate_user_edited_weekly_artifact(report_path)
+                else:
+                    self._validate_weekly_delivery_artifact(report_path)
             title = title.strip() or report_path.stem
         else:
             title = title.strip() or "战略新闻"

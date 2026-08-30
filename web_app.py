@@ -10,6 +10,7 @@ import os
 import queue
 import re
 import secrets
+import shutil
 import subprocess
 import sys
 import threading
@@ -47,6 +48,7 @@ from agent import available_agent_skills, stream_agent
 from cmhk.agent.memory import delete_memory, load_memories
 from cmhk.agent.production import dataset_lineage, list_agent_runs
 from cmhk.reporting.charts import generated_chart_path
+from cmhk.reporting.docx_editor import load_docx_for_editor, save_editor_document, sha256_file
 from tts_service import (
     AUDIO_DIR,
     audio_info_for_report,
@@ -113,6 +115,7 @@ REPORT_FILE_RE = re.compile(
     r"^\d{1,2}月\d{1,2}日周报(?:（(?:草稿，)?截至\d{1,2}月\d{1,2}日）)?(?: \(\d+\))?\.docx$"
 )
 REPORT_METADATA_PATH = ROOT / "data/reporting/report_file_metadata.json"
+REPORT_EDITOR_LOCK = threading.RLock()
 EXCLUDED_REPORT_NAMES = {
     "test_out.docx",
     "weekly_report.docx",
@@ -392,6 +395,12 @@ def subscription_operation_audit_payload(
             "queued_count": int(result.get("queued_count") or 0),
             "failed_count": int(result.get("failed_count") or 0),
             "batch_id": str(result.get("batch_id") or "")[:120],
+            "weekly_report_path": str(
+                result.get("weekly_report_path") or payload.get("weeklyReportPath") or ""
+            )[:240],
+            "weekly_report_selection": str(
+                result.get("weekly_report_selection") or "automatic"
+            )[:20],
         })
 
     details["target_label"] = target_label
@@ -1866,7 +1875,11 @@ def file_info(path: Path, url: str = None) -> dict:
     stat = path.stat()
     rel_path = str(path.relative_to(ROOT))
     metadata = load_report_metadata().get(rel_path, {})
+    metadata = metadata if isinstance(metadata, dict) else {}
     compact_audio = report_audio_metadata(path)
+    report_type = str(metadata.get("reportType") or "")
+    if report_type not in {"weekly", "carrier-performance"}:
+        report_type = "carrier-performance" if "业绩摘要" in path.name else "weekly"
     return {
         "name": path.name,
         "size": stat.st_size,
@@ -1874,8 +1887,13 @@ def file_info(path: Path, url: str = None) -> dict:
         "mtimeText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stat.st_mtime)),
         "url": url or f"/outputs/{quote(path.name)}",
         "path_str": rel_path,
-        "note": metadata.get("note", "") if isinstance(metadata, dict) else "",
-        "reportType": "carrier-performance" if "业绩摘要" in path.name else "weekly",
+        "note": str(metadata.get("note") or ""),
+        "reportType": report_type,
+        "isEdited": bool(metadata.get("isEdited")),
+        "editRevision": int(metadata.get("editorRevision") or 0),
+        "editedAt": str(metadata.get("editedAt") or ""),
+        "editedBy": str(metadata.get("editedBy") or ""),
+        "sourcePath": str(metadata.get("sourcePath") or ""),
         # Full subtitle cues and spoken text are loaded only when the user
         # plays one report.  Embedding every historical transcript made the
         # ten-second status poll grow to megabytes.
@@ -1951,6 +1969,127 @@ def update_report_file(payload: dict) -> dict:
     metadata[new_rel] = existing
     save_report_metadata(metadata)
     return build_status()
+
+
+class ReportEditConflict(RuntimeError):
+    """The report changed after the editor loaded its source revision."""
+
+
+def _report_type_for_path(path: Path, metadata: dict | None = None) -> str:
+    metadata = metadata if isinstance(metadata, dict) else {}
+    saved = str(metadata.get("reportType") or "")
+    if saved in {"weekly", "carrier-performance"}:
+        return saved
+    return "carrier-performance" if "业绩摘要" in path.name else "weekly"
+
+
+def _next_edited_report_path(source: Path) -> Path:
+    base = re.sub(r"（编辑稿(?:\s+\d+)?）$", "", source.stem).strip()
+    first = source.with_name(f"{base}（编辑稿）.docx")
+    if not first.exists():
+        return first
+    for revision in range(2, 1000):
+        candidate = source.with_name(f"{base}（编辑稿 {revision}）.docx")
+        if not candidate.exists():
+            return candidate
+    raise ValueError("编辑稿版本过多，请先整理报告库")
+
+
+def load_report_editor_payload(path_str: str) -> dict:
+    target = report_target_from_rel(path_str)
+    if not target:
+        raise FileNotFoundError("报告不存在或不允许编辑")
+    payload = load_docx_for_editor(target)
+    rel_path = str(target.relative_to(ROOT))
+    metadata = load_report_metadata().get(rel_path, {})
+    metadata = metadata if isinstance(metadata, dict) else {}
+    return {
+        **payload,
+        "path": rel_path,
+        "reportType": _report_type_for_path(target, metadata),
+        "isEdited": bool(metadata.get("isEdited")),
+        "editRevision": int(metadata.get("editorRevision") or 0),
+        "editedAt": str(metadata.get("editedAt") or ""),
+        "editedBy": str(metadata.get("editedBy") or ""),
+        "sourcePath": str(metadata.get("sourcePath") or rel_path),
+    }
+
+
+def save_report_editor_payload(payload: dict, *, actor: dict | None = None) -> dict:
+    source = report_target_from_rel(str(payload.get("path") or ""))
+    if not source:
+        raise FileNotFoundError("报告不存在或不允许编辑")
+    expected_hash = str(payload.get("sourceSha256") or "").lower()
+    if not re.fullmatch(r"[0-9a-f]{64}", expected_hash):
+        raise ValueError("缺少编辑源版本，请重新打开报告")
+    document_payload = payload.get("document")
+    save_mode = str(payload.get("saveMode") or "update")
+    if save_mode not in {"update", "copy"}:
+        raise ValueError("不支持的保存方式")
+
+    with REPORT_EDITOR_LOCK:
+        current_hash = sha256_file(source)
+        if current_hash != expected_hash:
+            raise ReportEditConflict("这份报告在编辑期间已被其他人更新，请重新打开后再编辑")
+        metadata = load_report_metadata()
+        source_rel = str(source.relative_to(ROOT))
+        source_meta = metadata.get(source_rel, {})
+        source_meta = source_meta if isinstance(source_meta, dict) else {}
+        source_is_edited = bool(source_meta.get("isEdited"))
+        target = source if source_is_edited and save_mode == "update" else _next_edited_report_path(source)
+
+        prior_revision = int(source_meta.get("editorRevision") or 0)
+        if target == source:
+            history_dir = ROOT / "archives" / "report_edits" / re.sub(r"[^0-9A-Za-z\u4e00-\u9fff._-]+", "_", source.stem)
+            history_dir.mkdir(parents=True, exist_ok=True)
+            history_name = f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-r{max(1, prior_revision)}.docx"
+            shutil.copy2(source, history_dir / history_name)
+
+        saved = save_editor_document(source, target, document_payload)
+        delete_audio_for_report(target)
+        preview_url = ""
+        warning = ""
+        try:
+            from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview
+
+            preview_path = convert_docx_to_pdf_preview(target)
+            preview_url = f"/static/report-previews/{quote(preview_path.name)}?v={target.stat().st_mtime_ns}"
+        except Exception as exc:
+            warning = f"Word 已保存，PDF 预览稍后再生成：{exc}"
+
+        actor = actor if isinstance(actor, dict) else {}
+        actor_name = str(actor.get("name") or actor.get("display_name") or actor.get("username") or "当前用户")[:120]
+        target_rel = str(target.relative_to(ROOT))
+        report_type = _report_type_for_path(source, source_meta)
+        root_source = str(source_meta.get("sourcePath") or source_rel)
+        revision = prior_revision + 1 if target == source else 1
+        metadata[target_rel] = {
+            "note": str(source_meta.get("note") or f"页面编辑稿 · 来源 {Path(root_source).name}")[:500],
+            "updatedAt": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "isEdited": True,
+            "editorRevision": revision,
+            "editedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+            "editedBy": actor_name,
+            "sourcePath": root_source,
+            "sourceSha256": str(source_meta.get("sourceSha256") or current_hash),
+            "reportType": report_type,
+        }
+        save_report_metadata(metadata)
+        status = build_status()
+        saved_file = next(
+            (item for item in status.get("outputs", []) if item.get("path_str") == target_rel),
+            file_info(target),
+        )
+        return {
+            "file": saved_file,
+            "status": status,
+            "sourcePath": source_rel,
+            "path": target_rel,
+            "sourceSha256": str(saved["sha256"]),
+            "sourceMtimeNs": int(saved["mtimeNs"]),
+            "previewUrl": preview_url,
+            "warning": warning,
+        }
 
 
 def delete_report_files(paths: list[str]) -> dict:
@@ -3173,6 +3312,7 @@ def push_latest_subscription_content(
     *,
     target_open_id: str = "",
     confirm_bulk: bool = False,
+    weekly_report_path: str = "",
 ) -> dict:
     """Send each active subscription's latest formal content without a second form."""
     summary = service.list_summary()
@@ -3196,14 +3336,54 @@ def push_latest_subscription_content(
         raise ValueError("接收范围内没有已启用的订阅内容")
 
     status = build_status()
-    content: dict[str, dict[str, str]] = {}
+    selected_weekly: dict | None = None
+    if weekly_report_path:
+        selected_weekly = next(
+            (
+                item
+                for item in (status.get("outputs") or [])
+                if isinstance(item, dict)
+                and item.get("path_str") == weekly_report_path
+                and item.get("reportType") == "weekly"
+            ),
+            None,
+        )
+        if not selected_weekly:
+            raise ValueError("选中的周报不在当前报告库中，请刷新后重新选择")
+
+    content: dict[str, dict[str, object]] = {}
     for service_key, report_type in (("weekly", "weekly"), ("performance", "carrier-performance")):
         if service_key not in selected_services:
             continue
         try:
+            if service_key == "weekly" and selected_weekly:
+                output = selected_weekly
+            else:
+                output = next(
+                    (
+                        item
+                        for item in (status.get("outputs") or [])
+                        if isinstance(item, dict)
+                        and item.get("reportType") == report_type
+                        and not item.get("isEdited")
+                    ),
+                    None,
+                )
+                if not output:
+                    output = next(
+                        (
+                            item
+                            for item in (status.get("outputs") or [])
+                            if isinstance(item, dict) and item.get("reportType") == report_type
+                        ),
+                        None,
+                    )
+                if not output:
+                    raise FileNotFoundError(report_type)
             content[service_key] = {
                 "mode": "pdf_audio",
-                "path": str(latest_output_path(status, report_type).relative_to(ROOT)),
+                "path": str(output.get("path_str") or ""),
+                "isEdited": bool(output.get("isEdited")),
             }
         except (FileNotFoundError, ValueError):
             continue
@@ -3224,12 +3404,13 @@ def push_latest_subscription_content(
         item = content[service_key]
         results.append(service.push(
             service=service_key,
-            mode=item["mode"],
-            path=item.get("path", ""),
-            title=item.get("title", ""),
-            body=item.get("body", ""),
+            mode=str(item["mode"]),
+            path=str(item.get("path") or ""),
+            title=str(item.get("title") or ""),
+            body=str(item.get("body") or ""),
             target_open_id=target_open_id,
             confirm_bulk=confirm_bulk,
+            allow_user_edited=service_key == "weekly" and bool(item.get("isEdited")),
         ))
     if latest_news:
         for subscriber in active:
@@ -3253,6 +3434,8 @@ def push_latest_subscription_content(
         "batch_id": f"manual-latest-{uuid.uuid4().hex[:12]}",
         "target_open_id": target_open_id,
         "service_count": len(results),
+        "weekly_report_path": str((content.get("weekly") or {}).get("path") or ""),
+        "weekly_report_selection": "manual" if selected_weekly else "automatic",
         "recipient_count": sum(int(item.get("recipient_count") or 0) for item in results),
         "verified_count": sum(int(item.get("verified_count") or 0) for item in results),
         "failed_count": sum(int(item.get("failed_count") or 0) for item in results),
@@ -5669,6 +5852,15 @@ class AppHandler(BaseHTTPRequestHandler):
                 return
             json_response(self, {"ok": True, "audio": audio_info_for_report(target)})
             return
+        if path == "/api/report-editor":
+            path_str = (parse_qs(parsed.query).get("path") or [""])[0]
+            try:
+                json_response(self, {"ok": True, **load_report_editor_payload(path_str)})
+            except FileNotFoundError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 404)
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
         if path == "/api/chat-starters":
             json_response(self, {"ok": True, "starters": sample_chat_starters()})
             return
@@ -5698,6 +5890,12 @@ class AppHandler(BaseHTTPRequestHandler):
                         "path": str(item.get("path_str") or ""),
                         "report_type": str(item.get("reportType") or ""),
                         "mtime_text": str(item.get("mtimeText") or ""),
+                        "is_edited": bool(item.get("isEdited")),
+                        "edit_revision": int(item.get("editRevision") or 0),
+                        "edited_at": str(item.get("editedAt") or ""),
+                        "edited_by": str(item.get("editedBy") or ""),
+                        "source_path": str(item.get("sourcePath") or ""),
+                        "note": str(item.get("note") or ""),
                         "audio": bool((item.get("audio") or {}).get("exists")) if isinstance(item.get("audio"), dict) else False,
                     }
                     for item in (status.get("outputs") or [])
@@ -6306,6 +6504,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         service,
                         target_open_id=str(payload.get("targetOpenId") or ""),
                         confirm_bulk=payload.get("confirmBulk") is True,
+                        weekly_report_path=str(payload.get("weeklyReportPath") or ""),
                     )
                 elif action == "push":
                     result = service.push(
@@ -6953,6 +7152,38 @@ class AppHandler(BaseHTTPRequestHandler):
         if parsed.path == "/api/report-file":
             try:
                 json_response(self, {"ok": True, "status": update_report_file(read_request_json(self))})
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
+        if parsed.path == "/api/report-editor":
+            try:
+                if int(self.headers.get("Content-Length") or 0) > 24 * 1024 * 1024:
+                    json_response(self, {"ok": False, "error": "编辑内容超过 24 MB 上限"}, 413)
+                    return
+                body = read_request_json(self)
+                actor = AUTH.current_actor(self)
+                result = save_report_editor_payload(body, actor=actor)
+                try:
+                    AUTH.record_operation(
+                        actor=actor,
+                        action="report.content_edit",
+                        target=str(result.get("path") or "")[:240],
+                        result="success",
+                        details={
+                            "source_label": "报告全屏编辑器",
+                            "page": "weekly" if (result.get("file") or {}).get("reportType") == "weekly" else "performance",
+                            "source_path": str(result.get("sourcePath") or "")[:240],
+                            "saved_path": str(result.get("path") or "")[:240],
+                            "editor_revision": int((result.get("file") or {}).get("editRevision") or 0),
+                        },
+                    )
+                except Exception:
+                    logging.exception("failed to record report editor footprint")
+                json_response(self, {"ok": True, **result})
+            except ReportEditConflict as exc:
+                json_response(self, {"ok": False, "error": str(exc), "conflict": True}, 409)
+            except FileNotFoundError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 404)
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return

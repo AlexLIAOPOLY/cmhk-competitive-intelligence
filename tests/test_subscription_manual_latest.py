@@ -48,8 +48,8 @@ class LatestSubscriptionPushTests(unittest.TestCase):
             performance.write_bytes(b"performance")
             status = {
                 "outputs": [
-                    {"reportType": "weekly", "path_str": weekly.name},
-                    {"reportType": "carrier-performance", "path_str": performance.name},
+                    {"reportType": "weekly", "path_str": weekly.name, "isEdited": False},
+                    {"reportType": "carrier-performance", "path_str": performance.name, "isEdited": False},
                 ]
             }
             news = [
@@ -77,6 +77,60 @@ class LatestSubscriptionPushTests(unittest.TestCase):
         latest.assert_called_once_with()
         self.assertEqual(result["service_count"], 3)
         self.assertEqual(result["verified_count"], 3)
+        self.assertEqual(result["weekly_report_path"], weekly.name)
+        self.assertEqual(result["weekly_report_selection"], "automatic")
+        self.assertFalse(service.calls[0]["allow_user_edited"])
+
+    def test_manual_weekly_selection_can_send_an_editor_copy(self):
+        service = FakeSubscriptionService()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            formal = root / "formal.docx"
+            edited = root / "formal（编辑稿）.docx"
+            formal.write_bytes(b"formal")
+            edited.write_bytes(b"edited")
+            status = {
+                "outputs": [
+                    {"reportType": "weekly", "path_str": edited.name, "isEdited": True},
+                    {"reportType": "weekly", "path_str": formal.name, "isEdited": False},
+                ]
+            }
+            with (
+                mock.patch.object(web_app, "ROOT", root),
+                mock.patch.object(web_app, "build_status", return_value=status),
+                mock.patch("strategic_briefing.latest_reviewed_news", return_value=[]),
+            ):
+                result = web_app.push_latest_subscription_content(
+                    service,
+                    target_open_id="ou_target123",
+                    weekly_report_path=edited.name,
+                )
+
+        weekly_call = next(item for item in service.calls if item["service"] == "weekly")
+        self.assertEqual(weekly_call["path"], edited.name)
+        self.assertTrue(weekly_call["allow_user_edited"])
+        self.assertEqual(result["weekly_report_selection"], "manual")
+
+    def test_automatic_weekly_selection_ignores_newer_editor_copies(self):
+        service = FakeSubscriptionService()
+        status = {
+            "outputs": [
+                {"reportType": "weekly", "path_str": "newer-edit.docx", "isEdited": True},
+                {"reportType": "weekly", "path_str": "formal.docx", "isEdited": False},
+            ]
+        }
+        with (
+            mock.patch.object(web_app, "build_status", return_value=status),
+            mock.patch("strategic_briefing.latest_reviewed_news", return_value=[]),
+        ):
+            result = web_app.push_latest_subscription_content(
+                service,
+                target_open_id="ou_target123",
+            )
+
+        weekly_call = next(item for item in service.calls if item["service"] == "weekly")
+        self.assertEqual(weekly_call["path"], "formal.docx")
+        self.assertEqual(result["weekly_report_selection"], "automatic")
 
     def test_bulk_icon_requires_confirmation(self):
         with self.assertRaisesRegex(ValueError, "二次确认"):

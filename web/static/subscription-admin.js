@@ -8,7 +8,7 @@
       invite: { kind: "all", status: "all" },
       subscriber: { service: "all", status: "all", frequency: "all" },
     },
-    openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
+    openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations", manualWeeklyPath: "",
   };
   let noticeTimer = 0;
   let noticeExitTimer = 0;
@@ -233,6 +233,47 @@
     return `下次 ${next} · ${last}`;
   }
 
+  function weeklyReportOptions() {
+    const reports = (state.data?.reports || []).filter((item) => item.report_type === "weekly");
+    const options = ['<option value="">自动选择（沿用现有最新正式版链路）</option>'];
+    reports.forEach((report) => {
+      const prefix = report.is_edited ? `【编辑稿${report.edit_revision ? ` r${number(report.edit_revision)}` : ""}】` : "【正式版】";
+      const selected = state.manualWeeklyPath === report.path ? " selected" : "";
+      options.push(`<option value="${esc(report.path)}"${selected}>${esc(prefix)}${esc(report.name)} · ${esc(report.mtime_text || "")}</option>`);
+    });
+    return options.join("");
+  }
+
+  function selectedWeeklyReport() {
+    if (!state.manualWeeklyPath) return null;
+    return (state.data?.reports || []).find((item) => item.report_type === "weekly" && item.path === state.manualWeeklyPath) || null;
+  }
+
+  function weeklySelectionCopy() {
+    const report = selectedWeeklyReport();
+    return report
+      ? `周报将使用${report.is_edited ? "已编辑版本" : "所选正式版本"}“${report.name}”；业绩摘要与新闻仍按原链路选择。`
+      : "未指定周报版本；系统会沿用原有链路，自动选择最新正式生成版。";
+  }
+
+  function countdownText(schedule) {
+    if (!schedule?.enabled) return "自动发送已暂停";
+    const next = Date.parse(schedule.next_run_at || "");
+    if (!Number.isFinite(next)) return "等待下一次自动发送排期";
+    const remaining = Math.max(0, next - Date.now());
+    const days = Math.floor(remaining / 86400000);
+    const hours = Math.floor((remaining % 86400000) / 3600000);
+    return `距离下一次自动发送还有 ${days} 天 ${hours} 小时`;
+  }
+
+  function updateScheduleCountdown() {
+    const schedule = state.data?.report_schedule;
+    root.querySelectorAll("[data-report-schedule-countdown]").forEach((element) => {
+      element.textContent = countdownText(schedule);
+      element.title = scheduleSummary(schedule);
+    });
+  }
+
   function render() {
     const data = state.data;
     if (!data) return;
@@ -245,14 +286,15 @@
       <main class="three-block-layout">
         <div class="upper-grid">
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions">${compactFilter("invite")}<button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送最新正式内容给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="manual-report-sendbar"><label><span>手动推送周报版本</span><select data-weekly-report-select aria-label="选择本次手动推送的周报版本">${weeklyReportOptions()}</select></label><p>${esc(weeklySelectionCopy())}</p></div><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
-        <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading"><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
+        <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><p class="report-schedule-countdown" data-report-schedule-countdown title="${esc(scheduleSummary(schedule))}">${esc(countdownText(schedule))}</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
       </main>
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
     </div>`;
     applySavedFilters();
+    updateScheduleCountdown();
     scheduleNoticeDismissal();
   }
 
@@ -287,6 +329,7 @@
     const payload = await subscriptions.json();
     if (!subscriptions.ok || !payload.ok) throw new Error(payload.error || `HTTP ${subscriptions.status}`);
     state.data = payload;
+    if (state.manualWeeklyPath && !(payload.reports || []).some((item) => item.report_type === "weekly" && item.path === state.manualWeeklyPath)) state.manualWeeklyPath = "";
     if (!keepNotice) { state.notice = ""; state.noticeKind = ""; }
     render();
   }
@@ -360,9 +403,9 @@
       return;
     }
     if (event.target.closest("[data-manual-push-all]")) {
-      const confirmed = await window.CMHKDialog.confirm({ title: "向全部订阅者推送？", message: "系统将按每位订阅者当前设置，推送最新正式内容。", detail: "消息发送后无法撤回，系统会逐条回读发送结果。", confirmLabel: "确认全部推送" });
+      const confirmed = await window.CMHKDialog.confirm({ title: "向全部订阅者推送？", message: weeklySelectionCopy(), detail: "消息发送后无法撤回，系统会按每位订阅者设置发送并逐条回读结果。", confirmLabel: "确认全部推送" });
       if (!confirmed) return;
-      try { await post({ action: "pushLatest", confirmBulk: true }, "正在向全部有效订阅者推送最新正式内容并逐条回读…"); }
+      try { await post({ action: "pushLatest", confirmBulk: true, weeklyReportPath: state.manualWeeklyPath }, "正在向全部有效订阅者推送所选内容并逐条回读…"); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
@@ -371,9 +414,9 @@
       const row = manualPerson.closest("[data-subscriber-row]");
       const targetOpenId = row?.dataset.subscriberRow || "";
       const targetName = row?.querySelector(".table-person-name")?.textContent?.trim() || "当前订阅者";
-      const confirmed = await window.CMHKDialog.confirm({ title: `向 ${targetName} 推送？`, message: `系统将按 ${targetName} 当前订阅设置推送最新正式内容。`, detail: "消息发送后无法撤回，完成后会回读发送结果。", confirmLabel: "确认推送" });
+      const confirmed = await window.CMHKDialog.confirm({ title: `向 ${targetName} 推送？`, message: weeklySelectionCopy(), detail: `系统会按 ${targetName} 当前订阅设置发送；消息发送后无法撤回，完成后会回读结果。`, confirmLabel: "确认推送" });
       if (!confirmed) return;
-      try { await post({ action: "pushLatest", targetOpenId }, `正在推送给 ${targetName} 并回读…`); }
+      try { await post({ action: "pushLatest", targetOpenId, weeklyReportPath: state.manualWeeklyPath }, `正在把所选内容推送给 ${targetName} 并回读…`); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
@@ -490,6 +533,13 @@
   });
 
   document.addEventListener("change", (event) => {
+    const weeklyReportSelect = event.target.closest("[data-weekly-report-select]");
+    if (weeklyReportSelect) {
+      state.manualWeeklyPath = weeklyReportSelect.value;
+      const hint = weeklyReportSelect.closest(".manual-report-sendbar")?.querySelector("p");
+      if (hint) hint.textContent = weeklySelectionCopy();
+      return;
+    }
     const filter = event.target.closest("[data-filter-section][data-filter-field]");
     if (!filter) return;
     state.filters[filter.dataset.filterSection][filter.dataset.filterField] = filter.value;
@@ -519,4 +569,5 @@
   window.setInterval(() => {
     if (!document.hidden) loadData({ keepNotice: true }).catch(() => {});
   }, 15000);
+  window.setInterval(updateScheduleCountdown, 60000);
 })();

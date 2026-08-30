@@ -616,6 +616,57 @@ class SubscriptionServiceTests(unittest.TestCase):
         named_pdf = self.root / "var" / "subscriptions" / "outbound" / "CMHK_战略双周报_测试周报.pdf"
         self.assertEqual(named_pdf.read_bytes(), pdf.read_bytes())
 
+    def test_explicit_user_edited_weekly_copy_uses_audited_formal_source(self):
+        from cmhk.reporting.pdf_preview import pdf_preview_path
+
+        source = self.root / "正式周报.docx"
+        edited = self.root / "正式周报（编辑稿）.docx"
+        self._write_weekly_report(source)
+        self._write_weekly_quality_sidecar(source)
+        self._write_weekly_report(edited, detail="这是经过页面编辑器人工修订的完整周报正文，仍然保留正式源文件的审计关系。")
+        metadata_path = self.root / "data" / "reporting" / "report_file_metadata.json"
+        metadata_path.parent.mkdir(parents=True)
+        metadata_path.write_text(json.dumps({
+            edited.name: {
+                "isEdited": True,
+                "reportType": "weekly",
+                "editorRevision": 1,
+                "sourcePath": source.name,
+                "sourceSha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+            }
+        }, ensure_ascii=False), encoding="utf-8")
+        preview = pdf_preview_path(edited, self.root / "web" / "static" / "report-previews")
+        preview.parent.mkdir(parents=True)
+        preview.write_bytes(b"%PDF-1.7\n")
+
+        with self.assertRaisesRegex(RuntimeError, "质量审计"):
+            self.service.push(
+                service="weekly", mode="pdf", path=edited.name, test_open_id="ou_test123"
+            )
+        result = self.service.push(
+            service="weekly",
+            mode="pdf",
+            path=edited.name,
+            test_open_id="ou_test123",
+            allow_user_edited=True,
+        )
+
+        self.assertEqual(result["verified_count"], 1)
+        self.assertTrue(any("--file" in call for call in self.lark.calls))
+
+    def test_user_edited_weekly_flag_cannot_bypass_editor_provenance(self):
+        report = self.root / "伪编辑稿.docx"
+        self._write_weekly_report(report)
+
+        with self.assertRaisesRegex(RuntimeError, "编辑记录"):
+            self.service.push(
+                service="weekly",
+                mode="pdf",
+                path=report.name,
+                test_open_id="ou_test123",
+                allow_user_edited=True,
+            )
+
     def test_reports_reject_non_pdf_delivery_modes(self):
         report = self.root / "测试周报.docx"
         self._write_weekly_report(report)

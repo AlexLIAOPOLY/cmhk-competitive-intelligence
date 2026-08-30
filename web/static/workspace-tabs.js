@@ -2279,6 +2279,7 @@
   function previewShell(item, body, { error = false } = {}) {
     return `<section class="workspace-panel report-preview${error ? " has-error" : ""}" data-report-preview>
       <header class="report-preview-header"><div><strong title="${esc(item.name)}">${esc(item.name)}</strong><span>PDF 预览</span></div><div class="report-preview-actions">
+        <button type="button" data-report-editor-path="${esc(item.path_str)}" aria-label="全屏编辑 ${esc(item.name)}" title="全屏编辑 Word 内容"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
         <button type="button" data-report-preview-expand aria-label="放大预览" title="放大预览"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
       </div></header><div class="report-preview-viewport">${body}</div></section>`;
   }
@@ -2708,6 +2709,8 @@
     }
     const row = event.target.closest(".workspace-report-host .file-row[data-path]");
     if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input, .file-name-editable")) showReportPreview(row.dataset.path);
+    const editPreview = event.target.closest("[data-report-editor-path]");
+    if (editPreview) window.CMHKReportEditor?.open(editPreview.dataset.reportEditorPath);
     const expandPreview = event.target.closest("[data-report-preview-expand]");
     if (expandPreview) {
       const preview = expandPreview.closest("[data-report-preview]");
@@ -2740,6 +2743,7 @@
   });
 
   document.addEventListener("keydown", (event) => {
+    if (window.CMHKReportEditor?.isOpen()) return;
     const faultRow = event.target.closest?.(".fault-row[data-fault-detail]");
     if (faultRow && !event.target.closest("input,button,a,select") && ["Enter", " "].includes(event.key)) {
       event.preventDefault();
@@ -2773,6 +2777,13 @@
       row.setAttribute("aria-pressed", String(active));
       row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.path || ""}`);
     });
+  });
+
+  window.addEventListener("cmhk-report-saved", (event) => {
+    if (!event.detail?.status) return;
+    state.status = event.detail.status;
+    if (can("weekly")) renderReports("weekly");
+    if (can("performance")) renderReports("performance");
   });
   if (document.body) reportRowObserver.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("change", (event) => {
