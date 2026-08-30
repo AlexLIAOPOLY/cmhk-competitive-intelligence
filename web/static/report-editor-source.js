@@ -223,7 +223,7 @@ function updateToolbar() {
 
 function editorExtensions() {
   return [
-    StarterKit.configure({ link: { openOnClick: false, autolink: true, defaultProtocol: "https" }, underline: false }),
+    StarterKit.configure({ link: { openOnClick: false, autolink: true, defaultProtocol: "https" } }),
     DocxBlockAttributes,
     TextAlign.configure({ types: ["heading", "paragraph"] }),
     TextStyleKit,

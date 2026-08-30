@@ -130,11 +130,13 @@ class ReportEditorUiTests(unittest.TestCase):
         self.assertIn("EditorTable", source)
         self.assertIn("replaceAll", source)
         self.assertIn("cmhk-report-editor-draft", source)
+        self.assertNotIn("underline: false", source)
         self.assertIn('class="row-icon-button edit-report-button"', app)
         self.assertIn("data-report-editor-path", workspace)
         self.assertIn("/api/report-editor", source)
         self.assertTrue(bundle.is_file())
         self.assertGreater(bundle.stat().st_size, 300_000)
+        self.assertIn("tiptap-report-editor-3.30.5.min.js?v=2", index)
         self.assertNotIn("cdn.jsdelivr", index)
         self.assertNotIn("unpkg.com", index)
 
