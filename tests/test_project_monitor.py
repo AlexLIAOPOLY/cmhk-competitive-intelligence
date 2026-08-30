@@ -1104,6 +1104,56 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(record["status"], "resolved")
         self.assertEqual(record["resolution_reason"], "condition_no_longer_current")
 
+    def test_quality_gate_rejection_is_not_reported_as_operational_failure(self):
+        monitor = self._monitor(enabled=False)
+        monitor.http_getter = lambda _url, _timeout: {
+            "ok": True,
+            "status": {
+                "visuals": {
+                    "quality": {
+                        "failed": 0,
+                        "operationalFailed": 0,
+                        "qualityRejected": 25,
+                    },
+                    "crawl": {
+                        "successRate": 97,
+                        "completedAt": "2026-08-30 03:07:49",
+                    },
+                }
+            },
+        }
+
+        issues = monitor._detect_web_health()
+
+        self.assertEqual(len(issues), 1)
+        self.assertIn("未进入数据库", issues[0]["summary"])
+        self.assertIn("quality_rejected_rows=25", issues[0]["error"])
+        self.assertNotIn("failed_rows=25", issues[0]["error"])
+
+    def test_operational_crawl_failure_remains_an_alert(self):
+        monitor = self._monitor(enabled=False)
+        monitor.http_getter = lambda _url, _timeout: {
+            "ok": True,
+            "status": {
+                "visuals": {
+                    "quality": {
+                        "failed": 2,
+                        "operationalFailed": 2,
+                        "qualityRejected": 0,
+                    },
+                    "crawl": {
+                        "successRate": 97,
+                        "completedAt": "2026-08-30 03:07:49",
+                    },
+                }
+            },
+        }
+
+        issues = monitor._detect_web_health()
+
+        self.assertEqual(len(issues), 1)
+        self.assertIn("operational_failed_rows=2", issues[0]["error"])
+
     def test_historical_strategic_pending_records_close_with_current_positive_evidence(self):
         monitor = self._monitor(enabled=False)
         (self.root / "strategy_briefing" / "candidate_ai_editor_deferred.json").write_text(

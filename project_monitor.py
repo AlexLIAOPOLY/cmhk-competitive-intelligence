@@ -590,25 +590,68 @@ class ProjectMonitor:
         visuals = status.get("visuals") if isinstance(status.get("visuals"), dict) else {}
         quality = visuals.get("quality") if isinstance(visuals.get("quality"), dict) else {}
         crawl = visuals.get("crawl") if isinstance(visuals.get("crawl"), dict) else {}
-        failed = int(quality.get("failed") or 0)
+        operational_failed = int(
+            quality.get("operationalFailed")
+            if "operationalFailed" in quality
+            else quality.get("failed") or 0
+        )
+        quality_rejected = int(quality.get("qualityRejected") or 0)
         success_rate = int(crawl.get("successRate") or 0)
         completed_at = str(crawl.get("completedAt") or "unknown")
-        if failed > 0 or (success_rate and success_rate < 95):
+        if operational_failed > 0 or (success_rate and success_rate < 95):
             issues.append(
                 self._issue(
-                    condition_key=f"data-quality:{completed_at}:{failed}:{success_rate}",
+                    condition_key=(
+                        f"data-operational:{completed_at}:"
+                        f"{operational_failed}:{success_rate}"
+                    ),
                     component="crawl",
-                    task_name="主爬虫数据质量门禁",
+                    task_name="主爬虫运行完整性",
                     severity="P3",
-                    summary="主爬虫存在失败或未通过质量门禁的数据",
-                    error=f"failed_rows={failed}; crawl_success_rate={success_rate}%",
+                    summary="主爬虫存在运行失败行或来源成功率偏低",
+                    error=(
+                        f"operational_failed_rows={operational_failed}; "
+                        f"crawl_success_rate={success_rate}%"
+                    ),
                     impact="系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
                     suggestions=[
                         "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
                         "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。",
                     ],
                     occurred_at_hkt=completed_at,
-                    evidence=["/api/status", f"quality.failed={failed}", f"crawl.successRate={success_rate}"],
+                    evidence=[
+                        "/api/status",
+                        f"quality.operationalFailed={operational_failed}",
+                        f"crawl.successRate={success_rate}",
+                    ],
+                )
+            )
+        if quality_rejected > 0:
+            issues.append(
+                self._issue(
+                    condition_key=(
+                        f"data-quality-gated:{completed_at}:{quality_rejected}"
+                    ),
+                    component="crawl",
+                    task_name="主爬虫数据质量门禁",
+                    severity="P3",
+                    summary="本轮有数据被质量门禁拒绝，未进入数据库",
+                    error=(
+                        f"quality_rejected_rows={quality_rejected}; "
+                        f"operational_failed_rows={operational_failed}"
+                    ),
+                    impact=(
+                        "这些行没有污染数据库；对应指标继续保留旧值或明确为未披露。"
+                    ),
+                    suggestions=[
+                        "查看质量门禁拒绝原因，只针对缺失的官方原文或字段补证。",
+                        "禁止用搜索摘要、行业代理值或插值填充未通过的指标。",
+                    ],
+                    occurred_at_hkt=completed_at,
+                    evidence=[
+                        "/api/status",
+                        f"quality.qualityRejected={quality_rejected}",
+                    ],
                 )
             )
         return issues

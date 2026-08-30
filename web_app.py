@@ -2007,7 +2007,8 @@ def build_status() -> dict:
     
     ok_count = 0
     partial_count = 0
-    failed_count = 0
+    quality_rejected_count = 0
+    operational_failed_count = 0
     block_counts: dict[str, int] = {}
     source_type_counts: dict[str, int] = {}
     jurisdiction_counts: dict[str, int] = {}
@@ -2024,12 +2025,15 @@ def build_status() -> dict:
             data = json.loads(path.read_text(encoding="utf-8"))
         except Exception:
             continue
-        if data.get("status") == "ok":
+        row_status = str(data.get("status") or "")
+        if row_status == "ok":
             ok_count += 1
-        elif data.get("status") == "partial":
+        elif row_status == "partial":
             partial_count += 1
+        elif row_status == "quality_rejected":
+            quality_rejected_count += 1
         else:
-            failed_count += 1
+            operational_failed_count += 1
         block = str(data.get("need") or data.get("block") or "未分类")
         if "香港" in block:
             block = "香港本地"
@@ -2090,7 +2094,10 @@ def build_status() -> dict:
             "quality": {
                 "ok": ok_count,
                 "partial": partial_count,
-                "failed": failed_count,
+                "failed": operational_failed_count,
+                "operationalFailed": operational_failed_count,
+                "qualityRejected": quality_rejected_count,
+                "nonPromoted": quality_rejected_count + operational_failed_count,
                 "fieldTotal": field_total,
                 "missingFields": missing_total,
                 "rawSources": raw_total,
