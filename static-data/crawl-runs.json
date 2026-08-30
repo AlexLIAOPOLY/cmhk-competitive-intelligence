@@ -2,18 +2,569 @@
   "ok": true,
   "runs": [
     {
-      "crawl_run_id": "20260831_030014_019556",
-      "trigger": "定时爬虫",
-      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第13行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第21行、第22行、第24行、第25行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "task_kind": "crawl",
+      "crawl_run_id": "20260831_033144_708045",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_fce88af444a2cd186c9bfd77 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_fce88af444a2cd186c9bfd77 完成，共 3051 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-31T03:34:37+08:00",
+      "started_at_hkt": "2026-08-31T03:31:44+08:00",
+      "completed_at_hkt": "2026-08-31T03:34:37+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 172479,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_fce88af444a2cd186c9bfd77",
+        "content_sha256": "fce88af444a2cd186c9bfd7730e8da111fb9355cc1e97f01faf00e261598d9fc",
+        "release_manifest_sha256": "f930496bb6864d6f60916942976f01dbce0dd8b0136a11e50d08d4b67a570183",
+        "row_count": 3051,
+        "data_as_of": "2026-06-30",
+        "created": true,
+        "parent_crawl_run_id": "20260831_033113_729673",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 9172,
+        "feishu_written": 7776,
+        "feishu_readback_verified": true,
+        "feishu_readback_scope": "all_rows_all_core_fields",
+        "feishu_readback_sha256": "54213210ec6e0fae5de5eb969de23d10ee20b5d8c408e8531fd394574c8513dc",
+        "feishu_coverage_ratio": 1.0,
+        "feishu_active_row_count": 7776,
+        "feishu_tombstone_row_count": 1396,
+        "feishu_pre_publish_written": 1396
+      }
+    },
+    {
+      "crawl_run_id": "20260831_033113_729673",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 scheduled_20260831_030014_019556 · 父任务 20260831_030014_019556",
+      "task_kind": "executive-intelligence-refresh",
       "run_status": "running",
-      "phase": "审核归档",
-      "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
-      "heartbeat_at_hkt": "2026-08-31T03:30:04+08:00",
-      "started_at_hkt": "2026-08-31T03:00:14+08:00",
+      "phase": "战略总览来源复查",
+      "progress_detail": "正在逐一复查当前战略总览四域所引用的官方文件，结果只写审计旁路，不覆盖已核验数值。",
+      "heartbeat_at_hkt": "2026-08-31T03:35:05+08:00",
+      "started_at_hkt": "2026-08-31T03:31:13+08:00",
       "completed_at_hkt": "",
       "final_audit": {},
       "curation": {}
+    },
+    {
+      "crawl_run_id": "20260831_030014_019556",
+      "trigger": "定时爬虫",
+      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第13行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第21行、第22行、第24行、第25行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "爬虫、审核与结果归档已全部完成。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-31T03:31:13+08:00",
+      "started_at_hkt": "2026-08-31T03:00:14+08:00",
+      "completed_at_hkt": "2026-08-31T03:31:13+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 1859760,
+      "final_audit": {
+        "generated_at": "2026-08-31T03:09:47.524985",
+        "rows_crawled": "33",
+        "ok_rows": "5",
+        "partial_rows": "1",
+        "quality_gated_rows": "27",
+        "failed_rows": "0",
+        "fulfilled": "6/33 (18.2%)",
+        "live_url_success": "200/207 (96.6%)",
+        "live_url_failures": "7",
+        "restored_from_previous_evidence": "0"
+      },
+      "curation": {
+        "agent_run_id": "scheduled_20260831_030014_019556",
+        "started_at": "2026-08-31T03:10:56+08:00",
+        "completed_at": "2026-08-31T03:30:04+08:00",
+        "tasks": 260,
+        "accepted": 143,
+        "rejected": 106,
+        "review": 11,
+        "gaps": 117,
+        "recrawl_rows": [],
+        "search_verification": {
+          "checked": 256,
+          "corrected": 5,
+          "review": 11,
+          "conflicts": 55,
+          "workers": 4,
+          "online_search": true,
+          "online_checked": 80,
+          "online_votes": 44
+        },
+        "local_financial_results": {
+          "schema_version": 1,
+          "generated_at_hkt": "2026-08-31T03:30:14+08:00",
+          "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
+          "reports": [
+            {
+              "row": 2,
+              "company": "HKT",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-07-29",
+              "due_at_hkt": "2026-07-30T03:00:00+08:00",
+              "source_url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf",
+              "source_title": "2026 Interim Results Announcement",
+              "content_hash": "239862bac00ac84c87fea99aa0958073c0f5864fb80549d8751360e5eaccf662",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$18,685 million",
+                  "evidence": "Total revenue increased by 8% to HK$18,685 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$6,586 million",
+                  "evidence": "Total EBITDA grew by 3% to HK$6,586 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$2,153 million",
+                  "evidence": "Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$1,042 million",
+                  "evidence": "CAPITAL EXPENDITURE2 Capital expenditure including capitalised interest for the six months ended 30 June 2026 was HK$1,042 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "34.80 HK cents",
+                  "evidence": "dividend of 34.80 HK cents"
+                },
+                {
+                  "metric_key": "5g_customers",
+                  "metric": "5G用户数",
+                  "value": "2.2 million",
+                  "evidence": "5G customer base expanded by 16% to 2.2 million"
+                }
+              ],
+              "core_metric_count": 5,
+              "fetched_at_hkt": "2026-08-31T03:01:03.175553+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 5,
+              "company": "3HK / Hutchison",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-08-10",
+              "due_at_hkt": "2026-08-11T03:00:00+08:00",
+              "source_url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf",
+              "source_title": "2026 Interim Results Presentation",
+              "content_hash": "d5df8055bfdd2080737c88c957365aed0e87a00d3f4eeb09915ceac2bcffa3ee",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$2,846 million",
+                  "evidence": "Results Highlights for Hong Kong Operations Results Highlights for Hong Kong Operations (1) Revenue Net customer Operating service revenue expenses $2,846 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$763 million",
+                  "evidence": "Interim dividend 2.28 HK cents EBITDA (2) EBIT (3) Capex (4) Stable $763 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$11 million",
+                  "evidence": "profit attributable to shareholders for the period ended 30 June 2026 was $11m"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "2.28 HK cents",
+                  "evidence": "Interim dividend 2.28 HK cents"
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-08-31T03:02:01.703271+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 8,
+              "company": "SmarTone",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-02-24",
+              "due_at_hkt": "2026-02-25T03:00:00+08:00",
+              "source_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$3,561 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$278 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561 +2.0% Underlying Revenue 3,441* 3,561 +3.5% Underlying EBIT 369* 392 +6.2% Underlying EBIT Margin 11% 11% Stable Reported Profit after tax 257 278"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "14.5 HK cents",
+                  "evidence": "Interim Dividend (cents per share) 14.5 14.5"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-08-31T03:02:06.797447+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 11,
+              "company": "HKBN",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-04-24",
+              "due_at_hkt": "2026-04-25T03:00:00+08:00",
+              "source_url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf",
+              "source_title": "FY26 Interim Results Announcement",
+              "content_hash": "fe24e7146d64cadc5c69220975706983f18b0baabf809400d6f14bb4e4aee833",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$6,029 million",
+                  "evidence": "Total revenue showed a strong performance, increasing by 5% to $6,029 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$1,257 million",
+                  "evidence": "EBITDA increased by 4% to $1,257 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$108 million",
+                  "evidence": "Net profit amounted to $108 million"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-08-31T03:03:00.885587+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 17,
+              "company": "i-CABLE",
+              "period": "FY 2025",
+              "report_type": "annual",
+              "publication_date": "2026-03-27",
+              "due_at_hkt": "2026-03-28T03:00:00+08:00",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "1a394bf9f12f069125d395a50be9040921947320127a460c17b20a7871628f6b",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$539 million",
+                  "evidence": "revenues of the Group decreasing by approximately HK$45 million or 8% to approximately HK$539 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "-HK$490 million",
+                  "evidence": "loss for the year ended 31 December 2025 to approximately HK$490 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$52 million",
+                  "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$52 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "HK$Nil",
+                  "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-08-31T03:03:12.137262+08:00",
+              "verification_status": "official_document_extracted"
+            }
+          ],
+          "last_check": [
+            {
+              "row": 2,
+              "company": "HKT",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-07-29",
+              "due_at_hkt": "2026-07-30T03:00:00+08:00",
+              "source_url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf",
+              "source_title": "2026 Interim Results Announcement",
+              "content_hash": "239862bac00ac84c87fea99aa0958073c0f5864fb80549d8751360e5eaccf662",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$18,685 million",
+                  "evidence": "Total revenue increased by 8% to HK$18,685 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$6,586 million",
+                  "evidence": "Total EBITDA grew by 3% to HK$6,586 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$2,153 million",
+                  "evidence": "Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$1,042 million",
+                  "evidence": "CAPITAL EXPENDITURE2 Capital expenditure including capitalised interest for the six months ended 30 June 2026 was HK$1,042 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "34.80 HK cents",
+                  "evidence": "dividend of 34.80 HK cents"
+                },
+                {
+                  "metric_key": "5g_customers",
+                  "metric": "5G用户数",
+                  "value": "2.2 million",
+                  "evidence": "5G customer base expanded by 16% to 2.2 million"
+                }
+              ],
+              "core_metric_count": 5,
+              "fetched_at_hkt": "2026-08-31T03:01:03.175553+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 5,
+              "company": "3HK / Hutchison",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-08-10",
+              "due_at_hkt": "2026-08-11T03:00:00+08:00",
+              "source_url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf",
+              "source_title": "2026 Interim Results Presentation",
+              "content_hash": "d5df8055bfdd2080737c88c957365aed0e87a00d3f4eeb09915ceac2bcffa3ee",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$2,846 million",
+                  "evidence": "Results Highlights for Hong Kong Operations Results Highlights for Hong Kong Operations (1) Revenue Net customer Operating service revenue expenses $2,846 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$763 million",
+                  "evidence": "Interim dividend 2.28 HK cents EBITDA (2) EBIT (3) Capex (4) Stable $763 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$11 million",
+                  "evidence": "profit attributable to shareholders for the period ended 30 June 2026 was $11m"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "2.28 HK cents",
+                  "evidence": "Interim dividend 2.28 HK cents"
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-08-31T03:02:01.703271+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 8,
+              "company": "SmarTone",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-02-24",
+              "due_at_hkt": "2026-02-25T03:00:00+08:00",
+              "source_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$3,561 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$278 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561 +2.0% Underlying Revenue 3,441* 3,561 +3.5% Underlying EBIT 369* 392 +6.2% Underlying EBIT Margin 11% 11% Stable Reported Profit after tax 257 278"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "14.5 HK cents",
+                  "evidence": "Interim Dividend (cents per share) 14.5 14.5"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-08-31T03:02:06.797447+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 11,
+              "company": "HKBN",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-04-24",
+              "due_at_hkt": "2026-04-25T03:00:00+08:00",
+              "source_url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf",
+              "source_title": "FY26 Interim Results Announcement",
+              "content_hash": "fe24e7146d64cadc5c69220975706983f18b0baabf809400d6f14bb4e4aee833",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$6,029 million",
+                  "evidence": "Total revenue showed a strong performance, increasing by 5% to $6,029 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$1,257 million",
+                  "evidence": "EBITDA increased by 4% to $1,257 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$108 million",
+                  "evidence": "Net profit amounted to $108 million"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-08-31T03:03:00.885587+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 15,
+              "company": "HGC",
+              "status": "not_applicable"
+            },
+            {
+              "row": 17,
+              "company": "i-CABLE",
+              "period": "FY 2025",
+              "report_type": "annual",
+              "publication_date": "2026-03-27",
+              "due_at_hkt": "2026-03-28T03:00:00+08:00",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "1a394bf9f12f069125d395a50be9040921947320127a460c17b20a7871628f6b",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$539 million",
+                  "evidence": "revenues of the Group decreasing by approximately HK$45 million or 8% to approximately HK$539 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "-HK$490 million",
+                  "evidence": "loss for the year ended 31 December 2025 to approximately HK$490 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$52 million",
+                  "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$52 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "HK$Nil",
+                  "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-08-31T03:03:12.137262+08:00",
+              "verification_status": "official_document_extracted"
+            }
+          ],
+          "quality": {
+            "ok": true,
+            "checked_rows": [
+              2,
+              5,
+              8,
+              11,
+              15,
+              17
+            ],
+            "failures": []
+          },
+          "database_changed": true,
+          "database_updated": true,
+          "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
+        },
+        "financial_frontend_publish": {
+          "ok": true,
+          "returnCode": 0,
+          "status": "published",
+          "site_version": "7227f33fa83316251f5e4ed0036304de191e8d0cc1c799ecada23ff17725b7f1",
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "673477a9362b81d61f6c9067fad2db89016ec7eb",
+          "error": ""
+        },
+        "news_bridge": {
+          "crawl_run_id": "20260831_030014_019556",
+          "bootstrap": false,
+          "page_count": 155,
+          "signal_count": 32,
+          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260831_030014_019556.json"
+        },
+        "executive_intelligence_refresh": {
+          "ok": true,
+          "launched": true,
+          "pid": 10985,
+          "agent_run_id": "scheduled_20260831_030014_019556",
+          "task_run_id": "20260831_033113_729673",
+          "task_id": "crawl:20260831_033113_729673",
+          "domains": [
+            "local",
+            "international",
+            "mainland",
+            "cloud"
+          ],
+          "stages": [
+            "database_refresh",
+            "quality_gate",
+            "official_source_recrawl",
+            "15_focus_analysis",
+            "homepage_ui_refresh",
+            "public_frontend_publish"
+          ]
+        }
+      }
     },
     {
       "crawl_run_id": "20260831_010008_824724",
@@ -83286,6 +83837,6 @@
       }
     }
   ],
-  "total": 307,
+  "total": 309,
   "truncated": false
 }
