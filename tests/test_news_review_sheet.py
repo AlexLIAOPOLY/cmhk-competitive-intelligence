@@ -8,6 +8,15 @@ import strategic_briefing
 
 
 class NewsReviewSheetSyncTests(unittest.TestCase):
+    def setUp(self):
+        self._spreadsheet_info_patch = mock.patch.object(
+            review_sheet,
+            "_spreadsheet_info",
+            return_value={"data": {"sheets": []}},
+        )
+        self._spreadsheet_info_patch.start()
+        self.addCleanup(self._spreadsheet_info_patch.stop)
+
     @staticmethod
     def _lark_result(payload, returncode=0):
         return subprocess.CompletedProcess(

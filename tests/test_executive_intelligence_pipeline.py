@@ -2212,6 +2212,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                     "ok": True, "status": "verified", "site_version": "site-123",
                     "public_url": "https://example.github.io/project/",
                 }) as publish_pages,
+                patch(
+                    "cmhk.integrations.four_database_crawl_sheet.append_pipeline_artifacts",
+                    return_value={"ok": True, "written": 0, "skipped": 0},
+                ),
                 patch("executive_intelligence_pipeline._task_event"),
             ):
                 result = pipeline.run_pipeline(
@@ -2259,6 +2263,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch(
                     "executive_intelligence_pipeline._publish_and_verify_github_pages",
                     side_effect=RuntimeError("公开回读失败"),
+                ),
+                patch(
+                    "cmhk.integrations.four_database_crawl_sheet.append_pipeline_artifacts",
+                    return_value={"ok": True, "written": 0, "skipped": 0},
                 ),
                 patch("executive_intelligence_pipeline._task_event"),
             ):
