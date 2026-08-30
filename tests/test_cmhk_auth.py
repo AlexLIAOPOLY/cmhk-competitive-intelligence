@@ -207,6 +207,10 @@ class AuthServiceTest(unittest.TestCase):
 
     def test_admin_can_assign_leader_and_server_enforces_module(self):
         _, admin_session = self.dev_login()
+        editor_read = FakeHandler(cookie=admin_session, origin="")
+        self.assertTrue(self.service.authorize_api(editor_read, "/api/report-editor", "GET"))
+        editor_write = FakeHandler(cookie=admin_session, origin="")
+        self.assertTrue(self.service.authorize_api(editor_write, "/api/report-editor", "POST"))
         users = self.service._users()
         users.append({
             "id": "leader-1", "account": "leader", "name": "领导测试", "email": "",
@@ -226,6 +230,9 @@ class AuthServiceTest(unittest.TestCase):
         ai = FakeHandler(cookie=leader_session, origin="")
         self.assertFalse(self.service.authorize_api(ai, "/api/chat-starters"))
         self.assertEqual(ai.status, 403)
+        editor = FakeHandler(cookie=leader_session, origin="")
+        self.assertFalse(self.service.authorize_api(editor, "/api/report-editor", "GET"))
+        self.assertEqual(editor.status, 403)
         mutation = FakeHandler(cookie=leader_session, origin="")
         self.assertFalse(self.service.authorize_api(mutation, "/api/status", "POST"))
         self.assertEqual(mutation.status, 403)

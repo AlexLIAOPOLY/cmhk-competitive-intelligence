@@ -91,6 +91,10 @@ _API_MODULE_PREFIXES = (
     ("/api/project-incidents", "fault"),
 )
 
+_API_ANY_MODULE_PREFIXES = (
+    ("/api/report-editor", ("weekly", "performance")),
+)
+
 
 def _now_iso() -> str:
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
@@ -1375,6 +1379,15 @@ class AuthService:
             modules = user["permissions"]["modules"]
             if modules.get("news") or modules.get("log"):
                 return True
+        for prefix, accepted_modules in _API_ANY_MODULE_PREFIXES:
+            if not path.startswith(prefix):
+                continue
+            modules = user["permissions"]["modules"]
+            if any(modules.get(module, False) for module in accepted_modules):
+                return True
+            labels = "或".join(MODULE_LABELS[module] for module in accepted_modules)
+            self._send_json(handler, 403, {"ok": False, "message": f"当前账号无权使用{labels}"})
+            return False
         module = self.module_for_api(path)
         if not module:
             self._send_json(handler, 403, {"ok": False, "message": "当前接口尚未配置访问权限"})
