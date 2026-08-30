@@ -2,6 +2,55 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260830_085914_859613",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-08-30@07:30）",
+      "task_kind": "news-selection-agent",
+      "run_status": "failed",
+      "phase": "失败",
+      "progress_detail": "新闻自动初筛失败：{ \"ok\": false, \"identity\": \"user\", \"error\": { \"type\": \"network\", \"subtype\": \"timeout\", \"message\": \"API call failed: Put \\\"https://open.feishu.cn/open-apis/sheets/v2/spreadsheets/ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA/values\\\": dial tcp 198.18.0.52:443: connect: operation timed out\" }, \"_notice\": { \"deprecated_command\": { \"action\": \"lark-cli update\", \"command\": \"+write\", \"message\": \"+write is a pre-refactor compatibility alias; use +cells-set instead; update your lark-sheets skill, run: lark-cli update\", \"replacement\": \"+cells-set\", \"skill\": \"lark-sheets\" } } }",
+      "status_detail": "新闻自动初筛失败：{ \"ok\": false, \"identity\": \"user\", \"error\": { \"type\": \"network\", \"subtype\": \"timeout\", \"message\": \"API call failed: Put \\\"https://open.feishu.cn/open-apis/sheets/v2/spreadsheets/ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA/values\\\": dial tcp 198.18.0.52:443: connect: operation timed out\" }, \"_notice\": { \"deprecated_command\": { \"action\": \"lark-cli update\", \"command\": \"+write\", \"message\": \"+write is a pre-refactor compatibility alias; use +cells-set instead; update your lark-sheets skill, run: lark-cli update\", \"replacement\": \"+cells-set\", \"skill\": \"lark-sheets\" } } }",
+      "failure_stage": "news_selection_agent",
+      "heartbeat_at_hkt": "2026-08-30T09:12:18+08:00",
+      "started_at_hkt": "2026-08-30T08:59:14+08:00",
+      "completed_at_hkt": "2026-08-30T09:12:18+08:00",
+      "crawl_return_code": 1,
+      "duration_ms": 784122,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {}
+    },
+    {
+      "crawl_run_id": "20260830_073032_883660",
+      "trigger": "战略新闻定时爬虫",
+      "scope": "晨间扫描（2026-08-30@07:30）",
+      "task_kind": "strategic-news",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 503 条，AI保留 171 条，历史重复 78 条，新增 93 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 503 条，AI保留 171 条，历史重复 78 条，新增 93 条。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-08-30T09:12:36+08:00",
+      "started_at_hkt": "2026-08-30T07:30:32+08:00",
+      "completed_at_hkt": "2026-08-30T09:12:36+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 6123369,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "slot": "2026-08-30@07:30",
+        "discovered": 503,
+        "ai_retained": 171,
+        "history_duplicates": 78,
+        "new_count": 93,
+        "readback_verified": true,
+        "notification_status": "sent",
+        "message_id": "om_x100b660c76e2f8a4b4b73a3a1c57181",
+        "selection_agent_status": "failed",
+        "selection_agent_changed": 0
+      }
+    },
+    {
       "crawl_run_id": "20260830_045025_648336",
       "trigger": "季度竞对数据发布",
       "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
@@ -71970,6 +72019,6 @@
       }
     }
   ],
-  "total": 286,
+  "total": 288,
   "truncated": false
 }

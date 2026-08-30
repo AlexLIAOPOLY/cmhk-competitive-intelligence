@@ -1,7 +1,31 @@
 {
   "ok": true,
-  "generated_at": "2026-08-30T07:25:32+08:00",
+  "generated_at": "2026-08-30T09:23:38+08:00",
   "items": [
+    {
+      "id": "NEWS-A4DAA3DA0AB2D4",
+      "title": "新皇岗口岸无香港电话讯号 政府免费Wi-Fi网速缓慢",
+      "summary": "新皇岗口岸由内地运营商提供流动通讯服务，大楼内无香港电话讯号；数字政策办公室提供免费Wi-Fi但网速缓慢，仍有改进空间。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.kinliu.hk/news/%E7%86%B1%E9%BB%9E/%E6%96%B0%E7%9A%87%E5%B4%97%E5%8F%A3%E5%B2%B8%E7%84%A1%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%A9%B1%E8%A8%8A%E8%99%9F-%E8%A8%AD%E6%9C%89%E6%94%BF%E5%BA%9C%E5%85%8D%E8%B2%BBWi-Fi%E4%BD%86%E6%9C%89%E6%94%B9%E9%80%B2%E7%A9%BA%E9%96%93/272235.html?id=51&from=home&bc1=%E9%A6%96%E9%A0%81&bc1to=%2F",
+      "published_at": "2026-08-29T20:47:00+08:00"
+    },
+    {
+      "id": "NEWS-E863449203275F",
+      "title": "新田科技城地价「有得倾」冀吸引芯片无人机企业落户",
+      "summary": "香港政府为吸引芯片和无人机企业落户新田科技城，表示地价安排可以协商，以推动创科产业发展。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMiiwFBVV95cUxNQURkb3pnN1Bxekk1ejUwak9PRlJ1U3hoeDlVVzBoa0l6YkNIdjREZUlWVTdyeW5LWHp6eUw4WG9xaGw3dlpyeU5qa1ZzLUV4ckJleG9yQjk3bjItX1JKMHlpX1Z3MHZSSmxDM21Lajl3RVl0T3hwTEE5SFV4OUMzeUpfd0ZreTJsN2tv?oc=5",
+      "published_at": "2026-08-29T18:03:24+08:00"
+    },
+    {
+      "id": "NEWS-506ADAA090057D",
+      "title": "新田科技城以弹性地价吸引高新龙头先进制造企业进驻",
+      "summary": "新田科技城定位主攻先进制造业，地价政策具弹性，旨在吸引高新龙头企业进驻。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiowFBVV95cUxQeVJnakJmUmhOcmNPajNQaVFacDlFQk1uSUlqNGNic3ByOExtR1VINUNpc0g1U2VBQS1HUjBFaTJZaUExUlR5YTRMU2RicUF4ek5tblNYVmVwMG1vSWJ3ZnQxYlpuR1dEa3hibnVkQXBheGtfb3k0VFJsUEx0VzJCT05fTzgwMnlSSXUxZ29jaWtkZEVoMG1obUVTdE43V2hlX1Nv?oc=5",
+      "published_at": "2026-08-29T17:56:55+08:00"
+    },
     {
       "id": "NEWS-A0D0A8AB00B25F",
       "title": "SmarTone精选客户5G宽频月费低至117港元",
@@ -41,30 +65,6 @@
       "category": "政策监管",
       "source_url": "https://metrohk.com.hk/%E6%B8%AF%E8%81%9E/%E5%B7%A5%E6%A5%AD%E7%B8%BD%E6%9C%83%E5%90%91%E7%89%B9%E9%A6%96%E6%8F%90%E4%BA%A4%E9%80%BE300%E9%A0%85%E6%94%BF%E7%AD%96%E5%BB%BA%E8%AD%B0-09afc0",
       "published_at": "2026-08-28T20:05:00+08:00"
-    },
-    {
-      "id": "NEWS-EFE609A2A39D46",
-      "title": "5G服务计划月费98港元享30GB本地数据",
-      "summary": "推出5G服务计划优惠，月费98港元享30GB本地数据及3GB两地数据。",
-      "category": "市场/产品类",
-      "source_url": "https://news.google.com/rss/articles/CBMiWEFVX3lxTFBLRl9qeTVzVVJTOGlUR0paQUpDcklXb1dzSFczbjgxcTN3OHlDcG9QNkxhV2hTYUswNTZlMy1fVGRFVjJ2SFEySkllRlJfN0dCd1FJdW9vbHg?oc=5",
-      "published_at": "2026-08-28T20:00:00+08:00"
-    },
-    {
-      "id": "NEWS-333A07C2F9C07E",
-      "title": "香港网约车牌照历经11年终合法化并接受申请",
-      "summary": "香港网约车牌照历经11年拉锯终合法化，即日起接受申请。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE13c1o1X21Ja1VUTGpaNy1TbkppU0Q1bm1DMnA3YnpTVmkwazV2aVg0d296cXN5TWcwemtYY2RtNnlpMHVneEpNUVJJYkVBNWFwWVhOeVZyUUVwWm1JY19mY1oxdlg1Zw?oc=5",
-      "published_at": "2026-08-28T18:51:00+08:00"
-    },
-    {
-      "id": "NEWS-2401FD8D0A9295",
-      "title": "HKT以Agentic AI革新客户服务体验",
-      "summary": "香港电讯采用Agentic AI技术，从被动回应转向主动决策，革新客户服务体验。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMilAJBVV95cUxPY05uVkNnODFvUGFCd0ZIR0I5VFlwM0dTQ0UzeWhHWFNJeWM4MFgzajl0RWJhQXJaU2E1Y1lodF9yZGEyUkhLR052MkUtZ0pLRTVaLUo3Y0xmZVl1ZzY2dXNlQWhpUlBwU1FFMHFwT0pMcUxYbXc0SU9FVUw1cW1lSXZPeE5haUFESy1lVmhQc3FHeDJxVzN1U2l4X0RZOGVZamJCZ0RFN2YwQkxJSG5EUWRqeDJoLUY4Q3ZaRDlBXzJhbVNYQTlTSjFTNW5wd3VueVRzNk9ScGhObkpVM0VoSV9Yc1E2aWQtVms5Zlg0RDRqSTRicGM0RVBsRjd2U1g4czhYRVRMa0RRck9GNmNMVUZiSUc?oc=5",
-      "published_at": "2026-08-28T18:00:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "742422ab5e1c28f360bd6ea398f2c752d7ea4344081ccc388377fde8de454bc0"
+  "site_version": "f16e8c749c133114e2f4152a56d3379fccb64ed535a98a3afaebcf3e61946b96"
 }
