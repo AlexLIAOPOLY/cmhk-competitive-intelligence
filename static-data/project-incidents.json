@@ -32,21 +32,23 @@
       "kind": "web-app",
       "kind_label": "主项目后台任务",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "impact": "已确认事实：至少一个候选的处理流程（如去重、AI审核）可能回退、延期或失败。推断：整体任务是否完成需检查任务归档，当前影响范围限于该候选及相关步骤。",
       "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+        "根据错误时间2026-08-30T11:58:35+08:00，关联对应任务归档和候选ID，确认该候选的最终完成状态。",
+        "检查初筛失败的具体原因，查看相关日志或依赖服务状态，定位是逻辑错误、数据问题还是外部依赖异常。",
+        "若条目已进入待恢复队列，保留已有处理结果，仅恢复失败的初筛步骤，并监控恢复过程。",
+        "恢复完成后，验证任务归档状态，确保该候选后续步骤（如去重、AI审核）正常完成。"
       ],
       "occurred_at_hkt": "2026-08-30T14:48:03+08:00",
       "started_at_hkt": "2026-08-30T14:48:03+08:00",
       "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-08-30T14:49:16+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -69,7 +71,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:48:01+08:00",
       "started_at_hkt": "2026-08-30T14:48:03+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -119,7 +121,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:46:03+08:00",
       "started_at_hkt": "2026-08-30T14:46:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -169,7 +171,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:38:02+08:00",
       "started_at_hkt": "2026-08-30T14:38:32+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -219,7 +221,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:36:00+08:00",
       "started_at_hkt": "2026-08-30T14:36:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -291,7 +293,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:27:01+08:00",
       "started_at_hkt": "2026-08-30T14:27:06+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -341,7 +343,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:25:00+08:00",
       "started_at_hkt": "2026-08-30T14:25:05+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -417,7 +419,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:13:11+08:00",
       "started_at_hkt": "2026-08-30T14:14:22+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -441,7 +443,7 @@
       ],
       "occurred_at_hkt": "2026-08-30T14:13:00+08:00",
       "started_at_hkt": "2026-08-30T14:13:11+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2045,7 +2047,7 @@
       ],
       "occurred_at_hkt": "2026-08-30 03:07:49",
       "started_at_hkt": "2026-08-30T09:59:04+08:00",
-      "heartbeat_at_hkt": "2026-08-30T14:48:03+08:00",
+      "heartbeat_at_hkt": "2026-08-30T14:54:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
