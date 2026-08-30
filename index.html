@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="./static/confirm-dialog.css?v=1" />
   <link rel="stylesheet" href="./static/responsive-layout-hardening.css?v=7" />
   <link rel="stylesheet" href="./static/leadership-board.css?v=19" />
-  <link rel="stylesheet" href="./static/news-review-sheet.css?v=4" />
+  <link rel="stylesheet" href="./static/news-review-sheet.css?v=5" />
   <link rel="stylesheet" href="./static/workspace-tabs.css?v=132" />
   <link rel="stylesheet" href="./static/intelligence-map.css?v=13" />
   <link rel="stylesheet" href="./static/organization-admin.css?v=26" />
@@ -234,8 +234,8 @@
               <div class="news-review-brand">
                 <img src="./static/assets/public/china-mobile-blue-logo.png" alt="中国移动 China Mobile" />
                 <div>
-                  <strong id="newsReviewTitle">滚动新闻审核表</strong>
-                  <span id="newsReviewSyncText" role="status" hidden>连接飞书审核表</span>
+                  <strong id="newsReviewTitle">新闻审核与完整历史</strong>
+                  <span id="newsReviewSyncText" role="status" hidden>连接飞书并合并本地历史</span>
                 </div>
               </div>
               <div class="news-review-actions">
@@ -257,7 +257,7 @@
               <span id="newsReviewCellValue">请选择单元格</span>
             </div>
             <div class="news-review-grid-shell" id="newsReviewGridShell">
-              <div class="news-review-loading" id="newsReviewLoading">正在读取飞书审核表…</div>
+              <div class="news-review-loading" id="newsReviewLoading">正在读取飞书与本地完整历史…</div>
               <table class="news-review-grid" id="newsReviewGrid" aria-label="滚动新闻审核表" hidden>
                 <colgroup id="newsReviewColgroup"></colgroup>
                 <thead id="newsReviewHead"></thead>
@@ -265,8 +265,8 @@
               </table>
             </div>
             <footer class="news-review-statusbar">
-              <span id="newsReviewSaveStatus">实时回写飞书 · 修改后自动保存并回读</span>
-              <span>双击编辑 · ⌘/Ctrl+C 复制 · ⌘/Ctrl+V 粘贴</span>
+              <span id="newsReviewSaveStatus">飞书当前行可编辑并回读 · 本地历史永久保留且只读</span>
+              <span>飞书当前行双击编辑 · 本地历史只读 · ⌘/Ctrl+C 复制</span>
             </footer>
             <div class="news-review-filter-menu" id="newsReviewFilterMenu" hidden></div>
           </section>
@@ -643,7 +643,7 @@
     <script defer src="./static/confirm-dialog.js?v=3"></script>
     <script defer src="./static/custom-select.js?v=2"></script>
     <script defer src="./static/app.js?v=312"></script>
-    <script defer src="./static/news-review-sheet.js?v=7"></script>
+    <script defer src="./static/news-review-sheet.js?v=8"></script>
     <script defer src="./static/organization-admin.js?v=32"></script>
   </body>
 </html>

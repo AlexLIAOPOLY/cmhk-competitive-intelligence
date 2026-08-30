@@ -1248,6 +1248,16 @@ body.has-maximized-report-preview { overflow: hidden; }
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(2),
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(3),
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(4) { background: #0d2935; }
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td,
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history:hover td {
+  color: #c8c1ad;
+  background: #182c31 !important;
+}
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td:nth-child(2),
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td:nth-child(3),
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td:nth-child(4) {
+  background: #203137 !important;
+}
 #newsReviewWorkspace.workspace-inline-review .news-review-grid .news-review-row-number {
   color: #789aa6;
   border-right-color: #365766;
