@@ -72,6 +72,7 @@ from cmhk.integrations.feishu_sheet_edit_events import (
     TARGET_SPREADSHEET_TOKEN,
     sheet_edit_events,
 )
+from cmhk.integrations.feishu_runtime import lark_cli_env, resolve_lark_cli
 from project_monitor_card_actions import CardActionHandler
 from cmhk.reporting.operational_pdf import generate_operational_report_pdf, report_filename
 
@@ -81,6 +82,9 @@ AUTH = AuthService(ROOT)
 QUARTERLY_RELEASE_ROOT = default_release_root(ROOT)
 NEWS_REVIEW_AUDIT_STATE_PATH = AUTH.state_dir / "news-review-sheet-audit-state.json"
 NEWS_REVIEW_ACTOR_OVERRIDES_PATH = AUTH.state_dir / "news-review-actor-overrides.json"
+NEWS_REVIEW_MENTION_IDENTITIES_PATH = (
+    AUTH.state_dir / "news-review-mention-identities.json"
+)
 NEWS_REVIEW_SHEET_EDIT_EVENT_PATH = AUTH.state_dir / "feishu-sheet-edit-events.jsonl"
 NEWS_SELECTION_DECISIONS_PATH = ROOT / "agent_knowledge" / "news_selection_agent" / "decisions.jsonl"
 NEWS_AUTO_SCREENING_ACTOR = {
@@ -89,9 +93,21 @@ NEWS_AUTO_SCREENING_ACTOR = {
     "avatarUrl": "",
     "role": "SYSTEM",
 }
+NEWS_REVIEW_SCREENER_COLUMN = 0
+NEWS_REVIEW_APP_STATUS_COLUMN = 1
+NEWS_REVIEW_WEEKLY_STATUS_COLUMN = 2
+NEWS_REVIEW_SYNC_STATUS_COLUMN = 3
+NEWS_REVIEW_TITLE_COLUMN = 7
+NEWS_REVIEW_DECISION_COLUMNS = (
+    NEWS_REVIEW_APP_STATUS_COLUMN,
+    NEWS_REVIEW_WEEKLY_STATUS_COLUMN,
+)
 NEWS_REVIEW_AUDIT_LOCK = threading.RLock()
+NEWS_REVIEW_MENTION_IDENTITY_LOCK = threading.RLock()
 NEWS_REVIEW_ACTOR_BACKFILL_LOCK = threading.Lock()
 NEWS_REVIEW_ACTOR_BACKFILL_LAST_ATTEMPT = 0.0
+NEWS_REVIEW_SCREENER_MONITOR_LOCK = threading.Lock()
+NEWS_REVIEW_SCREENER_MONITOR_STARTED = False
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
@@ -4571,7 +4587,272 @@ def _news_review_event_rank(event: dict, original_index: int) -> tuple[float, in
     return effective_timestamp, actor_priority, -original_index
 
 
-def attach_news_review_actors(snapshot: dict) -> dict:
+def _normalized_news_review_identity_text(value: object) -> str:
+    return "".join(str(value or "").casefold().split())
+
+
+def _news_review_contact_hints(actor: dict) -> tuple[str, str]:
+    """Return the verified local display name and enterprise email, when known."""
+
+    name = str(actor.get("name") or actor.get("account") or "").strip()
+    email = str(actor.get("email") or "").strip().casefold()
+    if email:
+        return name, email
+
+    actor_id = str(actor.get("id") or "").strip()
+    source_open_id = str(
+        actor.get("sourceOpenId") or actor.get("feishuOpenId") or ""
+    ).strip()
+    users = AUTH._read(AUTH.users_path, [])
+    users = [item for item in users if isinstance(item, dict)] if isinstance(users, list) else []
+    matched = next(
+        (
+            user
+            for user in users
+            if actor_id and str(user.get("id") or "") == actor_id
+        ),
+        None,
+    )
+    if matched is None and source_open_id:
+        matched = next(
+            (
+                user
+                for user in users
+                if source_open_id
+                in {
+                    str(user.get("feishu_open_id") or ""),
+                    str(user.get("feishu_union_id") or ""),
+                }
+            ),
+            None,
+        )
+    if matched is None and name:
+        named = [
+            user
+            for user in users
+            if _normalized_news_review_identity_text(user.get("name"))
+            == _normalized_news_review_identity_text(name)
+        ]
+        matched = named[0] if len(named) == 1 else None
+    if matched is not None:
+        name = name or str(matched.get("name") or "").strip()
+        email = str(matched.get("email") or "").strip().casefold()
+    return name, email
+
+
+def _news_review_contact_search(query: str) -> dict:
+    """Search the same user identity domain used by lark-cli sheet writes."""
+
+    command = [
+        resolve_lark_cli(),
+        "contact",
+        "+search-user",
+        "--query",
+        query,
+        "--exclude-external-users",
+        "--page-size",
+        "30",
+        "--as",
+        "user",
+        "--format",
+        "json",
+    ]
+    profile = str(
+        os.environ.get("CMHK_NEWS_REVIEW_FEISHU_PROFILE")
+        or os.environ.get("CMHK_FEISHU_SHEETS_PROFILE")
+        or ""
+    ).strip()
+    if profile:
+        command.extend(["--profile", profile])
+    process = subprocess.run(
+        command,
+        cwd=str(ROOT),
+        env=lark_cli_env(),
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+    try:
+        payload = json.loads(process.stdout) if process.stdout.strip() else {}
+    except json.JSONDecodeError as exc:
+        raise RuntimeError("飞书通讯录未返回有效 JSON") from exc
+    if process.returncode or payload.get("ok") is False:
+        error = payload.get("error") if isinstance(payload.get("error"), dict) else {}
+        raise RuntimeError(
+            str(error.get("message") or process.stderr.strip() or "飞书通讯录查询失败")
+        )
+    return payload
+
+
+def resolve_news_review_mention_identity(actor: dict | None) -> dict[str, object]:
+    """Resolve an APP/event actor to the sheet writer's native mention token.
+
+    Feishu Open IDs are application-scoped.  An OAuth Open ID captured by the
+    APP cannot be copied into a rich-text cell written by another lark-cli app;
+    resolve the same person by enterprise email (or an exact unique name) in
+    the writer's own identity domain and cache only that derived mapping.
+    """
+
+    actor = actor if isinstance(actor, dict) else {}
+    actor_id = str(actor.get("id") or "").strip()
+    role = str(actor.get("role") or "").strip().upper()
+    name, email = _news_review_contact_hints(actor)
+    is_system = actor_id == NEWS_AUTO_SCREENING_ACTOR["id"] or role == "SYSTEM"
+    if is_system:
+        return {
+            "name": name or NEWS_AUTO_SCREENING_ACTOR["name"],
+            "mentionToken": "",
+            "resolved": True,
+            "isSystem": True,
+            "resolutionSource": "system_actor",
+        }
+    if not name:
+        return {
+            "name": "",
+            "mentionToken": "",
+            "resolved": False,
+            "isSystem": False,
+            "resolutionSource": "missing_name",
+        }
+
+    cache_key = (
+        f"email:{email}"
+        if email
+        else f"name:{_normalized_news_review_identity_text(name)}"
+    )
+    try:
+        cache_seconds = max(
+            300,
+            int(os.environ.get("CMHK_NEWS_REVIEW_MENTION_CACHE_SECONDS", "604800")),
+        )
+    except ValueError:
+        cache_seconds = 604800
+    now = time.time()
+    with NEWS_REVIEW_MENTION_IDENTITY_LOCK:
+        cache = AUTH._read(NEWS_REVIEW_MENTION_IDENTITIES_PATH, {})
+        cache = cache if isinstance(cache, dict) else {}
+        identities = (
+            cache.get("identities")
+            if isinstance(cache.get("identities"), dict)
+            else {}
+        )
+        cached = identities.get(cache_key)
+        if isinstance(cached, dict):
+            try:
+                cache_age = now - float(cached.get("resolvedAtEpoch") or 0)
+            except (TypeError, ValueError):
+                cache_age = cache_seconds + 1
+            cached_token = str(cached.get("openId") or "").strip()
+            if cached_token and 0 <= cache_age <= cache_seconds:
+                return {
+                    "name": name,
+                    "mentionToken": cached_token,
+                    "resolved": True,
+                    "isSystem": False,
+                    "resolutionSource": "cache",
+                }
+
+    queries = [email] if email else []
+    if name and name not in queries:
+        queries.append(name)
+    resolved_user: dict | None = None
+    resolution_source = ""
+    last_error = ""
+    for query in queries:
+        try:
+            payload = _news_review_contact_search(query)
+        except (RuntimeError, subprocess.TimeoutExpired) as exc:
+            last_error = str(exc)
+            continue
+        data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+        users = data.get("users") if isinstance(data.get("users"), list) else []
+        exact: dict[str, dict] = {}
+        for item in users:
+            if not isinstance(item, dict):
+                continue
+            if item.get("is_cross_tenant") is True or item.get("is_activated") is False:
+                continue
+            open_id = str(item.get("open_id") or "").strip()
+            if not open_id:
+                continue
+            candidate_emails = {
+                str(item.get("email") or "").strip().casefold(),
+                str(item.get("enterprise_email") or "").strip().casefold(),
+            }
+            exact_match = (
+                email in candidate_emails
+                if email
+                else _normalized_news_review_identity_text(item.get("localized_name"))
+                == _normalized_news_review_identity_text(name)
+            )
+            if exact_match:
+                exact[open_id] = item
+        # A truncated name search cannot prove uniqueness. Enterprise email is
+        # tenant-unique, so one exact email match remains safe even if broader
+        # fuzzy results exist beyond the first page.
+        if len(exact) == 1 and (email or data.get("has_more") is not True):
+            resolved_user = next(iter(exact.values()))
+            resolution_source = "enterprise_email" if email else "exact_name"
+            break
+        last_error = "通讯录没有唯一精确匹配"
+
+    mention_token = str((resolved_user or {}).get("open_id") or "").strip()
+    if not mention_token:
+        logging.warning(
+            "战略新闻筛选人无法解析原生 @ 身份：%s（%s）",
+            name,
+            last_error or "未找到联系人",
+        )
+        return {
+            "name": name,
+            "mentionToken": "",
+            "resolved": False,
+            "isSystem": False,
+            "resolutionSource": "unresolved",
+        }
+
+    entry = {
+        "actorId": actor_id,
+        "name": name,
+        "email": email,
+        "openId": mention_token,
+        "localizedName": str((resolved_user or {}).get("localized_name") or ""),
+        "source": resolution_source,
+        "resolvedAt": datetime.now().astimezone().isoformat(timespec="seconds"),
+        "resolvedAtEpoch": now,
+    }
+    with NEWS_REVIEW_MENTION_IDENTITY_LOCK:
+        latest_cache = AUTH._read(NEWS_REVIEW_MENTION_IDENTITIES_PATH, {})
+        latest_cache = latest_cache if isinstance(latest_cache, dict) else {}
+        latest_identities = (
+            dict(latest_cache.get("identities"))
+            if isinstance(latest_cache.get("identities"), dict)
+            else {}
+        )
+        latest_identities[cache_key] = entry
+        AUTH._write(
+            NEWS_REVIEW_MENTION_IDENTITIES_PATH,
+            {
+                "version": 1,
+                "updatedAt": entry["resolvedAt"],
+                "identities": latest_identities,
+            },
+        )
+    return {
+        "name": name,
+        "mentionToken": mention_token,
+        "resolved": True,
+        "isSystem": False,
+        "resolutionSource": resolution_source,
+    }
+
+
+def attach_news_review_actors(
+    snapshot: dict,
+    *,
+    include_screener_actor: bool = False,
+) -> dict:
     """Attach the latest verified human or robot reviewer to each reviewed row."""
     refresh_news_review_actor_overrides()
     overrides = AUTH._read(NEWS_REVIEW_ACTOR_OVERRIDES_PATH, {})
@@ -4611,6 +4892,14 @@ def attach_news_review_actors(snapshot: dict) -> dict:
             "avatarUrl": str((override or {}).get("avatar_url") or event.get("actor_avatar_url") or ""),
             "role": str(event.get("actor_role") or ""),
             "reviewedAt": _news_review_event_effective_at(event),
+            # This source Open ID belongs to the APP/event application domain.
+            # It is only an identity hint and must never be written directly
+            # into a sheet rich-text mention from another application.
+            "sourceOpenId": str(
+                (override or {}).get("open_id")
+                or event.get("actor_open_id")
+                or ""
+            ),
         }
         if reviewed_record_id:
             reviewers_by_record.setdefault(reviewed_record_id, reviewer)
@@ -4632,8 +4921,11 @@ def attach_news_review_actors(snapshot: dict) -> dict:
                 except (TypeError, ValueError):
                     cell_column = -1
                 cell_field = {
+                    # Column 0 is retained only for pre-v10 footprints that did
+                    # not persist the field label.
                     0: "纳入滚动栏",
-                    1: "纳入周报",
+                    NEWS_REVIEW_APP_STATUS_COLUMN: "纳入滚动栏",
+                    NEWS_REVIEW_WEEKLY_STATUS_COLUMN: "纳入周报",
                 }.get(cell_column, "")
             try:
                 cell_row_number = int(
@@ -4688,6 +4980,7 @@ def attach_news_review_actors(snapshot: dict) -> dict:
                     reviewers_without_title_field.setdefault(
                         (row_number, reviewed_field), reviewer
                     )
+    mention_identities: dict[tuple[str, str, str], dict[str, object]] = {}
     for row in snapshot.get("rows") or []:
         if not isinstance(row, dict):
             continue
@@ -4696,7 +4989,11 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         except (TypeError, ValueError):
             row_number = 0
         values = row.get("values") if isinstance(row.get("values"), list) else []
-        title = str(values[6] if len(values) > 6 else "").strip()
+        title = str(
+            values[NEWS_REVIEW_TITLE_COLUMN]
+            if len(values) > NEWS_REVIEW_TITLE_COLUMN
+            else ""
+        ).strip()
         record_id = str(row.get("recordId") or "").strip()
         reviewer = (
             reviewers_by_record.get(record_id)
@@ -4705,7 +5002,32 @@ def attach_news_review_actors(snapshot: dict) -> dict:
             or reviewers_without_title.get(row_number)
         )
         if reviewer:
-            row["reviewer"] = reviewer
+            row["reviewer"] = {
+                key: reviewer.get(key, "")
+                for key in ("id", "name", "avatarUrl", "role", "reviewedAt")
+            }
+            if include_screener_actor:
+                identity_key = (
+                    str(reviewer.get("id") or ""),
+                    str(reviewer.get("name") or ""),
+                    str(reviewer.get("sourceOpenId") or ""),
+                )
+                mention_identity = mention_identities.get(identity_key)
+                if mention_identity is None:
+                    mention_identity = resolve_news_review_mention_identity(reviewer)
+                    mention_identities[identity_key] = mention_identity
+                row["_screenerActor"] = {
+                    "name": str(mention_identity.get("name") or ""),
+                    "mentionToken": str(
+                        mention_identity.get("mentionToken") or ""
+                    ),
+                    "notify": False,
+                    "isSystem": bool(mention_identity.get("isSystem")),
+                    "resolved": bool(mention_identity.get("resolved")),
+                    "resolutionSource": str(
+                        mention_identity.get("resolutionSource") or ""
+                    ),
+                }
         field_reviewers: dict[str, dict[str, str]] = {}
         for field_name in ("纳入滚动栏", "纳入周报"):
             field_reviewer = (
@@ -4715,7 +5037,10 @@ def attach_news_review_actors(snapshot: dict) -> dict:
                 or reviewers_without_title_field.get((row_number, field_name))
             )
             if field_reviewer:
-                field_reviewers[field_name] = field_reviewer
+                field_reviewers[field_name] = {
+                    key: field_reviewer.get(key, "")
+                    for key in ("id", "name", "avatarUrl", "role", "reviewedAt")
+                }
         if field_reviewers:
             row["reviewers"] = field_reviewers
     return snapshot
@@ -5049,7 +5374,7 @@ def sync_news_review_sheet_audit(
             row_number = int(item.get("rowNumber") or 0)
         except (TypeError, ValueError):
             continue
-        if column_index in {0, 1} and row_number >= 2:
+        if column_index in NEWS_REVIEW_DECISION_COLUMNS and row_number >= 2:
             ignored.add((
                 row_number,
                 column_index,
@@ -5071,12 +5396,19 @@ def sync_news_review_sheet_audit(
         except (TypeError, ValueError):
             continue
         values = row.get("values") if isinstance(row.get("values"), list) else []
-        if row_number < 2 or len(values) < 2:
+        if row_number < 2 or len(values) <= NEWS_REVIEW_WEEKLY_STATUS_COLUMN:
             continue
         current_rows[str(row_number)] = {
-            "title": str(values[6] if len(values) > 6 else "")[:500],
+            "title": str(
+                values[NEWS_REVIEW_TITLE_COLUMN]
+                if len(values) > NEWS_REVIEW_TITLE_COLUMN
+                else ""
+            )[:500],
             "record_id": str(row.get("recordId") or "")[:120],
-            "decisions": [str(values[0] or ""), str(values[1] or "")],
+            "decisions": [
+                str(values[NEWS_REVIEW_APP_STATUS_COLUMN] or ""),
+                str(values[NEWS_REVIEW_WEEKLY_STATUS_COLUMN] or ""),
+            ],
         }
 
     events: list[dict] = []
@@ -5110,6 +5442,11 @@ def sync_news_review_sheet_audit(
                 "name": "、".join(profile["name"] for profile in operator_profiles),
                 "avatarUrl": operator_profiles[0].get("avatar_url", "") if len(operator_profiles) == 1 else "",
                 "role": "EXTERNAL",
+                "feishuOpenId": (
+                    operator_profiles[0].get("open_id", "")
+                    if len(operator_profiles) == 1
+                    else ""
+                ),
             }
         agent_decisions = _news_auto_screening_decisions()
         recorded_agent_keys = {
@@ -5132,9 +5469,11 @@ def sync_news_review_sheet_audit(
                 if len(before_decisions) < 2 or len(after_decisions) < 2:
                     continue
                 row_number = int(row_key)
-                for column_index in (0, 1):
-                    before = str(before_decisions[column_index] or "")
-                    after = str(after_decisions[column_index] or "")
+                for decision_offset, column_index in enumerate(
+                    NEWS_REVIEW_DECISION_COLUMNS
+                ):
+                    before = str(before_decisions[decision_offset] or "")
+                    after = str(after_decisions[decision_offset] or "")
                     if before == after or (row_number, column_index, before, after) in ignored:
                         continue
                     field_label = str(headers[column_index] if len(headers) > column_index else f"审批列{column_index + 1}")
@@ -5152,7 +5491,7 @@ def sync_news_review_sheet_audit(
                     if cell_actor is None:
                         # Keep the previous value as the comparison baseline until
                         # either a verified Agent write or a Feishu editor resolves it.
-                        current["decisions"][column_index] = before
+                        current["decisions"][decision_offset] = before
                         continue
                     if not agent_match:
                         used_editor_event = True
@@ -5211,6 +5550,144 @@ def sync_news_review_sheet_audit(
         if previous != next_state:
             AUTH._write(NEWS_REVIEW_AUDIT_STATE_PATH, next_state)
     return events
+
+
+def reconcile_news_review_screener_column(snapshot: dict) -> dict:
+    """Mirror the latest verified reviewer into Feishu column A."""
+
+    from cmhk.intelligence.news_review_sheet import update_review_sheet_screeners
+
+    attach_news_review_actors(snapshot, include_screener_actor=True)
+    assignments: list[dict] = []
+    unresolved_human_mentions: list[dict[str, object]] = []
+    for row in snapshot.get("rows") or []:
+        if not isinstance(row, dict):
+            continue
+        actor = row.pop("_screenerActor", None)
+        if (
+            row.get("readOnly") is True
+            or str(row.get("storageSource") or "feishu") != "feishu"
+            or not isinstance(actor, dict)
+            or not str(actor.get("name") or "").strip()
+        ):
+            continue
+        if (
+            actor.get("isSystem") is not True
+            and (
+                actor.get("resolved") is not True
+                or not str(actor.get("mentionToken") or "").strip()
+            )
+        ):
+            unresolved_human_mentions.append(
+                {
+                    "rowNumber": int(row.get("rowNumber") or 0),
+                    "name": str(actor.get("name") or "")[:120],
+                }
+            )
+            # Never downgrade a human to plain text and pretend that it is an
+            # @ mention. A later monitor cycle retries the contact resolution.
+            continue
+        assignments.append(
+            {
+                key: actor.get(key)
+                for key in ("name", "mentionToken", "notify")
+                if key in actor
+            }
+            | {
+                "rowNumber": int(row.get("rowNumber") or 0),
+            }
+        )
+    if not assignments:
+        return {
+            "status": "partial" if unresolved_human_mentions else "ok",
+            "requestedCount": 0,
+            "changedCount": 0,
+            "verifiedCount": 0,
+            "readbackVerified": True,
+            "fullyReconciled": not unresolved_human_mentions,
+            "unresolvedHumanMentionCount": len(unresolved_human_mentions),
+            "unresolvedHumanMentions": unresolved_human_mentions[:20],
+        }
+    result = update_review_sheet_screeners(
+        assignments,
+        sheet_id=str(snapshot.get("sheetId") or "") or None,
+    )
+    if unresolved_human_mentions and result.get("status") == "ok":
+        result["status"] = "partial"
+    return {
+        **result,
+        "fullyReconciled": not unresolved_human_mentions
+        and result.get("status") == "ok"
+        and result.get("readbackVerified") is True,
+        "unresolvedHumanMentionCount": len(unresolved_human_mentions),
+        "unresolvedHumanMentions": unresolved_human_mentions[:20],
+    }
+
+
+def run_news_review_screener_monitor_cycle() -> dict:
+    """Poll Feishu edits, resolve the person, and reconcile the first column."""
+
+    from cmhk.intelligence.news_review_sheet import review_sheet_snapshot
+
+    checked_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    try:
+        snapshot = review_sheet_snapshot(lock_timeout_seconds=0.25)
+    except RuntimeError as exc:
+        if str(exc) != "后台战略新闻任务正在更新飞书审核表，请稍后刷新":
+            raise
+        # The producer owns the same process lock while replacing/sorting the
+        # active sheet. This is normal coordination, not a background error;
+        # retain the last verified names and retry on the next interval.
+        return {
+            "status": "busy",
+            "reason": "review_sheet_update_in_progress",
+            "requestedCount": 0,
+            "changedCount": 0,
+            "verifiedCount": 0,
+            "nativeMentionVerifiedCount": 0,
+            "readbackVerified": False,
+            "fullyReconciled": False,
+            "unresolvedHumanMentionCount": 0,
+            "unresolvedHumanMentions": [],
+            "auditEventCount": 0,
+            "checkedAt": checked_at,
+        }
+    events = sync_news_review_sheet_audit(snapshot)
+    result = reconcile_news_review_screener_column(snapshot)
+    return {
+        **result,
+        "auditEventCount": len(events),
+        "checkedAt": checked_at,
+    }
+
+
+def start_news_review_screener_monitor() -> None:
+    """Start one daemon that keeps direct Feishu edits attributed without an open page."""
+
+    global NEWS_REVIEW_SCREENER_MONITOR_STARTED
+    with NEWS_REVIEW_SCREENER_MONITOR_LOCK:
+        if NEWS_REVIEW_SCREENER_MONITOR_STARTED:
+            return
+        NEWS_REVIEW_SCREENER_MONITOR_STARTED = True
+
+    interval_seconds = max(
+        60,
+        int(os.environ.get("CMHK_NEWS_REVIEW_SCREENER_POLL_SECONDS", "60")),
+    )
+
+    def worker() -> None:
+        while True:
+            try:
+                run_news_review_screener_monitor_cycle()
+            except Exception:
+                logging.exception("战略新闻筛选人定期同步失败")
+            time.sleep(interval_seconds)
+
+    threading.Thread(
+        target=worker,
+        name="news-review-screener-monitor",
+        daemon=True,
+    ).start()
 
 
 def news_review_editor_tracking_status() -> dict[str, object]:
@@ -6004,11 +6481,16 @@ class AppHandler(BaseHTTPRequestHandler):
                 from cmhk.intelligence.news_review_sheet import review_sheet_snapshot
 
                 snapshot = review_sheet_snapshot()
-                sync_news_review_sheet_audit(snapshot)
+                audit_events = sync_news_review_sheet_audit(snapshot)
+                screener_sync = reconcile_news_review_screener_column(snapshot)
                 json_response(self, {
                     "ok": True,
                     **attach_news_review_actors(snapshot),
                     "editorTracking": news_review_editor_tracking_status(),
+                    "screenerSync": {
+                        **screener_sync,
+                        "auditEventCount": len(audit_events),
+                    },
                 })
             except Exception as exc:
                 json_response(
@@ -6664,12 +7146,54 @@ class AppHandler(BaseHTTPRequestHandler):
                 changes = payload.get("changes")
                 if not isinstance(changes, list):
                     raise ValueError("changes 必须是数组")
-                result = update_review_sheet_cells(changes)
+                has_decision_change = any(
+                    isinstance(item, dict)
+                    and int(item.get("columnIndex", -1))
+                    in NEWS_REVIEW_DECISION_COLUMNS
+                    for item in changes
+                )
+                mention_identity = (
+                    resolve_news_review_mention_identity(actor)
+                    if has_decision_change
+                    else {}
+                )
+                screener = None
+                if (
+                    mention_identity.get("resolved") is True
+                    and str(mention_identity.get("name") or "").strip()
+                    and (
+                        mention_identity.get("isSystem") is True
+                        or str(mention_identity.get("mentionToken") or "").strip()
+                    )
+                ):
+                    screener = {
+                        "name": str(mention_identity.get("name") or ""),
+                        "mentionToken": str(
+                            mention_identity.get("mentionToken") or ""
+                        ),
+                        "notify": False,
+                    }
+                result = update_review_sheet_cells(
+                    changes,
+                    screener=screener,
+                )
+                if has_decision_change and isinstance(result.get("screener"), dict):
+                    result["screener"].update(
+                        {
+                            "identityResolution": str(
+                                mention_identity.get("resolutionSource") or "pending"
+                            ),
+                            "fullyReconciled": bool(screener)
+                            and result["screener"].get("readbackVerified") is True,
+                        }
+                    )
                 sync_news_review_sheet_audit(result, ignored_changes=changes)
                 decision_rows = sorted({
                     int(item.get("rowNumber") or 0)
                     for item in changes
-                    if isinstance(item, dict) and int(item.get("columnIndex", -1)) in {0, 1}
+                    if isinstance(item, dict)
+                    and int(item.get("columnIndex", -1))
+                    in NEWS_REVIEW_DECISION_COLUMNS
                     and str(item.get("before") or "") != str(item.get("value") or "")
                 })
                 if not int(result.get("changedCount") or 0):
@@ -6696,7 +7220,8 @@ class AppHandler(BaseHTTPRequestHandler):
                     item
                     for item in changes[:200]
                     if isinstance(item, dict)
-                    and int(item.get("columnIndex", -1)) in {0, 1}
+                    and int(item.get("columnIndex", -1))
+                    in NEWS_REVIEW_DECISION_COLUMNS
                     and str(item.get("before") or "")
                     != str(item.get("value") or "")
                 ]
@@ -6738,7 +7263,11 @@ class AppHandler(BaseHTTPRequestHandler):
                             or str(result_row.get("recordId") or ""),
                             "news_id": record_id
                             or str(result_row.get("recordId") or ""),
-                            "title": str(values[6] if len(values) > 6 else "")[:500],
+                            "title": str(
+                                values[NEWS_REVIEW_TITLE_COLUMN]
+                                if len(values) > NEWS_REVIEW_TITLE_COLUMN
+                                else ""
+                            )[:500],
                             "before": str(item.get("before") or "")[:120],
                             "after": str(item.get("value") or "")[:120],
                         }
@@ -7640,6 +8169,7 @@ def main() -> None:
         news_vote_service.ensure_started()
     except Exception as exc:
         print(f"Feishu event listener failed to start: {exc}", flush=True)
+    start_news_review_screener_monitor()
     port = int(os.environ.get("PORT", "8765"))
     host = os.environ.get("HOST", "0.0.0.0")
     server = ThreadingHTTPServer((host, port), AppHandler)

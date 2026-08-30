@@ -14,7 +14,8 @@ import web_app
 
 
 def sheet_row(*values: str) -> list[str]:
-    return [*values, *([""] * (len(news_review_sheet.HEADERS) - len(values)))]
+    row = ["", *values]
+    return [*row, *([""] * (len(news_review_sheet.HEADERS) - len(row)))]
 
 
 class NewsReviewSheetModelTests(unittest.TestCase):
@@ -57,9 +58,13 @@ class NewsReviewSheetModelTests(unittest.TestCase):
 
         self.assertEqual(payload["sheetId"], "sheet-1")
         self.assertEqual(payload["headers"], news_review_sheet.HEADERS)
-        self.assertNotIn(2, payload["editableColumns"])
+        self.assertNotIn(news_review_sheet.SCREENER_COLUMN_INDEX, payload["editableColumns"])
+        self.assertNotIn(news_review_sheet.SYNC_STATUS_COLUMN_INDEX, payload["editableColumns"])
         self.assertEqual(payload["rows"][0]["rowNumber"], 2)
-        self.assertEqual(payload["rows"][0]["values"][6], "香港电讯推出自主研发 AI 平台")
+        self.assertEqual(
+            payload["rows"][0]["values"][news_review_sheet.TITLE_COLUMN_INDEX],
+            "香港电讯推出自主研发 AI 平台",
+        )
         self.assertFalse(payload["rows"][0]["readOnly"])
         self.assertEqual(payload["rows"][0]["storageSource"], "feishu")
         self.assertEqual(payload["feishuCurrentCount"], 1)
@@ -111,9 +116,15 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         self.assertEqual(payload["totalHistoryCount"], 2)
         self.assertEqual(payload["feishuCurrentCount"], 1)
         self.assertEqual(payload["localHistoryCount"], 1)
-        self.assertEqual(payload["rows"][0]["values"][6], "飞书当前新闻")
+        self.assertEqual(
+            payload["rows"][0]["values"][news_review_sheet.TITLE_COLUMN_INDEX],
+            "飞书当前新闻",
+        )
         self.assertFalse(payload["rows"][0]["readOnly"])
-        self.assertEqual(payload["rows"][1]["values"][6], "本地完整历史")
+        self.assertEqual(
+            payload["rows"][1]["values"][news_review_sheet.TITLE_COLUMN_INDEX],
+            "本地完整历史",
+        )
         self.assertTrue(payload["rows"][1]["readOnly"])
         self.assertEqual(payload["rows"][1]["storageSource"], "local_history")
 
@@ -143,20 +154,81 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         ):
             payload = news_review_sheet.update_review_sheet_cells(
                 [
-                    {"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "接受"},
                     {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "接受"},
+                    {"rowNumber": 2, "columnIndex": 2, "before": "待审核", "value": "接受"},
                 ]
             )
 
             write_many.assert_called_once_with(
                 "sheet-1",
-                [("A2:B2", [["接受", "接受"]])],
+                [("B2:C2", [["接受", "接受"]])],
                 identity="",
                 profile="",
             )
         self.assertTrue(payload["readbackVerified"])
         self.assertEqual(payload["changedCount"], 2)
-        self.assertEqual(payload["rows"][0]["values"][2], "已纳入")
+        self.assertEqual(payload["rows"][0]["values"][3], "已纳入")
+
+    def test_status_update_reconciles_the_authenticated_screener(self) -> None:
+        before = sheet_row("待审核", "待审核", "未同步", "2026-08-03")
+        after = sheet_row("接受", "待审核", "已纳入", "2026-08-03")
+        screener = {
+            "name": "廖望 Alex LIAO Wang",
+            "mentionToken": "ou_alex",
+            "notify": False,
+        }
+        with (
+            mock.patch.object(
+                news_review_sheet,
+                "_resolved_review_sheet_id",
+                return_value="sheet-1",
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "_review_process_lock",
+                return_value=nullcontext(True),
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "_read_rows",
+                side_effect=[[before], [after], [after]],
+            ),
+            mock.patch.object(news_review_sheet, "_write_many"),
+            mock.patch.object(
+                news_review_sheet,
+                "_write_review_sheet_screeners_locked",
+                return_value={
+                    "requestedCount": 1,
+                    "changedCount": 1,
+                    "verifiedCount": 1,
+                    "readbackVerified": True,
+                },
+            ) as write_screener,
+            mock.patch.object(
+                news_review_sheet,
+                "apply_reviews",
+                return_value={"accepted_count": 1},
+            ),
+        ):
+            payload = news_review_sheet.update_review_sheet_cells(
+                [
+                    {
+                        "rowNumber": 2,
+                        "columnIndex": news_review_sheet.APP_STATUS_COLUMN_INDEX,
+                        "before": "待审核",
+                        "value": "接受",
+                    }
+                ],
+                screener=screener,
+            )
+
+        write_screener.assert_called_once_with(
+            "sheet-1",
+            [{**screener, "rowNumber": 2}],
+            identity="",
+            profile="",
+        )
+        self.assertEqual(payload["screener"]["verifiedCount"], 1)
 
     def test_update_stops_on_stale_cell_instead_of_overwriting(self) -> None:
         rows = [sheet_row("接受", "待审核", "已纳入")]
@@ -168,7 +240,7 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         ):
             with self.assertRaisesRegex(RuntimeError, "其他用户修改"):
                 news_review_sheet.update_review_sheet_cells(
-                    [{"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "不接受"}]
+                    [{"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "不接受"}]
                 )
         write.assert_not_called()
 
@@ -196,8 +268,8 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         ):
             payload = news_review_sheet.update_review_sheet_cells(
                 [
-                    {"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "接受"},
-                    {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "不接受"},
+                    {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "接受"},
+                    {"rowNumber": 2, "columnIndex": 2, "before": "待审核", "value": "不接受"},
                 ]
             )
 
@@ -220,8 +292,8 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         ):
             payload = news_review_sheet.update_review_sheet_cells(
                 [
-                    {"rowNumber": 2, "columnIndex": 0, "before": "待审核", "value": "接受"},
-                    {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "不接受"},
+                    {"rowNumber": 2, "columnIndex": 1, "before": "待审核", "value": "接受"},
+                    {"rowNumber": 2, "columnIndex": 2, "before": "待审核", "value": "不接受"},
                 ]
             )
 
@@ -239,7 +311,34 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         ):
             with self.assertRaisesRegex(ValueError, "不能手工修改"):
                 news_review_sheet.update_review_sheet_cells(
-                    [{"rowNumber": 2, "columnIndex": 2, "before": "未同步", "value": "已纳入"}]
+                    [{"rowNumber": 2, "columnIndex": 3, "before": "未同步", "value": "已纳入"}]
+                )
+
+    def test_screener_column_is_not_user_editable(self) -> None:
+        rows = [sheet_row("待审核", "待审核", "未同步")]
+        with (
+            mock.patch.object(
+                news_review_sheet,
+                "_resolved_review_sheet_id",
+                return_value="sheet-1",
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "_review_process_lock",
+                return_value=nullcontext(True),
+            ),
+            mock.patch.object(news_review_sheet, "_read_rows", return_value=rows),
+        ):
+            with self.assertRaisesRegex(ValueError, "筛选人及同步状态列"):
+                news_review_sheet.update_review_sheet_cells(
+                    [
+                        {
+                            "rowNumber": 2,
+                            "columnIndex": news_review_sheet.SCREENER_COLUMN_INDEX,
+                            "before": "",
+                            "value": "伪造筛选人",
+                        }
+                    ]
                 )
 
     def test_local_history_and_stale_record_identity_cannot_write_feishu(self) -> None:
@@ -265,7 +364,7 @@ class NewsReviewSheetModelTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "本地历史记录仅供查看"):
                 news_review_sheet.update_review_sheet_cells([{
                     "rowNumber": 2,
-                    "columnIndex": 0,
+                    "columnIndex": 1,
                     "before": "待审核",
                     "value": "接受",
                     "readOnly": True,
@@ -274,7 +373,7 @@ class NewsReviewSheetModelTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "已移动或替换"):
                 news_review_sheet.update_review_sheet_cells([{
                     "rowNumber": 2,
-                    "columnIndex": 0,
+                    "columnIndex": 1,
                     "before": "待审核",
                     "value": "接受",
                     "recordId": "NEWS-STALE",
@@ -289,6 +388,7 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         css = (web_app.STATIC_DIR / "news-review-sheet.css").read_text(encoding="utf-8")
         organization_script = (web_app.STATIC_DIR / "organization-admin.js").read_text(encoding="utf-8")
         organization_css = (web_app.STATIC_DIR / "organization-admin.css").read_text(encoding="utf-8")
+        web_app_source = Path(web_app.__file__).read_text(encoding="utf-8")
 
         self.assertIn('id="openNewsReviewSheetButton"', html)
         self.assertIn('id="newsReviewWorkspace"', html)
@@ -319,7 +419,11 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertNotIn("exportExcel", script)
         self.assertIn("position: sticky", css)
         self.assertIn(".news-review-status-select.status-accepted", css)
-        self.assertIn("reviewerAvatar(row.reviewer)", script)
+        self.assertIn('reviewerAvatar(reviewer, "筛选人")', script)
+        self.assertIn('screener: 0', script)
+        self.assertIn('news-review-screener-cell', css)
+        self.assertIn("CMHK_NEWS_REVIEW_SCREENER_POLL_SECONDS", web_app_source)
+        self.assertIn("start_news_review_screener_monitor()", web_app_source)
         self.assertIn("news-review-reviewer", css)
         self.assertIn(".news-review-local-badge", css)
         self.assertIn("tr.is-local-history", css)
@@ -495,7 +599,8 @@ class NewsReviewActorTests(unittest.TestCase):
                 "decision_rows": [8],
                 "cells": [{
                     "row": 8,
-                    "column": 0,
+                    "column": 1,
+                    "field": "纳入滚动栏",
                     "record_id": "NEWS-HUMAN-MOVED",
                     "news_id": "NEWS-HUMAN-MOVED",
                     "title": "APP 人工修改",
@@ -512,6 +617,329 @@ class NewsReviewActorTests(unittest.TestCase):
             result["rows"][0]["reviewers"]["纳入滚动栏"]["role"],
             "ADMIN",
         )
+
+    def test_cross_app_open_id_is_resolved_by_enterprise_email_and_cached(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_root = Path(temp_dir)
+            users_path = temp_root / "users.json"
+            cache_path = temp_root / "news-review-mention-identities.json"
+            users_path.write_text(
+                json.dumps([
+                    {
+                        "id": "human-1",
+                        "name": "廖望 Alex LIAO Wang",
+                        "email": "alexliao@hk.chinamobile.com",
+                        "feishu_open_id": "ou_app_domain",
+                    }
+                ], ensure_ascii=False),
+                encoding="utf-8",
+            )
+            payload = {
+                "ok": True,
+                "data": {
+                    "has_more": False,
+                    "users": [{
+                        "open_id": "ou_sheet_domain",
+                        "localized_name": "廖望 Alex LIAO Wang",
+                        "email": "alexliao@hk.chinamobile.com",
+                        "enterprise_email": "alexliao@hk.chinamobile.com",
+                        "is_activated": True,
+                        "is_cross_tenant": False,
+                    }],
+                },
+            }
+            with (
+                mock.patch.object(web_app.AUTH, "users_path", users_path),
+                mock.patch.object(
+                    web_app,
+                    "NEWS_REVIEW_MENTION_IDENTITIES_PATH",
+                    cache_path,
+                ),
+                mock.patch.object(
+                    web_app,
+                    "_news_review_contact_search",
+                    return_value=payload,
+                ) as search,
+            ):
+                first = web_app.resolve_news_review_mention_identity(
+                    {
+                        "id": "human-1",
+                        "name": "廖望 Alex LIAO Wang",
+                        "sourceOpenId": "ou_app_domain",
+                        "role": "USER",
+                    }
+                )
+                second = web_app.resolve_news_review_mention_identity(
+                    {
+                        "id": "human-1",
+                        "name": "廖望 Alex LIAO Wang",
+                        "sourceOpenId": "ou_app_domain",
+                        "role": "USER",
+                    }
+                )
+
+        self.assertEqual(first["mentionToken"], "ou_sheet_domain")
+        self.assertEqual(first["resolutionSource"], "enterprise_email")
+        self.assertEqual(second["mentionToken"], "ou_sheet_domain")
+        self.assertEqual(second["resolutionSource"], "cache")
+        search.assert_called_once_with("alexliao@hk.chinamobile.com")
+
+    def test_ambiguous_exact_name_is_not_treated_as_a_native_mention(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            cache_path = Path(temp_dir) / "news-review-mention-identities.json"
+            payload = {
+                "ok": True,
+                "data": {
+                    "has_more": False,
+                    "users": [
+                        {
+                            "open_id": "ou_1",
+                            "localized_name": "同名人",
+                            "is_activated": True,
+                            "is_cross_tenant": False,
+                        },
+                        {
+                            "open_id": "ou_2",
+                            "localized_name": "同名人",
+                            "is_activated": True,
+                            "is_cross_tenant": False,
+                        },
+                    ],
+                },
+            }
+            with (
+                mock.patch.object(web_app.AUTH, "users_path", Path(temp_dir) / "missing.json"),
+                mock.patch.object(
+                    web_app,
+                    "NEWS_REVIEW_MENTION_IDENTITIES_PATH",
+                    cache_path,
+                ),
+                mock.patch.object(
+                    web_app,
+                    "_news_review_contact_search",
+                    return_value=payload,
+                ),
+            ):
+                result = web_app.resolve_news_review_mention_identity(
+                    {"id": "human-1", "name": "同名人", "role": "USER"}
+                )
+                cache_created = cache_path.exists()
+
+        self.assertFalse(result["resolved"])
+        self.assertEqual(result["mentionToken"], "")
+        self.assertFalse(cache_created)
+
+    def test_screener_reconciliation_uses_human_mention_and_plain_ai_name(self) -> None:
+        snapshot = {
+            "sheetId": "sheet-1",
+            "rows": [
+                {
+                    "rowNumber": 2,
+                    "recordId": "NEWS-HUMAN",
+                    "storageSource": "feishu",
+                    "readOnly": False,
+                    "values": sheet_row(
+                        "接受", "待审核", "已纳入", "", "", "", "人工新闻"
+                    ),
+                },
+                {
+                    "rowNumber": 3,
+                    "recordId": "NEWS-AI",
+                    "storageSource": "feishu",
+                    "readOnly": False,
+                    "values": sheet_row(
+                        "不接受", "待审核", "已移除", "", "", "", "AI 新闻"
+                    ),
+                },
+            ],
+        }
+        events = [
+            {
+                "at": "2026-08-30T10:02:00+08:00",
+                "actor_id": "human-1",
+                # The APP/event Open ID is deliberately from another app and
+                # must not be copied into the sheet mention.
+                "actor_open_id": "ou_app_human",
+                "actor_name": "人工筛选人",
+                "actor_role": "USER",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {"news_id": "NEWS-HUMAN", "decision_rows": [2]},
+            },
+            {
+                "at": "2026-08-30T10:01:00+08:00",
+                "actor_id": "news-auto-screening-bot",
+                "actor_name": "新闻自动初筛机器人",
+                "actor_role": "SYSTEM",
+                "action": "news_review.update",
+                "result": "success",
+                "details": {"news_id": "NEWS-AI", "decision_rows": [3]},
+            },
+        ]
+        with (
+            mock.patch.object(web_app, "refresh_news_review_actor_overrides"),
+            mock.patch.object(web_app.AUTH, "_read", return_value={}),
+            mock.patch.object(web_app.AUTH, "operation_audit", return_value=events),
+            mock.patch.object(
+                web_app,
+                "resolve_news_review_mention_identity",
+                side_effect=lambda reviewer: (
+                    {
+                        "name": "新闻自动初筛机器人",
+                        "mentionToken": "",
+                        "resolved": True,
+                        "isSystem": True,
+                        "resolutionSource": "system_actor",
+                    }
+                    if reviewer.get("id") == "news-auto-screening-bot"
+                    else {
+                        "name": "人工筛选人",
+                        "mentionToken": "ou_sheet_human",
+                        "resolved": True,
+                        "isSystem": False,
+                        "resolutionSource": "enterprise_email",
+                    }
+                ),
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "update_review_sheet_screeners",
+                return_value={
+                    "status": "ok",
+                    "requestedCount": 2,
+                    "changedCount": 2,
+                    "verifiedCount": 2,
+                    "readbackVerified": True,
+                },
+            ) as update_screeners,
+        ):
+            result = web_app.reconcile_news_review_screener_column(snapshot)
+
+        assignments = update_screeners.call_args.args[0]
+        self.assertEqual(
+            assignments,
+            [
+                {
+                    "name": "人工筛选人",
+                    "mentionToken": "ou_sheet_human",
+                    "notify": False,
+                    "rowNumber": 2,
+                },
+                {
+                    "name": "新闻自动初筛机器人",
+                    "mentionToken": "",
+                    "notify": False,
+                    "rowNumber": 3,
+                },
+            ],
+        )
+        update_screeners.assert_called_once_with(assignments, sheet_id="sheet-1")
+        self.assertEqual(result["verifiedCount"], 2)
+        self.assertTrue(result["fullyReconciled"])
+        self.assertEqual(result["unresolvedHumanMentionCount"], 0)
+        self.assertNotIn("_screenerActor", snapshot["rows"][0])
+        self.assertNotIn("mentionToken", snapshot["rows"][0]["reviewer"])
+
+    def test_screener_reconciliation_never_downgrades_unresolved_human_to_text(self) -> None:
+        snapshot = {
+            "sheetId": "sheet-1",
+            "rows": [{
+                "rowNumber": 2,
+                "recordId": "NEWS-HUMAN",
+                "storageSource": "feishu",
+                "readOnly": False,
+                "values": sheet_row(
+                    "接受", "待审核", "已纳入", "", "", "", "人工新闻"
+                ),
+            }],
+        }
+        events = [{
+            "at": "2026-08-30T10:02:00+08:00",
+            "actor_id": "human-1",
+            "actor_name": "同名待解析人",
+            "actor_role": "USER",
+            "action": "news_review.update",
+            "result": "success",
+            "details": {"news_id": "NEWS-HUMAN", "decision_rows": [2]},
+        }]
+        with (
+            mock.patch.object(web_app, "refresh_news_review_actor_overrides"),
+            mock.patch.object(web_app.AUTH, "_read", return_value={}),
+            mock.patch.object(web_app.AUTH, "operation_audit", return_value=events),
+            mock.patch.object(
+                web_app,
+                "resolve_news_review_mention_identity",
+                return_value={
+                    "name": "同名待解析人",
+                    "mentionToken": "",
+                    "resolved": False,
+                    "isSystem": False,
+                    "resolutionSource": "unresolved",
+                },
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "update_review_sheet_screeners",
+            ) as update_screeners,
+        ):
+            result = web_app.reconcile_news_review_screener_column(snapshot)
+
+        update_screeners.assert_not_called()
+        self.assertEqual(result["status"], "partial")
+        self.assertFalse(result["fullyReconciled"])
+        self.assertEqual(result["unresolvedHumanMentionCount"], 1)
+        self.assertEqual(result["unresolvedHumanMentions"][0]["rowNumber"], 2)
+
+    def test_periodic_monitor_polls_audit_before_reconciling_screener(self) -> None:
+        snapshot = {"sheetId": "sheet-1", "rows": []}
+        calls: list[str] = []
+        with (
+            mock.patch.object(
+                news_review_sheet,
+                "review_sheet_snapshot",
+                side_effect=lambda **_kwargs: calls.append("snapshot") or snapshot,
+            ),
+            mock.patch.object(
+                web_app,
+                "sync_news_review_sheet_audit",
+                side_effect=lambda _snapshot: calls.append("audit") or [{"id": "evt"}],
+            ),
+            mock.patch.object(
+                web_app,
+                "reconcile_news_review_screener_column",
+                side_effect=lambda _snapshot: calls.append("screener")
+                or {"status": "ok", "verifiedCount": 1},
+            ),
+        ):
+            result = web_app.run_news_review_screener_monitor_cycle()
+
+        self.assertEqual(calls, ["snapshot", "audit", "screener"])
+        self.assertEqual(result["auditEventCount"], 1)
+        self.assertEqual(result["verifiedCount"], 1)
+
+    def test_periodic_monitor_treats_the_producer_lock_as_a_normal_busy_cycle(self) -> None:
+        with (
+            mock.patch.object(
+                news_review_sheet,
+                "review_sheet_snapshot",
+                side_effect=RuntimeError(
+                    "后台战略新闻任务正在更新飞书审核表，请稍后刷新"
+                ),
+            ),
+            mock.patch.object(web_app, "sync_news_review_sheet_audit") as audit,
+            mock.patch.object(
+                web_app, "reconcile_news_review_screener_column"
+            ) as reconcile,
+        ):
+            result = web_app.run_news_review_screener_monitor_cycle()
+
+        audit.assert_not_called()
+        reconcile.assert_not_called()
+        self.assertEqual(result["status"], "busy")
+        self.assertEqual(result["reason"], "review_sheet_update_in_progress")
+        self.assertFalse(result["readbackVerified"])
+        self.assertFalse(result["fullyReconciled"])
+        self.assertEqual(result["auditEventCount"], 0)
 
     def test_legacy_generic_actor_is_backfilled_from_official_audit_api(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -534,6 +962,7 @@ class NewsReviewActorTests(unittest.TestCase):
                     "id": "fs-alice",
                     "name": "Alice Chen",
                     "avatar_url": "https://example.com/alice.png",
+                    "open_id": "ou_alice",
                 }),
             ):
                 overrides = web_app.refresh_news_review_actor_overrides(force=True)
@@ -568,6 +997,7 @@ class NewsReviewActorTests(unittest.TestCase):
                     "id": "fs-alice",
                     "name": "Alice Chen",
                     "avatar_url": "https://example.com/alice.png",
+                    "open_id": "ou_alice",
                 }),
             ):
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
@@ -575,12 +1005,13 @@ class NewsReviewActorTests(unittest.TestCase):
                 self.assertEqual(len(events), 1)
                 self.assertEqual(events[0]["source"], "feishu_sheet")
                 self.assertEqual(events[0]["actor_name"], "Alice Chen")
+                self.assertEqual(events[0]["actor_open_id"], "ou_alice")
                 self.assertEqual(events[0]["details"]["feishu_event_id"], "evt-1")
                 self.assertEqual(events[0]["details"]["news_id"], "NEWS-HUMAN-1")
                 self.assertEqual(events[0]["details"]["before"], "待审核")
                 self.assertEqual(events[0]["details"]["after"], "接受")
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
-                ignored = [{"rowNumber": 2, "columnIndex": 0, "before": "接受", "value": "不接受"}]
+                ignored = [{"rowNumber": 2, "columnIndex": 1, "before": "接受", "value": "不接受"}]
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("不接受"), ignored_changes=ignored), [])
 
     def test_local_history_rows_are_excluded_from_feishu_edit_audit_baseline(self) -> None:

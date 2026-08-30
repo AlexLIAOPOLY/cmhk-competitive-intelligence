@@ -313,6 +313,12 @@ body.news-review-open {
   z-index: 13;
 }
 
+.news-review-grid thead .news-review-screener-header {
+  position: sticky;
+  left: 46px;
+  z-index: 12;
+}
+
 .news-review-grid thead tr:nth-child(2) .news-review-corner {
   background: var(--sheet-blue-dark);
 }
@@ -373,6 +379,24 @@ body.news-review-open {
   object-fit: cover;
 }
 
+.news-review-screener {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+}
+
+.news-review-screener-name {
+  display: -webkit-box;
+  overflow: hidden;
+  color: #174a78;
+  font-size: 12px;
+  font-weight: 650;
+  word-break: break-word;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
 .news-review-grid tbody td {
   position: relative;
   height: 62px;
@@ -390,14 +414,24 @@ body.news-review-open {
 
 .news-review-grid tbody td:nth-child(2),
 .news-review-grid tbody td:nth-child(3),
-.news-review-grid tbody td:nth-child(4) {
+.news-review-grid tbody td:nth-child(4),
+.news-review-grid tbody td:nth-child(5) {
   background: #f3f8fb;
 }
 
 .news-review-grid tbody tr:hover td:nth-child(2),
 .news-review-grid tbody tr:hover td:nth-child(3),
-.news-review-grid tbody tr:hover td:nth-child(4) {
+.news-review-grid tbody tr:hover td:nth-child(4),
+.news-review-grid tbody tr:hover td:nth-child(5) {
   background: #edf6fb;
+}
+
+.news-review-grid tbody td.news-review-screener-cell {
+  position: sticky;
+  left: 46px;
+  z-index: 3;
+  background: #f3f8fb;
+  vertical-align: middle;
 }
 
 .news-review-grid tbody tr.is-local-history td,
@@ -408,7 +442,8 @@ body.news-review-open {
 
 .news-review-grid tbody tr.is-local-history td:nth-child(2),
 .news-review-grid tbody tr.is-local-history td:nth-child(3),
-.news-review-grid tbody tr.is-local-history td:nth-child(4) {
+.news-review-grid tbody tr.is-local-history td:nth-child(4),
+.news-review-grid tbody tr.is-local-history td:nth-child(5) {
   background: #f4f1e8;
 }
 
@@ -448,11 +483,11 @@ body.news-review-open {
   -webkit-line-clamp: 3;
 }
 
-.news-review-grid td[data-column-index="6"] .news-review-cell-text {
+.news-review-grid td[data-column-index="7"] .news-review-cell-text {
   font-weight: 650;
 }
 
-.news-review-grid td[data-column-index="10"] a {
+.news-review-grid td[data-column-index="11"] a {
   display: -webkit-box;
   overflow: hidden;
   color: #176be8;

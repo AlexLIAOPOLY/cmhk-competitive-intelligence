@@ -19,6 +19,7 @@ def _row(
     weekly: str = "待审核",
 ) -> list[str]:
     return [
+        "",
         app,
         weekly,
         "未同步",
@@ -535,7 +536,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
             _row(title="当天新闻", url="https://example.com/today"), 2
         )
         old_values = _row(title="旧新闻", url="https://example.com/old")
-        old_values[3] = "2026-08-27"
+        old_values[news_review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-27"
         old = news_review_sheet._row_dict(old_values, 3)
 
         targets = agent._target_rows(
@@ -946,10 +947,18 @@ class NewsSelectionAgentTests(unittest.TestCase):
             root = Path(temporary)
             updates = []
 
-            def update(changes, *, sheet_id, writer_identity, writer_profile):
+            def update(
+                changes,
+                *,
+                sheet_id,
+                writer_identity,
+                writer_profile,
+                screener,
+            ):
                 updates.extend(changes)
                 self.assertEqual(writer_identity, "bot")
                 self.assertEqual(writer_profile, "cli_a9575e70ae799cb2")
+                self.assertEqual(screener, {"name": "新闻自动初筛机器人"})
                 return {
                     "changedCount": len(changes),
                     "verifiedCount": len(changes),
@@ -1011,7 +1020,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
             self.assertEqual(result["weekly_accepted_count"], 0)
             self.assertEqual(
                 [(item["columnIndex"], item["value"]) for item in updates],
-                [(0, "接受"), (1, "不接受")],
+                [(1, "接受"), (2, "不接受")],
             )
             self.assertIn("不可变边界", (root / "SKILL.md").read_text(encoding="utf-8"))
             audit = json.loads((root / "decisions.jsonl").read_text(encoding="utf-8"))

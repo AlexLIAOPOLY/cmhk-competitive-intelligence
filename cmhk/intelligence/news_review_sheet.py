@@ -62,7 +62,7 @@ ROLLOVER_SOFT_LIMIT_RATIO = min(
 )
 ROLLOVER_TARGET_KEY = "news_review"
 SHEET_SOURCE = "feishu_review_sheet"
-FORMAT_VERSION = 9
+FORMAT_VERSION = 10
 LARK_READ_MAX_ATTEMPTS = 3
 LARK_TRANSIENT_ERROR_CODES = {2200}
 LARK_TRANSIENT_ERROR_TYPES = {"network", "timeout"}
@@ -90,7 +90,7 @@ PENDING_CYCLE_STATE_KEY = "pending_cycle"
 MAX_SUCCESSFUL_CYCLE_RESULTS = 32
 PENDING_SELECTION_BATCHES_STATE_KEY = "pending_selection_batches"
 MAX_PENDING_SELECTION_BATCHES = 32
-HISTORY_FORMAT_VERSION = 1
+HISTORY_FORMAT_VERSION = 2
 RETENTION_DAYS = max(
     1,
     int(os.environ.get("CMHK_NEWS_REVIEW_RETENTION_DAYS", "15")),
@@ -99,6 +99,7 @@ RETENTION_STATE_DATE_KEY = "last_retention_date_hkt"
 RETENTION_STATE_RESULT_KEY = "last_retention_result"
 
 HEADERS = [
+    "筛选人",
     "纳入滚动栏",
     "纳入周报",
     "同步状态",
@@ -114,6 +115,23 @@ HEADERS = [
     "入池理由",
     "信息获取流程",
 ]
+
+SCREENER_COLUMN_INDEX = 0
+APP_STATUS_COLUMN_INDEX = 1
+WEEKLY_STATUS_COLUMN_INDEX = 2
+SYNC_STATUS_COLUMN_INDEX = 3
+SEARCH_DATE_COLUMN_INDEX = 4
+REGION_COLUMN_INDEX = 5
+CATEGORY_COLUMN_INDEX = 6
+TITLE_COLUMN_INDEX = 7
+SUMMARY_COLUMN_INDEX = 8
+SOURCE_COLUMN_INDEX = 9
+SOURCE_DATE_COLUMN_INDEX = 10
+SOURCE_URL_COLUMN_INDEX = 11
+KEYWORDS_COLUMN_INDEX = 12
+NOTE_COLUMN_INDEX = 13
+INFORMATION_FLOW_COLUMN_INDEX = 14
+LAST_COLUMN_NAME = "O"
 
 _LOCK = threading.RLock()
 PROCESS_LOCK_PATH = DATA_DIR / "cmhk.intelligence.news_review_sheet.lock"
@@ -666,7 +684,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A1:N1",
+        f"{sheet_id}!A1:{LAST_COLUMN_NAME}1",
         "--style",
         json.dumps(header_style, ensure_ascii=False),
     )
@@ -676,7 +694,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A2:N{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A2:{LAST_COLUMN_NAME}{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(body_style, ensure_ascii=False),
     )
@@ -686,7 +704,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!A2:C{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A2:D{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -702,7 +720,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!D2:D{MAX_SHEET_ROWS}",
+        f"{sheet_id}!E2:E{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -720,7 +738,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!E2:F{MAX_SHEET_ROWS}",
+        f"{sheet_id}!F2:G{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -737,7 +755,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!G2:G{MAX_SHEET_ROWS}",
+        f"{sheet_id}!H2:H{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -754,7 +772,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!H2:H{MAX_SHEET_ROWS}",
+        f"{sheet_id}!I2:I{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -771,7 +789,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--spreadsheet-token",
         SPREADSHEET_TOKEN,
         "--range",
-        f"{sheet_id}!I2:N{MAX_SHEET_ROWS}",
+        f"{sheet_id}!J2:{LAST_COLUMN_NAME}{MAX_SHEET_ROWS}",
         "--style",
         json.dumps(
             {
@@ -781,19 +799,6 @@ def _format_sheet(sheet_id: str) -> None:
             },
             ensure_ascii=False,
         ),
-    )
-    _best_effort(
-        "sheets",
-        "+set-dropdown",
-        "--spreadsheet-token",
-        SPREADSHEET_TOKEN,
-        "--range",
-        f"{sheet_id}!A2:A{MAX_SHEET_ROWS}",
-        "--condition-values",
-        json.dumps(["待审核", "接受", "暂缓", "不接受"], ensure_ascii=False),
-        "--colors",
-        json.dumps(["#8F959E", "#16A34A", "#D97706", "#DC2626"]),
-        "--highlight",
     )
     _best_effort(
         "sheets",
@@ -816,12 +821,26 @@ def _format_sheet(sheet_id: str) -> None:
         "--range",
         f"{sheet_id}!C2:C{MAX_SHEET_ROWS}",
         "--condition-values",
+        json.dumps(["待审核", "接受", "暂缓", "不接受"], ensure_ascii=False),
+        "--colors",
+        json.dumps(["#8F959E", "#16A34A", "#D97706", "#DC2626"]),
+        "--highlight",
+    )
+    _best_effort(
+        "sheets",
+        "+set-dropdown",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--range",
+        f"{sheet_id}!D2:D{MAX_SHEET_ROWS}",
+        "--condition-values",
         json.dumps(["未同步", "已纳入", "已移除", "同步失败"], ensure_ascii=False),
         "--colors",
         json.dumps(["#8F959E", "#2563EB", "#D97706", "#DC2626"]),
         "--highlight",
     )
     widths = [
+        150,
         112,
         112,
         108,
@@ -899,7 +918,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--frozen-row-count",
         "1",
         "--frozen-col-count",
-        "8",
+        "9",
     )
     _best_effort(
         "sheets",
@@ -909,7 +928,7 @@ def _format_sheet(sheet_id: str) -> None:
         "--sheet-id",
         sheet_id,
         "--range",
-        f"{sheet_id}!A1:N{MAX_SHEET_ROWS}",
+        f"{sheet_id}!A1:{LAST_COLUMN_NAME}{MAX_SHEET_ROWS}",
         "--filter-view-name",
         "滚动新闻审核视图",
     )
@@ -977,12 +996,315 @@ def _write_many(
             SPREADSHEET_TOKEN,
             "--writes",
             json.dumps(batch, ensure_ascii=False),
-            # Never blindly replay an ambiguous write. The A/B and C-column
+            # Never blindly replay an ambiguous write. The B/C and D-column
             # callers reconcile live values before retrying a pending subset.
             retry_transient=False,
             identity_override=identity,
             profile_override=profile,
         )
+
+
+def _screener_text(value: Any) -> str:
+    return re.sub(r"^[\s@＠]+", "", _text(value, 160)).strip()
+
+
+def _screener_matches(actual: Any, expected_name: Any) -> bool:
+    actual_text = "".join(_screener_text(actual).casefold().split())
+    expected_text = "".join(_screener_text(expected_name).casefold().split())
+    return actual_text == expected_text
+
+
+def _screener_mention_tokens(
+    sheet_id: str,
+    row_numbers: list[int],
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> dict[int, set[str]]:
+    """Read native @-mention metadata for selected cells in column A.
+
+    A ToString sheet read proves only the visible name.  It cannot distinguish
+    a clickable Feishu mention from ordinary text, so human attribution needs
+    this second, structured readback before it can be reported as verified.
+    """
+
+    requested_rows = sorted({
+        int(row_number)
+        for row_number in row_numbers
+        if 2 <= int(row_number) <= MAX_SHEET_ROWS
+    })
+    if not requested_rows:
+        return {}
+
+    spans: list[tuple[int, int]] = []
+    span_start = requested_rows[0]
+    span_end = span_start
+    for row_number in requested_rows[1:]:
+        # Keep each structured read small enough that styles and rich text do
+        # not trigger CLI output truncation, even on a mostly populated sheet.
+        if row_number - span_start <= 249:
+            span_end = row_number
+            continue
+        spans.append((span_start, span_end))
+        span_start = span_end = row_number
+    spans.append((span_start, span_end))
+
+    tokens_by_row = {row_number: set() for row_number in requested_rows}
+    for start_row, end_row in spans:
+        payload = _lark(
+            "sheets",
+            "+cells-get",
+            "--spreadsheet-token",
+            SPREADSHEET_TOKEN,
+            "--sheet-id",
+            sheet_id,
+            "--range",
+            f"A{start_row}:A{end_row}",
+            retry_transient=True,
+            identity_override=identity,
+            profile_override=profile,
+        )
+        data = payload.get("data") if isinstance(payload.get("data"), dict) else {}
+        if data.get("has_more") is True:
+            raise RuntimeError("筛选人原生 @ 回读被截断，已停止确认")
+        ranges = data.get("ranges") if isinstance(data.get("ranges"), list) else []
+        for cell_range in ranges:
+            if not isinstance(cell_range, dict):
+                continue
+            if cell_range.get("truncated") is True:
+                raise RuntimeError("筛选人原生 @ 回读被截断，已停止确认")
+            row_indices = (
+                cell_range.get("row_indices")
+                if isinstance(cell_range.get("row_indices"), list)
+                else []
+            )
+            cell_rows = (
+                cell_range.get("cells")
+                if isinstance(cell_range.get("cells"), list)
+                else []
+            )
+            for row_index, cells in zip(row_indices, cell_rows):
+                try:
+                    row_number = int(row_index)
+                except (TypeError, ValueError):
+                    continue
+                if row_number not in tokens_by_row or not isinstance(cells, list):
+                    continue
+                cell = cells[0] if cells and isinstance(cells[0], dict) else {}
+                rich_text = (
+                    cell.get("rich_text")
+                    if isinstance(cell.get("rich_text"), list)
+                    else []
+                )
+                for segment in rich_text:
+                    if not isinstance(segment, dict) or segment.get("type") != "mention":
+                        continue
+                    try:
+                        mention_type = int(segment.get("mention_type") or 0)
+                    except (TypeError, ValueError):
+                        continue
+                    mention_token = _text(segment.get("mention_token"), 240)
+                    if mention_type == 0 and mention_token:
+                        tokens_by_row[row_number].add(mention_token)
+    return tokens_by_row
+
+
+def _write_review_sheet_screeners_locked(
+    sheet_id: str,
+    assignments: list[dict[str, Any]],
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> dict[str, Any]:
+    """Write human mentions or the AI name into the first column and prove readback."""
+
+    deduplicated: dict[int, dict[str, Any]] = {}
+    for raw in assignments:
+        if not isinstance(raw, dict):
+            continue
+        try:
+            row_number = int(raw.get("rowNumber") or 0)
+        except (TypeError, ValueError):
+            continue
+        name = _text(raw.get("name"), 160)
+        if row_number < 2 or row_number > MAX_SHEET_ROWS or not name:
+            continue
+        deduplicated[row_number] = {
+            "rowNumber": row_number,
+            "name": name,
+            "mentionToken": _text(raw.get("mentionToken"), 240),
+            # A native mention is required for identity, but periodic polling
+            # must not repeatedly notify the same person.
+            "notify": bool(raw.get("notify", False)),
+        }
+    if not deduplicated:
+        return {
+            "requestedCount": 0,
+            "changedCount": 0,
+            "verifiedCount": 0,
+            "nativeMentionVerifiedCount": 0,
+            "readbackVerified": True,
+        }
+
+    rows = _read_rows(sheet_id, identity=identity, profile=profile)
+    mention_tokens = _screener_mention_tokens(
+        sheet_id,
+        [
+            assignment["rowNumber"]
+            for assignment in deduplicated.values()
+            if assignment["mentionToken"]
+        ],
+        identity=identity,
+        profile=profile,
+    )
+    pending = [
+        assignment
+        for row_number, assignment in sorted(deduplicated.items())
+        if row_number - 2 >= len(rows)
+        or not _screener_matches(
+            rows[row_number - 2][SCREENER_COLUMN_INDEX],
+            assignment["name"],
+        )
+        or (
+            assignment["mentionToken"]
+            and assignment["mentionToken"]
+            not in mention_tokens.get(row_number, set())
+        )
+    ]
+    requested_count = len(deduplicated)
+    if not pending:
+        return {
+            "requestedCount": requested_count,
+            "changedCount": 0,
+            "verifiedCount": requested_count,
+            "nativeMentionVerifiedCount": sum(
+                1
+                for assignment in deduplicated.values()
+                if assignment["mentionToken"]
+            ),
+            "readbackVerified": True,
+        }
+    changed_count = len(pending)
+
+    last_error: Exception | None = None
+    for attempt in range(1, LARK_READ_MAX_ATTEMPTS + 1):
+        writes: list[dict[str, Any]] = []
+        for assignment in pending:
+            mention_token = assignment["mentionToken"]
+            cell = (
+                {
+                    "rich_text": [
+                        {
+                            "type": "mention",
+                            "text": assignment["name"],
+                            "mention_token": mention_token,
+                            "notify": assignment["notify"],
+                        }
+                    ]
+                }
+                if mention_token
+                else {"value": assignment["name"]}
+            )
+            row_number = assignment["rowNumber"]
+            writes.append(
+                {
+                    "sheet_id": sheet_id,
+                    "range": f"A{row_number}",
+                    "cells": [[cell]],
+                }
+            )
+        try:
+            # The API permits at most 50 people mentions per write. Keeping all
+            # screener chunks at 50 also covers mixed human/AI assignments.
+            for start in range(0, len(writes), 50):
+                _lark(
+                    "sheets",
+                    "+cells-set",
+                    "--spreadsheet-token",
+                    SPREADSHEET_TOKEN,
+                    "--writes",
+                    json.dumps(writes[start : start + 50], ensure_ascii=False),
+                    retry_transient=False,
+                    identity_override=identity,
+                    profile_override=profile,
+                )
+            last_error = None
+        except Exception as exc:
+            last_error = exc
+
+        live_rows = _read_rows(sheet_id, identity=identity, profile=profile)
+        live_mention_tokens = _screener_mention_tokens(
+            sheet_id,
+            [
+                assignment["rowNumber"]
+                for assignment in pending
+                if assignment["mentionToken"]
+            ],
+            identity=identity,
+            profile=profile,
+        )
+        pending = [
+            assignment
+            for assignment in pending
+            if assignment["rowNumber"] - 2 >= len(live_rows)
+            or not _screener_matches(
+                live_rows[assignment["rowNumber"] - 2][SCREENER_COLUMN_INDEX],
+                assignment["name"],
+            )
+            or (
+                assignment["mentionToken"]
+                and assignment["mentionToken"]
+                not in live_mention_tokens.get(assignment["rowNumber"], set())
+            )
+        ]
+        if not pending:
+            break
+        if attempt >= LARK_READ_MAX_ATTEMPTS:
+            detail = f"；最后错误：{last_error}" if last_error else ""
+            raise RuntimeError(
+                f"筛选人回读后仍有 {len(pending)} 行未生效{detail}"
+            )
+        time.sleep(2 ** (attempt - 1))
+
+    return {
+        "requestedCount": requested_count,
+        "changedCount": changed_count,
+        "verifiedCount": requested_count,
+        "nativeMentionVerifiedCount": sum(
+            1 for assignment in deduplicated.values() if assignment["mentionToken"]
+        ),
+        "readbackVerified": True,
+    }
+
+
+def update_review_sheet_screeners(
+    assignments: list[dict[str, Any]],
+    *,
+    sheet_id: str | None = None,
+    writer_identity: str = "",
+    writer_profile: str = "",
+) -> dict[str, Any]:
+    """Public non-blocking reconciler used by the periodic APP monitor."""
+
+    with _LOCK, _review_process_lock(wait=False) as process_lock_acquired:
+        if not process_lock_acquired:
+            return {
+                "status": "busy",
+                "reason": "another_review_process_is_running",
+                "requestedCount": len(assignments or []),
+                "changedCount": 0,
+                "verifiedCount": 0,
+                "readbackVerified": False,
+            }
+        return {
+            "status": "ok",
+            **_write_review_sheet_screeners_locked(
+                _resolved_review_sheet_id(sheet_id),
+                assignments,
+                identity=writer_identity,
+                profile=writer_profile,
+            ),
+        }
 
 
 def _insert_rows(
@@ -1057,7 +1379,7 @@ def _insert_rows(
             "--spreadsheet-token",
             SPREADSHEET_TOKEN,
             "--range",
-            f"{sheet_id}!A{separator_start}:N{separator_end}",
+            f"{sheet_id}!A{separator_start}:{LAST_COLUMN_NAME}{separator_end}",
             "--style",
             json.dumps({"backColor": SEPARATOR_ROW_COLOR}, ensure_ascii=False),
         )
@@ -1081,8 +1403,8 @@ def _batch_separator_count(
     )
     if existing_first is None:
         return 0
-    new_date = _publication_date(new_values[-1][3])
-    existing_date = _publication_date(existing_first[3])
+    new_date = _publication_date(new_values[-1][SEARCH_DATE_COLUMN_INDEX])
+    existing_date = _publication_date(existing_first[SEARCH_DATE_COLUMN_INDEX])
     if new_date and existing_date and new_date == existing_date:
         return SAME_DAY_BATCH_SEPARATOR_ROWS
     return CROSS_DAY_SEPARATOR_ROWS
@@ -1097,6 +1419,8 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
         width = 12
     elif format_version == 8:
         width = 13
+    elif format_version == 9:
+        width = 14
     else:
         width = len(HEADERS)
     padded = (list(row) + [""] * width)[:width]
@@ -1137,6 +1461,8 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
             "历史候选",
         ]
         return corrected
+    if format_version == 9:
+        return ["", *padded]
     return padded
 
 
@@ -1155,8 +1481,10 @@ def _read_rows(
         end_column = "L"
     elif format_version == 8:
         end_column = "M"
-    else:
+    elif format_version == 9:
         end_column = "N"
+    else:
+        end_column = LAST_COLUMN_NAME
     payload = _lark(
         "sheets",
         "+read",
@@ -1197,21 +1525,21 @@ def _validate_sheet_rows(
         if len(row) != len(HEADERS):
             errors.append(f"第{index}行列数为{len(row)}，应为{len(HEADERS)}")
             continue
-        search_date = _publication_date(row[3])
-        source_date = _publication_date(row[9])
-        source_url = _cell_link(row[10], 1600)
-        title = _text(row[6], 500)
-        category = _text(row[5], 120)
+        search_date = _publication_date(row[SEARCH_DATE_COLUMN_INDEX])
+        source_date = _publication_date(row[SOURCE_DATE_COLUMN_INDEX])
+        source_url = _cell_link(row[SOURCE_URL_COLUMN_INDEX], 1600)
+        title = _text(row[TITLE_COLUMN_INDEX], 500)
+        category = _text(row[CATEGORY_COLUMN_INDEX], 120)
         if not search_date:
-            errors.append(f"第{index}行检索日期不在D列")
-        if not source_date and _normalized_status(row[0]) != "不接受":
-            errors.append(f"第{index}行发布时间不在J列")
+            errors.append(f"第{index}行检索日期不在E列")
+        if not source_date and _normalized_status(row[APP_STATUS_COLUMN_INDEX]) != "不接受":
+            errors.append(f"第{index}行发布时间不在K列")
         if not title:
-            errors.append(f"第{index}行新闻标题不在G列")
+            errors.append(f"第{index}行新闻标题不在H列")
         if not category:
-            errors.append(f"第{index}行分类不在F列")
+            errors.append(f"第{index}行分类不在G列")
         if not source_url.lower().startswith(("http://", "https://")):
-            errors.append(f"第{index}行原文链接不在K列")
+            errors.append(f"第{index}行原文链接不在L列")
         if len(errors) >= 12:
             break
     if errors:
@@ -1222,9 +1550,12 @@ def _validate_sheet_rows(
 
 
 def _comparable_sheet_row(row: list[Any]) -> list[str]:
-    padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
+    source = list(row)
+    if len(source) == len(HEADERS) - 1:
+        source = ["", *source]
+    padded = (source + [""] * len(HEADERS))[: len(HEADERS)]
     return [
-        _cell_link(cell, 5000) if index == 10 else _text(cell, 5000)
+        _cell_link(cell, 5000) if index == SOURCE_URL_COLUMN_INDEX else _text(cell, 5000)
         for index, cell in enumerate(padded)
     ]
 
@@ -1274,8 +1605,8 @@ def ensure_sheet() -> str:
                 f"当前版本 {previous_version}，目标版本 {FORMAT_VERSION}。"
                 "请先使用独立迁移脚本备份、预检并回读验证。"
             )
-        _write(sheet_id, "A1:N1", [HEADERS])
-        _write(sheet_id, "O1:P1", [[""] * 2])
+        _write(sheet_id, f"A1:{LAST_COLUMN_NAME}1", [HEADERS])
+        _write(sheet_id, "P1:Q1", [[""] * 2])
         if (
             created
             or expanded
@@ -1361,7 +1692,7 @@ def _rollover_review_sheet(
             "--length",
             str(MAX_SHEET_ROWS - row_count),
         )
-    _write(new_sheet_id, "A1:N1", [HEADERS])
+    _write(new_sheet_id, f"A1:{LAST_COLUMN_NAME}1", [HEADERS])
     _format_sheet(new_sheet_id)
 
     archived_ids = {
@@ -1627,6 +1958,7 @@ def _information_flow(item: dict[str, Any], *, historical: bool = False) -> str:
 
 def _candidate_row(item: dict[str, Any], generated_at: str) -> list[Any]:
     return [
+        "",
         "待审核",
         "待审核",
         "未同步",
@@ -1690,7 +2022,11 @@ def _recent_semantic_history(
 _same_day_semantic_history = _recent_semantic_history
 
 
-HUMAN_DECISION_COLUMNS = (0, 1, 2)
+HUMAN_DECISION_COLUMNS = (
+    APP_STATUS_COLUMN_INDEX,
+    WEEKLY_STATUS_COLUMN_INDEX,
+    SYNC_STATUS_COLUMN_INDEX,
+)
 STATUS_PRIORITY = {"接受": 4, "不接受": 3, "暂缓": 2, "待审核": 1}
 
 
@@ -1705,8 +2041,10 @@ def _index_review_rows(rows: list[list[Any]]) -> dict[str, list[Any]]:
             continue
         previous = rows_by_id.get(news_id)
         if previous is not None and STATUS_PRIORITY.get(
-            _normalized_status(padded[0]), 0
-        ) <= STATUS_PRIORITY.get(_normalized_status(previous[0]), 0):
+            _normalized_status(padded[APP_STATUS_COLUMN_INDEX]), 0
+        ) <= STATUS_PRIORITY.get(
+            _normalized_status(previous[APP_STATUS_COLUMN_INDEX]), 0
+        ):
             continue
         rows_by_id[news_id] = padded
     return rows_by_id
@@ -1768,7 +2106,7 @@ def _refresh_live_review_sheet(
         rescued.append(
             {
                 "news_id": news_id,
-                "title": _text(latest[6], 240),
+                "title": _text(latest[TITLE_COLUMN_INDEX], 240),
                 "before": " / ".join(before),
                 "after": " / ".join(after),
             }
@@ -1829,7 +2167,9 @@ def sync_candidates(
             normalized_row = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
             previous_row = existing_rows_by_id.get(parsed["news_id"])
             if previous_row is not None:
-                previous_status = _normalized_status(previous_row[0])
+                previous_status = _normalized_status(
+                    previous_row[APP_STATUS_COLUMN_INDEX]
+                )
                 if status_priority.get(parsed["status"], 0) > status_priority.get(previous_status, 0):
                     existing_rows_by_id[parsed["news_id"]] = normalized_row
                     existing_status[parsed["news_id"]] = (
@@ -2115,13 +2455,16 @@ def sync_candidates(
                 }
             )
             new_values.append(value)
-            existing_status[news_id] = (value[0], value[2])
+            existing_status[news_id] = (
+                value[APP_STATUS_COLUMN_INDEX],
+                value[SYNC_STATUS_COLUMN_INDEX],
+            )
         # Keep each returned selector item paired with the exact row that will
         # be written. Sorting only new_values can make a concurrent duplicate
         # check drop one item while retaining a different row.
         sorted_new_pairs = sorted(
             zip(new_values, new_items),
-            key=lambda pair: str(pair[0][3] or ""),
+            key=lambda pair: str(pair[0][SEARCH_DATE_COLUMN_INDEX] or ""),
             reverse=True,
         )
         new_values = [pair[0] for pair in sorted_new_pairs]
@@ -2218,10 +2561,14 @@ def sync_candidates(
                     "飞书分批写入",
                     (
                         f"写入第 {offset // 40 + 1}/{total_chunks} 批新增，"
-                        f"范围 A{start_row}:N{chunk_end}，共 {len(chunk)} 行。"
+                        f"范围 A{start_row}:{LAST_COLUMN_NAME}{chunk_end}，共 {len(chunk)} 行。"
                     ),
                 )
-                _write(sheet_id, f"A{start_row}:N{chunk_end}", chunk)
+                _write(
+                    sheet_id,
+                    f"A{start_row}:{LAST_COLUMN_NAME}{chunk_end}",
+                    chunk,
+                )
         else:
             _progress(
                 progress_callback,
@@ -2307,9 +2654,9 @@ def sync_candidates(
             if row and any(_text(value, 80) for value in row)
         )
         active_metadata_keys = {
-            _gate_metadata_key(row[10])
+            _gate_metadata_key(row[SOURCE_URL_COLUMN_INDEX])
             for row in written_rows
-            if row and _gate_metadata_key(row[10])
+            if row and _gate_metadata_key(row[SOURCE_URL_COLUMN_INDEX])
         }
         candidate_gate_metadata = {
             key: metadata
@@ -2405,25 +2752,26 @@ def _normalized_status(value: Any) -> str:
 
 
 def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
-    padded = list(row) + [""] * max(0, len(HEADERS) - len(row))
-    source_url = _cell_link(padded[10], 1600)
-    news_id = _news_item_id(source_url, padded[6])
+    padded = _comparable_sheet_row(row)
+    source_url = _cell_link(padded[SOURCE_URL_COLUMN_INDEX], 1600)
+    news_id = _news_item_id(source_url, padded[TITLE_COLUMN_INDEX])
     return {
         "row_number": row_number,
-        "status": _normalized_status(padded[0]),
-        "weekly_status": _normalized_status(padded[1]),
-        "sync_status": _text(padded[2], 40),
-        "search_date": _text(padded[3], 20),
-        "region": _text(padded[4], 80),
-        "category": _text(padded[5], 120),
-        "title": _text(padded[6], 500),
-        "summary": _text(padded[7], 500),
-        "source": _text(padded[8], 240),
-        "source_date": _text(padded[9], 40),
+        "screener": _text(padded[SCREENER_COLUMN_INDEX], 120),
+        "status": _normalized_status(padded[APP_STATUS_COLUMN_INDEX]),
+        "weekly_status": _normalized_status(padded[WEEKLY_STATUS_COLUMN_INDEX]),
+        "sync_status": _text(padded[SYNC_STATUS_COLUMN_INDEX], 40),
+        "search_date": _text(padded[SEARCH_DATE_COLUMN_INDEX], 20),
+        "region": _text(padded[REGION_COLUMN_INDEX], 80),
+        "category": _text(padded[CATEGORY_COLUMN_INDEX], 120),
+        "title": _text(padded[TITLE_COLUMN_INDEX], 500),
+        "summary": _text(padded[SUMMARY_COLUMN_INDEX], 500),
+        "source": _text(padded[SOURCE_COLUMN_INDEX], 240),
+        "source_date": _text(padded[SOURCE_DATE_COLUMN_INDEX], 40),
         "source_url": source_url,
-        "keywords": _text(padded[11], 1800),
-        "note": _text(padded[12], 500),
-        "information_flow": _text(padded[13], 300),
+        "keywords": _text(padded[KEYWORDS_COLUMN_INDEX], 1800),
+        "note": _text(padded[NOTE_COLUMN_INDEX], 500),
+        "information_flow": _text(padded[INFORMATION_FLOW_COLUMN_INDEX], 300),
         "news_id": news_id,
     }
 
@@ -3112,7 +3460,11 @@ def maintain_review_history_and_retention(
         )
 
 
-REVIEW_SHEET_EDITABLE_COLUMNS = tuple(index for index in range(len(HEADERS)) if index != 2)
+REVIEW_SHEET_EDITABLE_COLUMNS = tuple(
+    index
+    for index in range(len(HEADERS))
+    if index not in {SCREENER_COLUMN_INDEX, SYNC_STATUS_COLUMN_INDEX}
+)
 REVIEW_SHEET_STATUS_OPTIONS = ("待审核", "接受", "不接受", "暂缓")
 
 
@@ -3191,8 +3543,8 @@ def review_sheet_snapshot(
             )
         local_rows.sort(
             key=lambda item: (
-                _publication_date(item["values"][3]),
-                _publication_date(item["values"][9]),
+                _publication_date(item["values"][SEARCH_DATE_COLUMN_INDEX]),
+                _publication_date(item["values"][SOURCE_DATE_COLUMN_INDEX]),
                 _text(item.get("retiredFromFeishuAt"), 60),
                 int(item.get("originalRowNumber") or 0),
             ),
@@ -3289,6 +3641,7 @@ def update_review_sheet_cells(
     sheet_id: str | None = None,
     writer_identity: str = "",
     writer_profile: str = "",
+    screener: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Write reviewed cells to Feishu, apply decisions, and prove them by readback."""
     if not isinstance(changes, list) or not changes:
@@ -3316,7 +3669,7 @@ def update_review_sheet_cells(
             if row_number < 2 or row_number > MAX_SHEET_ROWS:
                 raise ValueError(f"第 {row_number} 行超出审核表范围")
             if column_index not in REVIEW_SHEET_EDITABLE_COLUMNS:
-                raise ValueError("同步状态列由系统维护，不能手工修改")
+                raise ValueError("筛选人及同步状态列由系统维护，不能手工修改")
             row_offset = row_number - 2
             if row_offset >= len(current_rows):
                 raise ValueError(f"第 {row_number} 行不存在，已停止写入")
@@ -3329,11 +3682,18 @@ def update_review_sheet_cells(
                 )
             current = current_values[column_index]
             value = _text(raw_change.get("value"), 5000)
-            if column_index in {0, 1}:
+            if column_index in {
+                APP_STATUS_COLUMN_INDEX,
+                WEEKLY_STATUS_COLUMN_INDEX,
+            }:
                 value = _normalized_status(value)
                 if value not in REVIEW_SHEET_STATUS_OPTIONS:
                     raise ValueError(f"无效审核状态：{value}")
-            if column_index == 10 and value and not value.lower().startswith(("http://", "https://")):
+            if (
+                column_index == SOURCE_URL_COLUMN_INDEX
+                and value
+                and not value.lower().startswith(("http://", "https://"))
+            ):
                 raise ValueError("原文链接必须以 http:// 或 https:// 开头")
             expected = raw_change.get("before")
             if (
@@ -3353,7 +3713,38 @@ def update_review_sheet_cells(
 
         requested = list(normalized.values())
         changed = [item for item in requested if item["value"] != item["before"]]
+        screener_rows = sorted(
+            {
+                int(item["rowNumber"])
+                for item in requested
+                if int(item["columnIndex"])
+                in {APP_STATUS_COLUMN_INDEX, WEEKLY_STATUS_COLUMN_INDEX}
+            }
+        )
+
+        def reconcile_screener() -> dict[str, Any]:
+            if not screener_rows or not isinstance(screener, dict):
+                return {
+                    "requestedCount": 0,
+                    "changedCount": 0,
+                    "verifiedCount": 0,
+                    "readbackVerified": True,
+                }
+            return _write_review_sheet_screeners_locked(
+                resolved_sheet_id,
+                [
+                    {
+                        **screener,
+                        "rowNumber": row_number,
+                    }
+                    for row_number in screener_rows
+                ],
+                identity=writer_identity,
+                profile=writer_profile,
+            )
+
         if not changed:
+            screener_result = reconcile_screener()
             review_result = apply_reviews(
                 resolved_sheet_id,
                 identity=writer_identity,
@@ -3369,6 +3760,7 @@ def update_review_sheet_cells(
                 "alreadyAppliedCount": len(requested),
                 "verifiedCount": len(requested),
                 "readbackVerified": True,
+                "screener": screener_result,
                 "review": review_result,
                 **snapshot,
             }
@@ -3409,6 +3801,7 @@ def update_review_sheet_cells(
                 )
             time.sleep(2 ** (reconciliation_attempt - 1))
 
+        screener_result = reconcile_screener()
         review_result = apply_reviews(
             resolved_sheet_id,
             identity=writer_identity,
@@ -3440,6 +3833,7 @@ def update_review_sheet_cells(
             "alreadyAppliedCount": len(requested) - len(changed),
             "verifiedCount": len(requested),
             "readbackVerified": True,
+            "screener": screener_result,
             "review": review_result,
             **snapshot,
         }
@@ -3740,7 +4134,7 @@ def apply_reviews(
                     sync_changes.append(
                         {
                             "rowNumber": row["row_number"],
-                            "columnIndex": 2,
+                            "columnIndex": SYNC_STATUS_COLUMN_INDEX,
                             "before": row["sync_status"],
                             "value": "同步失败",
                         }
@@ -3758,7 +4152,7 @@ def apply_reviews(
                 sync_changes.append(
                     {
                         "rowNumber": row["row_number"],
-                        "columnIndex": 2,
+                        "columnIndex": SYNC_STATUS_COLUMN_INDEX,
                         "before": row["sync_status"],
                         "value": desired_sync,
                     }
@@ -3779,7 +4173,7 @@ def apply_reviews(
                 )
                 last_sync_error = None
             except Exception as exc:
-                # The request may have landed despite a timeout. Re-read C and
+                # The request may have landed despite a timeout. Re-read D and
                 # retry only cells whose live value is still the old snapshot.
                 last_sync_error = exc
             sheet_rows = _read_rows(
@@ -3794,7 +4188,7 @@ def apply_reviews(
             if conflicts:
                 first = conflicts[0]
                 raise RuntimeError(
-                    f"第 {first['rowNumber']} 行“{HEADERS[2]}”"
+                    f"第 {first['rowNumber']} 行“{HEADERS[SYNC_STATUS_COLUMN_INDEX]}”"
                     "在同步回读期间被其他操作修改，已停止续写"
                 )
             if not pending_sync:
@@ -3806,7 +4200,7 @@ def apply_reviews(
                 )
             time.sleep(2 ** (reconciliation_attempt - 1))
 
-        # Do not publish local ticker state until every derived Feishu C cell
+        # Do not publish local ticker state until every derived Feishu D cell
         # has been proved. Otherwise a failed sync can leave local and Feishu
         # views claiming different business outcomes.
         if old_comparable != new_comparable:

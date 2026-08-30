@@ -169,6 +169,133 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         self.assertFalse(lark.call_args.kwargs["retry_transient"])
 
+    def test_human_screener_is_written_as_verified_native_mention_without_notification(self):
+        before = self._existing_row()
+        # Visible text alone is not proof of a clickable @ mention. This
+        # legacy/plain cell must still be upgraded to native rich text.
+        before[review_sheet.SCREENER_COLUMN_INDEX] = "廖望 Alex LIAO Wang"
+        after = list(before)
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[[before], [after]],
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_screener_mention_tokens",
+                side_effect=[{}, {2: {"ou_alex"}}],
+            ),
+            mock.patch.object(review_sheet, "_lark") as lark,
+        ):
+            result = review_sheet._write_review_sheet_screeners_locked(
+                "sheet-1",
+                [
+                    {
+                        "rowNumber": 2,
+                        "name": "廖望 Alex LIAO Wang",
+                        "mentionToken": "ou_alex",
+                    }
+                ],
+            )
+
+        args = lark.call_args.args
+        writes = json.loads(args[args.index("--writes") + 1])
+        mention = writes[0]["cells"][0][0]["rich_text"][0]
+        self.assertEqual(writes[0]["range"], "A2")
+        self.assertEqual(mention["type"], "mention")
+        self.assertEqual(mention["text"], "廖望 Alex LIAO Wang")
+        self.assertEqual(mention["mention_token"], "ou_alex")
+        self.assertIs(mention["notify"], False)
+        self.assertEqual(result["changedCount"], 1)
+        self.assertEqual(result["verifiedCount"], 1)
+        self.assertTrue(result["readbackVerified"])
+
+    def test_native_screener_mention_reader_uses_real_row_indices_and_tokens(self):
+        with mock.patch.object(
+            review_sheet,
+            "_lark",
+            return_value={
+                "ok": True,
+                "data": {
+                    "has_more": False,
+                    "ranges": [{
+                        "actual_range": "A314:A314",
+                        "row_indices": [314],
+                        "col_indices": ["A"],
+                        "truncated": False,
+                        "cells": [[{
+                            "value": "廖望 Alex LIAO Wang",
+                            "rich_text": [{
+                                "type": "mention",
+                                "text": "廖望 Alex LIAO Wang",
+                                "mention_type": 0,
+                                "mention_token": "ou_alex",
+                                "notify": False,
+                            }],
+                        }]],
+                    }],
+                },
+            },
+        ) as lark:
+            result = review_sheet._screener_mention_tokens(
+                "sheet-1",
+                [314],
+                identity="user",
+                profile="profile-1",
+            )
+
+        self.assertEqual(result, {314: {"ou_alex"}})
+        self.assertIn("A314:A314", lark.call_args.args)
+        self.assertTrue(lark.call_args.kwargs["retry_transient"])
+        self.assertEqual(lark.call_args.kwargs["profile_override"], "profile-1")
+
+    def test_ai_screener_is_written_as_plain_name_and_idempotent_after_readback(self):
+        before = self._existing_row()
+        after = list(before)
+        after[review_sheet.SCREENER_COLUMN_INDEX] = "新闻自动初筛机器人"
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[[before], [after]],
+            ),
+            mock.patch.object(review_sheet, "_lark") as lark,
+        ):
+            result = review_sheet._write_review_sheet_screeners_locked(
+                "sheet-1",
+                [{"rowNumber": 2, "name": "新闻自动初筛机器人"}],
+            )
+
+        args = lark.call_args.args
+        writes = json.loads(args[args.index("--writes") + 1])
+        self.assertEqual(
+            writes[0]["cells"][0][0],
+            {"value": "新闻自动初筛机器人"},
+        )
+        self.assertEqual(result["changedCount"], 1)
+
+        with (
+            mock.patch.object(review_sheet, "_read_rows", return_value=[after]),
+            mock.patch.object(review_sheet, "_lark") as second_write,
+        ):
+            second = review_sheet._write_review_sheet_screeners_locked(
+                "sheet-1",
+                [{"rowNumber": 2, "name": "新闻自动初筛机器人"}],
+            )
+        second_write.assert_not_called()
+        self.assertEqual(second["changedCount"], 0)
+        self.assertEqual(second["verifiedCount"], 1)
+
+    def test_screener_readback_does_not_accept_a_similar_but_different_person(self):
+        self.assertFalse(review_sheet._screener_matches("@Alex", "Alexander"))
+        self.assertTrue(
+            review_sheet._screener_matches(
+                "@廖望 Alex LIAO Wang",
+                "廖望Alex LIAO Wang",
+            )
+        )
+
     def test_lark_read_does_not_retry_permission_error(self):
         forbidden = self._lark_result(
             {"ok": False, "error": {"code": 403, "message": "Forbidden"}},
@@ -274,7 +401,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 "--spreadsheet-token",
                 review_sheet.SPREADSHEET_TOKEN,
                 "--range",
-                "sheet!A5:N6",
+                "sheet!A5:O6",
                 "--style",
                 json.dumps(
                     {"backColor": review_sheet.SEPARATOR_ROW_COLOR},
@@ -458,6 +585,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def _existing_row(self):
         return [
+            "",
             "接受",
             "待审核",
             "已同步",
@@ -576,8 +704,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             sheet.inserts,
             [{"start_index": 1, "count": 3, "separator_count": 2}],
         )
-        self.assertEqual([cell_range for cell_range, _ in sheet.writes], ["A2:N2"])
-        self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
+        self.assertEqual([cell_range for cell_range, _ in sheet.writes], ["A2:O2"])
+        self.assertEqual(
+            sheet.writes[0][1][0][review_sheet.TITLE_COLUMN_INDEX],
+            "今日新新闻",
+        )
         self.assertFalse(any(sheet.rows[1]))
         self.assertFalse(any(sheet.rows[2]))
         self.assertEqual(sheet.rows[3], self._existing_row())
@@ -633,7 +764,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_sync_places_current_batch_first_when_search_dates_match(self):
         existing = self._existing_row()
-        existing[3] = "2026-07-22"
+        existing[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-07-22"
         sheet = self._LiveSheet([existing])
 
         with (
@@ -661,13 +792,16 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             review_sheet.sync_candidates([self._new_item()])
 
-        self.assertEqual(sheet.writes[0][1][0][6], "今日新新闻")
+        self.assertEqual(
+            sheet.writes[0][1][0][review_sheet.TITLE_COLUMN_INDEX],
+            "今日新新闻",
+        )
         self.assertEqual(
             sheet.inserts,
             [{"start_index": 1, "count": 2, "separator_count": 1}],
         )
         self.assertFalse(any(sheet.rows[1]))
-        self.assertEqual(sheet.rows[2][6], "历史新闻")
+        self.assertEqual(sheet.rows[2][review_sheet.TITLE_COLUMN_INDEX], "历史新闻")
 
     def test_sorted_rows_keep_the_matching_selector_item_identity(self):
         older = self._new_item()
@@ -710,7 +844,10 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             result = review_sheet.sync_candidates([older, newer])
 
         written_rows = sheet.writes[0][1]
-        self.assertEqual([row[6] for row in written_rows], ["较新候选", "今日新新闻"])
+        self.assertEqual(
+            [row[review_sheet.TITLE_COLUMN_INDEX] for row in written_rows],
+            ["较新候选", "今日新新闻"],
+        )
         self.assertEqual(
             [item["news_id"] for item in result["new_items"]],
             [newer["news_id"], older["news_id"]],
@@ -718,8 +855,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_sync_does_not_rewrite_existing_duplicate_rows(self):
         pending = self._existing_row()
-        pending[0] = "待审核"
-        pending[10] = [
+        pending[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        pending[review_sheet.SOURCE_URL_COLUMN_INDEX] = [
             {
                 "link": "https://example.com/news/same-event",
                 "text": "阅读原文",
@@ -727,8 +864,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             }
         ]
         rejected = list(pending)
-        rejected[0] = "不接受"
-        rejected[6] = "同一事件的人工拒绝记录"
+        rejected[review_sheet.APP_STATUS_COLUMN_INDEX] = "不接受"
+        rejected[review_sheet.TITLE_COLUMN_INDEX] = "同一事件的人工拒绝记录"
         sheet = self._LiveSheet([pending, rejected])
 
         with (
@@ -749,20 +886,26 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(result["candidate_count"], 2)
         self.assertEqual(sheet.writes, [])
         self.assertEqual(sheet.inserts, [])
-        self.assertEqual(sheet.rows[1][0], "不接受")
-        self.assertEqual(sheet.rows[1][6], "同一事件的人工拒绝记录")
+        self.assertEqual(
+            sheet.rows[1][review_sheet.APP_STATUS_COLUMN_INDEX],
+            "不接受",
+        )
+        self.assertEqual(
+            sheet.rows[1][review_sheet.TITLE_COLUMN_INDEX],
+            "同一事件的人工拒绝记录",
+        )
 
     def test_sync_keeps_review_decisions_made_during_ai_pass(self):
         pending = self._existing_row()
-        pending[0] = "待审核"
-        pending[1] = "待审核"
-        pending[2] = "未同步"
+        pending[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        pending[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        pending[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "未同步"
         sheet = self._LiveSheet([pending])
 
         def polish(items, **_kwargs):
-            sheet.rows[0][0] = "接受"
-            sheet.rows[0][1] = "接受"
-            sheet.rows[0][2] = "未同步"
+            sheet.rows[0][review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+            sheet.rows[0][review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "接受"
+            sheet.rows[0][review_sheet.SYNC_STATUS_COLUMN_INDEX] = "未同步"
             return items
 
         with (
@@ -790,9 +933,16 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             result = review_sheet.sync_candidates([self._new_item()])
 
-        written_titles = [row[6] for _range, rows in sheet.writes for row in rows]
+        written_titles = [
+            row[review_sheet.TITLE_COLUMN_INDEX]
+            for _range, rows in sheet.writes
+            for row in rows
+        ]
         self.assertNotIn("历史新闻", written_titles)
-        self.assertEqual(sheet.rows[3][:3], ["接受", "接受", "未同步"])
+        self.assertEqual(
+            [sheet.rows[3][column] for column in review_sheet.HUMAN_DECISION_COLUMNS],
+            ["接受", "接受", "未同步"],
+        )
         self.assertEqual(result["rescued_decision_count"], 1)
         self.assertEqual(result["rescued_decisions"][0]["before"], "待审核 / 待审核 / 未同步")
         self.assertEqual(result["rescued_decisions"][0]["after"], "接受 / 接受 / 未同步")
@@ -1153,8 +1303,8 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_weekly_status_is_independent_from_app_status(self):
         row = self._existing_row()
-        row[0] = "不接受"
-        row[1] = "接受"
+        row[review_sheet.APP_STATUS_COLUMN_INDEX] = "不接受"
+        row[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "接受"
 
         parsed = review_sheet._row_dict(row, 2)
 
@@ -1168,7 +1318,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_row_dict_extracts_real_url_from_feishu_rich_link_cell(self):
         row = self._existing_row()
-        row[10] = [
+        row[review_sheet.SOURCE_URL_COLUMN_INDEX] = [
             {
                 "cellPosition": None,
                 "link": "https://example.com/news/rich-link",
@@ -1187,7 +1337,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             parsed["news_id"],
             review_sheet._news_item_id(
                 "https://example.com/news/rich-link",
-                row[6],
+                row[review_sheet.TITLE_COLUMN_INDEX],
             ),
         )
 
@@ -1244,18 +1394,18 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_weekly_candidates_only_include_manual_accepts_inside_window(self):
         included = self._existing_row()
-        included[0] = "待审核"
-        included[1] = "接受"
-        included[3] = "2026-07-24"
-        included[9] = "2026-07-24"
+        included[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        included[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "接受"
+        included[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-07-24"
+        included[review_sheet.SOURCE_DATE_COLUMN_INDEX] = "2026-07-24"
         outside = list(included)
-        outside[6] = "窗口外新闻"
-        outside[9] = "2026-07-17"
-        outside[10] = "https://example.com/outside"
+        outside[review_sheet.TITLE_COLUMN_INDEX] = "窗口外新闻"
+        outside[review_sheet.SOURCE_DATE_COLUMN_INDEX] = "2026-07-17"
+        outside[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/outside"
         pending = list(included)
-        pending[1] = "待审核"
-        pending[6] = "未选择新闻"
-        pending[10] = "https://example.com/pending"
+        pending[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        pending[review_sheet.TITLE_COLUMN_INDEX] = "未选择新闻"
+        pending[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/pending"
         with (
             mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
             mock.patch.object(
@@ -1283,11 +1433,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             weekly_status: str = "待审核",
         ) -> list[str]:
             row = self._existing_row()
-            row[0] = app_status
-            row[1] = weekly_status
-            row[3] = search_date
-            row[6] = title
-            row[10] = f"https://example.com/{title}"
+            row[review_sheet.APP_STATUS_COLUMN_INDEX] = app_status
+            row[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = weekly_status
+            row[review_sheet.SEARCH_DATE_COLUMN_INDEX] = search_date
+            row[review_sheet.TITLE_COLUMN_INDEX] = title
+            row[review_sheet.SOURCE_URL_COLUMN_INDEX] = f"https://example.com/{title}"
             return row
 
         rows = [
@@ -1313,23 +1463,23 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_retention_mirrors_complete_rows_before_whole_row_delete_and_readback(self):
         expired = self._existing_row()
-        expired[0] = "不接受"
-        expired[1] = "待审核"
-        expired[3] = "2026-08-15"
-        expired[6] = "满十五天未接受"
-        expired[10] = "https://example.com/expired"
+        expired[review_sheet.APP_STATUS_COLUMN_INDEX] = "不接受"
+        expired[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        expired[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-15"
+        expired[review_sheet.TITLE_COLUMN_INDEX] = "满十五天未接受"
+        expired[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/expired"
         accepted = self._existing_row()
-        accepted[0] = "待审核"
-        accepted[1] = "接受"
-        accepted[3] = "2026-08-01"
-        accepted[6] = "周报已接受"
-        accepted[10] = "https://example.com/weekly-kept"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        accepted[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
+        accepted[review_sheet.TITLE_COLUMN_INDEX] = "周报已接受"
+        accepted[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/weekly-kept"
         recent = self._existing_row()
-        recent[0] = "待审核"
-        recent[1] = "待审核"
-        recent[3] = "2026-08-16"
-        recent[6] = "尚未满十五天"
-        recent[10] = "https://example.com/recent"
+        recent[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        recent[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        recent[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-16"
+        recent[review_sheet.TITLE_COLUMN_INDEX] = "尚未满十五天"
+        recent[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/recent"
         review_sheet._write_json(
             review_sheet.STATE_PATH,
             {"sheet_id": "sheet", "sheet_title": "候选池"},
@@ -1381,11 +1531,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_retention_aborts_when_decision_changes_between_preflight_reads(self):
         pending = self._existing_row()
-        pending[0] = "待审核"
-        pending[1] = "待审核"
-        pending[3] = "2026-08-01"
+        pending[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        pending[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        pending[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
         accepted = list(pending)
-        accepted[0] = "接受"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
         review_sheet._write_json(
             review_sheet.STATE_PATH,
             {"sheet_id": "sheet", "sheet_title": "候选池"},
@@ -1409,9 +1559,9 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_retention_dry_run_mirrors_and_plans_without_mutating_feishu(self):
         expired = self._existing_row()
-        expired[0] = "待审核"
-        expired[1] = "不接受"
-        expired[3] = "2026-08-01"
+        expired[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        expired[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "不接受"
+        expired[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
         review_sheet._write_json(
             review_sheet.STATE_PATH,
             {"sheet_id": "sheet", "sheet_title": "候选池"},
@@ -1442,9 +1592,9 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_retention_accepts_ambiguous_delete_only_after_full_readback(self):
         expired = self._existing_row()
-        expired[0] = "不接受"
-        expired[1] = "待审核"
-        expired[3] = "2026-08-01"
+        expired[review_sheet.APP_STATUS_COLUMN_INDEX] = "不接受"
+        expired[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        expired[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
         review_sheet._write_json(
             review_sheet.STATE_PATH,
             {"sheet_id": "sheet", "sheet_title": "候选池"},
@@ -1481,23 +1631,23 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_partial_retention_records_deleted_ids_and_current_count_before_retry(self):
         first = self._existing_row()
-        first[0] = "待审核"
-        first[1] = "待审核"
-        first[3] = "2026-08-01"
-        first[6] = "较低行待删"
-        first[10] = "https://example.com/first-expired"
+        first[review_sheet.APP_STATUS_COLUMN_INDEX] = "待审核"
+        first[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        first[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
+        first[review_sheet.TITLE_COLUMN_INDEX] = "较低行待删"
+        first[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/first-expired"
         survivor = self._existing_row()
-        survivor[0] = "接受"
-        survivor[1] = "待审核"
-        survivor[3] = "2026-08-01"
-        survivor[6] = "接受保留"
-        survivor[10] = "https://example.com/survivor"
+        survivor[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        survivor[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "待审核"
+        survivor[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
+        survivor[review_sheet.TITLE_COLUMN_INDEX] = "接受保留"
+        survivor[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/survivor"
         second = self._existing_row()
-        second[0] = "不接受"
-        second[1] = "暂缓"
-        second[3] = "2026-08-01"
-        second[6] = "较高行待删"
-        second[10] = "https://example.com/second-expired"
+        second[review_sheet.APP_STATUS_COLUMN_INDEX] = "不接受"
+        second[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "暂缓"
+        second[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-01"
+        second[review_sheet.TITLE_COLUMN_INDEX] = "较高行待删"
+        second[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/second-expired"
         review_sheet._write_json(
             review_sheet.STATE_PATH,
             {"sheet_id": "sheet", "sheet_title": "候选池", "last_candidate_count": 3},
@@ -1535,12 +1685,12 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_weekly_report_uses_local_history_after_sheet_rollover(self):
         accepted = self._existing_row()
-        accepted[0] = "不接受"
-        accepted[1] = "接受"
-        accepted[3] = "2026-08-20"
-        accepted[9] = "2026-08-20"
-        accepted[6] = "已归档但仍纳入周报"
-        accepted[10] = "https://example.com/archived-weekly"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "不接受"
+        accepted[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-08-20"
+        accepted[review_sheet.SOURCE_DATE_COLUMN_INDEX] = "2026-08-20"
+        accepted[review_sheet.TITLE_COLUMN_INDEX] = "已归档但仍纳入周报"
+        accepted[review_sheet.SOURCE_URL_COLUMN_INDEX] = "https://example.com/archived-weekly"
         review_sheet._upsert_review_history_rows(
             sheet_id="old-sheet",
             sheet_title="旧候选池",
@@ -1586,7 +1736,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "AI",
             "旧理由",
         ]
-        migrated = [legacy[0], "待审核", *legacy[1:]]
+        migrated = ["", legacy[0], "待审核", *legacy[1:], ""]
 
         parsed = review_sheet._row_dict(migrated, 2)
 
@@ -1617,8 +1767,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             review_sheet.FORMAT_VERSION,
         )
 
-        self.assertEqual(normalized, shifted)
-        with self.assertRaisesRegex(RuntimeError, "原文链接不在K列"):
+        self.assertEqual(
+            normalized,
+            (shifted + [""])[: len(review_sheet.HEADERS)],
+        )
+        with self.assertRaisesRegex(RuntimeError, "检索日期不在E列"):
             review_sheet._validate_sheet_rows(
                 [normalized],
                 context="测试表",
@@ -1632,13 +1785,13 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_apply_reviews_never_overwrites_human_decision_when_gate_blocks(self):
         accepted = self._existing_row()
-        accepted[0] = "接受"
-        accepted[2] = "已纳入"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "已纳入"
         writes = []
 
         def write_many(sheet, regions, **_kwargs):
             writes.extend((sheet, cell_range, values) for cell_range, values in regions)
-            accepted[2] = "同步失败"
+            accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "同步失败"
 
         with (
             mock.patch.object(review_sheet, "_read_rows", return_value=[accepted]),
@@ -1661,7 +1814,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             result = review_sheet.apply_reviews("sheet")
 
-        self.assertEqual(writes, [("sheet", "C2:C2", [["同步失败"]])])
+        self.assertEqual(writes, [("sheet", "D2:D2", [["同步失败"]])])
         self.assertEqual(result["requested_accept_count"], 1)
         self.assertEqual(result["blocked_accept_count"], 1)
         self.assertEqual(result["rejected_count"], 0)
@@ -1672,19 +1825,23 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_apply_reviews_restores_precise_gate_metadata_after_sheet_round_trip(self):
         accepted = self._existing_row()
-        accepted[0] = "接受"
-        accepted[2] = "同步失败"
-        accepted[3] = "2026-07-30"
-        accepted[6] = "香港电讯上半年多赚4%至21.5亿"
-        accepted[9] = "2026-07-29"
-        accepted[10] = "https://example.com/hkt-interim-results"
-        metadata_key = review_sheet._gate_metadata_key(accepted[10])
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "同步失败"
+        accepted[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-07-30"
+        accepted[review_sheet.TITLE_COLUMN_INDEX] = "香港电讯上半年多赚4%至21.5亿"
+        accepted[review_sheet.SOURCE_DATE_COLUMN_INDEX] = "2026-07-29"
+        accepted[review_sheet.SOURCE_URL_COLUMN_INDEX] = (
+            "https://example.com/hkt-interim-results"
+        )
+        metadata_key = review_sheet._gate_metadata_key(
+            accepted[review_sheet.SOURCE_URL_COLUMN_INDEX]
+        )
         writes = []
         published_payloads = []
 
         def write_many(sheet, regions, **_kwargs):
             writes.extend((sheet, cell_range, values) for cell_range, values in regions)
-            accepted[2] = "已纳入"
+            accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "已纳入"
 
         def read_json(path, default):
             if path == review_sheet.STATE_PATH:
@@ -1720,7 +1877,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
         self.assertEqual(result["accepted_count"], 1)
         self.assertEqual(result["blocked_accept_count"], 0)
-        self.assertEqual(writes, [("sheet", "C2:C2", [["已纳入"]])])
+        self.assertEqual(writes, [("sheet", "D2:D2", [["已纳入"]])])
         published = next(
             payload
             for path, payload in published_payloads
@@ -1734,22 +1891,24 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_apply_reviews_reconciles_timeout_that_already_landed_before_publishing(self):
         accepted = self._existing_row()
-        accepted[0] = "接受"
-        accepted[2] = "未同步"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "未同步"
         events = []
 
         def read_rows(*_args, **_kwargs):
-            events.append(("read", accepted[2]))
+            events.append(("read", accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX]))
             return [list(accepted)]
 
         def write_many(*_args, **_kwargs):
-            events.append(("write", accepted[2]))
-            accepted[2] = "已纳入"
+            events.append(("write", accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX]))
+            accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "已纳入"
             raise RuntimeError("request timeout")
 
         def write_json(path, _payload):
             if path == review_sheet.PUBLISHED_PATH:
-                events.append(("publish", accepted[2]))
+                events.append(
+                    ("publish", accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX])
+                )
 
         with (
             mock.patch.object(review_sheet, "_read_rows", side_effect=read_rows),
@@ -1782,11 +1941,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_apply_reviews_stops_on_sync_status_conflict_without_local_publish(self):
         accepted = self._existing_row()
-        accepted[0] = "接受"
-        accepted[2] = "未同步"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "未同步"
 
         def write_many(*_args, **_kwargs):
-            accepted[2] = "人工覆盖"
+            accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "人工覆盖"
             raise RuntimeError("request timeout")
 
         with (
@@ -1895,10 +2054,10 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
 
     def test_cross_day_sheet_row_without_precise_metadata_stays_blocked(self):
         accepted = self._existing_row()
-        accepted[0] = "接受"
-        accepted[2] = "同步失败"
-        accepted[3] = "2026-07-30"
-        accepted[9] = "2026-07-29"
+        accepted[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        accepted[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "同步失败"
+        accepted[review_sheet.SEARCH_DATE_COLUMN_INDEX] = "2026-07-30"
+        accepted[review_sheet.SOURCE_DATE_COLUMN_INDEX] = "2026-07-29"
         writes = []
         with (
             mock.patch.object(review_sheet, "_read_rows", return_value=[accepted]),

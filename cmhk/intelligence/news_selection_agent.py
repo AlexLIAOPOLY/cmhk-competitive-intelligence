@@ -570,7 +570,11 @@ def _decision_operations(
                 column_index = int(cell.get("column", cell.get("columnIndex", -1)))
             except (TypeError, ValueError):
                 continue
-            field = "app" if column_index == 0 else "weekly" if column_index == 1 else ""
+            field = _canonical_review_field(cell.get("field"))
+            if not field:
+                # Historical APP footprints predate the screener column and did
+                # not persist a field label, so retain the old 0/1 fallback.
+                field = "app" if column_index == 0 else "weekly" if column_index == 1 else ""
             append_operation(
                 event_id=f"{event.get('id') or ''}|cell-{cell_index}",
                 news_id=cell.get("news_id") or cell.get("record_id"),
@@ -1714,7 +1718,7 @@ def _run_news_selection_agent_locked(
                         changes.append(
                             {
                                 "rowNumber": decision["row_number"],
-                                "columnIndex": 0,
+                                "columnIndex": news_review_sheet.APP_STATUS_COLUMN_INDEX,
                                 "before": "待审核",
                                 "value": decision["app_status"],
                             }
@@ -1723,7 +1727,7 @@ def _run_news_selection_agent_locked(
                         changes.append(
                             {
                                 "rowNumber": decision["row_number"],
-                                "columnIndex": 1,
+                                "columnIndex": news_review_sheet.WEEKLY_STATUS_COLUMN_INDEX,
                                 "before": "待审核",
                                 "value": decision["weekly_status"],
                             }
@@ -1733,6 +1737,7 @@ def _run_news_selection_agent_locked(
                     sheet_id=sheet_id,
                     writer_identity="bot",
                     writer_profile=FEISHU_BOT_PROFILE,
+                    screener={"name": "新闻自动初筛机器人"},
                 )
                 if write_result.get("readbackVerified") is not True:
                     raise RuntimeError("自动勾选后未取得逐格回读证据")
