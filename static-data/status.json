@@ -18,7 +18,10 @@
       "quality": {
         "ok": 7,
         "partial": 1,
-        "failed": 25,
+        "failed": 0,
+        "operationalFailed": 0,
+        "qualityRejected": 25,
+        "nonPromoted": 25,
         "fieldTotal": 205,
         "missingFields": 2,
         "rawSources": 205
