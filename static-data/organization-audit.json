@@ -4,7 +4,7 @@
     {
       "id": "event-001",
       "at": "2026-08-30T09:32:21+00:00",
-      "actor_id": "",
+      "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "EXTERNAL",
       "action": "news_review.update",
@@ -18,7 +18,7 @@
     {
       "id": "event-002",
       "at": "2026-08-30T09:32:13+00:00",
-      "actor_id": "",
+      "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "EXTERNAL",
       "action": "news_review.update",
