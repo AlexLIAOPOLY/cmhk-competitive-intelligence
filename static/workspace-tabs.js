@@ -1395,12 +1395,14 @@
   }
 
   function hktCalendarDate() {
-    return new Intl.DateTimeFormat("en-CA", {
+    const parts = new Intl.DateTimeFormat("en-CA", {
       timeZone: "Asia/Hong_Kong",
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
-    }).format(new Date());
+    }).formatToParts(new Date());
+    const value = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+    return `${value.year}-${value.month}-${value.day}`;
   }
 
   function newsLineageRouteId(from, to) {
@@ -1466,11 +1468,11 @@
 
     const sourceHealth = nodesByKey.get(from)?.health || { key: "unknown", label: "无记录" };
     const targetHealth = nodesByKey.get(to)?.health || { key: "unknown", label: "无记录" };
-    if (targetHealth.key === "critical" || (sourceHealth.key === "critical" && !["healthy", "running"].includes(targetHealth.key))) {
-      return { key: "interrupted", label: "中断", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(targetHealth.key === "critical" ? to : from)?.label || "相邻节点"}有真实异常记录，交接未确认完成。` };
+    if (sourceHealth.key === "critical" && !["healthy", "running"].includes(targetHealth.key)) {
+      return { key: "interrupted", label: "中断", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(from)?.label || "上游节点"}有真实异常记录，下游交接未确认完成。` };
     }
-    if (targetHealth.key === "warning" || (sourceHealth.key === "warning" && targetHealth.key !== "healthy")) {
-      return { key: "degraded", label: "降级", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(targetHealth.key === "warning" ? to : from)?.label || "相邻节点"}处于警告状态。` };
+    if (targetHealth.key === "critical" || targetHealth.key === "warning" || (sourceHealth.key === "warning" && targetHealth.key !== "healthy")) {
+      return { key: "degraded", label: "降级", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(["critical", "warning"].includes(targetHealth.key) ? to : from)?.label || "相邻节点"}处于异常或警告状态；现有证据不足以把该输入线路判为中断。` };
     }
     if (targetHealth.key === "running" || sourceHealth.key === "running") {
       return { key: "running", label: "传输中", routeId, source: "run-evidence", confidence: "high", reason: "相邻节点仍在运行，线路保持活动。" };
@@ -2667,6 +2669,7 @@
       observeFaultSignals(nextTasks);
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
+      if (document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");

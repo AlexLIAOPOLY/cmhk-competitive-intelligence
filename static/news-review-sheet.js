@@ -28,7 +28,14 @@
     filterMenu: document.getElementById("newsReviewFilterMenu"),
   };
 
-  const columnWidths = [120, 120, 116, 120, 120, 135, 410, 470, 150, 150, 285, 230, 285, 285];
+  const columns = {
+    screener: 0,
+    appStatus: 1,
+    weeklyStatus: 2,
+    syncStatus: 3,
+    sourceUrl: 11,
+  };
+  const columnWidths = [160, 120, 120, 116, 120, 120, 135, 410, 470, 150, 150, 285, 230, 285, 285];
   const model = {
     headers: [],
     rows: [],
@@ -51,7 +58,7 @@
     page: 0,
     pageSize: 200,
   };
-  const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v2";
+  const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v3";
   const SHEET_READ_TIMEOUT_MS = 30000;
   const SHEET_AUTO_REFRESH_MS = 15000;
 
@@ -161,7 +168,18 @@
     cell.dataset.readOnly = row.readOnly ? "true" : "false";
     cell.tabIndex = -1;
     cell.title = row.readOnly ? `${value || "（空白）"} · APP 本地完整历史（只读）` : value;
-    if (columnIndex === 0 || columnIndex === 1) {
+    if (columnIndex === columns.screener) {
+      cell.classList.add("news-review-screener-cell");
+      const reviewer = row.reviewer;
+      if (reviewer?.name) {
+        cell.innerHTML = `<span class="news-review-screener">${reviewerAvatar(reviewer, "筛选人")}<span class="news-review-screener-name">${escapeHtml(reviewer.name)}</span></span>`;
+      } else {
+        const text = document.createElement("span");
+        text.className = "news-review-cell-text";
+        text.textContent = value || "待筛选";
+        cell.appendChild(text);
+      }
+    } else if (columnIndex === columns.appStatus || columnIndex === columns.weeklyStatus) {
       if (row.readOnly) {
         const chip = document.createElement("span");
         chip.className = `news-review-status-chip ${statusClass(value)}`;
@@ -193,12 +211,12 @@
         }], [cell]);
       });
       cell.appendChild(select);
-    } else if (columnIndex === 2) {
+    } else if (columnIndex === columns.syncStatus) {
       const chip = document.createElement("span");
       chip.className = `news-review-sync-chip ${syncClass(value)}`;
       chip.textContent = value || "未同步";
       cell.appendChild(chip);
-    } else if (columnIndex === 10 && /^https?:\/\//i.test(value)) {
+    } else if (columnIndex === columns.sourceUrl && /^https?:\/\//i.test(value)) {
       const link = document.createElement("a");
       link.href = value;
       link.target = "_blank";
@@ -215,7 +233,7 @@
     return cell;
   }
 
-  function reviewerAvatar(reviewer) {
+  function reviewerAvatar(reviewer, label = "最后复核人") {
     if (!reviewer?.name) return "";
     const name = String(reviewer.name);
     const title = `${name}最后复核${reviewer.reviewedAt ? ` · ${new Date(reviewer.reviewedAt).toLocaleString("zh-HK", { hour12: false })}` : ""}`;
@@ -230,7 +248,7 @@
       if (!["http:", "https:"].includes(url.protocol)) throw new Error("unsupported avatar URL");
       image = `<img src="${escapeHtml(url.href)}" alt="" />`;
     } catch (_) { /* use initial */ }
-    return `<span class="news-review-reviewer" title="${escapeHtml(title)}" aria-label="最后复核人：${escapeHtml(name)}">${image || escapeHtml(name.slice(0, 1) || "用")}</span>`;
+    return `<span class="news-review-reviewer" title="${escapeHtml(title)}" aria-label="${escapeHtml(label)}：${escapeHtml(name)}">${image || escapeHtml(name.slice(0, 1) || "用")}</span>`;
   }
 
   function renderHead() {
@@ -250,6 +268,7 @@
     letters.appendChild(letterCorner);
     model.headers.forEach((_header, index) => {
       const th = document.createElement("th");
+      if (index === columns.screener) th.classList.add("news-review-screener-header");
       th.textContent = columnName(index);
       letters.appendChild(th);
     });
@@ -261,6 +280,7 @@
     labels.appendChild(labelCorner);
     model.headers.forEach((header, columnIndex) => {
       const th = document.createElement("th");
+      if (columnIndex === columns.screener) th.classList.add("news-review-screener-header");
       const content = document.createElement("div");
       content.className = "news-review-header-cell";
       const sort = document.createElement("button");
@@ -304,8 +324,8 @@
       rowNumber.scope = "row";
       rowNumber.className = "news-review-row-number";
       rowNumber.innerHTML = row.readOnly
-        ? `<span class="news-review-local-badge" title="保存在本地 APP 的完整历史；不会回写飞书">本地</span><span class="news-review-original-row">#${escapeHtml(row.originalRowNumber || "—")}</span>${reviewerAvatar(row.reviewer)}`
-        : `<span>${row.rowNumber}</span>${reviewerAvatar(row.reviewer)}`;
+        ? `<span class="news-review-local-badge" title="保存在本地 APP 的完整历史；不会回写飞书">本地</span><span class="news-review-original-row">#${escapeHtml(row.originalRowNumber || "—")}</span>`
+        : `<span>${row.rowNumber}</span>`;
       tr.appendChild(rowNumber);
       row.values.forEach((_value, columnIndex) => tr.appendChild(buildCell(row, rowIndex, columnIndex)));
       fragment.appendChild(tr);
@@ -509,13 +529,13 @@
       rows.push(`<tr>${row.map((value, index) => {
         const columnIndex = columnOffset + index;
         let style = bodyStyle;
-        if (columnIndex <= 2) style += "background:#f3f8fb;";
-        if (columnIndex === 0 || columnIndex === 1) {
+        if (columnIndex <= columns.syncStatus) style += "background:#f3f8fb;";
+        if (columnIndex === columns.appStatus || columnIndex === columns.weeklyStatus) {
           if (value === "接受") style += "background:#28bd6a;color:#083b21;font-weight:700;";
           else if (value === "不接受") style += "background:#f0a6a6;color:#5b1717;font-weight:700;";
           else if (value === "暂缓") style += "background:#f0c36a;color:#4d3400;font-weight:700;";
           else style += "background:#aeb6bc;color:#28333b;font-weight:700;";
-        } else if (columnIndex === 2) {
+        } else if (columnIndex === columns.syncStatus) {
           if (value === "已纳入") style += "background:#0f6fe8;color:#ffffff;font-weight:700;";
           else if (value === "同步失败") style += "background:#d94b4b;color:#ffffff;font-weight:700;";
           else style += "background:#aeb6bc;color:#28333b;font-weight:700;";
@@ -544,7 +564,7 @@
     }
     const columnIndex = Number(cell.dataset.columnIndex);
     const rowIndex = Number(cell.dataset.rowIndex);
-    if (!model.editableColumns.has(columnIndex) || columnIndex <= 2) return;
+    if (!model.editableColumns.has(columnIndex) || columnIndex <= columns.syncStatus) return;
     const row = model.visibleRows[rowIndex];
     if (!row || row.readOnly) {
       if (row?.readOnly) setSaveStatus("本地历史记录只读，不会反向改写飞书", "success");
