@@ -17,6 +17,7 @@ chmod 700 "$STATE_DIR" "$STAGE_ROOT"
 
 interrupt_strategic=0
 overlay_files=()
+overlay_commit=""
 while (( $# > 0 )); do
   case "$1" in
     --interrupt-strategic)
@@ -37,12 +38,30 @@ while (( $# > 0 )); do
       overlay_files+=("$overlay_file")
       shift
       ;;
+    --overlay-commit)
+      shift
+      if (( $# == 0 )); then
+        echo "--overlay-commit requires a Git commit or ref." >&2
+        exit 2
+      fi
+      overlay_commit="$(git -C "$SOURCE" rev-parse --verify "$1^{commit}")"
+      if [[ ! "$overlay_commit" =~ ^[0-9a-f]{40,64}$ ]]; then
+        echo "Invalid overlay commit: $1" >&2
+        exit 2
+      fi
+      shift
+      ;;
     *)
-      echo "Usage: $0 [--interrupt-strategic] [--overlay-file RELATIVE_FILE ...]" >&2
+      echo "Usage: $0 [--interrupt-strategic] [--overlay-commit REF] [--overlay-file RELATIVE_FILE ...]" >&2
       exit 2
       ;;
   esac
 done
+
+if [[ -n "$overlay_commit" ]] && (( ${#overlay_files[@]} == 0 )); then
+  echo "--overlay-commit requires at least one --overlay-file." >&2
+  exit 2
+fi
 
 queue_lock_acquired=0
 request_published=0
@@ -123,7 +142,15 @@ mkdir -p "$release_dir"
 if (( ${#overlay_files[@]} > 0 )); then
   for overlay_file in "${overlay_files[@]}"; do
     mkdir -p "$release_dir/$(dirname "$overlay_file")"
-    rsync -a "$SOURCE/$overlay_file" "$release_dir/$overlay_file"
+    if [[ -n "$overlay_commit" ]]; then
+      if ! git -C "$SOURCE" cat-file -e "$overlay_commit:$overlay_file"; then
+        echo "Overlay file is not present in commit $overlay_commit: $overlay_file" >&2
+        exit 2
+      fi
+      git -C "$SOURCE" show "$overlay_commit:$overlay_file" > "$release_dir/$overlay_file"
+    else
+      rsync -a "$SOURCE/$overlay_file" "$release_dir/$overlay_file"
+    fi
   done
 else
   rsync -a \

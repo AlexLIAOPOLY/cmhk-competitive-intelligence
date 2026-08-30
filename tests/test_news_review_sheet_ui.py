@@ -409,6 +409,47 @@ class NewsReviewActorTests(unittest.TestCase):
 
         self.assertNotIn("reviewer", result["rows"][0])
         self.assertEqual(result["rows"][1]["reviewer"]["name"], "新闻自动初筛机器人")
+
+    def test_app_cell_reviewer_follows_record_id_after_row_moves(self) -> None:
+        snapshot = {
+            "rows": [{
+                "rowNumber": 99,
+                "recordId": "NEWS-HUMAN-MOVED",
+                "values": sheet_row(
+                    "接受", "待审核", "已纳入", "", "", "", "APP 人工修改"
+                ),
+            }]
+        }
+        events = [{
+            "at": "2026-08-28T04:10:37+00:00",
+            "actor_id": "human-1",
+            "actor_name": "人工审核人",
+            "actor_role": "ADMIN",
+            "action": "news_review.update",
+            "result": "success",
+            "details": {
+                "changed_count": 1,
+                "decision_rows": [8],
+                "cells": [{
+                    "row": 8,
+                    "column": 0,
+                    "record_id": "NEWS-HUMAN-MOVED",
+                    "news_id": "NEWS-HUMAN-MOVED",
+                    "title": "APP 人工修改",
+                    "before": "待审核",
+                    "after": "接受",
+                }],
+            },
+        }]
+        with mock.patch.object(web_app.AUTH, "operation_audit", return_value=events):
+            result = web_app.attach_news_review_actors(snapshot)
+
+        self.assertEqual(result["rows"][0]["reviewer"]["name"], "人工审核人")
+        self.assertEqual(
+            result["rows"][0]["reviewers"]["纳入滚动栏"]["role"],
+            "ADMIN",
+        )
+
     def test_legacy_generic_actor_is_backfilled_from_official_audit_api(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             service = AuthService(Path(temp_dir))
@@ -442,7 +483,11 @@ class NewsReviewActorTests(unittest.TestCase):
                 "sheetId": "sheet-1",
                 "updatedAt": "2026-08-25T10:00:00+08:00",
                 "headers": news_review_sheet.HEADERS,
-                "rows": [{"rowNumber": 2, "values": sheet_row(status, "待审核", "未同步", "", "", "", "测试新闻")}],
+                "rows": [{
+                    "rowNumber": 2,
+                    "recordId": "NEWS-HUMAN-1",
+                    "values": sheet_row(status, "待审核", "未同步", "", "", "", "测试新闻"),
+                }],
             }
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -468,6 +513,7 @@ class NewsReviewActorTests(unittest.TestCase):
                 self.assertEqual(events[0]["source"], "feishu_sheet")
                 self.assertEqual(events[0]["actor_name"], "Alice Chen")
                 self.assertEqual(events[0]["details"]["feishu_event_id"], "evt-1")
+                self.assertEqual(events[0]["details"]["news_id"], "NEWS-HUMAN-1")
                 self.assertEqual(events[0]["details"]["before"], "待审核")
                 self.assertEqual(events[0]["details"]["after"], "接受")
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
@@ -677,6 +723,7 @@ class NewsReviewActorTests(unittest.TestCase):
                 "event": "decision",
                 "recorded_at": "2026-08-28T12:07:01+08:00",
                 "agent_run_id": "agent-run-history",
+                "news_id": "NEWS-ONE",
                 "row_number": 18,
                 "title": "历史机器人新闻",
                 "automated_fields": ["app", "weekly"],
@@ -704,6 +751,7 @@ class NewsReviewActorTests(unittest.TestCase):
             self.assertEqual(len(events), 2)
             self.assertTrue(all(item["actor_id"] == "news-auto-screening-bot" for item in events))
             self.assertTrue(all(item["details"]["historical_backfill"] for item in events))
+            self.assertTrue(all(item["details"]["news_id"] == "NEWS-ONE" for item in events))
             self.assertEqual(
                 {item["details"]["field"] for item in events},
                 {"纳入滚动栏", "纳入周报"},

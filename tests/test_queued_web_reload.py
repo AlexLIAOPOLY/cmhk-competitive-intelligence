@@ -56,6 +56,8 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn("web-reload-queue.lock", queue)
         self.assertIn("prune_superseded_releases", queue)
         self.assertIn('prune_superseded_releases "$previous_token" "$request_token"', queue)
+        self.assertIn('--overlay-commit', queue)
+        self.assertIn('git -C "$SOURCE" show "$overlay_commit:$overlay_file"', queue)
         self.assertIn("web-reload-queue.lock", worker)
         self.assertIn('delete_release_dir "$release_dir"', worker)
         self.assertNotIn('rm -rf "$release_dir"', worker)

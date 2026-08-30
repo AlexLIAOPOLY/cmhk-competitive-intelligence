@@ -36,6 +36,37 @@ def _row(
     ]
 
 
+def _review_event(
+    *,
+    event_id: str,
+    title: str,
+    field: str,
+    after: str,
+    at: str,
+    actor_id: str,
+    actor_name: str,
+    actor_role: str,
+    before: str = "待审核",
+    **detail_overrides,
+) -> dict:
+    return {
+        "id": event_id,
+        "at": at,
+        "actor_id": actor_id,
+        "actor_name": actor_name,
+        "actor_role": actor_role,
+        "action": "news_review.update",
+        "result": "success",
+        "details": {
+            "target_label": title,
+            "field": field,
+            "before": before,
+            "after": after,
+            **detail_overrides,
+        },
+    }
+
+
 class NewsSelectionAgentTests(unittest.TestCase):
     def test_simplified_normalizes_model_explanations(self):
         self.assertEqual(agent._simplified("國際網絡與歷史取捨"), "国际网络与历史取舍")
@@ -61,23 +92,99 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 )
             },
         ]
-        decisions = {
-            rows[0]["news_id"]: {
-                "app_status": "接受",
-                "weekly_status": "不接受",
-            },
-            rows[1]["news_id"]: {
-                "app_status": "接受",
-                "weekly_status": "不接受",
-            },
-        }
+        events = [
+            _review_event(
+                event_id="human-corrected-weekly",
+                title="人工纠正",
+                field="纳入周报",
+                after="接受",
+                at="2026-08-28T09:02:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+                before="不接受",
+            ),
+            _review_event(
+                event_id="human-corrected-app",
+                title="人工纠正",
+                field="纳入滚动栏",
+                after="不接受",
+                at="2026-08-28T09:01:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+                before="接受",
+            ),
+            _review_event(
+                event_id="human-pure-weekly",
+                title="纯人工",
+                field="纳入周报",
+                after="接受",
+                at="2026-08-28T08:02:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+            ),
+            _review_event(
+                event_id="human-pure-app",
+                title="纯人工",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T08:01:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+            ),
+            _review_event(
+                event_id="machine-corrected-weekly",
+                title="人工纠正",
+                field="纳入周报",
+                after="不接受",
+                at="2026-08-28T07:02:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+            ),
+            _review_event(
+                event_id="machine-corrected-app",
+                title="人工纠正",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T07:01:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+            ),
+            _review_event(
+                event_id="machine-auto-weekly",
+                title="自动结果",
+                field="纳入周报",
+                after="不接受",
+                at="2026-08-28T06:02:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+            ),
+            _review_event(
+                event_id="machine-auto-app",
+                title="自动结果",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T06:01:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+            ),
+        ]
 
-        examples, corrected = agent._human_examples(rows, decisions)
+        examples, stats = agent._human_examples(rows, events)
 
-        self.assertEqual(corrected, 1)
+        self.assertEqual(stats["human_correction_field_count"], 2)
+        self.assertEqual(stats["machine_history_excluded_field_count"], 2)
         self.assertEqual({item["title"] for item in examples}, {"人工纠正", "纯人工"})
         corrected_item = next(item for item in examples if item["title"] == "人工纠正")
         self.assertTrue(corrected_item["human_correction_of_agent"])
+        self.assertEqual(set(corrected_item["human_correction_fields"]), {"app", "weekly"})
 
     def test_agent_uses_only_accept_or_reject_even_at_low_confidence(self):
         target = {
@@ -145,19 +252,266 @@ class NewsSelectionAgentTests(unittest.TestCase):
             weekly="待审核",
         )
         row = news_review_sheet._row_dict(values, 2)
-        examples, corrected = agent._human_examples(
+        examples, stats = agent._human_examples(
             [row],
-            {
-                row["news_id"]: {
-                    "automated_fields": ["app"],
-                    "app_status": "接受",
-                    "weekly_status": "待审核",
-                }
-            },
+            [_review_event(
+                event_id="machine-only",
+                title="只有机器人决定",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T08:00:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+            )],
         )
 
         self.assertEqual(examples, [])
-        self.assertEqual(corrected, 0)
+        self.assertEqual(stats["machine_history_excluded_field_count"], 1)
+
+    def test_human_examples_fail_closed_for_unknown_or_unattributed_history(self):
+        unknown = news_review_sheet._row_dict(
+            _row(
+                title="来源不明",
+                url="https://example.com/unknown",
+                app="接受",
+                weekly="不接受",
+            ),
+            2,
+        )
+        no_audit = news_review_sheet._row_dict(
+            _row(
+                title="没有审计",
+                url="https://example.com/no-audit",
+                app="接受",
+                weekly="不接受",
+            ),
+            3,
+        )
+        events = [
+            _review_event(
+                event_id="generic-weekly",
+                title="来源不明",
+                field="纳入周报",
+                after="不接受",
+                at="2026-08-28T08:02:00+08:00",
+                actor_id="feishu-review-sheet-collaborator",
+                actor_name="飞书表格协作者",
+                actor_role="EXTERNAL",
+            ),
+            _review_event(
+                event_id="generic-app",
+                title="来源不明",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T08:01:00+08:00",
+                actor_id="feishu-review-sheet-collaborator",
+                actor_name="飞书表格协作者",
+                actor_role="EXTERNAL",
+            ),
+        ]
+
+        examples, stats = agent._human_examples([unknown, no_audit], events)
+
+        self.assertEqual(examples, [])
+        self.assertEqual(stats["unknown_history_excluded_field_count"], 4)
+
+    def test_human_examples_use_machine_recorded_time_not_backfill_append_time(self):
+        row = news_review_sheet._row_dict(
+            _row(
+                title="人工最终纠正",
+                url="https://example.com/final-human",
+                app="接受",
+                weekly="待审核",
+            ),
+            27,
+        )
+        # Newest-first input mirrors AuthService.operation_audit(). The machine
+        # backfill was appended last, but its real decision time predates human.
+        events = [
+            _review_event(
+                event_id="machine-backfill",
+                title="人工最终纠正",
+                field="纳入滚动栏",
+                after="不接受",
+                at="2026-08-30T15:00:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+                agent_recorded_at="2026-08-28T07:00:00+08:00",
+                historical_backfill=True,
+            ),
+            _review_event(
+                event_id="human-final",
+                title="人工最终纠正",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T08:00:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+                before="不接受",
+            ),
+        ]
+
+        examples, stats = agent._human_examples([row], events)
+
+        self.assertEqual(len(examples), 1)
+        self.assertEqual(examples[0]["app_status"], "接受")
+        self.assertEqual(examples[0]["weekly_status"], "待审核")
+        self.assertEqual(stats["human_correction_field_count"], 1)
+
+    def test_human_examples_exclude_field_when_machine_is_final_actor(self):
+        row = news_review_sheet._row_dict(
+            _row(
+                title="机器最终覆盖",
+                url="https://example.com/machine-final",
+                app="接受",
+                weekly="待审核",
+            ),
+            28,
+        )
+        events = [
+            _review_event(
+                event_id="machine-final",
+                title="机器最终覆盖",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T09:00:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+                before="不接受",
+            ),
+            _review_event(
+                event_id="human-earlier",
+                title="机器最终覆盖",
+                field="纳入滚动栏",
+                after="不接受",
+                at="2026-08-28T08:00:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+            ),
+        ]
+
+        examples, stats = agent._human_examples([row], events)
+
+        self.assertEqual(examples, [])
+        self.assertEqual(stats["machine_history_excluded_field_count"], 1)
+
+    def test_human_examples_prefer_record_id_over_same_title_fallback(self):
+        row = news_review_sheet._row_dict(
+            _row(
+                title="相同标题",
+                url="https://example.com/id-authoritative",
+                app="接受",
+                weekly="待审核",
+            ),
+            29,
+        )
+        events = [
+            _review_event(
+                event_id="other-title-machine",
+                title="相同标题",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T10:00:00+08:00",
+                actor_id="news-auto-screening-bot",
+                actor_name="新闻自动初筛机器人",
+                actor_role="SYSTEM",
+                news_id="NEWS-OTHER",
+            ),
+            _review_event(
+                event_id="matching-id-human",
+                title="相同标题",
+                field="纳入滚动栏",
+                after="接受",
+                at="2026-08-28T09:00:00+08:00",
+                actor_id="fs-human",
+                actor_name="人工审核人",
+                actor_role="EXTERNAL",
+                news_id=row["news_id"],
+            ),
+        ]
+
+        examples, stats = agent._human_examples([row], events)
+
+        self.assertEqual(len(examples), 1)
+        self.assertEqual(examples[0]["verified_human_fields"], ["app"])
+        self.assertEqual(stats["machine_history_excluded_field_count"], 0)
+
+    def test_human_examples_reject_ambiguous_legacy_title_only_audit(self):
+        first = news_review_sheet._row_dict(
+            _row(
+                title="重复旧标题",
+                url="https://example.com/duplicate-one",
+                app="接受",
+                weekly="待审核",
+            ),
+            30,
+        )
+        second = news_review_sheet._row_dict(
+            _row(
+                title="重复旧标题",
+                url="https://example.com/duplicate-two",
+                app="接受",
+                weekly="待审核",
+            ),
+            31,
+        )
+        event = _review_event(
+            event_id="legacy-title-only",
+            title="重复旧标题",
+            field="纳入滚动栏",
+            after="接受",
+            at="2026-08-28T09:00:00+08:00",
+            actor_id="fs-human",
+            actor_name="人工审核人",
+            actor_role="EXTERNAL",
+        )
+
+        examples, stats = agent._human_examples([first, second], [event])
+
+        self.assertEqual(examples, [])
+        self.assertEqual(stats["unknown_history_excluded_field_count"], 2)
+
+    def test_app_cell_audit_uses_record_id_after_row_moves(self):
+        row = news_review_sheet._row_dict(
+            _row(
+                title="APP 人工编辑",
+                url="https://example.com/app-human",
+                app="接受",
+                weekly="待审核",
+            ),
+            99,
+        )
+        event = {
+            "id": "app-edit",
+            "at": "2026-08-28T08:00:00+08:00",
+            "actor_id": "fs-human",
+            "actor_name": "人工审核人",
+            "actor_role": "ADMIN",
+            "action": "news_review.update",
+            "result": "success",
+            "details": {
+                "cells": [{
+                    "row": 2,
+                    "column": 0,
+                    "record_id": row["news_id"],
+                    "news_id": row["news_id"],
+                    "title": "APP 人工编辑",
+                    "before": "待审核",
+                    "after": "接受",
+                }]
+            },
+        }
+
+        examples, stats = agent._human_examples([row], [event])
+
+        self.assertEqual(len(examples), 1)
+        self.assertEqual(examples[0]["verified_human_fields"], ["app"])
+        self.assertEqual(stats["verified_human_field_count"], 1)
 
     def test_unresolved_plans_are_touched_without_evicting_older_recovery_state(self):
         plans = {f"batch-{index}": {"index": index} for index in range(20)}
@@ -493,7 +847,11 @@ class NewsSelectionAgentTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             skill_path = root / "SKILL.md"
-            original_skill = "existing learned human preference\n"
+            original_skill = (
+                "---\n"
+                f"training_provenance: {agent.TRAINING_PROVENANCE_VERSION}\n"
+                "---\nexisting learned human preference\n"
+            )
             skill_path.write_text(original_skill, encoding="utf-8")
             with (
                 mock.patch.object(agent, "AGENT_DIR", root),

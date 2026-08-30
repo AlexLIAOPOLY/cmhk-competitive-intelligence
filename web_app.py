@@ -4363,9 +4363,11 @@ def attach_news_review_actors(snapshot: dict) -> dict:
     overrides = overrides if isinstance(overrides, dict) else {}
     reviewers_by_row_title: dict[tuple[int, str], dict[str, str]] = {}
     reviewers_by_title: dict[str, dict[str, str]] = {}
+    reviewers_by_record: dict[str, dict[str, str]] = {}
     reviewers_without_title: dict[int, dict[str, str]] = {}
     reviewers_by_row_title_field: dict[tuple[int, str, str], dict[str, str]] = {}
     reviewers_by_title_field: dict[tuple[str, str], dict[str, str]] = {}
+    reviewers_by_record_field: dict[tuple[str, str], dict[str, str]] = {}
     reviewers_without_title_field: dict[tuple[int, str], dict[str, str]] = {}
     for event in AUTH.operation_audit(limit=1000):
         if event.get("action") != "news_review.update" or event.get("result") != "success":
@@ -4377,6 +4379,7 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         details = event.get("details") if isinstance(event.get("details"), dict) else {}
         decision_rows = details.get("decision_rows") if isinstance(details.get("decision_rows"), list) else []
         reviewed_title = str(details.get("target_label") or event.get("target_label") or "").strip()
+        reviewed_record_id = str(details.get("news_id") or details.get("record_id") or "").strip()
         reviewed_field = _news_review_field_label(details.get("field"))
         reviewer = {
             "id": str((override or {}).get("id") or event.get("actor_id") or ""),
@@ -4385,6 +4388,61 @@ def attach_news_review_actors(snapshot: dict) -> dict:
             "role": str(event.get("actor_role") or ""),
             "reviewedAt": str(event.get("at") or ""),
         }
+        if reviewed_record_id:
+            reviewers_by_record.setdefault(reviewed_record_id, reviewer)
+            if reviewed_field:
+                reviewers_by_record_field.setdefault(
+                    (reviewed_record_id, reviewed_field), reviewer
+                )
+        for cell in details.get("cells") or []:
+            if not isinstance(cell, dict):
+                continue
+            cell_record_id = str(
+                cell.get("news_id") or cell.get("record_id") or ""
+            ).strip()
+            cell_title = str(cell.get("title") or reviewed_title).strip()
+            cell_field = _news_review_field_label(cell.get("field"))
+            if not cell_field:
+                try:
+                    cell_column = int(cell.get("column", cell.get("columnIndex", -1)))
+                except (TypeError, ValueError):
+                    cell_column = -1
+                cell_field = {
+                    0: "纳入滚动栏",
+                    1: "纳入周报",
+                }.get(cell_column, "")
+            try:
+                cell_row_number = int(
+                    cell.get("row", cell.get("rowNumber", 0)) or 0
+                )
+            except (TypeError, ValueError):
+                cell_row_number = 0
+            if cell_record_id:
+                reviewers_by_record.setdefault(cell_record_id, reviewer)
+                if cell_field:
+                    reviewers_by_record_field.setdefault(
+                        (cell_record_id, cell_field), reviewer
+                    )
+            if cell_title:
+                reviewers_by_title.setdefault(cell_title, reviewer)
+                if cell_row_number:
+                    reviewers_by_row_title.setdefault(
+                        (cell_row_number, cell_title), reviewer
+                    )
+                if cell_field:
+                    reviewers_by_title_field.setdefault(
+                        (cell_title, cell_field), reviewer
+                    )
+                    if cell_row_number:
+                        reviewers_by_row_title_field.setdefault(
+                            (cell_row_number, cell_title, cell_field), reviewer
+                        )
+            elif cell_row_number:
+                reviewers_without_title.setdefault(cell_row_number, reviewer)
+                if cell_field:
+                    reviewers_without_title_field.setdefault(
+                        (cell_row_number, cell_field), reviewer
+                    )
         for raw_row_number in decision_rows:
             try:
                 row_number = int(raw_row_number)
@@ -4415,8 +4473,10 @@ def attach_news_review_actors(snapshot: dict) -> dict:
             row_number = 0
         values = row.get("values") if isinstance(row.get("values"), list) else []
         title = str(values[6] if len(values) > 6 else "").strip()
+        record_id = str(row.get("recordId") or "").strip()
         reviewer = (
-            reviewers_by_row_title.get((row_number, title))
+            reviewers_by_record.get(record_id)
+            or reviewers_by_row_title.get((row_number, title))
             or reviewers_by_title.get(title)
             or reviewers_without_title.get(row_number)
         )
@@ -4425,7 +4485,8 @@ def attach_news_review_actors(snapshot: dict) -> dict:
         field_reviewers: dict[str, dict[str, str]] = {}
         for field_name in ("纳入滚动栏", "纳入周报"):
             field_reviewer = (
-                reviewers_by_row_title_field.get((row_number, title, field_name))
+                reviewers_by_record_field.get((record_id, field_name))
+                or reviewers_by_row_title_field.get((row_number, title, field_name))
                 or reviewers_by_title_field.get((title, field_name))
                 or reviewers_without_title_field.get((row_number, field_name))
             )
@@ -4552,6 +4613,7 @@ def _news_auto_screening_decisions() -> list[dict]:
                     str(record.get(after_key) or ""),
                 ))
             decisions.append({
+                "news_id": news_id,
                 "row_number": row_number,
                 "title": str(record.get("title") or "").strip(),
                 "field": field_label,
@@ -4726,6 +4788,7 @@ def backfill_news_auto_screening_audit() -> int:
             details={
                 "source_label": "新闻自动初筛",
                 "target_label": str(decision.get("title") or "")[:500],
+                "news_id": str(decision.get("news_id") or "")[:120],
                 "sheet_row": row_number,
                 "decision_rows": [row_number],
                 "field": str(decision.get("field") or ""),
@@ -4788,6 +4851,7 @@ def sync_news_review_sheet_audit(
             continue
         current_rows[str(row_number)] = {
             "title": str(values[6] if len(values) > 6 else "")[:500],
+            "record_id": str(row.get("recordId") or "")[:120],
             "decisions": [str(values[0] or ""), str(values[1] or "")],
         }
 
@@ -4871,6 +4935,7 @@ def sync_news_review_sheet_audit(
                     details = {
                         "source_label": "新闻自动初筛" if agent_match else "飞书表格",
                         "target_label": title,
+                        "news_id": str(current.get("record_id") or "")[:120],
                         "sheet_row": row_number,
                         "decision_rows": [row_number],
                         "field": field_label,
@@ -6369,6 +6434,75 @@ class AppHandler(BaseHTTPRequestHandler):
                 })
                 if not int(result.get("changedCount") or 0):
                     decision_rows = []
+                result_rows = [
+                    row for row in (result.get("rows") or []) if isinstance(row, dict)
+                ]
+                rows_by_record_id = {
+                    str(row.get("recordId") or ""): row
+                    for row in result_rows
+                    if str(row.get("recordId") or "")
+                }
+                rows_by_number = {
+                    int(row.get("rowNumber") or 0): row
+                    for row in result_rows
+                    if int(row.get("rowNumber") or 0) >= 2
+                }
+                headers = (
+                    result.get("headers")
+                    if isinstance(result.get("headers"), list)
+                    else []
+                )
+                candidate_review_changes = [
+                    item
+                    for item in changes[:200]
+                    if isinstance(item, dict)
+                    and int(item.get("columnIndex", -1)) in {0, 1}
+                    and str(item.get("before") or "")
+                    != str(item.get("value") or "")
+                ]
+                # update_review_sheet_cells may report an already-applied
+                # value from a stale browser. In an ambiguous mixed batch,
+                # omit the cells from human-learning evidence rather than
+                # falsely attributing a no-op to the current person.
+                auditable_changes = (
+                    candidate_review_changes
+                    if int(result.get("changedCount") or 0)
+                    == len(candidate_review_changes)
+                    else []
+                )
+                audited_cells = []
+                for item in auditable_changes:
+                    if not isinstance(item, dict):
+                        continue
+                    row_number = int(item.get("rowNumber") or 0)
+                    column_index = int(item.get("columnIndex", -1))
+                    record_id = str(item.get("recordId") or "")
+                    result_row = rows_by_record_id.get(record_id) or rows_by_number.get(
+                        row_number
+                    ) or {}
+                    values = (
+                        result_row.get("values")
+                        if isinstance(result_row.get("values"), list)
+                        else []
+                    )
+                    audited_cells.append(
+                        {
+                            "row": row_number,
+                            "column": column_index,
+                            "field": str(
+                                headers[column_index]
+                                if 0 <= column_index < len(headers)
+                                else ""
+                            ),
+                            "record_id": record_id
+                            or str(result_row.get("recordId") or ""),
+                            "news_id": record_id
+                            or str(result_row.get("recordId") or ""),
+                            "title": str(values[6] if len(values) > 6 else "")[:500],
+                            "before": str(item.get("before") or "")[:120],
+                            "after": str(item.get("value") or "")[:120],
+                        }
+                    )
                 AUTH.record_operation(
                     actor=actor,
                     action="news_review.update",
@@ -6376,16 +6510,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     details={
                         "changed_count": int(result.get("changedCount") or 0),
                         "decision_rows": decision_rows,
-                        "cells": [
-                            {
-                                "row": int(item.get("rowNumber") or 0),
-                                "column": int(item.get("columnIndex", -1)),
-                                "before": str(item.get("before") or "")[:120],
-                                "after": str(item.get("value") or "")[:120],
-                            }
-                            for item in changes[:200]
-                            if isinstance(item, dict)
-                        ],
+                        "cells": audited_cells,
                         "feishu_readback": bool(result.get("readbackVerified")),
                     },
                 )
