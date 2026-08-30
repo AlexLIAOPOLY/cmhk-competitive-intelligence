@@ -2,6 +2,56 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "6a0f0ed41bfb716654c5f507",
+      "task_id": "incident:6a0f0ed41bfb716654c5f507",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-31T03:15:38+08:00",
+      "started_at_hkt": "2026-08-31T03:15:38+08:00",
+      "heartbeat_at_hkt": "2026-08-31T03:15:38+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "0f24a1b9500650ff2d24ebf5",
+      "task_id": "incident:0f24a1b9500650ff2d24ebf5",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败状态。推断整体任务可能未完全完成，部分结果可能丢失或需恢复，但最终影响需结合任务归档判断。",
+      "suggestions": [
+        "",
+        "关联任务归档与候选ID：根据日志时间戳查询对应任务归档记录和候选ID，确认哪些步骤失败、是否已回退成功或进入待恢复队列。",
+        "恢复失败步骤：若条目进入待恢复队列，保留已有处理结果，仅重新执行失败步骤，并监控执行过程确保无新错误。",
+        "验证任务完成状态：在恢复或修复后，检查任务归档的最终状态，确认所有步骤成功完成且无数据丢失。"
+      ],
+      "occurred_at_hkt": "2026-08-31T03:14:38+08:00",
+      "started_at_hkt": "2026-08-31T03:14:38+08:00",
+      "heartbeat_at_hkt": "2026-08-31T03:14:38+08:00",
+      "completed_at_hkt": "2026-08-31T03:15:08+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "0dc7726eb169d0fea5aba7c7",
       "task_id": "incident:0dc7726eb169d0fea5aba7c7",
       "title": "主项目后台任务",
@@ -277,7 +327,7 @@
       ],
       "occurred_at_hkt": "2026-08-31 03:09:47",
       "started_at_hkt": "2026-08-31T03:10:04+08:00",
-      "heartbeat_at_hkt": "2026-08-31T03:10:04+08:00",
+      "heartbeat_at_hkt": "2026-08-31T03:15:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12103,54 +12153,6 @@
       "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
       "started_at_hkt": "2026-08-27T11:46:39+08:00",
       "heartbeat_at_hkt": "2026-08-27T11:46:39+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "8452839fc7ad913ff956f631",
-      "task_id": "incident:8452839fc7ad913ff956f631",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
-      "started_at_hkt": "2026-08-27T11:52:15+08:00",
-      "heartbeat_at_hkt": "2026-08-27T11:52:39+08:00",
-      "completed_at_hkt": "2026-08-29T16:42:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "e4e447b22405ddc8b9a9cc4d",
-      "task_id": "incident:e4e447b22405ddc8b9a9cc4d",
-      "title": "战略新闻AI补审队列",
-      "kind": "strategic-news",
-      "kind_label": "战略新闻AI补审队列",
-      "scope": "strategic-news",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
-      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
-      "suggestions": [
-        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
-        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
-      ],
-      "occurred_at_hkt": "2026-08-27T08:50:58+08:00",
-      "started_at_hkt": "2026-08-27T11:57:15+08:00",
-      "heartbeat_at_hkt": "2026-08-27T11:57:39+08:00",
       "completed_at_hkt": "2026-08-29T16:42:04+08:00",
       "handled_at_hkt": ""
     }
