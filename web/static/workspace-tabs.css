@@ -1236,7 +1236,9 @@ body.has-maximized-report-preview { overflow: hidden; }
 #newsReviewWorkspace.workspace-inline-review .news-review-selection-text { color: #7f9eaa; }
 #newsReviewWorkspace.workspace-inline-review .news-review-actions button,
 #newsReviewWorkspace.workspace-inline-review .news-review-actions a,
-#newsReviewWorkspace.workspace-inline-review .news-review-clear-filters { color: #bcd5dc; border-color: #3c6272; background: #102d3a; }
+#newsReviewWorkspace.workspace-inline-review .news-review-clear-filters,
+#newsReviewWorkspace.workspace-inline-review .news-review-pagination button { color: #bcd5dc; border-color: #3c6272; background: #102d3a; }
+#newsReviewWorkspace.workspace-inline-review .news-review-pagination button:disabled { color: #65808a; background: #0b222d; }
 #newsReviewWorkspace.workspace-inline-review .news-review-search { border-color: #3b6172; background: #071d28; }
 #newsReviewWorkspace.workspace-inline-review .news-review-search input { color: #e6f2f4; }
 #newsReviewWorkspace.workspace-inline-review .news-review-grid-shell,
@@ -1248,6 +1250,16 @@ body.has-maximized-report-preview { overflow: hidden; }
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(2),
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(3),
 #newsReviewWorkspace.workspace-inline-review .news-review-grid tbody td:nth-child(4) { background: #0d2935; }
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td,
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history:hover td {
+  color: #c8c1ad;
+  background: #182c31 !important;
+}
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td:nth-child(2),
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td:nth-child(3),
+#newsReviewWorkspace.workspace-inline-review .news-review-grid tbody tr.is-local-history td:nth-child(4) {
+  background: #203137 !important;
+}
 #newsReviewWorkspace.workspace-inline-review .news-review-grid .news-review-row-number {
   color: #789aa6;
   border-right-color: #365766;

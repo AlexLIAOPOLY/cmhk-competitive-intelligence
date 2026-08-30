@@ -172,6 +172,33 @@ body.news-review-open {
   white-space: nowrap;
 }
 
+.news-review-pagination {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  gap: 6px;
+  color: #607783;
+  white-space: nowrap;
+}
+
+.news-review-pagination button {
+  min-height: 26px;
+  padding: 0 8px;
+  color: #176f9f;
+  background: #f4f9fc;
+  border: 1px solid #c5dce8;
+  border-radius: 4px;
+  font: 600 11px/1 inherit;
+  cursor: pointer;
+}
+
+.news-review-pagination button:disabled {
+  color: #9aabb3;
+  background: #f3f5f6;
+  border-color: #dce3e7;
+  cursor: default;
+}
+
 .news-review-selection-text {
   margin-left: auto;
 }
@@ -304,6 +331,27 @@ body.news-review-open {
   margin-bottom: 5px;
 }
 
+.news-review-local-badge {
+  display: inline-flex !important;
+  width: 32px;
+  min-height: 19px;
+  margin: 0 auto 4px !important;
+  align-items: center;
+  justify-content: center;
+  color: #6b4c00;
+  background: #f4d88d;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+.news-review-original-row {
+  display: block;
+  margin-bottom: 5px;
+  color: #7f7561;
+  font-size: 9px;
+}
+
 .news-review-reviewer {
   display: inline-grid;
   width: 23px;
@@ -350,6 +398,18 @@ body.news-review-open {
 .news-review-grid tbody tr:hover td:nth-child(3),
 .news-review-grid tbody tr:hover td:nth-child(4) {
   background: #edf6fb;
+}
+
+.news-review-grid tbody tr.is-local-history td,
+.news-review-grid tbody tr.is-local-history:hover td {
+  color: #4d4a42;
+  background: #faf8f2;
+}
+
+.news-review-grid tbody tr.is-local-history td:nth-child(2),
+.news-review-grid tbody tr.is-local-history td:nth-child(3),
+.news-review-grid tbody tr.is-local-history td:nth-child(4) {
+  background: #f4f1e8;
 }
 
 .news-review-grid td.is-selected {
@@ -402,7 +462,8 @@ body.news-review-open {
   -webkit-line-clamp: 3;
 }
 
-.news-review-status-select {
+.news-review-status-select,
+.news-review-status-chip {
   width: 100%;
   min-width: 82px;
   padding: 4px 22px 4px 8px;
@@ -415,9 +476,18 @@ body.news-review-open {
   cursor: pointer;
 }
 
-.news-review-status-select.status-accepted { color: #063d28; background: #28bd6a; }
-.news-review-status-select.status-rejected { color: #7b2525; background: #f0b0ae; }
-.news-review-status-select.status-deferred { color: #664b00; background: #f1cf72; }
+.news-review-status-chip {
+  display: inline-flex;
+  width: auto;
+  cursor: default;
+}
+
+.news-review-status-select.status-accepted,
+.news-review-status-chip.status-accepted { color: #063d28; background: #28bd6a; }
+.news-review-status-select.status-rejected,
+.news-review-status-chip.status-rejected { color: #7b2525; background: #f0b0ae; }
+.news-review-status-select.status-deferred,
+.news-review-status-chip.status-deferred { color: #664b00; background: #f1cf72; }
 
 .news-review-sync-chip {
   display: inline-flex;

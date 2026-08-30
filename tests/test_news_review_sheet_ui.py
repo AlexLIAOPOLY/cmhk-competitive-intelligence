@@ -18,6 +18,21 @@ def sheet_row(*values: str) -> list[str]:
 
 
 class NewsReviewSheetModelTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self._temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self._temp_dir.cleanup)
+        for attribute, filename in (
+            ("HISTORY_PATH", "news-review-history.json"),
+            ("STATE_PATH", "news-review-state.json"),
+        ):
+            path_patch = mock.patch.object(
+                news_review_sheet,
+                attribute,
+                Path(self._temp_dir.name) / filename,
+            )
+            path_patch.start()
+            self.addCleanup(path_patch.stop)
+
     def test_snapshot_keeps_live_sheet_rows_and_edit_contract(self) -> None:
         rows = [
             sheet_row(
@@ -45,6 +60,62 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         self.assertNotIn(2, payload["editableColumns"])
         self.assertEqual(payload["rows"][0]["rowNumber"], 2)
         self.assertEqual(payload["rows"][0]["values"][6], "香港电讯推出自主研发 AI 平台")
+        self.assertFalse(payload["rows"][0]["readOnly"])
+        self.assertEqual(payload["rows"][0]["storageSource"], "feishu")
+        self.assertEqual(payload["feishuCurrentCount"], 1)
+        self.assertEqual(payload["localHistoryCount"], 0)
+
+    def test_snapshot_merges_local_history_as_read_only_and_live_row_wins(self) -> None:
+        historical = sheet_row(
+            "不接受",
+            "待审核",
+            "已移除",
+            "2026-07-01",
+            "香港本地",
+            "竞对动态",
+            "本地完整历史",
+            "历史摘要",
+            "历史媒体",
+            "2026-07-01",
+            "https://example.com/history",
+        )
+        live = sheet_row(
+            "待审核",
+            "待审核",
+            "未同步",
+            "2026-08-30",
+            "香港本地",
+            "竞对动态",
+            "飞书当前新闻",
+            "当前摘要",
+            "当前媒体",
+            "2026-08-30",
+            "https://example.com/live",
+        )
+        news_review_sheet._upsert_review_history_rows(
+            sheet_id="old-sheet",
+            sheet_title="旧候选池",
+            rows=[historical],
+            active_sheet_id="sheet-1",
+        )
+        news_review_sheet._write_json(
+            news_review_sheet.STATE_PATH,
+            {"sheet_id": "sheet-1", "sheet_title": "当前候选池"},
+        )
+        with (
+            mock.patch.object(news_review_sheet, "_resolved_review_sheet_id", return_value="sheet-1"),
+            mock.patch.object(news_review_sheet, "_read_rows", return_value=[live]),
+        ):
+            payload = news_review_sheet.review_sheet_snapshot()
+
+        self.assertEqual(payload["totalHistoryCount"], 2)
+        self.assertEqual(payload["feishuCurrentCount"], 1)
+        self.assertEqual(payload["localHistoryCount"], 1)
+        self.assertEqual(payload["rows"][0]["values"][6], "飞书当前新闻")
+        self.assertFalse(payload["rows"][0]["readOnly"])
+        self.assertEqual(payload["rows"][1]["values"][6], "本地完整历史")
+        self.assertTrue(payload["rows"][1]["readOnly"])
+        self.assertEqual(payload["rows"][1]["storageSource"], "local_history")
 
     def test_snapshot_fails_fast_when_background_sync_holds_lock(self) -> None:
         lock = mock.Mock()
@@ -171,6 +242,45 @@ class NewsReviewSheetModelTests(unittest.TestCase):
                     [{"rowNumber": 2, "columnIndex": 2, "before": "未同步", "value": "已纳入"}]
                 )
 
+    def test_local_history_and_stale_record_identity_cannot_write_feishu(self) -> None:
+        rows = [sheet_row(
+            "待审核",
+            "待审核",
+            "未同步",
+            "2026-08-30",
+            "香港本地",
+            "竞对动态",
+            "当前新闻",
+            "摘要",
+            "媒体",
+            "2026-08-30",
+            "https://example.com/current",
+        )]
+        with (
+            mock.patch.object(news_review_sheet, "_resolved_review_sheet_id", return_value="sheet-1"),
+            mock.patch.object(news_review_sheet, "_review_process_lock", return_value=nullcontext(True)),
+            mock.patch.object(news_review_sheet, "_read_rows", return_value=rows),
+            mock.patch.object(news_review_sheet, "_write_many") as write_many,
+        ):
+            with self.assertRaisesRegex(ValueError, "本地历史记录仅供查看"):
+                news_review_sheet.update_review_sheet_cells([{
+                    "rowNumber": 2,
+                    "columnIndex": 0,
+                    "before": "待审核",
+                    "value": "接受",
+                    "readOnly": True,
+                    "storageSource": "local_history",
+                }])
+            with self.assertRaisesRegex(RuntimeError, "已移动或替换"):
+                news_review_sheet.update_review_sheet_cells([{
+                    "rowNumber": 2,
+                    "columnIndex": 0,
+                    "before": "待审核",
+                    "value": "接受",
+                    "recordId": "NEWS-STALE",
+                }])
+        write_many.assert_not_called()
+
 
 class NewsReviewSheetStaticUiTests(unittest.TestCase):
     def test_report_library_contains_real_sheet_workspace(self) -> None:
@@ -199,12 +309,21 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertIn('value === "暂缓"', script)
         self.assertIn('value === "同步失败"', script)
         self.assertIn("model.saving", script)
+        self.assertIn('storageSource: String(row.storageSource || "feishu")', script)
+        self.assertIn("本地历史记录只读，不会反向改写飞书", script)
+        self.assertIn('row.readOnly ? "is-local-history"', script)
+        self.assertIn("pageSize: 200", script)
+        self.assertIn('id="newsReviewPreviousPage"', html)
+        self.assertIn('id="newsReviewNextPage"', html)
         self.assertNotIn("copySelection", script)
         self.assertNotIn("exportExcel", script)
         self.assertIn("position: sticky", css)
         self.assertIn(".news-review-status-select.status-accepted", css)
         self.assertIn("reviewerAvatar(row.reviewer)", script)
         self.assertIn("news-review-reviewer", css)
+        self.assertIn(".news-review-local-badge", css)
+        self.assertIn("tr.is-local-history", css)
+        self.assertIn(".news-review-pagination", css)
         self.assertIn('<th>来源</th>', organization_script)
         self.assertIn('label: "飞书表格"', organization_script)
         self.assertIn('label: "本地 APP"', organization_script)
@@ -354,6 +473,39 @@ class NewsReviewActorTests(unittest.TestCase):
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受")), [])
                 ignored = [{"rowNumber": 2, "columnIndex": 0, "before": "接受", "value": "不接受"}]
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("不接受"), ignored_changes=ignored), [])
+
+    def test_local_history_rows_are_excluded_from_feishu_edit_audit_baseline(self) -> None:
+        snapshot = {
+            "sheetId": "sheet-1",
+            "headers": news_review_sheet.HEADERS,
+            "rows": [
+                {
+                    "rowNumber": 2,
+                    "values": sheet_row("待审核", "待审核", "未同步", "", "", "", "飞书当前新闻"),
+                    "storageSource": "feishu",
+                    "readOnly": False,
+                },
+                {
+                    "rowNumber": 2,
+                    "values": sheet_row("不接受", "不接受", "已移除", "", "", "", "本地历史新闻"),
+                    "storageSource": "local_history",
+                    "readOnly": True,
+                },
+            ],
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            state_path = service.state_dir / "news-review-sheet-audit-state.json"
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(web_app, "sheet_edit_events", return_value=[]),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot), [])
+
+            saved = service._read(state_path, {})
+            self.assertEqual(saved["rows"]["2"]["title"], "飞书当前新闻")
+            self.assertEqual(saved["rows"]["2"]["decisions"], ["待审核", "待审核"])
 
     def test_direct_feishu_decision_waits_until_event_actor_is_available(self) -> None:
         def snapshot(status: str) -> dict:

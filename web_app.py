@@ -4762,6 +4762,11 @@ def sync_news_review_sheet_audit(
     for row in snapshot.get("rows") or []:
         if not isinstance(row, dict):
             continue
+        storage_source = str(row.get("storageSource") or "")
+        if row.get("readOnly") is True or (
+            storage_source and storage_source != "feishu"
+        ):
+            continue
         try:
             row_number = int(row.get("rowNumber") or 0)
         except (TypeError, ValueError):

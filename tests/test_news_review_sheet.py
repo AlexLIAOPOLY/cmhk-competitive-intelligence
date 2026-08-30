@@ -1,6 +1,9 @@
 import json
 import subprocess
+import tempfile
 import unittest
+from datetime import date
+from pathlib import Path
 from unittest import mock
 
 import cmhk.intelligence.news_review_sheet as review_sheet
@@ -9,6 +12,18 @@ import strategic_briefing
 
 class NewsReviewSheetSyncTests(unittest.TestCase):
     def setUp(self):
+        self._temp_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(self._temp_dir.cleanup)
+        temp_root = Path(self._temp_dir.name)
+        for attribute, filename in (
+            ("STATE_PATH", "state.json"),
+            ("PUBLISHED_PATH", "published.json"),
+            ("HISTORY_PATH", "history.json"),
+            ("RETENTION_AUDIT_PATH", "retention.jsonl"),
+        ):
+            patcher = mock.patch.object(review_sheet, attribute, temp_root / filename)
+            patcher.start()
+            self.addCleanup(patcher.stop)
         self._spreadsheet_info_patch = mock.patch.object(
             review_sheet,
             "_spreadsheet_info",
@@ -897,6 +912,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 "apply_reviews",
                 return_value={"changed_rows": 0},
             ) as apply_reviews,
+            mock.patch.object(
+                review_sheet,
+                "_maintain_review_history_and_retention",
+                return_value={"status": "ok", "historyTotalRows": 277, "removedRows": 0},
+            ),
         ):
             result = review_sheet.run_cycle()
 
@@ -908,6 +928,43 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertFalse(
             write_json.call_args.args[1]["group_notifications_paused"]
         )
+
+    def test_retention_failure_does_not_break_verified_review_sync(self):
+        state = {
+            "last_poll_epoch": 0,
+            "last_source_generated_at": "2026-08-30T07:30:00+08:00",
+            "last_source_summary": {
+                "generated_at": "2026-08-30T07:30:00+08:00",
+                "candidate_count": 5,
+            },
+            "sheet_id": "sheet",
+            "sheet_url": "https://example.com/sheet",
+            "last_candidate_count": 5,
+        }
+        with (
+            mock.patch.object(review_sheet, "_read_json", return_value=state),
+            mock.patch.object(review_sheet, "_write_json"),
+            mock.patch.object(
+                review_sheet,
+                "_current_source_generated_at",
+                return_value="2026-08-30T07:30:00+08:00",
+            ),
+            mock.patch.object(
+                review_sheet,
+                "apply_reviews",
+                return_value={"changed_rows": 0, "readback_verified": True},
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_maintain_review_history_and_retention",
+                side_effect=RuntimeError("retention unavailable"),
+            ),
+        ):
+            result = review_sheet.run_cycle(schedule_dashboard_publish=False)
+
+        self.assertEqual(result["status"], "ok")
+        self.assertEqual(result["retention"]["status"], "failed")
+        self.assertIn("retention unavailable", result["retention"]["error"])
 
     def test_run_cycle_reuses_verified_result_for_same_scheduled_slot(self):
         cached = {
@@ -989,6 +1046,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 review_sheet,
                 "apply_reviews",
                 return_value={"changed_rows": 0},
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_maintain_review_history_and_retention",
+                return_value={"status": "ok", "historyTotalRows": 471, "removedRows": 0},
             ),
         ):
             result = review_sheet.run_cycle(schedule_dashboard_publish=False)
@@ -1211,6 +1273,303 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(audit["acceptedRows"], 2)
         self.assertEqual(audit["includedRows"], 1)
         self.assertEqual(audit["reasons"]["out_of_window"], 1)
+
+    def test_retention_plan_uses_day_fifteen_and_either_acceptance(self):
+        def candidate(
+            search_date: str,
+            title: str,
+            *,
+            app_status: str = "待审核",
+            weekly_status: str = "待审核",
+        ) -> list[str]:
+            row = self._existing_row()
+            row[0] = app_status
+            row[1] = weekly_status
+            row[3] = search_date
+            row[6] = title
+            row[10] = f"https://example.com/{title}"
+            return row
+
+        rows = [
+            candidate("2026-08-16", "age-14"),
+            candidate("2026-08-15", "age-15"),
+            candidate("2026-08-01", "app-accepted", app_status="接受"),
+            candidate("2026-08-01", "weekly-accepted", weekly_status="接受"),
+            candidate("", "missing-date"),
+        ]
+
+        plan, warnings = review_sheet._retention_plan(
+            rows,
+            today_hkt=date(2026, 8, 30),
+        )
+
+        self.assertEqual([item["title"] for item in plan], ["age-15"])
+        self.assertEqual(plan[0]["age_days"], 15)
+        self.assertEqual(warnings[0]["title"], "missing-date")
+        self.assertEqual(
+            warnings[0]["reason"],
+            "missing_or_invalid_search_date_kept",
+        )
+
+    def test_retention_mirrors_complete_rows_before_whole_row_delete_and_readback(self):
+        expired = self._existing_row()
+        expired[0] = "不接受"
+        expired[1] = "待审核"
+        expired[3] = "2026-08-15"
+        expired[6] = "满十五天未接受"
+        expired[10] = "https://example.com/expired"
+        accepted = self._existing_row()
+        accepted[0] = "待审核"
+        accepted[1] = "接受"
+        accepted[3] = "2026-08-01"
+        accepted[6] = "周报已接受"
+        accepted[10] = "https://example.com/weekly-kept"
+        recent = self._existing_row()
+        recent[0] = "待审核"
+        recent[1] = "待审核"
+        recent[3] = "2026-08-16"
+        recent[6] = "尚未满十五天"
+        recent[10] = "https://example.com/recent"
+        review_sheet._write_json(
+            review_sheet.STATE_PATH,
+            {"sheet_id": "sheet", "sheet_title": "候选池"},
+        )
+
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[
+                    [expired, accepted, recent],
+                    [expired, accepted, recent],
+                    [accepted, recent],
+                ],
+            ),
+            mock.patch.object(review_sheet, "_delete_sheet_row_range") as delete_rows,
+        ):
+            result = review_sheet._maintain_review_history_and_retention(
+                active_sheet_id="sheet",
+                force=True,
+                today_hkt=date(2026, 8, 30),
+            )
+
+        delete_rows.assert_called_once_with(
+            "sheet",
+            2,
+            2,
+            identity="",
+            profile="",
+        )
+        self.assertEqual(result["removedRows"], 1)
+        self.assertEqual(result["historyTotalRows"], 3)
+        history = review_sheet._review_history_payload()["records"]
+        expired_id = review_sheet._row_dict(expired, 2)["news_id"]
+        accepted_id = review_sheet._row_dict(accepted, 3)["news_id"]
+        self.assertFalse(history[expired_id]["feishu_visible"])
+        self.assertEqual(history[expired_id]["values"], expired)
+        self.assertTrue(history[accepted_id]["feishu_visible"])
+        audit_events = [
+            json.loads(line)
+            for line in review_sheet.RETENTION_AUDIT_PATH.read_text(
+                encoding="utf-8"
+            ).splitlines()
+        ]
+        self.assertEqual([item["event"] for item in audit_events], ["planned", "verified"])
+        saved_state = review_sheet._read_json(review_sheet.STATE_PATH, {})
+        self.assertEqual(saved_state[review_sheet.RETENTION_STATE_DATE_KEY], "2026-08-30")
+        self.assertIn(expired_id, saved_state["archived_news_ids"])
+
+    def test_retention_aborts_when_decision_changes_between_preflight_reads(self):
+        pending = self._existing_row()
+        pending[0] = "待审核"
+        pending[1] = "待审核"
+        pending[3] = "2026-08-01"
+        accepted = list(pending)
+        accepted[0] = "接受"
+        review_sheet._write_json(
+            review_sheet.STATE_PATH,
+            {"sheet_id": "sheet", "sheet_title": "候选池"},
+        )
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[[pending], [accepted]],
+            ),
+            mock.patch.object(review_sheet, "_delete_sheet_row_range") as delete_rows,
+        ):
+            with self.assertRaisesRegex(RuntimeError, "发生变化"):
+                review_sheet._maintain_review_history_and_retention(
+                    active_sheet_id="sheet",
+                    force=True,
+                    today_hkt=date(2026, 8, 30),
+                )
+        delete_rows.assert_not_called()
+        self.assertEqual(len(review_sheet._review_history_payload()["records"]), 1)
+
+    def test_retention_dry_run_mirrors_and_plans_without_mutating_feishu(self):
+        expired = self._existing_row()
+        expired[0] = "待审核"
+        expired[1] = "不接受"
+        expired[3] = "2026-08-01"
+        review_sheet._write_json(
+            review_sheet.STATE_PATH,
+            {"sheet_id": "sheet", "sheet_title": "候选池"},
+        )
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[[expired], [expired]],
+            ),
+            mock.patch.object(review_sheet, "_delete_sheet_row_range") as delete_rows,
+        ):
+            result = review_sheet._maintain_review_history_and_retention(
+                active_sheet_id="sheet",
+                force=True,
+                dry_run=True,
+                today_hkt=date(2026, 8, 30),
+            )
+
+        self.assertEqual(result["status"], "dry_run")
+        self.assertEqual(result["plannedRows"], 1)
+        self.assertEqual(result["removedRows"], 0)
+        delete_rows.assert_not_called()
+        self.assertFalse(review_sheet.RETENTION_AUDIT_PATH.exists())
+        self.assertEqual(len(review_sheet._review_history_payload()["records"]), 1)
+        state = review_sheet._read_json(review_sheet.STATE_PATH, {})
+        self.assertNotIn(review_sheet.RETENTION_STATE_DATE_KEY, state)
+
+    def test_retention_accepts_ambiguous_delete_only_after_full_readback(self):
+        expired = self._existing_row()
+        expired[0] = "不接受"
+        expired[1] = "待审核"
+        expired[3] = "2026-08-01"
+        review_sheet._write_json(
+            review_sheet.STATE_PATH,
+            {"sheet_id": "sheet", "sheet_title": "候选池"},
+        )
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[[expired], [expired], []],
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_delete_sheet_row_range",
+                side_effect=RuntimeError("timeout after server applied delete"),
+            ),
+        ):
+            result = review_sheet._maintain_review_history_and_retention(
+                active_sheet_id="sheet",
+                force=True,
+                today_hkt=date(2026, 8, 30),
+            )
+
+        self.assertEqual(result["removedRows"], 1)
+        events = [
+            json.loads(line)["event"]
+            for line in review_sheet.RETENTION_AUDIT_PATH.read_text(
+                encoding="utf-8"
+            ).splitlines()
+        ]
+        self.assertEqual(
+            events,
+            ["planned", "write_error_readback_verified", "verified"],
+        )
+
+    def test_partial_retention_records_deleted_ids_and_current_count_before_retry(self):
+        first = self._existing_row()
+        first[0] = "待审核"
+        first[1] = "待审核"
+        first[3] = "2026-08-01"
+        first[6] = "较低行待删"
+        first[10] = "https://example.com/first-expired"
+        survivor = self._existing_row()
+        survivor[0] = "接受"
+        survivor[1] = "待审核"
+        survivor[3] = "2026-08-01"
+        survivor[6] = "接受保留"
+        survivor[10] = "https://example.com/survivor"
+        second = self._existing_row()
+        second[0] = "不接受"
+        second[1] = "暂缓"
+        second[3] = "2026-08-01"
+        second[6] = "较高行待删"
+        second[10] = "https://example.com/second-expired"
+        review_sheet._write_json(
+            review_sheet.STATE_PATH,
+            {"sheet_id": "sheet", "sheet_title": "候选池", "last_candidate_count": 3},
+        )
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[
+                    [first, survivor, second],
+                    [first, survivor, second],
+                    [first, survivor],
+                ],
+            ),
+            mock.patch.object(
+                review_sheet,
+                "_delete_sheet_row_range",
+                side_effect=[None, RuntimeError("second range timeout")],
+            ),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "未完整确认"):
+                review_sheet._maintain_review_history_and_retention(
+                    active_sheet_id="sheet",
+                    force=True,
+                    today_hkt=date(2026, 8, 30),
+                )
+
+        second_id = review_sheet._row_dict(second, 4)["news_id"]
+        state = review_sheet._read_json(review_sheet.STATE_PATH, {})
+        self.assertIn(second_id, state["archived_news_ids"])
+        self.assertEqual(state["last_candidate_count"], 2)
+        self.assertNotIn(review_sheet.RETENTION_STATE_DATE_KEY, state)
+        history = review_sheet._review_history_payload()["records"]
+        self.assertFalse(history[second_id]["feishu_visible"])
+
+    def test_weekly_report_uses_local_history_after_sheet_rollover(self):
+        accepted = self._existing_row()
+        accepted[0] = "不接受"
+        accepted[1] = "接受"
+        accepted[3] = "2026-08-20"
+        accepted[9] = "2026-08-20"
+        accepted[6] = "已归档但仍纳入周报"
+        accepted[10] = "https://example.com/archived-weekly"
+        review_sheet._upsert_review_history_rows(
+            sheet_id="old-sheet",
+            sheet_title="旧候选池",
+            rows=[accepted],
+            active_sheet_id="new-sheet",
+        )
+        review_sheet._write_json(
+            review_sheet.STATE_PATH,
+            {
+                "sheet_id": "new-sheet",
+                "sheet_title": "新候选池",
+                "archive_parts": [
+                    {"sheet_id": "old-sheet", "sheet_title": "旧候选池"}
+                ],
+            },
+        )
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="new-sheet"),
+            mock.patch.object(review_sheet, "_read_rows", return_value=[]),
+        ):
+            rows, audit = review_sheet.load_weekly_report_candidates(
+                "2026-08-18",
+                "2026-08-24",
+            )
+
+        self.assertEqual([row["title"] for row in rows], ["已归档但仍纳入周报"])
+        self.assertEqual(rows[0]["storage_source"], "local_history")
+        self.assertEqual(audit["sheetRows"], 0)
+        self.assertEqual(audit["localHistoryRows"], 1)
 
     def test_version_seven_row_migrates_by_inserting_weekly_status(self):
         legacy = [

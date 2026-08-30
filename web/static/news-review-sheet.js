@@ -10,6 +10,9 @@
     feishu: document.getElementById("newsReviewFeishuLink"),
     search: document.getElementById("newsReviewSearchInput"),
     count: document.getElementById("newsReviewCountText"),
+    previousPage: document.getElementById("newsReviewPreviousPage"),
+    nextPage: document.getElementById("newsReviewNextPage"),
+    pageText: document.getElementById("newsReviewPageText"),
     selection: document.getElementById("newsReviewSelectionText"),
     clearFilters: document.getElementById("newsReviewClearFilters"),
     cellName: document.getElementById("newsReviewCellName"),
@@ -29,6 +32,7 @@
   const model = {
     headers: [],
     rows: [],
+    matchedRows: [],
     visibleRows: [],
     editableColumns: new Set(),
     statusOptions: ["待审核", "接受", "不接受", "暂缓"],
@@ -41,8 +45,13 @@
     saving: false,
     activeEditor: null,
     cancelEditor: null,
+    feishuCurrentCount: 0,
+    localHistoryCount: 0,
+    totalHistoryCount: 0,
+    page: 0,
+    pageSize: 200,
   };
-  const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v1";
+  const SNAPSHOT_CACHE_KEY = "cmhk-news-review-snapshot-v2";
   const SHEET_READ_TIMEOUT_MS = 30000;
   const SHEET_AUTO_REFRESH_MS = 15000;
 
@@ -75,7 +84,7 @@
 
   function updateVisibleRows() {
     const query = nodes.search.value.trim().toLocaleLowerCase("zh-Hans");
-    model.visibleRows = model.rows.filter((row) => {
+    const matchedRows = model.rows.filter((row) => {
       if (query && !row.values.some((value) => String(value).toLocaleLowerCase("zh-Hans").includes(query))) {
         return false;
       }
@@ -86,12 +95,17 @@
     });
     if (model.sort) {
       const { columnIndex, direction } = model.sort;
-      model.visibleRows.sort((left, right) => String(left.values[columnIndex] || "").localeCompare(
+      matchedRows.sort((left, right) => String(left.values[columnIndex] || "").localeCompare(
         String(right.values[columnIndex] || ""),
         "zh-Hans",
         { numeric: true, sensitivity: "base" },
       ) * direction);
     }
+    model.matchedRows = matchedRows;
+    const pageCount = Math.max(1, Math.ceil(matchedRows.length / model.pageSize));
+    model.page = Math.max(0, Math.min(model.page, pageCount - 1));
+    const pageStart = model.page * model.pageSize;
+    model.visibleRows = matchedRows.slice(pageStart, pageStart + model.pageSize);
   }
 
   function selectionBounds() {
@@ -131,7 +145,9 @@
     nodes.selection.textContent = `${cellCount} 个单元格`;
     const activeRow = model.visibleRows[model.selectionFocus.rowIndex];
     if (activeRow) {
-      nodes.cellName.textContent = `${columnName(model.selectionFocus.columnIndex)}${activeRow.rowNumber}`;
+      nodes.cellName.textContent = activeRow.readOnly
+        ? `本地历史 · ${activeRow.sourceSheetTitle || activeRow.sourceSheetId || "已归档"} #${activeRow.originalRowNumber || "—"}`
+        : `${columnName(model.selectionFocus.columnIndex)}${activeRow.rowNumber}`;
       nodes.cellValue.textContent = activeRow.values[model.selectionFocus.columnIndex] || "（空白）";
     }
   }
@@ -142,9 +158,18 @@
     cell.dataset.rowIndex = String(rowIndex);
     cell.dataset.rowNumber = String(row.rowNumber);
     cell.dataset.columnIndex = String(columnIndex);
+    cell.dataset.readOnly = row.readOnly ? "true" : "false";
     cell.tabIndex = -1;
-    cell.title = value;
+    cell.title = row.readOnly ? `${value || "（空白）"} · APP 本地完整历史（只读）` : value;
     if (columnIndex === 0 || columnIndex === 1) {
+      if (row.readOnly) {
+        const chip = document.createElement("span");
+        chip.className = `news-review-status-chip ${statusClass(value)}`;
+        chip.textContent = value || "待审核";
+        chip.setAttribute("aria-label", `${model.headers[columnIndex]}：${value || "待审核"}，本地历史只读`);
+        cell.appendChild(chip);
+        return cell;
+      }
       const select = document.createElement("select");
       select.className = `news-review-status-select ${statusClass(value)}`;
       select.setAttribute("aria-label", `${model.headers[columnIndex]}，第 ${row.rowNumber} 行`);
@@ -161,6 +186,7 @@
         select.className = `news-review-status-select ${statusClass(next)}`;
         await saveChanges([{
           rowNumber: row.rowNumber,
+          recordId: row.recordId,
           columnIndex,
           before: value,
           value: next,
@@ -248,6 +274,7 @@
         model.sort = model.sort?.columnIndex === columnIndex
           ? { columnIndex, direction: model.sort.direction * -1 }
           : { columnIndex, direction: 1 };
+        model.page = 0;
         render();
       });
       const filter = document.createElement("button");
@@ -272,10 +299,13 @@
     model.visibleRows.forEach((row, rowIndex) => {
       const tr = document.createElement("tr");
       tr.dataset.rowNumber = String(row.rowNumber);
+      tr.className = row.readOnly ? "is-local-history" : "is-feishu-current";
       const rowNumber = document.createElement("th");
       rowNumber.scope = "row";
       rowNumber.className = "news-review-row-number";
-      rowNumber.innerHTML = `<span>${row.rowNumber}</span>${reviewerAvatar(row.reviewer)}`;
+      rowNumber.innerHTML = row.readOnly
+        ? `<span class="news-review-local-badge" title="保存在本地 APP 的完整历史；不会回写飞书">本地</span><span class="news-review-original-row">#${escapeHtml(row.originalRowNumber || "—")}</span>${reviewerAvatar(row.reviewer)}`
+        : `<span>${row.rowNumber}</span>${reviewerAvatar(row.reviewer)}`;
       tr.appendChild(rowNumber);
       row.values.forEach((_value, columnIndex) => tr.appendChild(buildCell(row, rowIndex, columnIndex)));
       fragment.appendChild(tr);
@@ -287,9 +317,14 @@
     updateVisibleRows();
     renderHead();
     renderBody();
-    nodes.count.textContent = model.visibleRows.length === model.rows.length
-      ? `${model.rows.length} 条记录`
-      : `${model.visibleRows.length} / ${model.rows.length} 条记录`;
+    const scope = model.matchedRows.length === model.rows.length
+      ? `${model.totalHistoryCount} 条完整记录`
+      : `${model.matchedRows.length} / ${model.totalHistoryCount} 条完整记录`;
+    nodes.count.textContent = `${scope} · 飞书当前 ${model.feishuCurrentCount} · 本地历史 ${model.localHistoryCount}`;
+    const pageCount = Math.max(1, Math.ceil(model.matchedRows.length / model.pageSize));
+    nodes.pageText.textContent = `第 ${model.page + 1} / ${pageCount} 页`;
+    nodes.previousPage.disabled = model.page <= 0;
+    nodes.nextPage.disabled = model.page >= pageCount - 1;
     nodes.clearFilters.hidden = model.filters.size === 0 && !nodes.search.value;
     nodes.grid.hidden = false;
     nodes.loading.hidden = true;
@@ -301,17 +336,33 @@
     model.rows = Array.isArray(payload.rows)
       ? payload.rows.map((row) => ({
         rowNumber: Number(row.rowNumber),
+        originalRowNumber: Number(row.originalRowNumber || row.rowNumber || 0),
+        recordId: String(row.recordId || ""),
         values: model.headers.map((_header, index) => String(row.values?.[index] || "")),
         reviewer: row.reviewer && typeof row.reviewer === "object" ? row.reviewer : null,
+        readOnly: row.readOnly === true,
+        storageSource: String(row.storageSource || "feishu"),
+        sourceSheetId: String(row.sourceSheetId || ""),
+        sourceSheetTitle: String(row.sourceSheetTitle || ""),
+        feishuVisible: row.feishuVisible === true,
       }))
       : [];
+    model.feishuCurrentCount = Number.isFinite(Number(payload.feishuCurrentCount))
+      ? Number(payload.feishuCurrentCount)
+      : model.rows.filter((row) => !row.readOnly).length;
+    model.localHistoryCount = Number.isFinite(Number(payload.localHistoryCount))
+      ? Number(payload.localHistoryCount)
+      : model.rows.filter((row) => row.readOnly).length;
+    model.totalHistoryCount = Number.isFinite(Number(payload.totalHistoryCount))
+      ? Number(payload.totalHistoryCount)
+      : model.rows.length;
     model.editableColumns = new Set((payload.editableColumns || []).map(Number));
     if (Array.isArray(payload.statusOptions) && payload.statusOptions.length) {
       model.statusOptions = payload.statusOptions.map(String);
     }
     nodes.syncText.textContent = payload.updatedAt
-      ? `已连接飞书 · ${new Date(payload.updatedAt).toLocaleString("zh-HK", { hour12: false })}`
-      : "已连接飞书审核表";
+      ? `飞书实时 + 本地完整历史 · ${new Date(payload.updatedAt).toLocaleString("zh-HK", { hour12: false })}`
+      : "飞书实时 + 本地完整历史";
     if (payload.sheetUrl) {
       nodes.feishu.href = payload.sheetUrl;
       nodes.feishu.hidden = false;
@@ -324,7 +375,7 @@
       const cached = JSON.parse(localStorage.getItem(SNAPSHOT_CACHE_KEY) || "null");
       if (!cached || !Array.isArray(cached.rows) || !Array.isArray(cached.headers)) return false;
       applySnapshot(cached);
-      nodes.syncText.textContent = "正在后台更新 · 已显示上次审核表";
+      nodes.syncText.textContent = "正在后台更新 · 已显示上次完整历史快照";
       return true;
     } catch (_error) {
       localStorage.removeItem(SNAPSHOT_CACHE_KEY);
@@ -339,8 +390,8 @@
     nodes.grid.hidden = !hasRows;
     nodes.loading.hidden = hasRows;
     nodes.loading.classList.remove("is-error");
-    nodes.loading.textContent = "正在读取飞书审核表…";
-    nodes.syncText.textContent = "正在连接飞书审核表";
+    nodes.loading.textContent = "正在读取飞书与本地完整历史…";
+    nodes.syncText.textContent = "正在连接飞书并合并本地历史";
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), SHEET_READ_TIMEOUT_MS);
     try {
@@ -352,7 +403,7 @@
       if (!response.ok || !payload.ok) throw new Error(payload.error || "审核表读取失败");
       applySnapshot(payload);
       try { localStorage.setItem(SNAPSHOT_CACHE_KEY, JSON.stringify(payload)); } catch (_error) { /* cache is optional */ }
-      setSaveStatus("实时回写飞书 · 修改后自动保存并回读");
+      setSaveStatus("飞书当前行可编辑并回读 · 本地历史永久保留且只读");
     } catch (error) {
       const errorMessage = error?.name === "AbortError"
         ? "实时刷新超过 30 秒，已停止等待"
@@ -395,7 +446,7 @@
       if (!response.ok || !payload.ok) throw new Error(payload.error || "保存失败");
       applySnapshot(payload);
       setSaveStatus(`已保存 ${payload.changedCount || 0} 个单元格，并通过飞书回读`, "success");
-      window.setTimeout(() => setSaveStatus("实时回写飞书 · 修改后自动保存并回读"), 3200);
+      window.setTimeout(() => setSaveStatus("飞书当前行可编辑并回读 · 本地历史永久保留且只读"), 3200);
       return true;
     } catch (error) {
       cells.forEach((cell) => cell?.classList.add("is-error"));
@@ -424,6 +475,7 @@
       button.addEventListener("click", () => {
         if (value === null) model.filters.delete(columnIndex);
         else model.filters.set(columnIndex, value);
+        model.page = 0;
         nodes.filterMenu.hidden = true;
         model.selectionAnchor = null;
         model.selectionFocus = null;
@@ -494,7 +546,10 @@
     const rowIndex = Number(cell.dataset.rowIndex);
     if (!model.editableColumns.has(columnIndex) || columnIndex <= 2) return;
     const row = model.visibleRows[rowIndex];
-    if (!row) return;
+    if (!row || row.readOnly) {
+      if (row?.readOnly) setSaveStatus("本地历史记录只读，不会反向改写飞书", "success");
+      return;
+    }
     const before = String(row.values[columnIndex] || "");
     const editor = document.createElement("textarea");
     editor.className = "news-review-cell-editor";
@@ -512,7 +567,13 @@
       model.cancelEditor = null;
       editor.remove();
       if (save && value !== before) {
-        await saveChanges([{ rowNumber: row.rowNumber, columnIndex, before, value }], [cell]);
+        await saveChanges([{
+          rowNumber: row.rowNumber,
+          recordId: row.recordId,
+          columnIndex,
+          before,
+          value,
+        }], [cell]);
       }
     };
     model.cancelEditor = () => finish(false);
@@ -541,12 +602,13 @@
     matrix.forEach((values, rowOffset) => {
       const targetRowIndex = model.selectionFocus.rowIndex + rowOffset;
       const targetRow = model.visibleRows[targetRowIndex];
-      if (!targetRow) return;
+      if (!targetRow || targetRow.readOnly) return;
       values.forEach((value, columnOffset) => {
         const columnIndex = model.selectionFocus.columnIndex + columnOffset;
         if (!model.editableColumns.has(columnIndex)) return;
         changes.push({
           rowNumber: targetRow.rowNumber,
+          recordId: targetRow.recordId,
           columnIndex,
           before: targetRow.values[columnIndex],
           value,
@@ -581,6 +643,7 @@
   openButton.addEventListener("click", openWorkspace);
   nodes.close.addEventListener("click", closeWorkspace);
   nodes.search.addEventListener("input", () => {
+    model.page = 0;
     model.selectionAnchor = null;
     model.selectionFocus = null;
     render();
@@ -588,7 +651,25 @@
   nodes.clearFilters.addEventListener("click", () => {
     model.filters.clear();
     nodes.search.value = "";
+    model.page = 0;
     render();
+  });
+  nodes.previousPage.addEventListener("click", () => {
+    if (model.page <= 0) return;
+    model.page -= 1;
+    model.selectionAnchor = null;
+    model.selectionFocus = null;
+    render();
+    nodes.shell.scrollTop = 0;
+  });
+  nodes.nextPage.addEventListener("click", () => {
+    const pageCount = Math.max(1, Math.ceil(model.matchedRows.length / model.pageSize));
+    if (model.page >= pageCount - 1) return;
+    model.page += 1;
+    model.selectionAnchor = null;
+    model.selectionFocus = null;
+    render();
+    nodes.shell.scrollTop = 0;
   });
 
   nodes.body.addEventListener("pointerdown", (event) => {

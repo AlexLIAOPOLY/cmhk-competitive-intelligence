@@ -12,7 +12,7 @@ import threading
 import time
 from collections import Counter
 from contextlib import contextmanager
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from difflib import SequenceMatcher
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -38,6 +38,8 @@ LATEST_PATH = DATA_DIR / "news_discovery_latest.json"
 FULL_DISCOVERY_PATH = DATA_DIR / "news_discovery_full.json"
 PUBLISHED_PATH = DATA_DIR / "published.json"
 STATE_PATH = DATA_DIR / "news_review_sheet_state.json"
+HISTORY_PATH = DATA_DIR / "news_review_history.json"
+RETENTION_AUDIT_PATH = DATA_DIR / "news_review_retention_audit.jsonl"
 GATE_METADATA_STATE_KEY = "candidate_gate_metadata"
 
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -88,6 +90,13 @@ PENDING_CYCLE_STATE_KEY = "pending_cycle"
 MAX_SUCCESSFUL_CYCLE_RESULTS = 32
 PENDING_SELECTION_BATCHES_STATE_KEY = "pending_selection_batches"
 MAX_PENDING_SELECTION_BATCHES = 32
+HISTORY_FORMAT_VERSION = 1
+RETENTION_DAYS = max(
+    1,
+    int(os.environ.get("CMHK_NEWS_REVIEW_RETENTION_DAYS", "15")),
+)
+RETENTION_STATE_DATE_KEY = "last_retention_date_hkt"
+RETENTION_STATE_RESULT_KEY = "last_retention_result"
 
 HEADERS = [
     "纳入滚动栏",
@@ -205,6 +214,12 @@ def _write_json(path: Path, payload: Any) -> None:
         encoding="utf-8",
     )
     temporary.replace(path)
+
+
+def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(payload, ensure_ascii=False, sort_keys=True) + "\n")
 
 
 def _text(value: Any, limit: int = 4000) -> str:
@@ -2413,6 +2428,690 @@ def _row_dict(row: list[Any], row_number: int) -> dict[str, Any]:
     }
 
 
+def _review_history_payload() -> dict[str, Any]:
+    payload = _read_json(HISTORY_PATH, {})
+    records = payload.get("records") if isinstance(payload, dict) else {}
+    return {
+        "format_version": HISTORY_FORMAT_VERSION,
+        "updated_at_hkt": _text(payload.get("updated_at_hkt"), 60)
+        if isinstance(payload, dict)
+        else "",
+        "mirrored_sheet_ids": [
+            _text(value, 120)
+            for value in (payload.get("mirrored_sheet_ids") or [])
+            if _text(value, 120)
+        ]
+        if isinstance(payload, dict)
+        else [],
+        "records": dict(records) if isinstance(records, dict) else {},
+    }
+
+
+def _upsert_review_history_rows(
+    *,
+    sheet_id: str,
+    sheet_title: str,
+    rows: list[list[Any]],
+    active_sheet_id: str = "",
+) -> dict[str, int]:
+    """Mirror complete Feishu rows locally without deleting older APP history."""
+
+    payload = _review_history_payload()
+    records = payload["records"]
+    observed_at = _now_iso()
+    observed = 0
+    changed = 0
+    metadata_changed = False
+    if sheet_id not in payload["mirrored_sheet_ids"]:
+        payload["mirrored_sheet_ids"].append(sheet_id)
+        metadata_changed = True
+    for row_number, raw_row in enumerate(rows, start=2):
+        if not raw_row or not any(_text(value, 80) for value in raw_row):
+            continue
+        values = _comparable_sheet_row(raw_row)
+        parsed = _row_dict(values, row_number)
+        news_id = parsed["news_id"]
+        if not news_id:
+            continue
+        observed += 1
+        previous = records.get(news_id)
+        previous = previous if isinstance(previous, dict) else {}
+        # A current-sheet observation is authoritative when a legacy part also
+        # happens to contain the same news identity.
+        if (
+            previous
+            and active_sheet_id
+            and sheet_id != active_sheet_id
+            and _text(previous.get("sheet_id"), 120) == active_sheet_id
+            and previous.get("feishu_visible") is True
+        ):
+            continue
+        candidate = {
+            "news_id": news_id,
+            "values": values,
+            "sheet_id": sheet_id,
+            "sheet_title": sheet_title,
+            "row_number": row_number,
+            "first_seen_at_hkt": _text(previous.get("first_seen_at_hkt"), 60)
+            or observed_at,
+            "last_seen_at_hkt": observed_at,
+            "feishu_visible": True,
+            "retired_from_feishu_at_hkt": "",
+            "retirement_reason": "",
+        }
+        comparable_previous = {
+            key: value
+            for key, value in previous.items()
+            if key != "last_seen_at_hkt"
+        }
+        comparable_candidate = {
+            key: value
+            for key, value in candidate.items()
+            if key != "last_seen_at_hkt"
+        }
+        if comparable_previous == comparable_candidate:
+            continue
+        records[news_id] = candidate
+        changed += 1
+    if changed or metadata_changed:
+        payload["updated_at_hkt"] = observed_at
+        _write_json(HISTORY_PATH, payload)
+    return {"observed": observed, "changed": changed, "total": len(records)}
+
+
+def _mark_review_history_retired(
+    *,
+    sheet_id: str,
+    news_ids: set[str],
+    reason: str,
+) -> int:
+    if not news_ids:
+        return 0
+    payload = _review_history_payload()
+    records = payload["records"]
+    retired_at = _now_iso()
+    changed = 0
+    for news_id in sorted(news_ids):
+        record = records.get(news_id)
+        if not isinstance(record, dict):
+            raise RuntimeError(
+                f"本地历史缺少待移除新闻 {news_id}，已停止确认飞书清理"
+            )
+        if _text(record.get("sheet_id"), 120) != sheet_id:
+            continue
+        if record.get("feishu_visible") is False and record.get("retirement_reason") == reason:
+            continue
+        record = dict(record)
+        record.update(
+            {
+                "feishu_visible": False,
+                "retired_from_feishu_at_hkt": retired_at,
+                "retirement_reason": reason,
+                "last_seen_at_hkt": retired_at,
+            }
+        )
+        records[news_id] = record
+        changed += 1
+    if changed:
+        payload["updated_at_hkt"] = retired_at
+        _write_json(HISTORY_PATH, payload)
+    return changed
+
+
+def _history_row_records() -> list[dict[str, Any]]:
+    payload = _review_history_payload()
+    records = []
+    for news_id, raw_record in payload["records"].items():
+        if not isinstance(raw_record, dict):
+            continue
+        values = _comparable_sheet_row(
+            raw_record.get("values") if isinstance(raw_record.get("values"), list) else []
+        )
+        if not any(_text(value, 80) for value in values):
+            continue
+        records.append(
+            {
+                **raw_record,
+                "news_id": _text(raw_record.get("news_id"), 80) or _text(news_id, 80),
+                "values": values,
+                "row_number": int(raw_record.get("row_number") or 0),
+            }
+        )
+    return records
+
+
+def _review_sheet_parts(state: dict[str, Any], active_sheet_id: str) -> list[dict[str, str]]:
+    parts: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for raw_part in state.get("archive_parts") or []:
+        if not isinstance(raw_part, dict):
+            continue
+        part_sheet_id = _text(raw_part.get("sheet_id"), 120)
+        if not part_sheet_id or part_sheet_id in seen:
+            continue
+        seen.add(part_sheet_id)
+        parts.append(
+            {
+                "sheet_id": part_sheet_id,
+                "sheet_title": _text(raw_part.get("sheet_title"), 160) or SHEET_TITLE,
+                "role": "archive",
+            }
+        )
+    if active_sheet_id and active_sheet_id not in seen:
+        parts.append(
+            {
+                "sheet_id": active_sheet_id,
+                "sheet_title": _text(state.get("sheet_title"), 160) or SHEET_TITLE,
+                "role": "active",
+            }
+        )
+    return parts
+
+
+def _retention_plan(
+    rows: list[list[Any]],
+    *,
+    today_hkt: date,
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    remove: list[dict[str, Any]] = []
+    warnings: list[dict[str, Any]] = []
+    for row_number, raw_row in enumerate(rows, start=2):
+        if not raw_row or not any(_text(value, 80) for value in raw_row):
+            continue
+        values = _comparable_sheet_row(raw_row)
+        parsed = _row_dict(values, row_number)
+        search_date_text = _publication_date(parsed["search_date"])
+        if not search_date_text:
+            warnings.append(
+                {
+                    "row_number": row_number,
+                    "news_id": parsed["news_id"],
+                    "title": parsed["title"],
+                    "reason": "missing_or_invalid_search_date_kept",
+                }
+            )
+            continue
+        age_days = (today_hkt - date.fromisoformat(search_date_text)).days
+        accepted = parsed["status"] == "接受" or parsed["weekly_status"] == "接受"
+        if age_days >= RETENTION_DAYS and not accepted:
+            remove.append(
+                {
+                    "row_number": row_number,
+                    "news_id": parsed["news_id"],
+                    "title": parsed["title"],
+                    "search_date": search_date_text,
+                    "age_days": age_days,
+                    "status": parsed["status"],
+                    "weekly_status": parsed["weekly_status"],
+                    "values": values,
+                }
+            )
+    return remove, warnings
+
+
+def _contiguous_row_ranges(row_numbers: list[int]) -> list[tuple[int, int]]:
+    numbers = sorted({int(value) for value in row_numbers if int(value) >= 2})
+    if not numbers:
+        return []
+    ranges: list[tuple[int, int]] = []
+    start = previous = numbers[0]
+    for number in numbers[1:]:
+        if number == previous + 1:
+            previous = number
+            continue
+        ranges.append((start, previous))
+        start = previous = number
+    ranges.append((start, previous))
+    return ranges
+
+
+def _delete_sheet_row_range(
+    sheet_id: str,
+    start_row: int,
+    end_row: int,
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> None:
+    if start_row < 2 or end_row < start_row:
+        raise ValueError("飞书删除行范围无效")
+    _lark(
+        "sheets",
+        "+delete-dimension",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--sheet-id",
+        sheet_id,
+        "--dimension",
+        "ROWS",
+        "--start-index",
+        str(start_row),
+        "--end-index",
+        str(end_row),
+        retry_transient=False,
+        identity_override=identity,
+        profile_override=profile,
+    )
+
+
+def _remove_retired_published_items(news_ids: set[str], sheet_id: str) -> int:
+    if not news_ids:
+        return 0
+    payload = _read_json(PUBLISHED_PATH, {"items": []})
+    items = payload.get("items") if isinstance(payload, dict) else []
+    items = [item for item in items or [] if isinstance(item, dict)]
+    kept = [
+        item
+        for item in items
+        if not (
+            _text(item.get("id"), 80) in news_ids
+            and item.get("approval_source") == SHEET_SOURCE
+            and (
+                not _text(item.get("approval_sheet_id"), 120)
+                or _text(item.get("approval_sheet_id"), 120) == sheet_id
+            )
+        )
+    ]
+    removed = len(items) - len(kept)
+    if removed:
+        _write_json(PUBLISHED_PATH, {**payload, "updated_at": _now_iso(), "items": kept})
+    return removed
+
+
+def _retention_signature(plan: list[dict[str, Any]]) -> list[tuple[int, str, str, str]]:
+    return [
+        (
+            int(item["row_number"]),
+            _text(item.get("news_id"), 80),
+            _text(item.get("status"), 40),
+            _text(item.get("weekly_status"), 40),
+        )
+        for item in plan
+    ]
+
+
+def _record_partial_retention_state(
+    *,
+    sheet_id: str,
+    active_sheet_id: str,
+    remaining_count: int,
+    removed_news_ids: set[str],
+) -> None:
+    """Persist proven partial progress so the next sync cannot re-add deleted rows."""
+
+    if not removed_news_ids:
+        return
+    state = _read_json(STATE_PATH, {})
+    state = dict(state) if isinstance(state, dict) else {}
+    archived_ids = {
+        _text(value, 80)
+        for value in state.get("archived_news_ids") or []
+        if _text(value, 80)
+    }
+    archived_ids.update(removed_news_ids)
+    state["archived_news_ids"] = sorted(archived_ids)
+    if sheet_id == active_sheet_id:
+        state["last_candidate_count"] = remaining_count
+    else:
+        updated_parts = []
+        for raw_part in state.get("archive_parts") or []:
+            if not isinstance(raw_part, dict):
+                continue
+            part = dict(raw_part)
+            if _text(part.get("sheet_id"), 120) == sheet_id:
+                part["candidate_count"] = remaining_count
+            updated_parts.append(part)
+        state["archive_parts"] = updated_parts
+    state["last_retention_partial_at_hkt"] = _now_iso()
+    _write_json(STATE_PATH, state)
+
+
+def _maintain_review_history_and_retention(
+    *,
+    active_sheet_id: str,
+    force: bool = False,
+    dry_run: bool = False,
+    today_hkt: date | None = None,
+    identity: str = "",
+    profile: str = "",
+) -> dict[str, Any]:
+    """Mirror all review rows locally, then prune only old unapproved Feishu rows."""
+
+    state = _read_json(STATE_PATH, {})
+    state = dict(state) if isinstance(state, dict) else {}
+    today_value = today_hkt or datetime.now(HKT).date()
+    today_text = today_value.isoformat()
+    retention_due = force or _text(state.get(RETENTION_STATE_DATE_KEY), 20) != today_text
+    parts = _review_sheet_parts(state, active_sheet_id)
+    if not parts and active_sheet_id:
+        parts = [{"sheet_id": active_sheet_id, "sheet_title": SHEET_TITLE, "role": "active"}]
+    if not retention_due:
+        parts = [part for part in parts if part["sheet_id"] == active_sheet_id]
+
+    result: dict[str, Any] = {
+        "status": "dry_run" if dry_run else "ok",
+        "retentionDays": RETENTION_DAYS,
+        "retentionDateHkt": today_text,
+        "retentionApplied": retention_due,
+        "partsChecked": 0,
+        "observedRows": 0,
+        "historyChangedRows": 0,
+        "historyTotalRows": 0,
+        "removedRows": 0,
+        "plannedRows": 0,
+        "retainedMalformedDateRows": 0,
+        "publishedItemsRemoved": 0,
+        "sheets": [],
+    }
+    removed_ids_all: set[str] = set()
+    archive_counts: dict[str, int] = {}
+    active_count: int | None = None
+
+    for part in parts:
+        part_sheet_id = part["sheet_id"]
+        initial_rows = _read_rows(
+            part_sheet_id,
+            identity=identity,
+            profile=profile,
+        )
+        mirror = _upsert_review_history_rows(
+            sheet_id=part_sheet_id,
+            sheet_title=part["sheet_title"],
+            rows=initial_rows,
+            active_sheet_id=active_sheet_id,
+        )
+        result["partsChecked"] += 1
+        result["observedRows"] += mirror["observed"]
+        result["historyChangedRows"] += mirror["changed"]
+        result["historyTotalRows"] = max(result["historyTotalRows"], mirror["total"])
+        if not retention_due:
+            if part_sheet_id == active_sheet_id:
+                active_count = mirror["observed"]
+            continue
+
+        initial_plan, initial_warnings = _retention_plan(
+            initial_rows,
+            today_hkt=today_value,
+        )
+        result["retainedMalformedDateRows"] += len(initial_warnings)
+        sheet_result = {
+            "sheetId": part_sheet_id,
+            "sheetTitle": part["sheet_title"],
+            "observedRows": mirror["observed"],
+            "eligibleRows": len(initial_plan),
+            "removedRows": 0,
+            "warnings": initial_warnings,
+        }
+        result["sheets"].append(sheet_result)
+        if not initial_plan:
+            if part_sheet_id == active_sheet_id:
+                active_count = mirror["observed"]
+            else:
+                archive_counts[part_sheet_id] = mirror["observed"]
+            continue
+
+        # Read a second time immediately before the destructive operation. Any
+        # row insertion, decision change, or deletion shifts the signature and
+        # aborts this pass instead of deleting by stale coordinates.
+        stable_rows = _read_rows(
+            part_sheet_id,
+            identity=identity,
+            profile=profile,
+        )
+        stable_plan, _stable_warnings = _retention_plan(
+            stable_rows,
+            today_hkt=today_value,
+        )
+        if _retention_signature(stable_plan) != _retention_signature(initial_plan):
+            raise RuntimeError(
+                f"飞书审核表 {part_sheet_id} 在清理预检期间发生变化，已停止删除并等待下次重算"
+            )
+        stable_mirror = _upsert_review_history_rows(
+            sheet_id=part_sheet_id,
+            sheet_title=part["sheet_title"],
+            rows=stable_rows,
+            active_sheet_id=active_sheet_id,
+        )
+        result["historyChangedRows"] += stable_mirror["changed"]
+        result["historyTotalRows"] = max(
+            result["historyTotalRows"], stable_mirror["total"]
+        )
+        if dry_run:
+            result["plannedRows"] += len(stable_plan)
+            sheet_result["plannedRows"] = len(stable_plan)
+            if part_sheet_id == active_sheet_id:
+                active_count = stable_mirror["observed"]
+            else:
+                archive_counts[part_sheet_id] = stable_mirror["observed"]
+            continue
+
+        expected_survivor_ids = {
+            _row_dict(row, row_number)["news_id"]
+            for row_number, row in enumerate(stable_rows, start=2)
+            if row and any(_text(value, 80) for value in row)
+        } - {item["news_id"] for item in stable_plan}
+        duplicate_counts = Counter(
+            _row_dict(row, row_number)["news_id"]
+            for row_number, row in enumerate(stable_rows, start=2)
+            if row and any(_text(value, 80) for value in row)
+        )
+        duplicates = [news_id for news_id, count in duplicate_counts.items() if count > 1]
+        if duplicates:
+            raise RuntimeError(
+                f"飞书审核表 {part_sheet_id} 存在 {len(duplicates)} 个重复新闻标识，已停止自动删除"
+            )
+
+        audit_id = hashlib.sha256(
+            f"{part_sheet_id}|{today_text}|{_now_iso()}|{len(stable_plan)}".encode("utf-8")
+        ).hexdigest()[:20]
+        _append_jsonl(
+            RETENTION_AUDIT_PATH,
+            {
+                "event": "planned",
+                "audit_id": audit_id,
+                "at_hkt": _now_iso(),
+                "sheet_id": part_sheet_id,
+                "sheet_title": part["sheet_title"],
+                "retention_days": RETENTION_DAYS,
+                "today_hkt": today_text,
+                "rows": stable_plan,
+            },
+        )
+        target_ids = {item["news_id"] for item in stable_plan}
+        reconciled_rows: list[list[Any]] | None = None
+        published_removed_before_verification = 0
+        try:
+            for start_row, end_row in reversed(
+                _contiguous_row_ranges([item["row_number"] for item in stable_plan])
+            ):
+                _delete_sheet_row_range(
+                    part_sheet_id,
+                    start_row,
+                    end_row,
+                    identity=identity,
+                    profile=profile,
+                )
+        except Exception as exc:
+            partial_rows = _read_rows(
+                part_sheet_id,
+                identity=identity,
+                profile=profile,
+            )
+            remaining_ids = {
+                _row_dict(row, row_number)["news_id"]
+                for row_number, row in enumerate(partial_rows, start=2)
+                if row and any(_text(value, 80) for value in row)
+            }
+            removed_so_far = target_ids - remaining_ids
+            missing_survivors_after_error = expected_survivor_ids - remaining_ids
+            _mark_review_history_retired(
+                sheet_id=part_sheet_id,
+                news_ids=removed_so_far,
+                reason=f"older_than_or_equal_to_{RETENTION_DAYS}_days_without_acceptance",
+            )
+            published_removed_so_far = _remove_retired_published_items(
+                removed_so_far,
+                part_sheet_id,
+            )
+            published_removed_before_verification = published_removed_so_far
+            _record_partial_retention_state(
+                sheet_id=part_sheet_id,
+                active_sheet_id=active_sheet_id,
+                remaining_count=len(remaining_ids),
+                removed_news_ids=removed_so_far,
+            )
+            if not (target_ids & remaining_ids) and not missing_survivors_after_error:
+                reconciled_rows = partial_rows
+                _append_jsonl(
+                    RETENTION_AUDIT_PATH,
+                    {
+                        "event": "write_error_readback_verified",
+                        "audit_id": audit_id,
+                        "at_hkt": _now_iso(),
+                        "sheet_id": part_sheet_id,
+                        "removed_news_ids": sorted(removed_so_far),
+                        "published_items_removed": published_removed_so_far,
+                        "error": _text(exc, 600),
+                    },
+                )
+            else:
+                _append_jsonl(
+                    RETENTION_AUDIT_PATH,
+                    {
+                        "event": "partial_failure",
+                        "audit_id": audit_id,
+                        "at_hkt": _now_iso(),
+                        "sheet_id": part_sheet_id,
+                        "removed_news_ids": sorted(removed_so_far),
+                        "remaining_target_news_ids": sorted(target_ids & remaining_ids),
+                        "missing_survivor_news_ids": sorted(missing_survivors_after_error),
+                        "published_items_removed": published_removed_so_far,
+                        "error": _text(exc, 600),
+                    },
+                )
+                raise RuntimeError(
+                    f"飞书审核表 {part_sheet_id} 清理未完整确认；已保留本地审计，下次将重新读取后续做"
+                ) from exc
+
+        verified_rows = (
+            reconciled_rows
+            if reconciled_rows is not None
+            else _read_rows(
+                part_sheet_id,
+                identity=identity,
+                profile=profile,
+            )
+        )
+        verified_ids = {
+            _row_dict(row, row_number)["news_id"]
+            for row_number, row in enumerate(verified_rows, start=2)
+            if row and any(_text(value, 80) for value in row)
+        }
+        remaining_targets = target_ids & verified_ids
+        missing_survivors = expected_survivor_ids - verified_ids
+        if remaining_targets or missing_survivors:
+            _append_jsonl(
+                RETENTION_AUDIT_PATH,
+                {
+                    "event": "readback_failed",
+                    "audit_id": audit_id,
+                    "at_hkt": _now_iso(),
+                    "sheet_id": part_sheet_id,
+                    "remaining_target_news_ids": sorted(remaining_targets),
+                    "missing_survivor_news_ids": sorted(missing_survivors),
+                },
+            )
+            raise RuntimeError(
+                f"飞书审核表 {part_sheet_id} 清理回读不一致，已停止确认完成"
+            )
+
+        retirement_reason = (
+            f"older_than_or_equal_to_{RETENTION_DAYS}_days_without_acceptance"
+        )
+        _mark_review_history_retired(
+            sheet_id=part_sheet_id,
+            news_ids=target_ids,
+            reason=retirement_reason,
+        )
+        published_removed = (
+            published_removed_before_verification
+            + _remove_retired_published_items(target_ids, part_sheet_id)
+        )
+        removed_ids_all.update(target_ids)
+        result["removedRows"] += len(target_ids)
+        result["publishedItemsRemoved"] += published_removed
+        sheet_result["removedRows"] = len(target_ids)
+        sheet_result["readbackVerified"] = True
+        _append_jsonl(
+            RETENTION_AUDIT_PATH,
+            {
+                "event": "verified",
+                "audit_id": audit_id,
+                "at_hkt": _now_iso(),
+                "sheet_id": part_sheet_id,
+                "removed_news_ids": sorted(target_ids),
+                "survivor_count": len(verified_ids),
+                "published_items_removed": published_removed,
+            },
+        )
+        if part_sheet_id == active_sheet_id:
+            active_count = len(verified_ids)
+        else:
+            archive_counts[part_sheet_id] = len(verified_ids)
+
+    if retention_due and not dry_run:
+        latest_state = _read_json(STATE_PATH, {})
+        latest_state = dict(latest_state) if isinstance(latest_state, dict) else {}
+        archived_ids = {
+            _text(value, 80)
+            for value in latest_state.get("archived_news_ids") or []
+            if _text(value, 80)
+        }
+        archived_ids.update(removed_ids_all)
+        latest_state["archived_news_ids"] = sorted(archived_ids)
+        if active_count is not None:
+            latest_state["last_candidate_count"] = active_count
+        if archive_counts:
+            updated_parts = []
+            for raw_part in latest_state.get("archive_parts") or []:
+                if not isinstance(raw_part, dict):
+                    continue
+                part_copy = dict(raw_part)
+                part_id = _text(part_copy.get("sheet_id"), 120)
+                if part_id in archive_counts:
+                    part_copy["candidate_count"] = archive_counts[part_id]
+                updated_parts.append(part_copy)
+            latest_state["archive_parts"] = updated_parts
+        latest_state[RETENTION_STATE_DATE_KEY] = today_text
+        latest_state[RETENTION_STATE_RESULT_KEY] = result
+        latest_state["last_retention_at_hkt"] = _now_iso()
+        _write_json(STATE_PATH, latest_state)
+    return result
+
+
+def maintain_review_history_and_retention(
+    *,
+    force: bool = False,
+    dry_run: bool = False,
+    today_hkt: date | None = None,
+    identity: str = "",
+    profile: str = "",
+) -> dict[str, Any]:
+    """Run the safe daily retention transaction outside the scheduler cycle."""
+
+    with _LOCK, _review_process_lock(wait=False) as process_lock_acquired:
+        if not process_lock_acquired:
+            return {"status": "busy", "reason": "another_review_process_is_running"}
+        return _maintain_review_history_and_retention(
+            active_sheet_id=_resolved_review_sheet_id(),
+            force=force,
+            dry_run=dry_run,
+            today_hkt=today_hkt,
+            identity=identity,
+            profile=profile,
+        )
+
+
 REVIEW_SHEET_EDITABLE_COLUMNS = tuple(index for index in range(len(HEADERS)) if index != 2)
 REVIEW_SHEET_STATUS_OPTIONS = ("待审核", "接受", "不接受", "暂缓")
 
@@ -2432,7 +3131,7 @@ def review_sheet_snapshot(
     profile: str = "",
     lock_timeout_seconds: float = 1.0,
 ) -> dict[str, Any]:
-    """Return a live, browser-safe view of the Feishu review worksheet."""
+    """Return current Feishu rows plus the APP's complete local history."""
     lock_acquired = _LOCK.acquire(timeout=max(0.0, lock_timeout_seconds))
     if not lock_acquired:
         raise RuntimeError("后台战略新闻任务正在更新飞书审核表，请稍后刷新")
@@ -2440,22 +3139,83 @@ def review_sheet_snapshot(
         resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
         rows = _read_rows(resolved_sheet_id, identity=identity, profile=profile)
         state = _read_json(STATE_PATH, {})
+        state = dict(state) if isinstance(state, dict) else {}
+        sheet_title = _text(state.get("sheet_title"), 100) or SHEET_TITLE
+        _upsert_review_history_rows(
+            sheet_id=resolved_sheet_id,
+            sheet_title=sheet_title,
+            rows=rows,
+            active_sheet_id=resolved_sheet_id,
+        )
+        live_rows: list[dict[str, Any]] = []
+        live_ids: set[str] = set()
+        for row_number, row in enumerate(rows, start=2):
+            if not row or not any(_text(value, 80) for value in row):
+                continue
+            values = _comparable_sheet_row(row)
+            news_id = _row_dict(values, row_number)["news_id"]
+            live_ids.add(news_id)
+            live_rows.append(
+                {
+                    "rowNumber": row_number,
+                    "originalRowNumber": row_number,
+                    "recordId": news_id,
+                    "values": values,
+                    "storageSource": "feishu",
+                    "sourceSheetId": resolved_sheet_id,
+                    "readOnly": False,
+                    "feishuVisible": True,
+                }
+            )
+        local_rows: list[dict[str, Any]] = []
+        for record in _history_row_records():
+            news_id = _text(record.get("news_id"), 80)
+            if not news_id or news_id in live_ids:
+                continue
+            local_rows.append(
+                {
+                    "rowNumber": int(record.get("row_number") or 0),
+                    "originalRowNumber": int(record.get("row_number") or 0),
+                    "recordId": news_id,
+                    "values": record["values"],
+                    "storageSource": "local_history",
+                    "sourceSheetId": _text(record.get("sheet_id"), 120),
+                    "sourceSheetTitle": _text(record.get("sheet_title"), 160),
+                    "readOnly": True,
+                    "feishuVisible": record.get("feishu_visible") is True,
+                    "retiredFromFeishuAt": _text(
+                        record.get("retired_from_feishu_at_hkt"), 60
+                    ),
+                    "retirementReason": _text(record.get("retirement_reason"), 160),
+                }
+            )
+        local_rows.sort(
+            key=lambda item: (
+                _publication_date(item["values"][3]),
+                _publication_date(item["values"][9]),
+                _text(item.get("retiredFromFeishuAt"), 60),
+                int(item.get("originalRowNumber") or 0),
+            ),
+            reverse=True,
+        )
+        combined_rows = live_rows + local_rows
         return {
             "sheetId": resolved_sheet_id,
-            "sheetTitle": _text(state.get("sheet_title"), 100) or SHEET_TITLE,
+            "sheetTitle": sheet_title,
             "sheetUrl": _sheet_url(resolved_sheet_id),
             "headers": list(HEADERS),
             "editableColumns": list(REVIEW_SHEET_EDITABLE_COLUMNS),
             "statusOptions": list(REVIEW_SHEET_STATUS_OPTIONS),
             "updatedAt": _now_iso(),
-            "rows": [
-                {
-                    "rowNumber": row_number,
-                    "values": _comparable_sheet_row(row),
-                }
-                for row_number, row in enumerate(rows, start=2)
-                if row and any(_text(value, 80) for value in row)
-            ],
+            "feishuCurrentCount": len(live_rows),
+            "localHistoryCount": len(local_rows),
+            "totalHistoryCount": len(combined_rows),
+            "retentionPolicy": {
+                "days": RETENTION_DAYS,
+                "rule": "第15天起，飞书仅保留纳入滚动栏或纳入周报为接受的整行；APP保留全量历史",
+                "lastAppliedDateHkt": _text(state.get(RETENTION_STATE_DATE_KEY), 20),
+            },
+            "rows": combined_rows,
         }
     finally:
         _LOCK.release()
@@ -2549,6 +3309,8 @@ def update_review_sheet_cells(
         for raw_change in changes:
             if not isinstance(raw_change, dict):
                 raise ValueError("单元格更新格式无效")
+            if raw_change.get("readOnly") is True or raw_change.get("storageSource") == "local_history":
+                raise ValueError("本地历史记录仅供查看，不能回写飞书")
             row_number = int(raw_change.get("rowNumber") or 0)
             column_index = int(raw_change.get("columnIndex", -1))
             if row_number < 2 or row_number > MAX_SHEET_ROWS:
@@ -2558,7 +3320,14 @@ def update_review_sheet_cells(
             row_offset = row_number - 2
             if row_offset >= len(current_rows):
                 raise ValueError(f"第 {row_number} 行不存在，已停止写入")
-            current = _comparable_sheet_row(current_rows[row_offset])[column_index]
+            current_values = _comparable_sheet_row(current_rows[row_offset])
+            expected_record_id = _text(raw_change.get("recordId"), 80)
+            current_record_id = _row_dict(current_values, row_number)["news_id"]
+            if expected_record_id and expected_record_id != current_record_id:
+                raise RuntimeError(
+                    f"第 {row_number} 行已移动或替换，请刷新后再编辑"
+                )
+            current = current_values[column_index]
             value = _text(raw_change.get("value"), 5000)
             if column_index in {0, 1}:
                 value = _normalized_status(value)
@@ -2653,6 +3422,7 @@ def update_review_sheet_cells(
         readback = {
             (row["rowNumber"], column_index): row["values"][column_index]
             for row in snapshot["rows"]
+            if row.get("readOnly") is not True
             for column_index in range(len(HEADERS))
         }
         mismatches = [
@@ -2686,12 +3456,50 @@ def load_weekly_report_candidates(
     end = _publication_date(window_end)
     if not start or not end or start > end:
         raise ValueError("双周报时间窗口必须提供有效的开始和结束日期")
+    include_local_history = sheet_id is None
     resolved_sheet_id = sheet_id or ensure_sheet()
-    rows = [
-        _row_dict(row, index)
-        for index, row in enumerate(_read_rows(resolved_sheet_id), start=2)
+    live_raw_rows = _read_rows(resolved_sheet_id)
+    state = _read_json(STATE_PATH, {})
+    state = dict(state) if isinstance(state, dict) else {}
+    _upsert_review_history_rows(
+        sheet_id=resolved_sheet_id,
+        sheet_title=_text(state.get("sheet_title"), 160) or SHEET_TITLE,
+        rows=live_raw_rows,
+        active_sheet_id=resolved_sheet_id,
+    )
+    live_rows = [
+        {**_row_dict(row, index), "storage_source": "feishu"}
+        for index, row in enumerate(live_raw_rows, start=2)
         if row and any(_text(value, 80) for value in row)
     ]
+    rows = list(live_rows)
+    local_history_rows = 0
+    if include_local_history:
+        # A weekly report must not lose accepted rows merely because the active
+        # Feishu worksheet rolled over. Seed any not-yet-mirrored legacy parts
+        # into the local APP archive before selecting the report window.
+        mirrored_sheet_ids = set(_review_history_payload()["mirrored_sheet_ids"])
+        for part in _review_sheet_parts(state, resolved_sheet_id):
+            if part["sheet_id"] in mirrored_sheet_ids:
+                continue
+            part_rows = _read_rows(part["sheet_id"])
+            _upsert_review_history_rows(
+                sheet_id=part["sheet_id"],
+                sheet_title=part["sheet_title"],
+                rows=part_rows,
+                active_sheet_id=resolved_sheet_id,
+            )
+        live_ids = {row["news_id"] for row in live_rows}
+        for record in _history_row_records():
+            news_id = _text(record.get("news_id"), 80)
+            if not news_id or news_id in live_ids:
+                continue
+            parsed = _row_dict(
+                record["values"],
+                int(record.get("row_number") or 0),
+            )
+            rows.append({**parsed, "storage_source": "local_history"})
+            local_history_rows += 1
     accepted = [row for row in rows if row["weekly_status"] == "接受"]
     included: list[dict[str, Any]] = []
     reasons: Counter[str] = Counter()
@@ -2744,7 +3552,9 @@ def load_weekly_report_candidates(
         "sheetUrl": _sheet_url(resolved_sheet_id),
         "windowStart": start,
         "windowEnd": end,
-        "sheetRows": len(rows),
+        "sheetRows": len(live_rows),
+        "localHistoryRows": local_history_rows,
+        "combinedRows": len(rows),
         "acceptedRows": len(accepted),
         "includedRows": len(included),
         "excludedRows": len(accepted) - len(included),
@@ -3555,6 +4365,30 @@ def run_cycle(
                     f"更新同步状态 {int(review_result.get('changed_rows') or 0)} 行。"
                 ),
             )
+            try:
+                retention_result = _maintain_review_history_and_retention(
+                    active_sheet_id=sync_result["sheet_id"],
+                    force=False,
+                )
+                _progress(
+                    progress_callback,
+                    "审核历史与飞书瘦身",
+                    (
+                        f"APP 本地历史 {int(retention_result.get('historyTotalRows') or 0)} 条；"
+                        f"本轮从飞书移除 {int(retention_result.get('removedRows') or 0)} 条"
+                        f"满 {RETENTION_DAYS} 天且两个审核入口均未接受的新闻。"
+                    ),
+                )
+            except Exception as retention_exc:
+                # Retention is a housekeeping layer. Preserve the already
+                # verified APP/Feishu review sync and retry cleanup next cycle.
+                logging.exception("新闻审核历史镜像或飞书保留策略执行失败")
+                retention_result = {
+                    "status": "failed",
+                    "error": _text(retention_exc, 600),
+                    "retentionDays": RETENTION_DAYS,
+                    "retentionApplied": False,
+                }
         except Exception as exc:
             state["last_poll_error"] = _text(exc, 600)
             state["last_poll_error_at"] = _now_iso()
@@ -3571,6 +4405,7 @@ def run_cycle(
                 "last_poll_status": "ok",
                 "last_source_summary": latest,
                 "group_notifications_paused": _group_notifications_paused(),
+                "last_retention_cycle_result": retention_result,
             }
         )
         _write_json(STATE_PATH, state)
@@ -3586,6 +4421,7 @@ def run_cycle(
             **latest,
             **sync_result,
             **review_result,
+            "retention": retention_result,
             "source_candidate_count": int(latest.get("candidate_count") or 0),
             "sheet_candidate_count": int(sync_result.get("candidate_count") or 0),
         }
