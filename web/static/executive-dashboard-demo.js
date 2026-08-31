@@ -398,7 +398,7 @@
     return {
       ...echartBaseOption(spec),
       title: {
-        left: "32%", top: "42%", textAlign: "center", itemGap: 3,
+        left: "32%", top: "42%", padding: 0, textAlign: "center", itemGap: 3,
         text: total.toLocaleString(),
         subtext: "总门店",
         textStyle: { color: "#e8f6fb", fontSize: 13, fontWeight: 700, lineHeight: 16 },
