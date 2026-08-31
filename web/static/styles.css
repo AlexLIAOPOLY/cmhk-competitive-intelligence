@@ -3655,10 +3655,9 @@ select {
 .chat-model-options::-webkit-scrollbar-track { background: transparent; }
 .chat-model-options::-webkit-scrollbar-thumb { border: 3px solid #fff; border-radius: 999px; background: #c7d4e1; }
 .chat-model-option { width: 100%; min-height: 40px; display: flex; align-items: center; margin: 0; padding: 0 9px; border: 0; border-radius: 9px; background: transparent; color: #36536f; text-align: left; cursor: pointer; }
-.chat-model-provider-logo { flex: 0 0 20px; width: 20px; height: 20px; display: inline-grid; place-items: center; margin-right: 8px; overflow: hidden; border: 1px solid rgba(115, 139, 161, .18); border-radius: 6px; background: rgba(255, 255, 255, .92); }
+.chat-model-provider-logo { flex: 0 0 20px; width: 20px; height: 20px; display: inline-grid; place-items: center; margin-right: 8px; background: transparent; }
 .chat-model-provider-logo img { width: 16px; height: 16px; display: block; object-fit: contain; }
-.chat-model-provider-logo.is-kimi { background: #101827; }
-.chat-model-button .chat-model-provider-logo { flex-basis: 18px; width: 18px; height: 18px; margin-right: 0; border-radius: 5px; }
+.chat-model-button .chat-model-provider-logo { flex-basis: 18px; width: 18px; height: 18px; margin-right: 0; }
 .chat-model-button .chat-model-provider-logo img { width: 14px; height: 14px; }
 .chat-model-option:hover { background: #f3f7fb; }
 .chat-model-option.active { background: #eaf3fa; color: #234966; }

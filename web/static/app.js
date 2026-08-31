@@ -472,7 +472,7 @@ function chatModelProvider(modelName) {
 function chatModelProviderLogoHtml(modelName) {
   const provider = chatModelProvider(modelName);
   if (!provider) return "";
-  return `<span class="chat-model-provider-logo is-${provider.slug}" aria-hidden="true"><img src="/static/assets/model-providers/${provider.slug}.svg?v=1" alt="" /></span>`;
+  return `<span class="chat-model-provider-logo is-${provider.slug}" aria-hidden="true"><img src="/static/assets/model-providers/${provider.slug}.svg?v=2" alt="" /></span>`;
 }
 
 function renderChatModelOptions() {
