@@ -1,4 +1,162 @@
 {
+  "20260831_143302_156182": [
+    {
+      "newsId": "NEWS-2CB82255574844",
+      "title": "国内AI算力集群加速部署，绿色低碳数据中心技术走向规模化落地",
+      "summary": "国内AI算力集群部署节奏加快，高密度算力带来的能耗压力推动数据中心绿色节能技术从标杆验证走向规模化落地，适配不同场景的低碳方案正在成形。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "手机凤凰网",
+      "publishedAt": "2026-08-31T07:16:00+08:00",
+      "url": "https://i.ifeng.com/c/8w2E42FSA53",
+      "inclusionReason": "AI算力集群部署加快推动数据中心绿色节能技术规模化落地，涉及数据中心能效与基础设施技术演进，可影响未来数据中心建设成本与运营效率。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-420243F14125B4",
+      "title": "英伟达DLSS 5神经渲染技术引发玩家与开发者争议",
+      "summary": "英伟达在GTC 2026大会上公布DLSS 5神经渲染技术，声称可彻底改变游戏光照和细节，但早期展示效果在角色面部处理上引发大量争议，被玩家讽刺为AI美颜。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "快科技",
+      "publishedAt": "2026-08-31T07:16:00+08:00",
+      "url": "https://news.mydrivers.com/1/1147/1147493.htm",
+      "inclusionReason": "英伟达DLSS 5利用AI神经渲染技术实现游戏画面革新，展示了AI在图形渲染领域的具体技术突破与商业化进展，属于AI关键技术演进事件。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-A7F20EB50FCF98",
+      "title": "特朗普分享AI生成的伊朗哈尔克岛被炸视频",
+      "summary": "特朗普在社交媒体分享AI生成的伊朗哈尔克岛被炸视频，哈尔克岛承担伊朗约90%石油出口，若遭攻击将导致全球石油市场混乱。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "The Mirror",
+      "publishedAt": "2026-08-31T06:58:00+08:00",
+      "url": "https://www.mirror.co.uk/news/us-news/iran-kharg-island-trump-video-37609592",
+      "inclusionReason": "涉及伊朗关键石油出口基础设施的潜在威胁与全球石油市场动荡风险，属于地缘政治事件，可能影响能源成本与全球供应链稳定，间接影响电信行业运营成本。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-1B6955FA55634F",
+      "title": "AMD将FSR 4.1.1 AI超分下放至RX 7000系列显卡",
+      "summary": "AMD发布虚幻引擎5.8 FSR插件，将机器学习AI超分FSR 4.1.1下放到RDNA3架构的RX 7000系列显卡，现役A卡首次支持AI驱动超分辨率技术。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "快科技",
+      "publishedAt": "2026-08-31T07:16:00+08:00",
+      "url": "https://news.mydrivers.com/1/1147/1147518.htm",
+      "inclusionReason": "AMD将AI超分技术下放至RX 7000系列，涉及AI在GPU硬件中的实际部署与能力扩展，属于关键技术演进，可影响算力生态与终端AI能力。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-D6ACD077D93BAF",
+      "title": "Globe Telecom因数据需求激增加大5G资本开支至263亿比索",
+      "summary": "Globe Telecom上半年资本开支同比增长39%至263亿比索，以应对数据需求激增，重点投向5G网络建设。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "Manila Bulletin",
+      "publishedAt": "2026-08-31T06:38:00+08:00",
+      "url": "https://mb.com.ph/2026/08/31/globe-telecom-boosts-5g-spending-to-263-billion-as-data-demand-surges",
+      "inclusionReason": "Globe Telecom作为菲律宾主要运营商加大5G资本开支，属于竞对网络投资与经营动作，可用于对标分析。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-07BD9A20963A74",
+      "title": "伊朗对美军基地发动弹道导弹袭击，誓言对进一步侵略作出决定性回应",
+      "summary": "伊朗伊斯兰革命卫队对位于约旦的两处美军基地发射弹道导弹，以报复美军此前对伊朗火箭发射器的打击，并警告将对进一步侵略行为作出决定性回应。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "The Economic Times",
+      "publishedAt": "2026-08-31T06:30:00+08:00",
+      "url": "https://economictimes.indiatimes.com/news/newsblogs/us-iran-war-strike-strait-of-hormuz-larak-island-us-bases-jordon-trump-khamenei-middle-east-war-india-pm-modi-delhi-weather-nepal-flash-floods-china/liveblog/133639257.cms",
+      "inclusionReason": "美伊军事冲突升级涉及弹道导弹袭击和报复性打击，可能影响中东地区稳定、能源供应及全球供应链，对电信行业的海缆安全、能源成本和地缘风险敞口产生潜在影响。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-CBA857C9704AE7",
+      "title": "工业和信息化部—国际电信联盟“空间促进发展”高级别研讨会在上海举行",
+      "summary": "8月31日，工业和信息化部—国际电信联盟“空间促进发展”高级别研讨会在上海市开幕。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-08-31T07:16:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5068005",
+      "inclusionReason": "工业和信息化部—国际电信联盟“空间促进发展”高级别研讨会在上海举行属于可验证的监管政策事件，影响合规与牌照。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-77E40378ECC521",
+      "title": "抢通通信生命线！中国移动陆续开通吉隆口岸通信基站",
+      "summary": "因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。在自治区通信管理局统筹部署下，8月27日，中国移动第一时间抽调抢险力量奔赴灾害一线开展应急通信抢修。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "新华网客户端",
+      "publishedAt": "2026-08-31T07:16:00+08:00",
+      "url": "https://app.xinhuanet.com/news/article.html?articleId=202608319ea610f4c0244adca9c79183f71b158a",
+      "inclusionReason": "抢通通信生命线！中国移动陆续开通吉隆口岸通信基站显示正式监控竞对发生具体经营事件，影响网络与运营。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-FCDBD6A45112AD",
+      "title": "欧洲央行推动欧元上链，或重塑欧洲稳定币市场生态",
+      "summary": "欧洲央行执行董事施纳贝尔在杰克森霍尔研讨会上表示，代币化市场需要央行创造的资产，对稳定币作为结算工具持保留态度，正推动将欧元直接发行在区块链上。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "蕃新聞",
+      "publishedAt": "2026-08-31T07:15:00+08:00",
+      "url": "https://n.yam.com/Article/20260831512199",
+      "inclusionReason": "欧洲央行推动欧元上链涉及区块链基础设施和数字货币政策变化，可能影响电信运营商在数字支付和区块链领域的业务布局。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-E95E484D57134B",
+      "title": "中大医院CEO谈深圳体检香港治疗两地医疗合作计划",
+      "summary": "香港中文大学医院CEO接受专访，探讨深圳体检、香港治疗的两地医疗合作模式与发展计划。",
+      "category": "行业动态",
+      "region": "香港本地",
+      "source": "香港文匯報",
+      "publishedAt": "2026-08-31T07:50:10+08:00",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE4xbnJ4Y2d3VVF1WEwzT3d2UFNLSTZEYkNEa1lveDZ4VjZhczNKX1Jac3NYTVNWUnVfNllvWFloQTZUekhpR3pqMWRqeERKcDVkVjBTUE4xX3VabWZ5SmtkUHhrUnZKZDhobTFxUDlvc3ZlejV3Y1FB?oc=5",
+      "inclusionReason": "深港医疗合作新模式涉及跨境服务与人员流动，可能影响两地通信需求、企业客户服务和跨境网络使用场景。",
+      "businessImpact": "客户与渠道"
+    },
+    {
+      "newsId": "NEWS-BCA66D050734CC",
+      "title": "科大讯飞将于9月7日发布星火X2.5通用大模型",
+      "summary": "科大讯飞计划于9月7日发布星火X2.5通用大模型，为AI大模型领域的新产品发布。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "TradingView",
+      "publishedAt": "2026-08-31T11:44:59+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFA2dEVINno1UDVLUjZzWDVuc2tHMHpvZ1l2b0NTSEp4Ri1nX3ZMM1BoQ2ZkOWZmNVNveWRCUWVFMkROM1pkQXBWSWdoMWdLT1UxaUlUWnJNVktpLUg1UUJ3d3NlUnJWUQ?oc=5",
+      "inclusionReason": "科大讯飞发布新通用大模型涉及AI技术演进和产品迭代，可作为AI行业动态跟踪，对电信运营商AI战略有参考价值。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-951B12EB40E635",
+      "title": "美国动员科技巨头进军埃及AI基建，抗衡华为数据中心布局",
+      "summary": "美国正动员科技巨头进入埃及AI基础设施市场，以抗衡华为在埃及的AI数据中心建设提案，华为计划部署超2000颗Ascend AI处理器。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "蕃新聞",
+      "publishedAt": "2026-08-31T07:15:00+08:00",
+      "url": "https://n.yam.com/Article/20260831578121",
+      "inclusionReason": "美中在埃及的AI数据中心竞争涉及华为Ascend AI处理器部署，反映AI基础设施领域的国际竞争格局变化，可能影响全球AI供应链与电信行业算力部署趋势。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-06DCA7E795D583",
+      "title": "美伊相互军事打击，国际油价开盘显著上涨",
+      "summary": "美军打击伊朗拉腊克岛火箭发射装置，伊朗向美军基地发射导弹，中东局势紧张推动国际油价在亚洲交易时段显著上涨。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-08-31T07:16:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5067795",
+      "inclusionReason": "美伊军事冲突升级直接影响国际油价，能源成本变化将传导至电信行业运营成本与宏观经济环境，属于地缘政治对行业的间接影响信号。",
+      "businessImpact": "成本与效率"
+    }
+  ],
   "20260831_073059_927382": [
     {
       "newsId": "NEWS-AC61F6771D219F",

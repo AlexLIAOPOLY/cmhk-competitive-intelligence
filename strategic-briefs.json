@@ -1,72 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-08-31T14:43:17+08:00",
-  "items": [
-    {
-      "id": "NEWS-12141BFC996222",
-      "title": "澳门「三五」规划：内联外通与大湾区城市形成合力",
-      "summary": "澳门公布「三五」规划，强调内联外通，与大湾区城市形成发展合力。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9CXy1lWTZJbVlRYmlCeU00czd0UXpPMjV5R3hkWmJOSExDTUtHelloeGRpUlllNjRrblV1NUwxYzlYNmROUEVyVUZPMUtUdlNya2lLSElGWGlDUm8xdUxKUXNETHFJRUNBdTVoclEzYTl2amg0YlA0?oc=5",
-      "published_at": "2026-08-30T21:19:58+08:00"
-    },
-    {
-      "id": "NEWS-541718877F714B",
-      "title": "可靠性国标年内修订，桂港联手推动国产机器人借港出海",
-      "summary": "国家可靠性标准年内将修订，广西与香港联手推动国产机器人通过香港渠道拓展海外市场。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMicEFVX3lxTFAtbmVQMFF6NDItQXN0UjVGb1J2N0lvb1R6aUpBenZCS3BHSVNsN09JOHNsQ296dzlMX21CWlBocFNFOE9ZTFZINGFtWHVGOFFBM3ZxUWFMaHlrVkw1aGdxZUNGWGNHMlRkSzhacmRoTmE?oc=5",
-      "published_at": "2026-08-30T19:47:58+08:00"
-    },
-    {
-      "id": "NEWS-C5B4EF05B97548",
-      "title": "消防处参与新皇岗口岸跨部门压力测试进行电动车灭火演练",
-      "summary": "香港消防处参与新皇岗口岸跨部门压力测试，进行电动车灭火演练。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE9nTkVHbTdwY2k5TWZLQVlWNGhXOWhOd0pNZWFDel9xY2NJamg3UlA5SVVHOG5YUU5ROFZjQUpBRlRHTDhhUEtCOHFWdzdpVHpSQmFnVndxVEt2Y3NScFJCc1lWbzlLX2RkVVRzcnpnZDBYbG1nYmVB?oc=5",
-      "published_at": "2026-08-30T18:42:07+08:00"
-    },
-    {
-      "id": "NEWS-4D6383646EDD9A",
-      "title": "新皇岗口岸推「五合一车检」 司机全程免下车办妥深港通关",
-      "summary": "新皇岗口岸采用「五合一车检」创新模式，司机全程无需下车即可完成深港两地通关手续。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMioAFBVV95cUxQQUw5R1g4eDcyNzg3RVl6dmV6QjZiQldyMk5iN2FuUngySWoyMjNTU0RuOFAzdzc2LTAyTF9SYjNybXdGYWNlT2I1dnh6N3ZsLU9LT0hwSmRqUm5HNWVEcHpZTG54RTY5X0RaSTdOeDR1enk1TWZ1eEptVnJ0SWp6RWVMRUt0elp4Y1FseTZ1em1WUEw0S29SVVFjZEl5dzNZ?oc=5",
-      "published_at": "2026-08-30T17:56:57+08:00"
-    },
-    {
-      "id": "NEWS-7E7FEB22BCC1F2",
-      "title": "可复用火箭里程碑为香港航天发展打开机遇",
-      "summary": "可复用火箭取得里程碑，商业活动为香港金融市场、研究型大学及北部都会区带来机遇。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "source_url": "https://www.scmp.com/opinion/hong-kong-opinion/article/3365219/reusable-rocket-milestone-opens-door-hong-kongs-space-ambitions?pgtype=live",
-      "published_at": "2026-08-30T16:30:00+08:00"
-    },
-    {
-      "id": "NEWS-F613BB2ED73CBC",
-      "title": "通讯办守护无线电频谱并支援5G建设",
-      "summary": "通讯办介绍守护无线电频谱、监测电波干扰及支援5G建设的工作，保障全港资讯高速公路畅通。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5GUUVRZHZyN1hiNGlySFhRSkNDbVR3b2hrRERmeXNuY2dOVlFnVGZCTGFQdHhUN3hJRW9CY1cwV2MyS3NSZGZ0T3JRVU9wQUkxRlpTTkszbjZBa2l4TUl3dWxkNzFweXZ2RDFqSUYzaWl5OHo5TFVn?oc=5",
-      "published_at": "2026-08-30T04:50:11+08:00"
-    },
-    {
-      "id": "NEWS-D73B2F986EFA4D",
-      "title": "香港5月固网用户净减少近1300户",
-      "summary": "香港5月固网用户净减少1271户，月底总用户数为167.8万，其中住宅固网约67万户、商业线路约100.8万户。",
-      "category": "行业动态",
-      "source_url": "https://www.telecompaper.com/news/hong-kong-loses-nearly-1300-fixed-line-subscribers-in-may--1581143",
-      "published_at": "2026-08-29T09:11:00+08:00"
-    },
-    {
-      "id": "NEWS-C9B9EB65F881BC",
-      "title": "CSL Mobile独家联乘顶尖网络商推全方位漫游服务",
-      "summary": "CSL Mobile宣布独家联乘顶尖网络商，提供全方位漫游服务并自动升级至「黄金漫游」。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9GeTNORVA4RUVMSjJvOFQ0OC1SbVVEVE1MNzRDcktWbXEtV3RQa01oc0V0c3llbldOQkVFQ0U4NlZMdDhYUm9LRm5yeGd1dEJESDRSUFpXQVh1djE0OHFkcnByNTd0OHpBRmxkUTJtUXpDS3M?oc=5",
-      "published_at": "2026-08-29T00:00:00+08:00"
-    }
-  ],
+  "generated_at": "2026-08-26T12:01:42+08:00",
+  "items": [],
   "monitor": {
     "status": "snapshot",
     "scan_times": [
@@ -75,5 +10,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "00c263895b7394f705bd3b37c3f6ab132b3a05301054986648ff9fd656ffecf9"
+  "site_version": "56aa552be6884a1e2142c24cffa9e0b3014077033de5f2c8639b2970350bf2e0"
 }

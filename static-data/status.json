@@ -143,108 +143,100 @@
         "completedAt": "2026-08-31T03:30:04+08:00"
       },
       "newsFunnel": {
-        "scope": "晨间扫描（2026-08-31@07:30）",
-        "label": "8月31日 07:30",
-        "completedAt": "2026-08-31T09:25:01+08:00",
-        "historyDuplicates": 33,
+        "scope": "午后扫描（2026-08-31@14:00）",
+        "label": "8月31日 14:00",
+        "completedAt": "2026-08-31T14:45:47+08:00",
+        "historyDuplicates": 0,
         "summary": {
-          "discovered": 527,
-          "confirmed": 147,
-          "newCount": 114,
-          "sourceCount": 81
+          "discovered": 24,
+          "confirmed": 13,
+          "newCount": 13,
+          "sourceCount": 10
         },
         "categories": [
           {
             "label": "行业动态",
-            "value": 41
-          },
-          {
-            "label": "网络与技术",
-            "value": 36
+            "value": 5
           },
           {
             "label": "宏观与国际",
-            "value": 13
+            "value": 3
+          },
+          {
+            "label": "竞对动态",
+            "value": 2
           },
           {
             "label": "其他",
-            "value": 24
+            "value": 3
           }
         ],
         "impacts": [
           {
-            "label": "成本与效率",
-            "value": 21
-          },
-          {
-            "label": "收入与需求",
-            "value": 19
-          },
-          {
-            "label": "网络与运营",
-            "value": 19
-          },
-          {
-            "label": "供应韧性",
-            "value": 16
-          },
-          {
-            "label": "竞争格局",
-            "value": 16
-          },
-          {
             "label": "产品与定价",
-            "value": 8
-          },
-          {
-            "label": "资本配置",
-            "value": 8
-          },
-          {
-            "label": "合规与牌照",
             "value": 4
           },
           {
-            "label": "客户与渠道",
+            "label": "成本与效率",
             "value": 3
+          },
+          {
+            "label": "供应韧性",
+            "value": 2
+          },
+          {
+            "label": "合规与牌照",
+            "value": 1
+          },
+          {
+            "label": "客户与渠道",
+            "value": 1
+          },
+          {
+            "label": "网络与运营",
+            "value": 1
+          },
+          {
+            "label": "资本配置",
+            "value": 1
           }
         ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 527,
+            "value": 24,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 527 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 24 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 147,
-            "removed": 380,
-            "rate": 28,
-            "note": "保留 28%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 147 条，未确认 380 条。"
+            "value": 13,
+            "removed": 11,
+            "rate": 54,
+            "note": "保留 54%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 13 条，未确认 11 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 114,
-            "removed": 33,
-            "rate": 78,
-            "note": "排除 33 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 33 条重复事件，剩余 114 条。"
+            "value": 13,
+            "removed": 0,
+            "rate": 100,
+            "note": "排除 0 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 0 条重复事件，剩余 13 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 114,
+            "value": 13,
             "removed": 0,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 114 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 13 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },

@@ -134,16 +134,16 @@
       { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
       { indices: [2] }
     ] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "bar", "column", "lollipop", "column", "column"], groups: [
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "bar", "column", "lollipop", "column", "bar"], groups: [
       { title: "移动业务", indices: [0, 1] },
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
     ] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bar"], groups: [
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["donut", "column"], groups: [
       { indices: [0] },
       { indices: [1] }
     ] },
-    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "radial", "diverging"], groups: [
+    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "radial", "bar"], groups: [
       { title: "经营规模与盈利", indices: [0, 2] },
       { indices: [1] }
     ] }
@@ -390,10 +390,55 @@
     };
   }
 
+  function echartDonutOption(spec) {
+    const rows = spec.rows;
+    const disclosed = rows.filter((row) => row.value !== null && row.value >= 0);
+    const total = disclosed.reduce((sum, row) => sum + row.value, 0);
+    const share = (row) => total > 0 ? `${((row.value / total) * 100).toFixed(1)}%` : "—";
+    return {
+      ...echartBaseOption(spec),
+      title: {
+        left: "32%", top: "42%", textAlign: "center", itemGap: 3,
+        text: total.toLocaleString(),
+        subtext: "总门店",
+        textStyle: { color: "#e8f6fb", fontSize: 13, fontWeight: 700, lineHeight: 16 },
+        subtextStyle: { color: "#e8f6fb", fontSize: 12, fontWeight: 650, lineHeight: 16 }
+      },
+      graphic: disclosed.map((row, disclosedIndex) => {
+          const colorIndex = rows.indexOf(row);
+          return {
+            type: "group", left: "66%", top: `${25 + (disclosedIndex * 24)}%`,
+            children: [
+              { type: "circle", shape: { cx: 4, cy: 7, r: 4 }, style: { fill: chartColors[colorIndex] } },
+              { type: "text", left: 14, top: 0, style: { text: `${row.company}  ${row.chartDisplay}｜${share(row)}`, fill: "#b8ced7", font: '600 11px "SF Pro Text", "PingFang SC", sans-serif' } }
+            ]
+          };
+        }),
+      series: [{
+        name: spec.metricLabel,
+        type: "pie",
+        center: ["32%", "50%"],
+        radius: ["31%", "51%"],
+        startAngle: 90,
+        clockwise: true,
+        avoidLabelOverlap: true,
+        label: { show: false },
+        labelLine: { show: false },
+        emphasis: { scale: true, scaleSize: 4 },
+        data: disclosed.map((row) => ({
+          value: row.value,
+          name: row.company,
+          itemStyle: { color: chartColors[rows.indexOf(row)], borderColor: "rgba(5,18,30,.9)", borderWidth: 2, borderRadius: 3 }
+        }))
+      }]
+    };
+  }
+
   function echartOption(spec) {
     if (spec.kind === "grouped-column") return echartGroupedColumnOption(spec);
     if (spec.kind === "column") return echartColumnOption(spec);
     if (spec.kind === "radial") return echartRadialOption(spec);
+    if (spec.kind === "donut") return echartDonutOption(spec);
     return echartHorizontalOption(spec);
   }
 
@@ -665,7 +710,7 @@
   }
 
   function comparisonChart(rows, metricLabel, chartType) {
-    if (window.echarts && ["column", "lollipop", "bar", "radial", "diverging"].includes(chartType)) {
+    if (window.echarts && ["column", "lollipop", "bar", "radial", "donut", "diverging"].includes(chartType)) {
       return echartHost({ kind: chartType, rows, metricLabel });
     }
     if (chartType === "column") return columnChart(rows, metricLabel);
