@@ -59,6 +59,11 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('收到的新闻', SCRIPT)
         self.assertIn('function renderReceivedNewsTable(items)', SCRIPT)
         self.assertIn('market-daily-table-wrap', STYLE)
+        self.assertIn('market-received-table-scroll', SCRIPT)
+        self.assertIn('max-height: clamp(320px, 48dvh, 520px)', STYLE)
+        self.assertIn('overflow: auto', STYLE)
+        self.assertNotIn('overflow-y: visible', STYLE)
+        self.assertIn('aria-label="可滚动的收到新闻列表"', SCRIPT)
         self.assertIn('scope="row"', SCRIPT)
         self.assertIn('本批次共 ${items.length} 条', SCRIPT)
         self.assertIn('state.payload?.receivedItems || []', SCRIPT)
@@ -88,7 +93,8 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('4000', SCRIPT)
 
     def test_live_endpoint_is_used(self):
-        self.assertIn('/static/intelligence-map.js?v=21', INDEX)
+        self.assertIn('/static/intelligence-map.js?v=22', INDEX)
+        self.assertIn('/static/intelligence-map.css?v=14', INDEX)
         self.assertIn('fetch(`/api/competitor-intelligence-map?_', SCRIPT)
         self.assertIn('if path == "/api/competitor-intelligence-map":', WEB_APP)
         self.assertIn("build_competitor_intelligence_map(ROOT)", WEB_APP)

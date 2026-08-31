@@ -204,8 +204,8 @@
   min-width: 0;
   box-sizing: border-box;
 }
-.market-daily-table-wrap { width: 100%; min-width: 0; max-width: 100%; overflow-x: auto; overflow-y: visible; box-sizing: border-box; scrollbar-color: rgba(76, 129, 169, .55) transparent; }
-.market-received-toolbar { position: sticky; left: 0; display: flex; width: 100%; min-width: min(920px, 100%); min-height: 58px; box-sizing: border-box; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 14px; border: 1px solid var(--map-line); border-bottom: 0; border-radius: 3px 3px 0 0; background: var(--map-card); }
+.market-daily-table-wrap { width: 100%; min-width: 0; max-width: 100%; overflow: hidden; box-sizing: border-box; border: 1px solid var(--map-line); border-radius: 3px; background: var(--map-card); }
+.market-received-toolbar { display: flex; width: 100%; min-width: 0; min-height: 58px; box-sizing: border-box; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 14px; border-bottom: 1px solid var(--map-line); background: var(--map-card); }
 .market-received-toolbar > div:first-child { min-width: 190px; }
 .market-received-toolbar h2 { margin: 0; color: var(--map-text); font-size: 13px; }
 .market-received-toolbar > div:first-child span { display: block; margin-top: 4px; color: var(--map-muted); font-size: 9px; }
@@ -218,7 +218,8 @@
 .market-time-filter button { height: 27px; padding: 0 9px; border: 1px solid var(--map-line); border-radius: 3px; color: #9fb4c7; background: transparent; font: inherit; font-size: 9px; cursor: pointer; }
 .market-time-filter button:hover:not(:disabled) { border-color: var(--map-cyan); color: var(--map-cyan); }
 .market-time-filter button:disabled { cursor: default; opacity: .38; }
-.market-daily-table-wrap table { width: 100%; min-width: 920px; table-layout: fixed; border: 1px solid var(--map-line); border-spacing: 0; border-radius: 3px; color: #9bb0c4; font-size: 9.5px; font-variant-numeric: tabular-nums; background: var(--map-card); }
+.market-received-table-scroll { width: 100%; max-height: clamp(320px, 48dvh, 520px); overflow: auto; overscroll-behavior: contain; scrollbar-color: rgba(76, 129, 169, .55) transparent; scrollbar-gutter: stable; }
+.market-daily-table-wrap table { width: 100%; min-width: 920px; table-layout: fixed; border: 0; border-spacing: 0; color: #9bb0c4; font-size: 9.5px; font-variant-numeric: tabular-nums; background: var(--map-card); }
 .market-daily-table-wrap th, .market-daily-table-wrap td { height: 32px; padding: 0 5px; border-bottom: 1px solid rgba(57, 91, 121, .3); text-align: center; white-space: nowrap; }
 .market-daily-table-wrap th:nth-child(1) { width: 120px; }
 .market-daily-table-wrap th:nth-child(2) { width: 42%; }
