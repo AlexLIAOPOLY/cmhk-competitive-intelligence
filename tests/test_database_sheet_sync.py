@@ -13,6 +13,7 @@ from cmhk.integrations.database_sheet_sync import (
     HEADERS,
     LarkSheetGateway,
     _read_sources,
+    _stamp_records,
     sync_producer_database_sheet,
 )
 
@@ -281,6 +282,58 @@ class DatabaseSheetSyncTests(unittest.TestCase):
 
             self.assertEqual(gateway.last_rows[0]["人工備註"], "本地維護備註")
 
+    def test_stamp_records_adopts_matching_remote_timestamp_across_roots(self) -> None:
+        record = {header: f"value:{header}" for header in HEADERS}
+        record["同步鍵"] = "shared-key"
+        record["同步時間"] = ""
+        remote = dict(record)
+        remote["同步時間"] = "2026-08-31T08:09:04+08:00"
+        state = {
+            "rows": {
+                "shared-key": {
+                    "data_hash": "stale-root-hash",
+                    "data_synced_at": "2026-08-31T03:32:33+08:00",
+                }
+            }
+        }
+
+        _stamp_records([record], state, {"shared-key": remote})
+
+        self.assertEqual(record["同步時間"], remote["同步時間"])
+        self.assertEqual(
+            state["rows"]["shared-key"]["data_synced_at"],
+            remote["同步時間"],
+        )
+
+    def test_pre_publish_preserves_remote_bundle_marker(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset, _ = self._dataset(root)
+            state = root / "state.json"
+            gateway = _FakeGateway()
+
+            sync_producer_database_sheet(
+                dataset,
+                release_id="qcm_old",
+                gateway=gateway,
+                state_path=state,
+            )
+            key = gateway.last_rows[0]["同步鍵"]
+            gateway.remote[key]["版本／快照"] = "bundle:qcm_remote · local-test"
+
+            result = sync_producer_database_sheet(
+                dataset,
+                preserve_remote_release_marker=True,
+                gateway=gateway,
+                state_path=state,
+            )
+
+            self.assertEqual(result["release_id"], "")
+            self.assertEqual(
+                gateway.last_rows[0]["版本／快照"],
+                "bundle:qcm_remote · local-test",
+            )
+
     def test_tariff_sync_key_ignores_capture_time_and_compacts_legacy_duplicates(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
@@ -444,13 +497,50 @@ class DatabaseSheetSyncTests(unittest.TestCase):
         gateway._styles = lambda _rows, _last: None  # type: ignore[method-assign]
         gateway.read_rows = lambda: (True, readback, 6)  # type: ignore[method-assign]
 
-        with self.assertRaisesRegex(RuntimeError, "完整回讀"):
-            gateway.upsert_rows(
-                rows,
+        with patch("cmhk.integrations.database_sheet_sync.time.sleep") as sleep:
+            with self.assertRaisesRegex(RuntimeError, "完整回讀"):
+                gateway.upsert_rows(
+                    rows,
+                    existed=True,
+                    remote_rows=readback,
+                    last_row=6,
+                )
+
+        self.assertGreaterEqual(sleep.call_count, 1)
+
+    def test_full_readback_retries_until_sheet_is_consistent(self) -> None:
+        row = {header: f"value:{header}" for header in HEADERS}
+        row["同步鍵"] = "eventual-key"
+        stale = {**row, "來源": "stale", "__row_number": "2"}
+        current = {**row, "__row_number": "2"}
+        readbacks = iter(
+            [
+                (True, {"eventual-key": stale}, 2),
+                (True, {"eventual-key": current}, 2),
+            ]
+        )
+        gateway = object.__new__(LarkSheetGateway)
+        gateway.title = "競對資料庫"
+        gateway.token = "token"
+        gateway.identity = "bot"
+        gateway.sheet_headers = HEADERS
+        gateway.sheet_col_count = len(HEADERS)
+        gateway.ignored_manual_rows = 0
+        gateway.ignored_duplicate_rows = 0
+        gateway._write_batches = lambda _writes: None  # type: ignore[method-assign]
+        gateway._styles = lambda _rows, _last: None  # type: ignore[method-assign]
+        gateway.read_rows = lambda: next(readbacks)  # type: ignore[method-assign]
+
+        with patch("cmhk.integrations.database_sheet_sync.time.sleep") as sleep:
+            result = gateway.upsert_rows(
+                [row],
                 existed=True,
-                remote_rows=readback,
-                last_row=6,
+                remote_rows={"eventual-key": stale},
+                last_row=2,
             )
+
+        self.assertTrue(result["readback_verified"])
+        self.assertEqual(sleep.call_count, 1)
 
 
 if __name__ == "__main__":

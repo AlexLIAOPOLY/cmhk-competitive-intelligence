@@ -383,6 +383,9 @@ class DataReleaseTests(unittest.TestCase):
         self.assertTrue(events[-1]["data"]["feishu_readback_verified"])
         self.assertEqual(sync_sheet.call_count, 2)
         self.assertNotIn("release_id", sync_sheet.call_args_list[0].kwargs)
+        self.assertTrue(
+            sync_sheet.call_args_list[0].kwargs["preserve_remote_release_marker"]
+        )
         self.assertEqual(
             sync_sheet.call_args_list[1].kwargs["release_id"], result["release_id"]
         )

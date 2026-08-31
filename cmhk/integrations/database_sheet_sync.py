@@ -35,6 +35,24 @@ SPREADSHEET_TOKEN = os.environ.get(
 )
 SHEET_TITLE = os.environ.get("CMHK_PRODUCER_DATABASE_SHEET_TITLE", "競對資料庫")
 STATE_PATH = ROOT / "var" / "feishu_database_sync" / "producer_state.json"
+MACHINE_LOCK_PATH = Path(
+    os.environ.get(
+        "CMHK_DATABASE_SHEET_MACHINE_LOCK_PATH",
+        str(
+            Path.home()
+            / "Library"
+            / "Application Support"
+            / "CMHK"
+            / "producer-database-sheet-sync.lock"
+        ),
+    )
+).expanduser()
+READBACK_ATTEMPTS = max(
+    1, int(os.environ.get("CMHK_DATABASE_SHEET_READBACK_ATTEMPTS", "3"))
+)
+READBACK_RETRY_SECONDS = max(
+    0.0, float(os.environ.get("CMHK_DATABASE_SHEET_READBACK_RETRY_SECONDS", "2"))
+)
 EDITABLE_HEADERS = ("人工修訂值", "人工備註")
 HEADERS = (
     "資料庫",
@@ -428,11 +446,16 @@ def _apply_overrides(
     return len(changed_files)
 
 
-def _stamp_records(records: list[dict[str, str]], state: dict[str, Any]) -> None:
+def _stamp_records(
+    records: list[dict[str, str]],
+    state: dict[str, Any],
+    remote_rows: dict[str, dict[str, str]] | None = None,
+) -> None:
     """Keep unchanged rows stable so a periodic task only writes real deltas."""
 
     changed_at = _now()
     hash_headers = tuple(header for header in HEADERS if header != "同步時間")
+    remote_rows = remote_rows or {}
     for record in records:
         row_state = state["rows"].setdefault(record["同步鍵"], {})
         digest = hashlib.sha256(
@@ -442,7 +465,23 @@ def _stamp_records(records: list[dict[str, str]], state: dict[str, Any]) -> None
                 separators=(",", ":"),
             ).encode("utf-8")
         ).hexdigest()
-        if digest != row_state.get("data_hash"):
+        remote = remote_rows.get(record["同步鍵"]) or {}
+        remote_digest = hashlib.sha256(
+            json.dumps(
+                [_text(remote.get(header), 800) for header in hash_headers],
+                ensure_ascii=False,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        remote_synced_at = _text(remote.get("同步時間"), 80)
+        if remote_synced_at and digest == remote_digest:
+            # The checkout and the production mirror intentionally maintain
+            # separate local state files while sharing one Feishu sheet. When
+            # their business fields match, adopt the existing sheet timestamp
+            # instead of making the two roots fight over volatile metadata.
+            row_state["data_hash"] = digest
+            row_state["data_synced_at"] = remote_synced_at
+        elif digest != row_state.get("data_hash"):
             row_state["data_hash"] = digest
             row_state["data_synced_at"] = changed_at
         record["同步時間"] = _text(row_state.get("data_synced_at") or changed_at, 80)
@@ -930,26 +969,38 @@ class LarkSheetGateway:
             last_row = max(last_row, cursor - 1)
             if new_rows:
                 self._styles(rows, last_row)
-        _, readback, readback_last = self.read_rows()
         expected = {row["同步鍵"]: row for row in rows}
-        missing = sorted(set(expected) - set(readback))
+        readback: dict[str, dict[str, str]] = {}
+        readback_last = last_row
+        missing: list[str] = []
+        unexpected: list[str] = []
+        mismatches: list[tuple[str, str]] = []
+        for attempt in range(1, READBACK_ATTEMPTS + 1):
+            _, readback, readback_last = self.read_rows()
+            missing = sorted(set(expected) - set(readback))
+            unexpected = sorted(set(readback) - set(expected))
+            mismatches = []
+            if not missing and not unexpected:
+                for key, row in expected.items():
+                    actual = readback[key]
+                    for header in HEADERS:
+                        if _text(actual.get(header), 800) != _text(row.get(header), 800):
+                            mismatches.append((key, header))
+                            if len(mismatches) >= 20:
+                                break
+                    if len(mismatches) >= 20:
+                        break
+            if not missing and not unexpected and not mismatches:
+                break
+            if attempt < READBACK_ATTEMPTS:
+                time.sleep(READBACK_RETRY_SECONDS * attempt)
+
         if missing:
             raise RuntimeError(f"飛書回讀缺少 {len(missing)} 個同步鍵；首個：{missing[0]}")
-        unexpected = sorted(set(readback) - set(expected))
         if unexpected:
             raise RuntimeError(
                 f"飛書回讀多出 {len(unexpected)} 個帶同步鍵資料列；首個：{unexpected[0]}"
             )
-        mismatches: list[tuple[str, str]] = []
-        for key, row in expected.items():
-            actual = readback[key]
-            for header in HEADERS:
-                if _text(actual.get(header), 800) != _text(row.get(header), 800):
-                    mismatches.append((key, header))
-                    if len(mismatches) >= 20:
-                        break
-            if len(mismatches) >= 20:
-                break
         if mismatches:
             first_key, first_header = mismatches[0]
             raise RuntimeError(
@@ -1002,22 +1053,34 @@ def sync_producer_database_sheet(
     dataset_dir: str | Path,
     *,
     release_id: str = "",
+    preserve_remote_release_marker: bool = False,
     gateway: LarkSheetGateway | None = None,
     state_path: Path = STATE_PATH,
 ) -> dict[str, Any]:
-    """Pull governed edits, apply them locally, then incrementally mirror all rows."""
+    """Pull governed edits, apply them locally, then incrementally mirror all rows.
+
+    The pre-publish pull can preserve the workbook's current bundle marker so a
+    runtime with an older local state file does not roll Feishu back while a new
+    immutable release is still being built.
+    """
 
     if not _enabled():
         return {"ok": True, "status": "disabled", "message": "飛書資料庫同步已停用。"}
     dataset_path = Path(dataset_dir).expanduser().resolve()
     sheet = gateway or LarkSheetGateway()
-    lock_path = state_path.with_suffix(state_path.suffix + ".lock")
+    # The development checkout and production mirror share one workbook but
+    # keep separate state files. A state-local lock cannot serialize them.
+    lock_path = MACHINE_LOCK_PATH
     lock_path.parent.mkdir(parents=True, exist_ok=True)
     with lock_path.open("a+") as lock_handle:
         fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
         existed, remote_rows, last_row = sheet.read_rows()
         state = _read_state(state_path)
-        effective_release_id = _text(release_id or state.get("release_id"), 180)
+        effective_release_id = _text(
+            release_id
+            or ("" if preserve_remote_release_marker else state.get("release_id")),
+            180,
+        )
         records, files = _read_sources(dataset_path)
         if not records:
             raise RuntimeError("沒有可同步的競對資料列。")
@@ -1039,6 +1102,14 @@ def sync_producer_database_sheet(
                 row_state = state["rows"].get(record["同步鍵"], {})
                 record["人工修訂值"] = _text(row_state.get("override_value"), 160)
                 record["人工備註"] = _text(row_state.get("note"), 800)
+        if preserve_remote_release_marker and not release_id:
+            for record in records:
+                remote_version = _text(
+                    (remote_rows.get(record["同步鍵"]) or {}).get("版本／快照"),
+                    180,
+                )
+                if "bundle:" in remote_version:
+                    record["版本／快照"] = remote_version
         if effective_release_id:
             for record in records:
                 version = _text(record.get("版本／快照"), 180)
@@ -1048,7 +1119,7 @@ def sync_producer_database_sheet(
                         f"{bundle_marker} · {version}" if version else bundle_marker,
                         180,
                     )
-        _stamp_records(records, state)
+        _stamp_records(records, state, remote_rows)
         local_keys = {row["同步鍵"] for row in records}
         for key, remote in remote_rows.items():
             if key in local_keys:

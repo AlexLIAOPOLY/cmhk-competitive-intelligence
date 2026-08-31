@@ -610,7 +610,10 @@ def publish_quarterly_release_task(
             "info",
             {"sheet_role": "竞对生产源库", "direction": "bidirectional"},
         )
-        feishu_pre_publish = sync_producer_database_sheet(dataset_dir)
+        feishu_pre_publish = sync_producer_database_sheet(
+            dataset_dir,
+            preserve_remote_release_marker=True,
+        )
         if feishu_pre_publish.get("status") != "synced" or not feishu_pre_publish.get(
             "readback_verified"
         ):
