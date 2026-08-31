@@ -16,6 +16,8 @@ class ChatUserAvatarTests(unittest.TestCase):
         self.assertIn('Promise.resolve(window.CMHKAuth?.ready)', APP)
         self.assertIn('classList.add("chat-user-avatar-button")', APP)
         self.assertIn('.message.user .chat-user-avatar-button img', STYLE)
+        self.assertIn('position: absolute;', STYLE)
+        self.assertIn('inset: 0;', STYLE)
 
     def test_user_avatar_opens_an_accessible_profile_card(self):
         self.assertIn('avatar.setAttribute("aria-haspopup", "dialog")', APP)
@@ -27,7 +29,7 @@ class ChatUserAvatarTests(unittest.TestCase):
         self.assertIn('if (profileCard)', AUTH)
 
     def test_changed_assets_are_cache_busted(self):
-        self.assertIn('/static/styles.css?v=291', INDEX)
+        self.assertIn('/static/styles.css?v=292', INDEX)
         self.assertIn('/static/auth-client.js?v=4', INDEX)
         self.assertIn('/static/app.js?v=319', INDEX)
 

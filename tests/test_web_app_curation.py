@@ -243,7 +243,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('grid.innerHTML = domains.map(renderDomainCard).join("")', app)
         self.assertIn('.intelligence-scroll-label.is-overflowing', styles)
         self.assertIn('.intelligence-scroll-label-track { display: none !important; }', styles)
-        self.assertIn('href="/static/styles.css?v=291"', html)
+        self.assertIn('href="/static/styles.css?v=292"', html)
         self.assertIn('Log and audit surfaces: complete dark-theme coverage v252', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
