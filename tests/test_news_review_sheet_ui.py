@@ -224,7 +224,11 @@ class NewsReviewSheetModelTests(unittest.TestCase):
 
         write_screener.assert_called_once_with(
             "sheet-1",
-            [{**screener, "rowNumber": 2}],
+            [{
+                **screener,
+                "rowNumber": 2,
+                "recordId": news_review_sheet._row_dict(before, 2)["news_id"],
+            }],
             identity="",
             profile="",
         )
@@ -466,7 +470,7 @@ class NewsReviewActorTests(unittest.TestCase):
         self.assertEqual(reviewers["纳入滚动栏"]["role"], "SYSTEM")
         self.assertEqual(reviewers["纳入周报"]["name"], "人工审核人")
 
-    def test_latest_successful_decision_actor_is_attached_to_review_row(self) -> None:
+    def test_legacy_row_only_actor_is_not_attached_after_rows_can_move(self) -> None:
         snapshot = {"rows": [{"rowNumber": 2, "values": ["接受"]}, {"rowNumber": 3, "values": ["待审核"]}]}
         events = [
             {
@@ -490,9 +494,8 @@ class NewsReviewActorTests(unittest.TestCase):
         with mock.patch.object(web_app.AUTH, "operation_audit", return_value=events):
             result = web_app.attach_news_review_actors(snapshot)
 
-        self.assertEqual(result["rows"][0]["reviewer"]["name"], "最新复核人")
-        self.assertEqual(result["rows"][0]["reviewer"]["avatarUrl"], "https://example.com/new.png")
-        self.assertEqual(result["rows"][1]["reviewer"]["name"], "旧复核人")
+        self.assertNotIn("reviewer", result["rows"][0])
+        self.assertNotIn("reviewer", result["rows"][1])
 
     def test_reviewer_uses_full_audit_and_machine_effective_time(self) -> None:
         snapshot = {
@@ -824,12 +827,14 @@ class NewsReviewActorTests(unittest.TestCase):
                     "mentionToken": "ou_sheet_human",
                     "notify": False,
                     "rowNumber": 2,
+                    "recordId": "NEWS-HUMAN",
                 },
                 {
                     "name": "新闻自动初筛机器人",
                     "mentionToken": "",
                     "notify": False,
                     "rowNumber": 3,
+                    "recordId": "NEWS-AI",
                 },
             ],
         )

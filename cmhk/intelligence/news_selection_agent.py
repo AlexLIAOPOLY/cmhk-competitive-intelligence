@@ -1718,6 +1718,7 @@ def _run_news_selection_agent_locked(
                         changes.append(
                             {
                                 "rowNumber": decision["row_number"],
+                                "recordId": decision["news_id"],
                                 "columnIndex": news_review_sheet.APP_STATUS_COLUMN_INDEX,
                                 "before": "待审核",
                                 "value": decision["app_status"],
@@ -1727,6 +1728,7 @@ def _run_news_selection_agent_locked(
                         changes.append(
                             {
                                 "rowNumber": decision["row_number"],
+                                "recordId": decision["news_id"],
                                 "columnIndex": news_review_sheet.WEEKLY_STATUS_COLUMN_INDEX,
                                 "before": "待审核",
                                 "value": decision["weekly_status"],

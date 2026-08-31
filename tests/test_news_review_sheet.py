@@ -175,11 +175,12 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         # legacy/plain cell must still be upgraded to native rich text.
         before[review_sheet.SCREENER_COLUMN_INDEX] = "廖望 Alex LIAO Wang"
         after = list(before)
+        record_id = review_sheet._row_dict(before, 2)["news_id"]
         with (
             mock.patch.object(
                 review_sheet,
                 "_read_rows",
-                side_effect=[[before], [after]],
+                side_effect=[[before], [before], [after]],
             ),
             mock.patch.object(
                 review_sheet,
@@ -193,6 +194,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 [
                     {
                         "rowNumber": 2,
+                        "recordId": record_id,
                         "name": "廖望 Alex LIAO Wang",
                         "mentionToken": "ou_alex",
                     }
@@ -254,17 +256,22 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         before = self._existing_row()
         after = list(before)
         after[review_sheet.SCREENER_COLUMN_INDEX] = "新闻自动初筛机器人"
+        record_id = review_sheet._row_dict(before, 2)["news_id"]
         with (
             mock.patch.object(
                 review_sheet,
                 "_read_rows",
-                side_effect=[[before], [after]],
+                side_effect=[[before], [before], [after]],
             ),
             mock.patch.object(review_sheet, "_lark") as lark,
         ):
             result = review_sheet._write_review_sheet_screeners_locked(
                 "sheet-1",
-                [{"rowNumber": 2, "name": "新闻自动初筛机器人"}],
+                [{
+                    "rowNumber": 2,
+                    "recordId": record_id,
+                    "name": "新闻自动初筛机器人",
+                }],
             )
 
         args = lark.call_args.args
@@ -281,7 +288,11 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         ):
             second = review_sheet._write_review_sheet_screeners_locked(
                 "sheet-1",
-                [{"rowNumber": 2, "name": "新闻自动初筛机器人"}],
+                [{
+                    "rowNumber": 2,
+                    "recordId": record_id,
+                    "name": "新闻自动初筛机器人",
+                }],
             )
         second_write.assert_not_called()
         self.assertEqual(second["changedCount"], 0)
@@ -1835,6 +1846,49 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             [self._existing_row()],
             context="测试表",
         )
+
+    def test_system_only_separator_artifact_is_quarantined(self):
+        artifact = [""] * len(review_sheet.HEADERS)
+        artifact[review_sheet.SCREENER_COLUMN_INDEX] = "新闻自动初筛机器人"
+        artifact[review_sheet.SYNC_STATUS_COLUMN_INDEX] = "未同步"
+
+        review_sheet._validate_sheet_rows([artifact], context="测试表")
+        self.assertTrue(review_sheet._is_system_only_review_row(artifact))
+        plan, warnings = review_sheet._retention_plan(
+            [artifact], today_hkt=date(2026, 8, 31)
+        )
+        self.assertEqual(plan, [])
+        self.assertEqual(warnings, [])
+
+    def test_screener_write_relocates_by_record_id_after_row_insert(self):
+        target = self._existing_row()
+        record_id = review_sheet._row_dict(target, 2)["news_id"]
+        blank = [""] * len(review_sheet.HEADERS)
+        moved = [blank, target]
+        written = [blank, list(target)]
+        written[1][review_sheet.SCREENER_COLUMN_INDEX] = "新闻自动初筛机器人"
+        with (
+            mock.patch.object(
+                review_sheet,
+                "_read_rows",
+                side_effect=[[target], moved, written],
+            ),
+            mock.patch.object(review_sheet, "_lark") as lark,
+        ):
+            result = review_sheet._write_review_sheet_screeners_locked(
+                "sheet-1",
+                [{
+                    "rowNumber": 2,
+                    "recordId": record_id,
+                    "name": "新闻自动初筛机器人",
+                }],
+            )
+
+        writes = json.loads(
+            lark.call_args.args[lark.call_args.args.index("--writes") + 1]
+        )
+        self.assertEqual(writes[0]["range"], "A3")
+        self.assertEqual(result["verifiedCount"], 1)
 
     def test_apply_reviews_never_overwrites_human_decision_when_gate_blocks(self):
         accepted = self._existing_row()

@@ -5045,11 +5045,9 @@ def attach_news_review_actors(
     reviewers_by_row_title: dict[tuple[int, str], dict[str, str]] = {}
     reviewers_by_title: dict[str, dict[str, str]] = {}
     reviewers_by_record: dict[str, dict[str, str]] = {}
-    reviewers_without_title: dict[int, dict[str, str]] = {}
     reviewers_by_row_title_field: dict[tuple[int, str, str], dict[str, str]] = {}
     reviewers_by_title_field: dict[tuple[str, str], dict[str, str]] = {}
     reviewers_by_record_field: dict[tuple[str, str], dict[str, str]] = {}
-    reviewers_without_title_field: dict[tuple[int, str], dict[str, str]] = {}
     audit_events = AUTH.operation_audit(limit=None)
     ranked_events = [
         event
@@ -5138,12 +5136,6 @@ def attach_news_review_actors(
                         reviewers_by_row_title_field.setdefault(
                             (cell_row_number, cell_title, cell_field), reviewer
                         )
-            elif cell_row_number:
-                reviewers_without_title.setdefault(cell_row_number, reviewer)
-                if cell_field:
-                    reviewers_without_title_field.setdefault(
-                        (cell_row_number, cell_field), reviewer
-                    )
         for raw_row_number in decision_rows:
             try:
                 row_number = int(raw_row_number)
@@ -5159,12 +5151,9 @@ def attach_news_review_actors(
                     reviewers_by_title_field.setdefault(
                         (reviewed_title, reviewed_field), reviewer
                     )
-            else:
-                reviewers_without_title.setdefault(row_number, reviewer)
-                if reviewed_field:
-                    reviewers_without_title_field.setdefault(
-                        (row_number, reviewed_field), reviewer
-                    )
+            # Legacy events without a stable news ID or title are deliberately
+            # not bound by row number. Row coordinates drift whenever a newer
+            # batch is inserted at the top of the Feishu sheet.
     mention_identities: dict[tuple[str, str, str], dict[str, object]] = {}
     for row in snapshot.get("rows") or []:
         if not isinstance(row, dict):
@@ -5184,7 +5173,6 @@ def attach_news_review_actors(
             reviewers_by_record.get(record_id)
             or reviewers_by_row_title.get((row_number, title))
             or reviewers_by_title.get(title)
-            or reviewers_without_title.get(row_number)
         )
         if reviewer:
             row["reviewer"] = {
@@ -5219,7 +5207,6 @@ def attach_news_review_actors(
                 reviewers_by_record_field.get((record_id, field_name))
                 or reviewers_by_row_title_field.get((row_number, title, field_name))
                 or reviewers_by_title_field.get((title, field_name))
-                or reviewers_without_title_field.get((row_number, field_name))
             )
             if field_reviewer:
                 field_reviewers[field_name] = {
@@ -5749,9 +5736,18 @@ def reconcile_news_review_screener_column(snapshot: dict) -> dict:
         if not isinstance(row, dict):
             continue
         actor = row.pop("_screenerActor", None)
+        values = row.get("values") if isinstance(row.get("values"), list) else []
+        record_id = str(row.get("recordId") or "").strip()
+        title = str(
+            values[NEWS_REVIEW_TITLE_COLUMN]
+            if len(values) > NEWS_REVIEW_TITLE_COLUMN
+            else ""
+        ).strip()
         if (
             row.get("readOnly") is True
             or str(row.get("storageSource") or "feishu") != "feishu"
+            or not record_id
+            or not title
             or not isinstance(actor, dict)
             or not str(actor.get("name") or "").strip()
         ):
@@ -5780,6 +5776,7 @@ def reconcile_news_review_screener_column(snapshot: dict) -> dict:
             }
             | {
                 "rowNumber": int(row.get("rowNumber") or 0),
+                "recordId": record_id,
             }
         )
     if not assignments:

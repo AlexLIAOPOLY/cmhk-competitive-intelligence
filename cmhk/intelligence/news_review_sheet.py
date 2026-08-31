@@ -1116,9 +1116,10 @@ def _write_review_sheet_screeners_locked(
     identity: str = "",
     profile: str = "",
 ) -> dict[str, Any]:
-    """Write human mentions or the AI name into the first column and prove readback."""
+    """Write column A by stable news identity and prove exact readback."""
 
-    deduplicated: dict[int, dict[str, Any]] = {}
+    deduplicated: dict[str, dict[str, Any]] = {}
+    unidentified_count = 0
     for raw in assignments:
         if not isinstance(raw, dict):
             continue
@@ -1126,11 +1127,14 @@ def _write_review_sheet_screeners_locked(
             row_number = int(raw.get("rowNumber") or 0)
         except (TypeError, ValueError):
             continue
+        record_id = _text(raw.get("recordId"), 80)
         name = _text(raw.get("name"), 160)
-        if row_number < 2 or row_number > MAX_SHEET_ROWS or not name:
+        if not record_id or not name:
+            unidentified_count += 1
             continue
-        deduplicated[row_number] = {
+        deduplicated[record_id] = {
             "rowNumber": row_number,
+            "recordId": record_id,
             "name": name,
             "mentionToken": _text(raw.get("mentionToken"), 240),
             # A native mention is required for identity, but periodic polling
@@ -1139,19 +1143,48 @@ def _write_review_sheet_screeners_locked(
         }
     if not deduplicated:
         return {
-            "requestedCount": 0,
+            "requestedCount": len(assignments or []),
             "changedCount": 0,
             "verifiedCount": 0,
             "nativeMentionVerifiedCount": 0,
-            "readbackVerified": True,
+            "unidentifiedCount": unidentified_count,
+            "readbackVerified": unidentified_count == 0,
+        }
+
+    def resolve_rows(
+        rows: list[list[Any]],
+        source: dict[str, dict[str, Any]],
+    ) -> dict[str, dict[str, Any]]:
+        rows_by_id: dict[str, int] = {}
+        duplicates: set[str] = set()
+        for current_row_number, row in enumerate(rows, start=2):
+            if not _is_identified_review_row(row, current_row_number):
+                continue
+            record_id = _row_dict(
+                _comparable_sheet_row(row), current_row_number
+            )["news_id"]
+            if record_id in rows_by_id:
+                duplicates.add(record_id)
+            rows_by_id[record_id] = current_row_number
+        if duplicates & source.keys():
+            raise RuntimeError("审核表存在重复新闻 ID，已停止筛选人写入")
+        missing = sorted(set(source) - set(rows_by_id))
+        if missing:
+            raise RuntimeError(
+                f"有 {len(missing)} 条筛选人记录已移动、删除或缺少稳定新闻 ID，已停止写入"
+            )
+        return {
+            record_id: {**assignment, "rowNumber": rows_by_id[record_id]}
+            for record_id, assignment in source.items()
         }
 
     rows = _read_rows(sheet_id, identity=identity, profile=profile)
+    resolved = resolve_rows(rows, deduplicated)
     mention_tokens = _screener_mention_tokens(
         sheet_id,
         [
             assignment["rowNumber"]
-            for assignment in deduplicated.values()
+            for assignment in resolved.values()
             if assignment["mentionToken"]
         ],
         identity=identity,
@@ -1159,7 +1192,10 @@ def _write_review_sheet_screeners_locked(
     )
     pending = [
         assignment
-        for row_number, assignment in sorted(deduplicated.items())
+        for assignment in sorted(
+            resolved.values(), key=lambda item: item["rowNumber"]
+        )
+        for row_number in [assignment["rowNumber"]]
         if row_number - 2 >= len(rows)
         or not _screener_matches(
             rows[row_number - 2][SCREENER_COLUMN_INDEX],
@@ -1179,15 +1215,25 @@ def _write_review_sheet_screeners_locked(
             "verifiedCount": requested_count,
             "nativeMentionVerifiedCount": sum(
                 1
-                for assignment in deduplicated.values()
+                for assignment in resolved.values()
                 if assignment["mentionToken"]
             ),
+            "unidentifiedCount": unidentified_count,
             "readbackVerified": True,
         }
     changed_count = len(pending)
 
     last_error: Exception | None = None
     for attempt in range(1, LARK_READ_MAX_ATTEMPTS + 1):
+        # Re-resolve immediately before every write. Row numbers are display
+        # coordinates only; insertions must never change the target identity.
+        latest_before_write = _read_rows(
+            sheet_id, identity=identity, profile=profile
+        )
+        pending_by_id = {
+            assignment["recordId"]: assignment for assignment in pending
+        }
+        pending = list(resolve_rows(latest_before_write, pending_by_id).values())
         writes: list[dict[str, Any]] = []
         for assignment in pending:
             mention_token = assignment["mentionToken"]
@@ -1233,11 +1279,15 @@ def _write_review_sheet_screeners_locked(
             last_error = exc
 
         live_rows = _read_rows(sheet_id, identity=identity, profile=profile)
+        live_pending_by_id = {
+            assignment["recordId"]: assignment for assignment in pending
+        }
+        resolved_pending = resolve_rows(live_rows, live_pending_by_id)
         live_mention_tokens = _screener_mention_tokens(
             sheet_id,
             [
                 assignment["rowNumber"]
-                for assignment in pending
+                for assignment in resolved_pending.values()
                 if assignment["mentionToken"]
             ],
             identity=identity,
@@ -1245,7 +1295,7 @@ def _write_review_sheet_screeners_locked(
         )
         pending = [
             assignment
-            for assignment in pending
+            for assignment in resolved_pending.values()
             if assignment["rowNumber"] - 2 >= len(live_rows)
             or not _screener_matches(
                 live_rows[assignment["rowNumber"] - 2][SCREENER_COLUMN_INDEX],
@@ -1273,6 +1323,7 @@ def _write_review_sheet_screeners_locked(
         "nativeMentionVerifiedCount": sum(
             1 for assignment in deduplicated.values() if assignment["mentionToken"]
         ),
+        "unidentifiedCount": unidentified_count,
         "readbackVerified": True,
     }
 
@@ -1397,7 +1448,9 @@ def _batch_separator_count(
         (
             row
             for row in existing_rows
-            if row and any(_text(value, 80) for value in row)
+            if row
+            and any(_text(value, 80) for value in row)
+            and not _is_system_only_review_row(row)
         ),
         None,
     )
@@ -1522,6 +1575,12 @@ def _validate_sheet_rows(
     for index, row in enumerate(rows, start=2):
         if not row or not any(_text(value, 80) for value in row):
             continue
+        if _is_system_only_review_row(row):
+            # Separator rows have no business identity. Historical versions
+            # could accidentally leave only A/D system values on them after
+            # row insertion; quarantine those artifacts instead of treating
+            # them as news records or blocking the next batch.
+            continue
         if len(row) != len(HEADERS):
             errors.append(f"第{index}行列数为{len(row)}，应为{len(HEADERS)}")
             continue
@@ -1558,6 +1617,37 @@ def _comparable_sheet_row(row: list[Any]) -> list[str]:
         _cell_link(cell, 5000) if index == SOURCE_URL_COLUMN_INDEX else _text(cell, 5000)
         for index, cell in enumerate(padded)
     ]
+
+
+def _is_system_only_review_row(row: list[Any]) -> bool:
+    """Return True when only system-maintained A/D cells contain values."""
+
+    values = _comparable_sheet_row(row)
+    system_value_present = any(
+        values[index]
+        for index in (SCREENER_COLUMN_INDEX, SYNC_STATUS_COLUMN_INDEX)
+    )
+    business_value_present = any(
+        value
+        for index, value in enumerate(values)
+        if index not in {SCREENER_COLUMN_INDEX, SYNC_STATUS_COLUMN_INDEX}
+    )
+    return system_value_present and not business_value_present
+
+
+def _is_identified_review_row(row: list[Any], row_number: int) -> bool:
+    """Require the stable fields that make a row safe for system writes."""
+
+    if not row or _is_system_only_review_row(row):
+        return False
+    values = _comparable_sheet_row(row)
+    parsed = _row_dict(values, row_number)
+    return bool(
+        parsed["news_id"]
+        and parsed["title"]
+        and parsed["search_date"]
+        and parsed["source_url"].lower().startswith(("http://", "https://"))
+    )
 
 
 def ensure_sheet() -> str:
@@ -2033,7 +2123,11 @@ STATUS_PRIORITY = {"接受": 4, "不接受": 3, "暂缓": 2, "待审核": 1}
 def _index_review_rows(rows: list[list[Any]]) -> dict[str, list[Any]]:
     rows_by_id: dict[str, list[Any]] = {}
     for index, row in enumerate(rows, start=2):
-        if not row or not any(_text(value, 80) for value in row):
+        if (
+            not row
+            or not any(_text(value, 80) for value in row)
+            or _is_system_only_review_row(row)
+        ):
             continue
         padded = (list(row) + [""] * len(HEADERS))[: len(HEADERS)]
         news_id = _row_dict(padded, index)["news_id"]
@@ -2085,7 +2179,9 @@ def _refresh_live_review_sheet(
     physical_count = sum(
         1
         for row in latest_rows
-        if row and any(_text(value, 80) for value in row)
+        if row
+        and any(_text(value, 80) for value in row)
+        and not _is_system_only_review_row(row)
     )
     for news_id, stored_row in existing_rows_by_id.items():
         latest = latest_by_id.get(news_id)
@@ -2160,7 +2256,11 @@ def sync_candidates(
         existing_row_count = 0
         status_priority = STATUS_PRIORITY
         for index, row in enumerate(rows, start=2):
-            if not row or not any(_text(value, 80) for value in row):
+            if (
+                not row
+                or not any(_text(value, 80) for value in row)
+                or _is_system_only_review_row(row)
+            ):
                 continue
             existing_row_count += 1
             parsed = _row_dict(row, index)
@@ -2814,7 +2914,11 @@ def _upsert_review_history_rows(
         payload["mirrored_sheet_ids"].append(sheet_id)
         metadata_changed = True
     for row_number, raw_row in enumerate(rows, start=2):
-        if not raw_row or not any(_text(value, 80) for value in raw_row):
+        if (
+            not raw_row
+            or not any(_text(value, 80) for value in raw_row)
+            or _is_system_only_review_row(raw_row)
+        ):
             continue
         values = _comparable_sheet_row(raw_row)
         parsed = _row_dict(values, row_number)
@@ -2964,7 +3068,11 @@ def _retention_plan(
     remove: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
     for row_number, raw_row in enumerate(rows, start=2):
-        if not raw_row or not any(_text(value, 80) for value in raw_row):
+        if (
+            not raw_row
+            or not any(_text(value, 80) for value in raw_row)
+            or _is_system_only_review_row(raw_row)
+        ):
             continue
         values = _comparable_sheet_row(raw_row)
         parsed = _row_dict(values, row_number)
@@ -3502,7 +3610,11 @@ def review_sheet_snapshot(
         live_rows: list[dict[str, Any]] = []
         live_ids: set[str] = set()
         for row_number, row in enumerate(rows, start=2):
-            if not row or not any(_text(value, 80) for value in row):
+            if (
+                not row
+                or not any(_text(value, 80) for value in row)
+                or _is_system_only_review_row(row)
+            ):
                 continue
             values = _comparable_sheet_row(row)
             news_id = _row_dict(values, row_number)["news_id"]
@@ -3762,6 +3874,7 @@ def update_review_sheet_cells(
                 )
             normalized[(row_number, column_index)] = {
                 "rowNumber": row_number,
+                "recordId": current_record_id,
                 "columnIndex": column_index,
                 "before": current,
                 "value": value,
@@ -3792,6 +3905,11 @@ def update_review_sheet_cells(
                     {
                         **screener,
                         "rowNumber": row_number,
+                        "recordId": next(
+                            item["recordId"]
+                            for item in requested
+                            if item["rowNumber"] == row_number
+                        ),
                     }
                     for row_number in screener_rows
                 ],
@@ -3920,7 +4038,9 @@ def load_weekly_report_candidates(
     live_rows = [
         {**_row_dict(row, index), "storage_source": "feishu"}
         for index, row in enumerate(live_raw_rows, start=2)
-        if row and any(_text(value, 80) for value in row)
+        if row
+        and any(_text(value, 80) for value in row)
+        and not _is_system_only_review_row(row)
     ]
     rows = list(live_rows)
     local_history_rows = 0
@@ -4042,7 +4162,9 @@ def apply_reviews(
         rows = [
             _row_dict(row, index)
             for index, row in enumerate(sheet_rows, start=2)
-            if row and any(_text(value, 80) for value in row[:2])
+            if row
+            and any(_text(value, 80) for value in row)
+            and not _is_system_only_review_row(row)
         ]
         payload = _read_json(PUBLISHED_PATH, {"items": []})
         published = payload.get("items") if isinstance(payload, dict) else []
