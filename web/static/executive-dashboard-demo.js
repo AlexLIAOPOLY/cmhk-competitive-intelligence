@@ -222,12 +222,12 @@
   function echartAxisLabel(rows) {
     const rich = {};
     rows.forEach((row, index) => {
-      rich[`dot${index}`] = { color: chartColors[index], fontSize: 14, lineHeight: 20 };
+      rich[`dot${index}`] = { color: chartColors[index], fontSize: 16, lineHeight: 22 };
     });
-    rich.name = { color: "#a9c0cb", fontSize: 11, fontWeight: 600, lineHeight: 20 };
+    rich.name = { color: "#a9c0cb", fontSize: 12, fontWeight: 600, lineHeight: 22 };
     return {
       color: "#a9c0cb",
-      margin: 9,
+      margin: 10,
       formatter(value, index) { return `{dot${index}|●}  {name|${value}}`; },
       rich
     };
@@ -250,7 +250,7 @@
     }));
     return {
       ...echartBaseOption(spec),
-      grid: { left: 72, right: 58, top: 9, bottom: 8 },
+      grid: { left: 78, right: 64, top: 8, bottom: 7 },
       xAxis: {
         type: "value",
         min: diverging ? -absoluteMax * 1.18 : 0,
@@ -266,20 +266,20 @@
           name: spec.metricLabel,
           type: "bar",
           data: barData,
-          barWidth: diverging ? 8 : (lollipop ? 7 : 10),
+          barWidth: diverging ? 10 : (lollipop ? 9 : 12),
           showBackground: !diverging,
           backgroundStyle: { color: "rgba(90, 132, 151, .14)", borderRadius: 3 },
           itemStyle: { borderRadius: 6 },
           label: {
             show: true,
             position: "right",
-            distance: 8,
-            fontSize: 11,
+            distance: 9,
+            fontSize: 12,
             fontWeight: 700,
-            lineHeight: 13,
+            lineHeight: 14,
             rich: {
-              value: { color: "#eaf6fb", fontSize: 11, fontWeight: 700, lineHeight: 13 },
-              period: { color: "#789baa", fontSize: 8, fontWeight: 560, lineHeight: 10 }
+              value: { color: "#eaf6fb", fontSize: 12, fontWeight: 700, lineHeight: 14 },
+              period: { color: "#789baa", fontSize: 9, fontWeight: 560, lineHeight: 11 }
             },
             formatter(params) {
               const row = rows[params.dataIndex];
@@ -293,7 +293,7 @@
         {
           type: "scatter",
           data: pointData,
-          symbolSize: lollipop ? 14 : (diverging ? 10 : 0),
+          symbolSize: lollipop ? 16 : (diverging ? 12 : 0),
           tooltip: { show: false },
           emphasis: { scale: 1.35 },
           z: 3
