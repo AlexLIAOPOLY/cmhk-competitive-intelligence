@@ -383,8 +383,15 @@
     });
   }
 
+  function competitorHasComparablePeer(data, companyId, years, metricKey = "") {
+    return data.companies.some((company) => company.id !== companyId
+      && competitorHasCompleteMetric(data, [companyId, company.id], years, metricKey));
+  }
+
   function visibleCompetitorIds(data, selectedCompanies, years, metricKey = "") {
-    if (!selectedCompanies.length) return new Set(data.companies.map((company) => company.id));
+    if (!selectedCompanies.length) return new Set(data.companies
+      .filter((company) => competitorHasComparablePeer(data, company.id, years, metricKey))
+      .map((company) => company.id));
     return new Set(data.companies
       .filter((company) => selectedCompanies.includes(company.id) || competitorHasCompleteMetric(data, [...selectedCompanies, company.id], years, metricKey))
       .map((company) => company.id));

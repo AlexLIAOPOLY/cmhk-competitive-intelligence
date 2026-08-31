@@ -41,6 +41,9 @@ class CompetitorSelectionGateTests(unittest.TestCase):
     def test_company_metric_and_year_controls_require_complete_windows(self):
         self.assertIn("function competitorComparableWindow", SCRIPT)
         self.assertIn("competitorHasCompleteMetric", SCRIPT)
+        self.assertIn("function competitorHasComparablePeer", SCRIPT)
+        self.assertIn("company.id !== companyId", SCRIPT)
+        self.assertIn(".filter((company) => competitorHasComparablePeer(data, company.id, years, metricKey))", SCRIPT)
         self.assertIn("selectedCompanies.includes(company.id) || competitorHasCompleteMetric", SCRIPT)
         self.assertIn("...(data.gaps || [])", SCRIPT)
         self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
