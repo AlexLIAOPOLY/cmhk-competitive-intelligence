@@ -1,6 +1,48 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260901_040728_806816": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260901_040728_806816",
+        "task_run_id": "20260901_040728_806816",
+        "title": "季度竞对数据发布",
+        "kind": "quarterly-data-release",
+        "kind_label": "季度数据发布",
+        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "发布 qcm_574db910b9e31d053bf6d83e 完成，共 3073 行；数据截至 2026-06-30；已经同步到飞书。",
+        "status_detail": "发布 qcm_574db910b9e31d053bf6d83e 完成，共 3073 行；数据截至 2026-06-30；已经同步到飞书。",
+        "started_at_hkt": "2026-09-01T04:07:28+08:00",
+        "heartbeat_at_hkt": "2026-09-01T04:10:25+08:00",
+        "completed_at_hkt": "2026-09-01T04:10:25+08:00",
+        "duration_ms": 177104,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260901_040702_619062": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260901_040702_619062",
+        "task_run_id": "20260901_040702_619062",
+        "title": "四库与观察结论自动更新",
+        "kind": "executive-intelligence-refresh",
+        "kind_label": "四库刷新",
+        "scope": "Agent审核 scheduled_20260901_030101_001044 · 父任务 20260901_030101_001044",
+        "run_status": "running",
+        "phase": "更新主页UI",
+        "progress_detail": "四库与15个AI洞察均已通过，正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+        "status_detail": "",
+        "started_at_hkt": "2026-09-01T04:07:02+08:00",
+        "heartbeat_at_hkt": "2026-09-01T04:25:23+08:00",
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260901_030101_001044": {
       "ok": true,
       "run": {
@@ -10,14 +52,14 @@
         "kind": "crawl",
         "kind_label": "爬虫",
         "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第23行、第24行、第26行、第27行、第28行、第29行、第30行、第31行、第32行、第33行、第34行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-        "run_status": "running",
-        "phase": "审核归档",
-        "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "爬虫、审核与结果归档已全部完成。",
         "status_detail": "",
-        "started_at_hkt": "2026-09-01T03:01:01+08:00",
-        "heartbeat_at_hkt": "2026-09-01T04:06:02+08:00",
-        "completed_at_hkt": "",
-        "duration_ms": 0,
+        "started_at_hkt": "2026-09-01T03:01:00+08:00",
+        "heartbeat_at_hkt": "2026-09-01T04:07:02+08:00",
+        "completed_at_hkt": "2026-09-01T04:07:02+08:00",
+        "duration_ms": 3961708,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
@@ -984,48 +1026,6 @@
         "heartbeat_at_hkt": "2026-08-29T18:46:42+08:00",
         "completed_at_hkt": "2026-08-29T18:46:42+08:00",
         "duration_ms": 1514,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260829_182039_728629": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260829_182039_728629",
-        "task_run_id": "20260829_182039_728629",
-        "title": "季度竞对数据发布",
-        "kind": "quarterly-data-release",
-        "kind_label": "季度数据发布",
-        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "发布 qcm_586e1d57a04b2a54964eaf1b 完成，共 3051 行；数据截至 2026-06-30。",
-        "status_detail": "发布 qcm_586e1d57a04b2a54964eaf1b 完成，共 3051 行；数据截至 2026-06-30。",
-        "started_at_hkt": "2026-08-29T18:20:39+08:00",
-        "heartbeat_at_hkt": "2026-08-29T18:20:41+08:00",
-        "completed_at_hkt": "2026-08-29T18:20:41+08:00",
-        "duration_ms": 1832,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260829_180414_374060": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260829_180414_374060",
-        "task_run_id": "20260829_180414_374060",
-        "title": "季度竞对数据发布",
-        "kind": "quarterly-data-release",
-        "kind_label": "季度数据发布",
-        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "发布 qcm_5ab205d0cff6836d0b5d1593 完成，共 3051 行；数据截至 2026-06-30。",
-        "status_detail": "发布 qcm_5ab205d0cff6836d0b5d1593 完成，共 3051 行；数据截至 2026-06-30。",
-        "started_at_hkt": "2026-08-29T18:04:14+08:00",
-        "heartbeat_at_hkt": "2026-08-29T18:04:15+08:00",
-        "completed_at_hkt": "2026-08-29T18:04:15+08:00",
-        "duration_ms": 1293,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
