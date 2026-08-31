@@ -56,6 +56,7 @@ METRIC_LABELS = {
 AMOUNT = r"(?:HK\$|HKD|港幣|港币|港元|\$)?\s*[-(]?\d[\d,]*(?:\.\d+)?\s*(?:million|billion|mn|bn|m|億港元|亿港元|百萬港元|百万港元|港元|港仙|HK cents?|%)?\)?"
 METRIC_PATTERNS: dict[str, tuple[str, ...]] = {
     "revenue": (
+        rf"HK\$['’]?000.{{0,240}}?\bRevenue\s+(?P<value>[-(]?\d[\d,]*(?:\.\d+)?\)?)",
         rf"Results Highlights.{{0,180}}?\bRevenue.{{0,80}}?(?P<value>\$\s*\d[\d,]*(?:\.\d+)?\s*(?:million|m))",
         rf"revenues?.{{0,220}}?(?:of the Group|Group).{{0,120}}?\bto\s+(?:approximately\s+)?(?P<value>{AMOUNT})",
         rf"(?:revenues? of the Group|Group revenue|total revenue).{{0,160}}?\bto\s+(?:approximately\s+)?(?P<value>{AMOUNT})",
@@ -70,9 +71,10 @@ METRIC_PATTERNS: dict[str, tuple[str, ...]] = {
         rf"(?:total\s+)?EBITDA[^\d]{{0,80}}(?P<value>{AMOUNT})",
     ),
     "net_profit": (
+        rf"HK\$['’]?000.{{0,320}}?\bLoss for the period\s+(?P<value>\(\d[\d,]*(?:\.\d+)?\))",
         rf"profit attributable to shareholders.{{0,100}}?\bwas\s+(?P<value>\$\s*\d[\d,]*(?:\.\d+)?\s*(?:million|m))",
         rf"Financial Highlights.{{0,360}}?(?:Reported\s+)?Profit after tax\s+{AMOUNT}\s+(?P<value>{AMOUNT})",
-        rf"(?:recorded a loss|loss attributable|loss for the year).{{0,140}}?(?P<value>HK\$\s*\d[\d,]*(?:\.\d+)?\s*(?:million|billion|mn|bn|m))",
+        rf"(?:recorded a (?:net )?loss|loss attributable|loss for the (?:year|period)).{{0,140}}?(?P<value>HK\$\s*\d[\d,]*(?:\.\d+)?\s*(?:million|billion|mn|bn|m))",
         rf"(?:profit attributable(?: to [^.；;]{{0,80}})?|net profit|profit for the period|純利|净利润|淨利潤|股東應佔溢利|股东应占溢利).{{0,120}}?\bto\s+(?P<value>{AMOUNT})",
         rf"(?:profit attributable(?: to [^.；;]{{0,80}})?|net profit|profit for the period|純利|净利润|淨利潤|股東應佔溢利|股东应占溢利)[^\d]{{0,80}}(?P<value>{AMOUNT})",
     ),
@@ -254,6 +256,13 @@ def _extract_metrics(text: str) -> list[dict[str, str]]:
             if not re.search(r"\d", value):
                 continue
             if metric_key in {"revenue", "ebitda", "net_profit", "capital_expenditure"}:
+                if re.search(r"HK\$['’]?000", evidence, re.I) and re.fullmatch(
+                    r"\(?\d[\d,]*(?:\.\d+)?\)?", value
+                ):
+                    negative = value.startswith("(") and value.endswith(")")
+                    numeric = float(value.strip("()").replace(",", "")) / 1000
+                    rendered = f"{numeric:,.3f}".rstrip("0").rstrip(".")
+                    value = f"{'-' if negative else ''}HK${rendered} million"
                 if re.fullmatch(r"[-+]?\d+(?:\.\d+)?%", value):
                     continue
                 if not re.search(r"HK\$|HKD|\$|港|million|billion|mn|bn|億|亿|百萬|百万", value, re.I):
@@ -289,7 +298,7 @@ def _extract_metrics(text: str) -> list[dict[str, str]]:
             )
             break
     if not any(item["metric_key"] == "dividend" for item in rows) and re.search(
-        r"does not recommend the payment of any dividend|不建議.{0,40}派發任何股息|不建议.{0,40}派发任何股息",
+        r"does not recommend the payment of any(?:\s+interim|\s+final)? dividend|不建議.{0,40}派發任何股息|不建议.{0,40}派发任何股息",
         text,
         re.I | re.S,
     ):

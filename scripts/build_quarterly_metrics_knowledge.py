@@ -131,6 +131,8 @@ AWS_Q4_2023_RESULTS_URL = "https://s2.q4cdn.com/299287126/files/doc_financials/2
 AWS_Q1_2025_RESULTS_URL = "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q1/AMZN-Q1-2025-Earnings-Release.pdf"
 AWS_Q2_2025_RESULTS_URL = "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q2/AMZN-Q2-2025-Earnings-Release.pdf"
 AWS_Q3_2025_RESULTS_URL = "https://s2.q4cdn.com/299287126/files/doc_financials/2025/q3/AMZN-Q3-2025-Earnings-Release.pdf"
+AWS_Q1_2026_RESULTS_URL = "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-First-Quarter-Results/default.aspx"
+AWS_Q2_2026_RESULTS_URL = "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx"
 AWS_Q1_2021_10Q_URL = "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000010/amzn-20210331.htm"
 AWS_Q2_2021_10Q_URL = "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000020/amzn-20210630.htm"
 AWS_Q3_2021_10Q_URL = "https://www.sec.gov/Archives/edgar/data/1018724/000101872421000028/amzn-20210930.htm"
@@ -199,6 +201,8 @@ AWS_2025_PERIODS = [
     {"period": "Q2 2025", "period_end": "2025-06-30", "grain": "quarter"},
     {"period": "Q3 2025", "period_end": "2025-09-30", "grain": "quarter"},
     {"period": "Q4 2025", "period_end": "2025-12-31", "grain": "quarter"},
+    {"period": "Q1 2026", "period_end": "2026-03-31", "grain": "quarter"},
+    {"period": "Q2 2026", "period_end": "2026-06-30", "grain": "quarter"},
 ]
 
 AWS_2025_METRICS = {
@@ -243,6 +247,8 @@ AWS_2025_METRICS = {
         "Q2 2025": 30873,
         "Q3 2025": 33006,
         "Q4 2025": 35579,
+        "Q1 2026": 37587,
+        "Q2 2026": 42232,
     },
     "operating_income": {
         "Q1 2016": 604,
@@ -285,6 +291,8 @@ AWS_2025_METRICS = {
         "Q2 2025": 10160,
         "Q3 2025": 11434,
         "Q4 2025": 12465,
+        "Q1 2026": 14161,
+        "Q2 2026": 16621,
     },
 }
 
@@ -529,6 +537,18 @@ AWS_2025_SOURCE_BY_PERIOD = {
         "type": "official_annual_report_reconciliation",
         "evidence": "Amazon 2025 Form 10-K Segment Information table reports AWS full-year net sales 128,725 and operating income 45,606 million USD; subtracting official Q1-Q3 AWS amounts gives Q4 net sales 35,579 and operating income 12,465 million USD.",
     },
+    "Q1 2026": {
+        "label": "Amazon Q1 2026 earnings release",
+        "url": AWS_Q1_2026_RESULTS_URL,
+        "type": "official_quarterly_earnings_release",
+        "evidence": "AWS Segment table reports net sales of 37,587 million USD, operating income of 14,161 million USD, and 28% year-on-year net sales growth for the quarter ended March 31, 2026.",
+    },
+    "Q2 2026": {
+        "label": "Amazon Q2 2026 earnings release",
+        "url": AWS_Q2_2026_RESULTS_URL,
+        "type": "official_quarterly_earnings_release",
+        "evidence": "AWS Segment table reports net sales of 42,232 million USD, operating income of 16,621 million USD, and 37% year-on-year net sales growth for the quarter ended June 30, 2026.",
+    },
 }
 
 MICROSOFT_EARNINGS_INDEX_URL = "https://www.microsoft.com/en-us/Investor/earnings"
@@ -612,6 +632,8 @@ MICROSOFT_FY26_Q2_PRESS_URL = "https://www.microsoft.com/en-us/Investor/earnings
 MICROSOFT_FY26_Q2_SEGMENT_URL = "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q2/segment-revenues"
 MICROSOFT_FY26_Q3_PRESS_URL = "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/press-release-webcast"
 MICROSOFT_FY26_Q3_SEGMENT_URL = "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q3/segment-revenues"
+MICROSOFT_FY26_Q4_PRESS_URL = "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast"
+MICROSOFT_FY26_Q4_SEGMENT_URL = "https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/segment-revenues"
 
 MICROSOFT_2025_PERIODS = [
     {"period": "Q2 2016", "period_end": "2016-06-30", "grain": "quarter"},
@@ -654,12 +676,13 @@ MICROSOFT_2025_PERIODS = [
     {"period": "Q3 2025", "period_end": "2025-09-30", "grain": "quarter"},
     {"period": "Q4 2025", "period_end": "2025-12-31", "grain": "quarter"},
     {"period": "Q1 2026", "period_end": "2026-03-31", "grain": "quarter"},
+    {"period": "Q2 2026", "period_end": "2026-06-30", "grain": "quarter"},
 ]
 
 MICROSOFT_2025_METRICS = {
-    "revenue": {"Q2 2016": 6711, "Q3 2016": 6382, "Q4 2016": 6861, "Q1 2017": 6763, "Q2 2017": 7434, "Q3 2017": 6922, "Q4 2017": 7795, "Q1 2018": 7896, "Q2 2018": 9606, "Q3 2018": 8567, "Q4 2018": 9378, "Q1 2019": 9649, "Q2 2019": 11391, "Q3 2019": 10845, "Q4 2019": 11869, "Q1 2020": 12281, "Q2 2020": 13371, "Q3 2020": 12986, "Q4 2020": 14601, "Q1 2021": 15118, "Q2 2021": 17375, "Q3 2021": 16964, "Q4 2021": 18327, "Q1 2022": 19051, "Q2 2022": 20909, "Q3 2022": 20325, "Q4 2022": 21508, "Q1 2023": 22081, "Q2 2023": 23993, "Q3 2023": 24259, "Q4 2023": 25880, "Q1 2024": 26708, "Q2 2024": 28515, "Q3 2024": 24092, "Q4 2024": 25544, "Q1 2025": 26751, "Q2 2025": 29878, "Q3 2025": 30897, "Q4 2025": 32907, "Q1 2026": 34681},
-    "operating_income": {"Q2 2016": 2190, "Q3 2016": 2058, "Q4 2016": 2398, "Q1 2017": 2181, "Q2 2017": 2501, "Q3 2017": 2137, "Q4 2017": 2832, "Q1 2018": 2654, "Q2 2018": 3901, "Q3 2018": 2931, "Q4 2018": 3279, "Q1 2019": 3208, "Q2 2019": 4502, "Q3 2019": 3889, "Q4 2019": 4531, "Q1 2020": 4560, "Q2 2020": 5344, "Q3 2020": 5422, "Q4 2020": 6492, "Q1 2021": 6425, "Q2 2021": 7787, "Q3 2021": 7562, "Q4 2021": 8197, "Q1 2022": 8281, "Q2 2022": 8681, "Q3 2022": 8978, "Q4 2022": 8904, "Q1 2023": 9476, "Q2 2023": 10526, "Q3 2023": 11751, "Q4 2023": 12461, "Q1 2024": 12513, "Q2 2024": 12859, "Q3 2024": 10503, "Q4 2024": 10851, "Q1 2025": 11095, "Q2 2025": 12140, "Q3 2025": 13391, "Q4 2025": 13873, "Q1 2026": 13753},
-    "azure_and_other_cloud_services_growth_yoy": {"Q2 2016": 102, "Q3 2016": 116, "Q4 2016": 93, "Q1 2017": 93, "Q2 2017": 97, "Q3 2017": 90, "Q4 2017": 98, "Q1 2018": 93, "Q2 2018": 89, "Q3 2018": 76, "Q4 2018": 76, "Q1 2019": 73, "Q2 2019": 64, "Q3 2019": 59, "Q4 2019": 62, "Q1 2020": 59, "Q2 2020": 47, "Q3 2020": 48, "Q4 2020": 50, "Q1 2021": 50, "Q2 2021": 51, "Q3 2021": 50, "Q4 2021": 46, "Q1 2022": 46, "Q2 2022": 40, "Q3 2022": 35, "Q4 2022": 31, "Q1 2023": 27, "Q2 2023": 26, "Q3 2023": 29, "Q4 2023": 30, "Q1 2024": 31, "Q2 2024": 29, "Q3 2024": 33, "Q4 2024": 31, "Q1 2025": 33, "Q2 2025": 39, "Q3 2025": 40, "Q4 2025": 39, "Q1 2026": 40},
+    "revenue": {"Q2 2016": 6711, "Q3 2016": 6382, "Q4 2016": 6861, "Q1 2017": 6763, "Q2 2017": 7434, "Q3 2017": 6922, "Q4 2017": 7795, "Q1 2018": 7896, "Q2 2018": 9606, "Q3 2018": 8567, "Q4 2018": 9378, "Q1 2019": 9649, "Q2 2019": 11391, "Q3 2019": 10845, "Q4 2019": 11869, "Q1 2020": 12281, "Q2 2020": 13371, "Q3 2020": 12986, "Q4 2020": 14601, "Q1 2021": 15118, "Q2 2021": 17375, "Q3 2021": 16964, "Q4 2021": 18327, "Q1 2022": 19051, "Q2 2022": 20909, "Q3 2022": 20325, "Q4 2022": 21508, "Q1 2023": 22081, "Q2 2023": 23993, "Q3 2023": 24259, "Q4 2023": 25880, "Q1 2024": 26708, "Q2 2024": 28515, "Q3 2024": 24092, "Q4 2024": 25544, "Q1 2025": 26751, "Q2 2025": 29878, "Q3 2025": 30897, "Q4 2025": 32907, "Q1 2026": 34681, "Q2 2026": 39306},
+    "operating_income": {"Q2 2016": 2190, "Q3 2016": 2058, "Q4 2016": 2398, "Q1 2017": 2181, "Q2 2017": 2501, "Q3 2017": 2137, "Q4 2017": 2832, "Q1 2018": 2654, "Q2 2018": 3901, "Q3 2018": 2931, "Q4 2018": 3279, "Q1 2019": 3208, "Q2 2019": 4502, "Q3 2019": 3889, "Q4 2019": 4531, "Q1 2020": 4560, "Q2 2020": 5344, "Q3 2020": 5422, "Q4 2020": 6492, "Q1 2021": 6425, "Q2 2021": 7787, "Q3 2021": 7562, "Q4 2021": 8197, "Q1 2022": 8281, "Q2 2022": 8681, "Q3 2022": 8978, "Q4 2022": 8904, "Q1 2023": 9476, "Q2 2023": 10526, "Q3 2023": 11751, "Q4 2023": 12461, "Q1 2024": 12513, "Q2 2024": 12859, "Q3 2024": 10503, "Q4 2024": 10851, "Q1 2025": 11095, "Q2 2025": 12140, "Q3 2025": 13391, "Q4 2025": 13873, "Q1 2026": 13753, "Q2 2026": 15955},
+    "azure_and_other_cloud_services_growth_yoy": {"Q2 2016": 102, "Q3 2016": 116, "Q4 2016": 93, "Q1 2017": 93, "Q2 2017": 97, "Q3 2017": 90, "Q4 2017": 98, "Q1 2018": 93, "Q2 2018": 89, "Q3 2018": 76, "Q4 2018": 76, "Q1 2019": 73, "Q2 2019": 64, "Q3 2019": 59, "Q4 2019": 62, "Q1 2020": 59, "Q2 2020": 47, "Q3 2020": 48, "Q4 2020": 50, "Q1 2021": 50, "Q2 2021": 51, "Q3 2021": 50, "Q4 2021": 46, "Q1 2022": 46, "Q2 2022": 40, "Q3 2022": 35, "Q4 2022": 31, "Q1 2023": 27, "Q2 2023": 26, "Q3 2023": 29, "Q4 2023": 30, "Q1 2024": 31, "Q2 2024": 29, "Q3 2024": 33, "Q4 2024": 31, "Q1 2025": 33, "Q2 2025": 39, "Q3 2025": 40, "Q4 2025": 39, "Q1 2026": 40, "Q2 2026": 43},
 }
 
 MICROSOFT_2025_SOURCE_BY_PERIOD = {
@@ -943,6 +966,13 @@ MICROSOFT_2025_SOURCE_BY_PERIOD = {
         "type": "official_quarterly_earnings_release",
         "evidence": "Quarter ended March 31, 2026: Intelligent Cloud revenue 34,681 and operating income 13,753 million USD; Azure and other cloud services revenue growth 40%.",
     },
+    "Q2 2026": {
+        "label": "Microsoft FY26 Q4 earnings release",
+        "url": MICROSOFT_FY26_Q4_PRESS_URL,
+        "segment_url": MICROSOFT_FY26_Q4_SEGMENT_URL,
+        "type": "official_quarterly_earnings_release",
+        "evidence": "Quarter ended June 30, 2026: Intelligent Cloud revenue 39,306 and operating income 15,955 million USD; Azure and other cloud services revenue growth 43%.",
+    },
 }
 
 ALPHABET_EARNINGS_INDEX_URL = "https://abc.xyz/investor/earnings/"
@@ -975,6 +1005,8 @@ ALPHABET_Q1_2025_10Q_URL = "https://www.sec.gov/Archives/edgar/data/1652044/0001
 ALPHABET_Q2_2025_10Q_URL = "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000062/goog-20250630.htm"
 ALPHABET_Q3_2025_10Q_URL = "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000091/goog-20250930.htm"
 ALPHABET_Q4_2025_8K_EXHIBIT_URL = "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000012/googexhibit991q42025.htm"
+ALPHABET_Q1_2026_8K_EXHIBIT_URL = "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000043/googexhibit991q12026.htm"
+ALPHABET_Q2_2026_8K_EXHIBIT_URL = "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm"
 
 GOOGLE_CLOUD_2025_PERIODS = [
     {"period": "Q1 2020", "period_end": "2020-03-31", "grain": "quarter"},
@@ -1001,12 +1033,14 @@ GOOGLE_CLOUD_2025_PERIODS = [
     {"period": "Q2 2025", "period_end": "2025-06-30", "grain": "quarter"},
     {"period": "Q3 2025", "period_end": "2025-09-30", "grain": "quarter"},
     {"period": "Q4 2025", "period_end": "2025-12-31", "grain": "quarter"},
+    {"period": "Q1 2026", "period_end": "2026-03-31", "grain": "quarter"},
+    {"period": "Q2 2026", "period_end": "2026-06-30", "grain": "quarter"},
 ]
 
 GOOGLE_CLOUD_2025_METRICS = {
-    "revenue": {"Q1 2020": 2777, "Q2 2020": 3007, "Q3 2020": 3444, "Q4 2020": 3831, "Q1 2021": 4047, "Q2 2021": 4628, "Q3 2021": 4990, "Q4 2021": 5541, "Q1 2022": 5821, "Q2 2022": 6276, "Q3 2022": 6868, "Q4 2022": 7315, "Q1 2023": 7454, "Q2 2023": 8031, "Q3 2023": 8411, "Q4 2023": 9192, "Q1 2024": 9574, "Q2 2024": 10347, "Q3 2024": 11353, "Q4 2024": 11955, "Q1 2025": 12260, "Q2 2025": 13624, "Q3 2025": 15157, "Q4 2025": 17664},
-    "operating_income": {"Q1 2020": -1730, "Q2 2020": -1426, "Q3 2020": -1208, "Q4 2020": -1243, "Q1 2021": -974, "Q2 2021": -591, "Q3 2021": -644, "Q4 2021": -890, "Q1 2022": -931, "Q2 2022": -858, "Q3 2022": -699, "Q4 2022": -480, "Q1 2023": 191, "Q2 2023": 395, "Q3 2023": 266, "Q4 2023": 864, "Q1 2024": 900, "Q2 2024": 1172, "Q3 2024": 1947, "Q4 2024": 2093, "Q1 2025": 2177, "Q2 2025": 2826, "Q3 2025": 3594, "Q4 2025": 5313},
-    "revenue_growth_yoy": {"Q1 2020": 52, "Q2 2020": 43, "Q3 2020": 45, "Q4 2020": 47, "Q1 2021": 46, "Q2 2021": 54, "Q3 2021": 45, "Q4 2021": 45, "Q1 2022": 44, "Q2 2022": 36, "Q3 2022": 38, "Q4 2022": 32, "Q1 2023": 28, "Q2 2023": 28, "Q3 2023": 22, "Q4 2023": 26, "Q1 2024": 28, "Q2 2024": 29, "Q3 2024": 35, "Q4 2024": 30, "Q1 2025": 28, "Q2 2025": 32, "Q3 2025": 34, "Q4 2025": 48},
+    "revenue": {"Q1 2020": 2777, "Q2 2020": 3007, "Q3 2020": 3444, "Q4 2020": 3831, "Q1 2021": 4047, "Q2 2021": 4628, "Q3 2021": 4990, "Q4 2021": 5541, "Q1 2022": 5821, "Q2 2022": 6276, "Q3 2022": 6868, "Q4 2022": 7315, "Q1 2023": 7454, "Q2 2023": 8031, "Q3 2023": 8411, "Q4 2023": 9192, "Q1 2024": 9574, "Q2 2024": 10347, "Q3 2024": 11353, "Q4 2024": 11955, "Q1 2025": 12260, "Q2 2025": 13624, "Q3 2025": 15157, "Q4 2025": 17664, "Q1 2026": 20028, "Q2 2026": 24768},
+    "operating_income": {"Q1 2020": -1730, "Q2 2020": -1426, "Q3 2020": -1208, "Q4 2020": -1243, "Q1 2021": -974, "Q2 2021": -591, "Q3 2021": -644, "Q4 2021": -890, "Q1 2022": -931, "Q2 2022": -858, "Q3 2022": -699, "Q4 2022": -480, "Q1 2023": 191, "Q2 2023": 395, "Q3 2023": 266, "Q4 2023": 864, "Q1 2024": 900, "Q2 2024": 1172, "Q3 2024": 1947, "Q4 2024": 2093, "Q1 2025": 2177, "Q2 2025": 2826, "Q3 2025": 3594, "Q4 2025": 5313, "Q1 2026": 6598, "Q2 2026": 8814},
+    "revenue_growth_yoy": {"Q1 2020": 52, "Q2 2020": 43, "Q3 2020": 45, "Q4 2020": 47, "Q1 2021": 46, "Q2 2021": 54, "Q3 2021": 45, "Q4 2021": 45, "Q1 2022": 44, "Q2 2022": 36, "Q3 2022": 38, "Q4 2022": 32, "Q1 2023": 28, "Q2 2023": 28, "Q3 2023": 22, "Q4 2023": 26, "Q1 2024": 28, "Q2 2024": 29, "Q3 2024": 35, "Q4 2024": 30, "Q1 2025": 28, "Q2 2025": 32, "Q3 2025": 34, "Q4 2025": 48, "Q1 2026": 63, "Q2 2026": 82},
 }
 
 GOOGLE_CLOUD_2025_SOURCE_BY_PERIOD = {
@@ -1057,6 +1091,20 @@ GOOGLE_CLOUD_2025_SOURCE_BY_PERIOD = {
         "annual_url": ALPHABET_2025_10K_URL,
         "type": "official_sec_8k_earnings_exhibit",
         "evidence": "Quarter ended December 31, 2025: Google Cloud revenue 17,664 million USD, operating income 5,313 million USD, and revenue growth 48%.",
+    },
+    "Q1 2026": {
+        "label": "Alphabet Q1 2026 earnings release exhibit",
+        "url": ALPHABET_Q1_2026_8K_EXHIBIT_URL,
+        "annual_url": ALPHABET_Q1_2026_8K_EXHIBIT_URL,
+        "type": "official_sec_8k_earnings_exhibit",
+        "evidence": "Quarter ended March 31, 2026: Google Cloud revenue 20,028 million USD, operating income 6,598 million USD, and revenue growth 63%.",
+    },
+    "Q2 2026": {
+        "label": "Alphabet Q2 2026 earnings release exhibit",
+        "url": ALPHABET_Q2_2026_8K_EXHIBIT_URL,
+        "annual_url": ALPHABET_Q2_2026_8K_EXHIBIT_URL,
+        "type": "official_sec_8k_earnings_exhibit",
+        "evidence": "Quarter ended June 30, 2026: Google Cloud revenue 24,768 million USD, operating income 8,814 million USD, and revenue growth 82%.",
     },
 }
 
@@ -1448,6 +1496,7 @@ TENCENT_Q2_2025_RESULTS_URL = "https://static.www.tencent.com/uploads/2025/08/13
 TENCENT_Q3_2025_RESULTS_URL = "https://static.www.tencent.com/uploads/2025/11/13/a33b6f19738615834787623f17d20ba3.pdf"
 TENCENT_Q4_2025_RESULTS_URL = "https://static.www.tencent.com/uploads/2026/03/18/e6a646796d0d869acc76271c9ee1a6a5.pdf"
 TENCENT_Q1_2026_RESULTS_URL = "https://static.www.tencent.com/uploads/2026/05/13/47382ae415a209fd161bc19a1f9b3704.pdf"
+TENCENT_Q2_2026_RESULTS_URL = "https://www.tencent.com/wp-content/uploads/2026/08/Tencent-Announces-2026-Second-Quarter-Results.pdf"
 
 TENCENT_FBS_PERIOD_END_BY_PERIOD = {
     "Q1 2019": "2019-03-31",
@@ -1479,6 +1528,7 @@ TENCENT_FBS_PERIOD_END_BY_PERIOD = {
     "Q3 2025": "2025-09-30",
     "Q4 2025": "2025-12-31",
     "Q1 2026": "2026-03-31",
+    "Q2 2026": "2026-06-30",
 }
 
 TENCENT_FBS_SOURCE_URL_BY_PERIOD = {
@@ -1511,6 +1561,7 @@ TENCENT_FBS_SOURCE_URL_BY_PERIOD = {
     "Q3 2025": TENCENT_Q3_2025_RESULTS_URL,
     "Q4 2025": TENCENT_Q4_2025_RESULTS_URL,
     "Q1 2026": TENCENT_Q1_2026_RESULTS_URL,
+    "Q2 2026": TENCENT_Q2_2026_RESULTS_URL,
 }
 
 TENCENT_FBS_PERIODS = [
@@ -1549,6 +1600,7 @@ TENCENT_FBS_METRICS = {
         "Q3 2025": 58174,
         "Q4 2025": 60818,
         "Q1 2026": 59885,
+        "Q2 2026": 60286,
     },
     "fintech_business_services_revenue_growth_yoy": {
         "Q1 2019": 44,
@@ -1580,6 +1632,7 @@ TENCENT_FBS_METRICS = {
         "Q3 2025": 10,
         "Q4 2025": 8,
         "Q1 2026": 9,
+        "Q2 2026": 9,
     },
 }
 
@@ -1659,6 +1712,8 @@ ALIBABA_DECEMBER_QTR_2025_DOCUMENT_URL = "https://www.alibabagroup.com/en-US/doc
 ALIBABA_DECEMBER_QTR_2025_RESULTS_URL = "https://data.alibabagroup.com/ecms-files/1532295521/e48e70a1-e5c8-40ac-bdd2-951ebcb36946/Alibaba%20Group%20Announces%20December%20Quarter%202025%20Results.pdf"
 ALIBABA_MARCH_QTR_2026_DOCUMENT_URL = "https://www.alibabagroup.com/en-US/document-1991237455038119936"
 ALIBABA_MARCH_QTR_2026_RESULTS_URL = "https://data.alibabagroup.com/ecms-files/1532295521/5b1cb883-8d00-4237-a148-6631cc12a5d2/Alibaba%20Group%20Announces%20March%20Quarter%202026%20and%20Fiscal%20Year%202026%20Results.pdf"
+ALIBABA_JUNE_QTR_2026_DOCUMENT_URL = "https://www.alibabagroup.com/en-US/document-2026456290057781248"
+ALIBABA_JUNE_QTR_2026_RESULTS_URL = "https://data.alibabagroup.com/ecms-files/1532295521/fa5d65fc-9b3e-4e82-a8fc-4ce1c3e2c407/Alibaba%20Group%20Announces%20June%20Quarter%202026%20Results.pdf"
 ALIBABA_JUNE_QTR_2024_DOCUMENT_URL = "https://www.alibabagroup.com/document-1761110461375315968"
 ALIBABA_JUNE_QTR_2024_RESULTS_URL = "https://www.sec.gov/Archives/edgar/data/1577552/000110465924090102/tm2421791d1_ex99-1.htm"
 ALIBABA_SEPTEMBER_QTR_2024_DOCUMENT_URL = ALIBABA_QUARTERLY_RESULTS_URL
@@ -1736,6 +1791,7 @@ ALIBABA_CLOUD_PERIODS = [
     {"period": "FY2026 Q2", "period_end": "2025-09-30", "grain": "quarter"},
     {"period": "FY2026 Q3", "period_end": "2025-12-31", "grain": "quarter"},
     {"period": "FY2026 Q4", "period_end": "2026-03-31", "grain": "quarter"},
+    {"period": "FY2027 Q1", "period_end": "2026-06-30", "grain": "quarter"},
 ]
 
 ALIBABA_CLOUD_METRICS = {
@@ -1756,6 +1812,7 @@ ALIBABA_CLOUD_METRICS = {
         "FY2026 Q2": 39824,
         "FY2026 Q3": 43284,
         "FY2026 Q4": 41626,
+        "FY2027 Q1": 48437,
     },
     "revenue_growth_yoy": {
         "FY2024 Q1": 2.911,
@@ -1770,6 +1827,7 @@ ALIBABA_CLOUD_METRICS = {
         "FY2026 Q2": 34,
         "FY2026 Q3": 36,
         "FY2026 Q4": 38,
+        "FY2027 Q1": 45,
     },
     "adjusted_ebita": {
         "FY2023 Q1": 864,
@@ -1788,6 +1846,7 @@ ALIBABA_CLOUD_METRICS = {
         "FY2026 Q2": 3604,
         "FY2026 Q3": 3911,
         "FY2026 Q4": 3796,
+        "FY2027 Q1": 5628,
     },
     "adjusted_ebita_growth_yoy": {
         "FY2024 Q1": 6.019,
@@ -1802,6 +1861,7 @@ ALIBABA_CLOUD_METRICS = {
         "FY2026 Q2": 35,
         "FY2026 Q3": 25,
         "FY2026 Q4": 57,
+        "FY2027 Q1": 133,
     },
 }
 
@@ -1983,6 +2043,13 @@ ALIBABA_CLOUD_SOURCE_BY_PERIOD = {
         "document_url": ALIBABA_MARCH_QTR_2026_DOCUMENT_URL,
         "type": "official_quarterly_earnings_release",
         "evidence": "Alibaba March quarter 2026 results report Cloud Intelligence Group revenue of RMB41,626 million, up 38% year-over-year, and adjusted EBITA of RMB3,796 million, up 57% year-over-year.",
+    },
+    "FY2027 Q1": {
+        "label": "Alibaba June Quarter 2026 results - AI Cloud and Compute Services",
+        "url": ALIBABA_JUNE_QTR_2026_RESULTS_URL,
+        "document_url": ALIBABA_JUNE_QTR_2026_DOCUMENT_URL,
+        "type": "official_quarterly_earnings_release_new_segment_boundary",
+        "evidence": "Alibaba June quarter 2026 results report AI Cloud and Compute Services revenue of RMB48,437 million, up 45% year-over-year, and adjusted EBITA of RMB5,628 million, up 133% year-over-year. This is a new segment combining Cloud Intelligence Group and T-Head, so the new boundary is retained explicitly and is not treated as a like-for-like continuation of the former Cloud Intelligence Group series.",
     },
 }
 

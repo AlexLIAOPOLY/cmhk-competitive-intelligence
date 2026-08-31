@@ -34,6 +34,7 @@ SEARCH_METRIC_TERMS = (
     "财报", "业绩", "营收", "收入", "利润", "用户数", "客户数", "订户",
     "资本开支", "云收入", "云业务",
 )
+DISCOVERY_LOOKBACK_DAYS = 7
 
 
 def _build_search_plans() -> list[dict[str, Any]]:
@@ -49,7 +50,7 @@ def _build_search_plans() -> list[dict[str, Any]]:
                 "entity": entity,
                 "query": f"({subject}) ({metric_clause})",
                 "keywords": list(aliases),
-                "lookback_days": 2,
+                "lookback_days": DISCOVERY_LOOKBACK_DAYS,
                 "search_origin": "four_database_0100_agent",
                 "semantic_relevance": True,
             }
@@ -209,7 +210,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
         plans = _build_search_plans()
         items, errors, stats = news_discovery_digest._execute_search_plans(
             plans,
-            start_at=reference - timedelta(hours=24),
+            start_at=reference - timedelta(days=DISCOVERY_LOOKBACK_DAYS),
             end_at=reference,
         )
         previous_runs, previous_references = _previous_day_news_references(reference)
@@ -253,7 +254,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             "signal_count": len(signals),
             "domains": {domain: sum(signal["domain"] == domain for signal in signals) for domain in ("local", "international", "mainland", "cloud")},
             "errors": errors,
-            "policy": "search_results_are_leads_only; 03:00_must_read_official_source_and_pass_field_gates",
+            "policy": "search_results_are_leads_only; seven_day_window_handles_indexing_delay; 03:00_must_read_official_source_and_pass_field_gates",
             "signals": signals,
         }
         payload["search_audit"] = _search_audit(plans, items, signals)

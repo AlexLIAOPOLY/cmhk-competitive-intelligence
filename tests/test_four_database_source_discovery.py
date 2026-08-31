@@ -12,14 +12,17 @@ class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
     def test_actual_search_queries_cover_all_metric_families_and_aliases(self) -> None:
         plans = discovery._build_search_plans()
 
-        self.assertEqual(len(plans), 18)
+        self.assertEqual(len(plans), len(discovery.NEWS_ENTITY_SOURCES))
         self.assertTrue(all("fallback_query" not in plan for plan in plans))
+        self.assertTrue(all(plan["lookback_days"] == discovery.DISCOVERY_LOOKBACK_DAYS for plan in plans))
         for plan in plans:
             for term in discovery.SEARCH_METRIC_TERMS:
                 self.assertIn(term, plan["query"])
         hkt = next(plan for plan in plans if plan["entity"] == "HKT")
         self.assertIn('"香港电讯"', hkt["query"])
         self.assertIn('"香港電訊"', hkt["query"])
+        icable = next(plan for plan in plans if plan["entity"] == "i-CABLE")
+        self.assertIn('"CTF Media & Entertainment"', icable["query"])
 
     def test_search_audit_keeps_per_domain_queries_results_and_zero_result_reason(self) -> None:
         plans = [

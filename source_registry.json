@@ -62,6 +62,27 @@
       "tos_status": "public_investor_relations",
       "notes": "Huawei official file host for annual-report PDFs discovered from the official annual-report index."
     },
+    "www.kddi.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "JP",
+      "tos_status": "public_investor_relations",
+      "notes": "KDDI official earnings library; low-volume result discovery only."
+    },
+    "www.orange.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "FR",
+      "tos_status": "public_investor_relations",
+      "notes": "Orange official financial information pages; low-volume result discovery only."
+    },
+    "investor.t-mobile.com": {
+      "policy": "allow",
+      "type": "company_official_investor_relations",
+      "jurisdiction": "US",
+      "tos_status": "public_investor_relations",
+      "notes": "T-Mobile US official quarterly-results index; low-volume result discovery only."
+    },
     "investor.oracle.com": {
       "policy": "allow",
       "type": "company_official_investor_relations",

@@ -61,6 +61,14 @@ PROVENANCE_FIELDS = (
     "feishu_override_at",
 )
 SUCCESS_MESSAGE = "已经同步到飞书"
+LEGACY_TARIFF_NATURAL_FIELDS = (
+    "记录键",
+    "品牌",
+    "套餐名称",
+    "期间",
+    "抓取/生效时间",
+    "来源URL",
+)
 
 
 @dataclass(frozen=True)
@@ -174,7 +182,7 @@ def _source_specs(dataset_dir: Path) -> tuple[SourceSpec, ...]:
             "competitor_product_tariffs",
             "競對產品資費",
             knowledge / "competitor_product_tariffs" / "product_tariffs_formal_agent_records.csv",
-            ("记录键", "品牌", "套餐名称", "期间", "抓取/生效时间", "来源URL"),
+            ("记录键",),
             ("品牌", "数据子库"),
             ("期间", "抓取/生效时间"),
             ("套餐名称", "产品类别"),
@@ -213,6 +221,12 @@ def _read_sources(dataset_dir: Path) -> tuple[list[dict[str, str]], dict[Path, d
             if not any(natural):
                 continue
             key = _sync_key(spec.dataset_key, natural)
+            legacy_key = ""
+            if spec.dataset_key == "competitor_product_tariffs":
+                legacy_key = _sync_key(
+                    spec.dataset_key,
+                    [_text(row.get(field), 500) for field in LEGACY_TARIFF_NATURAL_FIELDS],
+                )
             value = _text(row.get(spec.value_field), 160)
             note = _first(row, spec.note_fields, limit=600)
             source = _first(row, spec.source_fields, limit=500)
@@ -241,6 +255,7 @@ def _read_sources(dataset_dir: Path) -> tuple[list[dict[str, str]], dict[Path, d
                     "__path": str(spec.path),
                     "__index": str(index),
                     "__value_field": spec.value_field,
+                    "__legacy_sync_key": legacy_key,
                 }
             )
     records.sort(key=lambda row: (row["資料集"], row["主體"], row["期間"], row["指標"], row["同步鍵"]))
@@ -431,6 +446,71 @@ def _stamp_records(records: list[dict[str, str]], state: dict[str, Any]) -> None
             row_state["data_hash"] = digest
             row_state["data_synced_at"] = changed_at
         record["同步時間"] = _text(row_state.get("data_synced_at") or changed_at, 80)
+
+
+def _visible_record_fingerprint(row: dict[str, str]) -> tuple[str, ...]:
+    """Identify the same human-facing fact while excluding volatile sync metadata."""
+
+    return tuple(
+        _text(row.get(header), 800)
+        for header in (
+            "資料庫",
+            "資料集",
+            "主體",
+            "期間",
+            "指標",
+            "本地值",
+            "單位",
+            "資料備註",
+            "來源",
+        )
+    )
+
+
+def _migrate_tariff_sync_keys(
+    records: list[dict[str, str]],
+    remote_rows: dict[str, dict[str, str]],
+    state: dict[str, Any],
+) -> tuple[int, list[dict[str, str]]]:
+    """Re-key active tariff rows and compact only proven volatile-key duplicates.
+
+    Older releases included the daily capture timestamp in the Feishu sync key.
+    The same current tariffs therefore gained a new row every morning. Reuse the
+    current active row in place so editable cells and extra columns survive, then
+    clear only unedited tombstones that match a still-active visible fact.
+    """
+
+    migrated = 0
+    state_rows = state.setdefault("rows", {})
+    for record in records:
+        key = record["同步鍵"]
+        legacy_key = _text(record.get("__legacy_sync_key"), 200)
+        if not legacy_key or key in remote_rows or legacy_key not in remote_rows:
+            continue
+        remote_rows[key] = remote_rows.pop(legacy_key)
+        if key not in state_rows and legacy_key in state_rows:
+            state_rows[key] = state_rows.pop(legacy_key)
+        migrated += 1
+
+    active_tariff_fingerprints = {
+        _visible_record_fingerprint(record)
+        for record in records
+        if record.get("資料集") == "競對產品資費"
+    }
+    compacted: list[dict[str, str]] = []
+    for key, remote in list(remote_rows.items()):
+        if (
+            _text(remote.get("資料集"), 120) != "競對產品資費"
+            or _text(remote.get("資料狀態"), 120) != "本地已下線"
+            or _text(remote.get("人工修訂值"), 160)
+            or _text(remote.get("人工備註"), 800)
+            or _visible_record_fingerprint(remote) not in active_tariff_fingerprints
+        ):
+            continue
+        compacted.append(remote)
+        remote_rows.pop(key)
+        state_rows.pop(key, None)
+    return migrated, compacted
 
 
 def _column_letter(index: int) -> str:
@@ -776,6 +856,17 @@ class LarkSheetGateway:
                 retry_safe=True,
             )
 
+    def clear_core_rows(self, rows: list[dict[str, str]]) -> int:
+        """Clear governed columns while preserving any user-added columns."""
+
+        blank = {header: "" for header in HEADERS}
+        writes: list[dict[str, Any]] = []
+        for row in rows:
+            row_number = int(row["__row_number"])
+            writes.extend(self._row_writes(blank, row_number=row_number, remote=row))
+        self._write_batches(writes)
+        return len(rows)
+
     def upsert_rows(
         self,
         rows: list[dict[str, str]],
@@ -930,6 +1021,11 @@ def sync_producer_database_sheet(
         records, files = _read_sources(dataset_path)
         if not records:
             raise RuntimeError("沒有可同步的競對資料列。")
+        migrated_sync_keys, compacted_tombstones = _migrate_tariff_sync_keys(
+            records, remote_rows, state
+        )
+        if compacted_tombstones:
+            sheet.clear_core_rows(compacted_tombstones)
         audit = _reconcile_editable(records, remote_rows, state)
         changed_files = _apply_overrides(records, files, state)
         if changed_files:
@@ -983,6 +1079,8 @@ def sync_producer_database_sheet(
             "status": "synced",
             "changed_source_files": changed_files,
             "edit_audit_count": len(audit),
+            "migrated_sync_key_count": migrated_sync_keys,
+            "compacted_tombstone_count": len(compacted_tombstones),
             "release_id": effective_release_id,
             "message": SUCCESS_MESSAGE,
         }

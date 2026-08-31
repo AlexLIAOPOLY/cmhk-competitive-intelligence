@@ -655,6 +655,12 @@ def publish_quarterly_release_task(
             "feishu_active_row_count": feishu_sync.get("active_row_count"),
             "feishu_tombstone_row_count": feishu_sync.get("tombstone_row_count"),
             "feishu_pre_publish_written": feishu_pre_publish.get("written"),
+            "feishu_migrated_sync_key_count": feishu_pre_publish.get(
+                "migrated_sync_key_count"
+            ),
+            "feishu_compacted_tombstone_count": feishu_pre_publish.get(
+                "compacted_tombstone_count"
+            ),
         }
         event_sink("飞书同步", FEISHU_SYNC_SUCCESS_MESSAGE, "success", summary)
         finalize_operational_crawl_run(

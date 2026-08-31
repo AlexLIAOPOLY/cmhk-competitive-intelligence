@@ -23,6 +23,24 @@ CAPITAL EXPENDITURE Capital expenditure including capitalised interest for the s
 
 
 class LocalFinancialResultsTests(unittest.TestCase):
+    def test_hkex_thousands_table_and_interim_nil_dividend_are_normalized(self) -> None:
+        text = """
+        INTERIM RESULTS FOR THE SIX MONTHS ENDED 30 JUNE 2026
+        HK$'000    2026    2025
+        Revenue 244,420 277,511
+        Loss for the period (276,514) (216,816)
+        During the six months ended 30 June 2026, capital expenditure on property,
+        plant and equipment amounted to approximately HK$10 million.
+        The Board does not recommend the payment of any interim dividend.
+        """
+
+        metrics = {item["metric_key"]: item["value"] for item in finance._extract_metrics(text)}
+
+        self.assertEqual(metrics["revenue"], "HK$244.42 million")
+        self.assertEqual(metrics["net_profit"], "-HK$276.514 million")
+        self.assertEqual(metrics["capital_expenditure"], "HK$10 million")
+        self.assertEqual(metrics["dividend"], "HK$Nil")
+
     def test_hkex_notice_number_prefix_is_the_publication_date(self) -> None:
         self.assertEqual(
             finance._publication_date(

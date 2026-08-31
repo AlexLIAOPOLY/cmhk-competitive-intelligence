@@ -71,6 +71,70 @@ FINANCIAL_IR_INDEX_URLS: Dict[int, List[str]] = {
     17: ["https://www.ctfme.com/en/annual-interim-reports"],
 }
 
+# Current official result pages are a recovery lane for investor-relations
+# indexes whose newest documents are rendered by JavaScript or are published
+# to an exchange before the issuer index is updated.  The 01:00 discovery job
+# finds future publications; these direct pages ensure the current backlog is
+# actually read by the next 03:00 crawl rather than reporting a false green
+# from an HTTP-200 landing page.
+CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
+    17: {
+        "iCable": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf"],
+    },
+    19: {
+        "Telstra": ["https://www.telstra.com.au/aboutus/investors/financial-results"],
+        "SK Telecom": ["https://news.sktelecom.com/en/3218"],
+        "KDDI": ["https://www.kddi.com/english/corporate/ir/ir-library/earning/"],
+        "SoftBank": ["https://www.softbank.jp/en/corp/ir/"],
+        "Airtel": ["https://www.airtel.in/about-bharti/equity/results"],
+    },
+    20: {
+        "Vodafone": ["https://www.vodafone.com/investors/performance-and-reports/annual-reporting"],
+        "Deutsche Telekom": ["https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292"],
+        "Orange": ["https://www.orange.com/en/finance/financial-and-extra-financial-information"],
+        "Telefonica": ["https://www.telefonica.com/en/shareholders-investors/financial-reports/quarterly-reports/2026/"],
+        "BT/EE": ["https://www.bt.com/about/investors/financial-reporting-and-news/financial-calendar"],
+        "TIM": ["https://www.gruppotim.it/en/investors/reports-presentations/financial-reports/2026.html"],
+        "Verizon": ["https://www.verizon.com/about/news/verizon-delivers-record-2q26-results"],
+        "AT&T": ["https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"],
+        "T-Mobile US": ["https://investor.t-mobile.com/financials/quarterly-results/default.aspx"],
+    },
+    21: {
+        "e&": ["https://www.eand.com/en/investors/financial-results.html"],
+        "中国电信": ["https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf"],
+        "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
+    },
+    47: {
+        "i-CABLE": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf"],
+    },
+    48: {
+        "AT&T": ["https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"],
+        "Deutsche Telekom": ["https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292"],
+    },
+    49: {
+        "中国电信": ["https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf"],
+        "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
+    },
+    50: {
+        "AWS": ["https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx"],
+        "Microsoft Azure": ["https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast"],
+        "Google Cloud": ["https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm"],
+        "Alibaba Cloud": ["https://www.alibabagroup.com/en-US/document-2026456290057781248"],
+        "Tencent Cloud": ["https://www.tencent.com/wp-content/uploads/2026/08/Tencent-Announces-2026-Second-Quarter-Results.pdf"],
+        "Huawei Cloud": ["https://www.huawei.com/en/annual-report/2025"],
+        "Oracle Cloud": ["https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/"],
+    },
+    52: {"AWS": ["https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx"]},
+    53: {"Microsoft Azure": ["https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast"]},
+    54: {"Google Cloud": ["https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm"]},
+    55: {"Alibaba Cloud": ["https://www.alibabagroup.com/en-US/document-2026456290057781248"]},
+    56: {"Tencent Cloud": ["https://www.tencent.com/wp-content/uploads/2026/08/Tencent-Announces-2026-Second-Quarter-Results.pdf"]},
+    57: {"Huawei Cloud": ["https://www.huawei.com/en/annual-report/2025"]},
+    58: {"Oracle Cloud": ["https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/"]},
+}
+
+NEWS_CHILD_FOLLOW_ROWS = frozenset({22, 24, 25, 26, 27, 28, 29, 31, 32, 33})
+
 
 def is_database_update_row(source_row: Dict[str, Any], row: int | str = 0) -> bool:
     """Return whether a row must discover and follow new official reports."""
@@ -94,6 +158,28 @@ RECOVERABLE_URL_REWRITES: Dict[str, str] = {
 }
 
 RECOVERABLE_URL_ALTERNATIVES: Dict[str, List[str]] = {
+    "https://financialreports.eu/filings/hkt-management-limited-and-hkt-limited/annual-report/2025/32579946/": [
+        "https://www.hkt.com/en/about-hkt/investor-relations/financial-results/",
+        "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf",
+    ],
+    "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2026/33085922/": [
+        "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+    ],
+    "https://financialreports.eu/filings/smartone-telecommunications-holdings-limited/interim-quarterly-report/2025/17900712/": [
+        "https://www.smartoneholdings.com/about/investor/results/english/2025_annual_present.pdf",
+    ],
+    "https://financialreports.eu/filings/i-cable-communications-limited/annual-report/2025/24023514/": [
+        "https://www.i-cablecomm.com/annual-interim-reports?lang=en",
+        "https://apps5.i-cable.com/dl/comm/49be15c0a3d3.pdf",
+    ],
+    "https://web.three.com.hk/plans/apac/index2-en.html": [
+        "https://web.three.com.hk/plans/5g/index-en.html",
+        "https://web.three.com.hk/plans/3business5g/index-en.html",
+    ],
+    "https://www.hkbn.net/group/en/investor-engagement/announcements-circulars": [
+        "https://www.hkbn.net/group/en/investor-engagement/announcement-circulars",
+        "https://www.hkbn.net/group/en/investor-engagement/financial-results",
+    ],
     "https://www.censtatd.gov.hk/en/scode460.html": [
         "https://www.censtatd.gov.hk/en/scode530.html",
         "https://www.censtatd.gov.hk/en/page_213.html",
@@ -1057,6 +1143,8 @@ def candidate_targets(
         append_recovered_url(url)
     for entity in entities or []:
         for url in ENTITY_CANDIDATES.get(row, {}).get(entity, []):
+            append_recovered_url(url, [entity])
+        for url in CURRENT_OFFICIAL_RESULT_CANDIDATES.get(row, {}).get(entity, []):
             append_recovered_url(url, [entity])
     return targets
 
@@ -2068,6 +2156,8 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
     entity_records: Dict[str, List[Dict[str, Any]]] = {entity: [] for entity in entities}
     report_discoveries: List[Dict[str, str]] = []
     report_entities: Dict[str, List[str]] = {}
+    news_discoveries: List[Dict[str, str]] = []
+    news_entities: Dict[str, List[str]] = {}
     
     with ThreadPoolExecutor(max_workers=URL_WORKERS) as executor:
         future_to_target = {
@@ -2092,6 +2182,20 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                             continue
                         report_discoveries.append({**item, "discovered_from": url})
                         report_entities[str(item.get("url") or "").strip()] = discovery_hits
+                if row in NEWS_CHILD_FOLLOW_ROWS:
+                    discovery_hits = (
+                        [entity for entity in expected_entities if entity in entities]
+                        if expected_entities
+                        else matched_entities(row, entities, result)
+                    )
+                    for item in (result.get("discovered_news_links") or []):
+                        if not isinstance(item, dict):
+                            continue
+                        news_url = str(item.get("url") or "").strip()
+                        if not news_url:
+                            continue
+                        news_discoveries.append({**item, "discovered_from": url})
+                        news_entities[news_url] = discovery_hits
                 record = raw_record(row, result)
                 if is_successful_fetch(result):
                     successful_urls.append(url)
@@ -2193,6 +2297,52 @@ def crawl_row(client: httpx.Client, source_row: Dict[str, Any], deadline: float)
                 record["entity_hits"] = []
                 print(
                     f"    [官方财报跟进失败] 状态码: {result.get('status')} | 错误: {result.get('error')}",
+                    flush=True,
+                )
+            fetched.append(record)
+
+    if row in NEWS_CHILD_FOLLOW_ROWS and news_discoveries:
+        def news_recency(item: Dict[str, str]) -> tuple[int, str]:
+            surface = f"{item.get('url', '')} {item.get('title', '')}"
+            compact = re.findall(r"(?<!\d)(20\d{6})(?!\d)", surface)
+            separated = re.findall(
+                r"(?<!\d)(20\d{2})[-_/](0[1-9]|1[0-2])[-_/]([0-3]\d)(?!\d)",
+                surface,
+            )
+            dates = [int(value) for value in compact]
+            dates.extend(int("".join(parts)) for parts in separated)
+            return (max(dates, default=0), surface)
+
+        seen_news_urls = set(urls)
+        news_targets: List[str] = []
+        for item in sorted(news_discoveries, key=news_recency, reverse=True):
+            news_url = str(item.get("url") or "").strip()
+            if not news_url or news_url in seen_news_urls:
+                continue
+            seen_news_urls.add(news_url)
+            news_targets.append(news_url)
+            if len(news_targets) >= 6:
+                break
+        for news_url in news_targets:
+            if time.monotonic() > deadline:
+                break
+            print(f"  -> 跟进官方新闻正文: {news_url}", flush=True)
+            result = fetch_url(client, news_url)
+            record = raw_record(row, result)
+            if is_successful_fetch(result):
+                successful_urls.append(news_url)
+                combined_text += "\n\nSOURCE: " + news_url + "\n" + result["text"]
+                news_hits = news_entities.get(news_url) or matched_entities(row, entities, result)
+                record["entity_hits"] = news_hits
+                for entity in news_hits:
+                    if news_url not in entity_urls[entity]:
+                        entity_urls[entity].append(news_url)
+                    entity_records[entity].append(record)
+                    entity_text[entity] += "\n\nSOURCE: " + news_url + "\n" + result["text"]
+            else:
+                record["entity_hits"] = []
+                print(
+                    f"    [新闻正文跟进失败] 状态码: {result.get('status')} | 错误: {result.get('error')}",
                     flush=True,
                 )
             fetched.append(record)
@@ -2565,6 +2715,21 @@ def row_outcome_counts(row_results: List[Dict[str, Any]]) -> Dict[str, int]:
     }
 
 
+def log_live_fetch_status(record: Dict[str, Any]) -> str:
+    explicit = str(record.get("live_fetch_status") or "").strip()
+    if explicit:
+        return explicit
+    try:
+        status = int(record.get("status") or 0)
+    except (TypeError, ValueError):
+        status = 0
+    return (
+        "success"
+        if 200 <= status < 400 and not record.get("evidence_fallback_used")
+        else "failed"
+    )
+
+
 def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     f_values = []
     ij_values = []
@@ -2615,12 +2780,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
                     "cache_hit": rec.get("cache_hit", False),
                     "skip_reason": rec.get("skip_reason", ""),
                     "error": rec.get("error", ""),
-                    "live_fetch_status": rec.get("live_fetch_status", "")
-                    or (
-                        "failed"
-                        if rec.get("evidence_fallback_used")
-                        else "success"
-                    ),
+                    "live_fetch_status": log_live_fetch_status(rec),
                     "evidence_fallback_used": rec.get(
                         "evidence_fallback_used", False
                     ),

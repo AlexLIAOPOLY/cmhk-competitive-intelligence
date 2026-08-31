@@ -12,6 +12,29 @@ import crawl
 
 
 class CrawlRecoveryTests(unittest.TestCase):
+    def test_current_official_result_recovery_urls_are_bound_to_the_right_entity(self):
+        targets = crawl.candidate_targets(
+            50,
+            "AWS https://ir.aboutamazon.com/quarterly-results/default.aspx",
+            ["AWS", "Google Cloud"],
+        )
+        by_url = {url: entities for url, entities in targets}
+
+        self.assertEqual(
+            by_url[
+                "https://ir.aboutamazon.com/news-release/news-release-details/2026/"
+                "Amazon-com-Announces-Second-Quarter-Results/default.aspx"
+            ],
+            ["AWS"],
+        )
+        self.assertEqual(
+            by_url[
+                "https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/"
+                "googexhibit991q22026.htm"
+            ],
+            ["Google Cloud"],
+        )
+
     def test_ctfme_financial_api_reports_are_normalized(self):
         links = crawl.extract_ctfme_financial_report_links(
             {

@@ -37,7 +37,7 @@ def parse_partial_verification_response(content: str) -> dict:
     reason = ""
     if reason_match:
         reason = reason_match.group(1).strip()
-        reason = re.split(r'"\s*,?\s*"|\n\s*}', reason, maxsplit=1)[0]
+        reason = re.split(r'"\s*(?:,|})|"\s*"|\n\s*}', reason, maxsplit=1)[0]
         reason = reason.strip().strip('"').strip()
     return {
         "confidence_score": float(score_match.group(1)) if score_match else 0.5,
@@ -104,7 +104,13 @@ Provide your response in raw JSON format with NO markdown wrapping. It must cont
 """
     try:
         response = llm.invoke([SystemMessage(content="You are a JSON-only response bot. Only output valid JSON without any markdown tags like ```json."), HumanMessage(content=prompt)])
-        result = parse_verification_response(str(response.content))
+        content = str(response.content)
+        try:
+            result = parse_verification_response(content)
+        except (ValueError, json.JSONDecodeError):
+            result = parse_partial_verification_response(content)
+            if not result:
+                raise
         return normalize_verification_result(result)
     except Exception as e:
         print(f"Verification LLM failed: {e}")

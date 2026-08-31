@@ -12,6 +12,7 @@ from unittest.mock import patch
 from cmhk.integrations.database_sheet_sync import (
     HEADERS,
     LarkSheetGateway,
+    _read_sources,
     sync_producer_database_sheet,
 )
 
@@ -54,6 +55,15 @@ class _FakeGateway:
             "last_row": len(rows) + 1,
             "readback_verified": True,
         }
+
+    def clear_core_rows(self, rows: list[dict[str, str]]) -> int:
+        cleared = {int(row["__row_number"]) for row in rows}
+        self.remote = {
+            key: row
+            for key, row in self.remote.items()
+            if int(row["__row_number"]) not in cleared
+        }
+        return len(rows)
 
 
 class DatabaseSheetSyncTests(unittest.TestCase):
@@ -156,6 +166,45 @@ class DatabaseSheetSyncTests(unittest.TestCase):
         )
         return dataset, source
 
+    def _tariff_dataset(self, root: Path, *, captured_at: str) -> tuple[Path, Path]:
+        dataset, _ = self._dataset(root)
+        tariff_dir = root / "agent_knowledge" / "competitor_product_tariffs"
+        tariff_dir.mkdir(parents=True)
+        source = tariff_dir / "product_tariffs_formal_agent_records.csv"
+        fields = [
+            "记录键",
+            "品牌",
+            "套餐名称",
+            "期间",
+            "抓取/生效时间",
+            "来源URL",
+            "月费_HKD",
+            "计价单位",
+            "核验状态",
+            "证据摘录",
+        ]
+        with source.open("w", encoding="utf-8-sig", newline="") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            writer.writerow(
+                {
+                    "记录键": "stable-plan-1",
+                    "品牌": "HKBN",
+                    "套餐名称": "1000M 家居寬頻",
+                    "期间": "current",
+                    "抓取/生效时间": captured_at,
+                    "来源URL": "https://example.test/plan",
+                    "月费_HKD": "198",
+                    "计价单位": "HKD／月",
+                    "核验状态": "official_public_source_structured",
+                    "证据摘录": "官方月費",
+                }
+            )
+        (tariff_dir / "manifest.json").write_text(
+            json.dumps({"id": "tariff-test", "row_count": 1}), encoding="utf-8"
+        )
+        return dataset, source
+
     @staticmethod
     def _row(source: Path) -> dict[str, str]:
         with source.open(encoding="utf-8-sig", newline="") as handle:
@@ -231,6 +280,78 @@ class DatabaseSheetSyncTests(unittest.TestCase):
             sync_producer_database_sheet(dataset, gateway=gateway, state_path=state)
 
             self.assertEqual(gateway.last_rows[0]["人工備註"], "本地維護備註")
+
+    def test_tariff_sync_key_ignores_capture_time_and_compacts_legacy_duplicates(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            dataset, tariff = self._tariff_dataset(
+                root, captured_at="2026-08-30T03:00:00+08:00"
+            )
+            state = root / "state.json"
+            gateway = _FakeGateway()
+
+            initial = sync_producer_database_sheet(
+                dataset, gateway=gateway, state_path=state
+            )
+            tariff_row = next(
+                row for row in gateway.last_rows if row["資料集"] == "競對產品資費"
+            )
+            stable_key = tariff_row["同步鍵"]
+
+            source_records, _ = _read_sources(dataset)
+            legacy_key = next(
+                row["__legacy_sync_key"]
+                for row in source_records
+                if row["資料集"] == "競對產品資費"
+            )
+            active = gateway.remote.pop(stable_key)
+            active["同步鍵"] = legacy_key
+            active["人工備註"] = "保留人工備註"
+            gateway.remote[legacy_key] = active
+            state_payload = json.loads(state.read_text(encoding="utf-8"))
+            state_payload["rows"][legacy_key] = state_payload["rows"].pop(stable_key)
+            state.write_text(json.dumps(state_payload, ensure_ascii=False), encoding="utf-8")
+
+            tombstone = dict(active)
+            tombstone["同步鍵"] = "legacy-volatile-key"
+            tombstone["資料狀態"] = "本地已下線"
+            tombstone["人工備註"] = ""
+            tombstone["__row_number"] = "99"
+            gateway.remote["legacy-volatile-key"] = tombstone
+
+            migrated = sync_producer_database_sheet(
+                dataset, gateway=gateway, state_path=state
+            )
+            tariff_row = next(
+                row for row in gateway.last_rows if row["資料集"] == "競對產品資費"
+            )
+            self.assertEqual(migrated["migrated_sync_key_count"], 1)
+            self.assertEqual(migrated["compacted_tombstone_count"], 1)
+            self.assertEqual(tariff_row["同步鍵"], stable_key)
+            self.assertEqual(tariff_row["人工備註"], "保留人工備註")
+            self.assertNotIn("legacy-volatile-key", gateway.remote)
+
+            with tariff.open(encoding="utf-8-sig", newline="") as handle:
+                reader = csv.DictReader(handle)
+                fields = list(reader.fieldnames or [])
+                rows = list(reader)
+            rows[0]["抓取/生效时间"] = "2026-08-31T03:00:00+08:00"
+            with tariff.open("w", encoding="utf-8-sig", newline="") as handle:
+                writer = csv.DictWriter(handle, fieldnames=fields)
+                writer.writeheader()
+                writer.writerows(rows)
+
+            refreshed = sync_producer_database_sheet(
+                dataset, gateway=gateway, state_path=state
+            )
+            tariff_row = next(
+                row for row in gateway.last_rows if row["資料集"] == "競對產品資費"
+            )
+
+            self.assertEqual(tariff_row["同步鍵"], stable_key)
+            self.assertEqual(refreshed["migrated_sync_key_count"], 0)
+            self.assertEqual(refreshed["compacted_tombstone_count"], 0)
+            self.assertEqual(initial["compacted_tombstone_count"], 0)
 
     def test_sheet_reader_tolerates_extra_reordered_columns_and_manual_rows(
         self,
