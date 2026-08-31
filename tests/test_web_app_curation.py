@@ -299,7 +299,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('data-intelligence-disclosure', app)
         self.assertIn('overflow-y: auto;', styles)
         self.assertIn('overscroll-behavior: contain;', styles)
-        self.assertIn('href="/static/leadership-board.css?v=19"', html)
+        self.assertIn('href="/static/leadership-board.css?v=20"', html)
         self.assertIn('class="ai-insight-mark"', app)
         self.assertIn('数据战略解读', app)
         self.assertIn('focus.ai_summary?.origin !== "evidence_rule"', app)
@@ -894,7 +894,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         server = (root / "web_app.py").read_text(encoding="utf-8")
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
-        self.assertIn('href="/static/leadership-board.css?v=19"', html)
+        self.assertIn('href="/static/leadership-board.css?v=20"', html)
         self.assertIn('src="/static/app.js?v=319"', html)
         self.assertIn('self.send_header("Cache-Control", "no-store")', server)
         self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)

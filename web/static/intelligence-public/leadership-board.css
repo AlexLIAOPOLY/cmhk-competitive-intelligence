@@ -1,6 +1,6 @@
 /* Layered technology cockpit panels for the leadership board. */
 .intelligence-command-board {
-  grid-template-rows: 84px minmax(0, 1fr);
+  grid-template-rows: 70px minmax(0, 1fr);
   gap: 10px;
 }
 
@@ -32,8 +32,8 @@
 }
 
 .intelligence-relation {
-  min-height: 84px;
-  padding: 10px 16px;
+  min-height: 70px;
+  padding: 6px 16px;
 }
 
 .intelligence-relation::before,
@@ -711,7 +711,7 @@
 
 .intelligence-domain-focus-stage {
   grid-template-columns: minmax(0, 1.12fr) minmax(320px, .88fr);
-  gap: 38px;
+  gap: 56px;
 }
 
 @media (min-width: 981px) {

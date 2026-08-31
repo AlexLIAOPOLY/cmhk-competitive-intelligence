@@ -10,9 +10,12 @@ class LeadershipBoardBackgroundTests(unittest.TestCase):
         html = (ROOT / "web/static/index.html").read_text(encoding="utf-8")
         styles = (ROOT / "web/static/leadership-board.css").read_text(encoding="utf-8")
 
-        self.assertIn('href="/static/leadership-board.css?v=19"', html)
+        self.assertIn('href="/static/leadership-board.css?v=20"', html)
         self.assertIn("--domain-mask-mid: .62;", styles)
         self.assertIn("--domain-mask-bottom: .18;", styles)
+        self.assertIn("grid-template-rows: 70px minmax(0, 1fr);", styles)
+        self.assertIn("min-height: 70px;\n  padding: 6px 16px;", styles)
+        self.assertIn("grid-template-columns: minmax(0, 1.12fr) minmax(320px, .88fr);\n  gap: 56px;", styles)
 
 
 if __name__ == "__main__":
