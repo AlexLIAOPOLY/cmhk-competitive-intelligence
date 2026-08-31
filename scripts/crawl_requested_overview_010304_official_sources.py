@@ -171,6 +171,57 @@ def collect() -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     ], coverage
 
 
+def summarize_handoff_followup(
+    discovery: dict[str, Any],
+    crawled: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Audit 01:00 handoffs at entity grain so domain totals cannot hide gaps."""
+    results_by_url = {
+        str(item.get("url") or ""): item
+        for item in crawled
+        if str(item.get("url") or "")
+    }
+    entities: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for signal in discovery.get("signals", []) if isinstance(discovery, dict) else []:
+        if not isinstance(signal, dict):
+            continue
+        domain = str(signal.get("domain") or "")
+        entity = str(signal.get("entity") or "")
+        key = (domain, entity)
+        if not all(key) or key in seen:
+            continue
+        seen.add(key)
+        urls = list(dict.fromkeys(
+            str(url) for candidate in discovery.get("signals", [])
+            if isinstance(candidate, dict)
+            and str(candidate.get("domain") or "") == domain
+            and str(candidate.get("entity") or "") == entity
+            for url in candidate.get("official_followup_urls", [])
+            if str(url).startswith(("https://", "http://"))
+        ))
+        retrieved_urls = [url for url in urls if (results_by_url.get(url) or {}).get("ok")]
+        failed_urls = [url for url in urls if url in results_by_url and not results_by_url[url].get("ok")]
+        missing_urls = [url for url in urls if url not in results_by_url]
+        entities.append({
+            "domain": domain,
+            "entity": entity,
+            "status": "retrieved" if retrieved_urls else "external_source_unavailable",
+            "official_urls": urls,
+            "retrieved_urls": retrieved_urls,
+            "failed_urls": failed_urls,
+            "missing_urls": missing_urls,
+        })
+    retrieved = sum(item["status"] == "retrieved" for item in entities)
+    return {
+        "expected_entities": len(entities),
+        "retrieved_entities": retrieved,
+        "unavailable_entities": len(entities) - retrieved,
+        "coverage_complete": bool(entities) and retrieved == len(entities),
+        "entities": entities,
+    }
+
+
 class VisibleTextParser(HTMLParser):
     """Extract stable visible text while ignoring script/style/session attributes."""
 
@@ -308,6 +359,10 @@ def main() -> int:
     parser.add_argument("--limit", type=int, default=0, help="0 means all collected official URLs")
     args = parser.parse_args()
     targets, coverage = collect()
+    try:
+        discovery = read(SOURCE_DISCOVERY)
+    except (OSError, json.JSONDecodeError):
+        discovery = {}
     if args.limit > 0:
         targets = targets[: args.limit]
     previous_path = OUT_DIR / "official_source_recrawl.json"
@@ -332,6 +387,7 @@ def main() -> int:
         )
         item["first_observation"] = bool(item.get("ok") and not previous_item)
         item["fingerprint_baseline_upgraded"] = bool(item.get("ok") and previous_item and not old_fingerprint)
+    handoff_followup = summarize_handoff_followup(discovery, crawled)
     domain_summary: dict[str, dict[str, int]] = {}
     for domain in ("local", "international", "mainland", "cloud"):
         items = [item for item in crawled if domain in item.get("domains", [])]
@@ -355,8 +411,12 @@ def main() -> int:
             "content_changed": sum(1 for item in crawled if item.get("content_changed")),
             "first_observation": sum(1 for item in crawled if item.get("first_observation")),
             "fingerprint_baseline_upgraded": sum(1 for item in crawled if item.get("fingerprint_baseline_upgraded")),
+            "handoff_entities": handoff_followup["expected_entities"],
+            "handoff_retrieved_entities": handoff_followup["retrieved_entities"],
+            "handoff_unavailable_entities": handoff_followup["unavailable_entities"],
             "domains": domain_summary,
         },
+        "handoff_followup": handoff_followup,
         "postpaid_coverage": coverage,
         "source_crawl": crawled,
     }

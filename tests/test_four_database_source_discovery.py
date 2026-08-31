@@ -55,6 +55,36 @@ class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
         self.assertTrue(audit["results"][0]["handoff"])
         self.assertEqual(audit["results"][0]["disposition"], "已形成线索，交接03:00追官方原文")
 
+    def test_signal_builder_scopes_results_to_query_entity(self) -> None:
+        plans = discovery._build_search_plans()
+        plan = next(
+            item for item in plans
+            if item["entity"] == "中国电信" and item["disclosure_type"] == "financial_results"
+        )
+        items = [{
+            "module": "四库资料/mainland",
+            "query": plan["query"],
+            "title": "China Telecom earnings compare China Unicom revenue",
+            "url": "https://example.com/china-telecom-results",
+        }]
+
+        signals = discovery._build_signals(plans, items, [])
+
+        self.assertEqual([(item["domain"], item["entity"]) for item in signals], [("mainland", "中国电信")])
+        self.assertEqual(signals[0]["disclosure_type"], "financial_results")
+
+    def test_signal_builder_rejects_valuation_pages(self) -> None:
+        plans = discovery._build_search_plans()
+        plan = next(item for item in plans if item["entity"] == "Orange")
+        items = [{
+            "module": "四库资料/international",
+            "query": plan["query"],
+            "title": "Orange enterprise value to EBITDA forward",
+            "url": "https://example.com/orange-valuation",
+        }]
+
+        self.assertEqual(discovery._build_signals(plans, items, []), [])
+
     def test_readable_audit_events_include_every_domain_query_result_and_handoff(self) -> None:
         payload = {
             "generated_at_hkt": "2026-08-26T01:00:00+08:00", "query_count": 2,

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -50,6 +51,11 @@ DISCLOSURE_SEARCH_GROUPS = {
     ),
 }
 DISCOVERY_LOOKBACK_DAYS = 7
+NON_DISCLOSURE_LEAD_RE = re.compile(
+    r"price\s+to\s+(?:earnings|sales)|enterprise\s+value\s+to\s+ebitda|"
+    r"p/e\s+ratio|ev/ebitda|valuation\s+(?:ratio|multiple)",
+    re.I,
+)
 
 
 def _build_search_plans() -> list[dict[str, Any]]:
@@ -102,6 +108,63 @@ def _write_json(path: Path, payload: Any) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
     temporary.replace(path)
+
+
+def _build_signals(
+    plans: list[dict[str, Any]],
+    items: list[dict[str, Any]],
+    previous_references: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Create entity-scoped handoffs and reject valuation-page metric noise."""
+    plans_by_query = {
+        str(plan.get("fallback_query") or plan.get("query") or "").strip(): plan
+        for plan in plans
+    }
+    sources_by_key = {
+        (domain, entity): (aliases, official_urls)
+        for domain, entity, aliases, official_urls in NEWS_ENTITY_SOURCES
+    }
+    signals: list[dict[str, Any]] = []
+    seen: set[tuple[str, str, str]] = set()
+    for item in [*items, *previous_references]:
+        text = f"{item.get('title', '')} {item.get('summary', '')} {item.get('snippet', '')}"
+        if not NEWS_METRIC_RE.search(text) or NON_DISCLOSURE_LEAD_RE.search(text):
+            continue
+        query_plan = plans_by_query.get(str(item.get("query") or "").strip())
+        explicit_domain = str(item.get("domain") or "").strip()
+        explicit_entity = str(item.get("entity") or "").strip()
+        scoped_keys: list[tuple[str, str]]
+        if query_plan:
+            scoped_keys = [(str(query_plan["domain"]), str(query_plan["entity"]))]
+        elif explicit_domain and explicit_entity and (explicit_domain, explicit_entity) in sources_by_key:
+            scoped_keys = [(explicit_domain, explicit_entity)]
+        else:
+            scoped_keys = list(sources_by_key)
+        news_url = str(item.get("url") or item.get("source_url") or "").strip()
+        for domain, entity in scoped_keys:
+            aliases, official_urls = sources_by_key[(domain, entity)]
+            if not any(alias.casefold() in text.casefold() for alias in aliases):
+                continue
+            key = (domain, entity, news_url or str(item.get("title") or ""))
+            if key in seen:
+                continue
+            seen.add(key)
+            signals.append({
+                "domain": domain,
+                "entity": entity,
+                "title": str(item.get("title") or "").strip(),
+                "news_url": news_url,
+                "published_at": str(item.get("published_at") or item.get("source_date") or ""),
+                "disclosure_type": str(
+                    item.get("disclosure_type")
+                    or (query_plan or {}).get("disclosure_type")
+                    or ""
+                ),
+                "official_followup_urls": list(official_urls),
+                "disposition": "official_followup_required",
+                "reference_origin": str(item.get("reference_origin") or "0100_search_engine"),
+            })
+    return signals
 
 
 def _search_audit(
@@ -237,33 +300,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             end_at=reference,
         )
         previous_runs, previous_references = _previous_day_news_references(reference)
-        signals: list[dict[str, Any]] = []
-        seen: set[tuple[str, str, str]] = set()
-        for item in [*items, *previous_references]:
-            text = f"{item.get('title', '')} {item.get('summary', '')} {item.get('snippet', '')}"
-            if not NEWS_METRIC_RE.search(text):
-                continue
-            news_url = str(item.get("url") or item.get("source_url") or "").strip()
-            for domain, entity, aliases, official_urls in NEWS_ENTITY_SOURCES:
-                if not any(alias.casefold() in text.casefold() for alias in aliases):
-                    continue
-                key = (domain, entity, news_url or str(item.get("title") or ""))
-                if key in seen:
-                    continue
-                seen.add(key)
-                signals.append(
-                    {
-                        "domain": domain,
-                        "entity": entity,
-                        "title": str(item.get("title") or "").strip(),
-                        "news_url": news_url,
-                        "published_at": str(item.get("published_at") or item.get("source_date") or ""),
-                        "disclosure_type": str(item.get("disclosure_type") or ""),
-                        "official_followup_urls": list(official_urls),
-                        "disposition": "official_followup_required",
-                        "reference_origin": str(item.get("reference_origin") or "0100_search_engine"),
-                    }
-                )
+        signals = _build_signals(plans, items, previous_references)
         payload = {
             "schema_version": 2,
             "task_kind": TASK_KIND,
