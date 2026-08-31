@@ -140,7 +140,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('"ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"', SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("overflow-x: auto", STYLE)
-        self.assertIn('/static/news-review-sheet.css?v=5', INDEX)
+        self.assertIn('/static/news-review-sheet.css?v=6', INDEX)
         self.assertRegex(INDEX, r'/static/workspace-tabs\.css\?v=\d+')
         self.assertRegex(INDEX, r'/static/workspace-tabs\.js\?v=\d+')
         self.assertIn("width: min(calc(100% - 28px),1600px)", STYLE)
@@ -515,7 +515,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_review_sheet_uses_cached_snapshot_and_inline_escape_is_safe(self):
         review_script = (ROOT / "web" / "static" / "news-review-sheet.js").read_text(encoding="utf-8")
-        self.assertIn("cmhk-news-review-snapshot-v2", review_script)
+        self.assertIn("cmhk-news-review-snapshot-v3", review_script)
         self.assertIn('workspace.classList.contains("workspace-inline-review")', review_script)
 
     def test_news_module_replays_the_full_ai_review_pipeline_by_single_date(self):
