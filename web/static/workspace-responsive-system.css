@@ -8,6 +8,13 @@
   --workspace-readable-copy: clamp(12px, .68vw, 15px);
 }
 
+/* Each tab is also a responsive container.  Viewport queries still govern the
+   application chrome; the module itself now adapts to the space left after
+   the navigation rail opens, collapses or moves above the content. */
+.workspace-module-shell {
+  container: workspace-module / inline-size;
+}
+
 /* Text may shrink inside grid and flex items instead of pushing a sibling
    outside the viewport. */
 .workspace-content,
@@ -54,6 +61,48 @@
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Decision-bearing labels must remain legible. Several legacy modules used
+   8px metadata even when ample room was available, which made a full-screen
+   page look like a scaled thumbnail. */
+.news-lineage-group > span,
+.news-lineage-node > em,
+.news-lineage-details div > span,
+.news-lineage-details blockquote,
+.news-lineage-details button,
+.news-stage-run-log dt,
+.news-run-timeline span,
+.news-item-tags span,
+.news-item-tags em,
+.news-item dt {
+  font-size: 10px;
+}
+
+.competitor-option-group > span small,
+.competitor-insight-badge,
+.competitor-chart-tooltip small,
+.competitor-matrix td small,
+.competitor-matrix td a,
+.intelligence-relation small,
+.intelligence-viz-network .viz-value,
+.intelligence-viz-columns span,
+.intelligence-viz-kpis strong i,
+.intelligence-viz-kpis small,
+.governance-indicator > strong i,
+.governance-indicator > small,
+.intelligence-financial-chart > header span,
+.intelligence-viz-rows li > strong small.intelligence-period-prefix,
+.intelligence-entity-components li > strong i {
+  font-size: 9px;
+}
+
+.intelligence-domain-metric em,
+.intelligence-viz-columns strong small,
+.market-graph-legend span,
+.market-time-filter label span,
+.market-daily-table-wrap .received-keywords em {
+  font-size: 10px;
 }
 
 /* Compact screens: reserve explicit columns for logo, page identity and user.
@@ -348,5 +397,174 @@
   .market-keyword-stage > header h2,
   .market-received-toolbar h2 {
     font-size: clamp(13px, .7vw, 16px);
+  }
+}
+
+/* Component-level wide layout. This is intentionally keyed to the module's
+   usable width rather than the monitor width, so the same rules remain valid
+   with either navigation state and inside the full-screen AI surface. */
+@container workspace-module (min-width: 1500px) {
+  .chat-empty-state {
+    width: min(1180px, calc(100% - 96px));
+    padding-block: clamp(54px, 5cqi, 86px) clamp(42px, 4cqi, 70px);
+  }
+
+  .chat-empty-mark,
+  .dashboard-page .chat-empty-mark {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 22px;
+    border-radius: 17px;
+  }
+
+  .chat-empty-state h3,
+  .dashboard-page .chat-empty-state h3 {
+    font-size: clamp(26px, 1.35cqi, 34px);
+  }
+
+  .chat-empty-state > p {
+    margin-block: 12px 30px;
+    font-size: clamp(14px, .7cqi, 17px);
+  }
+
+  .chat-starter-grid {
+    gap: clamp(14px, .8cqi, 20px);
+  }
+
+  .chat-starter-card,
+  .dashboard-page .chat-starter-card {
+    min-height: clamp(142px, 8cqi, 176px);
+    padding: clamp(18px, 1cqi, 24px);
+  }
+
+  .chat-starter-icon {
+    width: 34px;
+    height: 34px;
+  }
+
+  .chat-starter-card-top > em {
+    font-size: 12px;
+  }
+
+  .chat-starter-card strong {
+    font-size: clamp(15px, .78cqi, 18px);
+  }
+
+  .chat-starter-card small {
+    margin-top: 6px;
+    font-size: clamp(12px, .62cqi, 14px);
+  }
+
+  .competitor-builder-head {
+    min-height: 84px;
+    padding-inline: clamp(24px, 1.5cqi, 36px);
+  }
+
+  .competitor-builder-head strong {
+    font-size: clamp(19px, 1cqi, 23px);
+  }
+
+  .competitor-steps fieldset {
+    padding: 17px clamp(18px, 1.1cqi, 27px) 20px;
+  }
+
+  .competitor-steps legend {
+    font-size: 14px;
+  }
+
+  .competitor-option-group > span b,
+  .competitor-steps legend small,
+  .competitor-option-group > span small {
+    font-size: 11px;
+  }
+
+  .competitor-option-group label > b,
+  .competitor-year-options span,
+  .competitor-select,
+  .competitor-select select {
+    font-size: 12px;
+  }
+
+  .competitor-option-group label > b,
+  .competitor-year-options span {
+    min-height: 32px;
+    padding-inline: 11px;
+  }
+
+  .competitor-empty {
+    padding: clamp(64px, 5cqi, 110px) 28px;
+  }
+
+  .competitor-empty span {
+    font-size: 12px;
+  }
+
+  .competitor-empty strong {
+    margin-top: 18px;
+    font-size: clamp(21px, 1.15cqi, 28px);
+  }
+
+  .competitor-empty p {
+    max-width: 640px;
+    margin-top: 12px;
+    font-size: clamp(12px, .66cqi, 15px);
+  }
+
+  .organization-heading,
+  .organization-surface,
+  .organization-directory {
+    width: min(94%, 2100px);
+    max-width: none;
+  }
+
+  .organization-heading h1 {
+    font-size: clamp(27px, 1.4cqi, 34px);
+  }
+
+  .organization-heading p {
+    max-width: 980px;
+    font-size: 14px;
+  }
+
+  .organization-access-layout {
+    grid-template-columns: minmax(460px, 34%) minmax(0, 1fr);
+  }
+
+  .organization-member-row {
+    min-height: 104px;
+  }
+
+  .organization-member strong,
+  .organization-profile-heading p,
+  .organization-table td,
+  .organization-audit-table td {
+    font-size: 12px;
+  }
+
+  .organization-member small,
+  .organization-member-meta small,
+  .organization-info-grid dt,
+  .organization-detail-section > header p,
+  .organization-permission small {
+    font-size: 10px;
+  }
+
+  .organization-member-meta strong,
+  .organization-info-grid dd,
+  .organization-permission strong,
+  .organization-footprint-toolbar input,
+  .organization-footprint-toolbar select {
+    font-size: 12px;
+  }
+
+  .workspace-table th,
+  .fault-table th {
+    font-size: 12px;
+  }
+
+  .workspace-table td,
+  .fault-table td {
+    font-size: clamp(12px, .62cqi, 14px);
+    line-height: 1.55;
   }
 }

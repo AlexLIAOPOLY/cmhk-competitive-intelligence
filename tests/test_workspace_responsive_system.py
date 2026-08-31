@@ -14,7 +14,7 @@ PUBLISHER = (ROOT / "scripts" / "publish_executive_dashboard_pages.py").read_tex
 
 class WorkspaceResponsiveSystemTests(unittest.TestCase):
     def test_responsive_contract_is_loaded_last_and_published(self):
-        href = '/static/workspace-responsive-system.css?v=2'
+        href = '/static/workspace-responsive-system.css?v=5'
         self.assertIn(href, INDEX)
         self.assertGreater(INDEX.index(href), INDEX.index('/static/organization-admin.css?v=28'))
         self.assertIn('"workspace-responsive-system.css"', PUBLISHER)
@@ -42,6 +42,29 @@ class WorkspaceResponsiveSystemTests(unittest.TestCase):
         self.assertIn(":has(.report-preview.is-placeholder)", STYLE)
         self.assertIn("clamp(340px, 22vw, 520px)", STYLE)
         self.assertIn(".competitor-option-group:not(.is-disappearing)", STYLE)
+
+    def test_modules_adapt_to_their_usable_container_width(self):
+        self.assertIn("container: workspace-module / inline-size", STYLE)
+        self.assertIn("@container workspace-module (min-width: 1500px)", STYLE)
+        self.assertIn("width: min(1180px, calc(100% - 96px))", STYLE)
+        self.assertIn("width: min(94%, 2100px)", STYLE)
+        self.assertIn("grid-template-columns: minmax(460px, 34%) minmax(0, 1fr)", STYLE)
+
+    def test_wide_empty_states_and_dense_tables_scale_readably(self):
+        self.assertIn(".competitor-empty strong", STYLE)
+        self.assertIn("font-size: clamp(21px, 1.15cqi, 28px)", STYLE)
+        self.assertIn(".workspace-table td", STYLE)
+        self.assertIn("font-size: clamp(12px, .62cqi, 14px)", STYLE)
+
+    def test_decision_metadata_no_longer_uses_thumbnail_sized_text(self):
+        self.assertIn(".news-item-tags span", STYLE)
+        self.assertIn(".news-item dt", STYLE)
+        self.assertIn("font-size: 10px", STYLE)
+        self.assertIn(".intelligence-viz-kpis small", STYLE)
+        self.assertIn("font-size: 9px", STYLE)
+        self.assertIn(".market-graph-legend span", STYLE)
+        self.assertIn(".market-daily-table-wrap .received-keywords em", STYLE)
+        self.assertIn(".intelligence-viz-columns strong small", STYLE)
 
     def test_all_workspace_tabs_remain_in_shared_document(self):
         modules = (
