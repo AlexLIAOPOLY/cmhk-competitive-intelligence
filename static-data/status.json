@@ -3,28 +3,28 @@
   "status": {
     "results": {
       "count": 33,
-      "ok": 5,
+      "ok": 2,
       "partial": 1
     },
     "visuals": {
       "crawl": {
-        "success": 200,
-        "failed": 7,
+        "success": 269,
+        "failed": 4,
         "fallback": 0,
-        "total": 207,
-        "successRate": 97,
-        "completedAt": "2026-08-31 03:09:47"
+        "total": 273,
+        "successRate": 99,
+        "completedAt": "2026-09-01 03:14:02"
       },
       "quality": {
-        "ok": 5,
+        "ok": 2,
         "partial": 1,
         "failed": 0,
         "operationalFailed": 0,
-        "qualityRejected": 27,
-        "nonPromoted": 27,
+        "qualityRejected": 30,
+        "nonPromoted": 30,
         "fieldTotal": 205,
-        "missingFields": 2,
-        "rawSources": 207
+        "missingFields": 1,
+        "rawSources": 273
       },
       "blocks": [
         {
@@ -43,104 +43,108 @@
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 119
+          "value": 144
         },
         {
           "label": "government_public_info",
-          "value": 27
+          "value": 55
+        },
+        {
+          "label": "regulator_public_info",
+          "value": 14
         },
         {
           "label": "commercial_data",
-          "value": 17
+          "value": 12
         },
         {
           "label": "government_statistics",
           "value": 9
         },
         {
-          "label": "regulator_public_info",
+          "label": "international_org",
           "value": 8
-        },
-        {
-          "label": "exchange_public_disclosure",
-          "value": 4
         }
       ],
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 105
+          "value": 125
         },
         {
           "label": "US",
-          "value": 19
+          "value": 28
         },
         {
           "label": "EU",
-          "value": 13
+          "value": 18
         },
         {
           "label": "international",
-          "value": 9
+          "value": 15
         },
         {
-          "label": "UK",
-          "value": 7
+          "label": "JP",
+          "value": 14
         },
         {
-          "label": "ES",
-          "value": 7
+          "label": "CN",
+          "value": 12
         }
       ],
       "methods": [
         {
           "label": "httpx",
-          "value": 145
+          "value": 201
         },
         {
           "label": "cache:httpx",
-          "value": 34
+          "value": 42
         },
         {
           "label": "curl_chrome_ua",
-          "value": 18
+          "value": 20
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 9
+          "value": 5
         },
         {
-          "label": "cache:curl_direct_chrome_ua",
-          "value": 1
+          "label": "curl_crawler_ua",
+          "value": 3
+        },
+        {
+          "label": "skipped",
+          "value": 2
         }
       ],
       "rejection": {
-        "accepted": 143,
+        "accepted": 176,
         "rejected": 4,
         "qualityRejected": 4,
-        "evidenceGaps": 102,
-        "reportedRejected": 106,
-        "review": 11,
-        "total": 260,
-        "qualityTotal": 158,
-        "rejectRate": 3,
-        "passRate": 91,
+        "evidenceGaps": 87,
+        "reportedRejected": 91,
+        "review": 34,
+        "total": 301,
+        "qualityTotal": 214,
+        "rejectRate": 2,
+        "passRate": 82,
         "reasons": [
           {
             "label": "置信度低于80%",
-            "value": 2
+            "value": 3
+          },
+          {
+            "label": "定性指标为截断网页片段",
+            "value": 1
           },
           {
             "label": "用户数仅有比例变化而无客户规模",
-            "value": 2
-          },
-          {
-            "label": "未通过指标格式与单位门禁",
             "value": 1
           }
         ],
-        "runId": "scheduled_20260831_030014_019556",
-        "completedAt": "2026-08-31T03:30:04+08:00"
+        "runId": "scheduled_20260901_030101_001044",
+        "completedAt": "2026-09-01T04:06:02+08:00"
       },
       "newsFunnel": {
         "scope": "午后扫描（2026-08-31@14:00）",
@@ -336,7 +340,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-08-31 03:08:16",
+    "latestOutputText": "2026-09-01 03:10:13",
     "outputs": [
       {
         "name": "8月30日周报 (3)（编辑稿）.docx",
