@@ -48,6 +48,7 @@ PUBLIC_STATIC_FILES = (
     "responsive-layout-hardening.css",
     "styles.css",
     "workspace-tabs.css",
+    "workspace-responsive-system.css",
     "workspace-tabs.js",
 )
 PUBLIC_VENDOR_FILES = (
