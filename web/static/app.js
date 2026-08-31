@@ -5442,10 +5442,35 @@ function addMessage(role, content, markdown = false) {
   if (emptyState) emptyState.remove();
   const node = document.createElement("div");
   node.className = `message ${role}`;
-  const avatar = document.createElement("span");
+  const avatar = document.createElement(role === "user" ? "button" : "span");
   avatar.className = "avatar";
   if (role === "user") {
-    avatar.textContent = "您";
+    avatar.type = "button";
+    avatar.classList.add("chat-user-avatar-button");
+    avatar.setAttribute("aria-haspopup", "dialog");
+    const renderUserAvatar = (user) => {
+      const name = String(user?.name || user?.account || "当前用户");
+      avatar.replaceChildren();
+      avatar.setAttribute("aria-label", `查看 ${name} 的详情`);
+      avatar.textContent = name.trim().slice(0, 1) || "您";
+      try {
+        const rawAvatar = String(user?.avatarUrl || "").trim();
+        if (!rawAvatar) throw new Error("missing avatar URL");
+        const avatarUrl = new URL(rawAvatar, location.origin);
+        if (!["http:", "https:"].includes(avatarUrl.protocol)) throw new Error("unsupported avatar URL");
+        const image = document.createElement("img");
+        image.src = avatarUrl.href;
+        image.alt = "";
+        image.addEventListener("error", () => image.remove(), { once: true });
+        avatar.appendChild(image);
+      } catch (_) {}
+    };
+    renderUserAvatar(window.CMHKAuth?.user);
+    Promise.resolve(window.CMHKAuth?.ready).then((user) => renderUserAvatar(user)).catch(() => {});
+    avatar.addEventListener("click", async () => {
+      const user = window.CMHKAuth?.user || await window.CMHKAuth?.ready;
+      window.CMHKAuth?.openProfile(user, avatar);
+    });
   } else {
     const logo = document.createElement("img");
     logo.src = "/static/assets/logo/xiaojing-ai-logo-mark.png?v=2";

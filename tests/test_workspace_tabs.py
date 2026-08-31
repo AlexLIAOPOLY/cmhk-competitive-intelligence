@@ -51,11 +51,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("驾驶舱", dashboard_tab)
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
-        self.assertIn('/static/auth-client.js?v=3', INDEX)
-        self.assertIn('/static/organization-admin.js?v=32', INDEX)
+        self.assertIn('/static/auth-client.js?v=4', INDEX)
+        self.assertIn('/static/organization-admin.js?v=33', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=157', INDEX)
-        self.assertIn('/static/app.js?v=314', INDEX)
+        self.assertIn('/static/app.js?v=317', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)

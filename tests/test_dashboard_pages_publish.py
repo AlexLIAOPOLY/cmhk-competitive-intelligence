@@ -879,7 +879,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertLess(
                 html.index('src="./static/workspace-tabs.js?v=public-8"'),
-                html.index('src="./static/app.js?v=316"'),
+                html.index('src="./static/app.js?v=317"'),
             )
             self.assertNotRegex(html, r'<script(?![^>]*\bdefer\b)[^>]+src=')
             self.assertIn('data-workspace-tab="subscriptions"', html)
