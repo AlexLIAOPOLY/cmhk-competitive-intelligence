@@ -7,6 +7,7 @@ INDEX = (ROOT / "web" / "static" / "index.html").read_text(encoding="utf-8")
 APP = (ROOT / "web" / "static" / "app.js").read_text(encoding="utf-8")
 AUTH = (ROOT / "web" / "static" / "auth-client.js").read_text(encoding="utf-8")
 STYLE = (ROOT / "web" / "static" / "styles.css").read_text(encoding="utf-8")
+ORGANIZATION_STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding="utf-8")
 
 
 class ChatUserAvatarTests(unittest.TestCase):
@@ -27,10 +28,16 @@ class ChatUserAvatarTests(unittest.TestCase):
         self.assertIn('profileField("所属部门", user.department)', AUTH)
         self.assertIn('profileField("企业邮箱", user.email)', AUTH)
         self.assertIn('if (profileCard)', AUTH)
+        self.assertIn('function positionProfileCard(card, anchor)', AUTH)
+        self.assertIn('anchor?.getBoundingClientRect?.()', AUTH)
+        self.assertIn('card.style.left', AUTH)
+        self.assertIn('card.style.top', AUTH)
+        self.assertIn('.organization-profile-card.auth-user-profile-card', ORGANIZATION_STYLE)
 
     def test_changed_assets_are_cache_busted(self):
         self.assertIn('/static/styles.css?v=292', INDEX)
-        self.assertIn('/static/auth-client.js?v=4', INDEX)
+        self.assertIn('/static/auth-client.js?v=5', INDEX)
+        self.assertIn('/static/organization-admin.css?v=28', INDEX)
         self.assertIn('/static/app.js?v=319', INDEX)
 
 

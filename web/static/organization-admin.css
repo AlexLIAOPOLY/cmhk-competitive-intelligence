@@ -30,3 +30,11 @@
 /* Long lists stay inside one viewport and use wheel scrolling instead of pagination. */
 @media(min-width:721px){.organization-access-layout{height:calc(100dvh - 212px);min-height:0;max-height:calc(100dvh - 212px)}.organization-member-list{display:flex;align-self:stretch;min-height:0;max-height:none;flex-direction:column}.organization-member-list>header{flex:0 0 auto}.organization-member-list>ul{min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.organization-footprint-surface{display:flex;height:calc(100dvh - 150px);min-height:0;max-height:calc(100dvh - 150px);flex-direction:column}.organization-footprint-surface .organization-table-wrap{min-height:0;max-height:none;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.organization-footprint-surface .organization-table th{position:sticky;z-index:2;top:0}}
 .organization-audit-table tbody tr{content-visibility:auto;contain-intrinsic-size:62px}
+
+/* AI chat current-user profile stays anchored beside the clicked avatar. */
+.organization-profile-card.auth-user-profile-card{top:0;right:auto;bottom:auto;left:0;width:min(320px,calc(100vw - 20px));max-height:calc(100dvh - 20px);overflow:auto;transform:none;animation:auth-user-profile-enter .14s cubic-bezier(0,0,.2,1) both}
+.organization-profile-card.auth-user-profile-card::after{position:absolute;top:20px;width:10px;height:10px;border-top:1px solid rgba(113,205,218,.28);border-right:1px solid rgba(113,205,218,.28);background:#0b2d39;content:""}
+.organization-profile-card.auth-user-profile-card[data-placement="left"]::after{right:-6px;transform:rotate(45deg)}
+.organization-profile-card.auth-user-profile-card[data-placement="right"]::after{left:-6px;transform:rotate(225deg)}
+@keyframes auth-user-profile-enter{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){.organization-profile-card.auth-user-profile-card{animation:none!important}}

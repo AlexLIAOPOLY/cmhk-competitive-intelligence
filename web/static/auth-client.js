@@ -50,6 +50,23 @@
     return row;
   }
 
+  function positionProfileCard(card, anchor) {
+    const edge = 10;
+    const gap = 10;
+    const anchorRect = anchor?.getBoundingClientRect?.();
+    if (!anchorRect) return;
+    const cardRect = card.getBoundingClientRect();
+    const roomOnLeft = anchorRect.left - gap - edge;
+    const placeLeft = roomOnLeft >= cardRect.width;
+    let left = placeLeft ? anchorRect.left - cardRect.width - gap : anchorRect.right + gap;
+    left = Math.max(edge, Math.min(left, window.innerWidth - cardRect.width - edge));
+    let top = anchorRect.top - 12;
+    top = Math.max(edge, Math.min(top, window.innerHeight - cardRect.height - edge));
+    card.dataset.placement = placeLeft ? "left" : "right";
+    card.style.left = `${Math.round(left)}px`;
+    card.style.top = `${Math.round(top)}px`;
+  }
+
   function openProfile(user = state.user, returnFocus = document.activeElement) {
     if (!user) return;
     closeProfile({ restoreFocus: false });
@@ -105,6 +122,7 @@
     card.append(close, header, details);
     document.body.appendChild(card);
     profileCard = card;
+    positionProfileCard(card, returnFocus);
     requestAnimationFrame(() => card.focus());
   }
 
@@ -232,5 +250,8 @@
       setMenu(false);
       document.getElementById("authUserMenuButton")?.focus();
     }
+  });
+  window.addEventListener("resize", () => {
+    if (profileCard) positionProfileCard(profileCard, profileReturnFocus);
   });
 })();

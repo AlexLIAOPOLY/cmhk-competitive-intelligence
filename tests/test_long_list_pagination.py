@@ -36,7 +36,7 @@ class LongListScrollTests(unittest.TestCase):
         for asset in (
             "/static/styles.css?v=292",
             "/static/workspace-tabs.css?v=136",
-            "/static/organization-admin.css?v=27",
+            "/static/organization-admin.css?v=28",
             "/static/app.js?v=319",
             "/static/organization-admin.js?v=35",
             "/static/workspace-tabs.js?v=161",
