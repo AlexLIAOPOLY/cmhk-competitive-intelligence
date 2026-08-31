@@ -810,6 +810,12 @@ class WorkspaceTabsTests(unittest.TestCase):
     def test_news_lineage_uses_semantic_health_colours_instead_of_node_type_colours(self):
         self.assertIn('const runHealth = (run) =>', SCRIPT)
         self.assertIn('const combinedRunHealth = (items) =>', SCRIPT)
+        self.assertIn('function authoritativeStrategicNewsRuns(attempts)', SCRIPT)
+        self.assertIn('strategicNewsRunRank(run)', SCRIPT)
+        self.assertIn('run?.operational_summary?.readback_verified === true', SCRIPT)
+        self.assertIn('const runs = authoritativeStrategicNewsRuns(attemptRuns);', SCRIPT)
+        self.assertIn('`当天${runs.length}轮`', SCRIPT)
+        self.assertIn('`${attemptRuns.length} 次尝试', SCRIPT)
         self.assertIn('data-health="${esc(node.health?.key || "unknown")}"', SCRIPT)
         self.assertIn('健康状态${esc(node.health?.label || "无记录")}', SCRIPT)
         for label in ("正常", "运行中", "警告", "异常", "无记录"):
@@ -817,6 +823,15 @@ class WorkspaceTabsTests(unittest.TestCase):
         for health in ("healthy", "running", "warning", "critical", "unknown"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.is-health-{health}", STYLE)
         self.assertNotIn('node.tone', SCRIPT)
+
+    def test_news_lineage_accepts_recovered_completed_stage_evidence(self):
+        self.assertIn('const completedFromSummary = {', SCRIPT)
+        self.assertIn('dedupe: runCompleted && summary.history_duplicates !== undefined && summary.new_count !== undefined', SCRIPT)
+        self.assertIn('write: runCompleted && summary.readback_verified === true', SCRIPT)
+        self.assertIn('push: notificationCompleted', SCRIPT)
+        self.assertIn('(?:语义去重完成|历史语义去重)', SCRIPT)
+        self.assertIn('notificationStatus === "sent" ? "正式群卡片已发送"', SCRIPT)
+        self.assertIn('运行完成摘要已确认该阶段完成', SCRIPT)
 
     def test_news_lineage_marks_only_evidence_backed_or_gated_llm_route_impacts(self):
         self.assertIn("function activeLineageRouteAssessments(selectedDate)", SCRIPT)
