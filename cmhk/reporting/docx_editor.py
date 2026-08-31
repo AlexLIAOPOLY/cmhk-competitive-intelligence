@@ -14,6 +14,7 @@ import hashlib
 import re
 import shutil
 import uuid
+from copy import deepcopy
 from datetime import datetime
 from io import BytesIO
 from pathlib import Path
@@ -92,6 +93,91 @@ def _points(value: Any) -> float | None:
         return None
 
 
+def _style_chain(style: Any) -> Iterable[Any]:
+    """Yield one Word style and its bases without looping on malformed files."""
+    seen: set[str] = set()
+    current = style
+    while current is not None:
+        style_id = str(getattr(current, "style_id", "") or id(current))
+        if style_id in seen:
+            break
+        seen.add(style_id)
+        yield current
+        current = getattr(current, "base_style", None)
+
+
+def _normal_style(paragraph: Paragraph) -> Any | None:
+    try:
+        return paragraph.part.document.styles["Normal"]
+    except (AttributeError, KeyError):
+        return None
+
+
+def _paragraph_format_sources(paragraph: Paragraph) -> Iterable[Any]:
+    yield paragraph.paragraph_format
+    seen: set[str] = set()
+    for style in _style_chain(paragraph.style):
+        seen.add(str(getattr(style, "style_id", "") or ""))
+        yield style.paragraph_format
+    normal = _normal_style(paragraph)
+    if normal is not None and str(getattr(normal, "style_id", "") or "") not in seen:
+        for style in _style_chain(normal):
+            yield style.paragraph_format
+
+
+def _effective_paragraph_value(paragraph: Paragraph, attribute: str) -> Any:
+    for formatting in _paragraph_format_sources(paragraph):
+        value = getattr(formatting, attribute, None)
+        if value is not None:
+            return value
+    return None
+
+
+def _font_name(font: Any) -> str:
+    direct = str(getattr(font, "name", "") or "").strip()
+    if direct:
+        return direct
+    element = getattr(font, "_element", None)
+    properties = getattr(element, "rPr", None)
+    fonts = getattr(properties, "rFonts", None)
+    if fonts is None:
+        return ""
+    for attribute in ("w:eastAsia", "w:ascii", "w:hAnsi", "w:cs"):
+        value = str(fonts.get(qn(attribute)) or "").strip()
+        if value and not value.startswith("+"):
+            return value
+    return ""
+
+
+def _run_font_sources(run: Run) -> Iterable[Any]:
+    yield run.font
+    try:
+        for style in _style_chain(run.style):
+            yield style.font
+    except (AttributeError, KeyError):
+        pass
+    paragraph = run._parent
+    if isinstance(paragraph, Paragraph):
+        seen: set[str] = set()
+        for style in _style_chain(paragraph.style):
+            seen.add(str(getattr(style, "style_id", "") or ""))
+            yield style.font
+        normal = _normal_style(paragraph)
+        if normal is not None and str(getattr(normal, "style_id", "") or "") not in seen:
+            for style in _style_chain(normal):
+                yield style.font
+
+
+def _effective_font_value(run: Run, attribute: str) -> Any:
+    for font in _run_font_sources(run):
+        value = _font_name(font) if attribute == "name" else getattr(font, attribute, None)
+        if attribute == "color" and value is not None and getattr(value, "rgb", None) is None:
+            continue
+        if value is not None and value != "":
+            return value
+    return None
+
+
 def _iter_blocks(parent: _Document | _Cell) -> Iterable[Paragraph | Table]:
     element = parent.element.body if isinstance(parent, _Document) else parent._tc
     for child in element.iterchildren():
@@ -122,18 +208,25 @@ def _heading_level(paragraph: Paragraph, style_name: str) -> int | None:
 
 
 def _paragraph_attrs(paragraph: Paragraph, style_name: str) -> dict[str, Any]:
-    formatting = paragraph.paragraph_format
+    alignment = _effective_paragraph_value(paragraph, "alignment")
     attrs: dict[str, Any] = {
         "docxStyle": style_name or None,
-        "textAlign": _ALIGN_TO_WEB.get(paragraph.alignment),
+        "textAlign": _ALIGN_TO_WEB.get(alignment),
         "lineHeight": None,
-        "spaceBefore": _points(formatting.space_before),
-        "spaceAfter": _points(formatting.space_after),
-        "firstLineIndent": _points(formatting.first_line_indent),
-        "leftIndent": _points(formatting.left_indent),
-        "rightIndent": _points(formatting.right_indent),
+        "spaceBefore": _points(_effective_paragraph_value(paragraph, "space_before")),
+        "spaceAfter": _points(_effective_paragraph_value(paragraph, "space_after")),
+        "firstLineIndent": _points(_effective_paragraph_value(paragraph, "first_line_indent")),
+        "leftIndent": _points(_effective_paragraph_value(paragraph, "left_indent")),
+        "rightIndent": _points(_effective_paragraph_value(paragraph, "right_indent")),
+        "keepWithNext": _effective_paragraph_value(paragraph, "keep_with_next"),
+        "keepTogether": _effective_paragraph_value(paragraph, "keep_together"),
+        "pageBreakBefore": _effective_paragraph_value(paragraph, "page_break_before"),
+        "widowControl": _effective_paragraph_value(paragraph, "widow_control"),
+        "paragraphMark": _paragraph_mark_attrs(paragraph),
+        "docxDrawingIds": [_drawing_id(element) for element in paragraph._p.xpath(".//w:drawing")],
+        "tabStops": _paragraph_tab_stops(paragraph),
     }
-    spacing = formatting.line_spacing
+    spacing = _effective_paragraph_value(paragraph, "line_spacing")
     if isinstance(spacing, (int, float)):
         attrs["lineHeight"] = str(round(float(spacing), 2))
     else:
@@ -143,27 +236,107 @@ def _paragraph_attrs(paragraph: Paragraph, style_name: str) -> dict[str, Any]:
     return attrs
 
 
+def _paragraph_mark_attrs(paragraph: Paragraph) -> dict[str, Any] | None:
+    properties = paragraph._p.pPr
+    run_properties = properties.find(qn("w:rPr")) if properties is not None else None
+    if run_properties is None:
+        return None
+    attrs: dict[str, Any] = {}
+    fonts = run_properties.find(qn("w:rFonts"))
+    if fonts is not None:
+        for attribute in ("w:eastAsia", "w:ascii", "w:hAnsi", "w:cs"):
+            value = str(fonts.get(qn(attribute)) or "").strip()
+            if value and not value.startswith("+"):
+                attrs["fontFamily"] = value
+                break
+        hint = str(fonts.get(qn("w:hint")) or "").strip()
+        if hint:
+            attrs["fontHint"] = hint
+        cs_font = str(fonts.get(qn("w:cs")) or "").strip()
+        if cs_font:
+            attrs["csFontFamily"] = cs_font
+    size = run_properties.find(qn("w:sz"))
+    if size is not None:
+        try:
+            attrs["fontSize"] = round(float(size.get(qn("w:val"))) / 2, 2)
+        except (TypeError, ValueError):
+            pass
+    color = run_properties.find(qn("w:color"))
+    normalized_color = _normalize_hex(color.get(qn("w:val")) if color is not None else "")
+    if normalized_color:
+        attrs["color"] = f"#{normalized_color.lower()}"
+    for key, tag in (("bold", "w:b"), ("italic", "w:i"), ("strike", "w:strike")):
+        element = run_properties.find(qn(tag))
+        if element is not None:
+            value = str(element.get(qn("w:val")) or "true").lower()
+            attrs[key] = value not in {"0", "false", "off", "none"}
+    underline = run_properties.find(qn("w:u"))
+    if underline is not None:
+        attrs["underline"] = str(underline.get(qn("w:val")) or "single").lower() not in {"0", "false", "off", "none"}
+    for key, tag in (("characterSpacing", "w:spacing"), ("position", "w:position")):
+        element = run_properties.find(qn(tag))
+        if element is not None:
+            try:
+                attrs[key] = int(element.get(qn("w:val")))
+            except (TypeError, ValueError):
+                pass
+    return attrs or None
+
+
+def _paragraph_tab_stops(paragraph: Paragraph) -> list[dict[str, Any]] | None:
+    properties = paragraph._p.pPr
+    tabs = properties.find(qn("w:tabs")) if properties is not None else None
+    result: list[dict[str, Any]] = []
+    if tabs is not None:
+        for tab in tabs.findall(qn("w:tab")):
+            try:
+                position = int(tab.get(qn("w:pos")))
+            except (TypeError, ValueError):
+                continue
+            result.append({
+                "positionTwips": position,
+                "alignment": str(tab.get(qn("w:val")) or "left"),
+                "leader": str(tab.get(qn("w:leader")) or "none"),
+            })
+    return result or None
+
+
 def _run_marks(run: Run, hyperlink: str = "") -> list[dict[str, Any]]:
     marks: list[dict[str, Any]] = []
-    if run.bold:
+    if _effective_font_value(run, "bold"):
         marks.append({"type": "bold"})
-    if run.italic:
+    if _effective_font_value(run, "italic"):
         marks.append({"type": "italic"})
-    if run.underline:
+    if _effective_font_value(run, "underline"):
         marks.append({"type": "underline"})
-    if run.font.strike:
+    if _effective_font_value(run, "strike"):
         marks.append({"type": "strike"})
-    if run.font.superscript:
+    if _effective_font_value(run, "superscript"):
         marks.append({"type": "superscript"})
-    if run.font.subscript:
+    if _effective_font_value(run, "subscript"):
         marks.append({"type": "subscript"})
     text_style: dict[str, Any] = {}
-    if run.font.name:
-        text_style["fontFamily"] = str(run.font.name)
-    if run.font.size:
-        text_style["fontSize"] = f"{run.font.size.pt:g}pt"
-    if run.font.color and run.font.color.rgb:
-        text_style["color"] = f"#{str(run.font.color.rgb).lower()}"
+    font_name = _effective_font_value(run, "name")
+    font_size = _effective_font_value(run, "size")
+    font_color = _effective_font_value(run, "color")
+    if font_name:
+        text_style["fontFamily"] = str(font_name)
+    if font_size:
+        text_style["fontSize"] = f"{font_size.pt:g}pt"
+    if font_color and font_color.rgb:
+        text_style["color"] = f"#{str(font_color.rgb).lower()}"
+    properties = run._r.rPr
+    fonts = properties.find(qn("w:rFonts")) if properties is not None else None
+    font_hint = str(fonts.get(qn("w:hint")) or "").strip() if fonts is not None else ""
+    if font_hint:
+        text_style["docxFontHint"] = font_hint
+    for key, tag in (("docxCharacterSpacing", "w:spacing"), ("docxPosition", "w:position")):
+        element = properties.find(qn(tag)) if properties is not None else None
+        if element is not None:
+            try:
+                text_style[key] = int(element.get(qn("w:val")))
+            except (TypeError, ValueError):
+                pass
     if text_style:
         marks.append({"type": "textStyle", "attrs": text_style})
     highlight = _HIGHLIGHT_TO_HEX.get(run.font.highlight_color)
@@ -201,8 +374,22 @@ def _image_node(blip: Any, drawing: Any, paragraph: Paragraph) -> dict[str, Any]
             "title": None,
             "width": width,
             "height": height,
+            "docxDrawingId": _drawing_id(drawing),
         },
     }
+
+
+def _drawing_id(element: Any) -> str:
+    return hashlib.sha256(element.xml.encode("utf-8")).hexdigest()
+
+
+def _drawing_parent_run(element: Any) -> Any | None:
+    parent = element.getparent()
+    while parent is not None and parent.tag != qn("w:p"):
+        if parent.tag == qn("w:r"):
+            return parent
+        parent = parent.getparent()
+    return None
 
 
 def _run_nodes(run_element: Any, paragraph: Paragraph, hyperlink: str = "") -> list[dict[str, Any]]:
@@ -412,6 +599,90 @@ def _apply_paragraph_attrs(paragraph: Paragraph, attrs: dict[str, Any]) -> None:
         length = _length_points(attrs.get(key))
         if length is not None:
             setattr(formatting, field, length)
+    for key, field in (
+        ("keepWithNext", "keep_with_next"),
+        ("keepTogether", "keep_together"),
+        ("pageBreakBefore", "page_break_before"),
+        ("widowControl", "widow_control"),
+    ):
+        if key in attrs and attrs[key] is not None:
+            setattr(formatting, field, bool(attrs[key]))
+    tab_stops = attrs.get("tabStops")
+    if isinstance(tab_stops, list) and tab_stops:
+        properties = paragraph._p.get_or_add_pPr()
+        tabs = OxmlElement("w:tabs")
+        for item in tab_stops[:32]:
+            if not isinstance(item, dict):
+                continue
+            try:
+                position = max(0, min(31680, int(item.get("positionTwips"))))
+            except (TypeError, ValueError):
+                continue
+            tab = OxmlElement("w:tab")
+            tab.set(qn("w:pos"), str(position))
+            alignment = str(item.get("alignment") or "left")
+            if alignment not in {"left", "center", "right", "decimal", "bar", "clear", "num"}:
+                alignment = "left"
+            tab.set(qn("w:val"), alignment)
+            leader = str(item.get("leader") or "none")
+            if leader not in {"none", "dot", "hyphen", "underscore", "heavy", "middleDot"}:
+                leader = "none"
+            if leader != "none":
+                tab.set(qn("w:leader"), leader)
+            tabs.append(tab)
+        if len(tabs):
+            run_properties = properties.find(qn("w:rPr"))
+            properties.insert(properties.index(run_properties) if run_properties is not None else len(properties), tabs)
+    mark = attrs.get("paragraphMark")
+    if isinstance(mark, dict):
+        properties = paragraph._p.get_or_add_pPr()
+        run_properties = properties.find(qn("w:rPr"))
+        if run_properties is None:
+            run_properties = OxmlElement("w:rPr")
+            properties.append(run_properties)
+        font_family = re.sub(r"[\r\n\x00]", "", str(mark.get("fontFamily") or "")).strip()[:80]
+        if font_family:
+            fonts = OxmlElement("w:rFonts")
+            for attribute in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+                fonts.set(qn(attribute), font_family)
+            if mark.get("csFontFamily"):
+                fonts.set(qn("w:cs"), str(mark["csFontFamily"])[:80])
+            if mark.get("fontHint"):
+                fonts.set(qn("w:hint"), str(mark["fontHint"])[:20])
+            run_properties.append(fonts)
+        try:
+            font_size = max(6, min(96, float(mark.get("fontSize"))))
+        except (TypeError, ValueError):
+            font_size = 0
+        if font_size:
+            for tag in ("w:sz", "w:szCs"):
+                size = OxmlElement(tag)
+                size.set(qn("w:val"), str(round(font_size * 2)))
+                run_properties.append(size)
+        color = _normalize_hex(mark.get("color"))
+        if color:
+            element = OxmlElement("w:color")
+            element.set(qn("w:val"), color)
+            run_properties.append(element)
+        for key, tag in (("characterSpacing", "w:spacing"), ("position", "w:position")):
+            if key not in mark:
+                continue
+            try:
+                value = max(-31680, min(31680, int(mark[key])))
+            except (TypeError, ValueError):
+                continue
+            element = OxmlElement(tag)
+            element.set(qn("w:val"), str(value))
+            run_properties.append(element)
+        for key, tag in (("bold", "w:b"), ("italic", "w:i"), ("strike", "w:strike"), ("underline", "w:u")):
+            if key not in mark:
+                continue
+            element = OxmlElement(tag)
+            if not bool(mark[key]):
+                element.set(qn("w:val"), "0")
+            elif key == "underline":
+                element.set(qn("w:val"), "single")
+            run_properties.append(element)
 
 
 def _normalize_hex(value: Any) -> str:
@@ -438,6 +709,14 @@ def _apply_run_marks(run: Run, marks: dict[str, dict[str, Any]]) -> None:
     font_family = re.sub(r"[\r\n\x00]", "", str(text_style.get("fontFamily") or "")).strip()[:80]
     if font_family:
         run.font.name = font_family
+        fonts = run._r.get_or_add_rPr().get_or_add_rFonts()
+        for attribute in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+            fonts.set(qn(attribute), font_family)
+    else:
+        fonts = run._r.get_or_add_rPr().get_or_add_rFonts()
+    font_hint = str(text_style.get("docxFontHint") or "")
+    if font_hint in {"default", "eastAsia", "cs"}:
+        fonts.set(qn("w:hint"), font_hint)
     font_size = str(text_style.get("fontSize") or "").strip().lower()
     size_match = re.fullmatch(r"(\d+(?:\.\d+)?)(pt|px)?", font_size)
     if size_match:
@@ -446,6 +725,17 @@ def _apply_run_marks(run: Run, marks: dict[str, dict[str, Any]]) -> None:
     color = _normalize_hex(text_style.get("color"))
     if color:
         run.font.color.rgb = RGBColor.from_string(color)
+    properties = run._r.get_or_add_rPr()
+    for key, tag in (("docxCharacterSpacing", "w:spacing"), ("docxPosition", "w:position")):
+        if key not in text_style:
+            continue
+        try:
+            value = max(-31680, min(31680, int(text_style[key])))
+        except (TypeError, ValueError):
+            continue
+        element = OxmlElement(tag)
+        element.set(qn("w:val"), str(value))
+        properties.append(element)
     highlight = _normalize_hex((marks.get("highlight") or {}).get("color"))
     background = _normalize_hex(text_style.get("backgroundColor"))
     selected = f"#{(highlight or background).lower()}" if highlight or background else ""
@@ -481,7 +771,8 @@ def _decode_image(src: str) -> BytesIO:
     return BytesIO(blob)
 
 
-def _render_inline(paragraph: Paragraph, content: list[dict[str, Any]]) -> None:
+def _render_inline(paragraph: Paragraph, content: list[dict[str, Any]], source_drawings: dict[str, Any]) -> set[str]:
+    restored_drawings: set[str] = set()
     for node in content:
         node_type = str(node.get("type") or "")
         if node_type == "text":
@@ -503,6 +794,11 @@ def _render_inline(paragraph: Paragraph, content: list[dict[str, Any]]) -> None:
             paragraph.add_run().add_break(WD_BREAK.PAGE)
         elif node_type == "image":
             attrs = node.get("attrs") if isinstance(node.get("attrs"), dict) else {}
+            drawing_id = str(attrs.get("docxDrawingId") or "")
+            if drawing_id in source_drawings:
+                paragraph._p.append(deepcopy(source_drawings[drawing_id]))
+                restored_drawings.add(drawing_id)
+                continue
             width_value = attrs.get("width")
             height_value = attrs.get("height")
             width = height = None
@@ -514,9 +810,16 @@ def _render_inline(paragraph: Paragraph, content: list[dict[str, Any]]) -> None:
             except (TypeError, ValueError):
                 width = height = None
             paragraph.add_run().add_picture(_decode_image(str(attrs.get("src") or "")), width=width, height=height)
+    return restored_drawings
 
 
-def _new_paragraph(container: _Document | _Cell, node: dict[str, Any], *, list_style: str = "") -> Paragraph:
+def _new_paragraph(
+    container: _Document | _Cell,
+    node: dict[str, Any],
+    source_drawings: dict[str, Any],
+    *,
+    list_style: str = "",
+) -> Paragraph:
     paragraph = container.add_paragraph()
     attrs = node.get("attrs") if isinstance(node.get("attrs"), dict) else {}
     document = container if isinstance(container, _Document) else container.part.document
@@ -536,7 +839,11 @@ def _new_paragraph(container: _Document | _Cell, node: dict[str, Any], *, list_s
     elif node_type == "codeBlock" and _style_exists(document, "No Spacing"):
         paragraph.style = "No Spacing"
     _apply_paragraph_attrs(paragraph, attrs)
-    _render_inline(paragraph, [item for item in node.get("content") or [] if isinstance(item, dict)])
+    restored = _render_inline(paragraph, [item for item in node.get("content") or [] if isinstance(item, dict)], source_drawings)
+    for drawing_id in attrs.get("docxDrawingIds") or []:
+        drawing_id = str(drawing_id or "")
+        if drawing_id in source_drawings and drawing_id not in restored:
+            paragraph._p.append(deepcopy(source_drawings[drawing_id]))
     if node_type == "codeBlock":
         for run in paragraph.runs:
             run.font.name = "Menlo"
@@ -544,7 +851,7 @@ def _new_paragraph(container: _Document | _Cell, node: dict[str, Any], *, list_s
     return paragraph
 
 
-def _render_list(container: _Document | _Cell, node: dict[str, Any], depth: int = 0) -> None:
+def _render_list(container: _Document | _Cell, node: dict[str, Any], source_drawings: dict[str, Any], depth: int = 0) -> None:
     ordered = node.get("type") == "orderedList"
     style = "List Number" if ordered else "List Bullet"
     nested_style = f"{style} {min(depth + 2, 3)}" if depth else style
@@ -555,9 +862,9 @@ def _render_list(container: _Document | _Cell, node: dict[str, Any], depth: int 
         wrote = False
         for block in blocks:
             if block.get("type") in {"bulletList", "orderedList"}:
-                _render_list(container, block, depth + 1)
+                _render_list(container, block, source_drawings, depth + 1)
             elif block.get("type") in {"paragraph", "heading", "blockquote", "codeBlock"}:
-                _new_paragraph(container, block, list_style=nested_style if not wrote else "")
+                _new_paragraph(container, block, source_drawings, list_style=nested_style if not wrote else "")
                 wrote = True
 
 
@@ -573,7 +880,7 @@ def _shade_cell(cell: _Cell, color: str) -> None:
     shading.set(qn("w:fill"), normalized)
 
 
-def _render_table(document: _Document, node: dict[str, Any]) -> None:
+def _render_table(document: _Document, node: dict[str, Any], source_drawings: dict[str, Any]) -> None:
     rows = [item for item in node.get("content") or [] if isinstance(item, dict)]
     columns = max((len(row.get("content") or []) for row in rows), default=1)
     table = document.add_table(rows=max(1, len(rows)), cols=max(1, columns))
@@ -591,7 +898,7 @@ def _render_table(document: _Document, node: dict[str, Any]) -> None:
             cell._tc.clear_content()
             cell_attrs = cell_node.get("attrs") if isinstance(cell_node.get("attrs"), dict) else {}
             _shade_cell(cell, str(cell_attrs.get("backgroundColor") or ("d9eaf7" if row_index == 0 else "")))
-            _render_blocks(cell, [item for item in cell_node.get("content") or [] if isinstance(item, dict)])
+            _render_blocks(cell, [item for item in cell_node.get("content") or [] if isinstance(item, dict)], source_drawings)
             if not cell.paragraphs:
                 cell.add_paragraph()
             if cell_node.get("type") == "tableHeader":
@@ -613,20 +920,20 @@ def _add_horizontal_rule(container: _Document | _Cell) -> None:
     properties.append(borders)
 
 
-def _render_blocks(container: _Document | _Cell, content: list[dict[str, Any]]) -> None:
+def _render_blocks(container: _Document | _Cell, content: list[dict[str, Any]], source_drawings: dict[str, Any]) -> None:
     for node in content:
         node_type = str(node.get("type") or "")
         if node_type in {"paragraph", "heading", "blockquote", "codeBlock"}:
-            _new_paragraph(container, node)
+            _new_paragraph(container, node, source_drawings)
         elif node_type in {"bulletList", "orderedList"}:
-            _render_list(container, node)
+            _render_list(container, node, source_drawings)
         elif node_type == "horizontalRule":
             _add_horizontal_rule(container)
         elif node_type == "table" and isinstance(container, _Document):
-            _render_table(container, node)
+            _render_table(container, node, source_drawings)
         elif node_type == "image":
             paragraph = container.add_paragraph()
-            _render_inline(paragraph, [node])
+            _render_inline(paragraph, [node], source_drawings)
 
 
 def save_editor_document(source_path: Path, target_path: Path, document_payload: Any) -> dict[str, Any]:
@@ -637,11 +944,16 @@ def save_editor_document(source_path: Path, target_path: Path, document_payload:
     shutil.copy2(source_path, pending)
     try:
         document = Document(pending)
+        source_drawings: dict[str, Any] = {}
+        for drawing in document._element.body.iter(qn("w:drawing")):
+            parent_run = _drawing_parent_run(drawing)
+            if parent_run is not None:
+                source_drawings[_drawing_id(drawing)] = deepcopy(parent_run)
         body = document._element.body
         for child in list(body):
             if child.tag != qn("w:sectPr"):
                 body.remove(child)
-        _render_blocks(document, [item for item in document_json.get("content") or [] if isinstance(item, dict)])
+        _render_blocks(document, [item for item in document_json.get("content") or [] if isinstance(item, dict)], source_drawings)
         if not document.paragraphs and not document.tables:
             document.add_paragraph()
         document.core_properties.modified = datetime.now()

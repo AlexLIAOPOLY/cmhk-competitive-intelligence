@@ -2075,6 +2075,15 @@ def load_report_editor_payload(path_str: str) -> dict:
     rel_path = str(target.relative_to(ROOT))
     metadata = load_report_metadata().get(rel_path, {})
     metadata = metadata if isinstance(metadata, dict) else {}
+    preview_url = ""
+    try:
+        from cmhk.reporting.pdf_preview import pdf_preview_path
+
+        preview_path = pdf_preview_path(target, ROOT / "web" / "static" / "report-previews")
+        if preview_path.is_file():
+            preview_url = f"/static/report-previews/{quote(preview_path.name)}?v={preview_path.stat().st_mtime_ns}"
+    except Exception:
+        preview_url = ""
     return {
         **payload,
         "path": rel_path,
@@ -2084,6 +2093,7 @@ def load_report_editor_payload(path_str: str) -> dict:
         "editedAt": str(metadata.get("editedAt") or ""),
         "editedBy": str(metadata.get("editedBy") or ""),
         "sourcePath": str(metadata.get("sourcePath") or rel_path),
+        "previewUrl": preview_url,
     }
 
 

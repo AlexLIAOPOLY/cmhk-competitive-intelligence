@@ -17,6 +17,13 @@ const BLOCK_ATTRS = {
   firstLineIndent: { default: null },
   leftIndent: { default: null },
   rightIndent: { default: null },
+  keepWithNext: { default: null },
+  keepTogether: { default: null },
+  pageBreakBefore: { default: null },
+  widowControl: { default: null },
+  paragraphMark: { default: null },
+  docxDrawingIds: { default: null },
+  tabStops: { default: null },
 };
 
 function blockStyle(attrs) {
@@ -30,6 +37,8 @@ function blockStyle(attrs) {
   point("firstLineIndent", "text-indent");
   point("leftIndent", "margin-left");
   point("rightIndent", "margin-right");
+  if (attrs.keepTogether) css.push("break-inside:avoid");
+  if (attrs.pageBreakBefore) css.push("break-before:page");
   return css.join(";");
 }
 
@@ -44,6 +53,30 @@ const DocxBlockAttributes = Extension.create({
           ? config.renderHTML
           : (attrs) => blockStyle(attrs) ? { style: blockStyle(attrs) } : {},
       }])),
+    }];
+  },
+});
+
+const DocxTextAttributes = Extension.create({
+  name: "docxTextAttributes",
+  addGlobalAttributes() {
+    return [{
+      types: ["textStyle"],
+      attributes: {
+        docxFontHint: { default: null },
+        docxCharacterSpacing: {
+          default: null,
+          renderHTML: (attrs) => Number.isFinite(Number(attrs.docxCharacterSpacing))
+            ? { style: `letter-spacing:${Number(attrs.docxCharacterSpacing) / 20}pt` }
+            : {},
+        },
+        docxPosition: {
+          default: null,
+          renderHTML: (attrs) => Number.isFinite(Number(attrs.docxPosition))
+            ? { style: `position:relative;top:${-Number(attrs.docxPosition) / 2}pt` }
+            : {},
+        },
+      },
     }];
   },
 });
@@ -67,6 +100,7 @@ const EditorImage = Image.extend({
       ...this.parent?.(),
       width: { default: null, parseHTML: (element) => element.getAttribute("width"), renderHTML: (attrs) => attrs.width ? { width: attrs.width } : {} },
       height: { default: null, parseHTML: (element) => element.getAttribute("height"), renderHTML: (attrs) => attrs.height ? { height: attrs.height } : {} },
+      docxDrawingId: { default: null },
     };
   },
 }).configure({ inline: true, allowBase64: true });
@@ -121,6 +155,12 @@ const icon = (name) => ({
 
 const shell = document.querySelector("#reportEditorModal");
 const mount = document.querySelector("#reportEditorMount");
+const workspace = document.querySelector("#reportEditorWorkspace");
+const editPane = document.querySelector(".report-editor-edit-pane");
+const proofPane = document.querySelector("#reportEditorProofPane");
+const proofMount = document.querySelector("#reportEditorProofMount");
+const proofState = document.querySelector("#reportEditorProofState");
+const proofToggle = document.querySelector("#reportEditorProofToggle");
 const ribbon = document.querySelector("#reportEditorRibbon");
 const status = document.querySelector("#reportEditorStatus");
 const fileName = document.querySelector("#reportEditorFileName");
@@ -136,6 +176,7 @@ let current = null;
 let dirty = false;
 let saving = false;
 let draftTimer = 0;
+let proofRequest = 0;
 
 function button(command, label, symbol, title = label) {
   return `<button type="button" class="report-editor-tool" data-editor-command="${command}" title="${esc(title)}" aria-label="${esc(title)}">${symbol}<span>${esc(label)}</span></button>`;
@@ -146,7 +187,7 @@ function ribbonMarkup() {
     <div class="report-editor-group compact" aria-label="撤销与恢复">${button("undo", "撤销", icon("undo"), "撤销 ⌘Z")}${button("redo", "恢复", icon("redo"), "恢复 ⇧⌘Z")}</div>
     <div class="report-editor-group font-group" aria-label="字体">
       <label><span class="sr-only">段落样式</span><select data-editor-select="block" data-custom-select="native" title="段落样式"><option value="paragraph">正文</option><option value="heading-1">标题 1</option><option value="heading-2">标题 2</option><option value="heading-3">标题 3</option><option value="heading-4">标题 4</option></select></label>
-      <label><span class="sr-only">字体</span><select data-editor-select="font" data-custom-select="native" title="字体"><option value="">沿用原字体</option><option value="Arial">Arial</option><option value="Calibri">Calibri</option><option value="Microsoft YaHei">微软雅黑</option><option value="SimSun">宋体</option><option value="SimHei">黑体</option><option value="PingFang SC">苹方</option></select></label>
+      <label><span class="sr-only">字体</span><select data-editor-select="font" data-custom-select="native" title="字体"><option value="">沿用原字体</option><option value="Arial">Arial</option><option value="Calibri">Calibri</option><option value="DengXian">等线</option><option value="FangSong">仿宋</option><option value="Microsoft YaHei">微软雅黑</option><option value="SimSun">宋体</option><option value="SimHei">黑体</option><option value="PingFang SC">苹方</option></select></label>
       <label><span class="sr-only">字号</span><select data-editor-select="size" data-custom-select="native" title="字号"><option value="">字号</option>${[9,10,10.5,11,12,14,16,18,22,26,32,36,48].map((size) => `<option value="${size}pt">${size}</option>`).join("")}</select></label>
       ${button("bold", "加粗", icon("bold"))}${button("italic", "斜体", icon("italic"))}${button("underline", "下划线", icon("underline"))}${button("strike", "删除线", icon("strike"))}
       ${button("subscript", "下标", "X<sub>2</sub>")}${button("superscript", "上标", "X<sup>2</sup>")}
@@ -225,6 +266,7 @@ function editorExtensions() {
   return [
     StarterKit.configure({ link: { openOnClick: false, autolink: true, defaultProtocol: "https" } }),
     DocxBlockAttributes,
+    DocxTextAttributes,
     TextAlign.configure({ types: ["heading", "paragraph"] }),
     TextStyleKit,
     Highlight.configure({ multicolor: true }),
@@ -251,6 +293,46 @@ function renderPage(page = {}) {
   return mount.querySelector("#reportEditorContent");
 }
 
+function setProofState(text, tone = "ready") {
+  if (!proofState) return;
+  proofState.textContent = text;
+  proofState.dataset.tone = tone;
+}
+
+function setProofVisible(visible) {
+  const next = Boolean(visible);
+  workspace?.classList.toggle("is-proof-open", next);
+  if (proofPane) proofPane.hidden = !next;
+  if (proofToggle) {
+    proofToggle.setAttribute("aria-pressed", String(next));
+    proofToggle.textContent = next ? "关闭对照" : "最终版式";
+  }
+  if (current?.page) window.requestAnimationFrame(() => applyZoom(preferredZoom(current.page)));
+}
+
+async function renderProof(url, name) {
+  const requestId = ++proofRequest;
+  if (!proofMount) return;
+  if (!url) {
+    proofMount.innerHTML = '<div class="report-editor-proof-empty"><strong>尚无最终版式</strong><small>保存后会自动生成 PDF 并显示在这里。</small></div>';
+    setProofState("尚未生成 PDF", "warning");
+    return;
+  }
+  proofMount.innerHTML = '<div class="report-editor-proof-loading"><span></span><small>正在读取最终版式…</small></div>';
+  setProofState("正在读取 PDF", "loading");
+  try {
+    const response = await fetch(url, { method: "HEAD", cache: "no-store" });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    if (requestId !== proofRequest) return;
+    proofMount.innerHTML = `<iframe src="${esc(url)}#toolbar=0&navpanes=0&view=FitH" title="${esc(name || "报告")} 最终 PDF 版式"></iframe>`;
+    setProofState(dirty ? "右侧为最近保存版" : "最近保存的 PDF", dirty ? "dirty" : "ready");
+  } catch (_error) {
+    if (requestId !== proofRequest) return;
+    proofMount.innerHTML = '<div class="report-editor-proof-empty"><strong>PDF 暂时无法读取</strong><small>内容仍可编辑，保存时会重新生成。</small></div>';
+    setProofState("待重新生成", "warning");
+  }
+}
+
 function applyZoom(value) {
   const minimum = Number(zoomInput?.min) || 35;
   const maximum = Number(zoomInput?.max) || 150;
@@ -262,9 +344,8 @@ function applyZoom(value) {
 }
 
 function preferredZoom(page = {}) {
-  if (window.innerWidth > 760) return 100;
   const pageWidthPixels = (Number(page.widthIn) || 8.27) * 96;
-  const availableWidth = Math.max(240, window.innerWidth - 24);
+  const availableWidth = Math.max(240, (editPane?.clientWidth || window.innerWidth) - (window.innerWidth > 760 ? 72 : 24));
   return Math.max(35, Math.min(100, Math.floor((availableWidth / pageWidthPixels) * 20) * 5));
 }
 
@@ -302,6 +383,8 @@ async function open(path) {
     current = payload;
     dirty = false;
     const content = await restoreDraftIfWanted(payload);
+    setProofVisible(window.innerWidth > 760);
+    renderProof(payload.previewUrl, payload.name);
     const element = renderPage(payload.page);
     applyZoom(preferredZoom(payload.page));
     editor = new Editor({
@@ -310,7 +393,7 @@ async function open(path) {
       content,
       autofocus: "start",
       editorProps: { attributes: { class: "cmhk-word-editor", role: "textbox", "aria-label": `${payload.name} 正文编辑区`, spellcheck: "true" } },
-      onUpdate: () => { dirty = true; setStatus("有未保存修改", "dirty"); updateCounts(); saveDraftSoon(); },
+      onUpdate: () => { dirty = true; setStatus("有未保存修改", "dirty"); setProofState("右侧为最近保存版", "dirty"); updateCounts(); saveDraftSoon(); },
       onSelectionUpdate: updateToolbar,
       onTransaction: updateToolbar,
     });
@@ -357,6 +440,7 @@ async function save(saveMode = "update") {
     saveButton.textContent = "保存";
     copyButton.textContent = "另存新编辑稿";
     setStatus(payload.warning ? `已保存 Word；${payload.warning}` : `已保存 · ${current.name}`, payload.warning ? "warning" : "saved");
+    renderProof(payload.previewUrl, current.name);
     window.dispatchEvent(new CustomEvent("cmhk-report-saved", { detail: { ...payload, reportType: payload.file?.reportType || current.reportType } }));
     return true;
   } catch (error) {
@@ -380,6 +464,8 @@ async function close() {
   editor?.destroy();
   editor = null;
   current = null;
+  proofRequest += 1;
+  if (proofMount) proofMount.innerHTML = "";
   dirty = false;
   shell.hidden = true;
   document.body.classList.remove("report-editor-open");
@@ -489,6 +575,7 @@ if (ribbon) {
 saveButton?.addEventListener("click", () => save("update"));
 copyButton?.addEventListener("click", () => save("copy"));
 closeButton?.addEventListener("click", close);
+proofToggle?.addEventListener("click", () => setProofVisible(!workspace?.classList.contains("is-proof-open")));
 zoomInput?.addEventListener("input", () => {
   applyZoom(zoomInput.value);
 });
