@@ -1001,6 +1001,22 @@ class SubscriptionServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "路径无效"):
             self.service.update_weekly_report_preference("../secret.docx")
 
+    def test_performance_report_preference_persists_and_is_exposed_in_summary(self):
+        saved = self.service.update_performance_report_preference("reports/运营商业绩摘要（编辑稿）.docx")
+        self.assertEqual(saved["path"], "reports/运营商业绩摘要（编辑稿）.docx")
+
+        reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
+        self.assertEqual(
+            reloaded.performance_report_preference()["path"],
+            "reports/运营商业绩摘要（编辑稿）.docx",
+        )
+        self.assertEqual(
+            reloaded.list_summary()["performance_report_preference"]["path"],
+            "reports/运营商业绩摘要（编辑稿）.docx",
+        )
+        with self.assertRaisesRegex(ValueError, "路径无效"):
+            self.service.update_performance_report_preference("../secret.docx")
+
     def test_report_schedule_persists_multiple_month_days_and_hong_kong_time(self):
         from datetime import datetime
 
@@ -1037,6 +1053,36 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.service.update_report_schedule(days="0, 15", time_hm="09:00", enabled=True)
         with self.assertRaisesRegex(ValueError, "HH:MM"):
             self.service.update_report_schedule(days="15, 30", time_hm="25:00", enabled=True)
+
+    def test_due_performance_schedule_delivers_selected_version_only_once(self):
+        from datetime import datetime
+
+        report = self.root / "8月30日运营商业绩摘要（编辑稿）.docx"
+        report.write_bytes(b"selected performance")
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["performance"], report_mode="pdf"
+        )
+        self.service.update_performance_report_preference(report.name)
+        self.service.update_performance_schedule(days=[30], time_hm="09:30", enabled=True)
+        now = datetime.fromisoformat("2026-08-30T09:30:00+08:00")
+        delivery = {
+            "recipient_count": 1,
+            "verified_count": 1,
+            "queued_count": 0,
+            "failed_count": 0,
+        }
+        with mock.patch.object(self.service, "push", return_value=delivery) as push:
+            first = self.service.run_due_performance_report(now=now)
+            second = self.service.run_due_performance_report(now=now)
+
+        self.assertTrue(first["ok"])
+        self.assertEqual(first["status"], "verified")
+        self.assertEqual(first["selection"], "manual")
+        self.assertEqual(first["report_path"], report.name)
+        self.assertFalse(second["due"])
+        push.assert_called_once()
+        self.assertEqual(push.call_args.kwargs["service"], "performance")
+        self.assertEqual(push.call_args.kwargs["path"], report.name)
 
     def test_due_report_schedule_generates_and_delivers_only_once_per_slot(self):
         from datetime import datetime

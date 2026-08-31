@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=14', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=25', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=15', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=26', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -161,6 +161,17 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("max-height: 224px", STYLE)
         self.assertIn("overflow-y: auto", STYLE)
         self.assertNotIn("data-weekly-report-select", SCRIPT)
+
+    def test_report_version_selection_is_separate_from_subscribers_and_supports_performance(self):
+        subscriber_section = SCRIPT.split('<section class="surface subscriber-surface">', 1)[1].split("</section>", 1)[0]
+        self.assertNotIn("weeklyReportPicker()", subscriber_section)
+        self.assertIn('<section class="surface version-surface">', SCRIPT)
+        self.assertIn("推送版本", SCRIPT)
+        self.assertIn("performanceReportPicker()", SCRIPT)
+        self.assertIn('action: "setPerformanceReportPreference"', SCRIPT)
+        self.assertIn('id="performanceScheduleForm"', SCRIPT)
+        self.assertIn("业绩摘要定时推送", SCRIPT)
+        self.assertIn(".report-version-grid", STYLE)
 
 
 if __name__ == "__main__":

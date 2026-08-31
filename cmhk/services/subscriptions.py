@@ -778,6 +778,12 @@ class SubscriptionService:
             db.execute(
                 """INSERT OR IGNORE INTO report_automation_schedule(
                        service, enabled, days_json, time_hm, timezone, updated_at
+                   ) VALUES('performance', 0, '[15,30]', '09:00', 'Asia/Hong_Kong', ?)""",
+                (_now_hkt(),),
+            )
+            db.execute(
+                """INSERT OR IGNORE INTO report_automation_schedule(
+                       service, enabled, days_json, time_hm, timezone, updated_at
                    ) VALUES('news', 0, '[]', '00:00', 'Asia/Hong_Kong', ?)""",
                 (_now_hkt(),),
             )
@@ -1341,7 +1347,9 @@ class SubscriptionService:
             "invitation_permissions": self.invitation_permission_snapshot(),
             "active_subscriber_count": sum(1 for row in subscribers if row["status"] == "active"),
             "report_schedule": self.report_schedule_snapshot(),
+            "performance_schedule": self.performance_schedule_snapshot(),
             "weekly_report_preference": self.weekly_report_preference(),
+            "performance_report_preference": self.performance_report_preference(),
             "strategic_news_schedule": self.strategic_news_schedule_snapshot(),
             "updated_at": _now_hkt(),
         }
@@ -1374,38 +1382,58 @@ class SubscriptionService:
             )
         return self.strategic_news_schedule_snapshot()
 
-    def weekly_report_preference(self) -> dict[str, Any]:
+    def _report_preference(self, service: str) -> dict[str, Any]:
+        if service not in {"weekly", "performance"}:
+            raise ValueError("报告版本服务无效")
+        preference_key = f"{service}_report_path"
         with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT preference_value, updated_at
                    FROM subscription_admin_preferences
-                   WHERE preference_key='weekly_report_path'"""
+                   WHERE preference_key=?""",
+                (preference_key,),
             ).fetchone()
         return {
             "path": str(row["preference_value"] or "") if row else "",
             "updated_at": str(row["updated_at"] or "") if row else "",
         }
 
-    def update_weekly_report_preference(self, report_path: Any) -> dict[str, Any]:
+    def _update_report_preference(self, service: str, report_path: Any) -> dict[str, Any]:
+        if service not in {"weekly", "performance"}:
+            raise ValueError("报告版本服务无效")
         normalized = str(report_path or "").strip()
         candidate = Path(normalized) if normalized else None
         if candidate and (candidate.is_absolute() or ".." in candidate.parts):
-            raise ValueError("周报版本路径无效")
+            label = "周报" if service == "weekly" else "业绩摘要"
+            raise ValueError(f"{label}版本路径无效")
         updated_at = _now_hkt()
+        preference_key = f"{service}_report_path"
         with closing(self._connect()) as db, db:
             db.execute(
                 """INSERT INTO subscription_admin_preferences(
                        preference_key, preference_value, updated_at
-                   ) VALUES('weekly_report_path', ?, ?)
+                   ) VALUES(?, ?, ?)
                    ON CONFLICT(preference_key) DO UPDATE SET
                        preference_value=excluded.preference_value,
                        updated_at=excluded.updated_at""",
-                (normalized, updated_at),
+                (preference_key, normalized, updated_at),
             )
         return {"path": normalized, "updated_at": updated_at}
 
+    def weekly_report_preference(self) -> dict[str, Any]:
+        return self._report_preference("weekly")
+
+    def update_weekly_report_preference(self, report_path: Any) -> dict[str, Any]:
+        return self._update_report_preference("weekly", report_path)
+
+    def performance_report_preference(self) -> dict[str, Any]:
+        return self._report_preference("performance")
+
+    def update_performance_report_preference(self, report_path: Any) -> dict[str, Any]:
+        return self._update_report_preference("performance", report_path)
+
     def automatic_delivery_enabled(self, service: str) -> bool:
-        if service not in {"news", "weekly"}:
+        if service not in {"news", "weekly", "performance"}:
             return False
         with closing(self._connect()) as db:
             row = db.execute(
@@ -1440,10 +1468,13 @@ class SubscriptionService:
             raise ValueError("执行时间必须使用 HH:MM 格式")
         return raw
 
-    def report_schedule_snapshot(self, *, now: datetime | None = None) -> dict[str, Any]:
+    def _report_schedule_snapshot(self, service: str, *, now: datetime | None = None) -> dict[str, Any]:
+        if service not in {"weekly", "performance"}:
+            raise ValueError("报告排期服务无效")
         with closing(self._connect()) as db:
             row = db.execute(
-                "SELECT * FROM report_automation_schedule WHERE service='weekly'"
+                "SELECT * FROM report_automation_schedule WHERE service=?",
+                (service,),
             ).fetchone()
         data = dict(row) if row else {}
         try:
@@ -1464,7 +1495,7 @@ class SubscriptionService:
                     next_run = candidate.isoformat(timespec="minutes")
                     break
         return {
-            "service": "weekly",
+            "service": service,
             "enabled": bool(data.get("enabled")),
             "days": days,
             "days_text": "、".join(str(day) for day in days) + " 日",
@@ -1480,21 +1511,47 @@ class SubscriptionService:
             "updated_at": str(data.get("updated_at") or ""),
         }
 
-    def update_report_schedule(self, *, days: Any, time_hm: Any, enabled: bool) -> dict[str, Any]:
+    def report_schedule_snapshot(self, *, now: datetime | None = None) -> dict[str, Any]:
+        return self._report_schedule_snapshot("weekly", now=now)
+
+    def performance_schedule_snapshot(self, *, now: datetime | None = None) -> dict[str, Any]:
+        return self._report_schedule_snapshot("performance", now=now)
+
+    def _update_report_schedule(self, service: str, *, days: Any, time_hm: Any, enabled: bool) -> dict[str, Any]:
+        if service not in {"weekly", "performance"}:
+            raise ValueError("报告排期服务无效")
         normalized_days = self._normalize_schedule_days(days)
         normalized_time = self._normalize_schedule_time(time_hm)
         with closing(self._connect()) as db, db:
             db.execute(
                 """UPDATE report_automation_schedule
                    SET enabled=?, days_json=?, time_hm=?, updated_at=?
-                   WHERE service='weekly'""",
-                (1 if enabled else 0, json.dumps(normalized_days), normalized_time, _now_hkt()),
+                   WHERE service=?""",
+                (1 if enabled else 0, json.dumps(normalized_days), normalized_time, _now_hkt(), service),
             )
-        return self.report_schedule_snapshot()
+        return self._report_schedule_snapshot(service)
+
+    def update_report_schedule(self, *, days: Any, time_hm: Any, enabled: bool) -> dict[str, Any]:
+        return self._update_report_schedule("weekly", days=days, time_hm=time_hm, enabled=enabled)
+
+    def update_performance_schedule(self, *, days: Any, time_hm: Any, enabled: bool) -> dict[str, Any]:
+        return self._update_report_schedule("performance", days=days, time_hm=time_hm, enabled=enabled)
 
     def report_schedule_due(self, *, now: datetime | None = None) -> dict[str, Any]:
         current = (now or datetime.now(HKT)).astimezone(HKT)
         schedule = self.report_schedule_snapshot(now=current)
+        slot = f"{current.date().isoformat()}@{schedule['time']}"
+        due = bool(
+            schedule["enabled"]
+            and current.day in schedule["days"]
+            and current.strftime("%H:%M") >= schedule["time"]
+            and schedule["last_slot"] != slot
+        )
+        return {**schedule, "due": due, "slot": slot if due else ""}
+
+    def performance_schedule_due(self, *, now: datetime | None = None) -> dict[str, Any]:
+        current = (now or datetime.now(HKT)).astimezone(HKT)
+        schedule = self.performance_schedule_snapshot(now=current)
         slot = f"{current.date().isoformat()}@{schedule['time']}"
         due = bool(
             schedule["enabled"]
@@ -1732,6 +1789,100 @@ class SubscriptionService:
                     """UPDATE report_automation_schedule
                        SET last_status='failed', last_error=?, last_completed_at=?, updated_at=?
                        WHERE service='weekly' AND last_slot=?""",
+                    (str(exc)[:1200], completed_at, completed_at, slot),
+                )
+            return {"ok": False, "slot": slot, "status": "failed", "error": str(exc)[:1200]}
+
+    def run_due_performance_report(self, *, now: datetime | None = None, dry_run: bool = False) -> dict[str, Any]:
+        """Deliver the selected performance summary, or the newest formal version, once per saved slot."""
+        current = (now or datetime.now(HKT)).astimezone(HKT)
+        due = self.performance_schedule_due(now=current)
+        if dry_run or not due["due"]:
+            return {"ok": True, "dry_run": dry_run, **due}
+        subscribers = self._subscribers_for("performance")
+        if not subscribers:
+            return {
+                "ok": True,
+                "due": False,
+                "skipped": "no_active_subscribers",
+                "schedule_enabled": True,
+                "slot": str(due["slot"]),
+            }
+        slot = str(due["slot"])
+        started_at = _now_hkt()
+        with closing(self._connect()) as db, db:
+            cursor = db.execute(
+                """UPDATE report_automation_schedule
+                   SET last_slot=?, last_status='running', last_error='', last_started_at=?, updated_at=?
+                   WHERE service='performance' AND last_slot<>?""",
+                (slot, started_at, started_at, slot),
+            )
+        if cursor.rowcount != 1:
+            return {"ok": True, "due": False, "skipped": "already_claimed", "slot": slot}
+        try:
+            preferred_path = str(self.performance_report_preference().get("path") or "")
+            report_path: Path | None = None
+            if preferred_path:
+                try:
+                    preferred, _ = self._resolve_report(preferred_path)
+                    if "业绩摘要" not in preferred.name:
+                        raise ValueError("所选文件不是业绩摘要")
+                    report_path = preferred
+                except ValueError:
+                    self.update_performance_report_preference("")
+            if report_path is None:
+                candidates = [
+                    path for path in self.runtime_root.glob("*.docx")
+                    if "业绩摘要" in path.name
+                    and "编辑稿" not in path.name
+                    and "template" not in path.name.lower()
+                    and not path.name.startswith("~$")
+                ]
+                if not candidates:
+                    raise RuntimeError("当前没有可供定时推送的业绩摘要")
+                report_path = max(candidates, key=lambda item: (item.stat().st_mtime_ns, item.name))
+            relative_path = report_path.relative_to(self.runtime_root.resolve()).as_posix()
+            if any(item.get("report_mode") in {"audio", "pdf_audio"} for item in subscribers):
+                try:
+                    from tts_service import synthesize_report_audio
+
+                    audio_result = synthesize_report_audio(report_path, force=False)
+                    if not audio_result.get("ok", True):
+                        raise RuntimeError(str(audio_result.get("error") or "业绩摘要语音生成失败"))
+                except Exception as exc:
+                    raise RuntimeError(f"业绩摘要语音准备失败：{exc}") from exc
+            delivery = self.push(
+                service="performance",
+                mode="pdf_audio",
+                path=relative_path,
+                confirm_bulk=True,
+                queue_failures=True,
+                batch_key=f"performance-schedule:{slot}:{hashlib.sha256(report_path.read_bytes()).hexdigest()}",
+            )
+            final_status = "queued" if delivery["queued_count"] else "verified"
+            completed_at = _now_hkt()
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    """UPDATE report_automation_schedule
+                       SET last_status=?, last_report_path=?, last_error='', last_completed_at=?, updated_at=?
+                       WHERE service='performance' AND last_slot=?""",
+                    (final_status, relative_path, completed_at, completed_at, slot),
+                )
+            return {
+                "ok": True,
+                "slot": slot,
+                "status": final_status,
+                "report_path": relative_path,
+                "selection": "manual" if preferred_path and relative_path == preferred_path else "automatic",
+                "delivery": delivery,
+            }
+        except Exception as exc:
+            completed_at = _now_hkt()
+            with closing(self._connect()) as db, db:
+                db.execute(
+                    """UPDATE report_automation_schedule
+                       SET last_status='failed', last_error=?, last_completed_at=?, updated_at=?
+                       WHERE service='performance' AND last_slot=?""",
                     (str(exc)[:1200], completed_at, completed_at, slot),
                 )
             return {"ok": False, "slot": slot, "status": "failed", "error": str(exc)[:1200]}

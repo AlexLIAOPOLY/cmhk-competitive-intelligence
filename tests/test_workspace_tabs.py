@@ -52,10 +52,10 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=4', INDEX)
-        self.assertIn('/static/organization-admin.js?v=33', INDEX)
+        self.assertIn('/static/organization-admin.js?v=35', INDEX)
         self.assertIn('/static/organization-admin.css?v=26', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=157', INDEX)
-        self.assertIn('/static/app.js?v=317', INDEX)
+        self.assertIn('/static/app.js?v=318', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -202,11 +202,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
         self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
         self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
-        self.assertIn('/static/subscription-admin.css?v=23', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=25', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=13', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=15', INDEX)
         self.assertNotIn('class="subtitle"', SUBSCRIPTION_SCRIPT)
         self.assertIn('fetch("/api/subscriptions"', SUBSCRIPTION_SCRIPT)
         self.assertIn('action: "publish"', SUBSCRIPTION_SCRIPT)

@@ -1072,6 +1072,23 @@ class SubscriptionDispatchScheduleTests(unittest.TestCase):
             dry_run=True,
         )
 
+    def test_frequency_scheduler_checks_saved_performance_report_schedule(self) -> None:
+        check_time = scheduler.datetime(2026, 8, 30, 9, 30, tzinfo=scheduler.HKT)
+        with mock.patch("cmhk.services.subscriptions.SubscriptionService") as service_class:
+            service_class.return_value.run_due_performance_report.return_value = {
+                "ok": True,
+                "due": True,
+                "slot": "2026-08-30@09:30",
+            }
+            result = scheduler.dispatch_scheduled_performance_report(dry_run=True, now=check_time)
+
+        self.assertTrue(result["due"])
+        service_class.assert_called_once_with(runtime_root=scheduler.ROOT)
+        service_class.return_value.run_due_performance_report.assert_called_once_with(
+            now=check_time,
+            dry_run=True,
+        )
+
 
 class TaskLogScrollTests(unittest.TestCase):
     def test_running_task_log_scroll_waits_for_layout_and_stays_at_bottom(self) -> None:

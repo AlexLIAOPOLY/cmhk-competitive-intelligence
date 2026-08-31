@@ -73,6 +73,8 @@ const state = {
   weeklyPreviewController: null,
   weeklyPushPreferencePath: "",
   weeklyPushPreferenceBusy: false,
+  performancePushPreferencePath: "",
+  performancePushPreferenceBusy: false,
 };
 
 const els = {
@@ -1832,12 +1834,26 @@ function broadcastWeeklyPushPreference(path) {
   frame?.contentWindow?.postMessage({ type: "cmhk-weekly-report-preference", path: String(path || "") }, location.origin);
 }
 
+function broadcastPerformancePushPreference(path) {
+  const frame = document.querySelector('[data-workspace-panel="subscriptions"] iframe');
+  frame?.contentWindow?.postMessage({ type: "cmhk-performance-report-preference", path: String(path || "") }, location.origin);
+}
+
 async function loadWeeklyPushPreference() {
   if (document.body.classList.contains("public-readonly")) return;
   const response = await fetch("/api/weekly-report-preference", { cache: "no-store" });
   const payload = await response.json();
   if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
   state.weeklyPushPreferencePath = String(payload.preference?.path || "");
+  renderFileList();
+}
+
+async function loadPerformancePushPreference() {
+  if (document.body.classList.contains("public-readonly")) return;
+  const response = await fetch("/api/performance-report-preference", { cache: "no-store" });
+  const payload = await response.json();
+  if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+  state.performancePushPreferencePath = String(payload.preference?.path || "");
   renderFileList();
 }
 
@@ -1864,6 +1880,33 @@ async function saveWeeklyPushPreference(path) {
     throw error;
   } finally {
     state.weeklyPushPreferenceBusy = false;
+    renderFileList();
+  }
+}
+
+async function savePerformancePushPreference(path) {
+  if (state.performancePushPreferenceBusy) return;
+  const previous = state.performancePushPreferencePath;
+  state.performancePushPreferenceBusy = true;
+  state.performancePushPreferencePath = String(path || "");
+  renderFileList();
+  try {
+    const response = await fetch("/api/subscriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "setPerformanceReportPreference", performanceReportPath: state.performancePushPreferencePath }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    state.performancePushPreferencePath = String(payload.result?.path || "");
+    const report = state.outputs.find((item) => item.path_str === state.performancePushPreferencePath);
+    showTaskOperationNotice(report ? `下次业绩摘要推送将使用：${report.name}` : "业绩摘要已恢复自动选择最新正式版");
+    broadcastPerformancePushPreference(state.performancePushPreferencePath);
+  } catch (error) {
+    state.performancePushPreferencePath = previous;
+    throw error;
+  } finally {
+    state.performancePushPreferenceBusy = false;
     renderFileList();
   }
 }
@@ -1897,10 +1940,14 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     const audioAction = file.audio && file.audio.exists
       ? `<button type="button" class="row-icon-button audio-play-button" data-path="${safePath}" data-name="${escapeHtml(file.name)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
       : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
-    const canChooseForPush = type === "weekly" && !document.body.classList.contains("public-readonly");
-    const chosenForPush = canChooseForPush && state.weeklyPushPreferencePath === file.path_str;
+    const canChooseForPush = ["weekly", "performance"].includes(type) && !document.body.classList.contains("public-readonly");
+    const preferencePath = type === "weekly" ? state.weeklyPushPreferencePath : state.performancePushPreferencePath;
+    const preferenceBusy = type === "weekly" ? state.weeklyPushPreferenceBusy : state.performancePushPreferenceBusy;
+    const chosenForPush = canChooseForPush && preferencePath === file.path_str;
+    const pushDataAttribute = type === "weekly" ? "data-weekly-push-path" : "data-performance-push-path";
+    const reportLabel = type === "weekly" ? "周报" : "业绩摘要";
     const pushChoice = canChooseForPush
-      ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" data-weekly-push-path="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : "设为下次推送的周报"}"${state.weeklyPushPreferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
+      ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" ${pushDataAttribute}="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : `设为下次推送的${reportLabel}`}"${preferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
       : "";
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
@@ -1926,6 +1973,12 @@ function bindOutputTableEvents(target) {
     button.addEventListener("click", () => {
       const path = state.weeklyPushPreferencePath === button.dataset.weeklyPushPath ? "" : button.dataset.weeklyPushPath;
       saveWeeklyPushPreference(path).catch((error) => showTaskOperationNotice(`周报推送版本保存失败：${error.message}`));
+    });
+  });
+  target.querySelectorAll("[data-performance-push-path]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const path = state.performancePushPreferencePath === button.dataset.performancePushPath ? "" : button.dataset.performancePushPath;
+      savePerformancePushPreference(path).catch((error) => showTaskOperationNotice(`业绩摘要推送版本保存失败：${error.message}`));
     });
   });
   target.querySelectorAll(".edit-report-button").forEach((button) => {
@@ -2201,11 +2254,16 @@ window.addEventListener("workspace-tab-change", (event) => {
     refreshWeeklyGenerationPreview();
     loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本同步失败", error));
   }
+  if (reportType === "carrier-performance") {
+    loadPerformancePushPreference().catch((error) => console.warn("业绩摘要推送版本同步失败", error));
+  }
 });
 
 window.addEventListener("message", (event) => {
-  if (event.origin !== location.origin || event.data?.type !== "cmhk-weekly-report-preference") return;
-  state.weeklyPushPreferencePath = String(event.data.path || "");
+  if (event.origin !== location.origin) return;
+  if (event.data?.type === "cmhk-weekly-report-preference") state.weeklyPushPreferencePath = String(event.data.path || "");
+  else if (event.data?.type === "cmhk-performance-report-preference") state.performancePushPreferencePath = String(event.data.path || "");
+  else return;
   renderFileList();
 });
 
@@ -7995,6 +8053,7 @@ window.CMHKAuth?.ready.then(() => {
   if (window.CMHKAuth.hasModule("dashboard")) {
     fetchStatus().catch((error) => setLog(`初始化失败：${error.message}`));
     loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本初始化失败", error));
+    loadPerformancePushPreference().catch((error) => console.warn("业绩摘要推送版本初始化失败", error));
     setInterval(() => fetchStatus().catch(console.error), 10000);
   }
 });

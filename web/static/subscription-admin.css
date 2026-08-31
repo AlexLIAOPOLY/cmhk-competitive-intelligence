@@ -86,7 +86,10 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table td select { min-width: 0; }
 .manual-report-sendbar { display: grid; grid-template-columns: minmax(280px, .88fr) minmax(260px, 1.12fr); align-items: end; gap: 12px; padding: 9px 16px 10px; border-bottom: 1px solid rgba(92,158,178,.18); background: rgba(8,34,44,.58); }
 .manual-report-sendbar p { align-self: center; color: #708891; font-size: 9px; line-height: 1.5; }
-.subscriber-surface:has(.weekly-report-picker.is-open) { z-index: 14; overflow: visible; }
+.version-surface:has(.weekly-report-picker.is-open) { z-index: 14; overflow: visible; }
+.report-version-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 14px 16px 16px; }
+.report-version-grid > div { min-width: 0; }
+.report-version-grid > div > p { margin-top: 7px; color: #708891; font-size: 10px; line-height: 1.5; }
 .weekly-report-picker { position: relative; display: grid; min-width: 0; gap: 4px; }
 .weekly-picker-title { color: #94abb3; font-size: 10px; }
 .weekly-picker-trigger { display: flex; width: 100%; height: 34px; min-width: 0; align-items: center; justify-content: space-between; gap: 10px; padding: 0 10px 0 11px; border: 1px solid rgba(94,159,180,.36); border-radius: 8px; color: #dbe8eb; background: rgba(4,23,32,.92); font-size: 11px; text-align: left; }
@@ -248,6 +251,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .news-schedule-form { grid-template-columns: 1fr auto; }
   .news-schedule-form .schedule-meta { grid-column: 1 / -1; }
   .manual-report-sendbar { grid-template-columns: 1fr; align-items: start; }
+  .report-version-grid { grid-template-columns: 1fr; }
   .push-workbench { max-width: none; padding: 0 18px; }
 }
 @media (max-width: 560px) {
@@ -271,6 +275,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .manual-push-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
   .weekly-schedule-heading .report-schedule-countdown { white-space: normal; }
   .manual-report-sendbar { padding: 9px 12px; }
+  .report-version-grid { padding: 12px; }
   .weekly-picker-popover { position: fixed; top: 86px; right: 12px; left: 12px; width: auto; }
   .invite-list-main { padding: 4px 10px 14px; }
   .form-row { grid-template-columns: 1fr; }

@@ -1929,6 +1929,18 @@ def dispatch_scheduled_weekly_report(*, dry_run: bool = False, now: datetime | N
         return {"ok": False, "error": str(exc)[:1200]}
 
 
+def dispatch_scheduled_performance_report(*, dry_run: bool = False, now: datetime | None = None) -> dict[str, object]:
+    """Deliver the selected performance summary when its saved monthly slot is due."""
+    try:
+        from cmhk.services.subscriptions import SubscriptionService
+
+        service = SubscriptionService(runtime_root=ROOT)
+        return service.run_due_performance_report(now=now or datetime.now(HKT), dry_run=dry_run)
+    except Exception as exc:
+        logging.exception("定时业绩摘要推送失败")
+        return {"ok": False, "error": str(exc)[:1200]}
+
+
 def run_due_four_database_source_discovery(
     now: datetime,
     state: dict[str, object],
@@ -1961,6 +1973,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     source_discovery = run_due_four_database_source_discovery(now, state, dry_run=dry_run)
     subscription_dispatch = dispatch_subscription_queue(dry_run=dry_run)
     weekly_report_dispatch = dispatch_scheduled_weekly_report(dry_run=True, now=now)
+    performance_report_dispatch = dispatch_scheduled_performance_report(dry_run=True, now=now)
     watchdog = (
         {"ok": True, "skipped": True, "reason": "dry_run"}
         if dry_run
@@ -1976,6 +1989,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
             "executive_intelligence_watchdog": watchdog,
             "subscription_dispatch": subscription_dispatch,
             "weekly_report_dispatch": weekly_report_dispatch,
+            "performance_report_dispatch": performance_report_dispatch,
             "four_database_source_discovery": source_discovery,
             "pending_run_id": pending.get("crawl_run_id"),
             "pending_stage": pending.get("stage"),
@@ -2020,6 +2034,7 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
         "executive_intelligence_watchdog": watchdog,
         "subscription_dispatch": subscription_dispatch,
         "weekly_report_dispatch": weekly_report_dispatch,
+        "performance_report_dispatch": performance_report_dispatch,
         "four_database_source_discovery": source_discovery,
         "due_rows": due,
         "rows": audit,
@@ -2032,9 +2047,14 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
                 **weekly_report_dispatch,
                 "skipped": "crawler_or_agent_audit_running",
             }
-            logging.info("爬虫或 Agent 审核正在运行，本轮暂缓定时周报")
+            result["performance_report_dispatch"] = {
+                **performance_report_dispatch,
+                "skipped": "crawler_or_agent_audit_running",
+            }
+            logging.info("爬虫或 Agent 审核正在运行，本轮暂缓定时报告推送")
             return result
         result["weekly_report_dispatch"] = dispatch_scheduled_weekly_report(now=now)
+        result["performance_report_dispatch"] = dispatch_scheduled_performance_report(now=now)
         logging.info("本轮无到期行")
         return result
     if crawl_process_running():

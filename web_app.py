@@ -339,6 +339,37 @@ def weekly_report_preference_payload(
     }
 
 
+def performance_report_preference_payload(
+    service: SubscriptionService,
+    *,
+    status: dict | None = None,
+) -> dict[str, object]:
+    preference = service.performance_report_preference()
+    preferred_path = str(preference.get("path") or "")
+    outputs = (status or build_status()).get("outputs") or []
+    report = next(
+        (
+            item
+            for item in outputs
+            if isinstance(item, dict)
+            and item.get("reportType") == "carrier-performance"
+            and item.get("path_str") == preferred_path
+        ),
+        None,
+    )
+    return {
+        **preference,
+        "path": preferred_path if report else "",
+        "available": bool(report),
+        "report": {
+            "name": str(report.get("name") or ""),
+            "path": str(report.get("path_str") or ""),
+            "is_edited": bool(report.get("isEdited")),
+            "mtime_text": str(report.get("mtimeText") or ""),
+        } if report else None,
+    }
+
+
 def update_weekly_report_preference(
     service: SubscriptionService,
     report_path: str,
@@ -356,12 +387,31 @@ def update_weekly_report_preference(
     return weekly_report_preference_payload(service, status=status)
 
 
+def update_performance_report_preference(
+    service: SubscriptionService,
+    report_path: str,
+) -> dict[str, object]:
+    normalized = str(report_path or "").strip()
+    status = build_status()
+    if normalized and not any(
+        isinstance(item, dict)
+        and item.get("reportType") == "carrier-performance"
+        and item.get("path_str") == normalized
+        for item in (status.get("outputs") or [])
+    ):
+        raise ValueError("选中的业绩摘要不在当前报告库中，请刷新后重新选择")
+    service.update_performance_report_preference(normalized)
+    return performance_report_preference_payload(service, status=status)
+
+
 SUBSCRIPTION_OPERATION_ACTIONS = {
     "publish": "subscription.card_send",
     "update": "subscription.settings_update",
     "updateReportSchedule": "subscription.report_schedule_update",
+    "updatePerformanceSchedule": "subscription.performance_schedule_update",
     "updateNewsSchedule": "subscription.news_schedule_update",
     "setWeeklyReportPreference": "subscription.weekly_report_preference_update",
+    "setPerformanceReportPreference": "subscription.performance_report_preference_update",
     "refreshDirectory": "subscription.directory_refresh",
     "addCandidates": "subscription.candidate_add",
     "invite": "subscription.invite_send",
@@ -412,11 +462,26 @@ def subscription_operation_audit_payload(
             "time": str(result.get("time") or payload.get("time") or "")[:20],
             "enabled": payload.get("enabled") is True,
         })
+    elif action == "updatePerformanceSchedule":
+        target = "performance-report-schedule"
+        target_label = "业绩摘要排期"
+        details.update({
+            "days": result.get("days") or payload.get("days"),
+            "time": str(result.get("time") or payload.get("time") or "")[:20],
+            "enabled": payload.get("enabled") is True,
+        })
     elif action == "setWeeklyReportPreference":
         target = str(result.get("path") or "automatic-weekly-report")
         target_label = str((result.get("report") or {}).get("name") or "自动选择最新正式版")[:240]
         details.update({
             "weekly_report_path": str(result.get("path") or "")[:240],
+            "selection": "manual" if result.get("path") else "automatic",
+        })
+    elif action == "setPerformanceReportPreference":
+        target = str(result.get("path") or "automatic-performance-report")
+        target_label = str((result.get("report") or {}).get("name") or "自动选择最新正式版")[:240]
+        details.update({
+            "performance_report_path": str(result.get("path") or "")[:240],
             "selection": "manual" if result.get("path") else "automatic",
         })
     elif action == "refreshDirectory":
@@ -3395,6 +3460,7 @@ def push_latest_subscription_content(
     target_open_id: str = "",
     confirm_bulk: bool = False,
     weekly_report_path: str = "",
+    performance_report_path: str = "",
 ) -> dict:
     """Send each active subscription's latest formal content without a second form."""
     summary = service.list_summary()
@@ -3443,6 +3509,31 @@ def push_latest_subscription_content(
                 preference_writer("")
             weekly_report_path = ""
 
+    explicit_performance_path = bool(performance_report_path)
+    if not performance_report_path:
+        preference_reader = getattr(service, "performance_report_preference", None)
+        if callable(preference_reader):
+            performance_report_path = str((preference_reader() or {}).get("path") or "")
+    selected_performance: dict | None = None
+    if performance_report_path:
+        selected_performance = next(
+            (
+                item
+                for item in (status.get("outputs") or [])
+                if isinstance(item, dict)
+                and item.get("path_str") == performance_report_path
+                and item.get("reportType") == "carrier-performance"
+            ),
+            None,
+        )
+        if not selected_performance:
+            if explicit_performance_path:
+                raise ValueError("选中的业绩摘要不在当前报告库中，请刷新后重新选择")
+            preference_writer = getattr(service, "update_performance_report_preference", None)
+            if callable(preference_writer):
+                preference_writer("")
+            performance_report_path = ""
+
     content: dict[str, dict[str, object]] = {}
     for service_key, report_type in (("weekly", "weekly"), ("performance", "carrier-performance")):
         if service_key not in selected_services:
@@ -3450,6 +3541,8 @@ def push_latest_subscription_content(
         try:
             if service_key == "weekly" and selected_weekly:
                 output = selected_weekly
+            elif service_key == "performance" and selected_performance:
+                output = selected_performance
             else:
                 output = next(
                     (
@@ -3528,6 +3621,8 @@ def push_latest_subscription_content(
         "service_count": len(results),
         "weekly_report_path": str((content.get("weekly") or {}).get("path") or ""),
         "weekly_report_selection": "manual" if selected_weekly else "automatic",
+        "performance_report_path": str((content.get("performance") or {}).get("path") or ""),
+        "performance_report_selection": "manual" if selected_performance else "automatic",
         "recipient_count": sum(int(item.get("recipient_count") or 0) for item in results),
         "verified_count": sum(int(item.get("verified_count") or 0) for item in results),
         "failed_count": sum(int(item.get("failed_count") or 0) for item in results),
@@ -5751,6 +5846,56 @@ def run_news_review_screener_monitor_cycle() -> dict:
     }
 
 
+def build_news_review_sheet_payload() -> dict:
+    """Read the review sheet without letting optional reconciliation hide it."""
+    from cmhk.intelligence.news_review_sheet import (
+        review_sheet_history_snapshot,
+        review_sheet_snapshot,
+    )
+
+    warnings: list[dict[str, str]] = []
+    try:
+        snapshot = review_sheet_snapshot()
+    except Exception as exc:
+        snapshot = review_sheet_history_snapshot(live_error=str(exc))
+        warnings.append({"stage": "live_read", "error": str(exc)[:240]})
+    payload = {
+        "ok": True,
+        **attach_news_review_actors(snapshot),
+        "editorTracking": news_review_editor_tracking_status(),
+    }
+    audit_events: list[dict] = []
+    if snapshot.get("snapshotMode") == "local_history":
+        screener_sync = {
+            "status": "unavailable",
+            "readbackVerified": False,
+            "fullyReconciled": False,
+        }
+    else:
+        try:
+            audit_events = sync_news_review_sheet_audit(snapshot)
+        except Exception as exc:
+            warnings.append({"stage": "audit_sync", "error": str(exc)[:240]})
+
+        try:
+            screener_sync = reconcile_news_review_screener_column(snapshot)
+        except Exception as exc:
+            screener_sync = {
+                "status": "unavailable",
+                "readbackVerified": False,
+                "fullyReconciled": False,
+            }
+            warnings.append({"stage": "screener_reconcile", "error": str(exc)[:240]})
+
+    payload["screenerSync"] = {
+        **screener_sync,
+        "auditEventCount": len(audit_events),
+    }
+    if warnings:
+        payload["warnings"] = warnings
+    return payload
+
+
 def start_news_review_screener_monitor() -> None:
     """Start one daemon that keeps direct Feishu edits attributed without an open page."""
 
@@ -6500,6 +6645,18 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, status=500)
             return
+        if path == "/api/performance-report-preference":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "业绩摘要推送版本仅允许本机管理"}, status=403)
+                return
+            try:
+                json_response(self, {
+                    "ok": True,
+                    "preference": performance_report_preference_payload(subscription_service()),
+                })
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=500)
+            return
         if path == "/api/subscriptions":
             if not is_loopback_client(str(self.client_address[0])):
                 json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
@@ -6584,20 +6741,7 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/news-review-sheet":
             try:
-                from cmhk.intelligence.news_review_sheet import review_sheet_snapshot
-
-                snapshot = review_sheet_snapshot()
-                audit_events = sync_news_review_sheet_audit(snapshot)
-                screener_sync = reconcile_news_review_screener_column(snapshot)
-                json_response(self, {
-                    "ok": True,
-                    **attach_news_review_actors(snapshot),
-                    "editorTracking": news_review_editor_tracking_status(),
-                    "screenerSync": {
-                        **screener_sync,
-                        "auditEventCount": len(audit_events),
-                    },
-                })
+                json_response(self, build_news_review_sheet_payload())
             except Exception as exc:
                 json_response(
                     self,
@@ -7094,6 +7238,12 @@ class AppHandler(BaseHTTPRequestHandler):
                         time_hm=payload.get("time"),
                         enabled=payload.get("enabled") is True,
                     )
+                elif action == "updatePerformanceSchedule":
+                    result = service.update_performance_schedule(
+                        days=payload.get("days"),
+                        time_hm=payload.get("time"),
+                        enabled=payload.get("enabled") is True,
+                    )
                 elif action == "updateNewsSchedule":
                     result = service.update_news_schedule(
                         enabled=payload.get("enabled") is True,
@@ -7102,6 +7252,11 @@ class AppHandler(BaseHTTPRequestHandler):
                     result = update_weekly_report_preference(
                         service,
                         str(payload.get("weeklyReportPath") or ""),
+                    )
+                elif action == "setPerformanceReportPreference":
+                    result = update_performance_report_preference(
+                        service,
+                        str(payload.get("performanceReportPath") or ""),
                     )
                 elif action == "refreshDirectory":
                     result = service.refresh_people_directory()
@@ -7139,6 +7294,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         target_open_id=str(payload.get("targetOpenId") or ""),
                         confirm_bulk=payload.get("confirmBulk") is True,
                         weekly_report_path=str(payload.get("weeklyReportPath") or ""),
+                        performance_report_path=str(payload.get("performanceReportPath") or ""),
                     )
                 elif action == "push":
                     result = service.push(

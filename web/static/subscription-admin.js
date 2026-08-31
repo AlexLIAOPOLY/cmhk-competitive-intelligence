@@ -10,6 +10,7 @@
     },
     openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
     manualWeeklyPath: "", weeklyPickerOpen: false, weeklyPickerQuery: "", weeklyPickerBusy: false,
+    manualPerformancePath: "", performancePickerOpen: false, performancePickerQuery: "", performancePickerBusy: false,
   };
   let noticeTimer = 0;
   let noticeExitTimer = 0;
@@ -238,9 +239,18 @@
     return (state.data?.reports || []).filter((item) => item.report_type === "weekly");
   }
 
+  function performanceReports() {
+    return (state.data?.reports || []).filter((item) => item.report_type === "carrier-performance");
+  }
+
   function selectedWeeklyReport() {
     if (!state.manualWeeklyPath) return null;
     return (state.data?.reports || []).find((item) => item.report_type === "weekly" && item.path === state.manualWeeklyPath) || null;
+  }
+
+  function selectedPerformanceReport() {
+    if (!state.manualPerformancePath) return null;
+    return performanceReports().find((item) => item.path === state.manualPerformancePath) || null;
   }
 
   function weeklySelectionCopy() {
@@ -248,6 +258,17 @@
     return report
       ? `周报将使用${report.is_edited ? "已编辑版本" : "所选正式版本"}“${report.name}”；业绩摘要与新闻仍按原链路选择。`
       : "未指定周报版本；系统会沿用原有链路，自动选择最新正式生成版。";
+  }
+
+  function performanceSelectionCopy() {
+    const report = selectedPerformanceReport();
+    return report
+      ? `业绩摘要将使用${report.is_edited ? "已编辑版本" : "所选正式版本"}“${report.name}”。`
+      : "未指定业绩摘要版本；系统会自动选择最新正式生成版。";
+  }
+
+  function reportSelectionCopy() {
+    return `${weeklySelectionCopy()} ${performanceSelectionCopy()}`;
   }
 
   function weeklyPickerLabel() {
@@ -280,6 +301,36 @@
     </div>`;
   }
 
+  function performancePickerLabel() {
+    const report = selectedPerformanceReport();
+    if (!report) return "自动选择最新正式版";
+    return `${report.is_edited ? "编辑稿" : "正式版"} · ${report.name}`;
+  }
+
+  function performancePickerOptions() {
+    const automaticSelected = state.manualPerformancePath ? "" : " is-selected";
+    const options = [`<button class="weekly-report-option${automaticSelected}" type="button" role="option" aria-selected="${String(!state.manualPerformancePath)}" data-performance-report-option="" data-performance-report-search="自动 最新 正式版"><span class="weekly-report-radio" aria-hidden="true"></span><span><strong>自动选择最新正式版</strong><small>保留现有正式版链路</small></span></button>`];
+    performanceReports().forEach((report) => {
+      const selected = state.manualPerformancePath === report.path;
+      const version = report.is_edited ? `编辑稿${report.edit_revision ? ` r${number(report.edit_revision)}` : ""}` : "正式版";
+      options.push(`<button class="weekly-report-option${selected ? " is-selected" : ""}" type="button" role="option" aria-selected="${String(selected)}" data-performance-report-option="${esc(report.path)}" data-performance-report-search="${esc(`${version} ${report.name} ${report.mtime_text || ""}`)}"><span class="weekly-report-radio" aria-hidden="true"></span><span><strong>${esc(report.name)}</strong><small>${esc(version)} · ${esc(report.mtime_text || "未记录时间")}</small></span></button>`);
+    });
+    return options.join("");
+  }
+
+  function performanceReportPicker() {
+    const reportCount = performanceReports().length;
+    return `<div class="weekly-report-picker${state.performancePickerOpen ? " is-open" : ""}" data-performance-report-picker>
+      <span class="weekly-picker-title">业绩摘要推送版本</span>
+      <button class="weekly-picker-trigger" type="button" data-performance-picker-trigger aria-haspopup="listbox" aria-expanded="${String(state.performancePickerOpen)}"${state.performancePickerBusy ? " disabled" : ""}><span>${esc(performancePickerLabel())}</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg></button>
+      <div class="weekly-picker-popover"${state.performancePickerOpen ? "" : " hidden"}>
+        <label class="weekly-picker-search"><span class="sr-only">筛选业绩摘要版本</span><input type="search" value="${esc(state.performancePickerQuery)}" data-performance-picker-search placeholder="按名称、版本或日期筛选" autocomplete="off"><small>${number(reportCount)} 个版本</small></label>
+        <div class="weekly-picker-options" role="listbox" aria-label="选择下次推送的业绩摘要版本">${performancePickerOptions()}</div>
+        <p class="weekly-picker-empty" data-performance-picker-empty hidden>没有匹配的业绩摘要版本</p>
+      </div>
+    </div>`;
+  }
+
   function countdownText(schedule) {
     if (!schedule?.enabled) return "自动发送已暂停";
     const next = Date.parse(schedule.next_run_at || "");
@@ -296,6 +347,11 @@
       element.textContent = countdownText(schedule);
       element.title = scheduleSummary(schedule);
     });
+    const performanceSchedule = state.data?.performance_schedule;
+    root.querySelectorAll("[data-performance-schedule-countdown]").forEach((element) => {
+      element.textContent = countdownText(performanceSchedule);
+      element.title = scheduleSummary(performanceSchedule);
+    });
   }
 
   function render() {
@@ -304,21 +360,24 @@
     const inviteCount = (data.invite_candidates || []).length;
     const groupInviteCount = (data.group_invitations || []).length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
+    const performanceSchedule = data.performance_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "07:30 / 14:00", timezone_label: "香港时间", dispatch_rule: "爬虫完成审核后推送" };
     root.innerHTML = `<div class="admin">
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status" aria-live="polite">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">
         <div class="upper-grid">
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions">${compactFilter("invite")}<button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="manual-report-sendbar">${weeklyReportPicker()}<p data-weekly-selection-copy>${esc(weeklySelectionCopy())}</p></div><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
-        <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><p class="report-schedule-countdown" data-report-schedule-countdown title="${esc(scheduleSummary(schedule))}">${esc(countdownText(schedule))}</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
+        <section class="surface version-surface"><header class="surface-header"><div><h2>推送版本</h2><p>分别选择周报和业绩摘要的推送版本；不选则自动使用最新正式版</p></div></header><div class="surface-body report-version-grid"><div>${weeklyReportPicker()}<p>${esc(weeklySelectionCopy())}</p></div><div>${performanceReportPicker()}<p>${esc(performanceSelectionCopy())}</p></div></div></section>
+        <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>业绩摘要定时推送</h3><p>按排期推送上方选定的业绩摘要；未选时使用最新正式版</p></div><p class="report-schedule-countdown" data-performance-schedule-countdown title="${esc(scheduleSummary(performanceSchedule))}">${esc(countdownText(performanceSchedule))}</p></div><form id="performanceScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((performanceSchedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(performanceSchedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${performanceSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${performanceSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存业绩摘要排期</button></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><p class="report-schedule-countdown" data-report-schedule-countdown title="${esc(scheduleSummary(schedule))}">${esc(countdownText(schedule))}</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
       </main>
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
     </div>`;
     applySavedFilters();
     if (state.weeklyPickerOpen) applyWeeklyPickerFilter(state.weeklyPickerQuery);
+    if (state.performancePickerOpen) applyPerformancePickerFilter(state.performancePickerQuery);
     updateScheduleCountdown();
     scheduleNoticeDismissal();
   }
@@ -356,6 +415,8 @@
     state.data = payload;
     const serverPath = String(payload.weekly_report_preference?.path || "");
     state.manualWeeklyPath = (payload.reports || []).some((item) => item.report_type === "weekly" && item.path === serverPath) ? serverPath : "";
+    const performanceServerPath = String(payload.performance_report_preference?.path || "");
+    state.manualPerformancePath = (payload.reports || []).some((item) => item.report_type === "carrier-performance" && item.path === performanceServerPath) ? performanceServerPath : "";
     if (!keepNotice) { state.notice = ""; state.noticeKind = ""; }
     render();
   }
@@ -369,6 +430,18 @@
       if (matches) visible += 1;
     });
     const empty = root.querySelector("[data-weekly-picker-empty]");
+    if (empty) empty.hidden = visible > 0;
+  }
+
+  function applyPerformancePickerFilter(query) {
+    const normalized = String(query || "").trim().toLocaleLowerCase();
+    let visible = 0;
+    root.querySelectorAll("[data-performance-report-option]").forEach((option) => {
+      const matches = !normalized || String(option.dataset.performanceReportSearch || "").toLocaleLowerCase().includes(normalized);
+      option.hidden = !matches;
+      if (matches) visible += 1;
+    });
+    const empty = root.querySelector("[data-performance-picker-empty]");
     if (empty) empty.hidden = visible > 0;
   }
 
@@ -398,6 +471,36 @@
       render();
     } finally {
       state.weeklyPickerBusy = false;
+      render();
+    }
+  }
+
+  async function savePerformanceReportPreference(path) {
+    const previous = state.manualPerformancePath;
+    state.performancePickerBusy = true;
+    state.performancePickerOpen = false;
+    state.manualPerformancePath = String(path || "");
+    render();
+    try {
+      const response = await fetch("/api/subscriptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "setPerformanceReportPreference", performanceReportPath: state.manualPerformancePath }),
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      state.manualPerformancePath = String(payload.result?.path || "");
+      state.notice = state.manualPerformancePath ? `已设为下次业绩摘要推送：${selectedPerformanceReport()?.name || "所选版本"}` : "业绩摘要已恢复自动选择最新正式版";
+      state.noticeKind = "success";
+      window.parent.postMessage({ type: "cmhk-performance-report-preference", path: state.manualPerformancePath }, location.origin);
+      await loadData({ keepNotice: true });
+    } catch (error) {
+      state.manualPerformancePath = previous;
+      state.notice = `业绩摘要版本保存失败：${error.message}`;
+      state.noticeKind = "error";
+      render();
+    } finally {
+      state.performancePickerBusy = false;
       render();
     }
   }
@@ -451,6 +554,25 @@
       picker?.querySelector(".weekly-picker-popover")?.setAttribute("hidden", "");
       picker?.querySelector("[data-weekly-picker-trigger]")?.setAttribute("aria-expanded", "false");
     }
+    const performancePickerTrigger = event.target.closest("[data-performance-picker-trigger]");
+    if (performancePickerTrigger) {
+      state.performancePickerOpen = !state.performancePickerOpen;
+      render();
+      if (state.performancePickerOpen) requestAnimationFrame(() => root.querySelector("[data-performance-picker-search]")?.focus());
+      return;
+    }
+    const performanceOption = event.target.closest("[data-performance-report-option]");
+    if (performanceOption) {
+      await savePerformanceReportPreference(performanceOption.dataset.performanceReportOption || "");
+      return;
+    }
+    if (state.performancePickerOpen && !event.target.closest("[data-performance-report-picker]")) {
+      state.performancePickerOpen = false;
+      const picker = root.querySelector("[data-performance-report-picker]");
+      picker?.classList.remove("is-open");
+      picker?.querySelector(".weekly-picker-popover")?.setAttribute("hidden", "");
+      picker?.querySelector("[data-performance-picker-trigger]")?.setAttribute("aria-expanded", "false");
+    }
     const filterTrigger = event.target.closest("[data-filter-trigger]");
     if (filterTrigger) {
       const section = filterTrigger.dataset.filterTrigger;
@@ -490,9 +612,9 @@
       return;
     }
     if (event.target.closest("[data-manual-push-all]")) {
-      const confirmed = await window.CMHKDialog.confirm({ title: "向全部订阅者推送？", message: weeklySelectionCopy(), detail: "消息发送后无法撤回，系统会按每位订阅者设置发送并逐条回读结果。", confirmLabel: "确认全部推送" });
+      const confirmed = await window.CMHKDialog.confirm({ title: "向全部订阅者推送？", message: reportSelectionCopy(), detail: "消息发送后无法撤回，系统会按每位订阅者设置发送并逐条回读结果。", confirmLabel: "确认全部推送" });
       if (!confirmed) return;
-      try { await post({ action: "pushLatest", confirmBulk: true, weeklyReportPath: state.manualWeeklyPath }, "正在向全部有效订阅者推送所选内容并逐条回读…"); }
+      try { await post({ action: "pushLatest", confirmBulk: true, weeklyReportPath: state.manualWeeklyPath, performanceReportPath: state.manualPerformancePath }, "正在向全部有效订阅者推送所选内容并逐条回读…"); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
@@ -501,9 +623,9 @@
       const row = manualPerson.closest("[data-subscriber-row]");
       const targetOpenId = row?.dataset.subscriberRow || "";
       const targetName = row?.querySelector(".table-person-name")?.textContent?.trim() || "当前订阅者";
-      const confirmed = await window.CMHKDialog.confirm({ title: `向 ${targetName} 推送？`, message: weeklySelectionCopy(), detail: `系统会按 ${targetName} 当前订阅设置发送；消息发送后无法撤回，完成后会回读结果。`, confirmLabel: "确认推送" });
+      const confirmed = await window.CMHKDialog.confirm({ title: `向 ${targetName} 推送？`, message: reportSelectionCopy(), detail: `系统会按 ${targetName} 当前订阅设置发送；消息发送后无法撤回，完成后会回读结果。`, confirmLabel: "确认推送" });
       if (!confirmed) return;
-      try { await post({ action: "pushLatest", targetOpenId, weeklyReportPath: state.manualWeeklyPath }, `正在把所选内容推送给 ${targetName} 并回读…`); }
+      try { await post({ action: "pushLatest", targetOpenId, weeklyReportPath: state.manualWeeklyPath, performanceReportPath: state.manualPerformancePath }, `正在把所选内容推送给 ${targetName} 并回读…`); }
       catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
@@ -601,6 +723,17 @@
       } catch (error) { state.notice = `排期保存失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
+    if (event.target.id === "performanceScheduleForm") {
+      event.preventDefault();
+      const values = Object.fromEntries(new FormData(event.target).entries());
+      try {
+        await post({ action: "updatePerformanceSchedule", days: values.days, time: values.time, enabled: values.enabled === "true" }, "正在保存业绩摘要自动排期…");
+        state.notice = `业绩摘要排期已保存：每月 ${values.days} 日 ${values.time}（香港时间）${values.enabled === "true" ? "自动执行" : "，当前暂停"}`;
+        state.noticeKind = "success";
+        render();
+      } catch (error) { state.notice = `业绩摘要排期保存失败：${error.message}`; state.noticeKind = "error"; render(); }
+      return;
+    }
     if (event.target.id === "peopleSearchForm") {
       event.preventDefault();
       const values = Object.fromEntries(new FormData(event.target).entries());
@@ -627,10 +760,16 @@
   });
 
   document.addEventListener("input", (event) => {
-    const search = event.target.closest("[data-weekly-picker-search]");
-    if (!search) return;
-    state.weeklyPickerQuery = search.value;
-    applyWeeklyPickerFilter(search.value);
+    const weeklySearch = event.target.closest("[data-weekly-picker-search]");
+    if (weeklySearch) {
+      state.weeklyPickerQuery = weeklySearch.value;
+      applyWeeklyPickerFilter(weeklySearch.value);
+      return;
+    }
+    const performanceSearch = event.target.closest("[data-performance-picker-search]");
+    if (!performanceSearch) return;
+    state.performancePickerQuery = performanceSearch.value;
+    applyPerformancePickerFilter(performanceSearch.value);
   });
 
   document.addEventListener("keydown", (event) => {
@@ -649,6 +788,12 @@
       root.querySelector("[data-weekly-picker-trigger]")?.focus();
       return;
     }
+    if (event.key === "Escape" && state.performancePickerOpen) {
+      state.performancePickerOpen = false;
+      render();
+      root.querySelector("[data-performance-picker-trigger]")?.focus();
+      return;
+    }
     if (event.key === "Escape" && (state.drawerOpen || state.peopleOpen)) {
       state.drawerOpen = false;
       state.peopleOpen = false;
@@ -657,10 +802,15 @@
   });
 
   window.addEventListener("message", (event) => {
-    if (event.origin !== location.origin || event.data?.type !== "cmhk-weekly-report-preference") return;
+    if (event.origin !== location.origin) return;
     const path = String(event.data.path || "");
-    state.manualWeeklyPath = weeklyReports().some((report) => report.path === path) ? path : "";
-    state.weeklyPickerOpen = false;
+    if (event.data?.type === "cmhk-weekly-report-preference") {
+      state.manualWeeklyPath = weeklyReports().some((report) => report.path === path) ? path : "";
+      state.weeklyPickerOpen = false;
+    } else if (event.data?.type === "cmhk-performance-report-preference") {
+      state.manualPerformancePath = performanceReports().some((report) => report.path === path) ? path : "";
+      state.performancePickerOpen = false;
+    } else return;
     render();
   });
 

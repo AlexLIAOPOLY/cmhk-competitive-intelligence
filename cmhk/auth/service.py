@@ -92,6 +92,8 @@ _API_MODULE_PREFIXES = (
 )
 
 _API_ANY_MODULE_PREFIXES = (
+    ("/api/weekly-report-preference", ("weekly", "subscriptions")),
+    ("/api/performance-report-preference", ("performance", "subscriptions")),
     ("/api/report-editor", ("weekly", "performance")),
 )
 
