@@ -56,7 +56,7 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn("@media (max-width: 560px)", STYLE)
         self.assertIn("grid-template-columns: repeat(2, minmax(0, 1fr))", STYLE)
         self.assertIn('cytoscape-3.34.0.min.js', INDEX)
-        self.assertIn('收到的新闻', SCRIPT)
+        self.assertIn('<h2>新闻列表</h2>', SCRIPT)
         self.assertIn('function renderReceivedNewsTable(items)', SCRIPT)
         self.assertIn('market-daily-table-wrap', STYLE)
         self.assertIn('market-received-table-scroll', SCRIPT)
@@ -93,7 +93,7 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('4000', SCRIPT)
 
     def test_live_endpoint_is_used(self):
-        self.assertIn('/static/intelligence-map.js?v=23', INDEX)
+        self.assertIn('/static/intelligence-map.js?v=24', INDEX)
         self.assertIn('if (panel.hidden) return;', SCRIPT)
         self.assertIn('if (state.payload && !state.rendered) renderAll()', SCRIPT)
         self.assertIn('/static/intelligence-map.css?v=14', INDEX)
