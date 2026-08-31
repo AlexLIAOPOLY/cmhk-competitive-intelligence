@@ -813,6 +813,32 @@ class AgenticNewsSearchTests(unittest.TestCase):
             ["HKT", "SmarTone"],
         )
 
+    def test_deterministic_followup_covers_all_eight_missing_competitors(self):
+        targets = [
+            "HKT",
+            "HKBN",
+            "SmarTone",
+            "3 Hong Kong",
+            "HGC",
+            "i-CABLE",
+            "China Telecom Global (Hong Kong)",
+            "China Unicom Hong Kong",
+        ]
+
+        plans, trace = digest._deterministic_followup_plans(
+            spec={"modules": []},
+            coverage={"missing_fixed_competitors": targets},
+            existing_plans=[],
+            limit=12,
+        )
+
+        self.assertEqual(trace["status"], "fallback")
+        self.assertEqual(trace["query_count"], 8)
+        self.assertEqual(
+            [plan["canonical_competitor"] for plan in plans],
+            targets,
+        )
+
     def test_collect_news_keeps_fixed_search_when_agentic_planner_fails(self):
         spec = {
             "module_count": 1,
@@ -855,6 +881,7 @@ class AgenticNewsSearchTests(unittest.TestCase):
                 side_effect=[
                     ([fixed_item], [], {"query_count": 1, "result_count": 1}),
                     ([], [], {"query_count": 0, "result_count": 0}),
+                    ([], [], {"query_count": 7, "result_count": 0}),
                 ],
             ),
             mock.patch.object(
@@ -875,6 +902,8 @@ class AgenticNewsSearchTests(unittest.TestCase):
         self.assertEqual(trace["fixed_result_count"], 1)
         self.assertEqual(trace["agentic_result_count"], 0)
         self.assertEqual(trace["rounds"][0]["status"], "failed")
+        self.assertEqual(trace["rounds"][1]["status"], "fallback")
+        self.assertGreater(trace["rounds"][1]["query_count"], 0)
 
 
 if __name__ == "__main__":

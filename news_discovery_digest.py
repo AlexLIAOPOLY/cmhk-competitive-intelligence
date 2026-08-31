@@ -1284,6 +1284,94 @@ def _call_agentic_followup_agents(
     }
 
 
+def _deterministic_followup_plans(
+    *,
+    spec: dict[str, Any],
+    coverage: dict[str, Any],
+    existing_plans: list[dict[str, Any]],
+    limit: int,
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Keep missing-competitor recall alive when the expansion planner fails.
+
+    Expansion failures are commonly truncated structured responses. Retrying a
+    per-competitor AI planner can multiply the same failure and delay the scan,
+    while the fixed competitor aliases already provide an auditable fallback.
+    """
+    targets = list(
+        dict.fromkeys(
+            _clean_text(value, 120)
+            for value in coverage.get("missing_fixed_competitors") or []
+            if _clean_text(value, 120)
+        )
+    )[:limit]
+    fixed_competitors = (
+        _agentic_monitoring_context(spec).get("fixed_competitors") or {}
+    )
+    evolving_plans = list(existing_plans)
+    plans: list[dict[str, Any]] = []
+    target_traces: list[dict[str, Any]] = []
+    for target in targets:
+        aliases = list(fixed_competitors.get(target) or [])
+        if not aliases:
+            target_traces.append(
+                {
+                    "target": target,
+                    "status": "failed",
+                    "reason": "fixed_competitor_aliases_missing",
+                    "query_count": 0,
+                }
+            )
+            continue
+        existing_queries = {
+            _normalized_query(plan.get("fallback_query") or plan.get("query"))
+            for plan in evolving_plans
+        }
+        target_plans = _normalize_agentic_plans(
+            {
+                "queries": [
+                    {
+                        "module": "竞争对手",
+                        "query": _deterministic_gap_query(aliases),
+                        "keywords": list(dict.fromkeys(aliases))[:3],
+                        "intent": "竞对经营动态兜底补搜",
+                        "reason": "扩展规划失败，使用正式竞对别名执行确定性补搜",
+                    }
+                ]
+            },
+            phase="followup",
+            existing_queries=existing_queries,
+            limit=1,
+        )
+        for plan in target_plans:
+            plan["canonical_competitor"] = target
+        plans.extend(target_plans)
+        evolving_plans.extend(target_plans)
+        target_traces.append(
+            {
+                "target": target,
+                "status": "fallback" if target_plans else "failed",
+                "query_count": len(target_plans),
+            }
+        )
+    covered_count = sum(trace["status"] == "fallback" for trace in target_traces)
+    status = (
+        "fallback"
+        if covered_count == len(target_traces)
+        else "partial"
+        if covered_count
+        else "failed"
+    )
+    return plans, {
+        "status": status,
+        "reason": "expansion_planner_failed_deterministic_recall",
+        "attempts": 0,
+        "sufficient": False,
+        "assessment": "Agentic扩展规划失败，已按固定竞对别名执行确定性补搜。",
+        "query_count": len(plans),
+        "targets": target_traces,
+    }
+
+
 def _execute_search_plans(
     plans: list[dict[str, Any]],
     *,
@@ -1503,18 +1591,22 @@ def collect_news(start_at: datetime, end_at: datetime) -> tuple[list[dict[str, A
         followup_plans: list[dict[str, Any]] = []
         followup_items: list[dict[str, Any]] = []
         if expansion_trace.get("status") == "failed":
-            followup_trace = {
-                "status": "skipped",
-                "reason": "expansion_planner_failed",
-                "query_count": 0,
-            }
-            followup_errors: list[str] = []
-            followup_stats = {
-                "query_count": 0,
-                "result_count": 0,
-                "zero_result_count": 0,
-                "zero_result_queries": [],
-            }
+            combined = _deduplicate(all_items)
+            followup_coverage = _coverage_digest(combined, errors=errors)
+            missing_count = len(
+                followup_coverage.get("missing_fixed_competitors") or []
+            )
+            followup_plans, followup_trace = _deterministic_followup_plans(
+                spec=spec,
+                coverage=followup_coverage,
+                existing_plans=executed_plans,
+                limit=min(12, max(AGENTIC_FOLLOWUP_LIMIT, missing_count)),
+            )
+            followup_items, followup_errors, followup_stats = _execute_search_plans(
+                followup_plans,
+                start_at=start_at,
+                end_at=end_at,
+            )
         elif expansion_trace.get("sufficient") and not expansion_plans:
             followup_trace = {
                 "status": "skipped",
