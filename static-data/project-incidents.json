@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "cc9f50c252ef8997c7092540",
+      "task_id": "incident:cc9f50c252ef8997c7092540",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-08-31T14:42:34+08:00",
+      "started_at_hkt": "2026-08-31T14:42:34+08:00",
+      "heartbeat_at_hkt": "2026-08-31T14:42:34+08:00",
+      "completed_at_hkt": "2026-08-31T14:43:04+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "86ed3a02dc4ada48c8576a3a",
       "task_id": "incident:86ed3a02dc4ada48c8576a3a",
       "title": "战略新闻常驻监视器",
@@ -14,14 +38,16 @@
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
+      "impact": "已确认：下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。推断：可能导致战略新闻处理延迟或遗漏，影响业务连续性。",
       "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
+        "检查com.liaowang.cmhk-web-app进程是否运行，并查看web_app stderr日志中的错误信息。",
+        "",
+        "若进程未运行，按LaunchAgent流程重启战略新闻监视器，并验证心跳恢复。",
+        "重启后监控心跳更新，确认下一次扫描、群回读和待发状态恢复功能正常执行。"
       ],
       "occurred_at_hkt": "2026-08-31T14:35:34+08:00",
       "started_at_hkt": "2026-08-31T14:37:34+08:00",
-      "heartbeat_at_hkt": "2026-08-31T14:37:34+08:00",
+      "heartbeat_at_hkt": "2026-08-31T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -201,7 +227,7 @@
       ],
       "occurred_at_hkt": "2026-08-31T14:17:48+08:00",
       "started_at_hkt": "2026-08-31T14:18:08+08:00",
-      "heartbeat_at_hkt": "2026-08-31T14:37:34+08:00",
+      "heartbeat_at_hkt": "2026-08-31T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -379,7 +405,7 @@
       ],
       "occurred_at_hkt": "2026-08-31T14:01:09+08:00",
       "started_at_hkt": "2026-08-31T14:01:39+08:00",
-      "heartbeat_at_hkt": "2026-08-31T14:37:34+08:00",
+      "heartbeat_at_hkt": "2026-08-31T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2229,7 +2255,7 @@
       ],
       "occurred_at_hkt": "2026-08-31 03:09:47",
       "started_at_hkt": "2026-08-31T12:05:09+08:00",
-      "heartbeat_at_hkt": "2026-08-31T14:37:34+08:00",
+      "heartbeat_at_hkt": "2026-08-31T14:43:04+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12206,30 +12232,6 @@
       "started_at_hkt": "2026-08-28T17:58:04+08:00",
       "heartbeat_at_hkt": "2026-08-28T18:07:04+08:00",
       "completed_at_hkt": "2026-08-28T18:07:40+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "dc4c2b427c4598b60abd192a",
-      "task_id": "incident:dc4c2b427c4598b60abd192a",
-      "title": "主爬虫数据质量门禁",
-      "kind": "crawl",
-      "kind_label": "主爬虫数据质量门禁",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主爬虫存在失败或未通过质量门禁的数据",
-      "impact": "系统仍可保留旧数据或部分结果，但相关指标可能不是本轮完整更新。",
-      "suggestions": [
-        "查看失败行及来源级错误，区分网站变更、网络失败和字段抽取失败。",
-        "只重试受影响来源；保留旧数据和证据边界，不要把部分成功标成全量成功。"
-      ],
-      "occurred_at_hkt": "2026-08-28 09:17:45",
-      "started_at_hkt": "2026-08-28T18:08:04+08:00",
-      "heartbeat_at_hkt": "2026-08-28T18:09:35+08:00",
-      "completed_at_hkt": "2026-08-28T18:10:10+08:00",
       "handled_at_hkt": ""
     }
   ],
