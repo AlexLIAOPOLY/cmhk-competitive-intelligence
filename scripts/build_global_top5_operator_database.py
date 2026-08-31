@@ -1564,6 +1564,48 @@ SOURCES["reliance_jio_ar_2022"]["evidence"] = {
 
 
 SOURCES.update({
+    "china_broadnet_nrta_2016": {
+        "source_id": "china_broadnet_nrta_2016", "operator_id": "china_broadnet", "year": 2016,
+        "label": "国家广播电视总局 2016年统计公报（广播影视部分）",
+        "url": "https://www.nrta.gov.cn/art/2017/3/22/art_2178_38967.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2016",
+    },
+    "china_broadnet_nrta_2017_comparative": {
+        "source_id": "china_broadnet_nrta_2017_comparative", "operator_id": "china_broadnet", "year": 2017,
+        "label": "国家广播电视总局 2018年行业统计公报（含2017年比较数据）",
+        "url": "https://www.nrta.gov.cn/art/2019/4/23/art_113_42604.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2018",
+    },
+    "china_broadnet_nrta_2018": {
+        "source_id": "china_broadnet_nrta_2018", "operator_id": "china_broadnet", "year": 2018,
+        "label": "国家广播电视总局 2018年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2019/4/23/art_113_42604.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2018",
+    },
+    "china_broadnet_nrta_2019": {
+        "source_id": "china_broadnet_nrta_2019", "operator_id": "china_broadnet", "year": 2019,
+        "label": "国家广播电视总局 2019年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2020/7/8/art_113_52026.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2019",
+    },
+    "china_broadnet_nrta_2020": {
+        "source_id": "china_broadnet_nrta_2020", "operator_id": "china_broadnet", "year": 2020,
+        "label": "国家广播电视总局 2020年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2021/4/19/art_113_55837.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2020",
+    },
+    "china_broadnet_nrta_2021": {
+        "source_id": "china_broadnet_nrta_2021", "operator_id": "china_broadnet", "year": 2021,
+        "label": "国家广播电视总局 2021年全国广播电视行业统计公报",
+        "url": "https://www.nrta.gov.cn/art/2022/4/25/art_113_60195.html",
+        "source_type": "official_regulator_statistical_bulletin", "publisher": "国家广播电视总局",
+        "source_document_id": "china_broadnet_nrta_statistical_bulletin_2021",
+    },
     "china_broadnet_nrta_2022": {
         "source_id": "china_broadnet_nrta_2022", "operator_id": "china_broadnet", "year": 2022,
         "label": "国家广播电视总局 2022年全国广播电视行业统计公报",
@@ -3127,6 +3169,18 @@ CBN_2025_HD = ["china_broadnet_nrta_2025", "china_broadnet_cena_2025", "china_br
 CBN_2025_REVENUE = ["china_broadnet_nrta_2025", "china_broadnet_cww_2025", "china_broadnet_chinacatv_2025"]
 CBN_CABLE_SCOPE = "nationwide cable-TV industry/federated operating system; not China Broadnet consolidated owned customer count"
 CBN_SOURCE_GAP_NOTE = "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+CBN_REGULATOR_GAP_SOURCE_BY_YEAR = {
+    2016: "china_broadnet_nrta_2016",
+    2017: "china_broadnet_nrta_2017_comparative",
+    2018: "china_broadnet_nrta_2018",
+    2019: "china_broadnet_nrta_2019",
+    2020: "china_broadnet_nrta_2020",
+    2021: "china_broadnet_nrta_2021",
+    2022: "china_broadnet_nrta_2022",
+    2023: "china_broadnet_nrta_2023",
+    2024: "china_broadnet_nrta_2024",
+    2025: "china_broadnet_nrta_2025",
+}
 
 add_series("china_broadnet", "mobile_subscribers", {y:None for y in YEARS}, scope="China Broadnet nationwide mobile subscriber base excluding IoT; separately disclosed total not found", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
 add_series("china_broadnet", "5g_network_subscribers", {y:None for y in range(2016, 2022)}, scope="China Broadnet 5G users", source_ids={y:[] for y in range(2016, 2022)}, note="Nationwide commercial mobile service had not launched; not a zero estimate.")
@@ -3152,6 +3206,22 @@ add_series("china_broadnet", "uhd_cable_tv_users", {year:None for year in range(
 add_series("china_broadnet", "cable_network_industry_revenue", {year:None for year in range(2022, 2026)}, unit="RMB_million", scope="nationwide cable-TV network industry revenue; not China Broadnet consolidated corporate revenue", source_ids={2022:CBN_2022_REVENUE, 2023:[], 2024:CBN_2024_CABLE_REVENUE, 2025:CBN_2025_REVENUE}, note="Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence.")
 for metric_key in ["revenue", "ebitda", "earnings_before_tax", "net_profit", "capex", "net_debt", "shareholders_equity"]:
     add_series("china_broadnet", metric_key, {y:None for y in YEARS}, unit="RMB_million", scope=f"China Broadnet consolidated {METRICS[metric_key][0]}", source_ids={y:[] for y in YEARS}, note=CBN_SOURCE_GAP_NOTE)
+
+# Every China Broadnet gap retains the official regulator page actually reviewed
+# for that year. These are candidate/search-evidence links only: nationwide
+# industry totals remain separate from China Broadnet consolidated company facts.
+for _row in ROWS:
+    if _row["operator_id"] != "china_broadnet" or _row["value"] is not None:
+        continue
+    _regulator_source_id = CBN_REGULATOR_GAP_SOURCE_BY_YEAR[_row["year"]]
+    if _regulator_source_id not in _row["candidate_sources"]:
+        _row["candidate_sources"].append(_regulator_source_id)
+    _regulator_note = (
+        " Official NRTA annual industry statistics were reviewed as search evidence; "
+        "industry-wide values are not substituted for China Broadnet company values."
+    )
+    if _regulator_note.strip() not in _row["quality_note"]:
+        _row["quality_note"] = f"{_row['quality_note'].rstrip()} {_regulator_note.strip()}"
 
 # Four international carriers requested in August 2026. Comcast is explicitly
 # excluded. The expansion module keeps source/evidence declarations reviewable

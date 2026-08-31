@@ -803,6 +803,26 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             sources["china_broadnet_pingliang_gov_2024"]["source_document_id"],
         )
 
+    def test_every_china_broadnet_gap_retains_year_specific_regulator_search_evidence(self):
+        source_payload = json.loads((GLOBAL / "sources.json").read_text(encoding="utf-8"))
+        sources = {source["source_id"]: source for source in source_payload["sources"]}
+        gaps = [
+            row for row in self.rows
+            if row["operator_id"] == "china_broadnet" and row["value"] is None
+        ]
+        self.assertTrue(gaps)
+        for row in gaps:
+            candidate_sources = row["candidate_sources"]
+            self.assertTrue(candidate_sources, (row["year"], row["metric_key"]))
+            regulator_sources = [
+                sources[source_id]
+                for source_id in candidate_sources
+                if sources[source_id]["source_type"] == "official_regulator_statistical_bulletin"
+            ]
+            self.assertTrue(regulator_sources, (row["year"], row["metric_key"]))
+            self.assertTrue(all(source["url"].startswith("https://www.nrta.gov.cn/") for source in regulator_sources))
+            self.assertIn("industry-wide values are not substituted", row["quality_note"])
+
     def test_xiaojing_ai_retrieves_china_broadnet_values_and_gaps(self):
         value_chunks = rag_llm._global_operator_exact_metric_chunks(
             "中国广电2024年5G用户和有线电视实际用户",

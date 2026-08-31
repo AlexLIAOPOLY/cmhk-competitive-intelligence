@@ -8909,6 +8909,66 @@
       "source_document_id": "jio_2022_q4"
     },
     {
+      "source_id": "china_broadnet_nrta_2016",
+      "operator_id": "china_broadnet",
+      "year": 2016,
+      "label": "国家广播电视总局 2016年统计公报（广播影视部分）",
+      "url": "https://www.nrta.gov.cn/art/2017/3/22/art_2178_38967.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2016"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2017_comparative",
+      "operator_id": "china_broadnet",
+      "year": 2017,
+      "label": "国家广播电视总局 2018年行业统计公报（含2017年比较数据）",
+      "url": "https://www.nrta.gov.cn/art/2019/4/23/art_113_42604.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2018"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2018",
+      "operator_id": "china_broadnet",
+      "year": 2018,
+      "label": "国家广播电视总局 2018年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2019/4/23/art_113_42604.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2018"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2019",
+      "operator_id": "china_broadnet",
+      "year": 2019,
+      "label": "国家广播电视总局 2019年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2020/7/8/art_113_52026.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2019"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2020",
+      "operator_id": "china_broadnet",
+      "year": 2020,
+      "label": "国家广播电视总局 2020年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2021/4/19/art_113_55837.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2020"
+    },
+    {
+      "source_id": "china_broadnet_nrta_2021",
+      "operator_id": "china_broadnet",
+      "year": 2021,
+      "label": "国家广播电视总局 2021年全国广播电视行业统计公报",
+      "url": "https://www.nrta.gov.cn/art/2022/4/25/art_113_60195.html",
+      "source_type": "official_regulator_statistical_bulletin",
+      "publisher": "国家广播电视总局",
+      "source_document_id": "china_broadnet_nrta_statistical_bulletin_2021"
+    },
+    {
       "source_id": "china_broadnet_nrta_2022",
       "operator_id": "china_broadnet",
       "year": 2022,

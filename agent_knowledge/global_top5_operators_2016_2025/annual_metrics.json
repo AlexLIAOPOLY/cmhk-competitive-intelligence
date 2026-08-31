@@ -6898,8 +6898,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Pre-network years; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "Pre-network years; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -6927,8 +6929,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -6956,8 +6960,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -6985,8 +6991,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7014,8 +7022,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7043,8 +7053,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7072,8 +7084,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7101,8 +7115,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7130,8 +7146,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7159,8 +7177,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7188,8 +7208,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7217,8 +7239,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7246,8 +7270,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7275,8 +7301,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7304,8 +7332,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2016"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7333,8 +7363,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Pre-network years; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "Pre-network years; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7362,8 +7394,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7391,8 +7425,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7420,8 +7456,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7449,8 +7487,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7478,8 +7518,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7507,8 +7549,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7536,8 +7580,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7565,8 +7611,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7594,8 +7642,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7623,8 +7673,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7652,8 +7704,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7681,8 +7735,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7710,8 +7766,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7739,8 +7797,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2017_comparative"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7768,8 +7828,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Pre-network years; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "Pre-network years; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7797,8 +7859,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7826,8 +7890,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7855,8 +7921,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7884,8 +7952,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7913,8 +7983,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7942,8 +8014,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -7971,8 +8045,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8000,8 +8076,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8029,8 +8107,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8058,8 +8138,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8087,8 +8169,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8116,8 +8200,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8145,8 +8231,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8174,8 +8262,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2018"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8203,8 +8293,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Pre-network years; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "Pre-network years; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8232,8 +8324,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8261,8 +8355,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8290,8 +8386,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8319,8 +8417,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8348,8 +8448,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8377,8 +8479,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8406,8 +8510,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8435,8 +8541,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8464,8 +8572,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8493,8 +8603,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8522,8 +8634,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8551,8 +8665,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8580,8 +8696,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8609,8 +8727,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2019"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8638,8 +8758,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Pre-network years; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "Pre-network years; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8667,8 +8789,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8696,8 +8820,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8725,8 +8851,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8754,8 +8882,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8783,8 +8913,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8812,8 +8944,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8841,8 +8975,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8870,8 +9006,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8899,8 +9037,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8928,8 +9068,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8957,8 +9099,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -8986,8 +9130,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9015,8 +9161,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9044,8 +9192,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2020"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9073,8 +9223,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Pre-network years; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "Pre-network years; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9102,8 +9254,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "Nationwide commercial mobile service had not launched; not a zero estimate. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9131,8 +9285,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9160,8 +9316,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9189,8 +9347,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9218,8 +9378,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9247,8 +9409,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9276,8 +9440,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9305,8 +9471,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9334,8 +9502,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9363,8 +9533,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9392,8 +9564,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9421,8 +9595,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9450,8 +9626,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9479,8 +9657,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2021"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9597,8 +9777,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9631,7 +9813,7 @@
         "china_broadnet_lianhe_rating_2022",
         "china_broadnet_lianhe_rating_revenue_2022"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9664,7 +9846,7 @@
         "china_broadnet_jiacreat_filing_2022",
         "china_broadnet_lianhe_rating_2022"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9692,8 +9874,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9721,8 +9905,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9750,8 +9936,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9779,8 +9967,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9813,7 +10003,7 @@
         "china_broadnet_jiacreat_filing_2022",
         "china_broadnet_lianhe_rating_2022"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9841,8 +10031,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9870,8 +10062,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9899,8 +10093,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9928,8 +10124,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9957,8 +10155,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -9986,8 +10186,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10015,8 +10217,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10044,8 +10248,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10078,7 +10284,7 @@
         "china_broadnet_jiacreat_filing_2022",
         "china_broadnet_lianhe_rating_2022"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10106,8 +10312,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "candidate_sources": [
+        "china_broadnet_nrta_2022"
+      ],
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10224,8 +10432,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10253,8 +10463,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10287,7 +10499,7 @@
         "china_broadnet_crta_2023",
         "china_broadnet_shaanxi_ar_2023"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10315,8 +10527,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10344,8 +10558,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10373,8 +10589,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10402,8 +10620,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10436,7 +10656,7 @@
         "china_broadnet_crta_2023",
         "china_broadnet_cctv_2023"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10464,8 +10684,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10493,8 +10715,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10522,8 +10746,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10551,8 +10777,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10580,8 +10808,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10609,8 +10839,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10671,8 +10903,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10700,8 +10934,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2023"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10734,7 +10970,7 @@
         "china_broadnet_crta_2023",
         "china_broadnet_shaanxi_ar_2023"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10767,7 +11003,7 @@
         "china_broadnet_crta_2023",
         "china_broadnet_cctv_2023"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10795,8 +11031,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Only interim or differently scoped shared-network totals were found; no year-end value is substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "Only interim or differently scoped shared-network totals were found; no year-end value is substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10871,8 +11109,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10905,7 +11145,7 @@
         "china_broadnet_crta_2024",
         "china_broadnet_people_2024"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10938,7 +11178,7 @@
         "china_broadnet_crta_2024",
         "china_broadnet_people_2024"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10966,8 +11206,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -10995,8 +11237,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11024,8 +11268,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11053,8 +11299,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11087,7 +11335,7 @@
         "china_broadnet_crta_2024",
         "china_broadnet_jiangsu_bond_2024"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11115,8 +11363,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11144,8 +11394,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11173,8 +11425,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11202,8 +11456,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11231,8 +11487,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11260,8 +11518,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11289,8 +11549,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11318,8 +11580,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11347,8 +11611,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "candidate_sources": [
+        "china_broadnet_nrta_2024"
+      ],
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11381,7 +11647,7 @@
         "china_broadnet_crta_2024",
         "china_broadnet_jiangsu_bond_2024"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11409,8 +11675,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "Only interim or differently scoped shared-network totals were found; no year-end value is substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "Only interim or differently scoped shared-network totals were found; no year-end value is substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11481,8 +11749,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11515,7 +11785,7 @@
         "china_broadnet_cww_2025",
         "china_broadnet_chinacatv_2025"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry revenue, not China Broadnet consolidated company revenue; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11548,7 +11818,7 @@
         "china_broadnet_nbs_2025",
         "china_broadnet_szse_filing_2025"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not a consolidated China Broadnet company customer base; they are retained only as source evidence and never stored as company values. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11576,8 +11846,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11605,8 +11877,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11634,8 +11908,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11663,8 +11939,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11697,7 +11975,7 @@
         "china_broadnet_cena_2025",
         "china_broadnet_zhonghong_2025"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11725,8 +12003,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11754,8 +12034,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11783,8 +12065,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11812,8 +12096,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11841,8 +12127,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11870,8 +12158,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11899,8 +12189,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "No comparable China Broadnet consolidated disclosure was found; industry aggregates and provincial cable-network company figures are intentionally not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11928,8 +12220,10 @@
       "primary_source_id": "",
       "primary_source_url": "",
       "verification_sources": [],
-      "candidate_sources": [],
-      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted."
+      "candidate_sources": [
+        "china_broadnet_nrta_2025"
+      ],
+      "quality_note": "MIIT totals include China Broadnet from February 2024 but do not disclose a company-specific series; the aggregate is not substituted. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11962,7 +12256,7 @@
         "china_broadnet_cww_2025",
         "china_broadnet_cena_2025"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_broadnet",
@@ -11995,7 +12289,7 @@
         "china_broadnet_cena_2025",
         "china_broadnet_zhonghong_2025"
       ],
-      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence."
+      "quality_note": "Scope not comparable: reviewed figures are nationwide cable-industry/federated totals, not consolidated company users; they are retained only as source evidence. Official NRTA annual industry statistics were reviewed as search evidence; industry-wide values are not substituted for China Broadnet company values."
     },
     {
       "operator_id": "china_mobile",
