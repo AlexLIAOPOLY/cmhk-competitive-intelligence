@@ -11,7 +11,7 @@ class CustomConfirmDialogTests(unittest.TestCase):
         index = (STATIC / "index.html").read_text(encoding="utf-8")
         subscription = (STATIC / "subscription-admin.html").read_text(encoding="utf-8")
         self.assertIn('/static/confirm-dialog.css?v=1', index)
-        self.assertLess(index.index('/static/confirm-dialog.js?v=3'), index.index('/static/app.js?v=313'))
+        self.assertLess(index.index('/static/confirm-dialog.js?v=3'), index.index('/static/app.js?v=314'))
         self.assertIn('/static/confirm-dialog.css?v=1', subscription)
         self.assertLess(subscription.index('/static/confirm-dialog.js?v=3'), subscription.index('/static/subscription-admin.js?v=24'))
 

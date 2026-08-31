@@ -3600,7 +3600,8 @@ select {
 .chat-model-button { max-width: min(300px, 42vw); height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 9px; border: 1px solid transparent; border-radius: 10px; background: transparent; color: #3c5871; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .chat-model-button:hover,
 .chat-model-button[aria-expanded="true"] { border-color: #cbddea; background: #f0f6fb; color: var(--blue-dark); }
-.chat-model-button #chatModelButtonLabel { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-model-button #chatModelButtonLabel { min-width: 0; display: inline-flex; align-items: center; gap: 7px; overflow: hidden; }
+.chat-model-button-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .chat-model-button svg { width: 15px; height: 15px; margin-left: auto; fill: none; stroke: currentColor; stroke-width: 1.8; transition: transform 160ms ease; }
 .chat-model-button[aria-expanded="true"] svg { transform: rotate(180deg); }
 .chat-model-menu { position: absolute; right: -72px; bottom: 42px; z-index: 36; width: min(280px, calc(100vw - 32px)); padding: 8px 6px 8px 10px; overflow: hidden; border: 1px solid #d4e0eb; border-radius: 16px; background: #fff; box-shadow: 0 10px 26px rgba(34,67,95,.1); }
@@ -3609,6 +3610,11 @@ select {
 .chat-model-options::-webkit-scrollbar-track { background: transparent; }
 .chat-model-options::-webkit-scrollbar-thumb { border: 3px solid #fff; border-radius: 999px; background: #c7d4e1; }
 .chat-model-option { width: 100%; min-height: 40px; display: flex; align-items: center; margin: 0; padding: 0 9px; border: 0; border-radius: 9px; background: transparent; color: #36536f; text-align: left; cursor: pointer; }
+.chat-model-provider-logo { flex: 0 0 20px; width: 20px; height: 20px; display: inline-grid; place-items: center; margin-right: 8px; overflow: hidden; border: 1px solid rgba(115, 139, 161, .18); border-radius: 6px; background: rgba(255, 255, 255, .92); }
+.chat-model-provider-logo img { width: 16px; height: 16px; display: block; object-fit: contain; }
+.chat-model-provider-logo.is-kimi { background: #101827; }
+.chat-model-button .chat-model-provider-logo { flex-basis: 18px; width: 18px; height: 18px; margin-right: 0; border-radius: 5px; }
+.chat-model-button .chat-model-provider-logo img { width: 14px; height: 14px; }
 .chat-model-option:hover { background: #f3f7fb; }
 .chat-model-option.active { background: #eaf3fa; color: #234966; }
 .chat-model-option strong { flex: 1; min-width: 0; overflow: hidden; font-size: 13px; font-weight: 700; line-height: 1.25; letter-spacing: .01em; text-overflow: ellipsis; white-space: nowrap; }
@@ -13423,6 +13429,18 @@ body.dashboard-page {
   border-color: #6dc5d8;
   background: #3a9bb2;
   color: #fff;
+}
+
+@media (max-width: 430px) {
+  .dashboard-page .chat-model-menu,
+  .chat-model-menu {
+    position: fixed;
+    right: 12px;
+    bottom: 60px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+  }
 }
 
 .dashboard-page #fileEditModal {

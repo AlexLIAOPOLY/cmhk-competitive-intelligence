@@ -454,13 +454,32 @@ function chatModelTags(modelName) {
   return tags;
 }
 
+const CHAT_MODEL_PROVIDERS = [
+  { pattern: /deepseek/i, slug: "deepseek", label: "DeepSeek" },
+  { pattern: /kimi/i, slug: "kimi", label: "Kimi（月之暗面）" },
+  { pattern: /qwen/i, slug: "qwen", label: "通义千问" },
+  { pattern: /minimax/i, slug: "minimax", label: "MiniMax" },
+  { pattern: /(?:chatglm|glm)/i, slug: "chatglm", label: "智谱 AI" },
+];
+
+function chatModelProvider(modelName) {
+  const value = String(modelName || "");
+  return CHAT_MODEL_PROVIDERS.find((provider) => provider.pattern.test(value)) || null;
+}
+
+function chatModelProviderLogoHtml(modelName) {
+  const provider = chatModelProvider(modelName);
+  if (!provider) return "";
+  return `<span class="chat-model-provider-logo is-${provider.slug}" aria-hidden="true"><img src="/static/assets/model-providers/${provider.slug}.svg?v=1" alt="" /></span>`;
+}
+
 function renderChatModelOptions() {
   if (!els.chatModelOptions) return;
   const models = visibleChatModels();
   els.chatModelOptions.innerHTML = models.length ? models.map((model) => {
     const active = model === state.chatModel;
     const tags = chatModelTags(model).map((tag) => `<span class="chat-model-tag" data-tag="${tag}">${tag}</span>`).join("");
-    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><strong>${escapeHtml(model)}</strong><span class="chat-model-tags">${tags}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
+    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" aria-label="${escapeHtml(model)}" data-model="${escapeHtml(model)}">${chatModelProviderLogoHtml(model)}<strong>${escapeHtml(model)}</strong><span class="chat-model-tags">${tags}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
   }).join("") : '<div class="chat-model-empty">没有匹配的语言模型</div>';
 }
 
@@ -469,7 +488,10 @@ function renderChatModelControls() {
     const models = visibleChatModels().length ? visibleChatModels() : [state.chatModel || "未配置模型"];
     els.chatModelSelect.innerHTML = models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
     els.chatModelSelect.value = models.includes(state.chatModel) ? state.chatModel : models[0];
-    if (els.chatModelButtonLabel) els.chatModelButtonLabel.textContent = state.chatModel || models[0];
+    if (els.chatModelButtonLabel) {
+      const selectedModel = state.chatModel || models[0];
+      els.chatModelButtonLabel.innerHTML = `${chatModelProviderLogoHtml(selectedModel)}<span class="chat-model-button-text">${escapeHtml(selectedModel)}</span>`;
+    }
     renderChatModelOptions();
   }
   if (els.composerUploadImageButton) {
