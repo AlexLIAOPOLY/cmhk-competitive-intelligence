@@ -34,27 +34,44 @@ SEARCH_METRIC_TERMS = (
     "财报", "业绩", "营收", "收入", "利润", "用户数", "客户数", "订户",
     "资本开支", "云收入", "云业务",
 )
+DISCLOSURE_SEARCH_GROUPS = {
+    "financial_results": (
+        "earnings", "results", '"financial results"', '"quarterly results"',
+        '"interim results"', '"earnings release"', '"annual report"',
+        "财报", "业绩", "中期业绩", "季度业绩", "年度业绩", "公告",
+    ),
+    "operating_metrics": (
+        "revenue", "profit", "EBITDA", "ARPU", "subscribers", "customers",
+        "capex", "营收", "收入", "利润", "用户数", "客户数", "订户", "资本开支",
+    ),
+    "cloud_metrics": (
+        '"cloud revenue"', '"cloud business"', '"cloud operating income"',
+        '"cloud segment"', "Azure", "AWS", "OCI", "云收入", "云业务", "云计算",
+    ),
+}
 DISCOVERY_LOOKBACK_DAYS = 7
 
 
 def _build_search_plans() -> list[dict[str, Any]]:
-    """Build the actual 01:00 queries; every metric term reaches the provider."""
-    metric_clause = " OR ".join(SEARCH_METRIC_TERMS)
+    """Build entity × disclosure-family queries for the real 01:00 providers."""
     plans: list[dict[str, Any]] = []
     for domain, entity, aliases, _official_urls in NEWS_ENTITY_SOURCES:
         subject = " OR ".join(f'"{alias}"' for alias in aliases[:3])
-        plans.append(
-            {
-                "module": f"四库资料/{domain}",
-                "domain": domain,
-                "entity": entity,
-                "query": f"({subject}) ({metric_clause})",
-                "keywords": list(aliases),
-                "lookback_days": DISCOVERY_LOOKBACK_DAYS,
-                "search_origin": "four_database_0100_agent",
-                "semantic_relevance": True,
-            }
-        )
+        for disclosure_type, terms in DISCLOSURE_SEARCH_GROUPS.items():
+            metric_clause = " OR ".join(terms)
+            plans.append(
+                {
+                    "module": f"四库资料/{domain}",
+                    "domain": domain,
+                    "entity": entity,
+                    "disclosure_type": disclosure_type,
+                    "query": f"({subject}) ({metric_clause})",
+                    "keywords": [*aliases, *terms],
+                    "lookback_days": DISCOVERY_LOOKBACK_DAYS,
+                    "search_origin": "four_database_0100_agent",
+                    "semantic_relevance": True,
+                }
+            )
     return plans
 
 
@@ -121,10 +138,15 @@ def _search_audit(
                 "domain": domain,
                 "domain_label": label,
                 "entity": str(plan.get("entity") or "").strip(),
+                "disclosure_type": str(plan.get("disclosure_type") or "").strip(),
                 "query": query,
                 "lookback_days": int(plan.get("lookback_days") or 0),
                 "result_count": len(results_by_query.get(query, [])),
-                "status": "命中" if results_by_query.get(query) else "无结果",
+                "status": (
+                    "searched_with_results"
+                    if results_by_query.get(query)
+                    else "searched_zero_result"
+                ),
             })
         for item in domain_items:
             item_url = str(item.get("url") or item.get("source_url") or "").strip()
@@ -141,6 +163,7 @@ def _search_audit(
                     if str(plan.get("fallback_query") or plan.get("query") or "").strip()
                     == str(item.get("query") or "").strip()
                 ), ""),
+                "disclosure_type": str(item.get("disclosure_type") or ""),
                 "title": str(item.get("title") or "").strip(),
                 "source": str(item.get("source") or "公开新闻来源").strip(),
                 "published_at": str(item.get("published_at") or "").strip(),
@@ -235,6 +258,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
                         "title": str(item.get("title") or "").strip(),
                         "news_url": news_url,
                         "published_at": str(item.get("published_at") or item.get("source_date") or ""),
+                        "disclosure_type": str(item.get("disclosure_type") or ""),
                         "official_followup_urls": list(official_urls),
                         "disposition": "official_followup_required",
                         "reference_origin": str(item.get("reference_origin") or "0100_search_engine"),
@@ -258,6 +282,10 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             "signals": signals,
         }
         payload["search_audit"] = _search_audit(plans, items, signals)
+        payload["coverage_matrix"] = list(payload["search_audit"].get("queries") or [])
+        payload["coverage_complete"] = (
+            len(payload["coverage_matrix"]) == len(plans) and not errors
+        )
         _write_json(OUTPUT, payload)
         try:
             payload["feishu_detail_log"] = append_rows(discovery_rows(payload, plans=plans, search_items=items))

@@ -12,12 +12,22 @@ class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
     def test_actual_search_queries_cover_all_metric_families_and_aliases(self) -> None:
         plans = discovery._build_search_plans()
 
-        self.assertEqual(len(plans), len(discovery.NEWS_ENTITY_SOURCES))
+        self.assertEqual(
+            len(plans),
+            len(discovery.NEWS_ENTITY_SOURCES) * len(discovery.DISCLOSURE_SEARCH_GROUPS),
+        )
         self.assertTrue(all("fallback_query" not in plan for plan in plans))
         self.assertTrue(all(plan["lookback_days"] == discovery.DISCOVERY_LOOKBACK_DAYS for plan in plans))
-        for plan in plans:
-            for term in discovery.SEARCH_METRIC_TERMS:
-                self.assertIn(term, plan["query"])
+        for entity in {plan["entity"] for plan in plans}:
+            entity_plans = [plan for plan in plans if plan["entity"] == entity]
+            self.assertEqual(
+                {plan["disclosure_type"] for plan in entity_plans},
+                set(discovery.DISCLOSURE_SEARCH_GROUPS),
+            )
+            combined_queries = " ".join(plan["query"] for plan in entity_plans)
+            for terms in discovery.DISCLOSURE_SEARCH_GROUPS.values():
+                for term in terms:
+                    self.assertIn(term, combined_queries)
         hkt = next(plan for plan in plans if plan["entity"] == "HKT")
         self.assertIn('"香港电讯"', hkt["query"])
         self.assertIn('"香港電訊"', hkt["query"])
@@ -40,7 +50,7 @@ class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
 
         self.assertEqual(audit["domains"]["local"]["zero_result_query_count"], 1)
         self.assertEqual(audit["domains"]["international"]["result_count"], 1)
-        self.assertEqual(audit["queries"][1]["status"], "命中")
+        self.assertEqual(audit["queries"][1]["status"], "searched_with_results")
         self.assertEqual(audit["results"][0]["entity"], "AT&T")
         self.assertTrue(audit["results"][0]["handoff"])
         self.assertEqual(audit["results"][0]["disposition"], "已形成线索，交接03:00追官方原文")

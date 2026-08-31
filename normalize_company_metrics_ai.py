@@ -1883,6 +1883,8 @@ def call_deepseek(
         "只有栏目名称、菜单词或没有具体动作的泛泛描述仍应 unavailable。"
         "value 必须短，优先保留数字、单位、比例、金额、用户数、日期、评级或一句战略事实。"
         "basis 用一句话说明依据来自片段中的哪部分。"
+        "注意：输入片段没有出现更新，只能表示当前证据不足，绝不等于外部没有新财报、公告或新闻；"
+        "不得输出‘没有新披露’之类的全网结论。最新性必须由后续覆盖全部主体×指标的联网搜索证明。"
         "只返回 JSON 对象，顶层字段只能是 items 数组，不要 Markdown。"
     )
     prepared_tasks = _prepare_tasks_for_token_budget(tasks, model=model, token_budget=AI_BATCH_TOKEN_BUDGET)
@@ -2031,7 +2033,10 @@ def main() -> int:
         cache["updatedAt"] = time.strftime("%Y-%m-%d %H:%M:%S")
         cache["items"] = existing
         write_cache(AI_CACHE_PATH, cache)
-        print(f"AI指标整理检查完成：当前 {len(existing)} 条均为最新，无新增记录。")
+        print(
+            f"AI指标整理检查完成：当前 {len(existing)} 条没有新的待清洗任务；"
+            "这不代表外网没有新披露，最新性以联网覆盖矩阵为准。"
+        )
         return 0
     print(f"准备清洗 {len(tasks)} 条指标，批大小 {batch_size}。")
     by_id = {task["id"]: task for task in tasks}

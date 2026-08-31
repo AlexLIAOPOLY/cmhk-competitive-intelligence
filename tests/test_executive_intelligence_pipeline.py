@@ -72,12 +72,37 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         with patch.object(
             pipeline,
             "_read_json",
-            return_value={"handoff_for_date": "2026-08-25", "signal_count": 3},
+            return_value={
+                "handoff_for_date": "2026-08-25",
+                "signal_count": 3,
+                "query_count": 1,
+                "coverage_matrix": [{"entity": "HKT", "disclosure_type": "financial_results"}],
+                "coverage_complete": True,
+                "errors": [],
+            },
         ):
             result = pipeline.load_0100_source_discovery_handoff(now=now, dry_run=True)
 
         self.assertTrue(result["available"])
         self.assertEqual(result["signal_count"], 3)
+
+    def test_0100_handoff_rejects_incomplete_search_coverage(self):
+        now = datetime(2026, 8, 25, 3, 0, tzinfo=pipeline.HKT)
+        with patch.object(
+            pipeline,
+            "_read_json",
+            return_value={
+                "handoff_for_date": "2026-08-25",
+                "query_count": 2,
+                "coverage_matrix": [{"entity": "HKT", "disclosure_type": "financial_results"}],
+                "coverage_complete": False,
+                "errors": ["provider timeout"],
+            },
+        ):
+            result = pipeline.load_0100_source_discovery_handoff(now=now, dry_run=True)
+
+        self.assertFalse(result["available"])
+        self.assertEqual(result["reason"], "today_0100_source_discovery_coverage_incomplete")
 
     def test_four_database_sheet_rows_follow_discovered_reports(self):
         row = {"block": "国际运营商", "package": "四库自动更新｜财报经营指标"}
@@ -2205,7 +2230,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("executive_intelligence_pipeline.validate_database", return_value={"rows": 1}),
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch("executive_intelligence_pipeline.load_0100_source_discovery_handoff", return_value={
-                    "ok": True, "available": True,
+                    "ok": True, "available": True, "coverage_complete": True,
                 }),
                 patch("executive_intelligence_pipeline.publish_model_domain_summaries", return_value=model_result),
                 patch("executive_intelligence_pipeline._publish_and_verify_github_pages", return_value={
@@ -2257,7 +2282,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("executive_intelligence_pipeline.validate_database", return_value={"rows": 1}),
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch("executive_intelligence_pipeline.load_0100_source_discovery_handoff", return_value={
-                    "ok": True, "available": True,
+                    "ok": True, "available": True, "coverage_complete": True,
                 }),
                 patch("executive_intelligence_pipeline.publish_model_domain_summaries", return_value=model_result),
                 patch(

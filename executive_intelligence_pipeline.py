@@ -4842,14 +4842,28 @@ def load_0100_source_discovery_handoff(
     today = reference.date().isoformat()
     payload = _read_json(SOURCE_DISCOVERY_PATH, {}) or {}
     handoff_date = str(payload.get("handoff_for_date") or "")
-    available = bool(payload and handoff_date == today)
+    coverage_matrix = payload.get("coverage_matrix") or []
+    coverage_complete = bool(
+        payload.get("coverage_complete")
+        and isinstance(coverage_matrix, list)
+        and len(coverage_matrix) == int(payload.get("query_count") or 0)
+        and not payload.get("errors")
+    )
+    available = bool(payload and handoff_date == today and coverage_complete)
+    if handoff_date != today:
+        reason = "today_0100_source_discovery_missing"
+    elif not coverage_complete:
+        reason = "today_0100_source_discovery_coverage_incomplete"
+    else:
+        reason = ""
     result = {
         **payload,
         "ok": available,
         "available": available,
         "expected_handoff_date": today,
         "audit_path": str(SOURCE_DISCOVERY_PATH),
-        "reason": "" if available else "today_0100_source_discovery_missing",
+        "coverage_complete": coverage_complete,
+        "reason": reason,
     }
     if not dry_run:
         _atomic_write_json(NEWS_DATABASE_SIGNALS_PATH, result)
@@ -5169,7 +5183,13 @@ def run_pipeline(
         model_ok = bool(state.get("model_analysis", {}).get("ok"))
         recrawl_ok = bool(state.get("overview_source_recrawl", {}).get("ok"))
         ui_contract_ok = bool(dry_run or state.get("ui_contract", {}).get("aligned"))
-        source_discovery_ok = bool(dry_run or state.get("news_database_signals", {}).get("available"))
+        source_discovery_ok = bool(
+            dry_run
+            or (
+                state.get("news_database_signals", {}).get("available")
+                and state.get("news_database_signals", {}).get("coverage_complete")
+            )
+        )
         core_ok = not failed and model_ok and recrawl_ok and ui_contract_ok and source_discovery_ok
         if dry_run:
             state["pages_publish"] = {"ok": True, "skipped": True, "reason": "dry_run"}

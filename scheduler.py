@@ -48,8 +48,8 @@ LARK_CLI = resolve_lark_cli()
 PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
 AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "5400")))
-DEFAULT_AGENT_AUDIT_ONLINE_LIMIT = "80"
-AGENT_AUDIT_CONTROL_VERSION = 2
+DEFAULT_AGENT_AUDIT_ONLINE_LIMIT = "0"
+AGENT_AUDIT_CONTROL_VERSION = 3
 REQUIRED_AGENT_NODES = {
     "证据接收",
     "来源分类",
@@ -834,6 +834,15 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
         "trace_events": event_count,
         "search_verification": extra.get("search_verification", {}),
     }
+    search_verification = summary["search_verification"]
+    if not isinstance(search_verification, dict) or not search_verification.get("online_search"):
+        problems.append("最终合并 Agent 未启用联网补充搜索")
+    elif not search_verification.get("online_coverage_complete"):
+        problems.append(
+            "最终合并 Agent 未完成全部主体×指标联网搜索："
+            f"{search_verification.get('online_checked', 0)}/"
+            f"{search_verification.get('online_required', latest.get('tasks', 0))}"
+        )
     return summary, problems
 
 

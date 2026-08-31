@@ -1622,13 +1622,25 @@ def _votes_from_cache(fact: CandidateFact, existing_items: dict[str, dict[str, A
 
 
 def _fact_search_query(fact: CandidateFact) -> str:
-    value_hint = clean_text(fact.value, 60)
-    if fact.status != "ok" or re.search(r"未提取到有效数据|未发现|未披露|无法确认", value_hint):
-        value_hint = ""
     metric_hint = fact.metric
     if re.search(r"净利润|利润|溢利", fact.metric, re.IGNORECASE):
         metric_hint = f"{fact.metric} net income net loss loss attributable"
-    return clean_text(f"{fact.company} {metric_hint} {value_hint} 年报 公告 最新", 180)
+    elif re.search(r"收入|收益", fact.metric, re.IGNORECASE):
+        metric_hint = f"{fact.metric} revenue segment revenue"
+    elif re.search(r"用户|客户|ARPU", fact.metric, re.IGNORECASE):
+        metric_hint = f"{fact.metric} subscribers customers ARPU"
+    elif re.search(r"资本开支", fact.metric, re.IGNORECASE):
+        metric_hint = f"{fact.metric} capital expenditure capex"
+    elif re.search(r"云|Cloud|Azure|AWS|OCI", fact.metric, re.IGNORECASE):
+        metric_hint = f"{fact.metric} cloud segment revenue operating income"
+    # Do not include the currently stored value: doing so biases the search
+    # towards the old report and defeats freshness discovery. Every
+    # company-metric pair receives the same bilingual disclosure terms.
+    return clean_text(
+        f'"{fact.company}" {metric_hint} 2026 latest official quarterly results '
+        "interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+        260,
+    )
 
 
 def _public_web_search(query: str, *, limit: int = 4, timeout: float = 6.0) -> tuple[list[dict[str, str]], str]:
@@ -1735,14 +1747,21 @@ def _votes_from_web_search(fact: CandidateFact, results: list[dict[str, str]]) -
     return votes
 
 
-def _votes_from_source_pages(fact: CandidateFact, *, timeout: float = 8.0) -> list[dict[str, Any]]:
+def _votes_from_source_pages(
+    fact: CandidateFact,
+    *,
+    extra_urls: list[str] | None = None,
+    timeout: float = 8.0,
+) -> list[dict[str, Any]]:
     try:
         import httpx
         from bs4 import BeautifulSoup
     except Exception:
         return []
     urls: list[str] = []
-    for url in fact.sources:
+    # Search-discovered pages are the freshness candidates, so inspect them
+    # before already-known and potentially stale sources.
+    for url in [*(extra_urls or []), *fact.sources]:
         if not str(url).startswith(("http://", "https://")):
             continue
         urls.append(str(url))
@@ -1750,7 +1769,7 @@ def _votes_from_source_pages(fact: CandidateFact, *, timeout: float = 8.0) -> li
             urls.append(str(url).split("/financials", 1)[0].rstrip("/") + "/statistics/")
     votes: list[dict[str, Any]] = []
     seen: set[str] = set()
-    for url in urls[:4]:
+    for url in urls[:8]:
         if url in seen:
             continue
         seen.add(url)
@@ -1762,8 +1781,19 @@ def _votes_from_source_pages(fact: CandidateFact, *, timeout: float = 8.0) -> li
                 follow_redirects=True,
             )
             response.raise_for_status()
-            soup = BeautifulSoup(response.text, "html.parser")
-            text = clean_text(soup.get_text(" ", strip=True), 12000)
+            content_type = str(response.headers.get("content-type") or "").lower()
+            if "pdf" in content_type or url.lower().split("?", 1)[0].endswith(".pdf"):
+                from io import BytesIO
+                from pypdf import PdfReader
+
+                reader = PdfReader(BytesIO(response.content), strict=False)
+                text = clean_text(
+                    " ".join((page.extract_text() or "") for page in reader.pages),
+                    20000,
+                )
+            else:
+                soup = BeautifulSoup(response.text, "html.parser")
+                text = clean_text(soup.get_text(" ", strip=True), 20000)
         except Exception:
             continue
         if _candidate_supported_by_raw_text(fact, text):
@@ -1873,7 +1903,12 @@ def _search_verify_one(
             "duration_ms": round((time.monotonic() - started) * 1000),
             "results": results[:4],
         }
-        votes.extend(_votes_from_source_pages(fact))
+        votes.extend(
+            _votes_from_source_pages(
+                fact,
+                extra_urls=[str(item.get("url") or "") for item in results],
+            )
+        )
         votes.extend(_votes_from_web_search(fact, results))
     for peer in peer_facts:
         if suspicious_profit_segment:
@@ -1946,6 +1981,12 @@ def _search_verify_one(
         fact.metric_supported = True
         fact.reasons = []
         fact.confidence = max(fact.confidence, 0.9)
+        discovered_sources = [
+            str(vote.get("url") or "")
+            for vote in majority
+            if str(vote.get("url") or "").startswith(("http://", "https://"))
+        ]
+        fact.sources = list(dict.fromkeys([*discovered_sources, *fact.sources]))
         decision = "majority_corrected"
     elif has_majority and majority_canonical and majority_canonical != original_canonical:
         # Candidate-basis and official-basis votes may be two renderings of the
@@ -1998,9 +2039,19 @@ def search_verify_facts(state: CurationState) -> dict[str, Any]:
         for item in accepted
         if online_enabled and _is_suspicious_profit_segment_fact(item)
     ]
-    verify_targets_by_id = {item.id: item for item in [*accepted, *rejected_recheck]}
+    # A merger that searches only accepted or conveniently recoverable facts
+    # can still report a false green. Online mode therefore covers every
+    # company-metric candidate.
+    verify_targets_by_id = {
+        item.id: item
+        for item in (candidates if online_enabled else [*accepted, *rejected_recheck])
+    }
     verify_targets = list(verify_targets_by_id.values())
-    online_order = [*rejected_recheck, *suspicious_recheck, *accepted]
+    online_order_by_id = {
+        item.id: item
+        for item in [*rejected_recheck, *suspicious_recheck, *candidates]
+    }
+    online_order = list(online_order_by_id.values())
     if online_enabled:
         online_slice = online_order if online_limit == 0 else online_order[:online_limit]
         online_ids = {item.id for item in online_slice}
@@ -2073,6 +2124,10 @@ def search_verify_facts(state: CurationState) -> dict[str, Any]:
         for vote in item.search_verification.get("votes", [])
         if vote.get("kind") in {"web_search", "source_page"}
     )
+    online_required = len(candidates) if online_enabled else 0
+    online_coverage_complete = bool(
+        not online_enabled or online_checked == online_required
+    )
     summary = {
         "checked": checked,
         "corrected": corrected,
@@ -2082,6 +2137,10 @@ def search_verify_facts(state: CurationState) -> dict[str, Any]:
         "online_search": online_enabled,
         "online_checked": online_checked,
         "online_votes": online_votes,
+        "online_required": online_required,
+        "online_limit": "all" if online_enabled and online_limit == 0 else online_limit,
+        "online_coverage_complete": online_coverage_complete,
+        "online_unsearched": max(0, online_required - online_checked),
     }
     return {
         "candidates": [item.model_dump() for item in verified_candidates],
@@ -2355,6 +2414,11 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
                         "必须先调用 inspect_evidence_gaps 查看候选行，再调用 schedule_targeted_recrawl "
                         "或 publish_without_recrawl 作出唯一决策。补爬只用于抓取失败、证据缺失或关键指标"
                         "缺口；格式问题、主体错误和低质量商业来源不应靠重复补爬解决。"
+                        "发布前的联网搜索必须覆盖每一个主体×指标，并使用 latest official、quarterly results、"
+                        "interim results、earnings release、annual report、财报、中期业绩、季度业绩、公告等"
+                        "中英文关键词。不能把旧候选、HTTP 200、搜索摘要为空或首页没有新链接解释为‘没有新披露’。"
+                        "搜索发现的新官方页面或 PDF 必须继续读取正文；发现更新但正文未成功读取时必须安排补爬，"
+                        "不得调用 publish_without_recrawl 输出假绿结论。"
                         "自然语言说明使用简洁中文段落，不要输出 Markdown 标题或表格，控制在 200 字以内。"
                     )
                 ),
@@ -2580,6 +2644,14 @@ def recrawl_gaps(state: CurationState) -> dict[str, Any]:
 
 
 def publish_results(state: CurationState) -> dict[str, Any]:
+    search_verification = state.get("search_verification", {})
+    if (
+        state.get("search_verify_online")
+        and not search_verification.get("online_coverage_complete")
+    ):
+        raise RuntimeError(
+            "最终合并 Agent 未完成全部主体×指标联网补充搜索，禁止发布假绿结果"
+        )
     candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
     for item in candidates:
         if item.decision != "accepted":

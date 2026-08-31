@@ -11,6 +11,7 @@ from data_curation.workflow import (
     audit_quality,
     build_graph,
     extract_facts,
+    publish_results,
     search_verify_facts,
     supervise_gap_actions,
     run_workflow,
@@ -29,6 +30,22 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    def test_publish_blocks_incomplete_online_coverage(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "未完成全部主体×指标联网补充搜索"):
+            publish_results(
+                {
+                    "search_verify_online": True,
+                    "search_verify_online_limit": 80,
+                    "search_verification": {
+                        "online_search": True,
+                        "online_checked": 80,
+                        "online_required": 256,
+                        "online_coverage_complete": False,
+                    },
+                    "candidates": [],
+                }
+            )
+
     def test_run_workflow_resumes_same_thread_from_checkpoint(self) -> None:
         graph = unittest.mock.Mock()
         graph.get_state.return_value = SimpleNamespace(
@@ -1327,7 +1344,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
                             "row_ref": f"row_{index}",
                             "sources": ["https://www.chinamobileltd.com/report"],
                             "quality_score": 0.94,
-                            "decision": "accepted",
+                            "decision": "rejected" if index == 2 else "accepted",
                         }
                         for index in range(3)
                     ],
@@ -1335,6 +1352,12 @@ class DataCurationWorkflowTests(unittest.TestCase):
             )
         self.assertEqual(len(calls), 3)
         self.assertEqual(result["search_verification"]["online_checked"], 3)
+        self.assertEqual(result["search_verification"]["online_required"], 3)
+        self.assertTrue(result["search_verification"]["online_coverage_complete"])
+        self.assertTrue(all("quarterly results" in query for query in calls))
+        self.assertTrue(all("interim results" in query for query in calls))
+        self.assertTrue(all("earnings release" in query for query in calls))
+        self.assertTrue(all("财报" in query and "公告" in query for query in calls))
 
     def test_search_verifier_online_source_pages_can_recover_rejected_fact(self) -> None:
         with (
