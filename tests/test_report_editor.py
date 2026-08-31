@@ -122,6 +122,7 @@ class ReportEditorUiTests(unittest.TestCase):
         source = (ROOT / "web/static/report-editor-source.js").read_text(encoding="utf-8")
         style = (ROOT / "web/static/report-editor.css").read_text(encoding="utf-8")
         bundle = ROOT / "web/static/vendor/tiptap-report-editor-3.30.5.min.js"
+        bundle_source = bundle.read_text(encoding="utf-8")
 
         self.assertIn('id="reportEditorModal"', index)
         self.assertIn('id="reportEditorRibbon"', index)
@@ -130,6 +131,8 @@ class ReportEditorUiTests(unittest.TestCase):
         self.assertIn("EditorTable", source)
         self.assertIn("replaceAll", source)
         self.assertIn("cmhk-report-editor-draft", source)
+        self.assertEqual(source.count('data-custom-select="native"'), 4)
+        self.assertEqual(bundle_source.count('data-custom-select="native"'), 4)
         self.assertNotIn("underline: false", source)
         self.assertIn("preferredZoom", source)
         self.assertIn('id="reportEditorZoom" type="range" min="35"', index)

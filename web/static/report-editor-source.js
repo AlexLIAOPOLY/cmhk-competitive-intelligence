@@ -145,9 +145,9 @@ function ribbonMarkup() {
   return `<div class="report-editor-ribbon-row">
     <div class="report-editor-group compact" aria-label="撤销与恢复">${button("undo", "撤销", icon("undo"), "撤销 ⌘Z")}${button("redo", "恢复", icon("redo"), "恢复 ⇧⌘Z")}</div>
     <div class="report-editor-group font-group" aria-label="字体">
-      <label><span class="sr-only">段落样式</span><select data-editor-select="block" title="段落样式"><option value="paragraph">正文</option><option value="heading-1">标题 1</option><option value="heading-2">标题 2</option><option value="heading-3">标题 3</option><option value="heading-4">标题 4</option></select></label>
-      <label><span class="sr-only">字体</span><select data-editor-select="font" title="字体"><option value="">沿用原字体</option><option value="Arial">Arial</option><option value="Calibri">Calibri</option><option value="Microsoft YaHei">微软雅黑</option><option value="SimSun">宋体</option><option value="SimHei">黑体</option><option value="PingFang SC">苹方</option></select></label>
-      <label><span class="sr-only">字号</span><select data-editor-select="size" title="字号"><option value="">字号</option>${[9,10,10.5,11,12,14,16,18,22,26,32,36,48].map((size) => `<option value="${size}pt">${size}</option>`).join("")}</select></label>
+      <label><span class="sr-only">段落样式</span><select data-editor-select="block" data-custom-select="native" title="段落样式"><option value="paragraph">正文</option><option value="heading-1">标题 1</option><option value="heading-2">标题 2</option><option value="heading-3">标题 3</option><option value="heading-4">标题 4</option></select></label>
+      <label><span class="sr-only">字体</span><select data-editor-select="font" data-custom-select="native" title="字体"><option value="">沿用原字体</option><option value="Arial">Arial</option><option value="Calibri">Calibri</option><option value="Microsoft YaHei">微软雅黑</option><option value="SimSun">宋体</option><option value="SimHei">黑体</option><option value="PingFang SC">苹方</option></select></label>
+      <label><span class="sr-only">字号</span><select data-editor-select="size" data-custom-select="native" title="字号"><option value="">字号</option>${[9,10,10.5,11,12,14,16,18,22,26,32,36,48].map((size) => `<option value="${size}pt">${size}</option>`).join("")}</select></label>
       ${button("bold", "加粗", icon("bold"))}${button("italic", "斜体", icon("italic"))}${button("underline", "下划线", icon("underline"))}${button("strike", "删除线", icon("strike"))}
       ${button("subscript", "下标", "X<sub>2</sub>")}${button("superscript", "上标", "X<sup>2</sup>")}
       <label class="report-editor-color" title="字体颜色"><input type="color" value="#111111" data-editor-color="text" aria-label="字体颜色"><span>A</span></label>
@@ -156,7 +156,7 @@ function ribbonMarkup() {
     <div class="report-editor-group paragraph-group" aria-label="段落">
       ${button("align-left", "左对齐", icon("alignLeft"))}${button("align-center", "居中", icon("alignCenter"))}${button("align-right", "右对齐", icon("alignRight"))}${button("align-justify", "两端", icon("justify"))}
       ${button("bullet", "项目", icon("bullet"))}${button("ordered", "编号", icon("ordered"))}${button("outdent", "减少缩进", icon("outdent"))}${button("indent", "增加缩进", icon("indent"))}
-      <label><span class="sr-only">行距</span><select data-editor-select="line-height" title="行距"><option value="">行距</option><option value="1">1.0</option><option value="1.15">1.15</option><option value="1.5">1.5</option><option value="2">2.0</option></select></label>
+      <label><span class="sr-only">行距</span><select data-editor-select="line-height" data-custom-select="native" title="行距"><option value="">行距</option><option value="1">1.0</option><option value="1.15">1.15</option><option value="1.5">1.5</option><option value="2">2.0</option></select></label>
     </div>
     <div class="report-editor-group insert-group" aria-label="插入">
       ${button("link", "链接", icon("link"))}${button("image", "图片", icon("image"))}${button("table", "表格", icon("table"))}${button("page-break", "分页", icon("page"))}${button("horizontal-rule", "分隔线", icon("rule"))}${button("clear", "清除格式", icon("clear"))}
