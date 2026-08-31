@@ -178,6 +178,8 @@ class AuthService:
         self._custom_attr_cache: tuple[list[dict[str, Any]], float] = ([], 0.0)
         self._directory_search_cache: tuple[list[dict[str, str]], float] = ([], 0.0)
         self._directory_refresh_in_progress = False
+        self._profile_refresh_in_progress = False
+        self._profile_refresh_completed_at = ""
         certificate_file = os.environ.get("SSL_CERT_FILE") or "/etc/ssl/cert.pem"
         ssl_context = ssl.create_default_context(cafile=certificate_file if Path(certificate_file).is_file() else None)
         self._url_opener = urllib.request.build_opener(
@@ -806,6 +808,29 @@ class AuthService:
                 target["directory_profile_synced_at"] = _now_iso()
                 self._write(self.users_path, users)
 
+    def _schedule_missing_feishu_profile_refresh(self) -> None:
+        """Refresh Feishu profiles without holding the organization page response open."""
+        with self.lock:
+            if self._profile_refresh_in_progress:
+                return
+            self._profile_refresh_in_progress = True
+
+        def refresh() -> None:
+            try:
+                self._refresh_missing_feishu_profiles()
+            except Exception as exc:
+                logging.warning("飞书成员资料后台刷新失败，继续使用最近本地资料：%s", exc)
+            finally:
+                with self.lock:
+                    self._profile_refresh_in_progress = False
+                    self._profile_refresh_completed_at = _now_iso()
+
+        threading.Thread(
+            target=refresh,
+            name="feishu-profile-refresh",
+            daemon=True,
+        ).start()
+
     def _directory_users_from_openapi(self) -> list[dict[str, str]]:
         cached, expires_at = self._directory_search_cache
         if cached and expires_at > time.time():
@@ -1159,7 +1184,10 @@ class AuthService:
             if not admin["permissions"]["manageOrganization"]:
                 self._send_json(handler, 403, {"ok": False, "message": "当前账号无权管理组织"})
                 return True
-            self._refresh_missing_feishu_profiles()
+            query = parse_qs(parsed.query)
+            refresh_profiles = str((query.get("profile_refresh") or ["background"])[0]).strip().lower() != "skip"
+            if refresh_profiles:
+                self._schedule_missing_feishu_profile_refresh()
             users = []
             for item in self._users():
                 public = self._public_user(item) or {}
@@ -1167,7 +1195,18 @@ class AuthService:
                 public["modules"] = public.get("permissions", {}).get("modules", {})
                 users.append(public)
             departments = sorted({str(item.get("department") or "") for item in users if item.get("department")})
-            self._send_json(handler, 200, {"ok": True, "users": users, "departments": departments, "roles": ROLE_LABELS, "modules": MODULE_LABELS, "roleModules": self._role_modules()})
+            self._send_json(handler, 200, {
+                "ok": True,
+                "users": users,
+                "departments": departments,
+                "roles": ROLE_LABELS,
+                "modules": MODULE_LABELS,
+                "roleModules": self._role_modules(),
+                "profileRefresh": {
+                    "running": self._profile_refresh_in_progress,
+                    "completedAt": self._profile_refresh_completed_at,
+                },
+            })
             return True
         if path == "/api/auth/admin/audit" and method == "GET":
             admin = self.current_user(handler)

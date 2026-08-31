@@ -10,6 +10,7 @@
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
     auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null, requestId: 0, controller: null },
+    profileRefreshTimer: null,
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const escapeRegExp = (value) => String(value ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -302,6 +303,32 @@
     hosts.forEach((host) => { host.innerHTML = `<div class="organization-error" role="alert"><strong>组织信息读取失败</strong><p>${esc(message)}</p><button type="button" data-refresh>重新读取</button></div>`; });
   }
 
+  function applyUsersPayload(payload) {
+    const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
+    const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
+    state.users = hasEnterpriseMembers ? loadedUsers.filter((user) => !user.developmentAccount) : loadedUsers;
+    state.departments = [...new Set(state.users.map((user) => user.department).filter(Boolean))].sort();
+    state.roles = payload.roles || {};
+    state.modules = payload.modules || {};
+    state.roleModules = payload.roleModules || {};
+  }
+
+  function scheduleProfileRefreshReadback(payload) {
+    window.clearTimeout(state.profileRefreshTimer);
+    state.profileRefreshTimer = null;
+    if (payload?.profileRefresh?.running !== true) return;
+    state.profileRefreshTimer = window.setTimeout(async () => {
+      try {
+        const refreshed = await request("/api/auth/admin/users?profile_refresh=skip");
+        applyUsersPayload(refreshed);
+        if (state.loaded) render();
+        scheduleProfileRefreshReadback(refreshed);
+      } catch (_) {
+        state.profileRefreshTimer = window.setTimeout(() => scheduleProfileRefreshReadback(payload), 2500);
+      }
+    }, 900);
+  }
+
   async function load({ force = false, syncFeishu = false } = {}) {
     if (state.loading || (state.loaded && !force)) return;
     state.loading = true;
@@ -316,16 +343,14 @@
         }
         catch (_) { state.auditSyncWarning = "飞书同步暂缓"; }
       }
-      const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=all"), request("/api/project-incidents?limit=500")]);
-      const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
-      const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
-      state.users = hasEnterpriseMembers ? loadedUsers.filter((user) => !user.developmentAccount) : loadedUsers;
-      state.departments = [...new Set(state.users.map((user) => user.department).filter(Boolean))].sort();
-      state.roles = payload.roles || {};
-      state.modules = payload.modules || {};
-      state.roleModules = payload.roleModules || {};
-      state.audit = Array.isArray(auditPayload.events) ? auditPayload.events : [];
-      state.incidents = Array.isArray(incidentsPayload.incidents) ? incidentsPayload.incidents : [];
+      const payload = await request("/api/auth/admin/users");
+      applyUsersPayload(payload);
+      scheduleProfileRefreshReadback(payload);
+      if (state.view === "footprint") {
+        const [auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/audit?limit=all"), request("/api/project-incidents?limit=500")]);
+        state.audit = Array.isArray(auditPayload.events) ? auditPayload.events : [];
+        state.incidents = Array.isArray(incidentsPayload.incidents) ? incidentsPayload.incidents : [];
+      }
       state.loaded = true;
       render();
     } catch (error) { renderError(error.message); }

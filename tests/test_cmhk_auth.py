@@ -3,6 +3,7 @@ import json
 import os
 import sqlite3
 import tempfile
+import threading
 import time
 import unittest
 from email.message import Message
@@ -502,6 +503,38 @@ class AuthServiceTest(unittest.TestCase):
             self.service._refresh_missing_feishu_profiles()
         refreshed = next(item for item in self.service._users() if item["id"] == "fs-title-gap")
         self.assertEqual(refreshed["title"], "经理")
+
+    def test_admin_users_returns_cached_profiles_while_feishu_refresh_runs(self):
+        _, session = self.dev_login()
+        release_refresh = threading.Event()
+        refresh_started = threading.Event()
+
+        def delayed_refresh():
+            refresh_started.set()
+            release_refresh.wait(timeout=2)
+
+        with patch.object(self.service, "_refresh_missing_feishu_profiles", side_effect=delayed_refresh):
+            handler = FakeHandler(cookie=session, origin="")
+            started = time.monotonic()
+            self.service.handle(handler, "GET", urlparse("/api/auth/admin/users"))
+            elapsed = time.monotonic() - started
+            self.assertTrue(refresh_started.wait(timeout=1))
+            self.assertLess(elapsed, 0.2)
+            self.assertEqual(handler.status, 200)
+            self.assertTrue(handler.payload()["profileRefresh"]["running"])
+
+            skip = FakeHandler(cookie=session, origin="")
+            self.service.handle(skip, "GET", urlparse("/api/auth/admin/users?profile_refresh=skip"))
+            self.assertEqual(skip.status, 200)
+            self.assertTrue(skip.payload()["profileRefresh"]["running"])
+            release_refresh.set()
+
+        for _ in range(50):
+            if not self.service._profile_refresh_in_progress:
+                break
+            time.sleep(0.01)
+        self.assertFalse(self.service._profile_refresh_in_progress)
+        self.assertTrue(self.service._profile_refresh_completed_at)
 
     def test_admin_can_delete_member_but_not_current_account(self):
         _, session = self.dev_login()
