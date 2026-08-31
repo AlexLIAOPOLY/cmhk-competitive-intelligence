@@ -71,6 +71,10 @@ const state = {
   hasRunningTasks: false,
   reportLibraryBaselineReady: false,
   weeklyPreviewController: null,
+  weeklyPushPreferencePath: "",
+  weeklyPushPreferenceBusy: false,
+  performancePushPreferencePath: "",
+  performancePushPreferenceBusy: false,
 };
 
 const els = {
@@ -454,13 +458,32 @@ function chatModelTags(modelName) {
   return tags;
 }
 
+const CHAT_MODEL_PROVIDERS = [
+  { pattern: /deepseek/i, slug: "deepseek", label: "DeepSeek" },
+  { pattern: /kimi/i, slug: "kimi", label: "Kimi（月之暗面）" },
+  { pattern: /qwen/i, slug: "qwen", label: "通义千问" },
+  { pattern: /minimax/i, slug: "minimax", label: "MiniMax" },
+  { pattern: /(?:chatglm|glm)/i, slug: "chatglm", label: "智谱 AI" },
+];
+
+function chatModelProvider(modelName) {
+  const value = String(modelName || "");
+  return CHAT_MODEL_PROVIDERS.find((provider) => provider.pattern.test(value)) || null;
+}
+
+function chatModelProviderLogoHtml(modelName) {
+  const provider = chatModelProvider(modelName);
+  if (!provider) return "";
+  return `<span class="chat-model-provider-logo is-${provider.slug}" aria-hidden="true"><img src="./static/assets/model-providers/${provider.slug}.svg?v=2" alt="" /></span>`;
+}
+
 function renderChatModelOptions() {
   if (!els.chatModelOptions) return;
   const models = visibleChatModels();
   els.chatModelOptions.innerHTML = models.length ? models.map((model) => {
     const active = model === state.chatModel;
     const tags = chatModelTags(model).map((tag) => `<span class="chat-model-tag" data-tag="${tag}">${tag}</span>`).join("");
-    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" data-model="${escapeHtml(model)}"><strong>${escapeHtml(model)}</strong><span class="chat-model-tags">${tags}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
+    return `<button class="chat-model-option${active ? " active" : ""}" type="button" role="option" aria-selected="${active}" aria-label="${escapeHtml(model)}" data-model="${escapeHtml(model)}">${chatModelProviderLogoHtml(model)}<strong>${escapeHtml(model)}</strong><span class="chat-model-tags">${tags}</span><span class="chat-model-check">${active ? "✓" : ""}</span></button>`;
   }).join("") : '<div class="chat-model-empty">没有匹配的语言模型</div>';
 }
 
@@ -469,7 +492,10 @@ function renderChatModelControls() {
     const models = visibleChatModels().length ? visibleChatModels() : [state.chatModel || "未配置模型"];
     els.chatModelSelect.innerHTML = models.map((model) => `<option value="${escapeHtml(model)}">${escapeHtml(model)}</option>`).join("");
     els.chatModelSelect.value = models.includes(state.chatModel) ? state.chatModel : models[0];
-    if (els.chatModelButtonLabel) els.chatModelButtonLabel.textContent = state.chatModel || models[0];
+    if (els.chatModelButtonLabel) {
+      const selectedModel = state.chatModel || models[0];
+      els.chatModelButtonLabel.innerHTML = `${chatModelProviderLogoHtml(selectedModel)}<span class="chat-model-button-text">${escapeHtml(selectedModel)}</span>`;
+    }
     renderChatModelOptions();
   }
   if (els.composerUploadImageButton) {
@@ -1803,6 +1829,88 @@ function renderInsights(status) {
   });
 }
 
+function broadcastWeeklyPushPreference(path) {
+  const frame = document.querySelector('[data-workspace-panel="subscriptions"] iframe');
+  frame?.contentWindow?.postMessage({ type: "cmhk-weekly-report-preference", path: String(path || "") }, location.origin);
+}
+
+function broadcastPerformancePushPreference(path) {
+  const frame = document.querySelector('[data-workspace-panel="subscriptions"] iframe');
+  frame?.contentWindow?.postMessage({ type: "cmhk-performance-report-preference", path: String(path || "") }, location.origin);
+}
+
+async function loadWeeklyPushPreference() {
+  if (document.body.classList.contains("public-readonly")) return;
+  const response = await fetch("/api/weekly-report-preference", { cache: "no-store" });
+  const payload = await response.json();
+  if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+  state.weeklyPushPreferencePath = String(payload.preference?.path || "");
+  renderFileList();
+}
+
+async function loadPerformancePushPreference() {
+  if (document.body.classList.contains("public-readonly")) return;
+  const response = await fetch("/api/performance-report-preference", { cache: "no-store" });
+  const payload = await response.json();
+  if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+  state.performancePushPreferencePath = String(payload.preference?.path || "");
+  renderFileList();
+}
+
+async function saveWeeklyPushPreference(path) {
+  if (state.weeklyPushPreferenceBusy) return;
+  const previous = state.weeklyPushPreferencePath;
+  state.weeklyPushPreferenceBusy = true;
+  state.weeklyPushPreferencePath = String(path || "");
+  renderFileList();
+  try {
+    const response = await fetch("/api/subscriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "setWeeklyReportPreference", weeklyReportPath: state.weeklyPushPreferencePath }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    state.weeklyPushPreferencePath = String(payload.result?.path || "");
+    const report = state.outputs.find((item) => item.path_str === state.weeklyPushPreferencePath);
+    showTaskOperationNotice(report ? `下次推送将使用：${report.name}` : "下次推送已恢复自动选择最新正式版");
+    broadcastWeeklyPushPreference(state.weeklyPushPreferencePath);
+  } catch (error) {
+    state.weeklyPushPreferencePath = previous;
+    throw error;
+  } finally {
+    state.weeklyPushPreferenceBusy = false;
+    renderFileList();
+  }
+}
+
+async function savePerformancePushPreference(path) {
+  if (state.performancePushPreferenceBusy) return;
+  const previous = state.performancePushPreferencePath;
+  state.performancePushPreferenceBusy = true;
+  state.performancePushPreferencePath = String(path || "");
+  renderFileList();
+  try {
+    const response = await fetch("/api/subscriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "setPerformanceReportPreference", performanceReportPath: state.performancePushPreferencePath }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    state.performancePushPreferencePath = String(payload.result?.path || "");
+    const report = state.outputs.find((item) => item.path_str === state.performancePushPreferencePath);
+    showTaskOperationNotice(report ? `下次业绩摘要推送将使用：${report.name}` : "业绩摘要已恢复自动选择最新正式版");
+    broadcastPerformancePushPreference(state.performancePushPreferencePath);
+  } catch (error) {
+    state.performancePushPreferencePath = previous;
+    throw error;
+  } finally {
+    state.performancePushPreferenceBusy = false;
+    renderFileList();
+  }
+}
+
 function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
   if (!target) return;
   const selectColumn = state.multiSelect ? "<span></span>" : "";
@@ -1832,10 +1940,19 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     const audioAction = file.audio && file.audio.exists
       ? `<button type="button" class="row-icon-button audio-play-button" data-path="${safePath}" data-name="${escapeHtml(file.name)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
       : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
+    const canChooseForPush = ["weekly", "performance"].includes(type) && !document.body.classList.contains("public-readonly");
+    const preferencePath = type === "weekly" ? state.weeklyPushPreferencePath : state.performancePushPreferencePath;
+    const preferenceBusy = type === "weekly" ? state.weeklyPushPreferenceBusy : state.performancePushPreferenceBusy;
+    const chosenForPush = canChooseForPush && preferencePath === file.path_str;
+    const pushDataAttribute = type === "weekly" ? "data-weekly-push-path" : "data-performance-push-path";
+    const reportLabel = type === "weekly" ? "周报" : "业绩摘要";
+    const pushChoice = canChooseForPush
+      ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" ${pushDataAttribute}="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : `设为下次推送的${reportLabel}`}"${preferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
+      : "";
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
+        <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
@@ -1852,6 +1969,18 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
 
 function bindOutputTableEvents(target) {
   if (!target) return;
+  target.querySelectorAll("[data-weekly-push-path]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const path = state.weeklyPushPreferencePath === button.dataset.weeklyPushPath ? "" : button.dataset.weeklyPushPath;
+      saveWeeklyPushPreference(path).catch((error) => showTaskOperationNotice(`周报推送版本保存失败：${error.message}`));
+    });
+  });
+  target.querySelectorAll("[data-performance-push-path]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const path = state.performancePushPreferencePath === button.dataset.performancePushPath ? "" : button.dataset.performancePushPath;
+      savePerformancePushPreference(path).catch((error) => showTaskOperationNotice(`业绩摘要推送版本保存失败：${error.message}`));
+    });
+  });
   target.querySelectorAll(".edit-report-button").forEach((button) => {
     button.addEventListener("click", () => window.CMHKReportEditor?.open(button.dataset.path));
   });
@@ -2121,7 +2250,21 @@ window.addEventListener("workspace-tab-change", (event) => {
   if (reportType === "weekly" || reportType === "performance") {
     markReportCategoryViewed(reportType);
   }
-  if (reportType === "weekly") refreshWeeklyGenerationPreview();
+  if (reportType === "weekly") {
+    refreshWeeklyGenerationPreview();
+    loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本同步失败", error));
+  }
+  if (reportType === "carrier-performance") {
+    loadPerformancePushPreference().catch((error) => console.warn("业绩摘要推送版本同步失败", error));
+  }
+});
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== location.origin) return;
+  if (event.data?.type === "cmhk-weekly-report-preference") state.weeklyPushPreferencePath = String(event.data.path || "");
+  else if (event.data?.type === "cmhk-performance-report-preference") state.performancePushPreferencePath = String(event.data.path || "");
+  else return;
+  renderFileList();
 });
 
 window.addEventListener("cmhk-report-saved", (event) => {
@@ -5357,10 +5500,35 @@ function addMessage(role, content, markdown = false) {
   if (emptyState) emptyState.remove();
   const node = document.createElement("div");
   node.className = `message ${role}`;
-  const avatar = document.createElement("span");
+  const avatar = document.createElement(role === "user" ? "button" : "span");
   avatar.className = "avatar";
   if (role === "user") {
-    avatar.textContent = "您";
+    avatar.type = "button";
+    avatar.classList.add("chat-user-avatar-button");
+    avatar.setAttribute("aria-haspopup", "dialog");
+    const renderUserAvatar = (user) => {
+      const name = String(user?.name || user?.account || "当前用户");
+      avatar.replaceChildren();
+      avatar.setAttribute("aria-label", `查看 ${name} 的详情`);
+      avatar.textContent = name.trim().slice(0, 1) || "您";
+      try {
+        const rawAvatar = String(user?.avatarUrl || "").trim();
+        if (!rawAvatar) throw new Error("missing avatar URL");
+        const avatarUrl = new URL(rawAvatar, location.origin);
+        if (!["http:", "https:"].includes(avatarUrl.protocol)) throw new Error("unsupported avatar URL");
+        const image = document.createElement("img");
+        image.src = avatarUrl.href;
+        image.alt = "";
+        image.addEventListener("error", () => image.remove(), { once: true });
+        avatar.appendChild(image);
+      } catch (_) {}
+    };
+    renderUserAvatar(window.CMHKAuth?.user);
+    Promise.resolve(window.CMHKAuth?.ready).then((user) => renderUserAvatar(user)).catch(() => {});
+    avatar.addEventListener("click", async () => {
+      const user = window.CMHKAuth?.user || await window.CMHKAuth?.ready;
+      window.CMHKAuth?.openProfile(user, avatar);
+    });
   } else {
     const logo = document.createElement("img");
     logo.src = "./static/assets/logo/xiaojing-ai-logo-mark.png?v=2";
@@ -7533,10 +7701,8 @@ if (els.webSearchToggle) {
 
 if (els.skillToggle) {
   renderSkillToggle();
-  window.CMHKAuth?.ready.then(() => {
-    if (window.CMHKAuth.hasModule("ai")) loadAgentSkills();
-  });
   els.skillToggle.addEventListener("click", () => {
+    ensureAiWorkspaceData();
     if (!els.skillMenu) return;
     const willOpen = els.skillMenu.hidden;
     els.skillMenu.hidden = !willOpen;
@@ -7556,10 +7722,8 @@ if (els.skillToggle) {
 
 if (els.databaseToggle) {
   renderDatabaseToggle();
-  window.CMHKAuth?.ready.then(() => {
-    if (window.CMHKAuth.hasModule("ai")) loadAgentDatasets();
-  });
   els.databaseToggle.addEventListener("click", () => {
+    ensureAiWorkspaceData();
     if (!els.databaseMenu) return;
     const willOpen = els.databaseMenu.hidden;
     els.databaseMenu.hidden = !willOpen;
@@ -7660,17 +7824,11 @@ if (els.chatModelSelect) {
       els.chatModelSelect.disabled = false;
     }
   });
-  window.CMHKAuth?.ready.then(() => {
-    if (!window.CMHKAuth.hasModule("ai")) return;
-    loadChatModelOptions().catch((error) => {
-      console.warn(error);
-      renderChatModelControls();
-    });
-  });
 }
 
 if (els.chatModelButton) {
   els.chatModelButton.addEventListener("click", (event) => {
+    ensureAiWorkspaceData();
     event.stopPropagation();
     const willOpen = Boolean(els.chatModelMenu?.hidden);
     if (els.chatModelMenu) els.chatModelMenu.hidden = !willOpen;
@@ -7877,13 +8035,33 @@ els.chatInput.addEventListener("keydown", (event) => {
 
 window.addEventListener("beforeunload", abandonPendingChatApproval);
 
+let aiWorkspaceLoadPromise = null;
+function ensureAiWorkspaceData() {
+  if (aiWorkspaceLoadPromise) return aiWorkspaceLoadPromise;
+  aiWorkspaceLoadPromise = (async () => {
+    await window.CMHKAuth?.ready;
+    if (!window.CMHKAuth?.hasModule("ai")) return;
+    await Promise.allSettled([
+      loadAgentSkills(),
+      loadAgentDatasets(),
+      loadChatModelOptions().catch((error) => { console.warn(error); renderChatModelControls(); }),
+      loadChatStarters({ render: true }),
+      loadChatThreads(),
+    ]);
+  })();
+  return aiWorkspaceLoadPromise;
+}
+
+window.addEventListener("workspace-tab-change", (event) => {
+  if (event.detail?.tab === "ai") ensureAiWorkspaceData();
+});
+
 window.CMHKAuth?.ready.then(() => {
-  if (window.CMHKAuth.hasModule("ai")) {
-    loadChatStarters({ render: true });
-    loadChatThreads();
-  }
+  if (document.querySelector('[data-workspace-tab="ai"]')?.classList.contains("is-active")) ensureAiWorkspaceData();
   if (window.CMHKAuth.hasModule("dashboard")) {
     fetchStatus().catch((error) => setLog(`初始化失败：${error.message}`));
+    loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本初始化失败", error));
+    loadPerformancePushPreference().catch((error) => console.warn("业绩摘要推送版本初始化失败", error));
     setInterval(() => fetchStatus().catch(console.error), 10000);
   }
 });

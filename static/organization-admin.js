@@ -10,6 +10,8 @@
     users: [], departments: [], roles: {}, modules: {}, roleModules: {}, audit: [], incidents: [],
     view: "control", profileKey: "", eventKey: "", auditQuery: "", auditAction: "", auditResult: "",
     auditSyncWarning: "", directory: { open: false, query: "", loading: false, users: [], error: "", timer: null, requestId: 0, controller: null },
+    profileRefreshTimer: null, auditFilterTimer: null, pendingLoad: null,
+    usersSignature: "", auditSignature: "",
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const escapeRegExp = (value) => String(value ?? "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -113,7 +115,8 @@
       "fault.mark_handled": "处理告警", "news_review.update": "复核新闻",
       "organization.user_update": "修改成员权限", "organization.user_import": "添加组织成员", "organization.user_delete": "删除组织成员",
       "subscription.card_send": "发送订阅卡片", "subscription.settings_update": "修改订阅设置",
-      "subscription.report_schedule_update": "修改周报排期", "subscription.news_schedule_update": "修改新闻排期",
+      "subscription.report_schedule_update": "修改周报排期", "subscription.performance_schedule_update": "修改业绩摘要排期", "subscription.news_schedule_update": "修改新闻排期",
+      "subscription.weekly_report_preference_update": "修改周报推送版本", "subscription.performance_report_preference_update": "修改业绩摘要推送版本",
       "subscription.directory_refresh": "刷新订阅通讯录", "subscription.candidate_add": "添加待邀请人员",
       "subscription.invite_send": "发送订阅邀请", "subscription.content_send": "发送订阅内容",
     })[event.action] || event.action || "系统操作";
@@ -286,11 +289,13 @@
   }
 
   function render() {
-    const users = filteredUsers();
-    const selected = selectedUser(users);
-    const roleFilter = `<option value="">全部角色</option>${Object.entries(state.roles).map(([value, label]) => `<option value="${esc(value)}"${state.role === value ? " selected" : ""}>${esc(label)}</option>`).join("")}`;
-    if (controlHost) controlHost.innerHTML = `${controlSurface(users, selected, roleFilter)}${state.view === "control" ? profileCard() : ""}`;
-    if (footprintHost) footprintHost.innerHTML = `${footprintSurface()}${state.view === "footprint" ? profileCard() + eventCard() : ""}`;
+    if (state.view === "control" && controlHost) {
+      const users = filteredUsers();
+      const selected = selectedUser(users);
+      const roleFilter = `<option value="">全部角色</option>${Object.entries(state.roles).map(([value, label]) => `<option value="${esc(value)}"${state.role === value ? " selected" : ""}>${esc(label)}</option>`).join("")}`;
+      controlHost.innerHTML = `${controlSurface(users, selected, roleFilter)}${profileCard()}`;
+    }
+    if (state.view === "footprint" && footprintHost) footprintHost.innerHTML = `${footprintSurface()}${profileCard()}${eventCard()}`;
     if (state.profileKey || state.eventKey) window.requestAnimationFrame(() => activeHost()?.querySelector(".organization-profile-card, .organization-event-card")?.focus());
   }
 
@@ -302,34 +307,92 @@
     hosts.forEach((host) => { host.innerHTML = `<div class="organization-error" role="alert"><strong>组织信息读取失败</strong><p>${esc(message)}</p><button type="button" data-refresh>重新读取</button></div>`; });
   }
 
-  async function load({ force = false, syncFeishu = false } = {}) {
-    if (state.loading || (state.loaded && !force)) return;
+  function applyUsersPayload(payload) {
+    const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
+    const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
+    const nextUsers = hasEnterpriseMembers ? loadedUsers.filter((user) => !user.developmentAccount) : loadedUsers;
+    const nextSignature = JSON.stringify([nextUsers, payload.roles || {}, payload.modules || {}, payload.roleModules || {}]);
+    const changed = nextSignature !== state.usersSignature;
+    state.usersSignature = nextSignature;
+    state.users = nextUsers;
+    state.departments = [...new Set(state.users.map((user) => user.department).filter(Boolean))].sort();
+    state.roles = payload.roles || {};
+    state.modules = payload.modules || {};
+    state.roleModules = payload.roleModules || {};
+    return changed;
+  }
+
+  function applyAuditPayload(payload) {
+    const events = Array.isArray(payload?.events) ? payload.events : [];
+    const first = events[0] || {};
+    const last = events.at(-1) || {};
+    const signature = [events.length, first.id, first.at, last.id, last.at].join("|");
+    const changed = signature !== state.auditSignature;
+    state.auditSignature = signature;
+    state.audit = events;
+    return changed;
+  }
+
+  function scheduleProfileRefreshReadback(payload) {
+    window.clearTimeout(state.profileRefreshTimer);
+    state.profileRefreshTimer = null;
+    if (payload?.profileRefresh?.running !== true) return;
+    state.profileRefreshTimer = window.setTimeout(async () => {
+      try {
+        const refreshed = await request("/api/auth/admin/users?profile_refresh=skip");
+        const changed = applyUsersPayload(refreshed);
+        if (state.loaded && changed) render();
+        scheduleProfileRefreshReadback(refreshed);
+      } catch (_) {
+        state.profileRefreshTimer = window.setTimeout(() => scheduleProfileRefreshReadback(payload), 2500);
+      }
+    }, 900);
+  }
+
+  async function load({ force = false, syncFeishu = false, view = state.view } = {}) {
+    if (state.loading) {
+      state.pendingLoad = { force: true, syncFeishu: syncFeishu || state.pendingLoad?.syncFeishu === true, view };
+      return;
+    }
+    if (state.loaded && !force) { if (view === state.view) render(); return; }
     state.loading = true;
-    if (!state.loaded) hosts.forEach((host) => { host.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>'; });
+    const targetHost = view === "footprint" ? footprintHost : controlHost;
+    if (!state.loaded && targetHost) targetHost.innerHTML = '<div class="organization-loading" role="status">正在读取组织成员与权限…</div>';
+    let syncPromise = null;
     try {
       state.auditSyncWarning = "";
       if (syncFeishu) {
-        try {
-          const syncPayload = await syncNewsReviewSheet();
+        syncPromise = syncNewsReviewSheet().then((syncPayload) => {
           const tracking = syncPayload?.editorTracking;
           if (tracking?.status !== "active") state.auditSyncWarning = tracking?.message || "飞书编辑者事件待接通";
-        }
-        catch (_) { state.auditSyncWarning = "飞书同步暂缓"; }
+          return syncPayload;
+        }).catch(() => { state.auditSyncWarning = "飞书同步暂缓"; return null; });
       }
-      const [payload, auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/users"), request("/api/auth/admin/audit?limit=all"), request("/api/project-incidents?limit=500")]);
-      const loadedUsers = Array.isArray(payload.users) ? payload.users : [];
-      const hasEnterpriseMembers = loadedUsers.some((user) => user.authProvider === "feishu");
-      state.users = hasEnterpriseMembers ? loadedUsers.filter((user) => !user.developmentAccount) : loadedUsers;
-      state.departments = [...new Set(state.users.map((user) => user.department).filter(Boolean))].sort();
-      state.roles = payload.roles || {};
-      state.modules = payload.modules || {};
-      state.roleModules = payload.roleModules || {};
-      state.audit = Array.isArray(auditPayload.events) ? auditPayload.events : [];
-      state.incidents = Array.isArray(incidentsPayload.incidents) ? incidentsPayload.incidents : [];
+      const payload = await request("/api/auth/admin/users");
+      applyUsersPayload(payload);
+      scheduleProfileRefreshReadback(payload);
+      if (view === "footprint") {
+        const [auditPayload, incidentsPayload] = await Promise.all([request("/api/auth/admin/audit?limit=all"), request("/api/project-incidents?limit=500")]);
+        applyAuditPayload(auditPayload);
+        state.incidents = Array.isArray(incidentsPayload.incidents) ? incidentsPayload.incidents : [];
+      }
       state.loaded = true;
-      render();
-    } catch (error) { renderError(error.message); }
-    finally { state.loading = false; }
+      if (view === state.view) render();
+      if (syncPromise && view === "footprint") {
+        syncPromise.then(async () => {
+          try {
+            const auditPayload = await request("/api/auth/admin/audit?limit=all");
+            if (applyAuditPayload(auditPayload) && state.view === "footprint") render();
+          } catch (_) { /* the already rendered local audit remains available */ }
+        });
+      }
+    } catch (error) { if (view === state.view) renderError(error.message); }
+    finally {
+      state.loading = false;
+      const pending = state.pendingLoad;
+      state.pendingLoad = null;
+      if (pending) load(pending);
+    }
   }
 
   function renderDirectoryResults() {
@@ -434,7 +497,17 @@
   hosts.forEach((host) => {
     host.addEventListener("input", (event) => {
       if (event.target.matches("[data-directory-search]")) { state.directory.query = event.target.value; window.clearTimeout(state.directory.timer); state.directory.timer = window.setTimeout(searchDirectory, 320); return; }
-      if (event.target.matches("[data-audit-search]")) { state.auditQuery = event.target.value; render(); const search = footprintHost?.querySelector("[data-audit-search]"); search?.focus(); search?.setSelectionRange(state.auditQuery.length, state.auditQuery.length); return; }
+      if (event.target.matches("[data-audit-search]")) {
+        state.auditQuery = event.target.value;
+        window.clearTimeout(state.auditFilterTimer);
+        state.auditFilterTimer = window.setTimeout(() => {
+          if (state.view !== "footprint") return;
+          render();
+          const search = footprintHost?.querySelector("[data-audit-search]");
+          search?.focus(); search?.setSelectionRange(state.auditQuery.length, state.auditQuery.length);
+        }, 100);
+        return;
+      }
       if (!event.target.matches("[data-search]")) return;
       state.query = event.target.value; render();
       const search = controlHost?.querySelector("[data-search]"); search?.focus(); search?.setSelectionRange(state.query.length, state.query.length);
@@ -491,9 +564,9 @@
     state.view = event.detail.tab === "footprint" ? "footprint" : "control";
     state.profileKey = "";
     state.eventKey = "";
-    if (state.view === "footprint") load({ force: true, syncFeishu: true });
+    if (state.view === "footprint") load({ force: true, syncFeishu: true, view: "footprint" });
     else if (state.loaded) render();
-    else load();
+    else load({ view: "control" });
   });
   window.CMHKOrganizationAdmin = { load };
 })();

@@ -8,7 +8,7 @@
   const typeColors = { entity: "#6679e8", topic: "#55aaf0", concept: "#23c574" };
   const cacheKey = "cmhk-intelligence-map-v2";
   const activeRefreshIntervalMs = 30000;
-  const state = { payload: null, graph: null, fullscreenGraph: null, graphPayload: null, keyword: "", receivedStart: "", receivedEnd: "", refreshPromise: null, lastRefreshAt: 0, signature: "", pollTimer: null, layoutFrame: null, resizeObserver: null };
+  const state = { payload: null, graph: null, fullscreenGraph: null, graphPayload: null, keyword: "", receivedStart: "", receivedEnd: "", refreshPromise: null, lastRefreshAt: 0, signature: "", rendered: false, pollTimer: null, layoutFrame: null, resizeObserver: null };
   const $ = (id) => panel.querySelector(`#${id}`) || document.getElementById(id);
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const ranked = (map) => [...map.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
@@ -256,17 +256,18 @@
     const minutes = items.map(receivedMinute).filter(Boolean).sort(); const min = minutes[0] || ""; const max = minutes.at(-1) || "";
     const filtered = items.filter((item) => { const value = receivedMinute(item); return (!state.receivedStart || value >= state.receivedStart) && (!state.receivedEnd || value <= state.receivedEnd); });
     const selected = Boolean(state.receivedStart || state.receivedEnd);
-    target.innerHTML = `<div class="market-received-toolbar"><div><h2>收到的新闻</h2><span>${selected ? `当前显示 ${filtered.length} / 本批次 ${items.length} 条` : `本批次共 ${items.length} 条`}${receivedAt ? ` · ${esc(receivedAt)}` : ""}</span></div><div class="market-time-filter" role="group" aria-label="按发布时间筛选新闻"><label><span>开始时间</span><input type="datetime-local" value="${esc(state.receivedStart)}" min="${esc(min)}" max="${esc(max)}" data-news-time-filter="start"></label><i aria-hidden="true">—</i><label><span>结束时间</span><input type="datetime-local" value="${esc(state.receivedEnd)}" min="${esc(min)}" max="${esc(max)}" data-news-time-filter="end"></label><button type="button" data-news-time-clear ${selected ? "" : "disabled"}>清除</button></div></div><table aria-label="收到的新闻明细"><thead><tr><th scope="col">发布时间</th><th scope="col">新闻标题</th><th scope="col">来源</th><th scope="col">监测模块</th><th scope="col">命中关键词</th></tr></thead><tbody>${filtered.map((item) => {
+    target.innerHTML = `<div class="market-received-toolbar"><div><h2>收到的新闻</h2><span>${selected ? `当前显示 ${filtered.length} / 本批次 ${items.length} 条` : `本批次共 ${items.length} 条`}${receivedAt ? ` · ${esc(receivedAt)}` : ""}</span></div><div class="market-time-filter" role="group" aria-label="按发布时间筛选新闻"><label><span>开始时间</span><input type="datetime-local" value="${esc(state.receivedStart)}" min="${esc(min)}" max="${esc(max)}" data-news-time-filter="start"></label><i aria-hidden="true">—</i><label><span>结束时间</span><input type="datetime-local" value="${esc(state.receivedEnd)}" min="${esc(min)}" max="${esc(max)}" data-news-time-filter="end"></label><button type="button" data-news-time-clear ${selected ? "" : "disabled"}>清除</button></div></div><div class="market-received-table-scroll" tabindex="0" role="region" aria-label="可滚动的收到新闻列表"><table aria-label="收到的新闻明细"><thead><tr><th scope="col">发布时间</th><th scope="col">新闻标题</th><th scope="col">来源</th><th scope="col">监测模块</th><th scope="col">命中关键词</th></tr></thead><tbody>${filtered.map((item) => {
       const publishedAt = String(item.publishedAt || "").replace("T", " ").slice(0, 16) || "—";
       const title = item.url ? `<a href="${esc(item.url)}" target="_blank" rel="noopener noreferrer">${esc(item.title)}<b aria-hidden="true">↗</b></a>` : `<span>${esc(item.title)}</span>`;
       const keywords = Array.isArray(item.keywords) && item.keywords.length ? item.keywords.map((keyword) => `<em>${esc(keyword)}</em>`).join("") : "—";
       return `<tr><td class="received-time">${esc(publishedAt)}</td><th scope="row" class="received-title">${title}</th><td>${esc(item.source || "未标注来源")}</td><td>${esc(item.module || "其他情报")}</td><td class="received-keywords">${keywords}</td></tr>`;
-    }).join("") || '<tr><td class="market-filter-empty" colspan="5">该时间范围内没有收到新闻</td></tr>'}</tbody></table>`;
+    }).join("") || '<tr><td class="market-filter-empty" colspan="5">该时间范围内没有收到新闻</td></tr>'}</tbody></table></div>`;
   }
 
   function renderAll() {
     const allItems = state.payload?.receivedItems || []; const items = state.keyword ? allItems.filter((item) => termsFor(item).includes(state.keyword)) : allItems;
     renderWordCloud(allItems); renderGraph(items); renderReceivedNewsTable(state.payload?.receivedItems || []); scheduleVisualLayout();
+    state.rendered = true;
   }
 
   function openFullscreen() {
@@ -304,7 +305,8 @@
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const payload = await response.json(); const signature = payloadSignature(payload); const changed = signature !== state.signature;
         state.payload = payload; state.lastRefreshAt = Date.now(); state.signature = signature;
-        if (changed) renderAll();
+        if (changed && !panel.hidden) renderAll();
+        else if (changed) state.rendered = false;
         try { sessionStorage.setItem(cacheKey, JSON.stringify(state.payload)); } catch (_error) { /* cache is optional */ }
         return state.payload;
       } finally { window.clearTimeout(timeout); }
@@ -319,10 +321,11 @@
       state.resizeObserver = new ResizeObserver(scheduleVisualLayout);
       state.resizeObserver.observe($("market-keyword-cloud")); state.resizeObserver.observe($("market-graph-canvas"));
     }
-    try { const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); if (cached?.ok && Array.isArray(cached.items)) { state.payload = cached; state.signature = payloadSignature(cached); renderAll(); } } catch (_error) { /* cache is optional */ }
+    try { const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null"); if (cached?.ok && Array.isArray(cached.items)) { state.payload = cached; state.signature = payloadSignature(cached); if (!panel.hidden) renderAll(); } } catch (_error) { /* cache is optional */ }
     try {
       await Promise.race([window.CMHKAuth?.ready, new Promise((_, reject) => setTimeout(() => reject(new Error("auth timeout")), 4000))]);
       if (!window.CMHKAuth?.hasModule("competitor")) return;
+      if (panel.hidden) return;
       await refreshData();
       if (!state.payload) throw new Error("intelligence unavailable");
     } catch (_error) { if (!state.payload) panel.innerHTML = '<div class="intelligence-map-loading">暂时无法读取情报图谱，请稍后刷新。</div>'; }
@@ -335,6 +338,7 @@
   }
   window.addEventListener("workspace-tab-change", (event) => {
     if (event.detail?.tab !== "intelligence-map") { window.clearTimeout(state.pollTimer); state.pollTimer = null; return; }
+    if (state.payload && !state.rendered) renderAll();
     if (Date.now() - state.lastRefreshAt >= activeRefreshIntervalMs) refreshData();
     schedulePolling(); scheduleVisualLayout();
   });

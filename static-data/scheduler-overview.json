@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-31T07:26:11+08:00",
+  "checked_at_hkt": "2026-08-31T14:21:17+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -681,56 +681,36 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260830_140056_625596",
+      "crawl_run_id": "20260831_141538_984910",
       "trigger": "战略新闻定时爬虫",
-      "scope": "午后扫描（2026-08-30@14:00）",
+      "scope": "午后扫描（2026-08-31@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
-      "run_status": "completed",
-      "backend_pid": 8919,
+      "run_status": "failed",
+      "backend_pid": 75781,
       "worker_pid": 0,
-      "phase": "已完成",
-      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
-      "heartbeat_at_hkt": "2026-08-30T14:13:10+08:00",
-      "started_at_hkt": "2026-08-30T14:00:56+08:00",
-      "completed_at_hkt": "2026-08-30T14:13:10+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 733441,
+      "phase": "失败",
+      "progress_detail": "战略新闻扫描失败：战略快讯下游处理失败；飞书审核表：现有飞书审核表结构校验失败，已停止写入以保护飞书审核表：第116行检索日期不在E列；第116行发布时间不在K列；第116行新闻标题不在H列；第116行分类不在G列；第116行原文链接不在L列；第117行检索日期不在E列；第117行发布时间不在K列；第117行新闻标题不在H列；第117行分类不在G列；第117行原文链接不在L列；第239行检索日期不在E列；第239行发布时间不在K列；第239行新闻标题不在H列；第239行分类不在G列；第239行原文链接不在L列；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
+      "heartbeat_at_hkt": "2026-08-31T14:17:48+08:00",
+      "started_at_hkt": "2026-08-31T14:15:38+08:00",
+      "completed_at_hkt": "2026-08-31T14:17:48+08:00",
+      "crawl_return_code": 1,
+      "duration_ms": 129548,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260830_140056_625596.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260831_141538_984910.jsonl"
       },
       "stream_log": {
-        "bytes": 12748,
-        "lines": 71
+        "bytes": 4793,
+        "lines": 19
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
-      "failure_stage": "",
-      "operational_summary": {
-        "slot": "2026-08-30@14:00",
-        "discovered": 18,
-        "ai_retained": 5,
-        "history_duplicates": 0,
-        "new_count": 5,
-        "readback_verified": true,
-        "notification_status": "sent",
-        "message_id": "om_x100b6608d181f0a0b25395ab1b6d843",
-        "message_ids": [
-          "om_x100b6608d181f0a0b25395ab1b6d843",
-          "om_x100b6608d19128a0b1f5642937f1b07"
-        ],
-        "notification_destination_count": 2,
-        "selection_agent_status": "completed",
-        "selection_agent_changed": 10,
-        "selection_agent_recovered": true,
-        "selection_agent_recovery_task_run_id": "20260830_150517_221049",
-        "selection_agent_recovered_at": "2026-08-30T15:07:42+08:00"
-      },
-      "amended_at_hkt": "2026-08-30T15:07:42+08:00"
+      "status_detail": "战略新闻扫描失败：战略快讯下游处理失败；飞书审核表：现有飞书审核表结构校验失败，已停止写入以保护飞书审核表：第116行检索日期不在E列；第116行发布时间不在K列；第116行新闻标题不在H列；第116行分类不在G列；第116行原文链接不在L列；第117行检索日期不在E列；第117行发布时间不在K列；第117行新闻标题不在H列；第117行分类不在G列；第117行原文链接不在L列；第239行检索日期不在E列；第239行发布时间不在K列；第239行新闻标题不在H列；第239行分类不在G列；第239行原文链接不在L列；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
+      "failure_stage": "strategic_news",
+      "operational_summary": {}
     },
     "four_database_refresh": {
       "crawl_run_id": "20260831_033113_729673",

@@ -2,6 +2,7 @@
   "use strict";
 
   const MODULES = ["dashboard", "monitoring", "competitor", "intelligence-map", "news", "weekly", "performance", "review", "subscriptions", "ai", "log", "fault", "organization", "footprint"];
+  const NEWS_REVIEW_SNAPSHOT_CACHE_KEY = "cmhk-news-review-lineage-snapshot-v1";
   let allowedModules = [];
   const state = {
     status: null,
@@ -38,6 +39,9 @@
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
     faultFeedback: null,
+    loadedKeys: new Set(),
+    dirtyModules: new Set(),
+    renderFrames: {},
   };
   const esc = (value) => String(value ?? "").replace(/[&<>\"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
@@ -293,6 +297,7 @@
     }
     hydrateAuthorizedFrame(target);
     syncEmbeddedVisibility(target);
+    renderWorkspaceModule(target);
     if (target === "fault" && state.tasks.length) refreshFaultData();
     if (updateUrl) history.replaceState(null, "", target === "dashboard" ? location.pathname + location.search : `${location.pathname}${location.search}#workspace=${target}`);
     window.dispatchEvent(new CustomEvent("workspace-tab-change", { detail: { tab: target } }));
@@ -1352,6 +1357,9 @@
     if (!sheet || !Array.isArray(sheet.headers) || !Array.isArray(sheet.rows)) {
       return { available: false, rows: [], appRows: [], appSyncedRows: [], weeklyRows: [], appMachineRows: [], appHumanRows: [], weeklyMachineRows: [], weeklyHumanRows: [] };
     }
+    if (sheet.snapshotMode === "cached" && sheet.snapshotCoverageStart && date < sheet.snapshotCoverageStart) {
+      return { available: false, rows: [], appRows: [], appSyncedRows: [], weeklyRows: [], appMachineRows: [], appHumanRows: [], weeklyMachineRows: [], weeklyHumanRows: [] };
+    }
     const indexes = new Map(sheet.headers.map((header, index) => [String(header || "").trim(), index]));
     const valueAt = (row, ...headers) => {
       const index = headers.map((header) => indexes.get(header)).find((candidate) => candidate !== undefined);
@@ -1378,6 +1386,7 @@
     const weeklyRows = rows.filter((row) => row.weeklyStatus === "接受");
     return {
       available: true,
+      cached: ["cached", "local_history"].includes(sheet.snapshotMode),
       rows,
       appRows,
       appSyncedRows: appRows.filter((row) => row.syncStatus === "已纳入"),
@@ -1641,8 +1650,8 @@
       { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: `实际留下 ${number(strategicDedupe.value)} 条`, health: strategicDedupeHealth, variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
       { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: `当天 ${runs.length} 次运行归档`, health: strategicOutputHealth, variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
       { key: "news-selection-agent", label: "新闻自动初筛", value: selectionRuns.length ? `纳入周报 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `纳入滚动栏 ${number(selectionSummary.appAccepted)} 条` : "当天未留下独立任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`权威批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `机器纳入周报 ${number(selectionSummary.weeklyAccepted)} 条；机器纳入滚动栏 ${number(selectionSummary.appAccepted)} 条`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
-      { key: "app-result", label: "纳入滚动栏", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `机器 ${number(reviewResults.appMachineRows.length)} 条 · 人工 ${number(reviewResults.appHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: ["按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条；人工纳入 ${number(reviewResults.appHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
-      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: reviewResults.available ? `机器 ${number(reviewResults.weeklyMachineRows.length)} 条 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: ["按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
+      { key: "app-result", label: "纳入滚动栏", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.appMachineRows.length)} 条 · 人工 ${number(reviewResults.appHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: [reviewResults.cached ? "实时读取短暂失败，按最近完整审核快照统计当天结果" : "按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条；人工纳入 ${number(reviewResults.appHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
+      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "实时读取短暂失败，按最近完整审核快照统计当天结果" : "按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日战略新闻", value: number(sourceDiscoverySummary.previous_day_reference_count || 0), unit: "条参考", note: `${number((sourceDiscoverySummary.previous_day_news_runs || []).length)} 轮新闻归档`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: ["读取前一日战略新闻任务归档", "只筛选与四库主体及指标相关的内容", "新闻摘要只作追证线索，不直接成为数据库事实"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日新闻归档" },
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [300, 250], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [300, 455], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
@@ -1793,6 +1802,19 @@
       fitNewsLineageToViewport(panel);
       scheduleNewsLineageEdgeSync();
     });
+  }
+
+  function newsLineageIncidentSignature(tasks) {
+    return (Array.isArray(tasks) ? tasks : []).map((task) => ({
+      id: task.incident_id || task.task_id || task.task_run_id || "",
+      status: task.incident_status || task.status || "",
+      severity: task.severity || task.severity_code || "",
+      routes: (Array.isArray(task.affected_routes) ? task.affected_routes : []).map((route) => [
+        route?.route_id || route?.id || "",
+        route?.impact || route?.status || "",
+        route?.confidence || "",
+      ]),
+    })).sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
   }
 
   function lineageStageKey(nodeKey) {
@@ -2298,16 +2320,21 @@
     const lineage = globalSchedulerLineageModel(runs, stages);
     const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
+    const initialLineageZoom = Number.isFinite(state.newsLineageZoom) && state.newsLineageZoom > 0
+      ? Math.min(1, state.newsLineageZoom)
+      : 1;
+    const initialLineageWidth = Math.max(1, Math.round(lineageWidth * initialLineageZoom));
+    const initialLineageHeight = Math.max(1, Math.round(lineageHeight * initialLineageZoom));
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
+        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-routine"><i></i>定时／回流</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
-            <div class="news-lineage-stage" data-news-lineage-stage style="width:${lineageWidth}px;height:${lineageHeight}px">
-            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:1;width:${lineageWidth}px;height:${lineageHeight}px">
-              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
+            <div class="news-lineage-stage" data-news-lineage-stage style="width:${initialLineageWidth}px;height:${initialLineageHeight}px">
+            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
+              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRoutine" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk", "running"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" title="${esc(line.reason || "")}"><i aria-hidden="true">${line.key === "interrupted" ? "×" : line.key === "degraded" ? "!" : "•"}</i>${esc(line.label)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
@@ -2328,7 +2355,7 @@
   async function loadNewsRuns(runIds) {
     if (!runIds.length) return;
     const requestId = ++state.newsRunRequest;
-    renderNews();
+    markWorkspaceModulesDirty("news");
     const missing = runIds.filter((id) => !state.newsRunDetails[id]);
     const results = await Promise.all(missing.map(async (runId) => {
       try {
@@ -2343,7 +2370,7 @@
     }));
     if (requestId !== state.newsRunRequest) return;
     results.forEach(([runId, payload]) => { state.newsRunDetails[runId] = payload; });
-    renderNews();
+    markWorkspaceModulesDirty("news");
   }
 
   function renderReports(kind) {
@@ -2666,10 +2693,12 @@
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
       const nextTasks = Array.isArray(data.incidents) ? data.incidents : [];
+      const newsLineageChanged = JSON.stringify(newsLineageIncidentSignature(state.tasks))
+        !== JSON.stringify(newsLineageIncidentSignature(nextTasks));
       observeFaultSignals(nextTasks);
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
-      if (document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
+      if (newsLineageChanged && document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");
@@ -2934,6 +2963,131 @@
     panel.innerHTML = `<div class="workspace-module-inner"><div class="workspace-panel workspace-error"><div class="workspace-empty" role="status">${esc(label)}数据暂时无法读取，请稍后刷新。</div></div></div>`;
   }
 
+  function activeWorkspaceModule() {
+    return document.querySelector("[data-workspace-tab].is-active")?.dataset.workspaceTab || "";
+  }
+
+  function renderWorkspaceModule(module) {
+    if (!state.dirtyModules.has(module)) return;
+    if (module === "competitor" && state.loadedKeys.has("workbench")) renderCompetitor();
+    else if (module === "news" && state.loadedKeys.has("newsRuns")) renderNews();
+    else if (module === "weekly" && state.loadedKeys.has("status")) renderReports("weekly");
+    else if (module === "performance" && state.loadedKeys.has("status")) renderReports("performance");
+    else if (module === "fault" && state.loadedKeys.has("tasks")) renderFaultMonitor();
+    else return;
+    state.dirtyModules.delete(module);
+  }
+
+  function markWorkspaceModulesDirty(...modules) {
+    modules.filter((module) => can(module)).forEach((module) => state.dirtyModules.add(module));
+    const active = activeWorkspaceModule();
+    if (!state.dirtyModules.has(active) || state.renderFrames[active]) return;
+    state.renderFrames[active] = requestAnimationFrame(() => {
+      state.renderFrames[active] = 0;
+      renderWorkspaceModule(active);
+    });
+  }
+
+  function updateRunningIndicator() {
+    const running = Boolean(state.status?.tasks?.hasRunning);
+    const runningIndicator = workspaceSignalDot(document.querySelector('[data-workspace-tab="log"]'));
+    if (!runningIndicator) return;
+    if (running) runningIndicator.dataset.indicatorRunning = "true";
+    else delete runningIndicator.dataset.indicatorRunning;
+    runningIndicator.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
+      .some((key) => runningIndicator.dataset[key] === "true");
+  }
+
+  function applyWorkspacePayload(key, payload) {
+    state.loadedKeys.add(key);
+    if (key === "status") {
+      state.status = payload.status || {};
+      updateRunningIndicator();
+      markWorkspaceModulesDirty("news", "weekly", "performance");
+    } else if (key === "metrics") state.metrics = payload.data || {};
+    else if (key === "briefs") state.briefs = payload.items || [];
+    else if (key === "tasks") {
+      state.tasks = payload.incidents || [];
+      state.faultTotal = Number(payload.total || state.tasks.length);
+      observeFaultSignals(state.tasks, { baseline: true });
+      markWorkspaceModulesDirty("fault", "news");
+    } else if (key === "newsRuns") {
+      state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
+      markWorkspaceModulesDirty("news");
+      const initialNewsRuns = selectedNewsRuns();
+      if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
+    } else if (key === "crawlRuns") { state.crawlRuns = payload.runs || []; markWorkspaceModulesDirty("news"); }
+    else if (key === "scheduler") { state.schedulerOverview = payload; markWorkspaceModulesDirty("news"); }
+    else if (key === "intelligence") { state.executiveIntelligence = payload; markWorkspaceModulesDirty("news"); }
+    else if (key === "reviewSheet") { state.newsReviewSheet = payload; markWorkspaceModulesDirty("news"); }
+    else if (key === "newsFallback") { state.newsItemFallback = payload || {}; markWorkspaceModulesDirty("news"); }
+    else if (key === "workbench") { state.competitorData = payload; markWorkspaceModulesDirty("competitor"); }
+  }
+
+  function validNewsReviewSnapshot(payload) {
+    return Boolean(payload && Array.isArray(payload.headers) && Array.isArray(payload.rows));
+  }
+
+  function compactNewsReviewSnapshot(payload) {
+    const requiredHeaders = [
+      "检索日期", "纳入滚动栏", "是否纳入滚动", "纳入周报", "是否纳入周报", "同步状态",
+      "新闻标题（AI）", "内容简介（AI）", "来源媒体", "发布时间", "原文链接", "分类", "入池理由",
+    ];
+    const indexes = requiredHeaders
+      .map((header) => ({ header, index: payload.headers.indexOf(header) }))
+      .filter((item) => item.index >= 0);
+    const coverage = new Date();
+    coverage.setDate(coverage.getDate() - 21);
+    const snapshotCoverageStart = coverage.toISOString().slice(0, 10);
+    const searchDateIndex = payload.headers.indexOf("检索日期");
+    return {
+      ok: true,
+      updatedAt: payload.updatedAt,
+      snapshotCoverageStart,
+      headers: indexes.map((item) => item.header),
+      rows: payload.rows
+        .filter((row) => String(row?.values?.[searchDateIndex] || "").slice(0, 10) >= snapshotCoverageStart)
+        .map((row) => ({
+          rowNumber: row.rowNumber,
+          recordId: row.recordId,
+          values: indexes.map((item) => row?.values?.[item.index] ?? ""),
+          reviewers: row.reviewers,
+          reviewer: row.reviewer,
+        })),
+    };
+  }
+
+  async function fetchNewsReviewSheetSnapshot() {
+    try {
+      const response = await fetch("/api/news-review-sheet", { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok || !validNewsReviewSnapshot(payload)) {
+        throw new Error(payload.error || `news review sheet ${response.status}`);
+      }
+      const compact = JSON.stringify(compactNewsReviewSnapshot(payload));
+      try { sessionStorage.setItem(NEWS_REVIEW_SNAPSHOT_CACHE_KEY, compact); } catch (_error) { /* cache is optional */ }
+      try { localStorage.setItem(NEWS_REVIEW_SNAPSHOT_CACHE_KEY, compact); } catch (_error) { /* cache is optional */ }
+      return payload;
+    } catch (error) {
+      try {
+        const cached = JSON.parse(
+          sessionStorage.getItem(NEWS_REVIEW_SNAPSHOT_CACHE_KEY)
+          || localStorage.getItem(NEWS_REVIEW_SNAPSHOT_CACHE_KEY)
+          || "null"
+        );
+        if (validNewsReviewSnapshot(cached)) {
+          return {
+            ...cached,
+            ok: true,
+            snapshotMode: "cached",
+            liveReadError: error.message || String(error),
+          };
+        }
+      } catch (_cacheError) { /* report the original live-read failure */ }
+      throw error;
+    }
+  }
+
   async function loadWorkspaceData() {
     const definitions = [
       ["status", "dashboard", () => fetch("/api/status").then((response) => response.ok ? response.json() : Promise.reject(new Error(`status ${response.status}`)))],
@@ -2944,65 +3098,27 @@
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
-      ["reviewSheet", "review", () => window.CMHKSyncNewsReviewSheet ? window.CMHKSyncNewsReviewSheet() : fetch("/api/news-review-sheet", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`news review sheet ${response.status}`)))],
+      ["reviewSheet", "review", fetchNewsReviewSheetSnapshot],
       ["newsFallback", "news", () => fetch("./static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {})],
       ["workbench", "competitor", () => fetch("./static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))],
     ];
     const activeDefinitions = definitions.filter(([, module]) => can(module));
-    const requests = await Promise.allSettled(activeDefinitions.map(([, , request]) => request()));
-    const results = Object.fromEntries(activeDefinitions.map(([key], index) => [key, requests[index]]));
-    const unavailable = { status: "skipped" };
-    const statusResult = results.status || unavailable;
-    const metricsResult = results.metrics || unavailable;
-    const briefsResult = results.briefs || unavailable;
-    const tasksResult = results.tasks || unavailable;
-    const newsRunsResult = results.newsRuns || unavailable;
-    const crawlRunsResult = results.crawlRuns || unavailable;
-    const schedulerOverviewResult = results.scheduler || unavailable;
-    const executiveIntelligenceResult = results.intelligence || unavailable;
-    const newsReviewSheetResult = results.reviewSheet || unavailable;
-    const newsFallbackResult = results.newsFallback || unavailable;
-    const workbenchResult = results.workbench || unavailable;
-    if (statusResult.status === "fulfilled") state.status = statusResult.value.status || {};
-    if (metricsResult.status === "fulfilled") state.metrics = metricsResult.value.data || {};
-    if (briefsResult.status === "fulfilled") state.briefs = briefsResult.value.items || [];
-    if (tasksResult.status === "fulfilled") {
-      state.tasks = tasksResult.value.incidents || [];
-      state.faultTotal = Number(tasksResult.value.total || state.tasks.length);
-      observeFaultSignals(state.tasks, { baseline: true });
-    }
-    if (newsRunsResult.status === "fulfilled") {
-      state.newsRuns = (newsRunsResult.value.runs || []).filter((run) => run.task_kind === "strategic-news");
-    }
-    if (crawlRunsResult.status === "fulfilled") state.crawlRuns = crawlRunsResult.value.runs || [];
-    if (schedulerOverviewResult.status === "fulfilled") state.schedulerOverview = schedulerOverviewResult.value;
-    if (executiveIntelligenceResult.status === "fulfilled") state.executiveIntelligence = executiveIntelligenceResult.value;
-    if (newsReviewSheetResult.status === "fulfilled") state.newsReviewSheet = newsReviewSheetResult.value;
-    if (newsFallbackResult.status === "fulfilled") state.newsItemFallback = newsFallbackResult.value || {};
-    if (workbenchResult.status === "fulfilled") state.competitorData = workbenchResult.value;
-
-    if (can("competitor")) state.competitorData ? renderCompetitor() : renderLoadError("competitor", "竞对");
-    if (can("news")) (state.status || newsRunsResult.status === "fulfilled") ? renderNews() : renderLoadError("news", "新闻");
-    if (can("weekly")) state.status ? renderReports("weekly") : renderLoadError("weekly", "周报");
-    if (can("performance")) state.status ? renderReports("performance") : renderLoadError("performance", "业绩摘要");
-    if (can("fault")) tasksResult.status === "fulfilled" ? renderFaultMonitor() : renderLoadError("fault", "故障监控");
-    const running = Boolean(state.status?.tasks?.hasRunning);
-    const logTab = document.querySelector('[data-workspace-tab="log"]');
-    const runningIndicator = workspaceSignalDot(logTab);
-    if (runningIndicator) {
-      if (running) runningIndicator.dataset.indicatorRunning = "true";
-      else delete runningIndicator.dataset.indicatorRunning;
-      runningIndicator.hidden = !["indicatorRunning", "indicatorReport", "indicatorSignal"]
-        .some((key) => runningIndicator.dataset[key] === "true");
-    }
-    const initialNewsRuns = can("news") ? selectedNewsRuns() : [];
-    if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
+    const requests = activeDefinitions.map(async ([key, module, request]) => {
+      try {
+        applyWorkspacePayload(key, await request());
+      } catch (error) {
+        console.warn("Workspace module data unavailable", error);
+        const coreModule = { workbench: "competitor", newsRuns: "news", status: "weekly", tasks: "fault" }[key];
+        if (coreModule && activeWorkspaceModule() === coreModule) renderLoadError(coreModule, { competitor: "竞对", news: "新闻", weekly: "周报", fault: "故障监控" }[coreModule]);
+        if (key === "status" && can("performance") && activeWorkspaceModule() === "performance") renderLoadError("performance", "业绩摘要");
+      }
+    });
     if (can("fault") && !motionState.pollingTimer) {
       motionState.pollingTimer = window.setInterval(() => {
         if (document.visibilityState === "visible") refreshFaultData({ quiet: true });
       }, 30000);
     }
-    requests.filter((result) => result.status === "rejected").forEach((result) => console.warn("Workspace module data unavailable", result.reason));
+    await Promise.allSettled(requests);
   }
 
   async function initializeWorkspace() {
