@@ -3573,6 +3573,62 @@ def review_sheet_snapshot(
         _LOCK.release()
 
 
+def review_sheet_history_snapshot(*, live_error: str = "") -> dict[str, Any]:
+    """Return the last locally mirrored complete rows when Feishu is unavailable."""
+    state = _read_json(STATE_PATH, {})
+    state = dict(state) if isinstance(state, dict) else {}
+    sheet_id = _text(state.get("sheet_id"), 120)
+    sheet_title = _text(state.get("sheet_title"), 100) or SHEET_TITLE
+    rows = [
+        {
+            "rowNumber": int(record.get("row_number") or 0),
+            "originalRowNumber": int(record.get("row_number") or 0),
+            "recordId": _text(record.get("news_id"), 80),
+            "values": record["values"],
+            "storageSource": "local_history",
+            "sourceSheetId": _text(record.get("sheet_id"), 120),
+            "sourceSheetTitle": _text(record.get("sheet_title"), 160),
+            "readOnly": True,
+            "feishuVisible": record.get("feishu_visible") is True,
+            "retiredFromFeishuAt": _text(record.get("retired_from_feishu_at_hkt"), 60),
+            "retirementReason": _text(record.get("retirement_reason"), 160),
+        }
+        for record in _history_row_records()
+        if _text(record.get("news_id"), 80)
+    ]
+    if not rows:
+        raise RuntimeError(live_error or "审核表实时读取失败且没有本地完整快照")
+    rows.sort(
+        key=lambda item: (
+            _publication_date(item["values"][SEARCH_DATE_COLUMN_INDEX]),
+            _publication_date(item["values"][SOURCE_DATE_COLUMN_INDEX]),
+            int(item.get("originalRowNumber") or 0),
+        ),
+        reverse=True,
+    )
+    history = _read_json(HISTORY_PATH, {})
+    return {
+        "sheetId": sheet_id,
+        "sheetTitle": sheet_title,
+        "sheetUrl": _sheet_url(sheet_id) if sheet_id else "",
+        "headers": list(HEADERS),
+        "editableColumns": [],
+        "statusOptions": list(REVIEW_SHEET_STATUS_OPTIONS),
+        "updatedAt": _text(history.get("updated_at_hkt") if isinstance(history, dict) else "", 60) or _now_iso(),
+        "snapshotMode": "local_history",
+        "liveReadError": _text(live_error, 240),
+        "feishuCurrentCount": 0,
+        "localHistoryCount": len(rows),
+        "totalHistoryCount": len(rows),
+        "retentionPolicy": {
+            "days": RETENTION_DAYS,
+            "rule": "第15天起，飞书仅保留纳入滚动栏或纳入周报为接受的整行；APP保留全量历史",
+            "lastAppliedDateHkt": _text(state.get(RETENTION_STATE_DATE_KEY), 20),
+        },
+        "rows": rows,
+    }
+
+
 def _column_name(index: int) -> str:
     if index < 0 or index >= 26:
         raise ValueError("列编号超出支持范围")

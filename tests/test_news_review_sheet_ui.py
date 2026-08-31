@@ -941,6 +941,51 @@ class NewsReviewActorTests(unittest.TestCase):
         self.assertFalse(result["fullyReconciled"])
         self.assertEqual(result["auditEventCount"], 0)
 
+    def test_review_sheet_payload_keeps_snapshot_when_optional_reconciliation_fails(self) -> None:
+        snapshot = {"sheetId": "sheet-1", "headers": ["检索日期"], "rows": []}
+        with (
+            mock.patch.object(news_review_sheet, "review_sheet_snapshot", return_value=snapshot),
+            mock.patch.object(web_app, "attach_news_review_actors", side_effect=lambda value: value),
+            mock.patch.object(web_app, "news_review_editor_tracking_status", return_value={}),
+            mock.patch.object(web_app, "sync_news_review_sheet_audit", side_effect=RuntimeError("audit unavailable")),
+            mock.patch.object(web_app, "reconcile_news_review_screener_column", side_effect=RuntimeError("reconcile unavailable")),
+        ):
+            payload = web_app.build_news_review_sheet_payload()
+
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["headers"], ["检索日期"])
+        self.assertEqual(payload["rows"], [])
+        self.assertEqual(payload["screenerSync"]["status"], "unavailable")
+        self.assertEqual(
+            [warning["stage"] for warning in payload["warnings"]],
+            ["audit_sync", "screener_reconcile"],
+        )
+
+    def test_review_sheet_payload_uses_local_history_when_live_read_fails(self) -> None:
+        cached = {
+            "sheetId": "sheet-1",
+            "headers": ["检索日期"],
+            "rows": [{"rowNumber": 2, "values": ["2026-08-31"]}],
+            "snapshotMode": "local_history",
+        }
+        with (
+            mock.patch.object(news_review_sheet, "review_sheet_snapshot", side_effect=RuntimeError("Feishu timeout")),
+            mock.patch.object(news_review_sheet, "review_sheet_history_snapshot", return_value=cached) as history,
+            mock.patch.object(web_app, "attach_news_review_actors", side_effect=lambda value: value),
+            mock.patch.object(web_app, "news_review_editor_tracking_status", return_value={}),
+            mock.patch.object(web_app, "sync_news_review_sheet_audit") as audit,
+            mock.patch.object(web_app, "reconcile_news_review_screener_column") as reconcile,
+        ):
+            payload = web_app.build_news_review_sheet_payload()
+
+        history.assert_called_once_with(live_error="Feishu timeout")
+        audit.assert_not_called()
+        reconcile.assert_not_called()
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["snapshotMode"], "local_history")
+        self.assertEqual(payload["rows"], cached["rows"])
+        self.assertEqual(payload["warnings"][0]["stage"], "live_read")
+
     def test_legacy_generic_actor_is_backfilled_from_official_audit_api(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             service = AuthService(Path(temp_dir))
