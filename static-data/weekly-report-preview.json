@@ -1,12 +1,12 @@
 {
   "ok": true,
   "preview": {
-    "windowStart": "2026-08-18",
-    "windowEnd": "2026-08-31",
-    "newsCount": 22,
+    "windowStart": "2026-08-19",
+    "windowEnd": "2026-09-01",
+    "newsCount": 21,
     "acceptedRows": 56,
-    "excludedRows": 34,
-    "refreshedAt": "2026-08-31T18:08:16+08:00",
+    "excludedRows": 35,
+    "refreshedAt": "2026-09-01T00:01:50+08:00",
     "selectionSource": "feishu_review_sheet"
   }
 }

@@ -1,0 +1,352 @@
+/* Shared responsive contract for every workspace tab.
+   Loaded last so page-specific styles keep their identity while geometry,
+   wrapping and wide-screen density remain consistent. */
+
+:root {
+  --workspace-fluid-gutter: clamp(10px, 1vw, 24px);
+  --workspace-fluid-gap: clamp(10px, .85vw, 20px);
+  --workspace-readable-copy: clamp(12px, .68vw, 15px);
+}
+
+/* Text may shrink inside grid and flex items instead of pushing a sibling
+   outside the viewport. */
+.workspace-content,
+.workspace-module-inner,
+.workspace-panel,
+.workspace-panel-header > *,
+.workspace-module-heading > *,
+.news-process-panel,
+.fault-workbench,
+.market-keyword-stage,
+.market-graph-detail-head > *,
+.market-graph-evidence-row > *,
+.competitor-option-group > div,
+.competitor-option-group label,
+.competitor-option-group label > b {
+  min-width: 0;
+}
+
+.competitor-option-group label {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.competitor-option-group label > b {
+  max-width: 100%;
+  box-sizing: border-box;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
+}
+
+.market-keyword {
+  max-width: min(52%, calc(100% - 20px));
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.market-keyword span,
+.market-graph-detail-head strong,
+.market-graph-detail-head span,
+.market-graph-evidence-row span,
+.market-graph-evidence-row small {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Compact screens: reserve explicit columns for logo, page identity and user.
+   The former absolutely-positioned title competed with the account control. */
+@media (max-width: 560px) {
+  .dashboard-page:not(.workspace-ai-active) .brand-bar {
+    display: grid !important;
+    grid-template-columns: minmax(104px, 1fr) minmax(0, 1.15fr) 48px;
+    gap: 6px;
+    padding-inline: 10px !important;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .brand-mark {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .cm-logo-image {
+    width: clamp(104px, 31vw, 120px);
+    max-width: 100%;
+    height: 36px;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .intelligence-page-identity {
+    position: static;
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    justify-self: stretch;
+    transform: none;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .intelligence-page-identity strong {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    padding-inline: 0;
+    font-size: clamp(11px, 3.3vw, 14px);
+    letter-spacing: .035em;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .intelligence-page-identity span {
+    display: none;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .auth-user {
+    width: 48px;
+    justify-self: end;
+    margin-left: 0;
+    padding-left: 6px;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .auth-user-trigger {
+    width: 42px;
+    gap: 0;
+    justify-content: center;
+    padding: 4px;
+  }
+
+  .dashboard-page:not(.workspace-ai-active) .auth-user-chevron {
+    display: none;
+  }
+
+  .workspace-module-shell {
+    padding-inline: 8px;
+  }
+
+  .workspace-module-heading {
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .workspace-module-heading h1 {
+    font-size: clamp(21px, 6.4vw, 27px);
+    overflow-wrap: anywhere;
+  }
+
+  .workspace-module-actions,
+  .workspace-module-actions > * {
+    max-width: 100%;
+  }
+
+  .workspace-kpi-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .workspace-kpi:nth-child(2) {
+    border-right: 0;
+  }
+
+  .workspace-kpi:nth-child(-n + 2) {
+    border-bottom: 1px solid #315567;
+  }
+
+  .competitor-option-group {
+    display: grid;
+    max-height: none;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+  }
+
+  .competitor-option-group > span {
+    display: flex;
+    min-width: 0;
+    align-items: baseline;
+    gap: 8px;
+    padding-top: 0;
+  }
+
+  .competitor-option-group > span small {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .competitor-option-group > div {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .competitor-option-group label {
+    flex: 0 1 auto;
+  }
+
+  .competitor-option-group label > b {
+    min-height: 30px;
+    padding: 5px 8px;
+  }
+
+  .market-keyword {
+    max-width: min(58%, calc(100% - 14px));
+    font-size: clamp(9px, var(--cloud-size, 14px), 27px);
+  }
+
+  .market-graph-detail-head,
+  .market-graph-evidence-row {
+    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .market-graph-detail-head {
+    display: grid;
+  }
+
+  .market-graph-evidence-row small {
+    white-space: normal;
+  }
+
+  .market-time-filter {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .market-time-filter label,
+  .market-time-filter input,
+  .market-time-filter button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .market-time-filter button {
+    grid-column: 1 / -1;
+  }
+
+  .news-item > p {
+    -webkit-line-clamp: 3;
+  }
+
+  .chat-composer-toolbar {
+    min-width: 0;
+    flex-wrap: wrap;
+  }
+
+  .chat-composer-toolbar > * {
+    min-width: 0;
+  }
+}
+
+/* Medium screens: avoid fixed second columns consuming most of the canvas. */
+@media (min-width: 561px) and (max-width: 1180px) {
+  .workspace-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(300px, .8fr);
+    gap: 12px;
+  }
+
+  .competitor-option-group > span {
+    flex-basis: 94px;
+  }
+
+  .competitor-option-group:not(.is-disappearing) {
+    max-height: none;
+  }
+}
+
+/* Wide screens: use the available canvas without turning the interface into
+   scattered islands. Sizes grow gently and retain enterprise density. */
+@media (min-width: 1800px) {
+  .dashboard-page:not(.workspace-dashboard-active) .workspace-layout:not(.is-nav-collapsed) {
+    grid-template-columns: clamp(248px, 13vw, 300px) minmax(0, 1fr);
+    column-gap: clamp(12px, .8vw, 20px);
+  }
+
+  .dashboard-page:not(.workspace-dashboard-active) .workspace-tabs {
+    margin-block: 14px;
+    margin-left: 14px;
+  }
+
+  .dashboard-page:not(.workspace-dashboard-active) .workspace-module-shell {
+    padding: clamp(18px, 1.15vw, 30px) clamp(20px, 1.3vw, 34px) clamp(20px, 1.3vw, 34px) 4px;
+  }
+
+  .workspace-module-heading {
+    gap: clamp(24px, 2vw, 44px);
+    margin-bottom: clamp(20px, 1.2vw, 30px);
+  }
+
+  .workspace-module-heading h1 {
+    font-size: clamp(34px, 1.65vw, 44px);
+  }
+
+  .workspace-module-heading p {
+    max-width: 860px;
+    font-size: var(--workspace-readable-copy);
+  }
+
+  .workspace-tab {
+    min-height: clamp(44px, 2.45vw, 54px);
+    font-size: clamp(12px, .67vw, 15px);
+  }
+
+  .workspace-kpi {
+    padding: clamp(16px, .9vw, 23px);
+  }
+
+  .workspace-kpi span,
+  .workspace-kpi small,
+  .workspace-panel-header span,
+  .workspace-report-host .file-row span {
+    font-size: clamp(11px, .58vw, 13px);
+  }
+
+  .workspace-kpi strong {
+    font-size: clamp(26px, 1.45vw, 36px);
+  }
+
+  .workspace-panel-header {
+    min-height: clamp(50px, 2.8vw, 64px);
+    padding-inline: clamp(16px, .9vw, 24px);
+  }
+
+  .workspace-panel-header h2,
+  .workspace-report-host .output-heading strong {
+    font-size: clamp(14px, .75vw, 17px);
+  }
+
+  #workspace-panel-weekly .workspace-grid:has(.report-preview.is-placeholder),
+  #workspace-panel-performance .workspace-grid:has(.report-preview.is-placeholder) {
+    grid-template-columns: minmax(0, 1fr) clamp(340px, 22vw, 520px);
+  }
+
+  .report-preview-guide {
+    max-width: 380px;
+    padding: clamp(30px, 2vw, 48px);
+  }
+
+  .report-preview-guide-icons span {
+    width: clamp(62px, 3.5vw, 82px);
+    height: clamp(62px, 3.5vw, 82px);
+  }
+
+  .report-preview-guide strong {
+    font-size: clamp(15px, .78vw, 18px);
+  }
+
+  .report-preview-guide p {
+    font-size: clamp(11px, .62vw, 14px);
+  }
+
+  .market-intel-page {
+    gap: clamp(12px, .8vw, 20px);
+  }
+
+  .market-keyword-stage {
+    padding: clamp(14px, .8vw, 22px);
+  }
+
+  .market-keyword-stage > header h2,
+  .market-received-toolbar h2 {
+    font-size: clamp(13px, .7vw, 16px);
+  }
+}
