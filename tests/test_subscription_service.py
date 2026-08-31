@@ -985,6 +985,22 @@ class SubscriptionServiceTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "新闻条数无效"):
             self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], news_item_limit=12)
 
+    def test_weekly_report_preference_persists_and_is_exposed_in_summary(self):
+        saved = self.service.update_weekly_report_preference("reports/战略周报（编辑稿）.docx")
+        self.assertEqual(saved["path"], "reports/战略周报（编辑稿）.docx")
+
+        reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
+        self.assertEqual(
+            reloaded.weekly_report_preference()["path"],
+            "reports/战略周报（编辑稿）.docx",
+        )
+        self.assertEqual(
+            reloaded.list_summary()["weekly_report_preference"]["path"],
+            "reports/战略周报（编辑稿）.docx",
+        )
+        with self.assertRaisesRegex(ValueError, "路径无效"):
+            self.service.update_weekly_report_preference("../secret.docx")
+
     def test_report_schedule_persists_multiple_month_days_and_hong_kong_time(self):
         from datetime import datetime
 

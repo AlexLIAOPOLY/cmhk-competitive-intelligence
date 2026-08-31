@@ -71,6 +71,8 @@ const state = {
   hasRunningTasks: false,
   reportLibraryBaselineReady: false,
   weeklyPreviewController: null,
+  weeklyPushPreferencePath: "",
+  weeklyPushPreferenceBusy: false,
 };
 
 const els = {
@@ -1825,6 +1827,47 @@ function renderInsights(status) {
   });
 }
 
+function broadcastWeeklyPushPreference(path) {
+  const frame = document.querySelector('[data-workspace-panel="subscriptions"] iframe');
+  frame?.contentWindow?.postMessage({ type: "cmhk-weekly-report-preference", path: String(path || "") }, location.origin);
+}
+
+async function loadWeeklyPushPreference() {
+  if (document.body.classList.contains("public-readonly")) return;
+  const response = await fetch("/api/weekly-report-preference", { cache: "no-store" });
+  const payload = await response.json();
+  if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+  state.weeklyPushPreferencePath = String(payload.preference?.path || "");
+  renderFileList();
+}
+
+async function saveWeeklyPushPreference(path) {
+  if (state.weeklyPushPreferenceBusy) return;
+  const previous = state.weeklyPushPreferencePath;
+  state.weeklyPushPreferenceBusy = true;
+  state.weeklyPushPreferencePath = String(path || "");
+  renderFileList();
+  try {
+    const response = await fetch("/api/subscriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "setWeeklyReportPreference", weeklyReportPath: state.weeklyPushPreferencePath }),
+    });
+    const payload = await response.json();
+    if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+    state.weeklyPushPreferencePath = String(payload.result?.path || "");
+    const report = state.outputs.find((item) => item.path_str === state.weeklyPushPreferencePath);
+    showTaskOperationNotice(report ? `下次推送将使用：${report.name}` : "下次推送已恢复自动选择最新正式版");
+    broadcastWeeklyPushPreference(state.weeklyPushPreferencePath);
+  } catch (error) {
+    state.weeklyPushPreferencePath = previous;
+    throw error;
+  } finally {
+    state.weeklyPushPreferenceBusy = false;
+    renderFileList();
+  }
+}
+
 function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
   if (!target) return;
   const selectColumn = state.multiSelect ? "<span></span>" : "";
@@ -1854,10 +1897,15 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
     const audioAction = file.audio && file.audio.exists
       ? `<button type="button" class="row-icon-button audio-play-button" data-path="${safePath}" data-name="${escapeHtml(file.name)}" title="播放音频摘要" aria-label="播放音频摘要">${iconSvg("volume")}</button>`
       : `<button type="button" class="row-icon-button generate-audio-button" data-path="${safePath}" title="生成音频摘要" aria-label="生成音频摘要">${iconSvg("waveform")}</button>`;
+    const canChooseForPush = type === "weekly" && !document.body.classList.contains("public-readonly");
+    const chosenForPush = canChooseForPush && state.weeklyPushPreferencePath === file.path_str;
+    const pushChoice = canChooseForPush
+      ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" data-weekly-push-path="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : "设为下次推送的周报"}"${state.weeklyPushPreferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
+      : "";
     html += `
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell">${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
+        <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
@@ -1874,6 +1922,12 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
 
 function bindOutputTableEvents(target) {
   if (!target) return;
+  target.querySelectorAll("[data-weekly-push-path]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const path = state.weeklyPushPreferencePath === button.dataset.weeklyPushPath ? "" : button.dataset.weeklyPushPath;
+      saveWeeklyPushPreference(path).catch((error) => showTaskOperationNotice(`周报推送版本保存失败：${error.message}`));
+    });
+  });
   target.querySelectorAll(".edit-report-button").forEach((button) => {
     button.addEventListener("click", () => window.CMHKReportEditor?.open(button.dataset.path));
   });
@@ -2143,7 +2197,16 @@ window.addEventListener("workspace-tab-change", (event) => {
   if (reportType === "weekly" || reportType === "performance") {
     markReportCategoryViewed(reportType);
   }
-  if (reportType === "weekly") refreshWeeklyGenerationPreview();
+  if (reportType === "weekly") {
+    refreshWeeklyGenerationPreview();
+    loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本同步失败", error));
+  }
+});
+
+window.addEventListener("message", (event) => {
+  if (event.origin !== location.origin || event.data?.type !== "cmhk-weekly-report-preference") return;
+  state.weeklyPushPreferencePath = String(event.data.path || "");
+  renderFileList();
 });
 
 window.addEventListener("cmhk-report-saved", (event) => {
@@ -7906,6 +7969,7 @@ window.CMHKAuth?.ready.then(() => {
   }
   if (window.CMHKAuth.hasModule("dashboard")) {
     fetchStatus().catch((error) => setLog(`初始化失败：${error.message}`));
+    loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本初始化失败", error));
     setInterval(() => fetchStatus().catch(console.error), 10000);
   }
 });

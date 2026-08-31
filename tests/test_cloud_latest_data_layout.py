@@ -36,7 +36,7 @@ class CloudLatestDataLayoutTests(unittest.TestCase):
         self.assertIn(".intelligence-domain-cloud .intelligence-viz-rows", STYLES)
         self.assertIn("align-content: start;", STYLES)
         self.assertIn("overflow-y: auto;", STYLES)
-        self.assertIn('/static/styles.css?v=288', INDEX)
+        self.assertIn('/static/styles.css?v=289', INDEX)
 
 
 if __name__ == "__main__":

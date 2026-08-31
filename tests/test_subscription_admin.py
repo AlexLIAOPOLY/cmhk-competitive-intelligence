@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=13', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=24', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=14', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=25', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -149,6 +149,18 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('.compact-filter-panel', STYLE)
         self.assertIn('.filter-trigger.is-active', STYLE)
         self.assertNotIn('type="search" data-section-filter', SCRIPT)
+
+    def test_weekly_report_picker_is_searchable_compact_and_server_synchronized(self):
+        self.assertIn("data-weekly-picker-trigger", SCRIPT)
+        self.assertIn('type="search"', SCRIPT)
+        self.assertIn("data-weekly-picker-search", SCRIPT)
+        self.assertIn('action: "setWeeklyReportPreference"', SCRIPT)
+        self.assertIn('type: "cmhk-weekly-report-preference"', SCRIPT)
+        self.assertIn("weekly_report_preference", SCRIPT)
+        self.assertIn(".weekly-picker-popover", STYLE)
+        self.assertIn("max-height: 224px", STYLE)
+        self.assertIn("overflow-y: auto", STYLE)
+        self.assertNotIn("data-weekly-report-select", SCRIPT)
 
 
 if __name__ == "__main__":

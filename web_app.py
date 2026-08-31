@@ -308,11 +308,60 @@ def subscription_service() -> SubscriptionService:
     return SubscriptionService(runtime_root=ROOT)
 
 
+def weekly_report_preference_payload(
+    service: SubscriptionService,
+    *,
+    status: dict | None = None,
+) -> dict[str, object]:
+    preference = service.weekly_report_preference()
+    preferred_path = str(preference.get("path") or "")
+    outputs = (status or build_status()).get("outputs") or []
+    report = next(
+        (
+            item
+            for item in outputs
+            if isinstance(item, dict)
+            and item.get("reportType") == "weekly"
+            and item.get("path_str") == preferred_path
+        ),
+        None,
+    )
+    return {
+        **preference,
+        "path": preferred_path if report else "",
+        "available": bool(report),
+        "report": {
+            "name": str(report.get("name") or ""),
+            "path": str(report.get("path_str") or ""),
+            "is_edited": bool(report.get("isEdited")),
+            "mtime_text": str(report.get("mtimeText") or ""),
+        } if report else None,
+    }
+
+
+def update_weekly_report_preference(
+    service: SubscriptionService,
+    report_path: str,
+) -> dict[str, object]:
+    normalized = str(report_path or "").strip()
+    status = build_status()
+    if normalized and not any(
+        isinstance(item, dict)
+        and item.get("reportType") == "weekly"
+        and item.get("path_str") == normalized
+        for item in (status.get("outputs") or [])
+    ):
+        raise ValueError("选中的周报不在当前报告库中，请刷新后重新选择")
+    service.update_weekly_report_preference(normalized)
+    return weekly_report_preference_payload(service, status=status)
+
+
 SUBSCRIPTION_OPERATION_ACTIONS = {
     "publish": "subscription.card_send",
     "update": "subscription.settings_update",
     "updateReportSchedule": "subscription.report_schedule_update",
     "updateNewsSchedule": "subscription.news_schedule_update",
+    "setWeeklyReportPreference": "subscription.weekly_report_preference_update",
     "refreshDirectory": "subscription.directory_refresh",
     "addCandidates": "subscription.candidate_add",
     "invite": "subscription.invite_send",
@@ -362,6 +411,13 @@ def subscription_operation_audit_payload(
             "days": result.get("days") or payload.get("days"),
             "time": str(result.get("time") or payload.get("time") or "")[:20],
             "enabled": payload.get("enabled") is True,
+        })
+    elif action == "setWeeklyReportPreference":
+        target = str(result.get("path") or "automatic-weekly-report")
+        target_label = str((result.get("report") or {}).get("name") or "自动选择最新正式版")[:240]
+        details.update({
+            "weekly_report_path": str(result.get("path") or "")[:240],
+            "selection": "manual" if result.get("path") else "automatic",
         })
     elif action == "refreshDirectory":
         target = "feishu-directory"
@@ -3352,6 +3408,11 @@ def push_latest_subscription_content(
         raise ValueError("接收范围内没有已启用的订阅内容")
 
     status = build_status()
+    explicit_weekly_path = bool(weekly_report_path)
+    if not weekly_report_path:
+        preference_reader = getattr(service, "weekly_report_preference", None)
+        if callable(preference_reader):
+            weekly_report_path = str((preference_reader() or {}).get("path") or "")
     selected_weekly: dict | None = None
     if weekly_report_path:
         selected_weekly = next(
@@ -3365,7 +3426,12 @@ def push_latest_subscription_content(
             None,
         )
         if not selected_weekly:
-            raise ValueError("选中的周报不在当前报告库中，请刷新后重新选择")
+            if explicit_weekly_path:
+                raise ValueError("选中的周报不在当前报告库中，请刷新后重新选择")
+            preference_writer = getattr(service, "update_weekly_report_preference", None)
+            if callable(preference_writer):
+                preference_writer("")
+            weekly_report_path = ""
 
     content: dict[str, dict[str, object]] = {}
     for service_key, report_type in (("weekly", "weekly"), ("performance", "carrier-performance")):
@@ -6412,6 +6478,18 @@ class AppHandler(BaseHTTPRequestHandler):
                     status=500,
                 )
             return
+        if path == "/api/weekly-report-preference":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "周报推送版本仅允许本机管理"}, status=403)
+                return
+            try:
+                json_response(self, {
+                    "ok": True,
+                    "preference": weekly_report_preference_payload(subscription_service()),
+                })
+            except Exception as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=500)
+            return
         if path == "/api/subscriptions":
             if not is_loopback_client(str(self.client_address[0])):
                 json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
@@ -7009,6 +7087,11 @@ class AppHandler(BaseHTTPRequestHandler):
                 elif action == "updateNewsSchedule":
                     result = service.update_news_schedule(
                         enabled=payload.get("enabled") is True,
+                    )
+                elif action == "setWeeklyReportPreference":
+                    result = update_weekly_report_preference(
+                        service,
+                        str(payload.get("weeklyReportPath") or ""),
                     )
                 elif action == "refreshDirectory":
                     result = service.refresh_people_directory()

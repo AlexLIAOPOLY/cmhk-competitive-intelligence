@@ -37,6 +37,19 @@ class FakeSubscriptionService:
         }
 
 
+class PreferredSubscriptionService(FakeSubscriptionService):
+    def __init__(self, preferred_path):
+        super().__init__()
+        self.preferred_path = preferred_path
+
+    def weekly_report_preference(self):
+        return {"path": self.preferred_path, "updated_at": "2026-08-31T09:00:00+08:00"}
+
+    def update_weekly_report_preference(self, report_path):
+        self.preferred_path = report_path
+        return {"path": report_path}
+
+
 class LatestSubscriptionPushTests(unittest.TestCase):
     def test_person_icon_uses_latest_content_and_current_subscription_preferences(self):
         service = FakeSubscriptionService()
@@ -130,6 +143,48 @@ class LatestSubscriptionPushTests(unittest.TestCase):
 
         weekly_call = next(item for item in service.calls if item["service"] == "weekly")
         self.assertEqual(weekly_call["path"], "formal.docx")
+        self.assertEqual(result["weekly_report_selection"], "automatic")
+
+    def test_saved_weekly_preference_is_used_when_push_request_omits_a_path(self):
+        service = PreferredSubscriptionService("selected-edit.docx")
+        status = {
+            "outputs": [
+                {"reportType": "weekly", "path_str": "selected-edit.docx", "isEdited": True},
+                {"reportType": "weekly", "path_str": "formal.docx", "isEdited": False},
+            ]
+        }
+        with (
+            mock.patch.object(web_app, "build_status", return_value=status),
+            mock.patch("strategic_briefing.latest_reviewed_news", return_value=[]),
+        ):
+            result = web_app.push_latest_subscription_content(
+                service,
+                target_open_id="ou_target123",
+            )
+
+        weekly_call = next(item for item in service.calls if item["service"] == "weekly")
+        self.assertEqual(weekly_call["path"], "selected-edit.docx")
+        self.assertTrue(weekly_call["allow_user_edited"])
+        self.assertEqual(result["weekly_report_selection"], "manual")
+
+    def test_missing_saved_weekly_preference_falls_back_to_latest_formal(self):
+        service = PreferredSubscriptionService("removed.docx")
+        status = {
+            "outputs": [
+                {"reportType": "weekly", "path_str": "formal.docx", "isEdited": False},
+            ]
+        }
+        with (
+            mock.patch.object(web_app, "build_status", return_value=status),
+            mock.patch("strategic_briefing.latest_reviewed_news", return_value=[]),
+        ):
+            result = web_app.push_latest_subscription_content(
+                service,
+                target_open_id="ou_target123",
+            )
+
+        self.assertEqual(service.preferred_path, "")
+        self.assertEqual(service.calls[0]["path"], "formal.docx")
         self.assertEqual(result["weekly_report_selection"], "automatic")
 
     def test_bulk_icon_requires_confirmation(self):

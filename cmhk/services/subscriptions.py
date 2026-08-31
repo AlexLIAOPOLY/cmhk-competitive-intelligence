@@ -762,6 +762,11 @@ class SubscriptionService:
                     last_completed_at TEXT NOT NULL DEFAULT '',
                     updated_at TEXT NOT NULL
                 );
+                CREATE TABLE IF NOT EXISTS subscription_admin_preferences (
+                    preference_key TEXT PRIMARY KEY,
+                    preference_value TEXT NOT NULL DEFAULT '',
+                    updated_at TEXT NOT NULL
+                );
                 """
             )
             db.execute(
@@ -1336,6 +1341,7 @@ class SubscriptionService:
             "invitation_permissions": self.invitation_permission_snapshot(),
             "active_subscriber_count": sum(1 for row in subscribers if row["status"] == "active"),
             "report_schedule": self.report_schedule_snapshot(),
+            "weekly_report_preference": self.weekly_report_preference(),
             "strategic_news_schedule": self.strategic_news_schedule_snapshot(),
             "updated_at": _now_hkt(),
         }
@@ -1367,6 +1373,36 @@ class SubscriptionService:
                 (1 if enabled else 0, _now_hkt()),
             )
         return self.strategic_news_schedule_snapshot()
+
+    def weekly_report_preference(self) -> dict[str, Any]:
+        with closing(self._connect()) as db:
+            row = db.execute(
+                """SELECT preference_value, updated_at
+                   FROM subscription_admin_preferences
+                   WHERE preference_key='weekly_report_path'"""
+            ).fetchone()
+        return {
+            "path": str(row["preference_value"] or "") if row else "",
+            "updated_at": str(row["updated_at"] or "") if row else "",
+        }
+
+    def update_weekly_report_preference(self, report_path: Any) -> dict[str, Any]:
+        normalized = str(report_path or "").strip()
+        candidate = Path(normalized) if normalized else None
+        if candidate and (candidate.is_absolute() or ".." in candidate.parts):
+            raise ValueError("周报版本路径无效")
+        updated_at = _now_hkt()
+        with closing(self._connect()) as db, db:
+            db.execute(
+                """INSERT INTO subscription_admin_preferences(
+                       preference_key, preference_value, updated_at
+                   ) VALUES('weekly_report_path', ?, ?)
+                   ON CONFLICT(preference_key) DO UPDATE SET
+                       preference_value=excluded.preference_value,
+                       updated_at=excluded.updated_at""",
+                (normalized, updated_at),
+            )
+        return {"path": normalized, "updated_at": updated_at}
 
     def automatic_delivery_enabled(self, service: str) -> bool:
         if service not in {"news", "weekly"}:

@@ -85,9 +85,30 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table th:nth-child(7) { width: 11%; }
 .subscriber-table td select { min-width: 0; }
 .manual-report-sendbar { display: grid; grid-template-columns: minmax(280px, .88fr) minmax(260px, 1.12fr); align-items: end; gap: 12px; padding: 9px 16px 10px; border-bottom: 1px solid rgba(92,158,178,.18); background: rgba(8,34,44,.58); }
-.manual-report-sendbar label { gap: 4px; color: #94abb3; font-size: 10px; }
-.manual-report-sendbar select { height: 32px; padding-right: 28px; color: #dbe8eb; font-size: 10px; }
 .manual-report-sendbar p { align-self: center; color: #708891; font-size: 9px; line-height: 1.5; }
+.subscriber-surface:has(.weekly-report-picker.is-open) { z-index: 14; overflow: visible; }
+.weekly-report-picker { position: relative; display: grid; min-width: 0; gap: 4px; }
+.weekly-picker-title { color: #94abb3; font-size: 10px; }
+.weekly-picker-trigger { display: flex; width: 100%; height: 34px; min-width: 0; align-items: center; justify-content: space-between; gap: 10px; padding: 0 10px 0 11px; border: 1px solid rgba(94,159,180,.36); border-radius: 8px; color: #dbe8eb; background: rgba(4,23,32,.92); font-size: 11px; text-align: left; }
+.weekly-picker-trigger > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.weekly-picker-trigger svg { width: 15px; height: 15px; flex: 0 0 auto; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; transition: transform .16s ease; }
+.weekly-report-picker.is-open .weekly-picker-trigger { border-color: #55aabd; box-shadow: 0 0 0 2px rgba(85,170,189,.1); }
+.weekly-report-picker.is-open .weekly-picker-trigger svg { transform: rotate(180deg); }
+.weekly-picker-popover { position: absolute; z-index: 30; top: calc(100% + 7px); left: 0; width: min(520px, calc(100vw - 48px)); padding: 9px; border: 1px solid rgba(100,183,199,.48); border-radius: 10px; background: rgba(6,28,38,.99); box-shadow: 0 18px 46px rgba(0,8,13,.58); }
+.weekly-picker-search { position: relative; display: block; }
+.weekly-picker-search input { height: 32px; padding-right: 78px; font-size: 11px; }
+.weekly-picker-search small { position: absolute; top: 50%; right: 10px; color: #6f8d97; font-size: 9px; transform: translateY(-50%); pointer-events: none; }
+.weekly-picker-options { display: grid; max-height: 224px; margin-top: 8px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.weekly-report-option { display: grid; grid-template-columns: 16px minmax(0,1fr); align-items: center; gap: 9px; min-height: 46px; padding: 7px 9px; border: 0; border-radius: 7px; color: #bdd0d5; background: transparent; text-align: left; }
+.weekly-report-option:hover, .weekly-report-option:focus-visible { outline: 0; color: #edf8fa; background: rgba(55,126,143,.2); }
+.weekly-report-option.is-selected { color: #e9f8f6; background: rgba(45,124,127,.28); }
+.weekly-report-option > span:last-child { min-width: 0; }
+.weekly-report-option strong, .weekly-report-option small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.weekly-report-option strong { font-size: 11px; font-weight: 620; }
+.weekly-report-option small { margin-top: 3px; color: #718d97; font-size: 9px; }
+.weekly-report-radio { width: 14px; height: 14px; border: 1px solid #587985; border-radius: 50%; box-shadow: inset 0 0 0 3px #061c26; background: transparent; }
+.weekly-report-option.is-selected .weekly-report-radio { border-color: #76d5d0; background: #76d5d0; }
+.weekly-picker-empty { padding: 18px 10px 10px; color: #718d97; font-size: 10px; text-align: center; }
 .table-person { display: flex; min-width: 0; align-items: center; gap: 9px; }
 .table-person-copy { min-width: 0; }
 .table-person-name, .table-person-id { display: block; white-space: nowrap; }
@@ -250,6 +271,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .manual-push-heading { align-items: flex-start; flex-direction: column; gap: 4px; }
   .weekly-schedule-heading .report-schedule-countdown { white-space: normal; }
   .manual-report-sendbar { padding: 9px 12px; }
+  .weekly-picker-popover { position: fixed; top: 86px; right: 12px; left: 12px; width: auto; }
   .invite-list-main { padding: 4px 10px 14px; }
   .form-row { grid-template-columns: 1fr; }
   .invite-row { grid-template-columns: auto auto minmax(0,1fr); }
