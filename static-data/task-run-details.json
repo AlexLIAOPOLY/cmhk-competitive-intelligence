@@ -1,6 +1,48 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260831_143733_686647": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260831_143733_686647",
+        "task_run_id": "20260831_143733_686647",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-08-31@14:00）",
+        "run_status": "running",
+        "phase": "LangChain 分批判断",
+        "progress_detail": "正在处理第 1/1 批，本批 13 条当天候选。",
+        "status_detail": "",
+        "started_at_hkt": "2026-08-31T14:37:33+08:00",
+        "heartbeat_at_hkt": "2026-08-31T14:37:35+08:00",
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260831_143302_156182": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260831_143302_156182",
+        "task_run_id": "20260831_143302_156182",
+        "title": "战略新闻定时爬虫",
+        "kind": "strategic-news",
+        "kind_label": "新闻爬虫",
+        "scope": "午后扫描（2026-08-31@14:00）",
+        "run_status": "running",
+        "phase": "飞书写入与逐格回读",
+        "progress_detail": "写入新增 13 条，涉及 10 个来源；飞书现有记录 1025 条，写入后逐格回读已确认。",
+        "status_detail": "",
+        "started_at_hkt": "2026-08-31T14:33:02+08:00",
+        "heartbeat_at_hkt": "2026-08-31T14:37:33+08:00",
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "retry_index": 2
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260831_141538_984910": {
       "ok": true,
       "run": {
@@ -984,48 +1026,6 @@
         "heartbeat_at_hkt": "2026-08-29T16:17:26+08:00",
         "completed_at_hkt": "2026-08-29T16:17:26+08:00",
         "duration_ms": 1386,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260829_161704_775570": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260829_161704_775570",
-        "task_run_id": "20260829_161704_775570",
-        "title": "季度竞对数据发布",
-        "kind": "quarterly-data-release",
-        "kind_label": "季度数据发布",
-        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "发布 qcm_79979881e6b4af8873f110de 完成，共 3051 行；数据截至 2026-06-30。",
-        "status_detail": "发布 qcm_79979881e6b4af8873f110de 完成，共 3051 行；数据截至 2026-06-30。",
-        "started_at_hkt": "2026-08-29T16:17:04+08:00",
-        "heartbeat_at_hkt": "2026-08-29T16:17:06+08:00",
-        "completed_at_hkt": "2026-08-29T16:17:06+08:00",
-        "duration_ms": 1459,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260829_155301_065177": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260829_155301_065177",
-        "task_run_id": "20260829_155301_065177",
-        "title": "季度竞对数据发布",
-        "kind": "quarterly-data-release",
-        "kind_label": "季度数据发布",
-        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "发布 qcm_d6959803299574f7d587d409 完成，共 3051 行；数据截至 2026-06-30。",
-        "status_detail": "发布 qcm_d6959803299574f7d587d409 完成，共 3051 行；数据截至 2026-06-30。",
-        "started_at_hkt": "2026-08-29T15:53:01+08:00",
-        "heartbeat_at_hkt": "2026-08-29T15:53:02+08:00",
-        "completed_at_hkt": "2026-08-29T15:53:02+08:00",
-        "duration_ms": 1492,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"

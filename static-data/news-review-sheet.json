@@ -25,11 +25,349 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-08-31T14:21:14+08:00",
+  "updatedAt": "2026-08-31T14:37:36+08:00",
   "rows": [
     {
       "rowNumber": 2,
       "originalRowNumber": 2,
+      "recordId": "NEWS-2CB82255574844",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "基础设施/网络/技术类",
+        "国内AI算力集群加速部署，绿色低碳数据中心技术走向规模化落地",
+        "国内AI算力集群部署节奏加快，高密度算力带来的能耗压力推动数据中心绿色节能技术从标杆验证走向规模化落地，适配不同场景的低碳方案正在成形。",
+        "手机凤凰网",
+        "2026-08-31",
+        "https://i.ifeng.com/c/8w2E42FSA53",
+        "数据中心",
+        "AI算力集群部署加快推动数据中心绿色节能技术规模化落地，涉及数据中心能效与基础设施技术演进，可影响未来数据中心建设成本与运营效率。",
+        "飞书监测表关键词（模块：基础设施/网络/技术类；命中：数据中心） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 3,
+      "originalRowNumber": 3,
+      "recordId": "NEWS-420243F14125B4",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "行业动态",
+        "英伟达DLSS 5神经渲染技术引发玩家与开发者争议",
+        "英伟达在GTC 2026大会上公布DLSS 5神经渲染技术，声称可彻底改变游戏光照和细节，但早期展示效果在角色面部处理上引发大量争议，被玩家讽刺为AI美颜。",
+        "快科技",
+        "2026-08-31",
+        "https://news.mydrivers.com/1/1147/1147493.htm",
+        "AI",
+        "英伟达DLSS 5利用AI神经渲染技术实现游戏画面革新，展示了AI在图形渲染领域的具体技术突破与商业化进展，属于AI关键技术演进事件。",
+        "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：AI） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 4,
+      "originalRowNumber": 4,
+      "recordId": "NEWS-A7F20EB50FCF98",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+        "特朗普分享AI生成的伊朗哈尔克岛被炸视频",
+        "特朗普在社交媒体分享AI生成的伊朗哈尔克岛被炸视频，哈尔克岛承担伊朗约90%石油出口，若遭攻击将导致全球石油市场混乱。",
+        "The Mirror",
+        "2026-08-31",
+        "https://www.mirror.co.uk/news/us-news/iran-kharg-island-trump-video-37609592",
+        "War",
+        "涉及伊朗关键石油出口基础设施的潜在威胁与全球石油市场动荡风险，属于地缘政治事件，可能影响能源成本与全球供应链稳定，间接影响电信行业运营成本。",
+        "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：War） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 5,
+      "originalRowNumber": 5,
+      "recordId": "NEWS-1B6955FA55634F",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "行业动态",
+        "AMD将FSR 4.1.1 AI超分下放至RX 7000系列显卡",
+        "AMD发布虚幻引擎5.8 FSR插件，将机器学习AI超分FSR 4.1.1下放到RDNA3架构的RX 7000系列显卡，现役A卡首次支持AI驱动超分辨率技术。",
+        "快科技",
+        "2026-08-31",
+        "https://news.mydrivers.com/1/1147/1147518.htm",
+        "AI",
+        "AMD将AI超分技术下放至RX 7000系列，涉及AI在GPU硬件中的实际部署与能力扩展，属于关键技术演进，可影响算力生态与终端AI能力。",
+        "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：AI） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 6,
+      "originalRowNumber": 6,
+      "recordId": "NEWS-D6ACD077D93BAF",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "竞对动态",
+        "Globe Telecom因数据需求激增加大5G资本开支至263亿比索",
+        "Globe Telecom上半年资本开支同比增长39%至263亿比索，以应对数据需求激增，重点投向5G网络建设。",
+        "Manila Bulletin",
+        "2026-08-31",
+        "https://mb.com.ph/2026/08/31/globe-telecom-boosts-5g-spending-to-263-billion-as-data-demand-surges",
+        "5G",
+        "Globe Telecom作为菲律宾主要运营商加大5G资本开支，属于竞对网络投资与经营动作，可用于对标分析。",
+        "飞书监测表关键词（模块：基础设施/网络/技术类；命中：5G） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 7,
+      "originalRowNumber": 7,
+      "recordId": "NEWS-07BD9A20963A74",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+        "伊朗对美军基地发动弹道导弹袭击，誓言对进一步侵略作出决定性回应",
+        "伊朗伊斯兰革命卫队对位于约旦的两处美军基地发射弹道导弹，以报复美军此前对伊朗火箭发射器的打击，并警告将对进一步侵略行为作出决定性回应。",
+        "The Economic Times",
+        "2026-08-31",
+        "https://economictimes.indiatimes.com/news/newsblogs/us-iran-war-strike-strait-of-hormuz-larak-island-us-bases-jordon-trump-khamenei-middle-east-war-india-pm-modi-delhi-weather-nepal-flash-floods-china/liveblog/133639257.cms",
+        "War",
+        "美伊军事冲突升级涉及弹道导弹袭击和报复性打击，可能影响中东地区稳定、能源供应及全球供应链，对电信行业的海缆安全、能源成本和地缘风险敞口产生潜在影响。",
+        "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：War） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 8,
+      "originalRowNumber": 8,
+      "recordId": "NEWS-CBA857C9704AE7",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "政策监管",
+        "工业和信息化部—国际电信联盟“空间促进发展”高级别研讨会在上海举行",
+        "8月31日，工业和信息化部—国际电信联盟“空间促进发展”高级别研讨会在上海市开幕。",
+        "wap.cj",
+        "2026-08-31",
+        "https://wap.cj.sina.cn/pc/7x24/5068005",
+        "工业和信息化部",
+        "工业和信息化部—国际电信联盟“空间促进发展”高级别研讨会在上海举行属于可验证的监管政策事件，影响合规与牌照。",
+        "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：工业和信息化部） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 9,
+      "originalRowNumber": 9,
+      "recordId": "NEWS-77E40378ECC521",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "竞对动态",
+        "抢通通信生命线！中国移动陆续开通吉隆口岸通信基站",
+        "因尼泊尔一侧发生泥石流灾害，造成西藏日喀则市吉隆县吉隆口岸重大人员伤亡、失联。在自治区通信管理局统筹部署下，8月27日，中国移动第一时间抽调抢险力量奔赴灾害一线开展应急通信抢修。",
+        "新华网客户端",
+        "2026-08-31",
+        "https://app.xinhuanet.com/news/article.html?articleId=202608319ea610f4c0244adca9c79183f71b158a",
+        "中国移动",
+        "抢通通信生命线！中国移动陆续开通吉隆口岸通信基站显示正式监控竞对发生具体经营事件，影响网络与运营。",
+        "飞书监测表关键词（模块：竞争对手；命中：中国移动） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 10,
+      "originalRowNumber": 10,
+      "recordId": "NEWS-FCDBD6A45112AD",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "行业动态",
+        "欧洲央行推动欧元上链，或重塑欧洲稳定币市场生态",
+        "欧洲央行执行董事施纳贝尔在杰克森霍尔研讨会上表示，代币化市场需要央行创造的资产，对稳定币作为结算工具持保留态度，正推动将欧元直接发行在区块链上。",
+        "蕃新聞",
+        "2026-08-31",
+        "https://n.yam.com/Article/20260831512199",
+        "",
+        "欧洲央行推动欧元上链涉及区块链基础设施和数字货币政策变化，可能影响电信运营商在数字支付和区块链领域的业务布局。",
+        "飞书监测表关键词（模块：基础设施/网络/技术类） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 11,
+      "originalRowNumber": 11,
+      "recordId": "NEWS-E95E484D57134B",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "香港本地",
+        "行业动态",
+        "中大医院CEO谈深圳体检香港治疗两地医疗合作计划",
+        "香港中文大学医院CEO接受专访，探讨深圳体检、香港治疗的两地医疗合作模式与发展计划。",
+        "香港文匯報",
+        "2026-08-31",
+        "https://news.google.com/rss/articles/CBMid0FVX3lxTE4xbnJ4Y2d3VVF1WEwzT3d2UFNLSTZEYkNEa1lveDZ4VjZhczNKX1Jac3NYTVNWUnVfNllvWFloQTZUekhpR3pqMWRqeERKcDVkVjBTUE4xX3VabWZ5SmtkUHhrUnZKZDhobTFxUDlvc3ZlejV3Y1FB?oc=5",
+        "",
+        "深港医疗合作新模式涉及跨境服务与人员流动，可能影响两地通信需求、企业客户服务和跨境网络使用场景。",
+        "Agentic Search 覆盖补搜（模块：香港本地新闻） → Google News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 12,
+      "originalRowNumber": 12,
+      "recordId": "NEWS-BCA66D050734CC",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "行业动态",
+        "科大讯飞将于9月7日发布星火X2.5通用大模型",
+        "科大讯飞计划于9月7日发布星火X2.5通用大模型，为AI大模型领域的新产品发布。",
+        "TradingView",
+        "2026-08-31",
+        "https://news.google.com/rss/articles/CBMiZkFVX3lxTFA2dEVINno1UDVLUjZzWDVuc2tHMHpvZ1l2b0NTSEp4Ri1nX3ZMM1BoQ2ZkOWZmNVNveWRCUWVFMkROM1pkQXBWSWdoMWdLT1UxaUlUWnJNVktpLUg1UUJ3d3NlUnJWUQ?oc=5",
+        "",
+        "科大讯飞发布新通用大模型涉及AI技术演进和产品迭代，可作为AI行业动态跟踪，对电信运营商AI战略有参考价值。",
+        "Agentic Search 覆盖补搜（模块：竞争对手） → Google News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 13,
+      "originalRowNumber": 13,
+      "recordId": "NEWS-951B12EB40E635",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "基础设施/网络/技术类",
+        "美国动员科技巨头进军埃及AI基建，抗衡华为数据中心布局",
+        "美国正动员科技巨头进入埃及AI基础设施市场，以抗衡华为在埃及的AI数据中心建设提案，华为计划部署超2000颗Ascend AI处理器。",
+        "蕃新聞",
+        "2026-08-31",
+        "https://n.yam.com/Article/20260831578121",
+        "AI",
+        "美中在埃及的AI数据中心竞争涉及华为Ascend AI处理器部署，反映AI基础设施领域的国际竞争格局变化，可能影响全球AI供应链与电信行业算力部署趋势。",
+        "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 14,
+      "originalRowNumber": 14,
+      "recordId": "NEWS-06DCA7E795D583",
+      "values": [
+        "",
+        "待审核",
+        "待审核",
+        "未同步",
+        "2026-08-31",
+        "国际/行业",
+        "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+        "美伊相互军事打击，国际油价开盘显著上涨",
+        "美军打击伊朗拉腊克岛火箭发射装置，伊朗向美军基地发射导弹，中东局势紧张推动国际油价在亚洲交易时段显著上涨。",
+        "wap.cj",
+        "2026-08-31",
+        "https://wap.cj.sina.cn/pc/7x24/5067795",
+        "开火",
+        "美伊军事冲突升级直接影响国际油价，能源成本变化将传导至电信行业运营成本与宏观经济环境，属于地缘政治对行业的间接影响信号。",
+        "飞书监测表关键词（模块：宏观经济&国际形势&地缘政治&其他国际性质关注词汇；命中：开火） → Bing News搜索"
+      ],
+      "storageSource": "feishu",
+      "sourceSheetId": "BYK3u",
+      "readOnly": false,
+      "feishuVisible": true
+    },
+    {
+      "rowNumber": 16,
+      "originalRowNumber": 16,
       "recordId": "NEWS-AC61F6771D219F",
       "values": [
         "新闻自动初筛机器人",
@@ -77,8 +415,8 @@
       }
     },
     {
-      "rowNumber": 3,
-      "originalRowNumber": 3,
+      "rowNumber": 17,
+      "originalRowNumber": 17,
       "recordId": "NEWS-7B05AE32FCD1E1",
       "values": [
         "新闻自动初筛机器人",
@@ -126,8 +464,8 @@
       }
     },
     {
-      "rowNumber": 4,
-      "originalRowNumber": 4,
+      "rowNumber": 18,
+      "originalRowNumber": 18,
       "recordId": "NEWS-C86ED0A99C398C",
       "values": [
         "新闻自动初筛机器人",
@@ -175,8 +513,8 @@
       }
     },
     {
-      "rowNumber": 5,
-      "originalRowNumber": 5,
+      "rowNumber": 19,
+      "originalRowNumber": 19,
       "recordId": "NEWS-12141BFC996222",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -224,14 +562,14 @@
       }
     },
     {
-      "rowNumber": 6,
-      "originalRowNumber": 6,
+      "rowNumber": 20,
+      "originalRowNumber": 20,
       "recordId": "NEWS-80BD26CE2F9B5B",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "香港本地",
         "基础设施/网络/技术类",
@@ -273,14 +611,14 @@
       }
     },
     {
-      "rowNumber": 7,
-      "originalRowNumber": 7,
+      "rowNumber": 21,
+      "originalRowNumber": 21,
       "recordId": "NEWS-407F5D808497E1",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -322,14 +660,14 @@
       }
     },
     {
-      "rowNumber": 8,
-      "originalRowNumber": 8,
+      "rowNumber": 22,
+      "originalRowNumber": 22,
       "recordId": "NEWS-F125FC3B3132DD",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -371,14 +709,14 @@
       }
     },
     {
-      "rowNumber": 9,
-      "originalRowNumber": 9,
+      "rowNumber": 23,
+      "originalRowNumber": 23,
       "recordId": "NEWS-6FEA73EFBF193F",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "行业动态",
@@ -420,14 +758,14 @@
       }
     },
     {
-      "rowNumber": 10,
-      "originalRowNumber": 10,
+      "rowNumber": 24,
+      "originalRowNumber": 24,
       "recordId": "NEWS-0C224CF68FB4E5",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -469,14 +807,14 @@
       }
     },
     {
-      "rowNumber": 11,
-      "originalRowNumber": 11,
+      "rowNumber": 25,
+      "originalRowNumber": 25,
       "recordId": "NEWS-792535E2EC1F3E",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "竞对动态",
@@ -518,8 +856,8 @@
       }
     },
     {
-      "rowNumber": 12,
-      "originalRowNumber": 12,
+      "rowNumber": 26,
+      "originalRowNumber": 26,
       "recordId": "NEWS-5FDE39F045FAB4",
       "values": [
         "新闻自动初筛机器人",
@@ -567,8 +905,8 @@
       }
     },
     {
-      "rowNumber": 13,
-      "originalRowNumber": 13,
+      "rowNumber": 27,
+      "originalRowNumber": 27,
       "recordId": "NEWS-722D08334B8AB9",
       "values": [
         "新闻自动初筛机器人",
@@ -616,8 +954,8 @@
       }
     },
     {
-      "rowNumber": 14,
-      "originalRowNumber": 14,
+      "rowNumber": 28,
+      "originalRowNumber": 28,
       "recordId": "NEWS-786788A24DCACC",
       "values": [
         "新闻自动初筛机器人",
@@ -665,14 +1003,14 @@
       }
     },
     {
-      "rowNumber": 15,
-      "originalRowNumber": 15,
+      "rowNumber": 29,
+      "originalRowNumber": 29,
       "recordId": "NEWS-8287BF2693BE7B",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "行业动态",
@@ -714,14 +1052,14 @@
       }
     },
     {
-      "rowNumber": 16,
-      "originalRowNumber": 16,
+      "rowNumber": 30,
+      "originalRowNumber": 30,
       "recordId": "NEWS-EFB1DDF49A72B9",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -763,8 +1101,8 @@
       }
     },
     {
-      "rowNumber": 17,
-      "originalRowNumber": 17,
+      "rowNumber": 31,
+      "originalRowNumber": 31,
       "recordId": "NEWS-C09787D3D62413",
       "values": [
         "新闻自动初筛机器人",
@@ -812,14 +1150,14 @@
       }
     },
     {
-      "rowNumber": 18,
-      "originalRowNumber": 18,
+      "rowNumber": 32,
+      "originalRowNumber": 32,
       "recordId": "NEWS-EF2227F4297B40",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -861,14 +1199,14 @@
       }
     },
     {
-      "rowNumber": 19,
-      "originalRowNumber": 19,
+      "rowNumber": 33,
+      "originalRowNumber": 33,
       "recordId": "NEWS-1A154D23BA1E1A",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "市场/产品类",
@@ -910,14 +1248,14 @@
       }
     },
     {
-      "rowNumber": 20,
-      "originalRowNumber": 20,
+      "rowNumber": 34,
+      "originalRowNumber": 34,
       "recordId": "NEWS-16A7620B2D5523",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -959,14 +1297,14 @@
       }
     },
     {
-      "rowNumber": 21,
-      "originalRowNumber": 21,
+      "rowNumber": 35,
+      "originalRowNumber": 35,
       "recordId": "NEWS-B29EF4B9FE54CE",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -1008,8 +1346,8 @@
       }
     },
     {
-      "rowNumber": 22,
-      "originalRowNumber": 22,
+      "rowNumber": 36,
+      "originalRowNumber": 36,
       "recordId": "NEWS-E682EE3499984A",
       "values": [
         "新闻自动初筛机器人",
@@ -1057,8 +1395,8 @@
       }
     },
     {
-      "rowNumber": 23,
-      "originalRowNumber": 23,
+      "rowNumber": 37,
+      "originalRowNumber": 37,
       "recordId": "NEWS-ACD293A44847E4",
       "values": [
         "新闻自动初筛机器人",
@@ -1106,8 +1444,8 @@
       }
     },
     {
-      "rowNumber": 24,
-      "originalRowNumber": 24,
+      "rowNumber": 38,
+      "originalRowNumber": 38,
       "recordId": "NEWS-FF32C0B6743618",
       "values": [
         "新闻自动初筛机器人",
@@ -1155,8 +1493,8 @@
       }
     },
     {
-      "rowNumber": 25,
-      "originalRowNumber": 25,
+      "rowNumber": 39,
+      "originalRowNumber": 39,
       "recordId": "NEWS-660F727ACC7A34",
       "values": [
         "新闻自动初筛机器人",
@@ -1204,8 +1542,8 @@
       }
     },
     {
-      "rowNumber": 26,
-      "originalRowNumber": 26,
+      "rowNumber": 40,
+      "originalRowNumber": 40,
       "recordId": "NEWS-6DC175FDF85AA9",
       "values": [
         "新闻自动初筛机器人",
@@ -1253,8 +1591,8 @@
       }
     },
     {
-      "rowNumber": 27,
-      "originalRowNumber": 27,
+      "rowNumber": 41,
+      "originalRowNumber": 41,
       "recordId": "NEWS-A17B902B63FE4C",
       "values": [
         "新闻自动初筛机器人",
@@ -1302,8 +1640,8 @@
       }
     },
     {
-      "rowNumber": 28,
-      "originalRowNumber": 28,
+      "rowNumber": 42,
+      "originalRowNumber": 42,
       "recordId": "NEWS-7F01E6BDCB471F",
       "values": [
         "新闻自动初筛机器人",
@@ -1351,8 +1689,8 @@
       }
     },
     {
-      "rowNumber": 29,
-      "originalRowNumber": 29,
+      "rowNumber": 43,
+      "originalRowNumber": 43,
       "recordId": "NEWS-E8BDC701FFDF0C",
       "values": [
         "新闻自动初筛机器人",
@@ -1400,8 +1738,8 @@
       }
     },
     {
-      "rowNumber": 30,
-      "originalRowNumber": 30,
+      "rowNumber": 44,
+      "originalRowNumber": 44,
       "recordId": "NEWS-62942A1075E0AC",
       "values": [
         "新闻自动初筛机器人",
@@ -1449,8 +1787,8 @@
       }
     },
     {
-      "rowNumber": 31,
-      "originalRowNumber": 31,
+      "rowNumber": 45,
+      "originalRowNumber": 45,
       "recordId": "NEWS-03FF0E57574527",
       "values": [
         "新闻自动初筛机器人",
@@ -1498,14 +1836,14 @@
       }
     },
     {
-      "rowNumber": 32,
-      "originalRowNumber": 32,
+      "rowNumber": 46,
+      "originalRowNumber": 46,
       "recordId": "NEWS-5D098AD959F3BE",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "香港本地",
         "政策监管",
@@ -1547,8 +1885,8 @@
       }
     },
     {
-      "rowNumber": 33,
-      "originalRowNumber": 33,
+      "rowNumber": 47,
+      "originalRowNumber": 47,
       "recordId": "NEWS-B939215C09B00C",
       "values": [
         "新闻自动初筛机器人",
@@ -1596,8 +1934,8 @@
       }
     },
     {
-      "rowNumber": 34,
-      "originalRowNumber": 34,
+      "rowNumber": 48,
+      "originalRowNumber": 48,
       "recordId": "NEWS-4C70B49675552D",
       "values": [
         "新闻自动初筛机器人",
@@ -1645,8 +1983,8 @@
       }
     },
     {
-      "rowNumber": 35,
-      "originalRowNumber": 35,
+      "rowNumber": 49,
+      "originalRowNumber": 49,
       "recordId": "NEWS-B9564F24F5E7F6",
       "values": [
         "新闻自动初筛机器人",
@@ -1694,8 +2032,8 @@
       }
     },
     {
-      "rowNumber": 36,
-      "originalRowNumber": 36,
+      "rowNumber": 50,
+      "originalRowNumber": 50,
       "recordId": "NEWS-DC0D19751DFD57",
       "values": [
         "新闻自动初筛机器人",
@@ -1743,8 +2081,8 @@
       }
     },
     {
-      "rowNumber": 37,
-      "originalRowNumber": 37,
+      "rowNumber": 51,
+      "originalRowNumber": 51,
       "recordId": "NEWS-1183281B744FE1",
       "values": [
         "新闻自动初筛机器人",
@@ -1792,8 +2130,8 @@
       }
     },
     {
-      "rowNumber": 38,
-      "originalRowNumber": 38,
+      "rowNumber": 52,
+      "originalRowNumber": 52,
       "recordId": "NEWS-2B66483FFA9651",
       "values": [
         "新闻自动初筛机器人",
@@ -1841,8 +2179,8 @@
       }
     },
     {
-      "rowNumber": 39,
-      "originalRowNumber": 39,
+      "rowNumber": 53,
+      "originalRowNumber": 53,
       "recordId": "NEWS-7E7FEB22BCC1F2",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -1890,8 +2228,8 @@
       }
     },
     {
-      "rowNumber": 40,
-      "originalRowNumber": 40,
+      "rowNumber": 54,
+      "originalRowNumber": 54,
       "recordId": "NEWS-8550B17B200047",
       "values": [
         "新闻自动初筛机器人",
@@ -1939,8 +2277,8 @@
       }
     },
     {
-      "rowNumber": 41,
-      "originalRowNumber": 41,
+      "rowNumber": 55,
+      "originalRowNumber": 55,
       "recordId": "NEWS-3EEB6180E3CAAB",
       "values": [
         "新闻自动初筛机器人",
@@ -1988,8 +2326,8 @@
       }
     },
     {
-      "rowNumber": 42,
-      "originalRowNumber": 42,
+      "rowNumber": 56,
+      "originalRowNumber": 56,
       "recordId": "NEWS-3B8ECA3C49D5B9",
       "values": [
         "新闻自动初筛机器人",
@@ -2037,8 +2375,8 @@
       }
     },
     {
-      "rowNumber": 43,
-      "originalRowNumber": 43,
+      "rowNumber": 57,
+      "originalRowNumber": 57,
       "recordId": "NEWS-9D0DB04577A3A9",
       "values": [
         "新闻自动初筛机器人",
@@ -2086,8 +2424,8 @@
       }
     },
     {
-      "rowNumber": 44,
-      "originalRowNumber": 44,
+      "rowNumber": 58,
+      "originalRowNumber": 58,
       "recordId": "NEWS-51B1DB11A0C99A",
       "values": [
         "新闻自动初筛机器人",
@@ -2135,8 +2473,8 @@
       }
     },
     {
-      "rowNumber": 45,
-      "originalRowNumber": 45,
+      "rowNumber": 59,
+      "originalRowNumber": 59,
       "recordId": "NEWS-B2837FB9C455B3",
       "values": [
         "新闻自动初筛机器人",
@@ -2184,8 +2522,8 @@
       }
     },
     {
-      "rowNumber": 46,
-      "originalRowNumber": 46,
+      "rowNumber": 60,
+      "originalRowNumber": 60,
       "recordId": "NEWS-D12D0A59F212D7",
       "values": [
         "新闻自动初筛机器人",
@@ -2233,8 +2571,8 @@
       }
     },
     {
-      "rowNumber": 47,
-      "originalRowNumber": 47,
+      "rowNumber": 61,
+      "originalRowNumber": 61,
       "recordId": "NEWS-068286F4D4D2E1",
       "values": [
         "新闻自动初筛机器人",
@@ -2282,8 +2620,8 @@
       }
     },
     {
-      "rowNumber": 48,
-      "originalRowNumber": 48,
+      "rowNumber": 62,
+      "originalRowNumber": 62,
       "recordId": "NEWS-85A61BA8DCE247",
       "values": [
         "新闻自动初筛机器人",
@@ -2331,8 +2669,8 @@
       }
     },
     {
-      "rowNumber": 49,
-      "originalRowNumber": 49,
+      "rowNumber": 63,
+      "originalRowNumber": 63,
       "recordId": "NEWS-955F5C9B7BFFE6",
       "values": [
         "新闻自动初筛机器人",
@@ -2380,8 +2718,8 @@
       }
     },
     {
-      "rowNumber": 50,
-      "originalRowNumber": 50,
+      "rowNumber": 64,
+      "originalRowNumber": 64,
       "recordId": "NEWS-64792F43F4FBEE",
       "values": [
         "新闻自动初筛机器人",
@@ -2429,8 +2767,8 @@
       }
     },
     {
-      "rowNumber": 51,
-      "originalRowNumber": 51,
+      "rowNumber": 65,
+      "originalRowNumber": 65,
       "recordId": "NEWS-4ED69919648A73",
       "values": [
         "新闻自动初筛机器人",
@@ -2478,8 +2816,8 @@
       }
     },
     {
-      "rowNumber": 52,
-      "originalRowNumber": 52,
+      "rowNumber": 66,
+      "originalRowNumber": 66,
       "recordId": "NEWS-3E1C478E3715EA",
       "values": [
         "新闻自动初筛机器人",
@@ -2527,8 +2865,8 @@
       }
     },
     {
-      "rowNumber": 53,
-      "originalRowNumber": 53,
+      "rowNumber": 67,
+      "originalRowNumber": 67,
       "recordId": "NEWS-743465219B65BE",
       "values": [
         "新闻自动初筛机器人",
@@ -2576,8 +2914,8 @@
       }
     },
     {
-      "rowNumber": 54,
-      "originalRowNumber": 54,
+      "rowNumber": 68,
+      "originalRowNumber": 68,
       "recordId": "NEWS-5F1DD7C6443B48",
       "values": [
         "新闻自动初筛机器人",
@@ -2625,8 +2963,8 @@
       }
     },
     {
-      "rowNumber": 55,
-      "originalRowNumber": 55,
+      "rowNumber": 69,
+      "originalRowNumber": 69,
       "recordId": "NEWS-88D15ECB83B5D2",
       "values": [
         "新闻自动初筛机器人",
@@ -2674,8 +3012,8 @@
       }
     },
     {
-      "rowNumber": 56,
-      "originalRowNumber": 56,
+      "rowNumber": 70,
+      "originalRowNumber": 70,
       "recordId": "NEWS-E14E01B41E1B60",
       "values": [
         "新闻自动初筛机器人",
@@ -2723,8 +3061,8 @@
       }
     },
     {
-      "rowNumber": 57,
-      "originalRowNumber": 57,
+      "rowNumber": 71,
+      "originalRowNumber": 71,
       "recordId": "NEWS-541718877F714B",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -2772,8 +3110,8 @@
       }
     },
     {
-      "rowNumber": 58,
-      "originalRowNumber": 58,
+      "rowNumber": 72,
+      "originalRowNumber": 72,
       "recordId": "NEWS-E4FBD2C81C6851",
       "values": [
         "新闻自动初筛机器人",
@@ -2821,8 +3159,8 @@
       }
     },
     {
-      "rowNumber": 59,
-      "originalRowNumber": 59,
+      "rowNumber": 73,
+      "originalRowNumber": 73,
       "recordId": "NEWS-11C6470FB56847",
       "values": [
         "新闻自动初筛机器人",
@@ -2870,8 +3208,8 @@
       }
     },
     {
-      "rowNumber": 60,
-      "originalRowNumber": 60,
+      "rowNumber": 74,
+      "originalRowNumber": 74,
       "recordId": "NEWS-846496757698A8",
       "values": [
         "新闻自动初筛机器人",
@@ -2919,8 +3257,8 @@
       }
     },
     {
-      "rowNumber": 61,
-      "originalRowNumber": 61,
+      "rowNumber": 75,
+      "originalRowNumber": 75,
       "recordId": "NEWS-22956CC342D7BF",
       "values": [
         "新闻自动初筛机器人",
@@ -2968,8 +3306,8 @@
       }
     },
     {
-      "rowNumber": 62,
-      "originalRowNumber": 62,
+      "rowNumber": 76,
+      "originalRowNumber": 76,
       "recordId": "NEWS-5D4DAA61B73819",
       "values": [
         "新闻自动初筛机器人",
@@ -3017,8 +3355,8 @@
       }
     },
     {
-      "rowNumber": 63,
-      "originalRowNumber": 63,
+      "rowNumber": 77,
+      "originalRowNumber": 77,
       "recordId": "NEWS-0266495B73CF9A",
       "values": [
         "新闻自动初筛机器人",
@@ -3066,8 +3404,8 @@
       }
     },
     {
-      "rowNumber": 64,
-      "originalRowNumber": 64,
+      "rowNumber": 78,
+      "originalRowNumber": 78,
       "recordId": "NEWS-3214A509796C42",
       "values": [
         "新闻自动初筛机器人",
@@ -3115,8 +3453,8 @@
       }
     },
     {
-      "rowNumber": 65,
-      "originalRowNumber": 65,
+      "rowNumber": 79,
+      "originalRowNumber": 79,
       "recordId": "NEWS-1DCD955EDF7BF7",
       "values": [
         "新闻自动初筛机器人",
@@ -3164,8 +3502,8 @@
       }
     },
     {
-      "rowNumber": 66,
-      "originalRowNumber": 66,
+      "rowNumber": 80,
+      "originalRowNumber": 80,
       "recordId": "NEWS-2FE35E57DE2EA8",
       "values": [
         "新闻自动初筛机器人",
@@ -3213,8 +3551,8 @@
       }
     },
     {
-      "rowNumber": 67,
-      "originalRowNumber": 67,
+      "rowNumber": 81,
+      "originalRowNumber": 81,
       "recordId": "NEWS-4D6383646EDD9A",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -3262,8 +3600,8 @@
       }
     },
     {
-      "rowNumber": 68,
-      "originalRowNumber": 68,
+      "rowNumber": 82,
+      "originalRowNumber": 82,
       "recordId": "NEWS-2F42EAB0DF8F1B",
       "values": [
         "新闻自动初筛机器人",
@@ -3311,8 +3649,8 @@
       }
     },
     {
-      "rowNumber": 69,
-      "originalRowNumber": 69,
+      "rowNumber": 83,
+      "originalRowNumber": 83,
       "recordId": "NEWS-C5B4EF05B97548",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -3360,8 +3698,8 @@
       }
     },
     {
-      "rowNumber": 70,
-      "originalRowNumber": 70,
+      "rowNumber": 84,
+      "originalRowNumber": 84,
       "recordId": "NEWS-2C4A60C8EFE4B4",
       "values": [
         "新闻自动初筛机器人",
@@ -3409,8 +3747,8 @@
       }
     },
     {
-      "rowNumber": 71,
-      "originalRowNumber": 71,
+      "rowNumber": 85,
+      "originalRowNumber": 85,
       "recordId": "NEWS-3070D40DA5D2B4",
       "values": [
         "新闻自动初筛机器人",
@@ -3458,14 +3796,14 @@
       }
     },
     {
-      "rowNumber": 72,
-      "originalRowNumber": 72,
+      "rowNumber": 86,
+      "originalRowNumber": 86,
       "recordId": "NEWS-DB2721990C5AC7",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-31",
         "国际/行业",
         "竞对动态",
@@ -3507,8 +3845,8 @@
       }
     },
     {
-      "rowNumber": 73,
-      "originalRowNumber": 73,
+      "rowNumber": 87,
+      "originalRowNumber": 87,
       "recordId": "NEWS-BB2FD7980A2792",
       "values": [
         "新闻自动初筛机器人",
@@ -3556,8 +3894,8 @@
       }
     },
     {
-      "rowNumber": 74,
-      "originalRowNumber": 74,
+      "rowNumber": 88,
+      "originalRowNumber": 88,
       "recordId": "NEWS-9B162A7148BCFE",
       "values": [
         "新闻自动初筛机器人",
@@ -3605,8 +3943,8 @@
       }
     },
     {
-      "rowNumber": 75,
-      "originalRowNumber": 75,
+      "rowNumber": 89,
+      "originalRowNumber": 89,
       "recordId": "NEWS-AC3715186FCD7D",
       "values": [
         "新闻自动初筛机器人",
@@ -3654,8 +3992,8 @@
       }
     },
     {
-      "rowNumber": 76,
-      "originalRowNumber": 76,
+      "rowNumber": 90,
+      "originalRowNumber": 90,
       "recordId": "NEWS-BBFDBDC4F0162A",
       "values": [
         "新闻自动初筛机器人",
@@ -3703,8 +4041,8 @@
       }
     },
     {
-      "rowNumber": 77,
-      "originalRowNumber": 77,
+      "rowNumber": 91,
+      "originalRowNumber": 91,
       "recordId": "NEWS-25E71E7021C5F7",
       "values": [
         "新闻自动初筛机器人",
@@ -3752,8 +4090,8 @@
       }
     },
     {
-      "rowNumber": 78,
-      "originalRowNumber": 78,
+      "rowNumber": 92,
+      "originalRowNumber": 92,
       "recordId": "NEWS-4B9F41695E90FA",
       "values": [
         "新闻自动初筛机器人",
@@ -3801,8 +4139,8 @@
       }
     },
     {
-      "rowNumber": 79,
-      "originalRowNumber": 79,
+      "rowNumber": 93,
+      "originalRowNumber": 93,
       "recordId": "NEWS-77AD4AE49AC066",
       "values": [
         "新闻自动初筛机器人",
@@ -3850,8 +4188,8 @@
       }
     },
     {
-      "rowNumber": 80,
-      "originalRowNumber": 80,
+      "rowNumber": 94,
+      "originalRowNumber": 94,
       "recordId": "NEWS-AEB6221F4774A0",
       "values": [
         "新闻自动初筛机器人",
@@ -3899,8 +4237,8 @@
       }
     },
     {
-      "rowNumber": 81,
-      "originalRowNumber": 81,
+      "rowNumber": 95,
+      "originalRowNumber": 95,
       "recordId": "NEWS-C6BC1CCED26DD1",
       "values": [
         "新闻自动初筛机器人",
@@ -3948,8 +4286,8 @@
       }
     },
     {
-      "rowNumber": 82,
-      "originalRowNumber": 82,
+      "rowNumber": 96,
+      "originalRowNumber": 96,
       "recordId": "NEWS-B07D1AFCF4A2A8",
       "values": [
         "新闻自动初筛机器人",
@@ -3997,8 +4335,8 @@
       }
     },
     {
-      "rowNumber": 83,
-      "originalRowNumber": 83,
+      "rowNumber": 97,
+      "originalRowNumber": 97,
       "recordId": "NEWS-2B78DAF4C2AFE4",
       "values": [
         "新闻自动初筛机器人",
@@ -4046,8 +4384,8 @@
       }
     },
     {
-      "rowNumber": 84,
-      "originalRowNumber": 84,
+      "rowNumber": 98,
+      "originalRowNumber": 98,
       "recordId": "NEWS-FC9DB5ADC00608",
       "values": [
         "新闻自动初筛机器人",
@@ -4095,8 +4433,8 @@
       }
     },
     {
-      "rowNumber": 85,
-      "originalRowNumber": 85,
+      "rowNumber": 99,
+      "originalRowNumber": 99,
       "recordId": "NEWS-9766D8F98B3C5E",
       "values": [
         "新闻自动初筛机器人",
@@ -4144,8 +4482,8 @@
       }
     },
     {
-      "rowNumber": 86,
-      "originalRowNumber": 86,
+      "rowNumber": 100,
+      "originalRowNumber": 100,
       "recordId": "NEWS-B4D00CB207991D",
       "values": [
         "新闻自动初筛机器人",
@@ -4193,8 +4531,8 @@
       }
     },
     {
-      "rowNumber": 87,
-      "originalRowNumber": 87,
+      "rowNumber": 101,
+      "originalRowNumber": 101,
       "recordId": "NEWS-3EB46DE3018BAE",
       "values": [
         "新闻自动初筛机器人",
@@ -4242,8 +4580,8 @@
       }
     },
     {
-      "rowNumber": 88,
-      "originalRowNumber": 88,
+      "rowNumber": 102,
+      "originalRowNumber": 102,
       "recordId": "NEWS-0EE11BEB1C9B8E",
       "values": [
         "新闻自动初筛机器人",
@@ -4291,8 +4629,8 @@
       }
     },
     {
-      "rowNumber": 89,
-      "originalRowNumber": 89,
+      "rowNumber": 103,
+      "originalRowNumber": 103,
       "recordId": "NEWS-CEE8E7CC2EF160",
       "values": [
         "新闻自动初筛机器人",
@@ -4340,8 +4678,8 @@
       }
     },
     {
-      "rowNumber": 90,
-      "originalRowNumber": 90,
+      "rowNumber": 104,
+      "originalRowNumber": 104,
       "recordId": "NEWS-26D4DEA9A8AACD",
       "values": [
         "新闻自动初筛机器人",
@@ -4389,8 +4727,8 @@
       }
     },
     {
-      "rowNumber": 91,
-      "originalRowNumber": 91,
+      "rowNumber": 105,
+      "originalRowNumber": 105,
       "recordId": "NEWS-2F750DA64F63D5",
       "values": [
         "新闻自动初筛机器人",
@@ -4438,8 +4776,8 @@
       }
     },
     {
-      "rowNumber": 92,
-      "originalRowNumber": 92,
+      "rowNumber": 106,
+      "originalRowNumber": 106,
       "recordId": "NEWS-F3C2127598F150",
       "values": [
         "新闻自动初筛机器人",
@@ -4487,8 +4825,8 @@
       }
     },
     {
-      "rowNumber": 93,
-      "originalRowNumber": 93,
+      "rowNumber": 107,
+      "originalRowNumber": 107,
       "recordId": "NEWS-06B52E23B544A1",
       "values": [
         "新闻自动初筛机器人",
@@ -4536,8 +4874,8 @@
       }
     },
     {
-      "rowNumber": 94,
-      "originalRowNumber": 94,
+      "rowNumber": 108,
+      "originalRowNumber": 108,
       "recordId": "NEWS-60091D2B82E90A",
       "values": [
         "新闻自动初筛机器人",
@@ -4585,8 +4923,8 @@
       }
     },
     {
-      "rowNumber": 95,
-      "originalRowNumber": 95,
+      "rowNumber": 109,
+      "originalRowNumber": 109,
       "recordId": "NEWS-74C319EDE663DD",
       "values": [
         "新闻自动初筛机器人",
@@ -4634,8 +4972,8 @@
       }
     },
     {
-      "rowNumber": 96,
-      "originalRowNumber": 96,
+      "rowNumber": 110,
+      "originalRowNumber": 110,
       "recordId": "NEWS-5507B8842144CD",
       "values": [
         "新闻自动初筛机器人",
@@ -4683,8 +5021,8 @@
       }
     },
     {
-      "rowNumber": 97,
-      "originalRowNumber": 97,
+      "rowNumber": 111,
+      "originalRowNumber": 111,
       "recordId": "NEWS-16AF3A9FEEB355",
       "values": [
         "新闻自动初筛机器人",
@@ -4732,8 +5070,8 @@
       }
     },
     {
-      "rowNumber": 98,
-      "originalRowNumber": 98,
+      "rowNumber": 112,
+      "originalRowNumber": 112,
       "recordId": "NEWS-A4BCDE50F6D518",
       "values": [
         "新闻自动初筛机器人",
@@ -4781,8 +5119,8 @@
       }
     },
     {
-      "rowNumber": 99,
-      "originalRowNumber": 99,
+      "rowNumber": 113,
+      "originalRowNumber": 113,
       "recordId": "NEWS-299EC9FBF8F516",
       "values": [
         "新闻自动初筛机器人",
@@ -4830,8 +5168,8 @@
       }
     },
     {
-      "rowNumber": 100,
-      "originalRowNumber": 100,
+      "rowNumber": 114,
+      "originalRowNumber": 114,
       "recordId": "NEWS-287DEACEE98E7F",
       "values": [
         "新闻自动初筛机器人",
@@ -4879,8 +5217,8 @@
       }
     },
     {
-      "rowNumber": 101,
-      "originalRowNumber": 101,
+      "rowNumber": 115,
+      "originalRowNumber": 115,
       "recordId": "NEWS-C2F457C709604E",
       "values": [
         "新闻自动初筛机器人",
@@ -4928,8 +5266,8 @@
       }
     },
     {
-      "rowNumber": 102,
-      "originalRowNumber": 102,
+      "rowNumber": 116,
+      "originalRowNumber": 116,
       "recordId": "NEWS-9B4B9306465184",
       "values": [
         "新闻自动初筛机器人",
@@ -4977,8 +5315,8 @@
       }
     },
     {
-      "rowNumber": 103,
-      "originalRowNumber": 103,
+      "rowNumber": 117,
+      "originalRowNumber": 117,
       "recordId": "NEWS-FE4BB645D4E3EB",
       "values": [
         "新闻自动初筛机器人",
@@ -5026,8 +5364,8 @@
       }
     },
     {
-      "rowNumber": 104,
-      "originalRowNumber": 104,
+      "rowNumber": 118,
+      "originalRowNumber": 118,
       "recordId": "NEWS-AF76D669628334",
       "values": [
         "新闻自动初筛机器人",
@@ -5075,8 +5413,8 @@
       }
     },
     {
-      "rowNumber": 105,
-      "originalRowNumber": 105,
+      "rowNumber": 119,
+      "originalRowNumber": 119,
       "recordId": "NEWS-083885B18EA4EF",
       "values": [
         "新闻自动初筛机器人",
@@ -5124,8 +5462,8 @@
       }
     },
     {
-      "rowNumber": 106,
-      "originalRowNumber": 106,
+      "rowNumber": 120,
+      "originalRowNumber": 120,
       "recordId": "NEWS-35602A7AC966C3",
       "values": [
         "新闻自动初筛机器人",
@@ -5173,8 +5511,8 @@
       }
     },
     {
-      "rowNumber": 107,
-      "originalRowNumber": 107,
+      "rowNumber": 121,
+      "originalRowNumber": 121,
       "recordId": "NEWS-94D19ACF0B818C",
       "values": [
         "新闻自动初筛机器人",
@@ -5222,8 +5560,8 @@
       }
     },
     {
-      "rowNumber": 108,
-      "originalRowNumber": 108,
+      "rowNumber": 122,
+      "originalRowNumber": 122,
       "recordId": "NEWS-CCA0AB40DA70D2",
       "values": [
         "新闻自动初筛机器人",
@@ -5271,8 +5609,8 @@
       }
     },
     {
-      "rowNumber": 109,
-      "originalRowNumber": 109,
+      "rowNumber": 123,
+      "originalRowNumber": 123,
       "recordId": "NEWS-773A5899F7C680",
       "values": [
         "新闻自动初筛机器人",
@@ -5320,8 +5658,8 @@
       }
     },
     {
-      "rowNumber": 110,
-      "originalRowNumber": 110,
+      "rowNumber": 124,
+      "originalRowNumber": 124,
       "recordId": "NEWS-17399830333B53",
       "values": [
         "新闻自动初筛机器人",
@@ -5369,8 +5707,8 @@
       }
     },
     {
-      "rowNumber": 111,
-      "originalRowNumber": 111,
+      "rowNumber": 125,
+      "originalRowNumber": 125,
       "recordId": "NEWS-7771F9D40B06D5",
       "values": [
         "新闻自动初筛机器人",
@@ -5418,8 +5756,8 @@
       }
     },
     {
-      "rowNumber": 112,
-      "originalRowNumber": 112,
+      "rowNumber": 126,
+      "originalRowNumber": 126,
       "recordId": "NEWS-5A0D231FC76260",
       "values": [
         "新闻自动初筛机器人",
@@ -5467,8 +5805,8 @@
       }
     },
     {
-      "rowNumber": 113,
-      "originalRowNumber": 113,
+      "rowNumber": 127,
+      "originalRowNumber": 127,
       "recordId": "NEWS-E8E10C7FFA47E4",
       "values": [
         "新闻自动初筛机器人",
@@ -5516,8 +5854,8 @@
       }
     },
     {
-      "rowNumber": 114,
-      "originalRowNumber": 114,
+      "rowNumber": 128,
+      "originalRowNumber": 128,
       "recordId": "NEWS-C5D8425374EE5D",
       "values": [
         "新闻自动初筛机器人",
@@ -5565,8 +5903,8 @@
       }
     },
     {
-      "rowNumber": 115,
-      "originalRowNumber": 115,
+      "rowNumber": 129,
+      "originalRowNumber": 129,
       "recordId": "NEWS-46A3C99A58D378",
       "values": [
         "新闻自动初筛机器人",
@@ -5614,66 +5952,14 @@
       }
     },
     {
-      "rowNumber": 116,
-      "originalRowNumber": 116,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 117,
-      "originalRowNumber": 117,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 118,
-      "originalRowNumber": 118,
+      "rowNumber": 132,
+      "originalRowNumber": 132,
       "recordId": "NEWS-1E0FC84F90D5C0",
       "values": [
         "新闻自动初筛机器人",
-        "接受",
         "不接受",
-        "已纳入",
+        "不接受",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "竞对动态",
@@ -5715,8 +6001,8 @@
       }
     },
     {
-      "rowNumber": 119,
-      "originalRowNumber": 119,
+      "rowNumber": 133,
+      "originalRowNumber": 133,
       "recordId": "NEWS-C1A57E25ED054F",
       "values": [
         "新闻自动初筛机器人",
@@ -5764,8 +6050,8 @@
       }
     },
     {
-      "rowNumber": 120,
-      "originalRowNumber": 120,
+      "rowNumber": 134,
+      "originalRowNumber": 134,
       "recordId": "NEWS-A7514BB409B3BB",
       "values": [
         "新闻自动初筛机器人",
@@ -5813,8 +6099,8 @@
       }
     },
     {
-      "rowNumber": 121,
-      "originalRowNumber": 121,
+      "rowNumber": 135,
+      "originalRowNumber": 135,
       "recordId": "NEWS-8C5659BD4C7B31",
       "values": [
         "新闻自动初筛机器人",
@@ -5862,14 +6148,14 @@
       }
     },
     {
-      "rowNumber": 122,
-      "originalRowNumber": 122,
+      "rowNumber": 136,
+      "originalRowNumber": 136,
       "recordId": "NEWS-E12878F8AC9FE0",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "行业动态",
@@ -5911,8 +6197,8 @@
       }
     },
     {
-      "rowNumber": 124,
-      "originalRowNumber": 124,
+      "rowNumber": 138,
+      "originalRowNumber": 138,
       "recordId": "NEWS-75D59C1C589AFF",
       "values": [
         "新闻自动初筛机器人",
@@ -5960,14 +6246,14 @@
       }
     },
     {
-      "rowNumber": 125,
-      "originalRowNumber": 125,
+      "rowNumber": 139,
+      "originalRowNumber": 139,
       "recordId": "NEWS-6A34944C537918",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -6009,8 +6295,8 @@
       }
     },
     {
-      "rowNumber": 126,
-      "originalRowNumber": 126,
+      "rowNumber": 140,
+      "originalRowNumber": 140,
       "recordId": "NEWS-1F918047A6383F",
       "values": [
         "新闻自动初筛机器人",
@@ -6058,8 +6344,8 @@
       }
     },
     {
-      "rowNumber": 127,
-      "originalRowNumber": 127,
+      "rowNumber": 141,
+      "originalRowNumber": 141,
       "recordId": "NEWS-AD01BC4848B0AF",
       "values": [
         "新闻自动初筛机器人",
@@ -6107,8 +6393,8 @@
       }
     },
     {
-      "rowNumber": 128,
-      "originalRowNumber": 128,
+      "rowNumber": 142,
+      "originalRowNumber": 142,
       "recordId": "NEWS-3D24235077174D",
       "values": [
         "新闻自动初筛机器人",
@@ -6156,8 +6442,8 @@
       }
     },
     {
-      "rowNumber": 129,
-      "originalRowNumber": 129,
+      "rowNumber": 143,
+      "originalRowNumber": 143,
       "recordId": "NEWS-84024D8B6A4335",
       "values": [
         "新闻自动初筛机器人",
@@ -6205,8 +6491,8 @@
       }
     },
     {
-      "rowNumber": 130,
-      "originalRowNumber": 130,
+      "rowNumber": 144,
+      "originalRowNumber": 144,
       "recordId": "NEWS-A42F7D0E61D595",
       "values": [
         "新闻自动初筛机器人",
@@ -6254,8 +6540,8 @@
       }
     },
     {
-      "rowNumber": 131,
-      "originalRowNumber": 131,
+      "rowNumber": 145,
+      "originalRowNumber": 145,
       "recordId": "NEWS-A3D5D05862B1C4",
       "values": [
         "新闻自动初筛机器人",
@@ -6303,8 +6589,8 @@
       }
     },
     {
-      "rowNumber": 132,
-      "originalRowNumber": 132,
+      "rowNumber": 146,
+      "originalRowNumber": 146,
       "recordId": "NEWS-9612C235213F84",
       "values": [
         "新闻自动初筛机器人",
@@ -6352,8 +6638,8 @@
       }
     },
     {
-      "rowNumber": 133,
-      "originalRowNumber": 133,
+      "rowNumber": 147,
+      "originalRowNumber": 147,
       "recordId": "NEWS-30EB2E1F9428EA",
       "values": [
         "新闻自动初筛机器人",
@@ -6401,8 +6687,8 @@
       }
     },
     {
-      "rowNumber": 134,
-      "originalRowNumber": 134,
+      "rowNumber": 148,
+      "originalRowNumber": 148,
       "recordId": "NEWS-E7C70224754ECB",
       "values": [
         "新闻自动初筛机器人",
@@ -6450,8 +6736,8 @@
       }
     },
     {
-      "rowNumber": 135,
-      "originalRowNumber": 135,
+      "rowNumber": 149,
+      "originalRowNumber": 149,
       "recordId": "NEWS-EE7009AB32C9F9",
       "values": [
         "新闻自动初筛机器人",
@@ -6499,8 +6785,8 @@
       }
     },
     {
-      "rowNumber": 136,
-      "originalRowNumber": 136,
+      "rowNumber": 150,
+      "originalRowNumber": 150,
       "recordId": "NEWS-BEA675833A8523",
       "values": [
         "新闻自动初筛机器人",
@@ -6548,8 +6834,8 @@
       }
     },
     {
-      "rowNumber": 137,
-      "originalRowNumber": 137,
+      "rowNumber": 151,
+      "originalRowNumber": 151,
       "recordId": "NEWS-C7299AA0DA89BF",
       "values": [
         "新闻自动初筛机器人",
@@ -6597,14 +6883,14 @@
       }
     },
     {
-      "rowNumber": 138,
-      "originalRowNumber": 138,
+      "rowNumber": 152,
+      "originalRowNumber": 152,
       "recordId": "NEWS-0BFAA29657A630",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -6646,14 +6932,14 @@
       }
     },
     {
-      "rowNumber": 139,
-      "originalRowNumber": 139,
+      "rowNumber": 153,
+      "originalRowNumber": 153,
       "recordId": "NEWS-CA0BA8098E7BAB",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -6695,14 +6981,14 @@
       }
     },
     {
-      "rowNumber": 140,
-      "originalRowNumber": 140,
+      "rowNumber": 154,
+      "originalRowNumber": 154,
       "recordId": "NEWS-E95639FE910741",
       "values": [
         "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -6744,8 +7030,8 @@
       }
     },
     {
-      "rowNumber": 141,
-      "originalRowNumber": 141,
+      "rowNumber": 155,
+      "originalRowNumber": 155,
       "recordId": "NEWS-51F8802EE1E0CF",
       "values": [
         "新闻自动初筛机器人",
@@ -6793,8 +7079,8 @@
       }
     },
     {
-      "rowNumber": 142,
-      "originalRowNumber": 142,
+      "rowNumber": 156,
+      "originalRowNumber": 156,
       "recordId": "NEWS-B26809CD334899",
       "values": [
         "新闻自动初筛机器人",
@@ -6842,8 +7128,8 @@
       }
     },
     {
-      "rowNumber": 143,
-      "originalRowNumber": 143,
+      "rowNumber": 157,
+      "originalRowNumber": 157,
       "recordId": "NEWS-C6EA83AC2E1720",
       "values": [
         "新闻自动初筛机器人",
@@ -6891,8 +7177,8 @@
       }
     },
     {
-      "rowNumber": 144,
-      "originalRowNumber": 144,
+      "rowNumber": 158,
+      "originalRowNumber": 158,
       "recordId": "NEWS-3339785FDC9E0E",
       "values": [
         "新闻自动初筛机器人",
@@ -6940,8 +7226,8 @@
       }
     },
     {
-      "rowNumber": 146,
-      "originalRowNumber": 146,
+      "rowNumber": 160,
+      "originalRowNumber": 160,
       "recordId": "NEWS-FB4FF1B8E06237",
       "values": [
         "新闻自动初筛机器人",
@@ -6989,8 +7275,8 @@
       }
     },
     {
-      "rowNumber": 147,
-      "originalRowNumber": 147,
+      "rowNumber": 161,
+      "originalRowNumber": 161,
       "recordId": "NEWS-07A3E1C5A42303",
       "values": [
         "新闻自动初筛机器人",
@@ -7038,8 +7324,8 @@
       }
     },
     {
-      "rowNumber": 148,
-      "originalRowNumber": 148,
+      "rowNumber": 162,
+      "originalRowNumber": 162,
       "recordId": "NEWS-6AF3003699AE1B",
       "values": [
         "新闻自动初筛机器人",
@@ -7087,8 +7373,8 @@
       }
     },
     {
-      "rowNumber": 149,
-      "originalRowNumber": 149,
+      "rowNumber": 163,
+      "originalRowNumber": 163,
       "recordId": "NEWS-A3B736644DC0FA",
       "values": [
         "新闻自动初筛机器人",
@@ -7136,8 +7422,8 @@
       }
     },
     {
-      "rowNumber": 150,
-      "originalRowNumber": 150,
+      "rowNumber": 164,
+      "originalRowNumber": 164,
       "recordId": "NEWS-B7FAD5D23A6E58",
       "values": [
         "新闻自动初筛机器人",
@@ -7185,8 +7471,8 @@
       }
     },
     {
-      "rowNumber": 151,
-      "originalRowNumber": 151,
+      "rowNumber": 165,
+      "originalRowNumber": 165,
       "recordId": "NEWS-2C8B0A65E9C54F",
       "values": [
         "新闻自动初筛机器人",
@@ -7234,8 +7520,8 @@
       }
     },
     {
-      "rowNumber": 152,
-      "originalRowNumber": 152,
+      "rowNumber": 166,
+      "originalRowNumber": 166,
       "recordId": "NEWS-BAFD1907553786",
       "values": [
         "新闻自动初筛机器人",
@@ -7283,8 +7569,8 @@
       }
     },
     {
-      "rowNumber": 153,
-      "originalRowNumber": 153,
+      "rowNumber": 167,
+      "originalRowNumber": 167,
       "recordId": "NEWS-66B4463371F15B",
       "values": [
         "新闻自动初筛机器人",
@@ -7332,8 +7618,8 @@
       }
     },
     {
-      "rowNumber": 154,
-      "originalRowNumber": 154,
+      "rowNumber": 168,
+      "originalRowNumber": 168,
       "recordId": "NEWS-1A79A6C439A745",
       "values": [
         "新闻自动初筛机器人",
@@ -7381,8 +7667,8 @@
       }
     },
     {
-      "rowNumber": 155,
-      "originalRowNumber": 155,
+      "rowNumber": 169,
+      "originalRowNumber": 169,
       "recordId": "NEWS-9F1D5B3E54DE22",
       "values": [
         "新闻自动初筛机器人",
@@ -7430,8 +7716,8 @@
       }
     },
     {
-      "rowNumber": 156,
-      "originalRowNumber": 156,
+      "rowNumber": 170,
+      "originalRowNumber": 170,
       "recordId": "NEWS-8CEC81F94B8A01",
       "values": [
         "新闻自动初筛机器人",
@@ -7479,8 +7765,8 @@
       }
     },
     {
-      "rowNumber": 157,
-      "originalRowNumber": 157,
+      "rowNumber": 171,
+      "originalRowNumber": 171,
       "recordId": "NEWS-FF93B1F8DF1034",
       "values": [
         "新闻自动初筛机器人",
@@ -7528,8 +7814,8 @@
       }
     },
     {
-      "rowNumber": 158,
-      "originalRowNumber": 158,
+      "rowNumber": 172,
+      "originalRowNumber": 172,
       "recordId": "NEWS-A505A96347D777",
       "values": [
         "新闻自动初筛机器人",
@@ -7577,8 +7863,8 @@
       }
     },
     {
-      "rowNumber": 159,
-      "originalRowNumber": 159,
+      "rowNumber": 173,
+      "originalRowNumber": 173,
       "recordId": "NEWS-9308402915DA1F",
       "values": [
         "新闻自动初筛机器人",
@@ -7626,14 +7912,14 @@
       }
     },
     {
-      "rowNumber": 160,
-      "originalRowNumber": 160,
+      "rowNumber": 174,
+      "originalRowNumber": 174,
       "recordId": "NEWS-D73B2F986EFA4D",
       "values": [
         "廖望 Alex LIAO Wang",
         "接受",
         "不接受",
-        "已移除",
+        "已纳入",
         "2026-08-30",
         "香港本地",
         "行业动态",
@@ -7675,8 +7961,8 @@
       }
     },
     {
-      "rowNumber": 161,
-      "originalRowNumber": 161,
+      "rowNumber": 175,
+      "originalRowNumber": 175,
       "recordId": "NEWS-B4704F367B434B",
       "values": [
         "新闻自动初筛机器人",
@@ -7724,8 +8010,8 @@
       }
     },
     {
-      "rowNumber": 162,
-      "originalRowNumber": 162,
+      "rowNumber": 176,
+      "originalRowNumber": 176,
       "recordId": "NEWS-F52D929CEC2F72",
       "values": [
         "新闻自动初筛机器人",
@@ -7773,8 +8059,8 @@
       }
     },
     {
-      "rowNumber": 163,
-      "originalRowNumber": 163,
+      "rowNumber": 177,
+      "originalRowNumber": 177,
       "recordId": "NEWS-C7372921A20D81",
       "values": [
         "新闻自动初筛机器人",
@@ -7822,8 +8108,8 @@
       }
     },
     {
-      "rowNumber": 164,
-      "originalRowNumber": 164,
+      "rowNumber": 178,
+      "originalRowNumber": 178,
       "recordId": "NEWS-DDC40F06C9DA7A",
       "values": [
         "新闻自动初筛机器人",
@@ -7871,8 +8157,8 @@
       }
     },
     {
-      "rowNumber": 165,
-      "originalRowNumber": 165,
+      "rowNumber": 179,
+      "originalRowNumber": 179,
       "recordId": "NEWS-B52E9ADBE3C58F",
       "values": [
         "新闻自动初筛机器人",
@@ -7920,8 +8206,8 @@
       }
     },
     {
-      "rowNumber": 166,
-      "originalRowNumber": 166,
+      "rowNumber": 180,
+      "originalRowNumber": 180,
       "recordId": "NEWS-A200104247636D",
       "values": [
         "新闻自动初筛机器人",
@@ -7969,8 +8255,8 @@
       }
     },
     {
-      "rowNumber": 167,
-      "originalRowNumber": 167,
+      "rowNumber": 181,
+      "originalRowNumber": 181,
       "recordId": "NEWS-889085C779B935",
       "values": [
         "新闻自动初筛机器人",
@@ -8018,8 +8304,8 @@
       }
     },
     {
-      "rowNumber": 168,
-      "originalRowNumber": 168,
+      "rowNumber": 182,
+      "originalRowNumber": 182,
       "recordId": "NEWS-4713DD686BE967",
       "values": [
         "新闻自动初筛机器人",
@@ -8067,8 +8353,8 @@
       }
     },
     {
-      "rowNumber": 169,
-      "originalRowNumber": 169,
+      "rowNumber": 183,
+      "originalRowNumber": 183,
       "recordId": "NEWS-0A99D46518AAC3",
       "values": [
         "新闻自动初筛机器人",
@@ -8116,8 +8402,8 @@
       }
     },
     {
-      "rowNumber": 170,
-      "originalRowNumber": 170,
+      "rowNumber": 184,
+      "originalRowNumber": 184,
       "recordId": "NEWS-BEF2D7FF0FDA14",
       "values": [
         "新闻自动初筛机器人",
@@ -8165,8 +8451,8 @@
       }
     },
     {
-      "rowNumber": 171,
-      "originalRowNumber": 171,
+      "rowNumber": 185,
+      "originalRowNumber": 185,
       "recordId": "NEWS-405847EE2B589E",
       "values": [
         "新闻自动初筛机器人",
@@ -8214,8 +8500,8 @@
       }
     },
     {
-      "rowNumber": 172,
-      "originalRowNumber": 172,
+      "rowNumber": 186,
+      "originalRowNumber": 186,
       "recordId": "NEWS-DCDA5E25DD8DDA",
       "values": [
         "新闻自动初筛机器人",
@@ -8263,8 +8549,8 @@
       }
     },
     {
-      "rowNumber": 173,
-      "originalRowNumber": 173,
+      "rowNumber": 187,
+      "originalRowNumber": 187,
       "recordId": "NEWS-04AD4EFFADC946",
       "values": [
         "新闻自动初筛机器人",
@@ -8312,8 +8598,8 @@
       }
     },
     {
-      "rowNumber": 174,
-      "originalRowNumber": 174,
+      "rowNumber": 188,
+      "originalRowNumber": 188,
       "recordId": "NEWS-A17FBBC9FED91E",
       "values": [
         "新闻自动初筛机器人",
@@ -8361,8 +8647,8 @@
       }
     },
     {
-      "rowNumber": 175,
-      "originalRowNumber": 175,
+      "rowNumber": 189,
+      "originalRowNumber": 189,
       "recordId": "NEWS-23B2C2FDC44E88",
       "values": [
         "新闻自动初筛机器人",
@@ -8410,8 +8696,8 @@
       }
     },
     {
-      "rowNumber": 176,
-      "originalRowNumber": 176,
+      "rowNumber": 190,
+      "originalRowNumber": 190,
       "recordId": "NEWS-9BF93A8E2A10F7",
       "values": [
         "新闻自动初筛机器人",
@@ -8459,8 +8745,8 @@
       }
     },
     {
-      "rowNumber": 177,
-      "originalRowNumber": 177,
+      "rowNumber": 191,
+      "originalRowNumber": 191,
       "recordId": "NEWS-DB0EA853332CC7",
       "values": [
         "新闻自动初筛机器人",
@@ -8508,8 +8794,8 @@
       }
     },
     {
-      "rowNumber": 178,
-      "originalRowNumber": 178,
+      "rowNumber": 192,
+      "originalRowNumber": 192,
       "recordId": "NEWS-EAAEF17FC9C289",
       "values": [
         "新闻自动初筛机器人",
@@ -8557,8 +8843,8 @@
       }
     },
     {
-      "rowNumber": 179,
-      "originalRowNumber": 179,
+      "rowNumber": 193,
+      "originalRowNumber": 193,
       "recordId": "NEWS-7EC1F172726BBF",
       "values": [
         "新闻自动初筛机器人",
@@ -8606,8 +8892,8 @@
       }
     },
     {
-      "rowNumber": 180,
-      "originalRowNumber": 180,
+      "rowNumber": 194,
+      "originalRowNumber": 194,
       "recordId": "NEWS-8215547C8A1B90",
       "values": [
         "新闻自动初筛机器人",
@@ -8655,8 +8941,8 @@
       }
     },
     {
-      "rowNumber": 181,
-      "originalRowNumber": 181,
+      "rowNumber": 195,
+      "originalRowNumber": 195,
       "recordId": "NEWS-41CD1F830CCCAD",
       "values": [
         "新闻自动初筛机器人",
@@ -8704,8 +8990,8 @@
       }
     },
     {
-      "rowNumber": 182,
-      "originalRowNumber": 182,
+      "rowNumber": 196,
+      "originalRowNumber": 196,
       "recordId": "NEWS-CD26AB7322CAEA",
       "values": [
         "新闻自动初筛机器人",
@@ -8753,8 +9039,8 @@
       }
     },
     {
-      "rowNumber": 183,
-      "originalRowNumber": 183,
+      "rowNumber": 197,
+      "originalRowNumber": 197,
       "recordId": "NEWS-B3DB2E694E8CAA",
       "values": [
         "新闻自动初筛机器人",
@@ -8802,8 +9088,8 @@
       }
     },
     {
-      "rowNumber": 184,
-      "originalRowNumber": 184,
+      "rowNumber": 198,
+      "originalRowNumber": 198,
       "recordId": "NEWS-571B798601D653",
       "values": [
         "新闻自动初筛机器人",
@@ -8851,8 +9137,8 @@
       }
     },
     {
-      "rowNumber": 185,
-      "originalRowNumber": 185,
+      "rowNumber": 199,
+      "originalRowNumber": 199,
       "recordId": "NEWS-5E1514D427BB12",
       "values": [
         "新闻自动初筛机器人",
@@ -8900,8 +9186,8 @@
       }
     },
     {
-      "rowNumber": 186,
-      "originalRowNumber": 186,
+      "rowNumber": 200,
+      "originalRowNumber": 200,
       "recordId": "NEWS-0D98BF1C0B9F75",
       "values": [
         "新闻自动初筛机器人",
@@ -8949,14 +9235,14 @@
       }
     },
     {
-      "rowNumber": 187,
-      "originalRowNumber": 187,
+      "rowNumber": 201,
+      "originalRowNumber": 201,
       "recordId": "NEWS-E863449203275F",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
+        "廖望 Alex LIAO Wang",
+        "不接受",
         "待审核",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "政策监管",
@@ -8974,11 +9260,11 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-30T09:55:18+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
@@ -8989,17 +9275,17 @@
           "reviewedAt": "2026-08-30T09:55:18+08:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 188,
-      "originalRowNumber": 188,
+      "rowNumber": 202,
+      "originalRowNumber": 202,
       "recordId": "NEWS-DD7FB219A1F70B",
       "values": [
         "新闻自动初筛机器人",
@@ -9047,8 +9333,8 @@
       }
     },
     {
-      "rowNumber": 189,
-      "originalRowNumber": 189,
+      "rowNumber": 203,
+      "originalRowNumber": 203,
       "recordId": "NEWS-EB9D7889B6E303",
       "values": [
         "新闻自动初筛机器人",
@@ -9096,8 +9382,8 @@
       }
     },
     {
-      "rowNumber": 190,
-      "originalRowNumber": 190,
+      "rowNumber": 204,
+      "originalRowNumber": 204,
       "recordId": "NEWS-ACA3E1E35824F6",
       "values": [
         "新闻自动初筛机器人",
@@ -9145,8 +9431,8 @@
       }
     },
     {
-      "rowNumber": 191,
-      "originalRowNumber": 191,
+      "rowNumber": 205,
+      "originalRowNumber": 205,
       "recordId": "NEWS-5A8CC6E5D18A25",
       "values": [
         "新闻自动初筛机器人",
@@ -9194,8 +9480,8 @@
       }
     },
     {
-      "rowNumber": 192,
-      "originalRowNumber": 192,
+      "rowNumber": 206,
+      "originalRowNumber": 206,
       "recordId": "NEWS-C93FEAEF21EC67",
       "values": [
         "新闻自动初筛机器人",
@@ -9243,8 +9529,8 @@
       }
     },
     {
-      "rowNumber": 193,
-      "originalRowNumber": 193,
+      "rowNumber": 207,
+      "originalRowNumber": 207,
       "recordId": "NEWS-1137D2C8893E16",
       "values": [
         "新闻自动初筛机器人",
@@ -9292,8 +9578,8 @@
       }
     },
     {
-      "rowNumber": 194,
-      "originalRowNumber": 194,
+      "rowNumber": 208,
+      "originalRowNumber": 208,
       "recordId": "NEWS-F520FBBD55D135",
       "values": [
         "新闻自动初筛机器人",
@@ -9341,8 +9627,8 @@
       }
     },
     {
-      "rowNumber": 195,
-      "originalRowNumber": 195,
+      "rowNumber": 209,
+      "originalRowNumber": 209,
       "recordId": "NEWS-793BA3DD4A1DF3",
       "values": [
         "新闻自动初筛机器人",
@@ -9390,8 +9676,8 @@
       }
     },
     {
-      "rowNumber": 196,
-      "originalRowNumber": 196,
+      "rowNumber": 210,
+      "originalRowNumber": 210,
       "recordId": "NEWS-A7CFDAD24E781E",
       "values": [
         "新闻自动初筛机器人",
@@ -9439,13 +9725,13 @@
       }
     },
     {
-      "rowNumber": 197,
-      "originalRowNumber": 197,
+      "rowNumber": 211,
+      "originalRowNumber": 211,
       "recordId": "NEWS-758A170FDD5F39",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
-        "接受",
+        "廖望 Alex LIAO Wang",
+        "不接受",
+        "不接受",
         "已移除",
         "2026-08-30",
         "香港本地",
@@ -9464,38 +9750,38 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-30T09:55:18+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 198,
-      "originalRowNumber": 198,
+      "rowNumber": 212,
+      "originalRowNumber": 212,
       "recordId": "NEWS-506ADAA090057D",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "行业动态",
@@ -9513,32 +9799,32 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-30T09:55:18+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 199,
-      "originalRowNumber": 199,
+      "rowNumber": 213,
+      "originalRowNumber": 213,
       "recordId": "NEWS-55F16D7ED87E0E",
       "values": [
         "新闻自动初筛机器人",
@@ -9586,8 +9872,8 @@
       }
     },
     {
-      "rowNumber": 200,
-      "originalRowNumber": 200,
+      "rowNumber": 214,
+      "originalRowNumber": 214,
       "recordId": "NEWS-475BB7FFC7A13F",
       "values": [
         "新闻自动初筛机器人",
@@ -9635,14 +9921,14 @@
       }
     },
     {
-      "rowNumber": 201,
-      "originalRowNumber": 201,
+      "rowNumber": 215,
+      "originalRowNumber": 215,
       "recordId": "NEWS-A4DAA3DA0AB2D4",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-30",
         "香港本地",
         "基础设施/网络/技术类",
@@ -9660,32 +9946,32 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-30T09:55:18+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-30T09:55:18+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 202,
-      "originalRowNumber": 202,
+      "rowNumber": 216,
+      "originalRowNumber": 216,
       "recordId": "NEWS-0C47EA9C27ACBF",
       "values": [
         "新闻自动初筛机器人",
@@ -9733,8 +10019,8 @@
       }
     },
     {
-      "rowNumber": 203,
-      "originalRowNumber": 203,
+      "rowNumber": 217,
+      "originalRowNumber": 217,
       "recordId": "NEWS-7385914C8EE36D",
       "values": [
         "新闻自动初筛机器人",
@@ -9782,8 +10068,8 @@
       }
     },
     {
-      "rowNumber": 204,
-      "originalRowNumber": 204,
+      "rowNumber": 218,
+      "originalRowNumber": 218,
       "recordId": "NEWS-CD09E79781853F",
       "values": [
         "新闻自动初筛机器人",
@@ -9831,8 +10117,8 @@
       }
     },
     {
-      "rowNumber": 205,
-      "originalRowNumber": 205,
+      "rowNumber": 219,
+      "originalRowNumber": 219,
       "recordId": "NEWS-6D9AF955DC1E74",
       "values": [
         "新闻自动初筛机器人",
@@ -9880,8 +10166,8 @@
       }
     },
     {
-      "rowNumber": 206,
-      "originalRowNumber": 206,
+      "rowNumber": 220,
+      "originalRowNumber": 220,
       "recordId": "NEWS-0182157ABE6F5C",
       "values": [
         "新闻自动初筛机器人",
@@ -9929,8 +10215,8 @@
       }
     },
     {
-      "rowNumber": 207,
-      "originalRowNumber": 207,
+      "rowNumber": 221,
+      "originalRowNumber": 221,
       "recordId": "NEWS-DD7474879CBA64",
       "values": [
         "新闻自动初筛机器人",
@@ -9978,8 +10264,8 @@
       }
     },
     {
-      "rowNumber": 208,
-      "originalRowNumber": 208,
+      "rowNumber": 222,
+      "originalRowNumber": 222,
       "recordId": "NEWS-1E820C58648E6E",
       "values": [
         "新闻自动初筛机器人",
@@ -10027,8 +10313,8 @@
       }
     },
     {
-      "rowNumber": 209,
-      "originalRowNumber": 209,
+      "rowNumber": 223,
+      "originalRowNumber": 223,
       "recordId": "NEWS-1B39550A2792A8",
       "values": [
         "新闻自动初筛机器人",
@@ -10076,8 +10362,8 @@
       }
     },
     {
-      "rowNumber": 210,
-      "originalRowNumber": 210,
+      "rowNumber": 224,
+      "originalRowNumber": 224,
       "recordId": "NEWS-655836D6C9AFBD",
       "values": [
         "新闻自动初筛机器人",
@@ -10125,8 +10411,8 @@
       }
     },
     {
-      "rowNumber": 211,
-      "originalRowNumber": 211,
+      "rowNumber": 225,
+      "originalRowNumber": 225,
       "recordId": "NEWS-B0EF0385473267",
       "values": [
         "新闻自动初筛机器人",
@@ -10174,8 +10460,8 @@
       }
     },
     {
-      "rowNumber": 212,
-      "originalRowNumber": 212,
+      "rowNumber": 226,
+      "originalRowNumber": 226,
       "recordId": "NEWS-81C40802BE8FD8",
       "values": [
         "新闻自动初筛机器人",
@@ -10223,8 +10509,8 @@
       }
     },
     {
-      "rowNumber": 213,
-      "originalRowNumber": 213,
+      "rowNumber": 227,
+      "originalRowNumber": 227,
       "recordId": "NEWS-69052793AAA3A6",
       "values": [
         "新闻自动初筛机器人",
@@ -10272,8 +10558,8 @@
       }
     },
     {
-      "rowNumber": 214,
-      "originalRowNumber": 214,
+      "rowNumber": 228,
+      "originalRowNumber": 228,
       "recordId": "NEWS-82F1A3D2D923A7",
       "values": [
         "新闻自动初筛机器人",
@@ -10321,8 +10607,8 @@
       }
     },
     {
-      "rowNumber": 215,
-      "originalRowNumber": 215,
+      "rowNumber": 229,
+      "originalRowNumber": 229,
       "recordId": "NEWS-8A20FC00ACF287",
       "values": [
         "新闻自动初筛机器人",
@@ -10370,8 +10656,8 @@
       }
     },
     {
-      "rowNumber": 216,
-      "originalRowNumber": 216,
+      "rowNumber": 230,
+      "originalRowNumber": 230,
       "recordId": "NEWS-45B105C5DE3AA9",
       "values": [
         "新闻自动初筛机器人",
@@ -10419,8 +10705,8 @@
       }
     },
     {
-      "rowNumber": 217,
-      "originalRowNumber": 217,
+      "rowNumber": 231,
+      "originalRowNumber": 231,
       "recordId": "NEWS-2AD8BEB05EA3E5",
       "values": [
         "新闻自动初筛机器人",
@@ -10468,8 +10754,8 @@
       }
     },
     {
-      "rowNumber": 218,
-      "originalRowNumber": 218,
+      "rowNumber": 232,
+      "originalRowNumber": 232,
       "recordId": "NEWS-C88EA6A70DD114",
       "values": [
         "新闻自动初筛机器人",
@@ -10517,8 +10803,8 @@
       }
     },
     {
-      "rowNumber": 219,
-      "originalRowNumber": 219,
+      "rowNumber": 233,
+      "originalRowNumber": 233,
       "recordId": "NEWS-0165F8FB5C62AC",
       "values": [
         "新闻自动初筛机器人",
@@ -10566,8 +10852,8 @@
       }
     },
     {
-      "rowNumber": 220,
-      "originalRowNumber": 220,
+      "rowNumber": 234,
+      "originalRowNumber": 234,
       "recordId": "NEWS-7550499602D982",
       "values": [
         "新闻自动初筛机器人",
@@ -10615,8 +10901,8 @@
       }
     },
     {
-      "rowNumber": 221,
-      "originalRowNumber": 221,
+      "rowNumber": 235,
+      "originalRowNumber": 235,
       "recordId": "NEWS-F5B0C0DA72F292",
       "values": [
         "新闻自动初筛机器人",
@@ -10664,8 +10950,8 @@
       }
     },
     {
-      "rowNumber": 222,
-      "originalRowNumber": 222,
+      "rowNumber": 236,
+      "originalRowNumber": 236,
       "recordId": "NEWS-30E7B451CCA4D2",
       "values": [
         "新闻自动初筛机器人",
@@ -10713,8 +10999,8 @@
       }
     },
     {
-      "rowNumber": 223,
-      "originalRowNumber": 223,
+      "rowNumber": 237,
+      "originalRowNumber": 237,
       "recordId": "NEWS-E0C3E9C2FFB5FA",
       "values": [
         "新闻自动初筛机器人",
@@ -10762,8 +11048,8 @@
       }
     },
     {
-      "rowNumber": 224,
-      "originalRowNumber": 224,
+      "rowNumber": 238,
+      "originalRowNumber": 238,
       "recordId": "NEWS-CF5A0EB161FE4E",
       "values": [
         "新闻自动初筛机器人",
@@ -10811,8 +11097,8 @@
       }
     },
     {
-      "rowNumber": 225,
-      "originalRowNumber": 225,
+      "rowNumber": 239,
+      "originalRowNumber": 239,
       "recordId": "NEWS-F3E09F92462D95",
       "values": [
         "新闻自动初筛机器人",
@@ -10860,8 +11146,8 @@
       }
     },
     {
-      "rowNumber": 226,
-      "originalRowNumber": 226,
+      "rowNumber": 240,
+      "originalRowNumber": 240,
       "recordId": "NEWS-ED75C41A98EBAD",
       "values": [
         "新闻自动初筛机器人",
@@ -10909,8 +11195,8 @@
       }
     },
     {
-      "rowNumber": 227,
-      "originalRowNumber": 227,
+      "rowNumber": 241,
+      "originalRowNumber": 241,
       "recordId": "NEWS-3CBBB4A6509300",
       "values": [
         "新闻自动初筛机器人",
@@ -10958,8 +11244,8 @@
       }
     },
     {
-      "rowNumber": 228,
-      "originalRowNumber": 228,
+      "rowNumber": 242,
+      "originalRowNumber": 242,
       "recordId": "NEWS-88D2393274E255",
       "values": [
         "新闻自动初筛机器人",
@@ -11007,8 +11293,8 @@
       }
     },
     {
-      "rowNumber": 229,
-      "originalRowNumber": 229,
+      "rowNumber": 243,
+      "originalRowNumber": 243,
       "recordId": "NEWS-17DA4D3C2637F0",
       "values": [
         "新闻自动初筛机器人",
@@ -11056,8 +11342,8 @@
       }
     },
     {
-      "rowNumber": 230,
-      "originalRowNumber": 230,
+      "rowNumber": 244,
+      "originalRowNumber": 244,
       "recordId": "NEWS-F613BB2ED73CBC",
       "values": [
         "新闻自动初筛机器人",
@@ -11105,8 +11391,8 @@
       }
     },
     {
-      "rowNumber": 231,
-      "originalRowNumber": 231,
+      "rowNumber": 245,
+      "originalRowNumber": 245,
       "recordId": "NEWS-E3E2F3321DFCB9",
       "values": [
         "新闻自动初筛机器人",
@@ -11154,8 +11440,8 @@
       }
     },
     {
-      "rowNumber": 232,
-      "originalRowNumber": 232,
+      "rowNumber": 246,
+      "originalRowNumber": 246,
       "recordId": "NEWS-734428BD4E3906",
       "values": [
         "新闻自动初筛机器人",
@@ -11203,8 +11489,8 @@
       }
     },
     {
-      "rowNumber": 233,
-      "originalRowNumber": 233,
+      "rowNumber": 247,
+      "originalRowNumber": 247,
       "recordId": "NEWS-C6F9F813C8B239",
       "values": [
         "新闻自动初筛机器人",
@@ -11252,8 +11538,8 @@
       }
     },
     {
-      "rowNumber": 234,
-      "originalRowNumber": 234,
+      "rowNumber": 248,
+      "originalRowNumber": 248,
       "recordId": "NEWS-A0AA4DEB9D8B7B",
       "values": [
         "新闻自动初筛机器人",
@@ -11301,8 +11587,8 @@
       }
     },
     {
-      "rowNumber": 235,
-      "originalRowNumber": 235,
+      "rowNumber": 249,
+      "originalRowNumber": 249,
       "recordId": "NEWS-9A0B5FFAD743D6",
       "values": [
         "新闻自动初筛机器人",
@@ -11350,8 +11636,8 @@
       }
     },
     {
-      "rowNumber": 236,
-      "originalRowNumber": 236,
+      "rowNumber": 250,
+      "originalRowNumber": 250,
       "recordId": "NEWS-63C719C17BE49F",
       "values": [
         "新闻自动初筛机器人",
@@ -11399,8 +11685,8 @@
       }
     },
     {
-      "rowNumber": 237,
-      "originalRowNumber": 237,
+      "rowNumber": 251,
+      "originalRowNumber": 251,
       "recordId": "NEWS-A517EF2D078FDC",
       "values": [
         "新闻自动初筛机器人",
@@ -11448,8 +11734,8 @@
       }
     },
     {
-      "rowNumber": 238,
-      "originalRowNumber": 238,
+      "rowNumber": 252,
+      "originalRowNumber": 252,
       "recordId": "NEWS-0BBF8A520A7620",
       "values": [
         "新闻自动初筛机器人",
@@ -11497,66 +11783,14 @@
       }
     },
     {
-      "rowNumber": 239,
-      "originalRowNumber": 239,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 240,
-      "originalRowNumber": 240,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 241,
-      "originalRowNumber": 241,
+      "rowNumber": 255,
+      "originalRowNumber": 255,
       "recordId": "NEWS-A0D0A8AB00B25F",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "竞对动态",
@@ -11574,32 +11808,32 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-29T14:06:41+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T14:06:41+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T14:06:41+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 242,
-      "originalRowNumber": 242,
+      "rowNumber": 256,
+      "originalRowNumber": 256,
       "recordId": "NEWS-44F7853E2974B0",
       "values": [
         "新闻自动初筛机器人",
@@ -11647,8 +11881,8 @@
       }
     },
     {
-      "rowNumber": 243,
-      "originalRowNumber": 243,
+      "rowNumber": 257,
+      "originalRowNumber": 257,
       "recordId": "NEWS-A77949C0E38239",
       "values": [
         "新闻自动初筛机器人",
@@ -11696,8 +11930,8 @@
       }
     },
     {
-      "rowNumber": 244,
-      "originalRowNumber": 244,
+      "rowNumber": 258,
+      "originalRowNumber": 258,
       "recordId": "NEWS-BEB6ED64FE7F2E",
       "values": [
         "新闻自动初筛机器人",
@@ -11745,8 +11979,8 @@
       }
     },
     {
-      "rowNumber": 245,
-      "originalRowNumber": 245,
+      "rowNumber": 259,
+      "originalRowNumber": 259,
       "recordId": "NEWS-924351D3738257",
       "values": [
         "新闻自动初筛机器人",
@@ -11794,8 +12028,8 @@
       }
     },
     {
-      "rowNumber": 246,
-      "originalRowNumber": 246,
+      "rowNumber": 260,
+      "originalRowNumber": 260,
       "recordId": "NEWS-0A97FD79D09F46",
       "values": [
         "新闻自动初筛机器人",
@@ -11843,8 +12077,8 @@
       }
     },
     {
-      "rowNumber": 247,
-      "originalRowNumber": 247,
+      "rowNumber": 261,
+      "originalRowNumber": 261,
       "recordId": "NEWS-836DDCE0F1D68A",
       "values": [
         "新闻自动初筛机器人",
@@ -11892,8 +12126,8 @@
       }
     },
     {
-      "rowNumber": 248,
-      "originalRowNumber": 248,
+      "rowNumber": 262,
+      "originalRowNumber": 262,
       "recordId": "NEWS-F24FF19B772294",
       "values": [
         "新闻自动初筛机器人",
@@ -11941,34 +12175,8 @@
       }
     },
     {
-      "rowNumber": 249,
-      "originalRowNumber": 249,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 250,
-      "originalRowNumber": 250,
+      "rowNumber": 264,
+      "originalRowNumber": 264,
       "recordId": "NEWS-82E04ABB323382",
       "values": [
         "新闻自动初筛机器人",
@@ -12016,8 +12224,8 @@
       }
     },
     {
-      "rowNumber": 251,
-      "originalRowNumber": 251,
+      "rowNumber": 265,
+      "originalRowNumber": 265,
       "recordId": "NEWS-95E436999C64BB",
       "values": [
         "新闻自动初筛机器人",
@@ -12065,34 +12273,8 @@
       }
     },
     {
-      "rowNumber": 252,
-      "originalRowNumber": 252,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 253,
-      "originalRowNumber": 253,
+      "rowNumber": 267,
+      "originalRowNumber": 267,
       "recordId": "NEWS-6018022DEFF315",
       "values": [
         "新闻自动初筛机器人",
@@ -12117,14 +12299,14 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 254,
-      "originalRowNumber": 254,
+      "rowNumber": 268,
+      "originalRowNumber": 268,
       "recordId": "NEWS-D44CC2DC6D14CB",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
-        "接受",
-        "未同步",
+        "廖望 Alex LIAO Wang",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "政策监管",
@@ -12140,37 +12322,34 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
+        },
+        "纳入周报": {
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
+        }
+      }
     },
     {
-      "rowNumber": 255,
-      "originalRowNumber": 255,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 256,
-      "originalRowNumber": 256,
+      "rowNumber": 270,
+      "originalRowNumber": 270,
       "recordId": "NEWS-7CD7B54BEF4F7E",
       "values": [
         "新闻自动初筛机器人",
@@ -12195,14 +12374,14 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 257,
-      "originalRowNumber": 257,
+      "rowNumber": 271,
+      "originalRowNumber": 271,
       "recordId": "NEWS-87E3FC6CEECFE9",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "接受",
         "接受",
-        "未同步",
+        "已纳入",
         "2026-08-29",
         "香港本地",
         "行业动态",
@@ -12218,11 +12397,34 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
+        },
+        "纳入周报": {
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
+        }
+      }
     },
     {
-      "rowNumber": 258,
-      "originalRowNumber": 258,
+      "rowNumber": 272,
+      "originalRowNumber": 272,
       "recordId": "NEWS-C032E8C23617EA",
       "values": [
         "新闻自动初筛机器人",
@@ -12247,8 +12449,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 259,
-      "originalRowNumber": 259,
+      "rowNumber": 273,
+      "originalRowNumber": 273,
       "recordId": "NEWS-923E6498031EC4",
       "values": [
         "新闻自动初筛机器人",
@@ -12273,8 +12475,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 260,
-      "originalRowNumber": 260,
+      "rowNumber": 274,
+      "originalRowNumber": 274,
       "recordId": "NEWS-79943BEE8CAD79",
       "values": [
         "新闻自动初筛机器人",
@@ -12299,14 +12501,14 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 261,
-      "originalRowNumber": 261,
+      "rowNumber": 275,
+      "originalRowNumber": 275,
       "recordId": "NEWS-8C32C5902B8320",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
-        "接受",
-        "未同步",
+        "廖望 Alex LIAO Wang",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "政策监管",
@@ -12322,11 +12524,34 @@
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",
       "readOnly": false,
-      "feishuVisible": true
+      "feishuVisible": true,
+      "reviewer": {
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
+        },
+        "纳入周报": {
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
+        }
+      }
     },
     {
-      "rowNumber": 262,
-      "originalRowNumber": 262,
+      "rowNumber": 276,
+      "originalRowNumber": 276,
       "recordId": "NEWS-DC1430AE56DD3F",
       "values": [
         "新闻自动初筛机器人",
@@ -12351,8 +12576,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 263,
-      "originalRowNumber": 263,
+      "rowNumber": 277,
+      "originalRowNumber": 277,
       "recordId": "NEWS-A3AB4C49559C46",
       "values": [
         "新闻自动初筛机器人",
@@ -12377,8 +12602,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 264,
-      "originalRowNumber": 264,
+      "rowNumber": 278,
+      "originalRowNumber": 278,
       "recordId": "NEWS-DCD1833F4C66C7",
       "values": [
         "新闻自动初筛机器人",
@@ -12403,40 +12628,14 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 265,
-      "originalRowNumber": 265,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 266,
-      "originalRowNumber": 266,
+      "rowNumber": 280,
+      "originalRowNumber": 280,
       "recordId": "NEWS-333A07C2F9C07E",
       "values": [
         "新闻自动初筛机器人",
-        "接受",
-        "接受",
-        "已纳入",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "政策监管",
@@ -12478,8 +12677,8 @@
       }
     },
     {
-      "rowNumber": 267,
-      "originalRowNumber": 267,
+      "rowNumber": 281,
+      "originalRowNumber": 281,
       "recordId": "NEWS-0D16D0DB637F88",
       "values": [
         "新闻自动初筛机器人",
@@ -12527,14 +12726,14 @@
       }
     },
     {
-      "rowNumber": 268,
-      "originalRowNumber": 268,
+      "rowNumber": 282,
+      "originalRowNumber": 282,
       "recordId": "NEWS-D3E71FA7078787",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "公司动态",
@@ -12552,38 +12751,38 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-29T09:29:14+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T09:29:14+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T09:29:14+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 269,
-      "originalRowNumber": 269,
+      "rowNumber": 283,
+      "originalRowNumber": 283,
       "recordId": "NEWS-EFE609A2A39D46",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
-        "已纳入",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "市场/产品类",
@@ -12601,32 +12800,32 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-29T09:29:14+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T09:29:14+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T09:29:14+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 270,
-      "originalRowNumber": 270,
+      "rowNumber": 284,
+      "originalRowNumber": 284,
       "recordId": "NEWS-A612EB0560D38A",
       "values": [
         "新闻自动初筛机器人",
@@ -12674,8 +12873,8 @@
       }
     },
     {
-      "rowNumber": 271,
-      "originalRowNumber": 271,
+      "rowNumber": 285,
+      "originalRowNumber": 285,
       "recordId": "NEWS-9B71794DC77A08",
       "values": [
         "新闻自动初筛机器人",
@@ -12723,8 +12922,8 @@
       }
     },
     {
-      "rowNumber": 272,
-      "originalRowNumber": 272,
+      "rowNumber": 286,
+      "originalRowNumber": 286,
       "recordId": "NEWS-7A34F993998051",
       "values": [
         "新闻自动初筛机器人",
@@ -12772,8 +12971,8 @@
       }
     },
     {
-      "rowNumber": 273,
-      "originalRowNumber": 273,
+      "rowNumber": 287,
+      "originalRowNumber": 287,
       "recordId": "NEWS-5B495EB7D4F087",
       "values": [
         "新闻自动初筛机器人",
@@ -12821,8 +13020,8 @@
       }
     },
     {
-      "rowNumber": 274,
-      "originalRowNumber": 274,
+      "rowNumber": 288,
+      "originalRowNumber": 288,
       "recordId": "NEWS-7C632294EA7C2A",
       "values": [
         "新闻自动初筛机器人",
@@ -12870,8 +13069,8 @@
       }
     },
     {
-      "rowNumber": 275,
-      "originalRowNumber": 275,
+      "rowNumber": 289,
+      "originalRowNumber": 289,
       "recordId": "NEWS-D227FF5E4D4B8A",
       "values": [
         "新闻自动初筛机器人",
@@ -12919,14 +13118,14 @@
       }
     },
     {
-      "rowNumber": 276,
-      "originalRowNumber": 276,
+      "rowNumber": 290,
+      "originalRowNumber": 290,
       "recordId": "NEWS-388FEA8BC43DA6",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "接受",
         "接受",
-        "已移除",
+        "已纳入",
         "2026-08-29",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -12944,32 +13143,32 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-29T09:29:14+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-08-31T06:21:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T09:29:14+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-29T09:29:14+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-08-31T06:21:36+00:00"
         }
       }
     },
     {
-      "rowNumber": 277,
-      "originalRowNumber": 277,
+      "rowNumber": 291,
+      "originalRowNumber": 291,
       "recordId": "NEWS-C486034F918909",
       "values": [
         "新闻自动初筛机器人",
@@ -13017,8 +13216,8 @@
       }
     },
     {
-      "rowNumber": 278,
-      "originalRowNumber": 278,
+      "rowNumber": 292,
+      "originalRowNumber": 292,
       "recordId": "NEWS-A0A3245530796F",
       "values": [
         "新闻自动初筛机器人",
@@ -13066,8 +13265,8 @@
       }
     },
     {
-      "rowNumber": 279,
-      "originalRowNumber": 279,
+      "rowNumber": 293,
+      "originalRowNumber": 293,
       "recordId": "NEWS-0109E8B11DA021",
       "values": [
         "新闻自动初筛机器人",
@@ -13115,8 +13314,8 @@
       }
     },
     {
-      "rowNumber": 280,
-      "originalRowNumber": 280,
+      "rowNumber": 294,
+      "originalRowNumber": 294,
       "recordId": "NEWS-5508DE74F08084",
       "values": [
         "新闻自动初筛机器人",
@@ -13164,8 +13363,8 @@
       }
     },
     {
-      "rowNumber": 281,
-      "originalRowNumber": 281,
+      "rowNumber": 295,
+      "originalRowNumber": 295,
       "recordId": "NEWS-C703FBA501A8BA",
       "values": [
         "新闻自动初筛机器人",
@@ -13213,8 +13412,8 @@
       }
     },
     {
-      "rowNumber": 282,
-      "originalRowNumber": 282,
+      "rowNumber": 296,
+      "originalRowNumber": 296,
       "recordId": "NEWS-C3DFE1BF0E75E0",
       "values": [
         "新闻自动初筛机器人",
@@ -13262,8 +13461,8 @@
       }
     },
     {
-      "rowNumber": 283,
-      "originalRowNumber": 283,
+      "rowNumber": 297,
+      "originalRowNumber": 297,
       "recordId": "NEWS-8A83B150CF31F9",
       "values": [
         "新闻自动初筛机器人",
@@ -13311,8 +13510,8 @@
       }
     },
     {
-      "rowNumber": 284,
-      "originalRowNumber": 284,
+      "rowNumber": 298,
+      "originalRowNumber": 298,
       "recordId": "NEWS-3478E06CC17359",
       "values": [
         "新闻自动初筛机器人",
@@ -13360,8 +13559,8 @@
       }
     },
     {
-      "rowNumber": 285,
-      "originalRowNumber": 285,
+      "rowNumber": 299,
+      "originalRowNumber": 299,
       "recordId": "NEWS-33908323F7E498",
       "values": [
         "新闻自动初筛机器人",
@@ -13409,8 +13608,8 @@
       }
     },
     {
-      "rowNumber": 286,
-      "originalRowNumber": 286,
+      "rowNumber": 300,
+      "originalRowNumber": 300,
       "recordId": "NEWS-4CB49CF222BDDE",
       "values": [
         "新闻自动初筛机器人",
@@ -13458,8 +13657,8 @@
       }
     },
     {
-      "rowNumber": 287,
-      "originalRowNumber": 287,
+      "rowNumber": 301,
+      "originalRowNumber": 301,
       "recordId": "NEWS-4293E905BD362A",
       "values": [
         "新闻自动初筛机器人",
@@ -13507,8 +13706,8 @@
       }
     },
     {
-      "rowNumber": 288,
-      "originalRowNumber": 288,
+      "rowNumber": 302,
+      "originalRowNumber": 302,
       "recordId": "NEWS-E58A3444FCE560",
       "values": [
         "新闻自动初筛机器人",
@@ -13556,8 +13755,8 @@
       }
     },
     {
-      "rowNumber": 289,
-      "originalRowNumber": 289,
+      "rowNumber": 303,
+      "originalRowNumber": 303,
       "recordId": "NEWS-0CACBE35FCF25E",
       "values": [
         "新闻自动初筛机器人",
@@ -13605,8 +13804,8 @@
       }
     },
     {
-      "rowNumber": 290,
-      "originalRowNumber": 290,
+      "rowNumber": 304,
+      "originalRowNumber": 304,
       "recordId": "NEWS-5F3D150C910E4D",
       "values": [
         "新闻自动初筛机器人",
@@ -13654,8 +13853,8 @@
       }
     },
     {
-      "rowNumber": 291,
-      "originalRowNumber": 291,
+      "rowNumber": 305,
+      "originalRowNumber": 305,
       "recordId": "NEWS-FA63BE00D50517",
       "values": [
         "新闻自动初筛机器人",
@@ -13703,8 +13902,8 @@
       }
     },
     {
-      "rowNumber": 292,
-      "originalRowNumber": 292,
+      "rowNumber": 306,
+      "originalRowNumber": 306,
       "recordId": "NEWS-9EC475D07DBAA4",
       "values": [
         "新闻自动初筛机器人",
@@ -13752,8 +13951,8 @@
       }
     },
     {
-      "rowNumber": 293,
-      "originalRowNumber": 293,
+      "rowNumber": 307,
+      "originalRowNumber": 307,
       "recordId": "NEWS-1876D105F90F26",
       "values": [
         "新闻自动初筛机器人",
@@ -13801,8 +14000,8 @@
       }
     },
     {
-      "rowNumber": 294,
-      "originalRowNumber": 294,
+      "rowNumber": 308,
+      "originalRowNumber": 308,
       "recordId": "NEWS-3E63D8B74A9C9F",
       "values": [
         "新闻自动初筛机器人",
@@ -13850,8 +14049,8 @@
       }
     },
     {
-      "rowNumber": 295,
-      "originalRowNumber": 295,
+      "rowNumber": 309,
+      "originalRowNumber": 309,
       "recordId": "NEWS-A24961C96B9B86",
       "values": [
         "新闻自动初筛机器人",
@@ -13899,8 +14098,8 @@
       }
     },
     {
-      "rowNumber": 296,
-      "originalRowNumber": 296,
+      "rowNumber": 310,
+      "originalRowNumber": 310,
       "recordId": "NEWS-C10E6CAF1A5ED6",
       "values": [
         "新闻自动初筛机器人",
@@ -13948,8 +14147,8 @@
       }
     },
     {
-      "rowNumber": 297,
-      "originalRowNumber": 297,
+      "rowNumber": 311,
+      "originalRowNumber": 311,
       "recordId": "NEWS-CD2F4F6B9A0910",
       "values": [
         "新闻自动初筛机器人",
@@ -13997,8 +14196,8 @@
       }
     },
     {
-      "rowNumber": 298,
-      "originalRowNumber": 298,
+      "rowNumber": 312,
+      "originalRowNumber": 312,
       "recordId": "NEWS-BF48B8F09CBF59",
       "values": [
         "新闻自动初筛机器人",
@@ -14046,8 +14245,8 @@
       }
     },
     {
-      "rowNumber": 299,
-      "originalRowNumber": 299,
+      "rowNumber": 313,
+      "originalRowNumber": 313,
       "recordId": "NEWS-4EEEAE930EBF20",
       "values": [
         "新闻自动初筛机器人",
@@ -14095,8 +14294,8 @@
       }
     },
     {
-      "rowNumber": 300,
-      "originalRowNumber": 300,
+      "rowNumber": 314,
+      "originalRowNumber": 314,
       "recordId": "NEWS-2FB6EBFEC5B6AE",
       "values": [
         "新闻自动初筛机器人",
@@ -14144,8 +14343,8 @@
       }
     },
     {
-      "rowNumber": 301,
-      "originalRowNumber": 301,
+      "rowNumber": 315,
+      "originalRowNumber": 315,
       "recordId": "NEWS-1434490A739453",
       "values": [
         "新闻自动初筛机器人",
@@ -14193,8 +14392,8 @@
       }
     },
     {
-      "rowNumber": 302,
-      "originalRowNumber": 302,
+      "rowNumber": 316,
+      "originalRowNumber": 316,
       "recordId": "NEWS-FB2902B09F9963",
       "values": [
         "新闻自动初筛机器人",
@@ -14242,8 +14441,8 @@
       }
     },
     {
-      "rowNumber": 303,
-      "originalRowNumber": 303,
+      "rowNumber": 317,
+      "originalRowNumber": 317,
       "recordId": "NEWS-3417701464A887",
       "values": [
         "新闻自动初筛机器人",
@@ -14291,8 +14490,8 @@
       }
     },
     {
-      "rowNumber": 304,
-      "originalRowNumber": 304,
+      "rowNumber": 318,
+      "originalRowNumber": 318,
       "recordId": "NEWS-563378C69560B2",
       "values": [
         "新闻自动初筛机器人",
@@ -14340,8 +14539,8 @@
       }
     },
     {
-      "rowNumber": 305,
-      "originalRowNumber": 305,
+      "rowNumber": 319,
+      "originalRowNumber": 319,
       "recordId": "NEWS-23B085DE03722E",
       "values": [
         "新闻自动初筛机器人",
@@ -14389,8 +14588,8 @@
       }
     },
     {
-      "rowNumber": 306,
-      "originalRowNumber": 306,
+      "rowNumber": 320,
+      "originalRowNumber": 320,
       "recordId": "NEWS-66B3B0458A787F",
       "values": [
         "新闻自动初筛机器人",
@@ -14438,8 +14637,8 @@
       }
     },
     {
-      "rowNumber": 307,
-      "originalRowNumber": 307,
+      "rowNumber": 321,
+      "originalRowNumber": 321,
       "recordId": "NEWS-273CA68863F669",
       "values": [
         "新闻自动初筛机器人",
@@ -14487,8 +14686,8 @@
       }
     },
     {
-      "rowNumber": 308,
-      "originalRowNumber": 308,
+      "rowNumber": 322,
+      "originalRowNumber": 322,
       "recordId": "NEWS-9C5AF3B5071B8A",
       "values": [
         "新闻自动初筛机器人",
@@ -14536,8 +14735,8 @@
       }
     },
     {
-      "rowNumber": 309,
-      "originalRowNumber": 309,
+      "rowNumber": 323,
+      "originalRowNumber": 323,
       "recordId": "NEWS-506098FCDA2A06",
       "values": [
         "新闻自动初筛机器人",
@@ -14585,8 +14784,8 @@
       }
     },
     {
-      "rowNumber": 310,
-      "originalRowNumber": 310,
+      "rowNumber": 324,
+      "originalRowNumber": 324,
       "recordId": "NEWS-53415A743D16C1",
       "values": [
         "新闻自动初筛机器人",
@@ -14634,8 +14833,8 @@
       }
     },
     {
-      "rowNumber": 311,
-      "originalRowNumber": 311,
+      "rowNumber": 325,
+      "originalRowNumber": 325,
       "recordId": "NEWS-6FB70FB223B8E3",
       "values": [
         "新闻自动初筛机器人",
@@ -14683,8 +14882,8 @@
       }
     },
     {
-      "rowNumber": 312,
-      "originalRowNumber": 312,
+      "rowNumber": 326,
+      "originalRowNumber": 326,
       "recordId": "NEWS-024FD2A45CC611",
       "values": [
         "新闻自动初筛机器人",
@@ -14732,8 +14931,8 @@
       }
     },
     {
-      "rowNumber": 313,
-      "originalRowNumber": 313,
+      "rowNumber": 327,
+      "originalRowNumber": 327,
       "recordId": "NEWS-61D7960A0B0BB6",
       "values": [
         "新闻自动初筛机器人",
@@ -14781,8 +14980,8 @@
       }
     },
     {
-      "rowNumber": 314,
-      "originalRowNumber": 314,
+      "rowNumber": 328,
+      "originalRowNumber": 328,
       "recordId": "NEWS-FE825DF14A9EF5",
       "values": [
         "新闻自动初筛机器人",
@@ -14830,8 +15029,8 @@
       }
     },
     {
-      "rowNumber": 315,
-      "originalRowNumber": 315,
+      "rowNumber": 329,
+      "originalRowNumber": 329,
       "recordId": "NEWS-72425D06F4E6D8",
       "values": [
         "新闻自动初筛机器人",
@@ -14879,8 +15078,8 @@
       }
     },
     {
-      "rowNumber": 316,
-      "originalRowNumber": 316,
+      "rowNumber": 330,
+      "originalRowNumber": 330,
       "recordId": "NEWS-6C894601213D32",
       "values": [
         "新闻自动初筛机器人",
@@ -14928,8 +15127,8 @@
       }
     },
     {
-      "rowNumber": 317,
-      "originalRowNumber": 317,
+      "rowNumber": 331,
+      "originalRowNumber": 331,
       "recordId": "NEWS-8DE8A7CE331CB9",
       "values": [
         "新闻自动初筛机器人",
@@ -14977,8 +15176,8 @@
       }
     },
     {
-      "rowNumber": 318,
-      "originalRowNumber": 318,
+      "rowNumber": 332,
+      "originalRowNumber": 332,
       "recordId": "NEWS-BAF471B27AADD5",
       "values": [
         "新闻自动初筛机器人",
@@ -15026,8 +15225,8 @@
       }
     },
     {
-      "rowNumber": 319,
-      "originalRowNumber": 319,
+      "rowNumber": 333,
+      "originalRowNumber": 333,
       "recordId": "NEWS-EAF139A26E7B1E",
       "values": [
         "新闻自动初筛机器人",
@@ -15075,8 +15274,8 @@
       }
     },
     {
-      "rowNumber": 320,
-      "originalRowNumber": 320,
+      "rowNumber": 334,
+      "originalRowNumber": 334,
       "recordId": "NEWS-379DABB4A5F0F2",
       "values": [
         "新闻自动初筛机器人",
@@ -15124,8 +15323,8 @@
       }
     },
     {
-      "rowNumber": 321,
-      "originalRowNumber": 321,
+      "rowNumber": 335,
+      "originalRowNumber": 335,
       "recordId": "NEWS-D81A8415802D40",
       "values": [
         "新闻自动初筛机器人",
@@ -15173,8 +15372,8 @@
       }
     },
     {
-      "rowNumber": 322,
-      "originalRowNumber": 322,
+      "rowNumber": 336,
+      "originalRowNumber": 336,
       "recordId": "NEWS-0F79223FCD97D6",
       "values": [
         "新闻自动初筛机器人",
@@ -15222,8 +15421,8 @@
       }
     },
     {
-      "rowNumber": 323,
-      "originalRowNumber": 323,
+      "rowNumber": 337,
+      "originalRowNumber": 337,
       "recordId": "NEWS-FEBA44CD55148B",
       "values": [
         "新闻自动初筛机器人",
@@ -15271,8 +15470,8 @@
       }
     },
     {
-      "rowNumber": 324,
-      "originalRowNumber": 324,
+      "rowNumber": 338,
+      "originalRowNumber": 338,
       "recordId": "NEWS-A3C58F2D96E72F",
       "values": [
         "新闻自动初筛机器人",
@@ -15320,8 +15519,8 @@
       }
     },
     {
-      "rowNumber": 325,
-      "originalRowNumber": 325,
+      "rowNumber": 339,
+      "originalRowNumber": 339,
       "recordId": "NEWS-1B057584FE4884",
       "values": [
         "新闻自动初筛机器人",
@@ -15369,8 +15568,8 @@
       }
     },
     {
-      "rowNumber": 326,
-      "originalRowNumber": 326,
+      "rowNumber": 340,
+      "originalRowNumber": 340,
       "recordId": "NEWS-29B684BA41F677",
       "values": [
         "新闻自动初筛机器人",
@@ -15418,8 +15617,8 @@
       }
     },
     {
-      "rowNumber": 327,
-      "originalRowNumber": 327,
+      "rowNumber": 341,
+      "originalRowNumber": 341,
       "recordId": "NEWS-A5C0586D201A59",
       "values": [
         "新闻自动初筛机器人",
@@ -15467,8 +15666,8 @@
       }
     },
     {
-      "rowNumber": 328,
-      "originalRowNumber": 328,
+      "rowNumber": 342,
+      "originalRowNumber": 342,
       "recordId": "NEWS-728D4FBBC1E3FB",
       "values": [
         "新闻自动初筛机器人",
@@ -15516,8 +15715,8 @@
       }
     },
     {
-      "rowNumber": 329,
-      "originalRowNumber": 329,
+      "rowNumber": 343,
+      "originalRowNumber": 343,
       "recordId": "NEWS-F1D81FFE6BE259",
       "values": [
         "新闻自动初筛机器人",
@@ -15565,8 +15764,8 @@
       }
     },
     {
-      "rowNumber": 330,
-      "originalRowNumber": 330,
+      "rowNumber": 344,
+      "originalRowNumber": 344,
       "recordId": "NEWS-C1A79366A7439B",
       "values": [
         "新闻自动初筛机器人",
@@ -15614,8 +15813,8 @@
       }
     },
     {
-      "rowNumber": 331,
-      "originalRowNumber": 331,
+      "rowNumber": 345,
+      "originalRowNumber": 345,
       "recordId": "NEWS-9AF10DC01C4BB4",
       "values": [
         "新闻自动初筛机器人",
@@ -15663,8 +15862,8 @@
       }
     },
     {
-      "rowNumber": 332,
-      "originalRowNumber": 332,
+      "rowNumber": 346,
+      "originalRowNumber": 346,
       "recordId": "NEWS-9C50A273761FA4",
       "values": [
         "新闻自动初筛机器人",
@@ -15712,8 +15911,8 @@
       }
     },
     {
-      "rowNumber": 333,
-      "originalRowNumber": 333,
+      "rowNumber": 347,
+      "originalRowNumber": 347,
       "recordId": "NEWS-321DD72664F43F",
       "values": [
         "新闻自动初筛机器人",
@@ -15761,8 +15960,8 @@
       }
     },
     {
-      "rowNumber": 334,
-      "originalRowNumber": 334,
+      "rowNumber": 348,
+      "originalRowNumber": 348,
       "recordId": "NEWS-BB91C8DF5A3A04",
       "values": [
         "新闻自动初筛机器人",
@@ -15810,8 +16009,8 @@
       }
     },
     {
-      "rowNumber": 335,
-      "originalRowNumber": 335,
+      "rowNumber": 349,
+      "originalRowNumber": 349,
       "recordId": "NEWS-F7C13C3CC860E2",
       "values": [
         "新闻自动初筛机器人",
@@ -15859,8 +16058,8 @@
       }
     },
     {
-      "rowNumber": 336,
-      "originalRowNumber": 336,
+      "rowNumber": 350,
+      "originalRowNumber": 350,
       "recordId": "NEWS-A1E33DA1D6B718",
       "values": [
         "新闻自动初筛机器人",
@@ -15908,8 +16107,8 @@
       }
     },
     {
-      "rowNumber": 337,
-      "originalRowNumber": 337,
+      "rowNumber": 351,
+      "originalRowNumber": 351,
       "recordId": "NEWS-F2C329D515F187",
       "values": [
         "新闻自动初筛机器人",
@@ -15957,14 +16156,14 @@
       }
     },
     {
-      "rowNumber": 338,
-      "originalRowNumber": 338,
+      "rowNumber": 352,
+      "originalRowNumber": 352,
       "recordId": "NEWS-5CC7F82B160DB5",
       "values": [
         "新闻自动初筛机器人",
-        "不接受",
-        "不接受",
-        "已移除",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-29",
         "香港本地",
         "基础设施/网络/技术类",
@@ -16006,8 +16205,8 @@
       }
     },
     {
-      "rowNumber": 339,
-      "originalRowNumber": 339,
+      "rowNumber": 353,
+      "originalRowNumber": 353,
       "recordId": "NEWS-A5367052DCBF15",
       "values": [
         "新闻自动初筛机器人",
@@ -16055,8 +16254,8 @@
       }
     },
     {
-      "rowNumber": 340,
-      "originalRowNumber": 340,
+      "rowNumber": 354,
+      "originalRowNumber": 354,
       "recordId": "NEWS-308A0E45DEDA34",
       "values": [
         "新闻自动初筛机器人",
@@ -16104,8 +16303,8 @@
       }
     },
     {
-      "rowNumber": 341,
-      "originalRowNumber": 341,
+      "rowNumber": 355,
+      "originalRowNumber": 355,
       "recordId": "NEWS-A47F7598B4C2C6",
       "values": [
         "新闻自动初筛机器人",
@@ -16153,8 +16352,8 @@
       }
     },
     {
-      "rowNumber": 342,
-      "originalRowNumber": 342,
+      "rowNumber": 356,
+      "originalRowNumber": 356,
       "recordId": "NEWS-A9C2BD6307089D",
       "values": [
         "新闻自动初筛机器人",
@@ -16202,8 +16401,8 @@
       }
     },
     {
-      "rowNumber": 343,
-      "originalRowNumber": 343,
+      "rowNumber": 357,
+      "originalRowNumber": 357,
       "recordId": "NEWS-6C5F2538B34E72",
       "values": [
         "新闻自动初筛机器人",
@@ -16251,8 +16450,8 @@
       }
     },
     {
-      "rowNumber": 344,
-      "originalRowNumber": 344,
+      "rowNumber": 358,
+      "originalRowNumber": 358,
       "recordId": "NEWS-1B8B2A446E88B4",
       "values": [
         "新闻自动初筛机器人",
@@ -16300,8 +16499,8 @@
       }
     },
     {
-      "rowNumber": 345,
-      "originalRowNumber": 345,
+      "rowNumber": 359,
+      "originalRowNumber": 359,
       "recordId": "NEWS-532CDE7EFD811F",
       "values": [
         "新闻自动初筛机器人",
@@ -16349,8 +16548,8 @@
       }
     },
     {
-      "rowNumber": 346,
-      "originalRowNumber": 346,
+      "rowNumber": 360,
+      "originalRowNumber": 360,
       "recordId": "NEWS-275CE0722E0094",
       "values": [
         "新闻自动初筛机器人",
@@ -16398,8 +16597,8 @@
       }
     },
     {
-      "rowNumber": 347,
-      "originalRowNumber": 347,
+      "rowNumber": 361,
+      "originalRowNumber": 361,
       "recordId": "NEWS-736C8CE7DEF0A0",
       "values": [
         "新闻自动初筛机器人",
@@ -16447,8 +16646,8 @@
       }
     },
     {
-      "rowNumber": 348,
-      "originalRowNumber": 348,
+      "rowNumber": 362,
+      "originalRowNumber": 362,
       "recordId": "NEWS-95BE622CD6A34E",
       "values": [
         "新闻自动初筛机器人",
@@ -16496,8 +16695,8 @@
       }
     },
     {
-      "rowNumber": 349,
-      "originalRowNumber": 349,
+      "rowNumber": 363,
+      "originalRowNumber": 363,
       "recordId": "NEWS-DCE9EC5E679593",
       "values": [
         "新闻自动初筛机器人",
@@ -16545,8 +16744,8 @@
       }
     },
     {
-      "rowNumber": 350,
-      "originalRowNumber": 350,
+      "rowNumber": 364,
+      "originalRowNumber": 364,
       "recordId": "NEWS-9CC342E66021AD",
       "values": [
         "新闻自动初筛机器人",
@@ -16594,8 +16793,8 @@
       }
     },
     {
-      "rowNumber": 351,
-      "originalRowNumber": 351,
+      "rowNumber": 365,
+      "originalRowNumber": 365,
       "recordId": "NEWS-DF68312FA57E85",
       "values": [
         "新闻自动初筛机器人",
@@ -16643,8 +16842,8 @@
       }
     },
     {
-      "rowNumber": 352,
-      "originalRowNumber": 352,
+      "rowNumber": 366,
+      "originalRowNumber": 366,
       "recordId": "NEWS-1F9434B19429E2",
       "values": [
         "新闻自动初筛机器人",
@@ -16692,8 +16891,8 @@
       }
     },
     {
-      "rowNumber": 353,
-      "originalRowNumber": 353,
+      "rowNumber": 367,
+      "originalRowNumber": 367,
       "recordId": "NEWS-A583E202310F2D",
       "values": [
         "新闻自动初筛机器人",
@@ -16741,14 +16940,14 @@
       }
     },
     {
-      "rowNumber": 354,
-      "originalRowNumber": 354,
+      "rowNumber": 368,
+      "originalRowNumber": 368,
       "recordId": "NEWS-EF3CDA447E77D4",
       "values": [
         "新闻自动初筛机器人",
-        "接受",
-        "接受",
-        "已纳入",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-29",
         "香港本地",
         "政策监管",
@@ -16790,8 +16989,8 @@
       }
     },
     {
-      "rowNumber": 355,
-      "originalRowNumber": 355,
+      "rowNumber": 369,
+      "originalRowNumber": 369,
       "recordId": "NEWS-CE067B854BEF73",
       "values": [
         "新闻自动初筛机器人",
@@ -16839,8 +17038,8 @@
       }
     },
     {
-      "rowNumber": 356,
-      "originalRowNumber": 356,
+      "rowNumber": 370,
+      "originalRowNumber": 370,
       "recordId": "NEWS-B76B3B6BE5C34A",
       "values": [
         "新闻自动初筛机器人",
@@ -16888,8 +17087,8 @@
       }
     },
     {
-      "rowNumber": 357,
-      "originalRowNumber": 357,
+      "rowNumber": 371,
+      "originalRowNumber": 371,
       "recordId": "NEWS-EDE3CFE28F07DD",
       "values": [
         "新闻自动初筛机器人",
@@ -16937,8 +17136,8 @@
       }
     },
     {
-      "rowNumber": 358,
-      "originalRowNumber": 358,
+      "rowNumber": 372,
+      "originalRowNumber": 372,
       "recordId": "NEWS-2147970710E5F2",
       "values": [
         "新闻自动初筛机器人",
@@ -16986,8 +17185,8 @@
       }
     },
     {
-      "rowNumber": 359,
-      "originalRowNumber": 359,
+      "rowNumber": 373,
+      "originalRowNumber": 373,
       "recordId": "NEWS-598BDB6331B474",
       "values": [
         "新闻自动初筛机器人",
@@ -17035,8 +17234,8 @@
       }
     },
     {
-      "rowNumber": 360,
-      "originalRowNumber": 360,
+      "rowNumber": 374,
+      "originalRowNumber": 374,
       "recordId": "NEWS-9B21F4D661C2FA",
       "values": [
         "新闻自动初筛机器人",
@@ -17084,8 +17283,8 @@
       }
     },
     {
-      "rowNumber": 361,
-      "originalRowNumber": 361,
+      "rowNumber": 375,
+      "originalRowNumber": 375,
       "recordId": "NEWS-1E5A280E85D60F",
       "values": [
         "新闻自动初筛机器人",
@@ -17133,8 +17332,8 @@
       }
     },
     {
-      "rowNumber": 362,
-      "originalRowNumber": 362,
+      "rowNumber": 376,
+      "originalRowNumber": 376,
       "recordId": "NEWS-86F77E503B2502",
       "values": [
         "新闻自动初筛机器人",
@@ -17182,8 +17381,8 @@
       }
     },
     {
-      "rowNumber": 363,
-      "originalRowNumber": 363,
+      "rowNumber": 377,
+      "originalRowNumber": 377,
       "recordId": "NEWS-E1A60AD916FF28",
       "values": [
         "新闻自动初筛机器人",
@@ -17231,8 +17430,8 @@
       }
     },
     {
-      "rowNumber": 364,
-      "originalRowNumber": 364,
+      "rowNumber": 378,
+      "originalRowNumber": 378,
       "recordId": "NEWS-BE4C98263D4608",
       "values": [
         "新闻自动初筛机器人",
@@ -17280,8 +17479,8 @@
       }
     },
     {
-      "rowNumber": 365,
-      "originalRowNumber": 365,
+      "rowNumber": 379,
+      "originalRowNumber": 379,
       "recordId": "NEWS-36D07BB3E2D742",
       "values": [
         "新闻自动初筛机器人",
@@ -17329,8 +17528,8 @@
       }
     },
     {
-      "rowNumber": 366,
-      "originalRowNumber": 366,
+      "rowNumber": 380,
+      "originalRowNumber": 380,
       "recordId": "NEWS-010703AD6A8520",
       "values": [
         "新闻自动初筛机器人",
@@ -17378,8 +17577,8 @@
       }
     },
     {
-      "rowNumber": 367,
-      "originalRowNumber": 367,
+      "rowNumber": 381,
+      "originalRowNumber": 381,
       "recordId": "NEWS-E7F4EEED32E44C",
       "values": [
         "新闻自动初筛机器人",
@@ -17427,8 +17626,8 @@
       }
     },
     {
-      "rowNumber": 368,
-      "originalRowNumber": 368,
+      "rowNumber": 382,
+      "originalRowNumber": 382,
       "recordId": "NEWS-61A51E788E1C52",
       "values": [
         "新闻自动初筛机器人",
@@ -17476,8 +17675,8 @@
       }
     },
     {
-      "rowNumber": 369,
-      "originalRowNumber": 369,
+      "rowNumber": 383,
+      "originalRowNumber": 383,
       "recordId": "NEWS-67261C063AA0A9",
       "values": [
         "新闻自动初筛机器人",
@@ -17525,8 +17724,8 @@
       }
     },
     {
-      "rowNumber": 370,
-      "originalRowNumber": 370,
+      "rowNumber": 384,
+      "originalRowNumber": 384,
       "recordId": "NEWS-EAB6A6688481FD",
       "values": [
         "新闻自动初筛机器人",
@@ -17574,8 +17773,8 @@
       }
     },
     {
-      "rowNumber": 371,
-      "originalRowNumber": 371,
+      "rowNumber": 385,
+      "originalRowNumber": 385,
       "recordId": "NEWS-756C789D504F22",
       "values": [
         "新闻自动初筛机器人",
@@ -17623,8 +17822,8 @@
       }
     },
     {
-      "rowNumber": 372,
-      "originalRowNumber": 372,
+      "rowNumber": 386,
+      "originalRowNumber": 386,
       "recordId": "NEWS-DD734F97DC79E0",
       "values": [
         "新闻自动初筛机器人",
@@ -17672,8 +17871,8 @@
       }
     },
     {
-      "rowNumber": 373,
-      "originalRowNumber": 373,
+      "rowNumber": 387,
+      "originalRowNumber": 387,
       "recordId": "NEWS-DC01CCE62324EC",
       "values": [
         "新闻自动初筛机器人",
@@ -17721,8 +17920,8 @@
       }
     },
     {
-      "rowNumber": 374,
-      "originalRowNumber": 374,
+      "rowNumber": 388,
+      "originalRowNumber": 388,
       "recordId": "NEWS-BDDCD1B881805D",
       "values": [
         "新闻自动初筛机器人",
@@ -17770,14 +17969,14 @@
       }
     },
     {
-      "rowNumber": 375,
-      "originalRowNumber": 375,
+      "rowNumber": 389,
+      "originalRowNumber": 389,
       "recordId": "NEWS-7818548BB0A30F",
       "values": [
         "新闻自动初筛机器人",
-        "不接受",
-        "不接受",
-        "已移除",
+        "接受",
+        "接受",
+        "已纳入",
         "2026-08-29",
         "香港本地",
         "基础设施/网络/技术类",
@@ -17819,8 +18018,8 @@
       }
     },
     {
-      "rowNumber": 376,
-      "originalRowNumber": 376,
+      "rowNumber": 390,
+      "originalRowNumber": 390,
       "recordId": "NEWS-DE781485FE7A09",
       "values": [
         "新闻自动初筛机器人",
@@ -17868,8 +18067,8 @@
       }
     },
     {
-      "rowNumber": 377,
-      "originalRowNumber": 377,
+      "rowNumber": 391,
+      "originalRowNumber": 391,
       "recordId": "NEWS-0EC31A30178E3E",
       "values": [
         "新闻自动初筛机器人",
@@ -17917,8 +18116,8 @@
       }
     },
     {
-      "rowNumber": 378,
-      "originalRowNumber": 378,
+      "rowNumber": 392,
+      "originalRowNumber": 392,
       "recordId": "NEWS-EF23D0EF77F5F2",
       "values": [
         "新闻自动初筛机器人",
@@ -17966,8 +18165,8 @@
       }
     },
     {
-      "rowNumber": 379,
-      "originalRowNumber": 379,
+      "rowNumber": 393,
+      "originalRowNumber": 393,
       "recordId": "NEWS-217D54360B9061",
       "values": [
         "新闻自动初筛机器人",
@@ -18015,8 +18214,8 @@
       }
     },
     {
-      "rowNumber": 380,
-      "originalRowNumber": 380,
+      "rowNumber": 394,
+      "originalRowNumber": 394,
       "recordId": "NEWS-588F47B82A5D3F",
       "values": [
         "新闻自动初筛机器人",
@@ -18064,8 +18263,8 @@
       }
     },
     {
-      "rowNumber": 381,
-      "originalRowNumber": 381,
+      "rowNumber": 395,
+      "originalRowNumber": 395,
       "recordId": "NEWS-B2B7FE2FE4DA25",
       "values": [
         "新闻自动初筛机器人",
@@ -18113,8 +18312,8 @@
       }
     },
     {
-      "rowNumber": 382,
-      "originalRowNumber": 382,
+      "rowNumber": 396,
+      "originalRowNumber": 396,
       "recordId": "NEWS-1A3910B9884388",
       "values": [
         "新闻自动初筛机器人",
@@ -18162,8 +18361,8 @@
       }
     },
     {
-      "rowNumber": 383,
-      "originalRowNumber": 383,
+      "rowNumber": 397,
+      "originalRowNumber": 397,
       "recordId": "NEWS-6A53AFD70EBCAB",
       "values": [
         "新闻自动初筛机器人",
@@ -18211,8 +18410,8 @@
       }
     },
     {
-      "rowNumber": 384,
-      "originalRowNumber": 384,
+      "rowNumber": 398,
+      "originalRowNumber": 398,
       "recordId": "NEWS-98714677BB96D3",
       "values": [
         "新闻自动初筛机器人",
@@ -18260,8 +18459,8 @@
       }
     },
     {
-      "rowNumber": 385,
-      "originalRowNumber": 385,
+      "rowNumber": 399,
+      "originalRowNumber": 399,
       "recordId": "NEWS-120B8A0389AF8B",
       "values": [
         "新闻自动初筛机器人",
@@ -18309,8 +18508,8 @@
       }
     },
     {
-      "rowNumber": 386,
-      "originalRowNumber": 386,
+      "rowNumber": 400,
+      "originalRowNumber": 400,
       "recordId": "NEWS-37F0C4F39E7B98",
       "values": [
         "新闻自动初筛机器人",
@@ -18358,8 +18557,8 @@
       }
     },
     {
-      "rowNumber": 387,
-      "originalRowNumber": 387,
+      "rowNumber": 401,
+      "originalRowNumber": 401,
       "recordId": "NEWS-3212B80C11611E",
       "values": [
         "新闻自动初筛机器人",
@@ -18407,8 +18606,8 @@
       }
     },
     {
-      "rowNumber": 388,
-      "originalRowNumber": 388,
+      "rowNumber": 402,
+      "originalRowNumber": 402,
       "recordId": "NEWS-34CA172F5B5369",
       "values": [
         "新闻自动初筛机器人",
@@ -18456,8 +18655,8 @@
       }
     },
     {
-      "rowNumber": 389,
-      "originalRowNumber": 389,
+      "rowNumber": 403,
+      "originalRowNumber": 403,
       "recordId": "NEWS-1834B9D50F6949",
       "values": [
         "新闻自动初筛机器人",
@@ -18505,8 +18704,8 @@
       }
     },
     {
-      "rowNumber": 390,
-      "originalRowNumber": 390,
+      "rowNumber": 404,
+      "originalRowNumber": 404,
       "recordId": "NEWS-FDC51E43452DDE",
       "values": [
         "新闻自动初筛机器人",
@@ -18554,8 +18753,8 @@
       }
     },
     {
-      "rowNumber": 391,
-      "originalRowNumber": 391,
+      "rowNumber": 405,
+      "originalRowNumber": 405,
       "recordId": "NEWS-39F42CC1737E08",
       "values": [
         "新闻自动初筛机器人",
@@ -18603,8 +18802,8 @@
       }
     },
     {
-      "rowNumber": 392,
-      "originalRowNumber": 392,
+      "rowNumber": 406,
+      "originalRowNumber": 406,
       "recordId": "NEWS-BC0389E4B21031",
       "values": [
         "新闻自动初筛机器人",
@@ -18652,8 +18851,8 @@
       }
     },
     {
-      "rowNumber": 393,
-      "originalRowNumber": 393,
+      "rowNumber": 407,
+      "originalRowNumber": 407,
       "recordId": "NEWS-1A82A46BB83D6A",
       "values": [
         "新闻自动初筛机器人",
@@ -18701,8 +18900,8 @@
       }
     },
     {
-      "rowNumber": 394,
-      "originalRowNumber": 394,
+      "rowNumber": 408,
+      "originalRowNumber": 408,
       "recordId": "NEWS-ABC66B6355A9A9",
       "values": [
         "新闻自动初筛机器人",
@@ -18750,8 +18949,8 @@
       }
     },
     {
-      "rowNumber": 395,
-      "originalRowNumber": 395,
+      "rowNumber": 409,
+      "originalRowNumber": 409,
       "recordId": "NEWS-2401FD8D0A9295",
       "values": [
         "新闻自动初筛机器人",
@@ -18799,8 +18998,8 @@
       }
     },
     {
-      "rowNumber": 396,
-      "originalRowNumber": 396,
+      "rowNumber": 410,
+      "originalRowNumber": 410,
       "recordId": "NEWS-159C4478D98E26",
       "values": [
         "新闻自动初筛机器人",
@@ -18848,8 +19047,8 @@
       }
     },
     {
-      "rowNumber": 397,
-      "originalRowNumber": 397,
+      "rowNumber": 411,
+      "originalRowNumber": 411,
       "recordId": "NEWS-E5558D5761E821",
       "values": [
         "新闻自动初筛机器人",
@@ -18897,8 +19096,8 @@
       }
     },
     {
-      "rowNumber": 398,
-      "originalRowNumber": 398,
+      "rowNumber": 412,
+      "originalRowNumber": 412,
       "recordId": "NEWS-EEB4615CB76813",
       "values": [
         "新闻自动初筛机器人",
@@ -18946,8 +19145,8 @@
       }
     },
     {
-      "rowNumber": 399,
-      "originalRowNumber": 399,
+      "rowNumber": 413,
+      "originalRowNumber": 413,
       "recordId": "NEWS-C9B9EB65F881BC",
       "values": [
         "新闻自动初筛机器人",
@@ -18995,8 +19194,8 @@
       }
     },
     {
-      "rowNumber": 400,
-      "originalRowNumber": 400,
+      "rowNumber": 414,
+      "originalRowNumber": 414,
       "recordId": "NEWS-881615BCC9A0A9",
       "values": [
         "新闻自动初筛机器人",
@@ -19044,8 +19243,8 @@
       }
     },
     {
-      "rowNumber": 401,
-      "originalRowNumber": 401,
+      "rowNumber": 415,
+      "originalRowNumber": 415,
       "recordId": "NEWS-293CB0B8D324D6",
       "values": [
         "新闻自动初筛机器人",
@@ -19093,8 +19292,8 @@
       }
     },
     {
-      "rowNumber": 402,
-      "originalRowNumber": 402,
+      "rowNumber": 416,
+      "originalRowNumber": 416,
       "recordId": "NEWS-166370B8206426",
       "values": [
         "新闻自动初筛机器人",
@@ -19142,8 +19341,8 @@
       }
     },
     {
-      "rowNumber": 403,
-      "originalRowNumber": 403,
+      "rowNumber": 417,
+      "originalRowNumber": 417,
       "recordId": "NEWS-711F722320AAAA",
       "values": [
         "新闻自动初筛机器人",
@@ -19191,8 +19390,8 @@
       }
     },
     {
-      "rowNumber": 404,
-      "originalRowNumber": 404,
+      "rowNumber": 418,
+      "originalRowNumber": 418,
       "recordId": "NEWS-BC3BB7025C97B7",
       "values": [
         "新闻自动初筛机器人",
@@ -19240,8 +19439,8 @@
       }
     },
     {
-      "rowNumber": 405,
-      "originalRowNumber": 405,
+      "rowNumber": 419,
+      "originalRowNumber": 419,
       "recordId": "NEWS-94E5DCADC4C57C",
       "values": [
         "新闻自动初筛机器人",
@@ -19289,8 +19488,8 @@
       }
     },
     {
-      "rowNumber": 406,
-      "originalRowNumber": 406,
+      "rowNumber": 420,
+      "originalRowNumber": 420,
       "recordId": "NEWS-F1F8018471C429",
       "values": [
         "新闻自动初筛机器人",
@@ -19338,8 +19537,8 @@
       }
     },
     {
-      "rowNumber": 407,
-      "originalRowNumber": 407,
+      "rowNumber": 421,
+      "originalRowNumber": 421,
       "recordId": "NEWS-93670B4410BEB7",
       "values": [
         "新闻自动初筛机器人",
@@ -19387,8 +19586,8 @@
       }
     },
     {
-      "rowNumber": 408,
-      "originalRowNumber": 408,
+      "rowNumber": 422,
+      "originalRowNumber": 422,
       "recordId": "NEWS-D44F1698D448C9",
       "values": [
         "新闻自动初筛机器人",
@@ -19436,8 +19635,8 @@
       }
     },
     {
-      "rowNumber": 409,
-      "originalRowNumber": 409,
+      "rowNumber": 423,
+      "originalRowNumber": 423,
       "recordId": "NEWS-D2F067F3139EB2",
       "values": [
         "新闻自动初筛机器人",
@@ -19485,8 +19684,8 @@
       }
     },
     {
-      "rowNumber": 410,
-      "originalRowNumber": 410,
+      "rowNumber": 424,
+      "originalRowNumber": 424,
       "recordId": "NEWS-A847095640FE4D",
       "values": [
         "新闻自动初筛机器人",
@@ -19534,8 +19733,8 @@
       }
     },
     {
-      "rowNumber": 411,
-      "originalRowNumber": 411,
+      "rowNumber": 425,
+      "originalRowNumber": 425,
       "recordId": "NEWS-50B5511646B078",
       "values": [
         "新闻自动初筛机器人",
@@ -19583,8 +19782,8 @@
       }
     },
     {
-      "rowNumber": 412,
-      "originalRowNumber": 412,
+      "rowNumber": 426,
+      "originalRowNumber": 426,
       "recordId": "NEWS-7F892D031532B5",
       "values": [
         "新闻自动初筛机器人",
@@ -19632,8 +19831,8 @@
       }
     },
     {
-      "rowNumber": 413,
-      "originalRowNumber": 413,
+      "rowNumber": 427,
+      "originalRowNumber": 427,
       "recordId": "NEWS-EA8E0AC55D3802",
       "values": [
         "新闻自动初筛机器人",
@@ -19681,8 +19880,8 @@
       }
     },
     {
-      "rowNumber": 414,
-      "originalRowNumber": 414,
+      "rowNumber": 428,
+      "originalRowNumber": 428,
       "recordId": "NEWS-39665BE6ECB357",
       "values": [
         "新闻自动初筛机器人",
@@ -19730,8 +19929,8 @@
       }
     },
     {
-      "rowNumber": 415,
-      "originalRowNumber": 415,
+      "rowNumber": 429,
+      "originalRowNumber": 429,
       "recordId": "NEWS-7D41D9634CF5EC",
       "values": [
         "新闻自动初筛机器人",
@@ -19779,14 +19978,14 @@
       }
     },
     {
-      "rowNumber": 416,
-      "originalRowNumber": 416,
+      "rowNumber": 430,
+      "originalRowNumber": 430,
       "recordId": "NEWS-C268C42FD59CC1",
       "values": [
         "新闻自动初筛机器人",
-        "接受",
-        "接受",
-        "已纳入",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-08-29",
         "国际/行业",
         "竞对动态",
@@ -19828,8 +20027,8 @@
       }
     },
     {
-      "rowNumber": 417,
-      "originalRowNumber": 417,
+      "rowNumber": 431,
+      "originalRowNumber": 431,
       "recordId": "NEWS-FA38BAB74624D3",
       "values": [
         "新闻自动初筛机器人",
@@ -19877,8 +20076,8 @@
       }
     },
     {
-      "rowNumber": 418,
-      "originalRowNumber": 418,
+      "rowNumber": 432,
+      "originalRowNumber": 432,
       "recordId": "NEWS-B71934E8BC8B25",
       "values": [
         "新闻自动初筛机器人",
@@ -19926,8 +20125,8 @@
       }
     },
     {
-      "rowNumber": 419,
-      "originalRowNumber": 419,
+      "rowNumber": 433,
+      "originalRowNumber": 433,
       "recordId": "NEWS-EBB6DA54D4104F",
       "values": [
         "新闻自动初筛机器人",
@@ -19975,60 +20174,8 @@
       }
     },
     {
-      "rowNumber": 420,
-      "originalRowNumber": 420,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 421,
-      "originalRowNumber": 421,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 422,
-      "originalRowNumber": 422,
+      "rowNumber": 436,
+      "originalRowNumber": 436,
       "recordId": "NEWS-DA2CB658ADFDBA",
       "values": [
         "新闻自动初筛机器人",
@@ -20076,8 +20223,8 @@
       }
     },
     {
-      "rowNumber": 423,
-      "originalRowNumber": 423,
+      "rowNumber": 437,
+      "originalRowNumber": 437,
       "recordId": "NEWS-F049D134874CCC",
       "values": [
         "新闻自动初筛机器人",
@@ -20125,8 +20272,8 @@
       }
     },
     {
-      "rowNumber": 424,
-      "originalRowNumber": 424,
+      "rowNumber": 438,
+      "originalRowNumber": 438,
       "recordId": "NEWS-3BA3EDBE8E3F93",
       "values": [
         "新闻自动初筛机器人",
@@ -20174,8 +20321,8 @@
       }
     },
     {
-      "rowNumber": 425,
-      "originalRowNumber": 425,
+      "rowNumber": 439,
+      "originalRowNumber": 439,
       "recordId": "NEWS-914918A8DC8B0D",
       "values": [
         "新闻自动初筛机器人",
@@ -20223,8 +20370,8 @@
       }
     },
     {
-      "rowNumber": 426,
-      "originalRowNumber": 426,
+      "rowNumber": 440,
+      "originalRowNumber": 440,
       "recordId": "NEWS-478FED429B57C0",
       "values": [
         "新闻自动初筛机器人",
@@ -20272,8 +20419,8 @@
       }
     },
     {
-      "rowNumber": 427,
-      "originalRowNumber": 427,
+      "rowNumber": 441,
+      "originalRowNumber": 441,
       "recordId": "NEWS-3000379B053779",
       "values": [
         "新闻自动初筛机器人",
@@ -20321,8 +20468,8 @@
       }
     },
     {
-      "rowNumber": 428,
-      "originalRowNumber": 428,
+      "rowNumber": 442,
+      "originalRowNumber": 442,
       "recordId": "NEWS-4B9373EDF66BF8",
       "values": [
         "新闻自动初筛机器人",
@@ -20370,8 +20517,8 @@
       }
     },
     {
-      "rowNumber": 429,
-      "originalRowNumber": 429,
+      "rowNumber": 443,
+      "originalRowNumber": 443,
       "recordId": "NEWS-315003AD6B72FA",
       "values": [
         "新闻自动初筛机器人",
@@ -20419,8 +20566,8 @@
       }
     },
     {
-      "rowNumber": 430,
-      "originalRowNumber": 430,
+      "rowNumber": 444,
+      "originalRowNumber": 444,
       "recordId": "NEWS-263116B713DD26",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -20468,8 +20615,8 @@
       }
     },
     {
-      "rowNumber": 431,
-      "originalRowNumber": 431,
+      "rowNumber": 445,
+      "originalRowNumber": 445,
       "recordId": "NEWS-CD5F140DCD6348",
       "values": [
         "新闻自动初筛机器人",
@@ -20517,34 +20664,8 @@
       }
     },
     {
-      "rowNumber": 432,
-      "originalRowNumber": 432,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 433,
-      "originalRowNumber": 433,
+      "rowNumber": 447,
+      "originalRowNumber": 447,
       "recordId": "NEWS-42BAB2051681C3",
       "values": [
         "新闻自动初筛机器人",
@@ -20569,8 +20690,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 434,
-      "originalRowNumber": 434,
+      "rowNumber": 448,
+      "originalRowNumber": 448,
       "recordId": "NEWS-299EE33862AF65",
       "values": [
         "新闻自动初筛机器人",
@@ -20595,8 +20716,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 435,
-      "originalRowNumber": 435,
+      "rowNumber": 449,
+      "originalRowNumber": 449,
       "recordId": "NEWS-2005FC3AA078B2",
       "values": [
         "新闻自动初筛机器人",
@@ -20621,8 +20742,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 436,
-      "originalRowNumber": 436,
+      "rowNumber": 450,
+      "originalRowNumber": 450,
       "recordId": "NEWS-62FD563AA41F36",
       "values": [
         "新闻自动初筛机器人",
@@ -20647,8 +20768,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 437,
-      "originalRowNumber": 437,
+      "rowNumber": 451,
+      "originalRowNumber": 451,
       "recordId": "NEWS-57C6E0D3D5FBE6",
       "values": [
         "新闻自动初筛机器人",
@@ -20673,34 +20794,8 @@
       "feishuVisible": true
     },
     {
-      "rowNumber": 438,
-      "originalRowNumber": 438,
-      "recordId": "NEWS-DA39A3EE5E6B4B",
-      "values": [
-        "新闻自动初筛机器人",
-        "",
-        "",
-        "未同步",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true
-    },
-    {
-      "rowNumber": 439,
-      "originalRowNumber": 439,
+      "rowNumber": 453,
+      "originalRowNumber": 453,
       "recordId": "NEWS-6D5C7C17BC139F",
       "values": [
         "新闻自动初筛机器人",
@@ -20748,8 +20843,8 @@
       }
     },
     {
-      "rowNumber": 440,
-      "originalRowNumber": 440,
+      "rowNumber": 454,
+      "originalRowNumber": 454,
       "recordId": "NEWS-DFAD0C28810EAB",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -20797,8 +20892,8 @@
       }
     },
     {
-      "rowNumber": 441,
-      "originalRowNumber": 441,
+      "rowNumber": 455,
+      "originalRowNumber": 455,
       "recordId": "NEWS-E660BC98F88F2F",
       "values": [
         "新闻自动初筛机器人",
@@ -20846,8 +20941,8 @@
       }
     },
     {
-      "rowNumber": 442,
-      "originalRowNumber": 442,
+      "rowNumber": 456,
+      "originalRowNumber": 456,
       "recordId": "NEWS-F976533BFF6478",
       "values": [
         "新闻自动初筛机器人",
@@ -20895,8 +20990,8 @@
       }
     },
     {
-      "rowNumber": 443,
-      "originalRowNumber": 443,
+      "rowNumber": 457,
+      "originalRowNumber": 457,
       "recordId": "NEWS-52FB6F13435D8D",
       "values": [
         "新闻自动初筛机器人",
@@ -20944,8 +21039,8 @@
       }
     },
     {
-      "rowNumber": 444,
-      "originalRowNumber": 444,
+      "rowNumber": 458,
+      "originalRowNumber": 458,
       "recordId": "NEWS-EAE9698343E79F",
       "values": [
         "新闻自动初筛机器人",
@@ -20993,8 +21088,8 @@
       }
     },
     {
-      "rowNumber": 445,
-      "originalRowNumber": 445,
+      "rowNumber": 459,
+      "originalRowNumber": 459,
       "recordId": "NEWS-EB3F8B749CDDFF",
       "values": [
         "新闻自动初筛机器人",
@@ -21042,8 +21137,8 @@
       }
     },
     {
-      "rowNumber": 446,
-      "originalRowNumber": 446,
+      "rowNumber": 460,
+      "originalRowNumber": 460,
       "recordId": "NEWS-4B01BE061BEC45",
       "values": [
         "新闻自动初筛机器人",
@@ -21091,8 +21186,8 @@
       }
     },
     {
-      "rowNumber": 447,
-      "originalRowNumber": 447,
+      "rowNumber": 461,
+      "originalRowNumber": 461,
       "recordId": "NEWS-4D5FBBB026B963",
       "values": [
         "新闻自动初筛机器人",
@@ -21140,8 +21235,8 @@
       }
     },
     {
-      "rowNumber": 448,
-      "originalRowNumber": 448,
+      "rowNumber": 462,
+      "originalRowNumber": 462,
       "recordId": "NEWS-FA296A3EB65CE3",
       "values": [
         "新闻自动初筛机器人",
@@ -21189,8 +21284,8 @@
       }
     },
     {
-      "rowNumber": 449,
-      "originalRowNumber": 449,
+      "rowNumber": 463,
+      "originalRowNumber": 463,
       "recordId": "NEWS-A9A36843C9E792",
       "values": [
         "新闻自动初筛机器人",
@@ -21238,8 +21333,8 @@
       }
     },
     {
-      "rowNumber": 450,
-      "originalRowNumber": 450,
+      "rowNumber": 464,
+      "originalRowNumber": 464,
       "recordId": "NEWS-865777FF7A1406",
       "values": [
         "新闻自动初筛机器人",
@@ -21287,8 +21382,8 @@
       }
     },
     {
-      "rowNumber": 451,
-      "originalRowNumber": 451,
+      "rowNumber": 465,
+      "originalRowNumber": 465,
       "recordId": "NEWS-D39DF461F16C72",
       "values": [
         "新闻自动初筛机器人",
@@ -21336,8 +21431,8 @@
       }
     },
     {
-      "rowNumber": 452,
-      "originalRowNumber": 452,
+      "rowNumber": 466,
+      "originalRowNumber": 466,
       "recordId": "NEWS-774B213F12664C",
       "values": [
         "新闻自动初筛机器人",
@@ -21385,8 +21480,8 @@
       }
     },
     {
-      "rowNumber": 453,
-      "originalRowNumber": 453,
+      "rowNumber": 467,
+      "originalRowNumber": 467,
       "recordId": "NEWS-A1140DCF2A1847",
       "values": [
         "新闻自动初筛机器人",
@@ -21434,8 +21529,8 @@
       }
     },
     {
-      "rowNumber": 454,
-      "originalRowNumber": 454,
+      "rowNumber": 468,
+      "originalRowNumber": 468,
       "recordId": "NEWS-AF9988916B6F86",
       "values": [
         "新闻自动初筛机器人",
@@ -21483,8 +21578,8 @@
       }
     },
     {
-      "rowNumber": 455,
-      "originalRowNumber": 455,
+      "rowNumber": 469,
+      "originalRowNumber": 469,
       "recordId": "NEWS-A3338874AE8B6A",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -21532,8 +21627,8 @@
       }
     },
     {
-      "rowNumber": 456,
-      "originalRowNumber": 456,
+      "rowNumber": 470,
+      "originalRowNumber": 470,
       "recordId": "NEWS-2F120396415C35",
       "values": [
         "新闻自动初筛机器人",
@@ -21581,8 +21676,8 @@
       }
     },
     {
-      "rowNumber": 457,
-      "originalRowNumber": 457,
+      "rowNumber": 471,
+      "originalRowNumber": 471,
       "recordId": "NEWS-20E4BC2AE5B95A",
       "values": [
         "新闻自动初筛机器人",
@@ -21630,8 +21725,8 @@
       }
     },
     {
-      "rowNumber": 458,
-      "originalRowNumber": 458,
+      "rowNumber": 472,
+      "originalRowNumber": 472,
       "recordId": "NEWS-94795121E82789",
       "values": [
         "新闻自动初筛机器人",
@@ -21679,8 +21774,8 @@
       }
     },
     {
-      "rowNumber": 459,
-      "originalRowNumber": 459,
+      "rowNumber": 473,
+      "originalRowNumber": 473,
       "recordId": "NEWS-8D056EB363D291",
       "values": [
         "新闻自动初筛机器人",
@@ -21728,8 +21823,8 @@
       }
     },
     {
-      "rowNumber": 460,
-      "originalRowNumber": 460,
+      "rowNumber": 474,
+      "originalRowNumber": 474,
       "recordId": "NEWS-1FB35323F531E6",
       "values": [
         "新闻自动初筛机器人",
@@ -21777,8 +21872,8 @@
       }
     },
     {
-      "rowNumber": 461,
-      "originalRowNumber": 461,
+      "rowNumber": 475,
+      "originalRowNumber": 475,
       "recordId": "NEWS-35E1D6C479351F",
       "values": [
         "新闻自动初筛机器人",
@@ -21826,8 +21921,8 @@
       }
     },
     {
-      "rowNumber": 462,
-      "originalRowNumber": 462,
+      "rowNumber": 476,
+      "originalRowNumber": 476,
       "recordId": "NEWS-4861F7C7814CD4",
       "values": [
         "新闻自动初筛机器人",
@@ -21875,8 +21970,8 @@
       }
     },
     {
-      "rowNumber": 463,
-      "originalRowNumber": 463,
+      "rowNumber": 477,
+      "originalRowNumber": 477,
       "recordId": "NEWS-302C4A88B7F817",
       "values": [
         "新闻自动初筛机器人",
@@ -21924,8 +22019,8 @@
       }
     },
     {
-      "rowNumber": 464,
-      "originalRowNumber": 464,
+      "rowNumber": 478,
+      "originalRowNumber": 478,
       "recordId": "NEWS-FF7D91655F46CA",
       "values": [
         "新闻自动初筛机器人",
@@ -21973,8 +22068,8 @@
       }
     },
     {
-      "rowNumber": 465,
-      "originalRowNumber": 465,
+      "rowNumber": 479,
+      "originalRowNumber": 479,
       "recordId": "NEWS-FC425E41615674",
       "values": [
         "新闻自动初筛机器人",
@@ -22022,8 +22117,8 @@
       }
     },
     {
-      "rowNumber": 466,
-      "originalRowNumber": 466,
+      "rowNumber": 480,
+      "originalRowNumber": 480,
       "recordId": "NEWS-A8A2B88BBAA3A3",
       "values": [
         "新闻自动初筛机器人",
@@ -22071,8 +22166,8 @@
       }
     },
     {
-      "rowNumber": 467,
-      "originalRowNumber": 467,
+      "rowNumber": 481,
+      "originalRowNumber": 481,
       "recordId": "NEWS-5CDE39F8C00F46",
       "values": [
         "新闻自动初筛机器人",
@@ -22120,8 +22215,8 @@
       }
     },
     {
-      "rowNumber": 468,
-      "originalRowNumber": 468,
+      "rowNumber": 482,
+      "originalRowNumber": 482,
       "recordId": "NEWS-9D3E8DB047C8D4",
       "values": [
         "新闻自动初筛机器人",
@@ -22169,8 +22264,8 @@
       }
     },
     {
-      "rowNumber": 469,
-      "originalRowNumber": 469,
+      "rowNumber": 483,
+      "originalRowNumber": 483,
       "recordId": "NEWS-7C273B625ACB81",
       "values": [
         "新闻自动初筛机器人",
@@ -22218,8 +22313,8 @@
       }
     },
     {
-      "rowNumber": 470,
-      "originalRowNumber": 470,
+      "rowNumber": 484,
+      "originalRowNumber": 484,
       "recordId": "NEWS-EB59998CE43C00",
       "values": [
         "新闻自动初筛机器人",
@@ -22267,8 +22362,8 @@
       }
     },
     {
-      "rowNumber": 471,
-      "originalRowNumber": 471,
+      "rowNumber": 485,
+      "originalRowNumber": 485,
       "recordId": "NEWS-F1E3653DE06D44",
       "values": [
         "新闻自动初筛机器人",
@@ -22316,8 +22411,8 @@
       }
     },
     {
-      "rowNumber": 472,
-      "originalRowNumber": 472,
+      "rowNumber": 486,
+      "originalRowNumber": 486,
       "recordId": "NEWS-D28CA58BC5724D",
       "values": [
         "新闻自动初筛机器人",
@@ -22365,8 +22460,8 @@
       }
     },
     {
-      "rowNumber": 473,
-      "originalRowNumber": 473,
+      "rowNumber": 487,
+      "originalRowNumber": 487,
       "recordId": "NEWS-DE560AA74DDDDE",
       "values": [
         "新闻自动初筛机器人",
@@ -22414,8 +22509,8 @@
       }
     },
     {
-      "rowNumber": 474,
-      "originalRowNumber": 474,
+      "rowNumber": 488,
+      "originalRowNumber": 488,
       "recordId": "NEWS-DC975247404A9C",
       "values": [
         "新闻自动初筛机器人",
@@ -22463,8 +22558,8 @@
       }
     },
     {
-      "rowNumber": 475,
-      "originalRowNumber": 475,
+      "rowNumber": 489,
+      "originalRowNumber": 489,
       "recordId": "NEWS-D311560C748582",
       "values": [
         "新闻自动初筛机器人",
@@ -22512,8 +22607,8 @@
       }
     },
     {
-      "rowNumber": 476,
-      "originalRowNumber": 476,
+      "rowNumber": 490,
+      "originalRowNumber": 490,
       "recordId": "NEWS-2C73EBF23E4467",
       "values": [
         "新闻自动初筛机器人",
@@ -22561,8 +22656,8 @@
       }
     },
     {
-      "rowNumber": 477,
-      "originalRowNumber": 477,
+      "rowNumber": 491,
+      "originalRowNumber": 491,
       "recordId": "NEWS-C874EBC3799E58",
       "values": [
         "新闻自动初筛机器人",
@@ -22610,8 +22705,8 @@
       }
     },
     {
-      "rowNumber": 478,
-      "originalRowNumber": 478,
+      "rowNumber": 492,
+      "originalRowNumber": 492,
       "recordId": "NEWS-CE36870767DE4B",
       "values": [
         "新闻自动初筛机器人",
@@ -22659,8 +22754,8 @@
       }
     },
     {
-      "rowNumber": 479,
-      "originalRowNumber": 479,
+      "rowNumber": 493,
+      "originalRowNumber": 493,
       "recordId": "NEWS-6AA1CD0D7CCC10",
       "values": [
         "新闻自动初筛机器人",
@@ -22708,8 +22803,8 @@
       }
     },
     {
-      "rowNumber": 480,
-      "originalRowNumber": 480,
+      "rowNumber": 494,
+      "originalRowNumber": 494,
       "recordId": "NEWS-F13D0155E8014E",
       "values": [
         "新闻自动初筛机器人",
@@ -22757,8 +22852,8 @@
       }
     },
     {
-      "rowNumber": 481,
-      "originalRowNumber": 481,
+      "rowNumber": 495,
+      "originalRowNumber": 495,
       "recordId": "NEWS-C557378BFEA5D3",
       "values": [
         "新闻自动初筛机器人",
@@ -22806,8 +22901,8 @@
       }
     },
     {
-      "rowNumber": 482,
-      "originalRowNumber": 482,
+      "rowNumber": 496,
+      "originalRowNumber": 496,
       "recordId": "NEWS-0AA99B9031C4E3",
       "values": [
         "新闻自动初筛机器人",
@@ -22855,8 +22950,8 @@
       }
     },
     {
-      "rowNumber": 483,
-      "originalRowNumber": 483,
+      "rowNumber": 497,
+      "originalRowNumber": 497,
       "recordId": "NEWS-38DC7FFFCCD800",
       "values": [
         "新闻自动初筛机器人",
@@ -22904,8 +22999,8 @@
       }
     },
     {
-      "rowNumber": 484,
-      "originalRowNumber": 484,
+      "rowNumber": 498,
+      "originalRowNumber": 498,
       "recordId": "NEWS-647E523ABDF1C4",
       "values": [
         "新闻自动初筛机器人",
@@ -22953,8 +23048,8 @@
       }
     },
     {
-      "rowNumber": 485,
-      "originalRowNumber": 485,
+      "rowNumber": 499,
+      "originalRowNumber": 499,
       "recordId": "NEWS-F9994D745A3FDB",
       "values": [
         "新闻自动初筛机器人",
@@ -23002,8 +23097,8 @@
       }
     },
     {
-      "rowNumber": 486,
-      "originalRowNumber": 486,
+      "rowNumber": 500,
+      "originalRowNumber": 500,
       "recordId": "NEWS-FFFE26BF664799",
       "values": [
         "新闻自动初筛机器人",
@@ -23051,8 +23146,8 @@
       }
     },
     {
-      "rowNumber": 487,
-      "originalRowNumber": 487,
+      "rowNumber": 501,
+      "originalRowNumber": 501,
       "recordId": "NEWS-EC52D4771A3C67",
       "values": [
         "新闻自动初筛机器人",
@@ -23100,8 +23195,8 @@
       }
     },
     {
-      "rowNumber": 488,
-      "originalRowNumber": 488,
+      "rowNumber": 502,
+      "originalRowNumber": 502,
       "recordId": "NEWS-161352BD7E7DEA",
       "values": [
         "新闻自动初筛机器人",
@@ -23149,8 +23244,8 @@
       }
     },
     {
-      "rowNumber": 489,
-      "originalRowNumber": 489,
+      "rowNumber": 503,
+      "originalRowNumber": 503,
       "recordId": "NEWS-D6C4C396EEAF90",
       "values": [
         "新闻自动初筛机器人",
@@ -23198,8 +23293,8 @@
       }
     },
     {
-      "rowNumber": 490,
-      "originalRowNumber": 490,
+      "rowNumber": 504,
+      "originalRowNumber": 504,
       "recordId": "NEWS-D32314A336DA5B",
       "values": [
         "新闻自动初筛机器人",
@@ -23247,8 +23342,8 @@
       }
     },
     {
-      "rowNumber": 491,
-      "originalRowNumber": 491,
+      "rowNumber": 505,
+      "originalRowNumber": 505,
       "recordId": "NEWS-243414382F0E2A",
       "values": [
         "新闻自动初筛机器人",
@@ -23296,8 +23391,8 @@
       }
     },
     {
-      "rowNumber": 492,
-      "originalRowNumber": 492,
+      "rowNumber": 506,
+      "originalRowNumber": 506,
       "recordId": "NEWS-4F007C1BBE4C42",
       "values": [
         "新闻自动初筛机器人",
@@ -23345,8 +23440,8 @@
       }
     },
     {
-      "rowNumber": 493,
-      "originalRowNumber": 493,
+      "rowNumber": 507,
+      "originalRowNumber": 507,
       "recordId": "NEWS-90D720FF5538B0",
       "values": [
         "新闻自动初筛机器人",
@@ -23394,8 +23489,8 @@
       }
     },
     {
-      "rowNumber": 494,
-      "originalRowNumber": 494,
+      "rowNumber": 508,
+      "originalRowNumber": 508,
       "recordId": "NEWS-6909B01DB6617F",
       "values": [
         "新闻自动初筛机器人",
@@ -23443,8 +23538,8 @@
       }
     },
     {
-      "rowNumber": 495,
-      "originalRowNumber": 495,
+      "rowNumber": 509,
+      "originalRowNumber": 509,
       "recordId": "NEWS-96EEB98FC799AF",
       "values": [
         "新闻自动初筛机器人",
@@ -23492,8 +23587,8 @@
       }
     },
     {
-      "rowNumber": 496,
-      "originalRowNumber": 496,
+      "rowNumber": 510,
+      "originalRowNumber": 510,
       "recordId": "NEWS-F5E2CB8BC7666E",
       "values": [
         "新闻自动初筛机器人",
@@ -23541,8 +23636,8 @@
       }
     },
     {
-      "rowNumber": 497,
-      "originalRowNumber": 497,
+      "rowNumber": 511,
+      "originalRowNumber": 511,
       "recordId": "NEWS-4D460883C1512C",
       "values": [
         "新闻自动初筛机器人",
@@ -23590,8 +23685,8 @@
       }
     },
     {
-      "rowNumber": 498,
-      "originalRowNumber": 498,
+      "rowNumber": 512,
+      "originalRowNumber": 512,
       "recordId": "NEWS-D2C6C4F3BDBD08",
       "values": [
         "新闻自动初筛机器人",
@@ -23639,8 +23734,8 @@
       }
     },
     {
-      "rowNumber": 499,
-      "originalRowNumber": 499,
+      "rowNumber": 513,
+      "originalRowNumber": 513,
       "recordId": "NEWS-4C2395B1EFEAE9",
       "values": [
         "新闻自动初筛机器人",
@@ -23688,8 +23783,8 @@
       }
     },
     {
-      "rowNumber": 500,
-      "originalRowNumber": 500,
+      "rowNumber": 514,
+      "originalRowNumber": 514,
       "recordId": "NEWS-88159DDFE485E1",
       "values": [
         "廖望 Alex LIAO Wang",
@@ -23737,8 +23832,8 @@
       }
     },
     {
-      "rowNumber": 501,
-      "originalRowNumber": 501,
+      "rowNumber": 515,
+      "originalRowNumber": 515,
       "recordId": "NEWS-35E4CCE4CA36C9",
       "values": [
         "新闻自动初筛机器人",
@@ -23786,8 +23881,8 @@
       }
     },
     {
-      "rowNumber": 502,
-      "originalRowNumber": 502,
+      "rowNumber": 516,
+      "originalRowNumber": 516,
       "recordId": "NEWS-7E98B1DCFF5638",
       "values": [
         "新闻自动初筛机器人",
@@ -23805,55 +23900,6 @@
         "香港",
         "百度在香港联交所转换为双重主要上市，属香港资本市场具体事件，影响本地科技企业融资与市场格局。",
         "后台固定战略词库（模块：香港本地新闻；命中：香港） → Google News搜索"
-      ],
-      "storageSource": "feishu",
-      "sourceSheetId": "BYK3u",
-      "readOnly": false,
-      "feishuVisible": true,
-      "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-08-28T12:07:01+08:00"
-      },
-      "reviewers": {
-        "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-28T12:07:01+08:00"
-        },
-        "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-08-28T12:07:01+08:00"
-        }
-      }
-    },
-    {
-      "rowNumber": 503,
-      "originalRowNumber": 503,
-      "recordId": "NEWS-D7FEAF6369F587",
-      "values": [
-        "新闻自动初筛机器人",
-        "不接受",
-        "不接受",
-        "已移除",
-        "2026-08-28",
-        "国际/行业",
-        "政策监管",
-        "特朗普政府拟借G20推AI轻监管框架 马斯克黄仁勋等出席",
-        "美国拟在G20创新部长级会议推动对AI及新兴科技采取较宽松监管的共同原则，马斯克、黄仁勋等将出席。",
-        "香港經濟日報即時新聞頻道",
-        "2026-08-27",
-        "https://inews.hket.com/article/4184169/%E3%80%90G20%20-%20AI%E3%80%91%E7%89%B9%E6%9C%97%E6%99%AE%E6%94%BF%E5%BA%9C%E6%93%AC%E5%80%9FG20%E6%8E%A8%E3%80%8C%E8%BC%95%E7%9B%A3%E7%AE%A1%E3%80%8D%E6%A1%86%E6%9E%B6%E3%80%80%E9%A6%AC%E6%96%AF%E5%85%8B%E3%80%81%E9%BB%83%E4%BB%81%E5%8B%B3%E7%AD%89%E5%87%BA%E5%B8%AD",
-        "AI、人工智能",
-        "美国推动G20对AI采取轻监管框架，属影响AI产业监管环境的国际政策信号，可能影响技术合规与市场准入。",
-        "飞书监测表关键词（模块：基础设施/网络/技术类；命中：AI、人工智能） → Bing News搜索"
       ],
       "storageSource": "feishu",
       "sourceSheetId": "BYK3u",

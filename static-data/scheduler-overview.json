@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-08-31T14:21:17+08:00",
+  "checked_at_hkt": "2026-08-31T14:37:40+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -681,36 +681,31 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260831_141538_984910",
+      "crawl_run_id": "20260831_143302_156182",
       "trigger": "战略新闻定时爬虫",
       "scope": "午后扫描（2026-08-31@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
-      "run_status": "failed",
-      "backend_pid": 75781,
+      "run_status": "running",
+      "backend_pid": 5520,
       "worker_pid": 0,
-      "phase": "失败",
-      "progress_detail": "战略新闻扫描失败：战略快讯下游处理失败；飞书审核表：现有飞书审核表结构校验失败，已停止写入以保护飞书审核表：第116行检索日期不在E列；第116行发布时间不在K列；第116行新闻标题不在H列；第116行分类不在G列；第116行原文链接不在L列；第117行检索日期不在E列；第117行发布时间不在K列；第117行新闻标题不在H列；第117行分类不在G列；第117行原文链接不在L列；第239行检索日期不在E列；第239行发布时间不在K列；第239行新闻标题不在H列；第239行分类不在G列；第239行原文链接不在L列；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
-      "heartbeat_at_hkt": "2026-08-31T14:17:48+08:00",
-      "started_at_hkt": "2026-08-31T14:15:38+08:00",
-      "completed_at_hkt": "2026-08-31T14:17:48+08:00",
-      "crawl_return_code": 1,
-      "duration_ms": 129548,
+      "phase": "飞书写入与逐格回读",
+      "progress_detail": "写入新增 13 条，涉及 10 个来源；飞书现有记录 1025 条，写入后逐格回读已确认。",
+      "heartbeat_at_hkt": "2026-08-31T14:37:33+08:00",
+      "started_at_hkt": "2026-08-31T14:33:02+08:00",
+      "completed_at_hkt": "",
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260831_141538_984910.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260831_143302_156182.jsonl"
       },
       "stream_log": {
-        "bytes": 4793,
+        "bytes": 3526,
         "lines": 19
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {},
-      "status_detail": "战略新闻扫描失败：战略快讯下游处理失败；飞书审核表：现有飞书审核表结构校验失败，已停止写入以保护飞书审核表：第116行检索日期不在E列；第116行发布时间不在K列；第116行新闻标题不在H列；第116行分类不在G列；第116行原文链接不在L列；第117行检索日期不在E列；第117行发布时间不在K列；第117行新闻标题不在H列；第117行分类不在G列；第117行原文链接不在L列；第239行检索日期不在E列；第239行发布时间不在K列；第239行新闻标题不在H列；第239行分类不在G列；第239行原文链接不在L列；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
-      "failure_stage": "strategic_news",
-      "operational_summary": {}
+      "metrics_refresh": {}
     },
     "four_database_refresh": {
       "crawl_run_id": "20260831_033113_729673",

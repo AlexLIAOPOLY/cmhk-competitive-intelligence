@@ -591,55 +591,7 @@
           <svg viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></svg>
         </button>
       </div>
-    </div>    <script data-public-early-shell>
-(() => {
-  "use strict";
-  const tabs = Array.from(document.querySelectorAll("[data-workspace-tab]"));
-  const panels = Array.from(document.querySelectorAll("[data-workspace-panel]"));
-  if (!tabs.length || !panels.length) return;
-
-  function activate(tab) {
-    const workspace = tab.dataset.workspaceTab;
-    tabs.forEach((item) => {
-      const selected = item === tab;
-      item.classList.toggle("is-active", selected);
-      item.setAttribute("aria-selected", String(selected));
-      item.tabIndex = selected ? 0 : -1;
-    });
-    panels.forEach((panel) => {
-      const selected = panel.dataset.workspacePanel === workspace;
-      panel.hidden = !selected;
-      panel.classList.toggle("is-active", selected);
-      if (selected) {
-        const frame = panel.querySelector("iframe[data-src]");
-        if (frame && !frame.src) frame.src = frame.dataset.src;
-      }
-    });
-    document.body.classList.toggle("workspace-dashboard-active", workspace === "dashboard");
-    document.body.classList.toggle("workspace-ai-active", workspace === "ai");
-    const params = new URLSearchParams(location.hash.replace(/^#/, ""));
-    params.set("workspace", workspace);
-    history.replaceState(null, "", `${location.pathname}${location.search}#${params}`);
-  }
-
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => activate(tab));
-    tab.addEventListener("keydown", (event) => {
-      if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
-      event.preventDefault();
-      const index = tabs.indexOf(tab);
-      const target = event.key === 'Home' ? tabs[0]
-        : event.key === 'End' ? tabs[tabs.length - 1]
-        : tabs[(index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length];
-      target.focus();
-      activate(target);
-    });
-  });
-  window.CMHK_PUBLIC_EARLY_SHELL = Object.freeze({ activate });
-})();
-</script>
-    <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>
-    <script defer src="./static/auth-client.js?v=5"></script>
+    </div>    <script defer src="./static/auth-client.js?v=5"></script>
     <script defer src="./static/vendor/chart-4.4.0.umd.js?v=1"></script>
     <script defer src="./static/vendor/cytoscape-3.34.0.min.js?v=1"></script>
     <script defer src="./static/workspace-tabs.js?v=public-8"></script>
