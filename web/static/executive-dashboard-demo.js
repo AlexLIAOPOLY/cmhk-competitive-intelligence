@@ -134,16 +134,16 @@
       { title: "基站总数（4G / 5G）", indices: [0, 1], sharedChart: "grouped-column" },
       { indices: [2] }
     ] },
-    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "bar", "column", "lollipop", "column", "column"], groups: [
+    { key: "business", number: "02", title: "客户与业务对标层", metricCount: 6, chartTypes: ["column", "bar", "column", "lollipop", "column", "bar"], groups: [
       { title: "移动业务", indices: [0, 1] },
       { title: "家庭业务", indices: [2, 3] },
       { title: "政企业务", indices: [4, 5] }
     ] },
-    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["column", "bar"], groups: [
+    { key: "reach", number: "03", title: "渠道与品牌触达层", metricCount: 2, chartTypes: ["donut", "column"], groups: [
       { indices: [0] },
       { indices: [1] }
     ] },
-    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "radial", "diverging"], groups: [
+    { key: "finance", number: "04", title: "财务成果", metricCount: 3, chartTypes: ["bar", "radial", "bar"], groups: [
       { title: "经营规模与盈利", indices: [0, 2] },
       { indices: [1] }
     ] }
@@ -222,12 +222,12 @@
   function echartAxisLabel(rows) {
     const rich = {};
     rows.forEach((row, index) => {
-      rich[`dot${index}`] = { color: chartColors[index], fontSize: 16, lineHeight: 22 };
+      rich[`dot${index}`] = { color: chartColors[index], fontSize: 14, lineHeight: 20 };
     });
-    rich.name = { color: "#a9c0cb", fontSize: 12, fontWeight: 600, lineHeight: 22 };
+    rich.name = { color: "#a9c0cb", fontSize: 11, fontWeight: 600, lineHeight: 20 };
     return {
       color: "#a9c0cb",
-      margin: 10,
+      margin: 9,
       formatter(value, index) { return `{dot${index}|●}  {name|${value}}`; },
       rich
     };
@@ -250,7 +250,7 @@
     }));
     return {
       ...echartBaseOption(spec),
-      grid: { left: 78, right: 64, top: 8, bottom: 7 },
+      grid: { left: 72, right: 58, top: 9, bottom: 8 },
       xAxis: {
         type: "value",
         min: diverging ? -absoluteMax * 1.18 : 0,
@@ -266,20 +266,20 @@
           name: spec.metricLabel,
           type: "bar",
           data: barData,
-          barWidth: diverging ? 10 : (lollipop ? 9 : 12),
+          barWidth: diverging ? 8 : (lollipop ? 7 : 10),
           showBackground: !diverging,
           backgroundStyle: { color: "rgba(90, 132, 151, .14)", borderRadius: 3 },
           itemStyle: { borderRadius: 6 },
           label: {
             show: true,
             position: "right",
-            distance: 9,
-            fontSize: 12,
+            distance: 8,
+            fontSize: 11,
             fontWeight: 700,
-            lineHeight: 14,
+            lineHeight: 13,
             rich: {
-              value: { color: "#eaf6fb", fontSize: 12, fontWeight: 700, lineHeight: 14 },
-              period: { color: "#789baa", fontSize: 9, fontWeight: 560, lineHeight: 11 }
+              value: { color: "#eaf6fb", fontSize: 11, fontWeight: 700, lineHeight: 13 },
+              period: { color: "#789baa", fontSize: 8, fontWeight: 560, lineHeight: 10 }
             },
             formatter(params) {
               const row = rows[params.dataIndex];
@@ -293,7 +293,7 @@
         {
           type: "scatter",
           data: pointData,
-          symbolSize: lollipop ? 16 : (diverging ? 12 : 0),
+          symbolSize: lollipop ? 14 : (diverging ? 10 : 0),
           tooltip: { show: false },
           emphasis: { scale: 1.35 },
           z: 3
@@ -390,10 +390,54 @@
     };
   }
 
+  function echartDonutOption(spec) {
+    const rows = spec.rows;
+    const disclosed = rows.filter((row) => row.value !== null && row.value >= 0);
+    const total = disclosed.reduce((sum, row) => sum + row.value, 0);
+    const share = (row) => total > 0 ? `${((row.value / total) * 100).toFixed(1)}%` : "—";
+    return {
+      ...echartBaseOption(spec),
+      graphic: [
+        {
+          type: "text", left: "32%", top: "44%",
+          style: { text: `${total.toLocaleString()}\n总门店`, textAlign: "center", textVerticalAlign: "middle", fill: "#e8f6fb", font: '700 12px "SF Pro Text", "PingFang SC", sans-serif', lineHeight: 17 }
+        },
+        ...disclosed.map((row, disclosedIndex) => {
+          const colorIndex = rows.indexOf(row);
+          return {
+            type: "group", left: "66%", top: `${25 + (disclosedIndex * 24)}%`,
+            children: [
+              { type: "circle", shape: { cx: 4, cy: 7, r: 4 }, style: { fill: chartColors[colorIndex] } },
+              { type: "text", left: 14, top: 0, style: { text: `${row.company}  ${row.chartDisplay}｜${share(row)}`, fill: "#b8ced7", font: '600 11px "SF Pro Text", "PingFang SC", sans-serif' } }
+            ]
+          };
+        })
+      ],
+      series: [{
+        name: spec.metricLabel,
+        type: "pie",
+        center: ["32%", "50%"],
+        radius: ["31%", "51%"],
+        startAngle: 90,
+        clockwise: true,
+        avoidLabelOverlap: true,
+        label: { show: false },
+        labelLine: { show: false },
+        emphasis: { scale: true, scaleSize: 4 },
+        data: disclosed.map((row) => ({
+          value: row.value,
+          name: row.company,
+          itemStyle: { color: chartColors[rows.indexOf(row)], borderColor: "rgba(5,18,30,.9)", borderWidth: 2, borderRadius: 3 }
+        }))
+      }]
+    };
+  }
+
   function echartOption(spec) {
     if (spec.kind === "grouped-column") return echartGroupedColumnOption(spec);
     if (spec.kind === "column") return echartColumnOption(spec);
     if (spec.kind === "radial") return echartRadialOption(spec);
+    if (spec.kind === "donut") return echartDonutOption(spec);
     return echartHorizontalOption(spec);
   }
 
@@ -665,7 +709,7 @@
   }
 
   function comparisonChart(rows, metricLabel, chartType) {
-    if (window.echarts && ["column", "lollipop", "bar", "radial", "diverging"].includes(chartType)) {
+    if (window.echarts && ["column", "lollipop", "bar", "radial", "donut", "diverging"].includes(chartType)) {
       return echartHost({ kind: chartType, rows, metricLabel });
     }
     if (chartType === "column") return columnChart(rows, metricLabel);
