@@ -397,12 +397,14 @@
     const share = (row) => total > 0 ? `${((row.value / total) * 100).toFixed(1)}%` : "—";
     return {
       ...echartBaseOption(spec),
-      graphic: [
-        {
-          type: "text", left: "32%", top: "44%",
-          style: { text: `${total.toLocaleString()}\n总门店`, textAlign: "center", textVerticalAlign: "middle", fill: "#e8f6fb", font: '700 12px "SF Pro Text", "PingFang SC", sans-serif', lineHeight: 17 }
-        },
-        ...disclosed.map((row, disclosedIndex) => {
+      title: {
+        left: "32%", top: "42%", textAlign: "center", itemGap: 3,
+        text: total.toLocaleString(),
+        subtext: "总门店",
+        textStyle: { color: "#e8f6fb", fontSize: 13, fontWeight: 700, lineHeight: 16 },
+        subtextStyle: { color: "#e8f6fb", fontSize: 12, fontWeight: 650, lineHeight: 16 }
+      },
+      graphic: disclosed.map((row, disclosedIndex) => {
           const colorIndex = rows.indexOf(row);
           return {
             type: "group", left: "66%", top: `${25 + (disclosedIndex * 24)}%`,
@@ -411,8 +413,7 @@
               { type: "text", left: 14, top: 0, style: { text: `${row.company}  ${row.chartDisplay}｜${share(row)}`, fill: "#b8ced7", font: '600 11px "SF Pro Text", "PingFang SC", sans-serif' } }
             ]
           };
-        })
-      ],
+        }),
       series: [{
         name: spec.metricLabel,
         type: "pie",

@@ -247,6 +247,8 @@ class DashboardPagesPublishTests(unittest.TestCase):
         self.assertIn("function echartRadialOption", script)
         self.assertIn('type: "pie"', script)
         self.assertIn("function echartDonutOption", script)
+        self.assertIn('left: "32%", top: "42%", textAlign: "center"', script)
+        self.assertIn('subtext: "总门店"', script)
         self.assertIn('text: `${row.company}  ${row.chartDisplay}｜${share(row)}`', script)
         self.assertIn('barWidth: diverging ? 8 : (lollipop ? 7 : 10)', script)
         self.assertIn("function donutChart", script)
