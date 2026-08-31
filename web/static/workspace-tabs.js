@@ -1795,6 +1795,19 @@
     });
   }
 
+  function newsLineageIncidentSignature(tasks) {
+    return (Array.isArray(tasks) ? tasks : []).map((task) => ({
+      id: task.incident_id || task.task_id || task.task_run_id || "",
+      status: task.incident_status || task.status || "",
+      severity: task.severity || task.severity_code || "",
+      routes: (Array.isArray(task.affected_routes) ? task.affected_routes : []).map((route) => [
+        route?.route_id || route?.id || "",
+        route?.impact || route?.status || "",
+        route?.confidence || "",
+      ]),
+    })).sort((left, right) => JSON.stringify(left).localeCompare(JSON.stringify(right)));
+  }
+
   function lineageStageKey(nodeKey) {
     return ({ strategic: "search", "news-search": "search", "news-ai": "ai", "news-dedupe": "dedupe", "news-output": "push", "news-selection-agent": "push", "app-result": "push", "weekly-result": "push" })[nodeKey] || "";
   }
@@ -2298,6 +2311,11 @@
     const lineage = globalSchedulerLineageModel(runs, stages);
     const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
     const [lineageWidth, lineageHeight] = lineage.canvasSize || [1260, 480];
+    const initialLineageZoom = Number.isFinite(state.newsLineageZoom) && state.newsLineageZoom > 0
+      ? Math.min(1, state.newsLineageZoom)
+      : 1;
+    const initialLineageWidth = Math.max(1, Math.round(lineageWidth * initialLineageZoom));
+    const initialLineageHeight = Math.max(1, Math.round(lineageHeight * initialLineageZoom));
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
         <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy"><i></i>正常</span><span class="is-running"><i></i>运行中</span><span class="is-warning"><i></i>警告</span><span class="is-critical"><i></i>异常</span><span class="is-unknown"><i></i>无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
@@ -2305,8 +2323,8 @@
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
-            <div class="news-lineage-stage" data-news-lineage-stage style="width:${lineageWidth}px;height:${lineageHeight}px">
-            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:1;width:${lineageWidth}px;height:${lineageHeight}px">
+            <div class="news-lineage-stage" data-news-lineage-stage style="width:${initialLineageWidth}px;height:${initialLineageHeight}px">
+            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk", "running"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" title="${esc(line.reason || "")}"><i aria-hidden="true">${line.key === "interrupted" ? "×" : line.key === "degraded" ? "!" : "•"}</i>${esc(line.label)}</span>` : "").join("")}</div>
@@ -2666,10 +2684,12 @@
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
       const nextTasks = Array.isArray(data.incidents) ? data.incidents : [];
+      const newsLineageChanged = JSON.stringify(newsLineageIncidentSignature(state.tasks))
+        !== JSON.stringify(newsLineageIncidentSignature(nextTasks));
       observeFaultSignals(nextTasks);
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
-      if (document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
+      if (newsLineageChanged && document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");
