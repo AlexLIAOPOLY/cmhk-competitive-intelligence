@@ -261,7 +261,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("is-nav-collapsed", STYLE)
         self.assertIn('class="workspace-monitoring-frame"', INDEX)
         self.assertIn("CMHK战略竞对中心", INDEX)
-        self.assertIn("executive-dashboard-demo.html?embedded=1&amp;v=2", INDEX)
+        self.assertIn("executive-dashboard-demo.html?embedded=1&amp;v=3", INDEX)
 
     def test_report_modules_open_pdf_previews_and_keep_word_downloads_without_top_kpi_strip(self):
         self.assertNotIn("docx-preview", INDEX)
