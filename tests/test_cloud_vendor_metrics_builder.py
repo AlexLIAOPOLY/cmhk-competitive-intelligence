@@ -4,6 +4,7 @@ import json
 import unittest
 
 from scripts import build_cloud_vendor_metrics_knowledge as builder
+import agent
 from cmhk.agent import rag as rag_llm
 
 
@@ -147,6 +148,20 @@ class CloudVendorMetricsBuilderTests(unittest.TestCase):
             ),
             [],
         )
+
+    def test_agent_structured_cloud_answer_keeps_requested_metric_scope(self):
+        result = agent._structured_cloud_vendor_exact_answer(
+            "阿里云 FY2022 云收入是多少？只回答数值、单位和官方来源。",
+            {"cloud_vendor_metrics_2026-06-17"},
+        )
+        self.assertIsNotNone(result)
+        answer, evidence = result
+        self.assertIn("102016 RMB millions", answer)
+        self.assertNotIn("74568 RMB millions", answer)
+        self.assertIn("不同原披露、抵销后重列及代理分部口径不互换", answer)
+        self.assertEqual(evidence["series"][0]["metric"], "cloud_revenue")
+        self.assertEqual(evidence["series"][0]["officialValue"], "102016")
+        self.assertGreaterEqual(len(evidence["references"]), 2)
 
 
 if __name__ == "__main__":

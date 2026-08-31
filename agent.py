@@ -42,7 +42,7 @@ from cmhk.agent.production import (
 )
 from cmhk.crawl.run_registry import latest_crawl_run_summary
 from network_utils import urlopen_with_local_proxy_fallback
-from cmhk.agent.rag import _global_operator_exact_metric_chunks, _local_hk_operator_exact_metric_chunks, build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
+from cmhk.agent.rag import _cloud_vendor_exact_metric_chunks, _global_operator_exact_metric_chunks, _local_hk_operator_exact_metric_chunks, build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
 from cmhk.reporting.charts import render_chart
 
 
@@ -415,6 +415,103 @@ def _structured_local_hk_exact_answer(
         "不声称穷尽互联网每一个页面。"
     )
     return answer, {"source": source, "series": structured_rows, "references": references}
+
+
+def _structured_cloud_vendor_exact_answer(
+    message: str,
+    dataset_ids: set[str],
+) -> tuple[str, dict[str, Any]] | None:
+    """Render an exact governed cloud row without allowing the model to switch scopes."""
+    chunks = _cloud_vendor_exact_metric_chunks(message, dataset_ids=dataset_ids)
+    if not chunks:
+        return None
+
+    source = str(chunks[0].get("source") or "")
+    table_rows: list[str] = []
+    structured_rows: list[dict[str, Any]] = []
+    references: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    for chunk in chunks:
+        row = chunk.get("exact_metric_row") or {}
+        value = str(row.get("official_value") or "").strip()
+        currency = str(row.get("currency") or "").strip()
+        unit = str(row.get("unit") or "").strip()
+        if value:
+            rendered_value = " ".join(part for part in (value, currency, unit) if part)
+            quality = str(row.get("verification_status") or "已核验")
+        else:
+            rendered_value = _governed_cloud_gap_label(
+                str(row.get("verification_status") or "source_gap_confirmed")
+            )
+            quality = str(row.get("gap_reason") or "已复核但未找到同期间、同口径公司数值")
+        if row.get("quality_note"):
+            quality += f"；{row['quality_note']}"
+
+        source_numbers: list[int] = []
+        for link in chunk.get("links") or []:
+            url = str(link.get("url") or "").strip()
+            if not url:
+                continue
+            if url not in seen_urls:
+                seen_urls.add(url)
+                references.append(
+                    {
+                        "index": len(references) + 1,
+                        "source": str(link.get("label") or "官方披露"),
+                        "links": [{"label": str(link.get("label") or "官方披露"), "url": url}],
+                        "sourceType": "本地" if url.startswith("/references/") else "网络",
+                    }
+                )
+            source_numbers.append(
+                next(item["index"] for item in references if item["links"][0]["url"] == url)
+            )
+        if source_numbers:
+            quality += "；来源" + "".join(f"[{index}]" for index in source_numbers)
+
+        table_rows.append(
+            "| "
+            + " | ".join(
+                str(item).replace("|", "\\|").replace("\n", " ")
+                for item in (
+                    row.get("vendor") or "未注明",
+                    f"FY{row.get('fiscal_year')}",
+                    row.get("metric_zh") or row.get("metric_key") or "未注明",
+                    rendered_value,
+                    quality,
+                )
+            )
+            + " |"
+        )
+        structured_rows.append(
+            {
+                "vendor": row.get("vendor"),
+                "fiscalYear": row.get("fiscal_year"),
+                "metric": row.get("metric_key"),
+                "officialValue": value or None,
+                "currency": currency,
+                "unit": unit,
+                "verificationStatus": row.get("verification_status"),
+                "gapReasonCode": row.get("gap_reason_code") or None,
+            }
+        )
+
+    answer = (
+        "## 核对结果\n\n"
+        "| 云厂商 | 财年 | 指标口径 | 核对值 | 口径与来源 |\n"
+        "|---|---|---|---:|---|\n"
+        + "\n".join(table_rows)
+        + "\n\n数值直接来自当前签名云厂商十年数据库的精确指标行；"
+        "不同原披露、抵销后重列及代理分部口径不互换，未披露项不估算、不写0。"
+    )
+    return answer, {"source": source, "series": structured_rows, "references": references}
+
+
+def _governed_cloud_gap_label(status: str) -> str:
+    return {
+        "not_applicable_business_scope": "业务不适用",
+        "not_applicable_precommercial": "商用前不适用",
+        "scope_not_comparable": "口径不可比",
+    }.get(status, "未披露")
 WEB_SEARCH_AVAILABLE: ContextVar[bool] = ContextVar("WEB_SEARCH_AVAILABLE", default=False)
 
 
@@ -2865,7 +2962,10 @@ def stream_agent(
     structured_answer = _structured_local_hk_exact_answer(
         original_user_message,
         selected_dataset_set,
-    ) or _structured_global_postpaid_answer(original_user_message, selected_dataset_set)
+    ) or _structured_global_postpaid_answer(
+        original_user_message,
+        selected_dataset_set,
+    ) or _structured_cloud_vendor_exact_answer(original_user_message, selected_dataset_set)
     if structured_answer:
         answer, evidence = structured_answer
         try:

@@ -751,6 +751,20 @@ def _cloud_vendor_exact_metric_chunks(
             "source": source,
             "text": text,
             "links": [{"label": source, "url": _local_ref(source)}, *_strict_source_links(row)],
+            "exact_metric_row": {
+                "vendor": row.get("vendor"),
+                "fiscal_year": row.get("fiscal_year"),
+                "metric_key": row.get("metric_key"),
+                "metric_zh": row.get("metric_zh"),
+                "official_value": official_value,
+                "currency": row.get("currency"),
+                "unit": row.get("official_unit") or row.get("unit"),
+                "verification_status": status,
+                "gap_reason_code": row.get("gap_reason_code"),
+                "gap_reason": row.get("gap_reason"),
+                "disclosure_quality": row.get("disclosure_quality"),
+                "quality_note": row.get("quality_note"),
+            },
         })
     return chunks
 
