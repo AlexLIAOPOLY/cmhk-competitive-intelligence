@@ -941,11 +941,15 @@ def _build_site(
         '<span class="public-snapshot-label">公开快照</span>',
         html,
     )
-    html = html.replace(
-        '    <script defer src="./static/auth-client.js?v=3"></script>',
-        f'    {PUBLIC_EARLY_SHELL}\n'
-        '    <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
-        '    <script defer src="./static/auth-client.js?v=3"></script>',
+    html = re.sub(
+        r'(<script defer src="\./static/auth-client\.js\?v=[^"]+"></script>)',
+        lambda match: (
+            f'{PUBLIC_EARLY_SHELL}\n'
+            '    <script defer src="./static/public-snapshot-bootstrap.js?v=6"></script>\n'
+            f'    {match.group(1)}'
+        ),
+        html,
+        count=1,
     )
     html = html.replace(
         "<head>",
