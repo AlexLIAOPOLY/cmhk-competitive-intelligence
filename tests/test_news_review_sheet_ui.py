@@ -169,6 +169,52 @@ class NewsReviewSheetModelTests(unittest.TestCase):
         self.assertEqual(payload["changedCount"], 2)
         self.assertEqual(payload["rows"][0]["values"][3], "已纳入")
 
+    def test_automated_update_relocates_by_record_id_but_manual_contract_stays_strict(self) -> None:
+        target = sheet_row(
+            "待审核", "待审核", "未同步", "2026-08-31",
+            "香港本地", "竞对动态", "已移动新闻", "摘要", "媒体",
+            "2026-08-31", "https://example.com/moved",
+        )
+        record_id = news_review_sheet._row_dict(target, 2)["news_id"]
+        blank = [""] * len(news_review_sheet.HEADERS)
+        moved_before = [blank, target]
+        moved_after = [blank, list(target)]
+        moved_after[1][news_review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+        with (
+            mock.patch.object(
+                news_review_sheet, "_resolved_review_sheet_id", return_value="sheet-1"
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "_review_process_lock",
+                return_value=nullcontext(True),
+            ),
+            mock.patch.object(
+                news_review_sheet,
+                "_read_rows",
+                side_effect=[moved_before, moved_after, moved_after],
+            ),
+            mock.patch.object(news_review_sheet, "_write_many") as write_many,
+            mock.patch.object(
+                news_review_sheet, "apply_reviews", return_value={"accepted_count": 1}
+            ),
+        ):
+            payload = news_review_sheet.update_review_sheet_cells(
+                [{
+                    "rowNumber": 2,
+                    "recordId": record_id,
+                    "columnIndex": news_review_sheet.APP_STATUS_COLUMN_INDEX,
+                    "before": "待审核",
+                    "value": "接受",
+                }],
+                relocate_by_record_id=True,
+            )
+
+        write_many.assert_called_once_with(
+            "sheet-1", [("B3:B3", [["接受"]])], identity="", profile=""
+        )
+        self.assertEqual(payload["verifiedCount"], 1)
+
     def test_status_update_reconciles_the_authenticated_screener(self) -> None:
         before = sheet_row("待审核", "待审核", "未同步", "2026-08-03")
         after = sheet_row("接受", "待审核", "已纳入", "2026-08-03")

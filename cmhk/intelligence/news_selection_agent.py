@@ -1740,6 +1740,7 @@ def _run_news_selection_agent_locked(
                     writer_identity="bot",
                     writer_profile=FEISHU_BOT_PROFILE,
                     screener={"name": "新闻自动初筛机器人"},
+                    relocate_by_record_id=True,
                 )
                 if write_result.get("readbackVerified") is not True:
                     raise RuntimeError("自动勾选后未取得逐格回读证据")

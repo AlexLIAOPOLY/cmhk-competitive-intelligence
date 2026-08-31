@@ -3810,6 +3810,7 @@ def update_review_sheet_cells(
     writer_identity: str = "",
     writer_profile: str = "",
     screener: dict[str, Any] | None = None,
+    relocate_by_record_id: bool = False,
 ) -> dict[str, Any]:
     """Write reviewed cells to Feishu, apply decisions, and prove them by readback."""
     if not isinstance(changes, list) or not changes:
@@ -3826,6 +3827,17 @@ def update_review_sheet_cells(
             identity=writer_identity,
             profile=writer_profile,
         )
+        rows_by_record_id: dict[str, list[int]] = {}
+        if relocate_by_record_id:
+            for current_row_number, current_row in enumerate(current_rows, start=2):
+                if not _is_identified_review_row(current_row, current_row_number):
+                    continue
+                current_record_id = _row_dict(
+                    _comparable_sheet_row(current_row), current_row_number
+                )["news_id"]
+                rows_by_record_id.setdefault(current_record_id, []).append(
+                    current_row_number
+                )
         normalized: dict[tuple[int, int], dict[str, Any]] = {}
         for raw_change in changes:
             if not isinstance(raw_change, dict):
@@ -3834,6 +3846,16 @@ def update_review_sheet_cells(
                 raise ValueError("本地历史记录仅供查看，不能回写飞书")
             row_number = int(raw_change.get("rowNumber") or 0)
             column_index = int(raw_change.get("columnIndex", -1))
+            expected_record_id = _text(raw_change.get("recordId"), 80)
+            if relocate_by_record_id:
+                if not expected_record_id:
+                    raise ValueError("自动写入必须提供稳定新闻 ID")
+                matching_rows = rows_by_record_id.get(expected_record_id, [])
+                if len(matching_rows) != 1:
+                    raise RuntimeError(
+                        f"新闻 ID {expected_record_id} 当前对应 {len(matching_rows)} 行，已停止自动写入"
+                    )
+                row_number = matching_rows[0]
             if row_number < 2 or row_number > MAX_SHEET_ROWS:
                 raise ValueError(f"第 {row_number} 行超出审核表范围")
             if column_index not in REVIEW_SHEET_EDITABLE_COLUMNS:
@@ -3842,7 +3864,6 @@ def update_review_sheet_cells(
             if row_offset >= len(current_rows):
                 raise ValueError(f"第 {row_number} 行不存在，已停止写入")
             current_values = _comparable_sheet_row(current_rows[row_offset])
-            expected_record_id = _text(raw_change.get("recordId"), 80)
             current_record_id = _row_dict(current_values, row_number)["news_id"]
             if expected_record_id and expected_record_id != current_record_id:
                 raise RuntimeError(

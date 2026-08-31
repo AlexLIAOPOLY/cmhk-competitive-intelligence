@@ -954,11 +954,13 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 writer_identity,
                 writer_profile,
                 screener,
+                relocate_by_record_id,
             ):
                 updates.extend(changes)
                 self.assertEqual(writer_identity, "bot")
                 self.assertEqual(writer_profile, "cli_a9575e70ae799cb2")
                 self.assertEqual(screener, {"name": "新闻自动初筛机器人"})
+                self.assertTrue(relocate_by_record_id)
                 return {
                     "changedCount": len(changes),
                     "verifiedCount": len(changes),
