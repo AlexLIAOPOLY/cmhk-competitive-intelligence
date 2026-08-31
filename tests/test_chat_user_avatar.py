@@ -29,7 +29,7 @@ class ChatUserAvatarTests(unittest.TestCase):
     def test_changed_assets_are_cache_busted(self):
         self.assertIn('/static/styles.css?v=291', INDEX)
         self.assertIn('/static/auth-client.js?v=4', INDEX)
-        self.assertIn('/static/app.js?v=317', INDEX)
+        self.assertIn('/static/app.js?v=319', INDEX)
 
 
 if __name__ == "__main__":

@@ -1154,6 +1154,7 @@ body.has-maximized-report-preview { overflow: hidden; }
 .fault-table td strong,.fault-table td small { display: block; }
 .fault-table td small { margin-top: 3px; color: #7899a6; font-size: 9px; }
 .fault-row { cursor: pointer; transition: background .16s ease; }
+.fault-table tbody .fault-row { content-visibility: auto; contain-intrinsic-size: 66px; }
 .fault-row:hover { background: rgba(51,126,145,.14); }
 .fault-row:focus { outline: 2px solid #5fc4d7; outline-offset: -2px; }
 .fault-row.is-resolving { background: rgba(65,166,187,.13); box-shadow: inset 3px 0 #63c8dc; }

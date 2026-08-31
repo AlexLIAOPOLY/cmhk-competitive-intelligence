@@ -11,9 +11,9 @@ class CustomConfirmDialogTests(unittest.TestCase):
         index = (STATIC / "index.html").read_text(encoding="utf-8")
         subscription = (STATIC / "subscription-admin.html").read_text(encoding="utf-8")
         self.assertIn('/static/confirm-dialog.css?v=1', index)
-        self.assertLess(index.index('/static/confirm-dialog.js?v=3'), index.index('/static/app.js?v=317'))
+        self.assertLess(index.index('/static/confirm-dialog.js?v=3'), index.index('/static/app.js?v=319'))
         self.assertIn('/static/confirm-dialog.css?v=1', subscription)
-        self.assertLess(subscription.index('/static/confirm-dialog.js?v=3'), subscription.index('/static/subscription-admin.js?v=25'))
+        self.assertLess(subscription.index('/static/confirm-dialog.js?v=3'), subscription.index('/static/subscription-admin.js?v=26'))
 
     def test_feature_code_has_no_browser_native_dialog_calls(self):
         for name in ("app.js", "subscription-admin.js", "organization-admin.js"):

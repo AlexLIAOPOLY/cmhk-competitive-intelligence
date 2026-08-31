@@ -53,9 +53,9 @@ class WorkspaceTabsTests(unittest.TestCase):
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=4', INDEX)
         self.assertIn('/static/organization-admin.js?v=35', INDEX)
-        self.assertIn('/static/organization-admin.css?v=26', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=157', INDEX)
-        self.assertIn('/static/app.js?v=318', INDEX)
+        self.assertIn('/static/organization-admin.css?v=27', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=161', INDEX)
+        self.assertIn('/static/app.js?v=319', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
         self.assertIn('definitions.filter(([, module]) => can(module))', SCRIPT)
@@ -120,6 +120,17 @@ class WorkspaceTabsTests(unittest.TestCase):
             "#generatePerformanceButton",
         ):
             self.assertIn(existing_action, SCRIPT)
+
+    def test_workspace_requests_render_independently_without_a_global_data_barrier(self):
+        self.assertIn('activeDefinitions.map(async ([key, module, request]) =>', SCRIPT)
+        self.assertIn('applyWorkspacePayload(key, await request())', SCRIPT)
+        self.assertIn('markWorkspaceModulesDirty("news", "weekly", "performance")', SCRIPT)
+        self.assertIn('renderWorkspaceModule(target)', SCRIPT)
+        self.assertNotIn('await Promise.allSettled(activeDefinitions.map', SCRIPT)
+        app_script = (ROOT / "web" / "static" / "app.js").read_text(encoding="utf-8")
+        self.assertIn('event.detail?.tab === "ai"', app_script)
+        self.assertIn('function ensureAiWorkspaceData()', app_script)
+        self.assertIn('Promise.allSettled([', app_script)
 
     def test_alert_and_log_surfaces_export_all_operational_report_periods(self):
         for label, value in (("日报", "daily"), ("周报", "weekly"), ("月报", "monthly"), ("年报", "annual")):
@@ -517,6 +528,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         review_script = (ROOT / "web" / "static" / "news-review-sheet.js").read_text(encoding="utf-8")
         self.assertIn("cmhk-news-review-snapshot-v3", review_script)
         self.assertIn('workspace.classList.contains("workspace-inline-review")', review_script)
+        self.assertIn("NEWS_REVIEW_SNAPSHOT_CACHE_KEY", SCRIPT)
+        self.assertIn('snapshotMode: "cached"', SCRIPT)
+        self.assertIn("sessionStorage.setItem(NEWS_REVIEW_SNAPSHOT_CACHE_KEY", SCRIPT)
+        self.assertIn("最近完整快照", SCRIPT)
 
     def test_news_module_replays_the_full_ai_review_pipeline_by_single_date(self):
         self.assertIn('fetch("/api/crawl-runs?taskKind=strategic-news&limit=365")', SCRIPT)
@@ -647,10 +662,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=135', INDEX)
-        self.assertIn('workspace-tabs.js?v=157', INDEX)
+        self.assertIn('workspace-tabs.css?v=136', INDEX)
+        self.assertIn('workspace-tabs.js?v=161', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=135', INDEX)
+        self.assertIn('workspace-tabs.css?v=136', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)

@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding=
 
 class OrganizationAdminCollapsibleTests(unittest.TestCase):
     def test_collapsible_assets_are_cache_busted(self):
-        self.assertIn('/static/organization-admin.js?v=33', INDEX)
-        self.assertIn('/static/organization-admin.css?v=26', INDEX)
+        self.assertIn('/static/organization-admin.js?v=35', INDEX)
+        self.assertIn('/static/organization-admin.css?v=27', INDEX)
 
     def test_member_detail_starts_empty_until_a_member_is_selected(self):
         self.assertIn('selectedUserId: ""', SCRIPT)
@@ -93,6 +93,14 @@ class OrganizationAdminCollapsibleTests(unittest.TestCase):
         self.assertIn('profileRefresh?.running !== true', SCRIPT)
         self.assertIn('request("/api/auth/admin/users?profile_refresh=skip")', SCRIPT)
         self.assertIn('scheduleProfileRefreshReadback(payload)', SCRIPT)
+
+    def test_footprint_renders_immediately_then_refreshes_after_feishu_sync(self):
+        self.assertIn('syncPromise = syncNewsReviewSheet().then', SCRIPT)
+        self.assertIn('syncPromise.then(async () =>', SCRIPT)
+        self.assertIn('state.pendingLoad = { force: true', SCRIPT)
+        self.assertIn('if (view === state.view) render()', SCRIPT)
+        self.assertIn('if (state.view === "control" && controlHost)', SCRIPT)
+        self.assertIn('if (state.loaded && changed) render()', SCRIPT)
 
     def test_subscription_page_changes_and_messages_have_readable_footprint_actions(self):
         self.assertIn('"subscription.settings_update": "修改订阅设置"', SCRIPT)

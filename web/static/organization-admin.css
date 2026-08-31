@@ -29,3 +29,4 @@
 
 /* Long lists stay inside one viewport and use wheel scrolling instead of pagination. */
 @media(min-width:721px){.organization-access-layout{height:calc(100dvh - 212px);min-height:0;max-height:calc(100dvh - 212px)}.organization-member-list{display:flex;align-self:stretch;min-height:0;max-height:none;flex-direction:column}.organization-member-list>header{flex:0 0 auto}.organization-member-list>ul{min-height:0;flex:1;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.organization-footprint-surface{display:flex;height:calc(100dvh - 150px);min-height:0;max-height:calc(100dvh - 150px);flex-direction:column}.organization-footprint-surface .organization-table-wrap{min-height:0;max-height:none;flex:1;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable}.organization-footprint-surface .organization-table th{position:sticky;z-index:2;top:0}}
+.organization-audit-table tbody tr{content-visibility:auto;contain-intrinsic-size:62px}

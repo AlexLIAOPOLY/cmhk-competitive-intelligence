@@ -30,8 +30,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertNotIn("transition: transform .18s ease", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=134', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=156', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=136', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=161', INDEX)
 
 
 if __name__ == "__main__":

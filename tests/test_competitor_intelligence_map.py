@@ -93,7 +93,9 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('4000', SCRIPT)
 
     def test_live_endpoint_is_used(self):
-        self.assertIn('/static/intelligence-map.js?v=22', INDEX)
+        self.assertIn('/static/intelligence-map.js?v=23', INDEX)
+        self.assertIn('if (panel.hidden) return;', SCRIPT)
+        self.assertIn('if (state.payload && !state.rendered) renderAll()', SCRIPT)
         self.assertIn('/static/intelligence-map.css?v=14', INDEX)
         self.assertIn('fetch(`/api/competitor-intelligence-map?_', SCRIPT)
         self.assertIn('if path == "/api/competitor-intelligence-map":', WEB_APP)

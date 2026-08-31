@@ -35,13 +35,20 @@ class LongListScrollTests(unittest.TestCase):
     def test_changed_assets_are_cache_busted(self):
         for asset in (
             "/static/styles.css?v=291",
-            "/static/workspace-tabs.css?v=133",
-            "/static/organization-admin.css?v=26",
-            "/static/app.js?v=317",
-            "/static/organization-admin.js?v=32",
-            "/static/workspace-tabs.js?v=155",
+            "/static/workspace-tabs.css?v=136",
+            "/static/organization-admin.css?v=27",
+            "/static/app.js?v=319",
+            "/static/organization-admin.js?v=35",
+            "/static/workspace-tabs.js?v=161",
         ):
             self.assertIn(asset, INDEX)
+
+    def test_long_rows_use_viewport_render_containment_without_pagination(self):
+        self.assertIn("content-visibility:auto", ORGANIZATION_STYLES)
+        self.assertIn("contain-intrinsic-size:62px", ORGANIZATION_STYLES)
+        workspace_style = (ROOT / "web/static/workspace-tabs.css").read_text(encoding="utf-8")
+        self.assertIn("content-visibility: auto", workspace_style)
+        self.assertNotIn("data-page", ORGANIZATION)
 
 
 if __name__ == "__main__":

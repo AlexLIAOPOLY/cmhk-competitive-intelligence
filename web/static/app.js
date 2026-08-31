@@ -7701,10 +7701,8 @@ if (els.webSearchToggle) {
 
 if (els.skillToggle) {
   renderSkillToggle();
-  window.CMHKAuth?.ready.then(() => {
-    if (window.CMHKAuth.hasModule("ai")) loadAgentSkills();
-  });
   els.skillToggle.addEventListener("click", () => {
+    ensureAiWorkspaceData();
     if (!els.skillMenu) return;
     const willOpen = els.skillMenu.hidden;
     els.skillMenu.hidden = !willOpen;
@@ -7724,10 +7722,8 @@ if (els.skillToggle) {
 
 if (els.databaseToggle) {
   renderDatabaseToggle();
-  window.CMHKAuth?.ready.then(() => {
-    if (window.CMHKAuth.hasModule("ai")) loadAgentDatasets();
-  });
   els.databaseToggle.addEventListener("click", () => {
+    ensureAiWorkspaceData();
     if (!els.databaseMenu) return;
     const willOpen = els.databaseMenu.hidden;
     els.databaseMenu.hidden = !willOpen;
@@ -7828,17 +7824,11 @@ if (els.chatModelSelect) {
       els.chatModelSelect.disabled = false;
     }
   });
-  window.CMHKAuth?.ready.then(() => {
-    if (!window.CMHKAuth.hasModule("ai")) return;
-    loadChatModelOptions().catch((error) => {
-      console.warn(error);
-      renderChatModelControls();
-    });
-  });
 }
 
 if (els.chatModelButton) {
   els.chatModelButton.addEventListener("click", (event) => {
+    ensureAiWorkspaceData();
     event.stopPropagation();
     const willOpen = Boolean(els.chatModelMenu?.hidden);
     if (els.chatModelMenu) els.chatModelMenu.hidden = !willOpen;
@@ -8045,11 +8035,29 @@ els.chatInput.addEventListener("keydown", (event) => {
 
 window.addEventListener("beforeunload", abandonPendingChatApproval);
 
+let aiWorkspaceLoadPromise = null;
+function ensureAiWorkspaceData() {
+  if (aiWorkspaceLoadPromise) return aiWorkspaceLoadPromise;
+  aiWorkspaceLoadPromise = (async () => {
+    await window.CMHKAuth?.ready;
+    if (!window.CMHKAuth?.hasModule("ai")) return;
+    await Promise.allSettled([
+      loadAgentSkills(),
+      loadAgentDatasets(),
+      loadChatModelOptions().catch((error) => { console.warn(error); renderChatModelControls(); }),
+      loadChatStarters({ render: true }),
+      loadChatThreads(),
+    ]);
+  })();
+  return aiWorkspaceLoadPromise;
+}
+
+window.addEventListener("workspace-tab-change", (event) => {
+  if (event.detail?.tab === "ai") ensureAiWorkspaceData();
+});
+
 window.CMHKAuth?.ready.then(() => {
-  if (window.CMHKAuth.hasModule("ai")) {
-    loadChatStarters({ render: true });
-    loadChatThreads();
-  }
+  if (document.querySelector('[data-workspace-tab="ai"]')?.classList.contains("is-active")) ensureAiWorkspaceData();
   if (window.CMHKAuth.hasModule("dashboard")) {
     fetchStatus().catch((error) => setLog(`初始化失败：${error.message}`));
     loadWeeklyPushPreference().catch((error) => console.warn("周报推送版本初始化失败", error));
