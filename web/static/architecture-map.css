@@ -15,20 +15,8 @@ body {
   background-size: 34px 34px, 34px 34px, auto, auto;
 }
 
-.architecture-page { width: 100%; min-height: 100dvh; padding: 26px clamp(18px, 2.3vw, 42px) 28px; }
-.architecture-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; padding-bottom: 18px; border-bottom: 1px solid rgba(92, 199, 220, .18); }
-.architecture-heading h1, .architecture-heading p { margin: 0; }
-.architecture-heading h1 { color: #f0fafc; font-size: clamp(26px, 2.3vw, 38px); letter-spacing: -.035em; }
-.architecture-heading p { margin-top: 8px; color: #7da5b1; font-size: 13px; }
-.architecture-legend { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px 16px; color: #8fb0ba; font-size: 11px; }
-.architecture-legend span { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-.architecture-legend i { width: 7px; height: 7px; border-radius: 50%; color: #55cce4; background: currentColor; box-shadow: 0 0 10px currentColor; }
-.architecture-legend i[data-tone="flow"] { color: #4faccc; }
-.architecture-legend i[data-tone="agent"] { color: #62d9bc; }
-.architecture-legend i[data-tone="llm"] { color: #a08cf0; }
-.architecture-legend i[data-tone="gate"] { color: #efbd67; }
-
-.architecture-diagram { margin-top: 18px; overflow: hidden; }
+.architecture-page { width: 100%; min-height: 100dvh; padding: 8px clamp(10px, 1.2vw, 20px) 12px; }
+.architecture-diagram { overflow: hidden; }
 .diagram-canvas { position: relative; width: 1600px; height: 900px; margin: 0; transform-origin: top left; }
 .architecture-links { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .architecture-links path { fill: none; stroke-width: 1.35; stroke-linecap: round; stroke-dasharray: 7 8; animation: architecture-flow 2.4s linear infinite; }
@@ -105,11 +93,7 @@ body {
 @keyframes architecture-orbit { to { transform: rotate(360deg); } }
 
 @media (max-width: 1000px) {
-  .architecture-page { padding: 18px 12px 24px; }
-  .architecture-heading { display: block; }
-  .architecture-heading h1 { font-size: 24px; }
-  .architecture-heading p { line-height: 1.55; }
-  .architecture-legend { justify-content: flex-start; margin-top: 15px; gap: 8px 12px; }
+  .architecture-page { padding: 8px 8px 16px; }
   .architecture-diagram { overflow: visible; height: auto !important; }
   .diagram-canvas { display: grid; width: auto; height: auto; gap: 18px; margin-top: 18px; transform: none !important; }
   .architecture-links, .agent-orbit { display: none; }

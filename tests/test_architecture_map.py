@@ -17,7 +17,7 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn('aria-controls="workspace-panel-architecture"', INDEX)
         self.assertIn('id="workspace-panel-architecture"', INDEX)
         self.assertIn('data-workspace-panel="architecture"', INDEX)
-        self.assertIn('data-src="/static/architecture-map.html?v=3"', INDEX)
+        self.assertIn('data-src="/static/architecture-map.html?v=4"', INDEX)
         self.assertIn('architecture: "dashboard"', SCRIPT)
 
     def test_architecture_maps_every_ai_workstream_without_interactions(self):
@@ -59,9 +59,10 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn('class="architecture-links"', PAGE)
         self.assertIn('marker-end="url(#arrow-cyan)"', PAGE)
         self.assertIn('class="architecture-node agent-core"', PAGE)
-        self.assertIn("整个项目以 AI 智能中枢为核心", PAGE)
         self.assertIn("五条业务流程在此汇聚", PAGE)
         self.assertIn('class="layer-box governance-layer"', PAGE)
+        self.assertNotIn('class="architecture-heading"', PAGE)
+        self.assertNotIn('class="architecture-legend"', PAGE)
         self.assertNotIn("architecture-lane", PAGE)
         self.assertNotIn("architecture-cell", PAGE)
         for traditional in ("與", "架構", "頁面", "確定", "專責", "輸出", "審核", "競對", "飛書", "圖表", "回讀"):
