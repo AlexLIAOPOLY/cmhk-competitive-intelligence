@@ -67,7 +67,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
             def __init__(self) -> None:
                 self.turn = 0
 
-            def bind_tools(self, _tools):
+            def bind_tools(self, _tools, **_kwargs):
                 return self
 
             def invoke(self, _messages):
@@ -168,6 +168,26 @@ class DataCurationWorkflowTests(unittest.TestCase):
                             }],
                         },
                     }],
+                    5: [{
+                        "id": "complete-retry",
+                        "name": "complete_company_research",
+                        "args": {
+                            "status": "conflict",
+                            "rationale": "旧来源不能证明最新，另一指标也未搜索",
+                            "metric_statuses": [
+                                {
+                                    "metric": "收入",
+                                    "status": "verified_latest",
+                                    "rationale": "模型仍声称沿用旧来源",
+                                },
+                                {
+                                    "metric": "EBITDA",
+                                    "status": "conflict",
+                                    "rationale": "没有当期官方证据",
+                                },
+                            ],
+                        },
+                    }],
                 }
                 return SimpleNamespace(content="", tool_calls=calls[self.turn])
 
@@ -212,6 +232,155 @@ class DataCurationWorkflowTests(unittest.TestCase):
             {item["metric"]: item["status"] for item in result["metric_results"]}["EBITDA"],
             "unsearched",
         )
+
+    def test_company_agent_forces_agent_completion_when_research_turns_omit_it(self) -> None:
+        class ResearchWithoutCompletion:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_company_evidence", "args": {}}],
+                    2: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    3: [{
+                        "id": "open",
+                        "name": "open_official_pages",
+                        "args": {"metric": "收入", "urls": ["https://www.sec.gov/known-report"]},
+                    }],
+                    4: [],
+                    5: [{
+                        "id": "forced-complete",
+                        "name": "complete_company_research",
+                        "args": {
+                            "status": "verified_latest",
+                            "rationale": "最终决策 Agent 已核验最新官方值",
+                            "metric_statuses": [{
+                                "metric": "收入",
+                                "status": "verified_latest",
+                                "rationale": "已取得当期官方收入值",
+                            }],
+                        },
+                    }],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        fact = CandidateFact(
+            id="aws-known-official",
+            company="AWS",
+            metric="收入",
+            value="42,232 million USD",
+            sources=["https://www.sec.gov/known-report"],
+            source_tier="official",
+            decision="accepted",
+        )
+
+        def open_known_fact_source(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            self.assertEqual(extra_urls, ["https://www.sec.gov/known-report"])
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return [{"url": extra_urls[0], "value": "42,232 million USD"}]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._build_supervisor_model", return_value=ResearchWithoutCompletion()),
+            patch("data_curation.workflow._public_web_search", return_value=([{
+                "title": "AWS 2026 results",
+                "url": "https://www.sec.gov/known-report",
+                "snippet": "2026 quarterly results",
+            }], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_known_fact_source),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-synthesized"}, "AWS", 50, "AWS", [fact]
+            )
+        self.assertTrue(result["completion_forced"])
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(result["metric_results"][0]["status"], "verified_latest")
+
+    def test_company_agent_fails_closed_when_final_decision_agent_omits_completion(self) -> None:
+        class NeverCompletes:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_company_evidence", "args": {}}],
+                    2: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    3: [],
+                    4: [],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        model = NeverCompletes()
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["AWS"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=model),
+            patch("data_curation.workflow._public_web_search", return_value=([], "test")),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-missing-terminal"}, "AWS", 50, "AWS", []
+            )
+        self.assertEqual(result["status"], "agent_error")
+        self.assertEqual(result["reason_code"], "missing_terminal_call")
+        self.assertTrue(result["completion_forced"])
+        self.assertFalse(result["metric_coverage_complete"])
+        self.assertEqual(result["metric_results"][0]["status"], "agent_error")
+
+    def test_company_agent_keeps_audited_search_exhausted_as_terminal_state(self) -> None:
+        class ExhaustedCompanyAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_company_evidence", "args": {}}],
+                    2: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    3: [{
+                        "id": "complete",
+                        "name": "complete_company_research",
+                        "args": {
+                            "status": "search_exhausted",
+                            "rationale": "定向搜索未找到直接披露值",
+                            "metric_statuses": [{
+                                "metric": "收入",
+                                "status": "search_exhausted",
+                                "rationale": "定向搜索未找到直接披露值",
+                            }],
+                        },
+                    }],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["AWS"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=ExhaustedCompanyAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([], "test")),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-exhausted"}, "AWS", 50, "AWS", []
+            )
+        self.assertEqual(result["status"], "search_exhausted")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(result["unresolved_metrics"], [])
+        self.assertEqual(result["metric_results"][0]["status"], "search_exhausted")
 
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
