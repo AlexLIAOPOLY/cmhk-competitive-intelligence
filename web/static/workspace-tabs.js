@@ -1631,7 +1631,7 @@
       ? `当前阶段：${currentStrategicStage.label}`
       : fallbackNote;
     const domains = new Map((state.executiveIntelligence?.domains || []).map((domain) => [domain.id, domain]));
-    const expectedInsightCount = Number(
+    const expectedFocusInsightCount = Number(
       intelligenceRun.operational_summary?.model_analysis?.focuses_expected
       || state.executiveIntelligence?.ui_contract?.focuses_expected
       || 15
@@ -1700,7 +1700,23 @@
     const numericChangeCount = Number(uiValueChanges.changed || 0);
     const numericChangeText = numericBaselineAvailable ? `${number(numericChangeCount)} 项` : "未留存";
     const modelAnalysis = intelligenceRun.operational_summary?.model_analysis || {};
-    const insightCount = Number(modelAnalysis.focuses_passed || 0);
+    const focusInsightCount = Number(modelAnalysis.focuses_passed || 0);
+    const expectedDiscoveryInsightCount = Number(modelAnalysis.discoveries_expected ?? 4);
+    const discoveryInsightCount = Number(
+      modelAnalysis.discoveries_passed
+      ?? (modelAnalysis.discovery_model ? expectedDiscoveryInsightCount : 0)
+    );
+    const expectedInsightCount = Number(
+      modelAnalysis.insights_expected
+      ?? (expectedFocusInsightCount + expectedDiscoveryInsightCount)
+    );
+    const insightCount = Number(
+      modelAnalysis.insights_passed
+      ?? (focusInsightCount + discoveryInsightCount)
+    );
+    const insightCoverageComplete = insightCount === expectedInsightCount
+      && focusInsightCount === expectedFocusInsightCount
+      && discoveryInsightCount === expectedDiscoveryInsightCount;
     const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
     const mainRowsProcessed = Number(mainRun.final_audit?.rows_crawled || 0);
@@ -1751,7 +1767,7 @@
       domainNode("international", "国际运营商", [1155, 410], "database-international"),
       domainNode("cloud", "全球云厂商", [990, 535], "database-cloud"),
       domainNode("mainland", "内地运营商", [1155, 535], "database-mainland"),
-      { key: "insights", label: "AI战略洞察UI更新", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: intelligenceRun.crawl_run_id ? "项AI洞察" : "", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && !intelligenceRun.operational_summary?.pages_publish?.ok) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1385, 455], details: intelligenceRun.crawl_run_id ? [`AI洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；本轮${insightGenerationLabel}`, "洞察生成数与数据库事实数、UI发布对象数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
+      { key: "insights", label: "AI战略洞察UI更新", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: intelligenceRun.crawl_run_id ? "项AI洞察" : "", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && (!intelligenceRun.operational_summary?.pages_publish?.ok || !insightCoverageComplete)) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1385, 455], details: intelligenceRun.crawl_run_id ? [`AI洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；分域洞察 ${number(focusInsightCount)} / ${number(expectedFocusInsightCount)}，顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}；本轮${insightGenerationLabel}`, "洞察生成数与数据库事实数、UI发布对象数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
     ];
     const edges = [
       ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "news-selection-agent", "学习人工习惯", "cyan"], ["news-selection-agent", "app-result", "机器人勾选", "cyan"], ["news-selection-agent", "weekly-result", "机器人勾选", "cyan"], ["news-output", "strategic", "", "feedback"],

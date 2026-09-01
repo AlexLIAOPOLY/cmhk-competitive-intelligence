@@ -5109,10 +5109,12 @@ def run_pipeline(
                 len(domain.get("focuses") or [])
                 for domain in current_evidence.get("domains") or []
             )
+            expected_discovery_count = 4
             _task_event(
                 task_run_id,
                 "生成AI洞察",
-                f"正在根据四库最新通过事实生成AI洞察，并对{expected_focus_count}个关注点逐一执行深层解释、简洁度与事实门禁。",
+                f"正在根据四库最新通过事实生成AI洞察，并对{expected_focus_count}个关注点及"
+                f"{expected_discovery_count}条顶部跨库研判逐一执行深层解释、简洁度与事实门禁。",
             )
             try:
                 model_analysis = publish_model_domain_summaries()
@@ -5120,6 +5122,9 @@ def run_pipeline(
                     len(summary.get("focuses") or [])
                     for summary in model_analysis.get("summaries") or []
                 )
+                passed_discovery_count = len(model_analysis.get("discoveries") or [])
+                expected_insight_count = expected_focus_count + expected_discovery_count
+                passed_insight_count = passed_focus_count + passed_discovery_count
                 state["model_analysis"] = {
                     "ok": True,
                     "generated_at_hkt": model_analysis["generated_at_hkt"],
@@ -5127,6 +5132,10 @@ def run_pipeline(
                     "domains": len(model_analysis["summaries"]),
                     "focuses_expected": expected_focus_count,
                     "focuses_passed": passed_focus_count,
+                    "discoveries_expected": expected_discovery_count,
+                    "discoveries_passed": passed_discovery_count,
+                    "insights_expected": expected_insight_count,
+                    "insights_passed": passed_insight_count,
                     "reused": bool(model_analysis.get("reused")),
                     "fallback_used": bool(model_analysis.get("fallback_used")),
                     "fallback_reason": str(model_analysis.get("fallback_reason") or ""),
@@ -5142,6 +5151,10 @@ def run_pipeline(
                     {
                         "focuses_expected": expected_focus_count,
                         "focuses_passed": passed_focus_count,
+                        "discoveries_expected": expected_discovery_count,
+                        "discoveries_passed": passed_discovery_count,
+                        "insights_expected": expected_insight_count,
+                        "insights_passed": passed_insight_count,
                         "summary_domain_ids": [
                             str(summary.get("domain") or "") for summary in model_analysis.get("summaries") or []
                         ],
@@ -5149,6 +5162,7 @@ def run_pipeline(
                             [str(summary.get("domain") or "") for summary in model_analysis.get("summaries") or []]
                             == list(UI_DOMAIN_IDS)
                             and passed_focus_count == expected_focus_count
+                            and passed_discovery_count == expected_discovery_count
                         ),
                     }
                 )
@@ -5159,7 +5173,9 @@ def run_pipeline(
                 _task_event(
                     task_run_id,
                     "生成AI洞察",
-                    f"{passed_focus_count}/{expected_focus_count}关注点门禁通过；模型：{state['model_analysis']['model']}；"
+                    f"{passed_insight_count}/{expected_insight_count}项洞察门禁通过（关注点"
+                    f"{passed_focus_count}/{expected_focus_count}、顶部跨库研判"
+                    f"{passed_discovery_count}/{expected_discovery_count}）；模型：{state['model_analysis']['model']}；"
                     f"证据哈希：{state['model_analysis']['evidence_hash'][:16]}{fallback_note}。",
                 )
             except Exception as exc:
@@ -5214,7 +5230,8 @@ def run_pipeline(
             _task_event(
                 task_run_id,
                 "更新主页UI",
-                f"四库与{int(state['model_analysis'].get('focuses_passed') or 0)}个AI洞察均已通过，"
+                f"四库与{int(state['model_analysis'].get('insights_passed') or 0)}项AI洞察均已通过"
+                f"（含{int(state['model_analysis'].get('discoveries_passed') or 0)}条顶部跨库研判），"
                 "正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
             )
             try:
@@ -5320,12 +5337,16 @@ def _validated_fallback_complete(result: dict[str, Any]) -> bool:
         return False
     expected = int(analysis.get("focuses_expected") or 0)
     passed = int(analysis.get("focuses_passed") or 0)
+    discoveries_expected = int(analysis.get("discoveries_expected") or 0)
+    discoveries_passed = int(analysis.get("discoveries_passed") or 0)
     return bool(
         result.get("status") == "completed_with_fallback"
         and not result.get("failed_domains")
         and analysis.get("fallback_used")
         and expected > 0
         and passed == expected
+        and discoveries_expected == 4
+        and discoveries_passed == discoveries_expected
         and pages.get("ok")
     )
 
@@ -5393,14 +5414,22 @@ def run_pipeline_with_recovery(
         elif fallback_complete:
             detail = (
                 f"在线AI连续 {attempts} 次未通过后，已使用通过全部证据门禁的确定性回退；"
-                f"{int((result.get('model_analysis') or {}).get('focuses_passed') or 0)}个洞察及公开页面回读完整。"
+                f"{int((result.get('model_analysis') or {}).get('insights_passed') or 0)}项洞察"
+                f"（含{int((result.get('model_analysis') or {}).get('discoveries_passed') or 0)}条顶部跨库研判）"
+                "及公开页面回读完整。"
             )
         elif (result.get("pages_publish") or {}).get("ok"):
-            focus_count = int((result.get("model_analysis") or {}).get("focuses_passed") or 0)
-            detail = f"四库、{focus_count}个AI洞察、前端数据源及GitHub.io公开验证已完成，共执行 {attempts} 次。"
+            insight_count = int((result.get("model_analysis") or {}).get("insights_passed") or 0)
+            discovery_count = int((result.get("model_analysis") or {}).get("discoveries_passed") or 0)
+            detail = (
+                f"四库、{insight_count}项AI洞察（含{discovery_count}条顶部跨库研判）、"
+                f"前端数据源及GitHub.io公开验证已完成，共执行 {attempts} 次。"
+            )
         else:
             detail = (
-                f"四库、{int((result.get('model_analysis') or {}).get('focuses_passed') or 0)}个AI洞察和前端数据源已完成，但GitHub.io发布验证未通过："
+                f"四库、{int((result.get('model_analysis') or {}).get('insights_passed') or 0)}项AI洞察"
+                f"（含{int((result.get('model_analysis') or {}).get('discoveries_passed') or 0)}条顶部跨库研判）"
+                "和前端数据源已完成，但GitHub.io发布验证未通过："
                 f"{(result.get('pages_publish') or {}).get('error') or '未返回原因'}。"
             )
     else:

@@ -1052,6 +1052,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "fallback_used": True,
                 "focuses_expected": 17,
                 "focuses_passed": 17,
+                "discoveries_expected": 4,
+                "discoveries_passed": 4,
+                "insights_expected": 21,
+                "insights_passed": 21,
             },
             "pages_publish": {"ok": True, "status": "verified"},
         }
@@ -2215,6 +2219,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "generated_at_hkt": "2026-08-06T04:00:00+08:00",
                 "model": "deepseek-v4",
                 "summaries": [{"domain": item} for item in pipeline.UI_DOMAIN_IDS],
+                "discoveries": [{"from": "a", "to": "b"}] * 4,
                 "evidence_hash": "evidence-hash",
                 "fallback_used": False,
             }
@@ -2251,6 +2256,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
         self.assertTrue(result["ok"])
         self.assertTrue(result["pages_publish"]["ok"])
+        self.assertEqual(result["model_analysis"]["discoveries_expected"], 4)
+        self.assertEqual(result["model_analysis"]["discoveries_passed"], 4)
+        self.assertEqual(result["model_analysis"]["insights_passed"], 4)
+        self.assertTrue(result["ui_contract"]["aligned"])
         publish_pages.assert_called_once_with()
 
     def test_frontend_publish_failure_keeps_four_domain_refresh_failed(self):
@@ -2267,6 +2276,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "generated_at_hkt": "2026-08-06T04:00:00+08:00",
                 "model": "deepseek-v4",
                 "summaries": [{"domain": item} for item in pipeline.UI_DOMAIN_IDS],
+                "discoveries": [{"from": "a", "to": "b"}] * 4,
                 "evidence_hash": "evidence-hash",
                 "fallback_used": False,
             }
@@ -2320,7 +2330,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(result["domains"], ["local", "international", "mainland", "cloud"])
         self.assertEqual(
             result["stages"],
-            ["database_refresh", "quality_gate", "official_source_recrawl", "15_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"],
+            ["database_refresh", "quality_gate", "official_source_recrawl", "19_insight_analysis_15_focuses_4_discoveries", "homepage_ui_refresh", "public_frontend_publish"],
         )
 
 

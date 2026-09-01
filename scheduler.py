@@ -1025,7 +1025,7 @@ def _launch_executive_intelligence_refresh(
         "database_refresh",
         "quality_gate",
         "official_source_recrawl",
-        "15_focus_analysis",
+        "19_insight_analysis_15_focuses_4_discoveries",
         "homepage_ui_refresh",
         "public_frontend_publish",
     ]
@@ -1074,13 +1074,13 @@ def _launch_executive_intelligence_refresh(
             "agentRunId": agent_run_id,
             "domains": domains,
             "stages": stages,
-            "completionContract": "current_ui_four_domains_database_quality_source_recrawl_15_focus_homepage_public_frontend",
+            "completionContract": "current_ui_four_domains_database_quality_source_recrawl_15_focus_4_discovery_homepage_public_frontend",
             "error": result.get("error", ""),
         },
     )
     result = {**result, "domains": domains, "stages": stages}
     if result.get("ok"):
-        logging.info("当前UI四域数据库、质量门禁、官方来源复查、15项战略解读、主页与公开前端刷新已启动：%s", result)
+        logging.info("当前UI四域数据库、质量门禁、官方来源复查、15项分域洞察、4条顶部跨库研判、主页与公开前端刷新已启动：%s", result)
     else:
         logging.warning("四域数据库与前端刷新未启动；守护进程将依据本轮爬虫日志补跑：%s", result)
     return result
