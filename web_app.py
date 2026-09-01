@@ -1738,6 +1738,34 @@ def load_agent_trace(limit: int = 300) -> list[dict]:
     return rows
 
 
+def load_agent_research_for_run(run_id: str) -> tuple[list[dict], list[dict]]:
+    """Load the real per-company worker trace and reports for one curation run."""
+    safe_run_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(run_id or ""))
+    if not safe_run_id:
+        return [], []
+    run_dir = ROOT / "curation_data" / "runs"
+    trace_path = run_dir / f"{safe_run_id}_agent_trace.jsonl"
+    report_path = run_dir / f"{safe_run_id}_company_agent_results.json"
+    traces: list[dict] = []
+    if trace_path.exists():
+        try:
+            for line in trace_path.read_text(encoding="utf-8").splitlines():
+                item = json.loads(line)
+                if isinstance(item, dict) and item.get("role") in {"lead_research", "company_research"}:
+                    traces.append(item)
+        except Exception:
+            traces = []
+    reports: list[dict] = []
+    if report_path.exists():
+        try:
+            payload = json.loads(report_path.read_text(encoding="utf-8"))
+            if isinstance(payload, list):
+                reports = [item for item in payload if isinstance(item, dict)]
+        except Exception:
+            reports = []
+    return traces, reports
+
+
 def read_request_json(handler: BaseHTTPRequestHandler) -> dict:
     length = int(handler.headers.get("Content-Length") or 0)
     if not length:
@@ -6961,6 +6989,9 @@ class AppHandler(BaseHTTPRequestHandler):
                 quality = load_curation_quality_records(agent_run_id) if agent_run_id else {"ok": False, "records": []}
                 result["agentReviewItems"] = quality.get("records", []) if quality.get("ok") else []
                 result["agentReviewSummary"] = quality.get("summary", {}) if quality.get("ok") else {}
+                research_trace, research_reports = load_agent_research_for_run(agent_run_id)
+                result["companyAgentTrace"] = research_trace
+                result["companyAgentReports"] = research_reports
                 result["newsSelectionItems"] = news_selection_items_for_crawl_run(run)
             json_response(self, result, 200 if result.get("ok") else 404)
             return

@@ -2281,6 +2281,60 @@
     }).join("")}</div></section>`;
   }
 
+  function companyAgentExecutionModel(relatedRuns) {
+    const reports = relatedRuns.flatMap((run) => {
+      const detail = state.newsRunDetails[run.crawl_run_id] || {};
+      return Array.isArray(detail.companyAgentReports) ? detail.companyAgentReports : [];
+    });
+    const traces = relatedRuns.flatMap((run) => {
+      const detail = state.newsRunDetails[run.crawl_run_id] || {};
+      return Array.isArray(detail.companyAgentTrace) ? detail.companyAgentTrace : [];
+    });
+    const unique = new Map();
+    reports.forEach((report) => unique.set(report.company, report));
+    const groupLabels = { local: "香港运营商", international: "国际运营商", mainland: "内地运营商", cloud: "云厂商" };
+    const groups = ["local", "international", "mainland", "cloud"].map((key) => ({
+      key,
+      label: groupLabels[key],
+      reports: [...unique.values()].filter((report) => report.group === key),
+    }));
+    return {
+      reports: [...unique.values()],
+      groups,
+      traces,
+      expected: 36,
+      completed: [...unique.values()].filter((report) => report.status && report.status !== "agent_error").length,
+    };
+  }
+
+  function renderCompanyAgentExecutionGraph(relatedRuns) {
+    const model = companyAgentExecutionModel(relatedRuns);
+    if (!model.reports.length) {
+      return `<section class="news-lineage-dialog-section company-agent-graph-section"><header><h3>公司 Agent 执行图</h3><span>未留存多 Agent 轨迹</span></header><div class="company-agent-graph-empty"><strong>该历史运行尚未使用 36 公司 Multi-Agent 子图</strong><p>页面不会用逐条审核记录伪造 Agent 身份；新版运行完成后将显示真实的搜索、打开原文和终态。</p></div></section>`;
+    }
+    const statusLabels = { verified_latest: "已核验最新值", not_disclosed: "当期未披露", search_exhausted: "已完成定向搜索", conflict: "证据冲突", agent_error: "Agent 未完成" };
+    const groups = model.groups.map((group) => `<section class="company-agent-group is-${esc(group.key)}"><header><strong>${esc(group.label)}</strong><span>${number(group.reports.length)} 家</span></header><ol role="list">${group.reports.map((report, index) => {
+      const panelId = `companyAgentDetail-${esc(group.key)}-${index}`;
+      const status = report.status || "agent_error";
+      const queries = Array.isArray(report.queries) ? report.queries : [];
+      const evidenceUrls = Array.isArray(report.evidence_urls) ? report.evidence_urls : [];
+      const openAttempts = Array.isArray(report.open_attempts) ? report.open_attempts : [];
+      return `<li><button type="button" class="company-agent-node is-${esc(status)}" data-company-agent-node="${esc(report.company)}" aria-expanded="false" aria-controls="${panelId}"><span>${esc(report.company || "未记录公司")}</span><strong>${esc(statusLabels[status] || status)}</strong><em>搜索 ${number(report.search_count || 0)} · 原文成功 ${number(report.open_success_count || 0)} · 被拒 ${number(report.open_blocked_count || 0)} · 证据 ${number(report.evidence_count || 0)}</em></button><div class="company-agent-detail" id="${panelId}" hidden><dl><div><dt>最终判断</dt><dd>${esc(report.rationale || "未留存判断理由")}</dd></div><div><dt>研究路径</dt><dd>规划查询 → 搜索引擎 → 打开官方原文 → 证据门禁 → 提交</dd></div>${queries.length ? `<div><dt>搜索查询</dt><dd>${queries.map((query) => esc(query)).join("<br>")}</dd></div>` : ""}${openAttempts.length ? `<div><dt>原文打开</dt><dd>${openAttempts.map((attempt) => `${esc(attempt.opened ? "成功" : attempt.blocked_reason || "失败")} · ${esc(attempt.url || "未记录 URL")}`).join("<br>")}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>官方证据</dt><dd>${evidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">证据 ${number(urlIndex + 1)}</a>`).join(" · ")}</dd></div>` : ""}</dl></div></li>`;
+    }).join("")}</ol></section>`).join("");
+    return `<section class="news-lineage-dialog-section company-agent-graph-section"><header><h3>公司 Agent 执行图</h3><span>${number(model.completed)}/${number(model.expected)} 家已返回终态 · ${number(model.traces.length)} 条真实轨迹</span></header><div class="company-agent-graph" aria-label="Lead Research Agent 到 36 个公司 Agent 再到完整性门禁的执行图"><article class="company-agent-lead"><span>LEAD</span><strong>Lead Research Agent</strong><em>确定性派发 ${number(model.expected)} 家</em></article><i class="company-agent-connector" aria-hidden="true"></i><div class="company-agent-groups">${groups}</div><i class="company-agent-connector" aria-hidden="true"></i><article class="company-agent-gate"><span>GATE</span><strong>36/36 完整性门禁</strong><em>证据校验 → 补爬或发布</em></article></div></section>`;
+  }
+
+  function bindCompanyAgentGraphInteractions(dialog) {
+    dialog.querySelectorAll("[data-company-agent-node]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const expanded = button.getAttribute("aria-expanded") === "true";
+        const panel = dialog.querySelector(`#${CSS.escape(button.getAttribute("aria-controls"))}`);
+        button.setAttribute("aria-expanded", expanded ? "false" : "true");
+        if (panel) panel.hidden = expanded;
+      });
+    });
+  }
+
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
     const relatedRuns = lineageRunsForNode(nodeKey);
@@ -2313,6 +2367,7 @@
     const reviewItemDetails = (node.reviewRows || []).length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天选用明细</h3><span>${number(node.reviewRows.length)} 条审核表记录</span></header><div class="news-lineage-detail-items">${node.reviewRows.map((item) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(item.publishedAt || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title || "未命名新闻")}</a>` : esc(item.title || "未命名新闻")}</h4><p>${esc(item.summary || "审核表未保存内容简介。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>APP状态</dt><dd>${esc(item.rollingStatus || "未记录")} · ${esc(item.syncStatus || "未记录同步状态")}</dd></div><div><dt>周报状态</dt><dd>${esc(item.weeklyStatus || "未记录")}</dd></div><div><dt>入池理由</dt><dd>${esc(item.reason || "审核表未记录入池理由。")}</dd></div></dl></article>`).join("")}</div></section>` : "";
     body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>只展示所选日期真实发生的处理事件，不展示通用逻辑原则。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
       <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>当天运行</dt><dd>${relatedRuns.length ? relatedRuns.map((run) => `${newsRunTime(run)} · ${run.crawl_run_id}`).join("、") : "未找到当天运行归档"}</dd></div><div><dt>上下游</dt><dd>${esc(`${incoming.join("、") || "无"} → ${outgoing.join("、") || "无"}`)}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate)}</dd></div></dl></section>
+      ${nodeKey === "agent" ? renderCompanyAgentExecutionGraph(relatedRuns) : ""}
       ${renderNewsErrors(nodeKey, relatedRuns)}
       <section class="news-lineage-dialog-section is-process-flow"><header><h3>当天实际处理轨迹</h3><span>${number(events.length)} 条真实运行事件</span></header>${traceBody}</section>
       ${renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
@@ -2321,6 +2376,7 @@
       ${reviewItemDetails}
       <section class="news-lineage-dialog-section is-node-evidence"><header><h3>当天归档摘要</h3><span>运行状态与交付证据</span></header><pre class="news-lineage-node-evidence">${esc(node.evidence || "当天归档未保存可展示的摘要。")}</pre></section>
     </div>`;
+    bindCompanyAgentGraphInteractions(dialog);
     dialog.showModal();
   }
 

@@ -13,6 +13,7 @@ from data_curation.workflow import (
     extract_facts,
     plan_gaps,
     publish_results,
+    run_company_research_agents,
     search_verify_facts,
     supervise_gap_actions,
     run_workflow,
@@ -31,6 +32,87 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
+        class ToolCallingSupervisor:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_evidence_gaps", "args": {"row_numbers": [50]}}],
+                    2: [{
+                        "id": "search",
+                        "name": "search_and_open_official_evidence",
+                        "args": {"row_number": 50, "company": "AWS", "metric": "收入"},
+                    }],
+                    3: [{
+                        "id": "schedule",
+                        "name": "schedule_targeted_recrawl",
+                        "args": {"row_numbers": [50], "rationale": "搜索发现当期官方业绩原文"},
+                    }],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        candidate = CandidateFact(
+            id="aws-gap",
+            company="AWS",
+            metric="收入",
+            row_ref="row_50",
+            decision="rejected",
+            reasons=["缺少可核验公开来源"],
+        ).model_dump()
+        with (
+            patch("data_curation.workflow._build_supervisor_model", return_value=ToolCallingSupervisor()),
+            patch(
+                "data_curation.workflow._public_web_search",
+                return_value=([
+                    {
+                        "title": "Amazon Q2 2026 results",
+                        "url": "https://www.sec.gov/Archives/edgar/data/1018724/results.htm",
+                        "snippet": "AWS segment revenue",
+                        "provider": "test",
+                    }
+                ], "test"),
+            ),
+            patch("data_curation.workflow._votes_from_source_pages", return_value=[]),
+            patch("data_curation.workflow._result_status", return_value="quality_rejected"),
+        ):
+            result = supervise_gap_actions(
+                {
+                    "run_id": "unit-test",
+                    "online_ai": True,
+                    "max_recrawl_rows": 14,
+                    "max_recrawl_rounds": 1,
+                    "recrawl_round": 0,
+                    "recrawl_tasks": [],
+                    "candidates": [candidate],
+                    "gaps": [
+                        {
+                            "company": "AWS",
+                            "metric": "收入",
+                            "row_ref": "row_50",
+                            "reason": "缺少可核验公开来源",
+                            "candidate_ids": ["aws-gap"],
+                        }
+                    ],
+                }
+            )
+        self.assertEqual(result["supervisor_decision"], "recrawl")
+        self.assertEqual([item["row_number"] for item in result["recrawl_tasks"]], [50])
+        tool_calls = [
+            event.get("tool")
+            for event in result["agent_trace"]
+            if event.get("phase") == "tool_call"
+        ]
+        self.assertEqual(
+            tool_calls,
+            ["inspect_evidence_gaps", "search_and_open_official_evidence", "schedule_targeted_recrawl"],
+        )
+
     @patch("data_curation.workflow._result_status", return_value="quality_rejected")
     def test_current_value_quality_gap_is_scheduled_for_recrawl(self, _status) -> None:
         result = plan_gaps(
@@ -1105,9 +1187,38 @@ class DataCurationWorkflowTests(unittest.TestCase):
         graph = build_graph().get_graph()
         self.assertIn("supervisor", graph.nodes)
         self.assertIn("search_verify", graph.nodes)
+        self.assertIn("company_research", graph.nodes)
         self.assertIn(("resolve", "search_verify"), {(edge.source, edge.target) for edge in graph.edges})
         self.assertIn(("search_verify", "plan_gaps"), {(edge.source, edge.target) for edge in graph.edges})
-        self.assertIn(("plan_gaps", "supervisor"), {(edge.source, edge.target) for edge in graph.edges})
+        self.assertIn(("plan_gaps", "company_research"), {(edge.source, edge.target) for edge in graph.edges})
+        self.assertIn(("company_research", "supervisor"), {(edge.source, edge.target) for edge in graph.edges})
+
+    def test_lead_agent_dispatches_every_company_even_without_candidates(self) -> None:
+        def fake_worker(_state, company, row_number, row_entity, facts):
+            return ({
+                "company": company,
+                "group": "test",
+                "row_number": row_number,
+                "row_entity": row_entity,
+                "status": "search_exhausted",
+                "search_count": 1,
+                "opened_page_count": 0,
+                "evidence_count": 0,
+                "facts_seen": len(facts),
+            }, [])
+
+        with patch("data_curation.workflow._run_company_research_agent", side_effect=fake_worker):
+            result = run_company_research_agents({
+                "run_id": "company-fanout",
+                "online_ai": True,
+                "search_verify_online": True,
+                "candidates": [],
+            })
+        self.assertEqual(result["company_agent_summary"]["expected"], 36)
+        self.assertEqual(result["company_agent_summary"]["completed"], 36)
+        self.assertTrue(result["company_agent_summary"]["coverage_complete"])
+        self.assertEqual(len({item["company"] for item in result["company_agent_results"]}), 36)
+        self.assertTrue(all(item["facts_seen"] == 0 for item in result["company_agent_results"]))
 
     def test_search_verifier_majority_corrects_candidate_value(self) -> None:
         result = search_verify_facts(
@@ -1611,6 +1722,37 @@ class DataCurationWorkflowTests(unittest.TestCase):
         )
         with patch("httpx.get", return_value=FakeResponse()):
             self.assertEqual(_votes_from_source_pages(fact), [])
+
+    def test_source_open_audit_keeps_403_separate_from_search(self) -> None:
+        class ForbiddenResponse:
+            text = ""
+            url = "https://example.com/investors/results"
+            status_code = 403
+            is_success = False
+            headers = {}
+
+            def raise_for_status(self) -> None:
+                raise RuntimeError("403 Forbidden")
+
+        fact = CandidateFact(
+            id="airtel-results",
+            company="Bharti Airtel",
+            metric="收入",
+            row_ref="row_19",
+            sources=[],
+            decision="review",
+        )
+        audit = []
+        with patch("httpx.get", return_value=ForbiddenResponse()):
+            votes = _votes_from_source_pages(
+                fact,
+                extra_urls=["https://example.com/investors/results"],
+                open_audit=audit,
+            )
+        self.assertEqual(votes, [])
+        self.assertEqual(audit[0]["http_status"], 403)
+        self.assertFalse(audit[0]["opened"])
+        self.assertEqual(audit[0]["blocked_reason"], "HTTP 403")
 
     def test_search_verifier_matches_wan_unit_to_raw_integer(self) -> None:
         result = search_verify_facts(

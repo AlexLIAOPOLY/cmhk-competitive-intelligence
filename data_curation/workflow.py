@@ -206,6 +206,8 @@ class CurationState(TypedDict, total=False):
     best_candidates: list[dict[str, Any]]
     best_accepted_count: int
     search_verification: dict[str, Any]
+    company_agent_results: list[dict[str, Any]]
+    company_agent_summary: dict[str, Any]
     summary: dict[str, Any]
     node_events: Annotated[list[str], operator.add]
     agent_trace: Annotated[list[dict[str, Any]], operator.add]
@@ -244,6 +246,10 @@ def _trace(
     status: str = "",
     decision: str = "",
     duration_ms: int | None = None,
+    agent_id: str = "",
+    parent_agent_id: str = "",
+    company: str = "",
+    role: str = "",
 ) -> dict[str, Any]:
     event = {
         "ts": datetime.now().astimezone().isoformat(timespec="seconds"),
@@ -259,6 +265,14 @@ def _trace(
         event["decision"] = clean_text(decision, 500)
     if duration_ms is not None:
         event["duration_ms"] = duration_ms
+    if agent_id:
+        event["agent_id"] = clean_text(agent_id, 120)
+    if parent_agent_id:
+        event["parent_agent_id"] = clean_text(parent_agent_id, 120)
+    if company:
+        event["company"] = clean_text(company, 120)
+    if role:
+        event["role"] = clean_text(role, 80)
     if input is not None:
         event["input"] = _compact(input)
     if output is not None:
@@ -1759,6 +1773,7 @@ def _votes_from_source_pages(
     *,
     extra_urls: list[str] | None = None,
     timeout: float = 8.0,
+    open_audit: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     try:
         import httpx
@@ -1787,6 +1802,16 @@ def _votes_from_source_pages(
                 timeout=timeout,
                 follow_redirects=True,
             )
+            if open_audit is not None:
+                open_audit.append(
+                    {
+                        "url": url,
+                        "final_url": str(response.url),
+                        "http_status": response.status_code,
+                        "opened": response.is_success,
+                        "blocked_reason": "" if response.is_success else f"HTTP {response.status_code}",
+                    }
+                )
             response.raise_for_status()
             content_type = str(response.headers.get("content-type") or "").lower()
             if "pdf" in content_type or url.lower().split("?", 1)[0].endswith(".pdf"):
@@ -1801,7 +1826,18 @@ def _votes_from_source_pages(
             else:
                 soup = BeautifulSoup(response.text, "html.parser")
                 text = clean_text(soup.get_text(" ", strip=True), 20000)
-        except Exception:
+        except Exception as exc:
+            if open_audit is not None and not any(item.get("url") == url for item in open_audit):
+                status_code = getattr(getattr(exc, "response", None), "status_code", 0)
+                open_audit.append(
+                    {
+                        "url": url,
+                        "final_url": str(getattr(getattr(exc, "response", None), "url", "") or ""),
+                        "http_status": int(status_code or 0),
+                        "opened": False,
+                        "blocked_reason": f"HTTP {status_code}" if status_code else clean_text(exc, 160),
+                    }
+                )
             continue
         if _candidate_supported_by_raw_text(fact, text):
             vote = _verification_vote(
@@ -2343,9 +2379,386 @@ def _build_supervisor_model() -> ChatDeepSeek:
     )
 
 
+def _company_agent_group(company: str) -> str:
+    if company in {"HKT", "SmarTone", "3HK", "HKBN", "i-CABLE"}:
+        return "local"
+    if company in {"中国移动", "中国电信", "中国联通"}:
+        return "mainland"
+    if company in CLOUD_METRIC_COMPANIES:
+        return "cloud"
+    return "international"
+
+
+def _run_company_research_agent(
+    state: CurationState,
+    company: str,
+    row_number: int,
+    row_entity: str,
+    facts: list[CandidateFact],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Run one isolated tool-calling research agent for exactly one company."""
+    agent_id = f"company-{uuid.uuid5(uuid.NAMESPACE_URL, state.get('run_id', '') + ':' + company).hex[:12]}"
+    parent_agent_id = f"lead-{state.get('run_id', '')}"
+    traces = [
+        _trace(
+            state,
+            "公司研究 Agent",
+            "start",
+            f"{company} Company Research Agent 开始独立研究。",
+            input={"row": row_number, "row_entity": row_entity, "fact_count": len(facts)},
+            status="running",
+            agent_id=agent_id,
+            parent_agent_id=parent_agent_id,
+            company=company,
+            role="company_research",
+        )
+    ]
+    searches: list[dict[str, Any]] = []
+    opened: list[dict[str, Any]] = []
+    final: dict[str, Any] = {}
+
+    @tool
+    def inspect_company_evidence() -> dict[str, Any]:
+        """读取该公司已有事实、期间、决策和证据地址。"""
+        return {
+            "company": company,
+            "facts": [
+                {
+                    "metric": item.metric,
+                    "value": item.value,
+                    "decision": item.decision,
+                    "period": getattr(item, "period", ""),
+                    "sources": item.sources[:4],
+                    "reasons": item.reasons[:4],
+                }
+                for item in facts[:30]
+            ],
+        }
+
+    @tool
+    def search_latest_official(metric: str) -> dict[str, Any]:
+        """使用搜索引擎查找该公司最新官方业绩、IR、交易所或监管披露。"""
+        selected = next((item for item in facts if item.metric == metric), None)
+        query_fact = selected or CandidateFact(
+            id=f"{agent_id}-{metric or 'latest'}",
+            company=company,
+            metric=metric or "最新业绩和核心经营指标",
+            row_ref=f"row_{row_number}",
+            decision="review",
+        )
+        query = _fact_search_query(query_fact)
+        results, provider = _public_web_search(query, limit=8, timeout=12.0)
+        record = {"metric": metric, "query": query, "provider": provider, "results": results}
+        searches.append(record)
+        return record
+
+    @tool
+    def open_official_pages(metric: str, urls: list[str]) -> dict[str, Any]:
+        """打开搜索命中的官方网页或 PDF 正文并提取可核验票据。"""
+        discovered = {
+            str(item.get("url") or "")
+            for search in searches
+            for item in search.get("results", [])
+        }
+        selected_urls = [url for url in dict.fromkeys(urls) if url in discovered][:8]
+        selected = next((item for item in facts if item.metric == metric), None)
+        query_fact = selected or CandidateFact(
+            id=f"{agent_id}-open-{metric or 'latest'}",
+            company=company,
+            metric=metric or "最新业绩和核心经营指标",
+            row_ref=f"row_{row_number}",
+            decision="review",
+        )
+        open_attempts: list[dict[str, Any]] = []
+        votes = _votes_from_source_pages(
+            query_fact,
+            extra_urls=selected_urls,
+            timeout=15.0,
+            open_audit=open_attempts,
+        )
+        result = {
+            "metric": metric,
+            "requested_urls": selected_urls,
+            "opened_evidence": votes,
+            "opened_evidence_count": len(votes),
+            "open_attempts": open_attempts,
+            "note": "HTTP 403 只属于原文打开失败，不代表搜索失败。",
+        }
+        opened.append(result)
+        return result
+
+    @tool
+    def complete_company_research(status: str, rationale: str) -> dict[str, Any]:
+        """完成公司研究；状态只能是 verified_latest/not_disclosed/search_exhausted/conflict。"""
+        allowed_statuses = {"verified_latest", "not_disclosed", "search_exhausted", "conflict"}
+        normalized = status if status in allowed_statuses else "conflict"
+        final.update({"status": normalized, "rationale": clean_text(rationale, 600)})
+        return {"accepted": status in allowed_statuses, **final}
+
+    tools = [
+        inspect_company_evidence,
+        search_latest_official,
+        open_official_pages,
+        complete_company_research,
+    ]
+    tool_map = {item.name: item for item in tools}
+    error = ""
+    try:
+        model = _build_supervisor_model().bind_tools(tools)
+        messages: list[Any] = [
+            SystemMessage(
+                content=(
+                    f"你是只负责 {company} 的 Company Research Agent，不得研究或引用其他公司的数值。"
+                    "必须先读取已有证据，再自主调用搜索引擎寻找最新官方 IR、业绩公告、交易所或监管披露，"
+                    "并继续打开搜索命中的官方网页或 PDF。固定 URL 只是线索，不是限定入口。"
+                    "某个网页打开返回 403 时应继续搜索其他官方入口，不得把 403 说成搜索引擎失败。"
+                    "最后必须调用 complete_company_research；不得用 0、行业估算或旧值填补未披露项。"
+                )
+            ),
+            HumanMessage(
+                content=(
+                    f"调度行 {row_number}，库内主体 {row_entity}，"
+                    f"当前指标 {list(dict.fromkeys(item.metric for item in facts))[:20] or ['尚无候选事实']}。"
+                )
+            ),
+        ]
+        for _ in range(5):
+            started = time.monotonic()
+            response = model.invoke(messages)
+            messages.append(response)
+            traces.append(
+                _trace(
+                    state,
+                    "公司研究 Agent",
+                    "thinking",
+                    clean_text(response.content or f"{company} Agent 选择研究工具。", 500),
+                    output={"tool_calls": response.tool_calls},
+                    duration_ms=round((time.monotonic() - started) * 1000),
+                    agent_id=agent_id,
+                    parent_agent_id=parent_agent_id,
+                    company=company,
+                    role="company_research",
+                )
+            )
+            if not response.tool_calls:
+                break
+            for call in response.tool_calls:
+                name = str(call.get("name") or "")
+                args = call.get("args") or {}
+                traces.append(
+                    _trace(
+                        state,
+                        "公司研究 Agent",
+                        "tool_call",
+                        f"{company} Agent 调用 {name}。",
+                        event_type="tool_call",
+                        tool=name,
+                        input=args,
+                        agent_id=agent_id,
+                        parent_agent_id=parent_agent_id,
+                        company=company,
+                        role="company_research",
+                    )
+                )
+                selected_tool = tool_map.get(name)
+                result = selected_tool.invoke(args) if selected_tool else {"ok": False, "error": "unknown tool"}
+                traces.append(
+                    _trace(
+                        state,
+                        "公司研究 Agent",
+                        "tool_result",
+                        f"{company} Agent 完成 {name}。",
+                        event_type="tool_result",
+                        tool=name,
+                        result=result,
+                        status="success" if not result.get("error") else "error",
+                        agent_id=agent_id,
+                        parent_agent_id=parent_agent_id,
+                        company=company,
+                        role="company_research",
+                    )
+                )
+                messages.append(ToolMessage(content=json.dumps(result, ensure_ascii=False), tool_call_id=call["id"]))
+            if final:
+                break
+    except Exception as exc:
+        error = clean_text(exc, 300)
+
+    if not searches or not final:
+        final = {
+            "status": "agent_error",
+            "rationale": error or "Agent 未完成必需的搜索、打开原文和终态调用。",
+        }
+    evidence_urls = list(
+        dict.fromkeys(
+            str(vote.get("url") or "")
+            for item in opened
+            for vote in item.get("opened_evidence", [])
+            if str(vote.get("url") or "")
+        )
+    )
+    evidence_count = sum(len(item.get("opened_evidence", [])) for item in opened)
+    if final.get("status") in {"verified_latest", "not_disclosed"} and evidence_count == 0:
+        final = {
+            "status": "conflict",
+            "rationale": (
+                "Agent 声称已核验或未披露，但没有成功打开并回读当期官方原文，"
+                "确定性证据门禁已将其改为冲突。"
+            ),
+        }
+    result = {
+        "agent_id": agent_id,
+        "parent_agent_id": parent_agent_id,
+        "company": company,
+        "group": _company_agent_group(company),
+        "row_number": row_number,
+        "row_entity": row_entity,
+        "status": final["status"],
+        "rationale": final.get("rationale", ""),
+        "search_count": len(searches),
+        "opened_page_count": sum(len(item.get("requested_urls", [])) for item in opened),
+        "open_success_count": sum(
+            sum(bool(attempt.get("opened")) for attempt in item.get("open_attempts", []))
+            for item in opened
+        ),
+        "open_blocked_count": sum(
+            sum(not bool(attempt.get("opened")) for attempt in item.get("open_attempts", []))
+            for item in opened
+        ),
+        "open_attempts": [
+            attempt
+            for item in opened
+            for attempt in item.get("open_attempts", [])
+        ][:20],
+        "evidence_count": evidence_count,
+        "evidence_urls": evidence_urls[:12],
+        "queries": [item.get("query", "") for item in searches[:8]],
+        "metrics": list(dict.fromkeys(item.metric for item in facts))[:20],
+    }
+    traces.append(
+        _trace(
+            state,
+            "公司研究 Agent",
+            "complete",
+            f"{company} Company Research Agent 完成：{result['status']}。",
+            output=result,
+            status="success" if result["status"] != "agent_error" else "error",
+            decision=result["status"],
+            agent_id=agent_id,
+            parent_agent_id=parent_agent_id,
+            company=company,
+            role="company_research",
+        )
+    )
+    return result, traces
+
+
+def run_company_research_agents(state: CurationState) -> dict[str, Any]:
+    """Lead Agent deterministically fans out one autonomous worker per company."""
+    from crawl import ALL_COMPANY_CURRENT_RESULT_TARGETS
+
+    required = bool(state.get("online_ai", True) and state.get("search_verify_online"))
+    if not required:
+        summary = {"required": False, "expected": 36, "completed": 0, "coverage_complete": False}
+        return {
+            "company_agent_results": [],
+            "company_agent_summary": summary,
+            "node_events": [_event("公司研究 Agent", "本轮未启用联网多 Agent 研究，不声称已完成 36 家。")],
+            "agent_trace": [
+                _trace(state, "公司研究 Agent", "skip", "本轮未启用联网多 Agent 研究。", output=summary)
+            ],
+        }
+    candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
+    workers = max(1, min(8, int(os.environ.get("CMHK_COMPANY_AGENT_WORKERS") or 4)))
+    trace_events = [
+        _trace(
+            state,
+            "公司研究 Agent",
+            "fan_out",
+            "Lead Research Agent 确定性派发 36 个公司 Agent。",
+            input={"expected_companies": list(ALL_COMPANY_CURRENT_RESULT_TARGETS), "workers": workers},
+            agent_id=f"lead-{state.get('run_id', '')}",
+            role="lead_research",
+        )
+    ]
+    results: list[dict[str, Any]] = []
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = {}
+        for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
+            company_facts = [item for item in candidates if item.company in {company, row_entity}]
+            future = executor.submit(
+                _run_company_research_agent,
+                state,
+                company,
+                row_number,
+                row_entity,
+                company_facts,
+            )
+            futures[future] = company
+        for future in as_completed(futures):
+            company = futures[future]
+            try:
+                result, child_traces = future.result()
+            except Exception as exc:
+                result = {
+                    "company": company,
+                    "group": _company_agent_group(company),
+                    "status": "agent_error",
+                    "rationale": clean_text(exc, 300),
+                    "search_count": 0,
+                    "opened_page_count": 0,
+                    "evidence_count": 0,
+                }
+                child_traces = []
+            results.append(result)
+            trace_events.extend(child_traces)
+    order = {company: index for index, company in enumerate(ALL_COMPANY_CURRENT_RESULT_TARGETS)}
+    results.sort(key=lambda item: order.get(str(item.get("company") or ""), 999))
+    completed = sum(item.get("status") in {"verified_latest", "not_disclosed", "search_exhausted", "conflict"} for item in results)
+    errors = [item["company"] for item in results if item.get("status") == "agent_error"]
+    unresolved = [
+        item["company"]
+        for item in results
+        if item.get("status") in {"search_exhausted", "conflict", "agent_error"}
+    ]
+    summary = {
+        "required": True,
+        "expected": len(ALL_COMPANY_CURRENT_RESULT_TARGETS),
+        "completed": completed,
+        "coverage_complete": completed == len(ALL_COMPANY_CURRENT_RESULT_TARGETS),
+        "publish_ready": completed == len(ALL_COMPANY_CURRENT_RESULT_TARGETS) and not unresolved,
+        "agent_errors": errors,
+        "unresolved_companies": unresolved,
+        "workers": workers,
+        "searches": sum(int(item.get("search_count") or 0) for item in results),
+        "opened_pages": sum(int(item.get("opened_page_count") or 0) for item in results),
+        "evidence": sum(int(item.get("evidence_count") or 0) for item in results),
+    }
+    trace_events.append(
+        _trace(
+            state,
+            "公司研究 Agent",
+            "join",
+            f"Lead Research Agent 收齐 {completed}/{len(ALL_COMPANY_CURRENT_RESULT_TARGETS)} 个公司 Agent 终态。",
+            output=summary,
+            status="success" if summary["coverage_complete"] else "error",
+            agent_id=f"lead-{state.get('run_id', '')}",
+            role="lead_research",
+        )
+    )
+    return {
+        "company_agent_results": results,
+        "company_agent_summary": summary,
+        "node_events": [_event("公司研究 Agent", f"收齐 {completed}/36 家公司 Agent 终态。")],
+        "agent_trace": trace_events,
+    }
+
+
 def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
     planned = [RecrawlTask.model_validate(item) for item in state.get("recrawl_tasks", [])]
     gaps = [GapRecord.model_validate(item) for item in state.get("gaps", [])]
+    candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
+    company_agent_summary = state.get("company_agent_summary", {})
     trace_events: list[dict[str, Any]] = [
         _trace(
             state,
@@ -2357,11 +2770,12 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
                 "candidate_recrawl_rows": [item.row_number for item in planned],
                 "recrawl_round": state.get("recrawl_round", 0),
                 "max_recrawl_rounds": state.get("max_recrawl_rounds", 1),
+                "company_agent_summary": company_agent_summary,
             },
         )
     ]
-    if not planned:
-        reason = "没有满足补爬条件的候选行，进入发布。"
+    if not gaps:
+        reason = "没有事实缺口，进入发布。"
         return {
             "supervisor_decision": "publish",
             "supervisor_reason": reason,
@@ -2379,16 +2793,37 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
         match = re.fullmatch(r"row_(\d+)", gap.row_ref or "")
         if match:
             gap_by_row.setdefault(int(match.group(1)), []).append(gap)
+    facts_by_key = {
+        (item.row_ref, item.company, item.metric): item for item in candidates
+    }
+    searched_rows: set[int] = set()
     decision: dict[str, Any] = {}
 
     @tool
     def inspect_evidence_gaps(row_numbers: list[int]) -> dict[str, Any]:
         """读取候选行的缺口、抓取状态和缺失指标，供 Supervisor 决策。"""
         rows = []
-        for row_number in row_numbers:
-            if row_number not in allowed:
+        requested = row_numbers or sorted(gap_by_row)
+        for row_number in requested:
+            if row_number not in gap_by_row:
                 continue
             row_gaps = gap_by_row.get(row_number, [])
+            verification = []
+            for gap in row_gaps[:12]:
+                fact = facts_by_key.get((gap.row_ref, gap.company, gap.metric))
+                online = (fact.search_verification or {}).get("online_search", {}) if fact else {}
+                verification.append(
+                    {
+                        "company": gap.company,
+                        "metric": gap.metric,
+                        "reason": gap.reason,
+                        "search_provider": online.get("provider", ""),
+                        "search_result_count": int(online.get("result_count") or 0),
+                        "search_urls": [
+                            item.get("url", "") for item in (online.get("results") or [])[:4]
+                        ],
+                    }
+                )
             rows.append(
                 {
                     "row": row_number,
@@ -2397,10 +2832,75 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
                     "metrics": [gap.metric for gap in row_gaps[:12]],
                     "companies": list(dict.fromkeys(gap.company for gap in row_gaps))[:12],
                     "reasons": list(dict.fromkeys(gap.reason for gap in row_gaps))[:6],
-                    "deterministic_priority": allowed[row_number].priority,
+                    "rule_candidate": row_number in allowed,
+                    "deterministic_priority": allowed[row_number].priority if row_number in allowed else 0,
+                    "search_verification": verification,
                 }
             )
         return {"rows": rows, "max_rows": int(state.get("max_recrawl_rows") or 3)}
+
+    @tool
+    def search_and_open_official_evidence(
+        row_number: int,
+        company: str,
+        metric: str,
+    ) -> dict[str, Any]:
+        """为一个缺口调用搜索引擎，并继续打开搜索命中的官方网页或 PDF。"""
+        row_ref = f"row_{int(row_number)}"
+        matching_gap = next(
+            (
+                item
+                for item in gap_by_row.get(int(row_number), [])
+                if item.company == company and item.metric == metric
+            ),
+            None,
+        )
+        if matching_gap is None:
+            return {"ok": False, "error": "该主体×指标不在当前缺口中"}
+        fact = facts_by_key.get((row_ref, company, metric)) or CandidateFact(
+            id=f"supervisor-{row_number}-{company}-{metric}",
+            company=company,
+            metric=metric,
+            row_ref=row_ref,
+            decision="rejected",
+            reasons=[matching_gap.reason],
+        )
+        query = _fact_search_query(fact)
+        results, provider = _public_web_search(query, limit=6, timeout=10.0)
+        result_urls = [str(item.get("url") or "") for item in results]
+        page_votes = _votes_from_source_pages(fact, extra_urls=result_urls, timeout=12.0)
+        official_results = [
+            item
+            for item in results
+            if _official_domain_owners(str(item.get("url") or ""))
+            or any(
+                term in urlparse(str(item.get("url") or "")).netloc.lower()
+                for term in OFFICIAL_HOST_TERMS
+            )
+            or urlparse(str(item.get("url") or "")).netloc.lower().endswith("sec.gov")
+        ]
+        if official_results:
+            searched_rows.add(int(row_number))
+            if int(row_number) not in allowed:
+                row_gaps = gap_by_row[int(row_number)]
+                allowed[int(row_number)] = RecrawlTask(
+                    row_ref=row_ref,
+                    row_number=int(row_number),
+                    reason="Supervisor 搜索发现官方当期证据，需定向读取原文",
+                    priority=100,
+                    attempts=int(state.get("recrawl_round") or 0),
+                    companies=list(dict.fromkeys(item.company for item in row_gaps)),
+                    metrics=list(dict.fromkeys(item.metric for item in row_gaps)),
+                )
+        return {
+            "ok": True,
+            "query": query,
+            "provider": provider,
+            "results": results,
+            "official_results": official_results,
+            "opened_page_votes": page_votes,
+            "row_promoted_for_recrawl": int(row_number) in searched_rows,
+        }
 
     @tool
     def schedule_targeted_recrawl(row_numbers: list[int], rationale: str) -> dict[str, Any]:
@@ -2421,7 +2921,12 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
         decision.update({"action": "publish", "rows": [], "reason": clean_text(reason, 500)})
         return {"accepted": True, "action": "publish", "reason": decision["reason"]}
 
-    tools = [inspect_evidence_gaps, schedule_targeted_recrawl, publish_without_recrawl]
+    tools = [
+        inspect_evidence_gaps,
+        search_and_open_official_evidence,
+        schedule_targeted_recrawl,
+        publish_without_recrawl,
+    ]
     tool_map = {item.name: item for item in tools}
     if state.get("online_ai", True):
         try:
@@ -2431,7 +2936,9 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
                     content=(
                         "你是公开信息数据治理 Supervisor。你不能直接修改事实、质量分数或发布阈值。"
                         "必须先调用 inspect_evidence_gaps 查看候选行，再调用 schedule_targeted_recrawl "
-                        "或 publish_without_recrawl 作出唯一决策。补爬只用于抓取失败、证据缺失或关键指标"
+                        "或 publish_without_recrawl 作出唯一决策。对质量拒绝、无抽取或搜索结果未打开的缺口，"
+                        "必须先调用 search_and_open_official_evidence，由你自己查找并打开官方原文。"
+                        "补爬只用于抓取失败、证据缺失或关键指标"
                         "缺口；格式问题、主体错误和低质量商业来源不应靠重复补爬解决。"
                         "发布前的联网搜索必须覆盖每一个主体×指标，并使用 latest official、quarterly results、"
                         "interim results、earnings release、annual report、财报、中期业绩、季度业绩、公告等"
@@ -2443,7 +2950,9 @@ def supervise_gap_actions(state: CurationState) -> dict[str, Any]:
                 ),
                 HumanMessage(
                     content=(
-                        f"当前有 {len(gaps)} 个证据缺口；规则引擎给出候选行 {sorted(allowed)}。"
+                        f"当前有 {len(gaps)} 个证据缺口，涉及行 {sorted(gap_by_row)}；"
+                        f"规则引擎仅提供参考候选 {sorted(allowed)}，最终由你调用工具决定。"
+                        f"上游公司 Agent 覆盖状态为 {company_agent_summary}。"
                         f"最多补爬 {int(state.get('max_recrawl_rows') or 3)} 行。"
                     )
                 ),
@@ -2671,6 +3180,12 @@ def publish_results(state: CurationState) -> dict[str, Any]:
         raise RuntimeError(
             "最终合并 Agent 未完成全部主体×指标联网补充搜索，禁止发布假绿结果"
         )
+    company_agent_summary = state.get("company_agent_summary", {})
+    if company_agent_summary.get("required") and not company_agent_summary.get("coverage_complete"):
+        raise RuntimeError(
+            f"公司研究 Agent 仅完成 {company_agent_summary.get('completed', 0)}/"
+            f"{company_agent_summary.get('expected', 36)}，禁止把不完整结果标成成功"
+        )
     candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
     for item in candidates:
         if item.decision != "accepted":
@@ -2724,6 +3239,12 @@ def publish_results(state: CurationState) -> dict[str, Any]:
     summary.extra["online_batches"] = int((state.get("summary") or {}).get("onlineBatches") or 0)
     summary.extra["fallback_batches"] = int((state.get("summary") or {}).get("fallbackBatches") or 0)
     summary.extra["search_verification"] = state.get("search_verification", {})
+    summary.extra["company_agent_summary"] = company_agent_summary
+    summary.extra["overall_status"] = (
+        "complete"
+        if not company_agent_summary.get("required") or company_agent_summary.get("publish_ready")
+        else "partial"
+    )
     if not state.get("dry_run"):
         cache_backup_path = None
         previous_cache: dict[str, Any] = {}
@@ -2803,6 +3324,8 @@ def publish_results(state: CurationState) -> dict[str, Any]:
             f"curation_data/runs/{state['run_id']}_candidate_facts.jsonl",
             "curation_data/agent_trace.jsonl",
             f"curation_data/runs/{state['run_id']}_agent_trace.jsonl",
+            "curation_data/company_agent_results.json",
+            f"curation_data/runs/{state['run_id']}_company_agent_results.json",
         ]
         trace_events.append(
             _trace(
@@ -2832,6 +3355,11 @@ def publish_results(state: CurationState) -> dict[str, Any]:
         )
         atomic_write_jsonl(DATA_DIR / "verified_facts.jsonl", [item.model_dump() for item in accepted])
         atomic_write_json(DATA_DIR / "recrawl_tasks.json", state.get("recrawl_tasks", []))
+        atomic_write_json(DATA_DIR / "company_agent_results.json", state.get("company_agent_results", []))
+        atomic_write_json(
+            RUNS_DIR / f"{state['run_id']}_company_agent_results.json",
+            state.get("company_agent_results", []),
+        )
         atomic_write_json(DATA_DIR / "latest.json", summary.model_dump())
         atomic_write_json(RUNS_DIR / f"{state['run_id']}.json", summary.model_dump())
         if cache_backup_path:
@@ -2892,6 +3420,7 @@ def build_graph(current_thread_id: str = ""):
     builder.add_node("resolve", resolve_conflicts, retry_policy=retry)
     builder.add_node("search_verify", search_verify_facts, retry_policy=retry)
     builder.add_node("plan_gaps", plan_gaps, retry_policy=retry)
+    builder.add_node("company_research", run_company_research_agents)
     builder.add_node("supervisor", supervise_gap_actions, retry_policy=retry)
     # These nodes have external side effects and must not be retried implicitly.
     builder.add_node("recrawl", recrawl_gaps)
@@ -2904,7 +3433,8 @@ def build_graph(current_thread_id: str = ""):
     builder.add_edge("audit", "resolve")
     builder.add_edge("resolve", "search_verify")
     builder.add_edge("search_verify", "plan_gaps")
-    builder.add_edge("plan_gaps", "supervisor")
+    builder.add_edge("plan_gaps", "company_research")
+    builder.add_edge("company_research", "supervisor")
     builder.add_conditional_edges(
         "supervisor",
         route_after_supervisor,
