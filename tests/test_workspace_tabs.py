@@ -54,7 +54,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.js?v=35', INDEX)
         self.assertIn('/static/organization-admin.css?v=28', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=162', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=164', INDEX)
         self.assertIn('/static/app.js?v=319', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -662,10 +662,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=136', INDEX)
-        self.assertIn('workspace-tabs.js?v=162', INDEX)
+        self.assertIn('workspace-tabs.css?v=138', INDEX)
+        self.assertIn('workspace-tabs.js?v=164', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=136', INDEX)
+        self.assertIn('workspace-tabs.css?v=138', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
@@ -868,6 +868,27 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("marker-end: url(#newsLineageArrowRoutine)", STYLE)
         self.assertIn(".news-line-health-legend .is-line-routine", STYLE)
         self.assertIn(".fault-route-impact", STYLE)
+
+    def test_news_lineage_locates_running_work_on_one_specific_node(self):
+        self.assertIn("function activeNewsStage(stages)", SCRIPT)
+        self.assertIn("function activeNewsStageNodeKey(stageKey)", SCRIPT)
+        self.assertIn('gate: "news-search"', SCRIPT)
+        self.assertIn('write: "news-output"', SCRIPT)
+        self.assertIn('const currentStrategicStage = strategicHealth.key === "running" ? activeNewsStage(stages) : null;', SCRIPT)
+        self.assertIn('`当前阶段：${currentStrategicStage.label}`', SCRIPT)
+        self.assertIn('`当前节点：${activeNewsStageNodeLabel(currentStrategicStage.key)}', SCRIPT)
+        self.assertIn('当前执行已定位在“${runningNode.label}”节点；未发现线路异常证据。', SCRIPT)
+        self.assertNotIn('label: "传输中"', SCRIPT)
+        self.assertNotIn('["interrupted", "degraded", "at-risk", "running"].includes(line?.key)', SCRIPT)
+
+    def test_news_lineage_uses_semantic_svg_status_icons(self):
+        self.assertIn("function lineageStatusIcon(status)", SCRIPT)
+        for status in ("healthy", "running", "warning", "critical", "unknown", "interrupted", "degraded", '"at-risk"'):
+            self.assertIn(f"{status}:", SCRIPT)
+        self.assertIn('lineageStatusIcon(node.health?.key || "unknown")', SCRIPT)
+        self.assertIn("lineageStatusIcon(line.key)", SCRIPT)
+        self.assertIn(".news-lineage-status-icon", STYLE)
+        self.assertNotIn(".news-lineage-edge-state.is-running", STYLE)
 
 
 if __name__ == "__main__":
