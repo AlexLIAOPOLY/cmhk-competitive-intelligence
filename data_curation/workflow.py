@@ -3444,12 +3444,20 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
             and all(metric.get("status") in terminal for metric in metric_results)
         )
 
+    company_tasks: list[tuple[str, int, str, list[CandidateFact]]] = []
+    for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
+        fact_entities = _company_fact_entities(company) | {row_entity}
+        company_facts = [item for item in candidates if item.company in fact_entities]
+        expected_metric_plan[company] = _company_expected_metrics(company, company_facts)
+        company_tasks.append((company, row_number, row_entity, company_facts))
+    # Finish the smallest complete company audits first.  Every completion is
+    # persisted, so a later outer timeout retains the largest possible number
+    # of reusable company x metric terminal states.
+    company_tasks.sort(key=lambda item: len(expected_metric_plan[item[0]]))
+
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {}
-        for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
-            fact_entities = _company_fact_entities(company) | {row_entity}
-            company_facts = [item for item in candidates if item.company in fact_entities]
-            expected_metric_plan[company] = _company_expected_metrics(company, company_facts)
+        for company, row_number, row_entity, company_facts in company_tasks:
             cached_result = progress_results.get(company)
             if cached_result and reusable_progress(cached_result, expected_metric_plan[company]):
                 results.append(cached_result)

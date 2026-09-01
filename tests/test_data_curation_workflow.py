@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 import tempfile
 import unittest
 import time
@@ -507,6 +508,42 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertTrue(first["company_agent_summary"]["metric_coverage_complete"])
         self.assertTrue(second["company_agent_summary"]["metric_coverage_complete"])
         self.assertIn("Example", progress["companies"])
+
+    def test_company_agents_run_smallest_metric_plan_first(self) -> None:
+        observed: list[str] = []
+
+        def expected(company, _facts):
+            return ["收入"] if company == "Small" else ["收入", "EBITDA", "净利润"]
+
+        def worker(_state, company, _row, _entity, _facts):
+            observed.append(company)
+            metrics = expected(company, [])
+            return ({
+                "company": company,
+                "status": "verified_latest",
+                "metric_coverage_complete": True,
+                "metric_results": [
+                    {"metric": metric, "status": "verified_latest"} for metric in metrics
+                ],
+            }, [])
+
+        with (
+            patch.dict(os.environ, {"CMHK_COMPANY_AGENT_WORKERS": "1"}),
+            patch("crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS", {
+                "Big": (2, "Big"),
+                "Small": (3, "Small"),
+            }),
+            patch("data_curation.workflow._company_expected_metrics", side_effect=expected),
+            patch("data_curation.workflow._run_company_research_agent", side_effect=worker),
+        ):
+            result = run_company_research_agents({
+                "run_id": "company_priority_test",
+                "online_ai": True,
+                "search_verify_online": True,
+                "candidates": [],
+            })
+        self.assertEqual(observed, ["Small", "Big"])
+        self.assertEqual(result["company_agent_summary"]["completed_metrics"], 4)
 
     def test_company_agent_downgrades_unsupported_not_disclosed_claim(self) -> None:
         seed_url = "https://example.com/current"
