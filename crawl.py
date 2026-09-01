@@ -129,21 +129,27 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
         "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
     },
     50: {
-        "AWS": ["https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx"],
+        "AWS": [
+            "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
+            "https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx",
+        ],
         "Microsoft Azure": ["https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast"],
         "Google Cloud": ["https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm"],
         "Alibaba Cloud": ["https://www.alibabagroup.com/en-US/document-2026456290057781248"],
         "Tencent Cloud": ["https://www.tencent.com/wp-content/uploads/2026/08/Tencent-Announces-2026-Second-Quarter-Results.pdf"],
         "Huawei Cloud": ["https://www.huawei.com/en/annual-report/2025"],
-        "Oracle Cloud": ["https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/"],
+        "Oracle Cloud": [
+            "https://www.sec.gov/Archives/edgar/data/1341439/000119312526265848/orcl-ex99_1.htm",
+            "https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/",
+        ],
     },
-    52: {"AWS": ["https://ir.aboutamazon.com/news-release/news-release-details/2026/Amazon-com-Announces-Second-Quarter-Results/default.aspx"]},
+    52: {"AWS": ["https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm"]},
     53: {"Microsoft Azure": ["https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast"]},
     54: {"Google Cloud": ["https://www.sec.gov/Archives/edgar/data/1652044/000165204426000066/googexhibit991q22026.htm"]},
     55: {"Alibaba Cloud": ["https://www.alibabagroup.com/en-US/document-2026456290057781248"]},
     56: {"Tencent Cloud": ["https://www.tencent.com/wp-content/uploads/2026/08/Tencent-Announces-2026-Second-Quarter-Results.pdf"]},
     57: {"Huawei Cloud": ["https://www.huawei.com/en/annual-report/2025"]},
-    58: {"Oracle Cloud": ["https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/"]},
+    58: {"Oracle Cloud": ["https://www.sec.gov/Archives/edgar/data/1341439/000119312526265848/orcl-ex99_1.htm"]},
 }
 
 # Canonical 01:00 discovery entities mapped to the 03:00 row/entity that must

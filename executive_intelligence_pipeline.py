@@ -137,13 +137,13 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
         "https://www.chinaunicom.com.hk/en/ir/reports.php",
         "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
     )),
-    ("cloud", "AWS", ("AWS", "Amazon Web Services"), ("https://ir.aboutamazon.com/quarterly-results/default.aspx",)),
+    ("cloud", "AWS", ("AWS", "Amazon Web Services"), ("https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm", "https://ir.aboutamazon.com/quarterly-results/default.aspx")),
     ("cloud", "Microsoft Azure", ("Azure", "Microsoft cloud"), ("https://www.microsoft.com/en-us/Investor/earnings",)),
     ("cloud", "Google Cloud", ("Google Cloud", "Alphabet"), ("https://abc.xyz/investor/",)),
     ("cloud", "Alibaba Cloud", ("Alibaba Cloud", "阿里云", "阿里雲"), ("https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",)),
     ("cloud", "Tencent Cloud", ("Tencent Cloud", "腾讯云", "騰訊雲"), ("https://www.tencent.com/investors/results/",)),
     ("cloud", "Huawei Cloud", ("Huawei Cloud", "华为云", "華為雲"), ("https://www.huawei.com/en/annual-report",)),
-    ("cloud", "Oracle Cloud", ("Oracle Cloud",), ("https://investor.oracle.com/financials/",)),
+    ("cloud", "Oracle Cloud", ("Oracle Cloud",), ("https://www.sec.gov/Archives/edgar/data/1341439/000119312526265848/orcl-ex99_1.htm", "https://investor.oracle.com/financials/")),
 )
 FACT_DOMAIN_IDS = (*UI_DOMAIN_IDS, *SUPPORTING_DOMAIN_IDS)
 
