@@ -257,6 +257,7 @@ class CrawlRunReconciliationTests(unittest.TestCase):
 
 class ScheduledAgentAuditTests(unittest.TestCase):
     def test_scheduled_agent_uses_stable_checkpoint_and_bounded_online_search(self) -> None:
+        self.assertIn("公司研究 Agent", scheduler.REQUIRED_AGENT_NODES)
         with tempfile.TemporaryDirectory() as temp_dir:
             log_path = Path(temp_dir) / "run.jsonl"
             log_path.write_text("", encoding="utf-8")

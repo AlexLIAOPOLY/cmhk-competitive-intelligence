@@ -59,6 +59,7 @@ REQUIRED_AGENT_NODES = {
     "冲突仲裁",
     "搜索验证",
     "缺口规划",
+    "公司研究 Agent",
     "编排决策",
     "发布",
 }
@@ -833,6 +834,8 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
         "agent_trace": str(trace_path.relative_to(ROOT)),
         "trace_events": event_count,
         "search_verification": extra.get("search_verification", {}),
+        "company_agent_summary": extra.get("company_agent_summary", {}),
+        "overall_status": extra.get("overall_status", ""),
     }
     search_verification = summary["search_verification"]
     if not isinstance(search_verification, dict) or not search_verification.get("online_search"):
@@ -842,6 +845,15 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
             "最终合并 Agent 未完成全部主体×指标联网搜索："
             f"{search_verification.get('online_checked', 0)}/"
             f"{search_verification.get('online_required', latest.get('tasks', 0))}"
+        )
+    company_agent_summary = summary["company_agent_summary"]
+    if not isinstance(company_agent_summary, dict) or not company_agent_summary.get("required"):
+        problems.append("最终合并 Agent 未启用 36 公司 Multi-Agent 研究")
+    elif not company_agent_summary.get("coverage_complete"):
+        problems.append(
+            "公司 Agent 报告未收齐："
+            f"{company_agent_summary.get('completed', 0)}/"
+            f"{company_agent_summary.get('expected', 36)}"
         )
     return summary, problems
 
