@@ -39,7 +39,7 @@ class LongListScrollTests(unittest.TestCase):
             "/static/organization-admin.css?v=28",
             "/static/app.js?v=319",
             "/static/organization-admin.js?v=35",
-            "/static/workspace-tabs.js?v=164",
+            "/static/workspace-tabs.js?v=165",
         ):
             self.assertIn(asset, INDEX)
 

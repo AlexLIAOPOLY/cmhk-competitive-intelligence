@@ -54,7 +54,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.js?v=35', INDEX)
         self.assertIn('/static/organization-admin.css?v=28', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=164', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=165', INDEX)
         self.assertIn('/static/app.js?v=319', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -663,7 +663,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
         self.assertIn('workspace-tabs.css?v=138', INDEX)
-        self.assertIn('workspace-tabs.js?v=164', INDEX)
+        self.assertIn('workspace-tabs.js?v=165', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=138', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
@@ -843,6 +843,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('(?:语义去重完成|历史语义去重)', SCRIPT)
         self.assertIn('notificationStatus === "sent" ? "正式群卡片已发送"', SCRIPT)
         self.assertIn('运行完成摘要已确认该阶段完成', SCRIPT)
+        self.assertIn("function logLineMatching(content, pattern)", SCRIPT)
+        self.assertIn('dedupe: logLineMatching(content, /(?:^|\\]\\s*)(?:语义去重完成|历史语义去重)：/)', SCRIPT)
+        self.assertNotIn('dedupe: logLine(content, "语义去重完成") || logLine(content, "历史语义去重")', SCRIPT)
 
     def test_news_lineage_marks_only_evidence_backed_or_gated_llm_route_impacts(self):
         self.assertIn("function activeLineageRouteAssessments(selectedDate)", SCRIPT)

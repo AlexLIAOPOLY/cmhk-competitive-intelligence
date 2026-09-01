@@ -1198,6 +1198,10 @@
     return String(content || "").split("\n").find((line) => line.includes(prefix)) || "";
   }
 
+  function logLineMatching(content, pattern) {
+    return String(content || "").split("\n").find((line) => pattern.test(line)) || "";
+  }
+
   function logNumber(content, pattern, fallback = 0) {
     const match = String(content || "").match(pattern);
     return match ? Number(match[1] || 0) : Number(fallback || 0);
@@ -1245,7 +1249,7 @@
       search: logLine(content, "新闻发现完成"),
       gate: logLine(content, "候选确定性门禁"),
       ai: logLine(content, "AI审核完成"),
-      dedupe: logLine(content, "语义去重完成") || logLine(content, "历史语义去重"),
+      dedupe: logLineMatching(content, /(?:^|\]\s*)(?:语义去重完成|历史语义去重)：/),
       write: logLine(content, "飞书逐格回读：第 1 次回读通过") || logLine(content, "飞书写入与逐格回读"),
       push: logLine(content, "群通知完成"),
     };
