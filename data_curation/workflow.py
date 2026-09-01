@@ -2993,16 +2993,53 @@ def _run_company_research_agent(
                 break
         if searches and not completion_accepted:
             completion_forced = True
-            for repair_index in range(4):
+            for repair_index in range(6):
+                required_open_metrics = re.findall(
+                    r"([^\[\],;']+):open_current_official_results",
+                    completion_rejection,
+                )
+                required_open_metrics = [clean_text(metric, 120) for metric in required_open_metrics]
+                open_candidate_map = {
+                    metric: list(dict.fromkeys(
+                        str(result.get("url") or "")
+                        for record in searches
+                        if record.get("metric") == metric
+                        for result in record.get("current_official_results", [])
+                        if str(result.get("url") or "")
+                    ))[:8]
+                    for metric in required_open_metrics
+                }
+                only_open_required = bool(required_open_metrics) and not any(
+                    marker in completion_rejection
+                    for marker in (
+                        ":search_not_run",
+                        ":fresh_official_evidence_required",
+                        ":fresh_official_open_required",
+                        ":open_sources_before_conflict",
+                    )
+                )
                 messages.append(HumanMessage(content=(
                     "你是该公司的 Final Decision Agent。上次提交未通过公司和指标证据门禁："
                     f"{completion_rejection}。必须根据门禁反馈继续调用 search_latest_official、"
                     "open_official_pages 补齐真实研究，再调用 complete_company_research 重新提交。"
                     "不得由工作流补写业务结论；所有 status 只能使用 verified_latest、not_disclosed、"
                     "not_applicable、search_exhausted、conflict。"
+                    + (
+                        "当前只剩原文打开缺口，不得重复搜索；必须按以下指标和已发现候选调用 "
+                        f"open_official_pages：{json.dumps(open_candidate_map, ensure_ascii=False)}。"
+                        if only_open_required else ""
+                    )
                 )))
                 started = time.monotonic()
-                response = _build_supervisor_model().bind_tools(tools).invoke(messages)
+                repair_model = _build_supervisor_model()
+                if only_open_required:
+                    repair_model = repair_model.bind_tools(
+                        [open_official_pages],
+                        tool_choice="open_official_pages",
+                    )
+                else:
+                    repair_model = repair_model.bind_tools(tools)
+                response = repair_model.invoke(messages)
                 messages.append(response)
                 traces.append(
                     _trace(
