@@ -114,7 +114,7 @@ body {
   .architecture-links, .ambient-orbit { display: none; }
   .sector, .ai-core { position: relative; inset: auto; width: auto; height: auto; }
   .ai-core { order: 1; min-height: 390px; margin: 4px 2px 12px; border-radius: 44px; }
-  .ai-core::before { inset: 16px; border-radius: 36px; }.ai-core::after { inset: 36px; border-radius: 28px; }
+  .ai-core::before { inset: 16px; border-radius: 36px; animation: none; }.ai-core::after { inset: 36px; border-radius: 28px; animation: none; }
   .core-radar { display: none; }
   .core-content { position: relative; inset: auto; padding: 46px 28px 84px; }
   .core-content h1 { font-size: clamp(24px, 7.4vw, 31px); }
