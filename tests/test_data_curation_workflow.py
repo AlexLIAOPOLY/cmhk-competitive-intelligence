@@ -6,7 +6,7 @@ import unittest
 import time
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import data_curation.workflow as workflow
 from data_curation.schemas import CandidateFact, EvidenceTask
@@ -37,6 +37,32 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    def test_source_page_reader_reuses_successful_fetch(self) -> None:
+        response = Mock()
+        response.url = "https://example.com/results"
+        response.status_code = 200
+        response.headers = {"content-type": "text/html"}
+        response.text = "<html><body>Revenue HK$ 10 million</body></html>"
+        response.raise_for_status.return_value = None
+        fact = CandidateFact(
+            id="cache-test",
+            company="Example",
+            metric="收入",
+            value="HK$ 10 million",
+            sources=["https://example.com/results"],
+            row_ref="row_2",
+            decision="review",
+        )
+        workflow._SOURCE_PAGE_CACHE.clear()
+        with patch("httpx.get", return_value=response) as get:
+            first_audit: list[dict] = []
+            second_audit: list[dict] = []
+            _votes_from_source_pages(fact, open_audit=first_audit)
+            _votes_from_source_pages(fact, open_audit=second_audit)
+        self.assertEqual(get.call_count, 1)
+        self.assertFalse(first_audit[0]["cache_hit"])
+        self.assertTrue(second_audit[0]["cache_hit"])
+
     def test_company_profiles_include_verified_regulator_fallbacks(self) -> None:
         self.assertIn(
             "sec.gov",
@@ -391,6 +417,96 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertTrue(result["metric_coverage_complete"])
         self.assertEqual(result["unresolved_metrics"], [])
         self.assertEqual(result["metric_results"][0]["status"], "search_exhausted")
+
+    def test_company_agent_accepts_exhaustion_after_current_official_page_has_no_metric(self) -> None:
+        current_url = "https://example.com/2026-results"
+
+        class ExhaustedAfterOpenAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    2: [{"id": "open", "name": "open_official_pages", "args": {
+                        "metric": "收入", "urls": [current_url],
+                    }}],
+                    3: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "search_exhausted",
+                        "rationale": "当期官方页可读但没有该指标",
+                        "metric_statuses": [{
+                            "metric": "收入",
+                            "status": "search_exhausted",
+                            "rationale": "当期官方页可读但没有收入直接值",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_without_metric(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return []
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Example"], "official_hosts": ["example.com"], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=ExhaustedAfterOpenAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([{
+                "title": "Example 2026 results",
+                "url": current_url,
+                "snippet": "Official 2026 annual results",
+                "provider": "test",
+            }], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_without_metric),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-current-open-exhausted"}, "Example", 2, "Example", []
+            )
+        self.assertEqual(result["status"], "search_exhausted")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(result["metric_results"][0]["fresh_official_open_count"], 1)
+
+    def test_scheduled_company_progress_skips_completed_company_on_resume(self) -> None:
+        complete = {
+            "company": "Example",
+            "status": "verified_latest",
+            "metric_coverage_complete": True,
+            "metric_results": [{"metric": "收入", "status": "verified_latest"}],
+            "search_count": 1,
+            "opened_page_count": 1,
+            "evidence_count": 1,
+        }
+        worker = Mock(return_value=(complete, []))
+        with (
+            tempfile.TemporaryDirectory() as temp_dir,
+            patch.object(workflow, "RUNS_DIR", Path(temp_dir)),
+            patch("crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS", {"Example": (2, "Example")}),
+            patch("data_curation.workflow._company_expected_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._run_company_research_agent", worker),
+        ):
+            state = {
+                "run_id": "scheduled_progress_test",
+                "online_ai": True,
+                "search_verify_online": True,
+                "candidates": [],
+            }
+            first = run_company_research_agents(state)
+            second = run_company_research_agents(state)
+            progress = json.loads(
+                (Path(temp_dir) / "scheduled_progress_test_company_agent_progress.json").read_text(
+                    encoding="utf-8"
+                )
+            )
+        self.assertEqual(worker.call_count, 1)
+        self.assertTrue(first["company_agent_summary"]["metric_coverage_complete"])
+        self.assertTrue(second["company_agent_summary"]["metric_coverage_complete"])
+        self.assertIn("Example", progress["companies"])
 
     def test_company_agent_downgrades_unsupported_not_disclosed_claim(self) -> None:
         seed_url = "https://example.com/current"

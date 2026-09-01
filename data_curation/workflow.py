@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import time
 import uuid
 import warnings
@@ -69,6 +70,66 @@ GLOBAL_CRAWL_ARTIFACTS = [
     "run_log.json",
     "final_audit.md",
 ]
+
+_SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
+_SOURCE_PAGE_CACHE_LOCK = threading.Lock()
+
+
+def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
+    """Fetch and parse one public page once per workflow process."""
+    with _SOURCE_PAGE_CACHE_LOCK:
+        cached = _SOURCE_PAGE_CACHE.get(url)
+    if cached is not None:
+        return {**cached, "cache_hit": True}
+
+    result: dict[str, Any]
+    response: Any = None
+    try:
+        import httpx
+        from bs4 import BeautifulSoup
+
+        response = httpx.get(
+            url,
+            headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) CMHK-SearchVerifier/1.0"},
+            timeout=timeout,
+            follow_redirects=True,
+        )
+        response.raise_for_status()
+        content_type = str(response.headers.get("content-type") or "").lower()
+        if "pdf" in content_type or url.lower().split("?", 1)[0].endswith(".pdf"):
+            from io import BytesIO
+            from pypdf import PdfReader
+
+            reader = PdfReader(BytesIO(response.content), strict=False)
+            page_text = " ".join((page.extract_text() or "") for page in reader.pages)
+        else:
+            soup = BeautifulSoup(response.text, "html.parser")
+            page_text = soup.get_text(" ", strip=True)
+        result = {
+            "url": url,
+            "final_url": str(response.url),
+            "http_status": int(response.status_code),
+            "opened": True,
+            "blocked_reason": "",
+            "text": clean_text(page_text, 20000),
+            "cache_hit": False,
+        }
+    except Exception as exc:
+        failed_response = getattr(exc, "response", None) or response
+        status_code = int(getattr(failed_response, "status_code", 0) or 0)
+        result = {
+            "url": url,
+            "final_url": str(getattr(failed_response, "url", "") or ""),
+            "http_status": status_code,
+            "opened": False,
+            "blocked_reason": f"HTTP {status_code}" if status_code else clean_text(exc, 160),
+            "text": "",
+            "cache_hit": False,
+        }
+    if result["opened"]:
+        with _SOURCE_PAGE_CACHE_LOCK:
+            _SOURCE_PAGE_CACHE[url] = result
+    return dict(result)
 
 
 def restore_compressed_checkpoint() -> Path:
@@ -1775,11 +1836,6 @@ def _votes_from_source_pages(
     timeout: float = 8.0,
     open_audit: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
-    try:
-        import httpx
-        from bs4 import BeautifulSoup
-    except Exception:
-        return []
     urls: list[str] = []
     # Search-discovered pages are the freshness candidates, so inspect them
     # before already-known and potentially stale sources.
@@ -1795,50 +1851,12 @@ def _votes_from_source_pages(
         if url in seen:
             continue
         seen.add(url)
-        try:
-            response = httpx.get(
-                url,
-                headers={"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) CMHK-SearchVerifier/1.0"},
-                timeout=timeout,
-                follow_redirects=True,
-            )
-            if open_audit is not None:
-                open_audit.append(
-                    {
-                        "url": url,
-                        "final_url": str(response.url),
-                        "http_status": response.status_code,
-                        "opened": response.is_success,
-                        "blocked_reason": "" if response.is_success else f"HTTP {response.status_code}",
-                    }
-                )
-            response.raise_for_status()
-            content_type = str(response.headers.get("content-type") or "").lower()
-            if "pdf" in content_type or url.lower().split("?", 1)[0].endswith(".pdf"):
-                from io import BytesIO
-                from pypdf import PdfReader
-
-                reader = PdfReader(BytesIO(response.content), strict=False)
-                text = clean_text(
-                    " ".join((page.extract_text() or "") for page in reader.pages),
-                    20000,
-                )
-            else:
-                soup = BeautifulSoup(response.text, "html.parser")
-                text = clean_text(soup.get_text(" ", strip=True), 20000)
-        except Exception as exc:
-            if open_audit is not None and not any(item.get("url") == url for item in open_audit):
-                status_code = getattr(getattr(exc, "response", None), "status_code", 0)
-                open_audit.append(
-                    {
-                        "url": url,
-                        "final_url": str(getattr(getattr(exc, "response", None), "url", "") or ""),
-                        "http_status": int(status_code or 0),
-                        "opened": False,
-                        "blocked_reason": f"HTTP {status_code}" if status_code else clean_text(exc, 160),
-                    }
-                )
+        page = _read_source_page(url, timeout)
+        if open_audit is not None:
+            open_audit.append({key: value for key, value in page.items() if key != "text"})
+        if not page["opened"]:
             continue
+        text = str(page["text"])
         if _candidate_supported_by_raw_text(fact, text):
             vote = _verification_vote(
                 value=fact.value,
@@ -2595,6 +2613,9 @@ def _run_company_research_agent(
     @tool
     def search_latest_official(metric: str) -> dict[str, Any]:
         """使用搜索引擎查找该公司最新官方业绩、IR、交易所或监管披露。"""
+        previous = next((item for item in searches if item.get("metric") == metric), None)
+        if previous is not None:
+            return {**previous, "reused": True}
         selected = next((item for item in facts if item.metric == metric), None)
         query_fact = selected or CandidateFact(
             id=f"{agent_id}-{metric or 'latest'}",
@@ -2707,6 +2728,17 @@ def _run_company_research_agent(
                 selected_urls.append(selected_url)
             if len(selected_urls) >= 8:
                 break
+        previous = next(
+            (
+                item
+                for item in opened
+                if item.get("metric") == metric
+                and item.get("requested_urls") == selected_urls
+            ),
+            None,
+        )
+        if previous is not None:
+            return {**previous, "reused": True}
         selected = next((item for item in facts if item.metric == metric), None)
         query_fact = selected or CandidateFact(
             id=f"{agent_id}-open-{metric or 'latest'}",
@@ -2848,7 +2880,8 @@ def _run_company_research_agent(
                 research_incomplete.append(f"{metric}:fresh_official_open_required")
             elif metric_status == "search_exhausted":
                 exhausted = (
-                    not metric_has_organic_current_result
+                    metric_fresh_opens > 0
+                    or not metric_has_organic_current_result
                     or (metric_open_attempts and not any(attempt.get("opened") for attempt in metric_open_attempts))
                 )
                 if not exhausted:
@@ -2993,7 +3026,11 @@ def _run_company_research_agent(
                 break
         if searches and not completion_accepted:
             completion_forced = True
-            for repair_index in range(6):
+            repair_rounds = max(
+                1,
+                min(4, int(os.environ.get("CMHK_COMPANY_AGENT_REPAIR_ROUNDS") or 2)),
+            )
+            for repair_index in range(repair_rounds):
                 required_open_metrics = re.findall(
                     r"([^\[\],;']+):open_current_official_results",
                     completion_rejection,
@@ -3371,12 +3408,63 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
     ]
     results: list[dict[str, Any]] = []
     expected_metric_plan: dict[str, list[str]] = {}
+    run_id = str(state.get("run_id") or "")
+    progress_path = RUNS_DIR / f"{run_id}_company_agent_progress.json"
+    progress_enabled = run_id.startswith("scheduled_")
+    progress_results: dict[str, dict[str, Any]] = {}
+    if progress_enabled and progress_path.exists():
+        try:
+            progress_payload = json.loads(progress_path.read_text(encoding="utf-8"))
+            progress_results = {
+                str(company): item
+                for company, item in (progress_payload.get("companies") or {}).items()
+                if isinstance(item, dict)
+            }
+        except Exception:
+            progress_results = {}
+
+    def persist_progress() -> None:
+        if progress_enabled:
+            atomic_write_json(
+                progress_path,
+                {
+                    "run_id": run_id,
+                    "updated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
+                    "companies": progress_results,
+                },
+            )
+
+    def reusable_progress(item: dict[str, Any], expected_metrics: list[str]) -> bool:
+        metric_results = item.get("metric_results") or []
+        terminal = {"verified_latest", "not_disclosed", "not_applicable", "search_exhausted"}
+        return bool(
+            item.get("metric_coverage_complete")
+            and item.get("status") in terminal
+            and [metric.get("metric") for metric in metric_results] == expected_metrics
+            and all(metric.get("status") in terminal for metric in metric_results)
+        )
+
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {}
         for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
             fact_entities = _company_fact_entities(company) | {row_entity}
             company_facts = [item for item in candidates if item.company in fact_entities]
             expected_metric_plan[company] = _company_expected_metrics(company, company_facts)
+            cached_result = progress_results.get(company)
+            if cached_result and reusable_progress(cached_result, expected_metric_plan[company]):
+                results.append(cached_result)
+                trace_events.append(
+                    _trace(
+                        state,
+                        "公司研究 Agent",
+                        "resume",
+                        f"{company} 已有完整逐指标终态，本次恢复不重跑。",
+                        output={"company": company, "metrics": expected_metric_plan[company]},
+                        agent_id=f"lead-{run_id}",
+                        role="lead_research",
+                    )
+                )
+                continue
             future = executor.submit(
                 _run_company_research_agent,
                 state,
@@ -3419,6 +3507,9 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
                 result["unresolved_metrics"] = list(expected_metric_plan.get(company, []))
             results.append(result)
             trace_events.extend(child_traces)
+            if progress_enabled:
+                progress_results[company] = result
+                persist_progress()
     order = {company: index for index, company in enumerate(ALL_COMPANY_CURRENT_RESULT_TARGETS)}
     results.sort(key=lambda item: order.get(str(item.get("company") or ""), 999))
     completed = sum(item.get("status") in {"verified_latest", "not_disclosed", "not_applicable", "search_exhausted", "conflict"} for item in results)

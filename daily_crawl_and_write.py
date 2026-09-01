@@ -559,13 +559,49 @@ def append_agent_trace_to_log_sheet(
 
 
 def regenerate_payload_with_log_title(log_sheet_title: str, log_spreadsheet_url: str) -> None:
+    scheduled_rows = [
+        int(item)
+        for item in os.environ.get("CMHK_ROWS", "").split(",")
+        if item.strip().isdigit()
+    ]
+    target_rows = scheduled_rows or list(range(2, 35))
     results = []
-    for row in range(2, 35):
-        result = json.loads((ROOT / "results" / f"row_{row}.json").read_text(encoding="utf-8"))
+    for row in target_rows:
+        result_path = ROOT / "results" / f"row_{row}.json"
+        if not result_path.exists():
+            continue
+        result = json.loads(result_path.read_text(encoding="utf-8"))
         result["log_sheet_title"] = log_sheet_title
         result["log_spreadsheet_url"] = log_spreadsheet_url
         results.append(result)
-    crawl.write_outputs(results)
+    f_values = [[crawl.compact_f_cell(result)] for result in results]
+    ij_values = [
+        [
+            crawl.compact_i_cell(result),
+            crawl.compact_log_cell(result),
+            crawl.compact_j_cell(result),
+        ]
+        for result in results
+    ]
+    # This step only refreshes the Feishu write payload.  The crawler already
+    # wrote the authoritative coverage/run-log/final-audit artifacts for the
+    # exact scheduled rows; calling crawl.write_outputs() here used to replace
+    # them with the legacy 2-34 range and erase rows 47-58 from the audit.
+    (ROOT / "write_payload.json").write_text(
+        json.dumps(
+            {
+                "row_numbers": [int(result["row"]) for result in results],
+                "successful_sources_payload": f_values,
+                "sources_payload": f_values,
+                "results_payload": ij_values,
+                "F2:F34": f_values,
+                "I2:K34": ij_values,
+            },
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
 
 
 def build_log_link_payload(log_spreadsheet_url: str) -> list[list[str]]:
