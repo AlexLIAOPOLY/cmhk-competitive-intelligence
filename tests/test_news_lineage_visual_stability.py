@@ -19,6 +19,12 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
     def test_node_title_reserves_space_for_health_and_open_icon(self):
         self.assertIn("padding-right: 64px", STYLE)
 
+    def test_crawler_diagram_uses_fine_high_contrast_grid_glass(self):
+        self.assertIn(".news-lineage-viewport::before", STYLE)
+        self.assertIn("background-size: 14px 14px, 14px 14px, 70px 70px, 70px 70px", STYLE)
+        self.assertIn("backdrop-filter: blur(18px) saturate(150%)", STYLE)
+        self.assertIn("rgba(126, 224, 244, .13)", STYLE)
+
     def test_quiet_fault_poll_does_not_rebuild_unchanged_news_lineage(self):
         self.assertIn("function newsLineageIncidentSignature(tasks)", SCRIPT)
         self.assertIn("if (newsLineageChanged && document.querySelector", SCRIPT)
@@ -28,7 +34,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertNotIn("transition: transform .18s ease", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=141', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=142', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=168', INDEX)
 
 

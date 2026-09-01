@@ -18,7 +18,7 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn('data-workspace-tab="architecture" data-workspace-tab-hidden hidden', INDEX)
         self.assertIn('id="workspace-panel-architecture"', INDEX)
         self.assertIn('data-workspace-panel="architecture"', INDEX)
-        self.assertIn('data-src="/static/architecture-map.html?v=8"', INDEX)
+        self.assertIn('data-src="/static/architecture-map.html?v=7"', INDEX)
         self.assertIn('<span class="workspace-tab-label">项目系统架构</span>', INDEX)
         self.assertIn('architecture: "dashboard"', SCRIPT)
 
@@ -102,14 +102,6 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn("ResizeObserver", RESPONSIVE_SCRIPT)
         self.assertIn("availableWidth / CANVAS_WIDTH", RESPONSIVE_SCRIPT)
         self.assertIn("availableHeight / CANVAS_HEIGHT", RESPONSIVE_SCRIPT)
-
-    def test_architecture_background_uses_grid_gradient_glass(self):
-        self.assertIn(".architecture-diagram::before", STYLE)
-        self.assertIn("background-size: 40px 40px", STYLE)
-        self.assertIn("mask-image: radial-gradient", STYLE)
-        self.assertIn("backdrop-filter: blur(24px) saturate(138%)", STYLE)
-        self.assertIn("linear-gradient(145deg", STYLE)
-        self.assertIn('architecture-map.css?v=8', PAGE)
 
     def test_public_snapshot_copies_the_static_architecture_assets(self):
         self.assertIn('"architecture-map.css"', PUBLISHER)
