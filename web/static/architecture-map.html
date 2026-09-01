@@ -1,137 +1,119 @@
 <!doctype html>
-<html lang="zh-Hant">
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LLM 與 Agent 全流程架構</title>
-    <link rel="stylesheet" href="./architecture-map.css?v=1" />
+    <title>LLM 与 Agent 全流程架构</title>
+    <link rel="stylesheet" href="./architecture-map.css?v=2" />
   </head>
   <body>
     <main class="architecture-page">
       <header class="architecture-heading">
-        <div>
-          <p>CODE-MAPPED ARCHITECTURE</p>
-          <h1>LLM 與 Agent 全流程架構</h1>
-          <span>依據目前程式碼映射頁面、確定性工作流、專責 Agent、模型路由及受管制輸出</span>
-        </div>
-        <aside class="architecture-legend" aria-label="圖例">
-          <span><i data-tone="page"></i>頁面入口</span>
-          <span><i data-tone="flow"></i>確定性流程</span>
-          <span><i data-tone="agent"></i>Agent</span>
-          <span><i data-tone="llm"></i>LLM 路由</span>
-          <span><i data-tone="gate"></i>人工／品質門禁</span>
+        <div><h1>LLM 与 Agent 全流程架构</h1><p>从页面入口到流程编排、Agent 协同、模型调用与受控发布的完整关系</p></div>
+        <aside class="architecture-legend" aria-label="图例">
+          <span><i data-tone="page"></i>页面入口</span><span><i data-tone="flow"></i>流程编排</span>
+          <span><i data-tone="agent"></i>Agent</span><span><i data-tone="llm"></i>LLM 路由</span>
+          <span><i data-tone="gate"></i>质量与人工门禁</span>
         </aside>
       </header>
 
-      <section class="architecture-stage" aria-label="五層架構">
-        <div><b>01</b><span>頁面入口</span><small>使用者與排程觸發</small></div>
-        <div><b>02</b><span>流程編排</span><small>固定步驟與狀態管理</small></div>
-        <div><b>03</b><span>專責 Agent</span><small>判斷、工具與迭代</small></div>
-        <div><b>04</b><span>共享模型層</span><small>模型、Key 與工具路由</small></div>
-        <div><b>05</b><span>受管制輸出</span><small>證據、回讀與發布</small></div>
+      <section class="architecture-diagram" aria-label="系统节点与数据流架构图">
+        <div class="diagram-canvas">
+          <svg class="architecture-links" viewBox="0 0 1600 900" aria-hidden="true">
+            <defs>
+              <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-violet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+            </defs>
+            <g class="edge-entry">
+              <path d="M258 163H308" marker-end="url(#arrow-cyan)"/><path d="M258 286H308" marker-end="url(#arrow-cyan)"/>
+              <path d="M258 409H308" marker-end="url(#arrow-cyan)"/><path d="M258 532H308" marker-end="url(#arrow-cyan)"/>
+              <path d="M258 655H308" marker-end="url(#arrow-cyan)"/>
+            </g>
+            <g class="edge-domain">
+              <path d="M568 163C600 163 594 208 634 208" marker-end="url(#arrow-green)"/>
+              <path d="M568 286C600 286 594 310 634 310" marker-end="url(#arrow-green)"/>
+              <path d="M568 409C600 409 594 412 634 412" marker-end="url(#arrow-green)"/>
+              <path d="M568 532C600 532 594 514 634 514" marker-end="url(#arrow-green)"/>
+              <path d="M568 655C600 655 594 616 634 616" marker-end="url(#arrow-green)"/>
+            </g>
+            <g class="edge-agent">
+              <path d="M786 208C816 208 818 342 838 370" marker-end="url(#arrow-green)"/>
+              <path d="M786 310C816 310 818 370 838 392" marker-end="url(#arrow-green)"/>
+              <path d="M786 412H838" marker-end="url(#arrow-green)"/>
+              <path d="M786 514C816 514 818 454 838 432" marker-end="url(#arrow-green)"/>
+              <path d="M786 616C816 616 818 482 838 454" marker-end="url(#arrow-green)"/>
+              <path d="M1014 412H1118" marker-end="url(#arrow-violet)"/>
+            </g>
+            <g class="edge-model">
+              <path d="M1358 433C1382 433 1370 163 1396 163" marker-end="url(#arrow-violet)"/>
+              <path d="M1358 433C1382 433 1370 286 1396 286" marker-end="url(#arrow-violet)"/>
+              <path d="M1358 433H1396" marker-end="url(#arrow-violet)"/>
+              <path d="M1358 433C1382 433 1370 532 1396 532" marker-end="url(#arrow-violet)"/>
+              <path d="M1358 433C1382 433 1370 655 1396 655" marker-end="url(#arrow-violet)"/>
+            </g>
+            <g class="edge-feedback">
+              <path d="M1492 713V840H1358" marker-end="url(#arrow-amber)"/>
+              <path d="M834 840H568V732" marker-end="url(#arrow-amber)"/>
+              <path d="M1088 840H1492" marker-end="url(#arrow-amber)"/>
+              <path d="M834 840H939V490" marker-end="url(#arrow-amber)"/>
+            </g>
+          </svg>
+
+          <section class="layer-box entry-layer" aria-labelledby="entry-title">
+            <header><span>01</span><div><h2 id="entry-title">页面入口</h2><p>用户、排程与事件触发</p></div></header>
+            <div class="architecture-node"><em>情报采集</em><b>新闻采集 · 新闻审核</b><small>定时扫描 / 人工复核</small></div>
+            <div class="architecture-node"><em>数据研判</em><b>战略总览 · 竞对分析</b><small>监控体系 / 情报图谱</small></div>
+            <div class="architecture-node"><em>报告生产</em><b>战略周报 · 业绩摘要</b><small>订阅与推送</small></div>
+            <div class="architecture-node"><em>智能问答</em><b>小竞AI</b><small>文字 / 图片 / 语音 / 对话</small></div>
+            <div class="architecture-node"><em>生产运维</em><b>任务日志 · 报警处置</b><small>团队管理 / 团队足迹</small></div>
+          </section>
+
+          <section class="layer-box orchestration-layer" aria-labelledby="flow-title">
+            <header><span>02</span><div><h2 id="flow-title">流程编排</h2><p>确定性步骤与状态管理</p></div></header>
+            <div class="architecture-node"><b>来源监测与定时爬虫</b><small>查询 → 覆盖盘点 → 时窗门禁</small></div>
+            <div class="architecture-node"><b>LangGraph 数据治理</b><small>采集 → 抽取 → 验证 → 缺口规划</small></div>
+            <div class="architecture-node"><b>报告生产工作流</b><small>事实筛选 → 编写 → 质量复核</small></div>
+            <div class="architecture-node"><b>可续传 SSE 会话</b><small>上下文 → 权限 → 审批 → 恢复</small></div>
+            <div class="architecture-node"><b>Scheduler + Run Registry</b><small>检测 → 合并 → 恢复 → 更新</small></div>
+          </section>
+
+          <section class="layer-box agent-layer" aria-labelledby="agent-title">
+            <header><span>03</span><div><h2 id="agent-title">Agent 协同中枢</h2><p>规划、工具调用、观察与复核</p></div></header>
+            <div class="agent-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="architecture-node agent-satellite agent-news"><em>新闻 Agents</em><b>Agentic Search Planner</b><small>AI 文案 / 语义去重 / 新闻选材 Agent</small></div>
+            <div class="architecture-node agent-satellite agent-research"><em>研究 Agents</em><b>公司研究 Agents + 缺口 Supervisor</b><small>跨库洞察 / 竞对洞察</small></div>
+            <div class="architecture-node agent-satellite agent-report"><em>报告 Agents</em><b>Weekly Writer</b><small>Quality Reviewer / Performance Editor</small></div>
+            <div class="architecture-node agent-satellite agent-assistant"><em>小竞AI</em><b>ReAct Agent</b><small>Skills / RAG / 数据集 / 图表 / 预测</small></div>
+            <div class="architecture-node agent-satellite agent-ops"><em>运维 Agents</em><b>AI 故障诊断与影响线路复核</b><small>结案摘要</small></div>
+            <div class="architecture-node agent-core"><span class="core-signal"></span><em>AGENT GATEWAY</em><b>统一任务与工具路由</b><small>边界检查 · 权限 · 审批 · 运行足迹</small></div>
+          </section>
+
+          <section class="layer-box model-layer" aria-labelledby="model-title">
+            <header><span>04</span><div><h2 id="model-title">共享模型路由</h2><p>任务匹配、Key 轮换与后备</p></div></header>
+            <div class="architecture-node model-router"><em>主模型</em><b>DeepSeek-V4-Pro</b><small>结构化生成与工具判断</small></div>
+            <div class="route-line"><i></i><span>失败切换 / 配额保护</span><i></i></div>
+            <div class="architecture-node"><em>后备模型</em><b>GLM</b><b>Qwen3-30B-A3B-Instruct-2507</b></div>
+            <div class="architecture-node multimodal"><em>多模态路由</em><b>Kimi-K2.5 · 图像</b><b>Qwen3ASR · 语音</b></div>
+          </section>
+
+          <section class="layer-box output-layer" aria-labelledby="output-title">
+            <header><span>05</span><div><h2 id="output-title">受控输出</h2><p>证据、回读与发布</p></div></header>
+            <div class="architecture-node"><b>飞书新闻审核表</b><small>战略快讯 / 周报候选</small></div>
+            <div class="architecture-node"><b>受管数据与洞察</b><small>看板 / 图谱 / 只读快照</small></div>
+            <div class="architecture-node"><b>Word · PDF · 音频</b><small>报告库 / 飞书订阅</small></div>
+            <div class="architecture-node"><b>回答 · 图表 · 文件</b><small>引用 / 追问 / Agent Run</small></div>
+            <div class="architecture-node output-gate"><b>报警闭环与错误台账</b><small>人工处置 / 恢复证据 / 风险</small></div>
+          </section>
+
+          <section class="layer-box governance-layer" aria-labelledby="governance-title">
+            <header><span>06</span><div><h2 id="governance-title">横向治理与反馈</h2><p>证据链 · 数据质量 · 人工门禁 · 飞书回读 · 操作审计 · 权限控制</p></div></header>
+            <div class="governance-status"><i></i><span>输出不直接发布</span><i></i><span>失败保留确定性结果</span><i></i><span>反馈持续校正 Agent</span></div>
+          </section>
+        </div>
       </section>
-
-      <section class="architecture-lanes" aria-label="頁面與 AI 流程關係">
-        <article class="architecture-lane" data-lane="news">
-          <header><span>情報採集</span><strong>新聞發現與審核</strong><small>候選進入人工審核前，先完成補搜、文案及偏好判斷</small></header>
-          <div class="architecture-cell" data-kind="page">
-            <em>頁面</em><b>新聞採集</b><b>新聞審核</b><small>定時掃描／人工回讀</small>
-          </div>
-          <div class="architecture-cell" data-kind="flow">
-            <em>固定流程</em><b>來源監測＋定時爬蟲</b><small>固定查詢 → 覆蓋盤點 → 時窗門禁</small>
-          </div>
-          <div class="architecture-cell" data-kind="agent">
-            <em>Agents</em><b>Agentic Search Planner</b><b>AI 文案與語義去重</b><b>新聞選材 Agent</b>
-          </div>
-          <div class="architecture-cell" data-kind="llm">
-            <em>模型路由</em><b>DeepSeek-V4-Pro</b><small>可按設定路由模型／Key；失敗保留確定性補搜</small>
-          </div>
-          <div class="architecture-cell" data-kind="output">
-            <em>輸出</em><b>飛書新聞審核表</b><b>戰略快訊／周報候選</b><small>人工作者身份、內容與回讀驗證</small>
-          </div>
-        </article>
-
-        <article class="architecture-lane" data-lane="intelligence">
-          <header><span>數據研判</span><strong>競對數據與戰略洞察</strong><small>先治理可驗證事實，再讓模型在口徑及證據門禁內研判</small></header>
-          <div class="architecture-cell" data-kind="page">
-            <em>頁面</em><b>戰略總覽／監控體系</b><b>競對分析／情報圖譜</b>
-          </div>
-          <div class="architecture-cell" data-kind="flow">
-            <em>LangGraph</em><b>擷取 → 分類 → 抽取</b><b>實體驗證 → 品質審核</b><small>衝突處理 → 搜尋核驗 → 缺口規劃 → 發布</small>
-          </div>
-          <div class="architecture-cell" data-kind="agent">
-            <em>Agents</em><b>公司研究 Agents</b><b>缺口 Supervisor</b><b>跨庫洞察／競對洞察</b>
-          </div>
-          <div class="architecture-cell" data-kind="llm">
-            <em>模型路由</em><b>DeepSeek-V4-Pro</b><small>GLM → Qwen3-30B-A3B-Instruct-2507 後備</small>
-          </div>
-          <div class="architecture-cell" data-kind="output">
-            <em>受管資料</em><b>本地／國際／內地／雲</b><b>證據快照與不可比邊界</b><small>API → 看板 → GitHub Pages 只讀快照</small>
-          </div>
-        </article>
-
-        <article class="architecture-lane" data-lane="reports">
-          <header><span>報告產製</span><strong>周報與業績摘要</strong><small>模型負責編輯與複核，數字、來源和成品仍通過獨立品質門禁</small></header>
-          <div class="architecture-cell" data-kind="page">
-            <em>頁面</em><b>戰略周報</b><b>業績摘要</b><b>訂閱與推送</b>
-          </div>
-          <div class="architecture-cell" data-kind="flow">
-            <em>工作流</em><b>審核新聞＋已驗證事實</b><small>期間篩選 → 來源整理 → 成品驗證</small>
-          </div>
-          <div class="architecture-cell" data-kind="agent">
-            <em>Agents</em><b>Weekly Writer</b><b>Quality Reviewer</b><b>Performance Editor</b>
-          </div>
-          <div class="architecture-cell" data-kind="llm">
-            <em>模型路由</em><b>共用內部模型網關</b><small>結構化輸出、Key 輪換、失敗時保留有限版</small>
-          </div>
-          <div class="architecture-cell" data-kind="output">
-            <em>輸出</em><b>Word／PDF／音頻摘要</b><b>報告庫／飛書訂閱</b><small>生成紀錄、內容品質與發送回讀</small>
-          </div>
-        </article>
-
-        <article class="architecture-lane" data-lane="assistant">
-          <header><span>智能工具</span><strong>小競AI 工具循環</strong><small>單一 ReAct Agent 自主選擇 Skill、資料集與工具；有副作用操作另行審批</small></header>
-          <div class="architecture-cell" data-kind="page">
-            <em>頁面</em><b>小競AI</b><small>文字／圖片／語音／歷史對話</small>
-          </div>
-          <div class="architecture-cell" data-kind="flow">
-            <em>會話層</em><b>可續傳 SSE Session</b><small>上下文 → 權限 → 審批 → 事件序列 → 恢復</small>
-          </div>
-          <div class="architecture-cell" data-kind="agent">
-            <em>ReAct Agent</em><b>規劃 → 工具 → 觀察 → 回答</b><small>RAG／Skills／資料集／記憶／搜尋／圖表／預測／任務</small>
-          </div>
-          <div class="architecture-cell" data-kind="llm">
-            <em>模型路由</em><b>設定模型＋Key 輪換</b><small>Kimi-K2.5 圖像路由 · Qwen3ASR 語音路由</small>
-          </div>
-          <div class="architecture-cell" data-kind="output">
-            <em>回答</em><b>Markdown＋文內引用</b><b>圖表／檔案／三個追問</b><small>完整答案、工具足跡與 Agent Run 稽核</small>
-          </div>
-        </article>
-
-        <article class="architecture-lane" data-lane="operations">
-          <header><span>生產運維</span><strong>任務監控與告警閉環</strong><small>確定性檢測先建立故障證據，LLM 只在候選線路與證據邊界內分析</small></header>
-          <div class="architecture-cell" data-kind="page">
-            <em>頁面</em><b>任務日誌</b><b>報警處置</b><small>團隊管理／團隊足跡提供權限與操作稽核</small>
-          </div>
-          <div class="architecture-cell" data-kind="flow">
-            <em>監控流程</em><b>Scheduler＋Run Registry</b><small>健康檢測 → 事件合併 → 恢復證據 → 狀態更新</small>
-          </div>
-          <div class="architecture-cell" data-kind="agent">
-            <em>Agents</em><b>AI 故障診斷</b><b>影響線路複核</b><b>結案摘要</b>
-          </div>
-          <div class="architecture-cell" data-kind="llm">
-            <em>模型路由</em><b>設定模型</b><small>救援模型 → GLM → Qwen3-30B-A3B-Instruct-2507</small>
-          </div>
-          <div class="architecture-cell" data-kind="gate">
-            <em>閉環門禁</em><b>飛書原卡更新與回讀</b><b>錯誤台帳／操作足跡</b><small>人工處理、恢復證據、剩餘風險</small>
-          </div>
-        </article>
-      </section>
-
-      <footer class="architecture-footer">
-        <p><strong>靜態關係圖</strong> 動畫只表示既定流程方向，不代表目前有任務正在執行。</p>
-        <div><span>確定性優先</span><span>Agent 自主判斷</span><span>LLM 不直接發布</span><span>人工與回讀閉環</span></div>
-      </footer>
+      <footer class="architecture-footer"><strong>静态架构图</strong><span>动画仅表示流程方向，不代表当前有任务正在运行。</span></footer>
     </main>
   </body>
 </html>

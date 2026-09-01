@@ -307,7 +307,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("小竞AI", products)
         self.assertNotIn("AI问数", INDEX)
         self.assertNotIn("小竞AI", operations)
-        self.assertIn("AI 流程架構", operations)
+        self.assertIn("AI 流程架构", operations)
 
     def test_navigation_uses_semantic_icons_instead_of_numeric_badges(self):
         navigation = INDEX[INDEX.index('id="workspace-group-overview"'):INDEX.index('id="workspace-panel-dashboard"')]
