@@ -8,6 +8,7 @@ from unittest.mock import patch
 from data_curation.schemas import CandidateFact, EvidenceTask
 from data_curation.workflow import (
     _votes_from_source_pages,
+    _run_company_research_agent,
     audit_quality,
     build_graph,
     extract_facts,
@@ -32,6 +33,63 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    def test_company_agent_controls_its_own_search_and_open_sequence(self) -> None:
+        class ToolCallingCompanyAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_company_evidence", "args": {}}],
+                    2: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    3: [{
+                        "id": "open",
+                        "name": "open_official_pages",
+                        "args": {"metric": "收入", "urls": ["https://www.sec.gov/example"]},
+                    }],
+                    4: [{
+                        "id": "complete",
+                        "name": "complete_company_research",
+                        "args": {"status": "verified_latest", "rationale": "已回读最新官方原文"},
+                    }],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        fact = CandidateFact(
+            id="aws-revenue",
+            company="AWS",
+            metric="收入",
+            row_ref="row_50",
+            value="AWS revenue 42,232 million USD",
+            sources=["https://www.sec.gov/example"],
+            decision="accepted",
+        )
+        with (
+            patch("data_curation.workflow._build_supervisor_model", return_value=ToolCallingCompanyAgent()),
+            patch(
+                "data_curation.workflow._public_web_search",
+                return_value=([{"title": "AWS results", "url": "https://www.sec.gov/example", "snippet": "AWS revenue"}], "test"),
+            ),
+            patch(
+                "data_curation.workflow._votes_from_source_pages",
+                return_value=[{"url": "https://www.sec.gov/example", "value": "42,232 million USD"}],
+            ),
+        ):
+            result, trace = _run_company_research_agent(
+                {"run_id": "company-agent-test"}, "AWS", 50, "AWS", [fact]
+            )
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertEqual(result["search_count"], 1)
+        self.assertEqual(result["evidence_count"], 1)
+        self.assertEqual(
+            [item.get("tool") for item in trace if item.get("phase") == "tool_call"],
+            ["inspect_company_evidence", "search_latest_official", "open_official_pages", "complete_company_research"],
+        )
+
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
             def __init__(self) -> None:
