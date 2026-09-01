@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+import json
+import tempfile
 import unittest
 import time
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 
+import data_curation.workflow as workflow
 from data_curation.schemas import CandidateFact, EvidenceTask
 from data_curation.workflow import (
     _votes_from_source_pages,
@@ -234,22 +238,43 @@ class DataCurationWorkflowTests(unittest.TestCase):
             )
 
     def test_publish_blocks_unresolved_company_agents(self) -> None:
-        with self.assertRaisesRegex(RuntimeError, "尚有未解决主体.*AWS"):
-            publish_results(
-                {
-                    "search_verify_online": True,
-                    "search_verification": {"online_coverage_complete": True},
-                    "company_agent_summary": {
-                        "required": True,
-                        "expected": 36,
-                        "completed": 36,
-                        "coverage_complete": True,
-                        "publish_ready": False,
-                        "unresolved_companies": ["AWS"],
-                    },
-                    "candidates": [],
-                }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            data_dir = Path(temp_dir) / "curation_data"
+            runs_dir = data_dir / "runs"
+            state = {
+                "run_id": "blocked-company-run",
+                "started_at": "2026-09-01T09:00:00+08:00",
+                "search_verify_online": True,
+                "search_verification": {"online_coverage_complete": True},
+                "company_agent_summary": {
+                    "required": True,
+                    "expected": 36,
+                    "completed": 36,
+                    "coverage_complete": True,
+                    "publish_ready": False,
+                    "unresolved_companies": ["AWS"],
+                },
+                "company_agent_results": [{"company": "AWS", "status": "conflict"}],
+                "candidates": [],
+                "agent_trace": [],
+            }
+            with (
+                patch.object(workflow, "DATA_DIR", data_dir),
+                patch.object(workflow, "RUNS_DIR", runs_dir),
+                self.assertRaisesRegex(RuntimeError, "尚有未解决主体.*AWS"),
+            ):
+                publish_results(state)
+
+            summary = json.loads((runs_dir / "blocked-company-run.json").read_text(encoding="utf-8"))
+            reports = json.loads(
+                (runs_dir / "blocked-company-run_company_agent_results.json").read_text(encoding="utf-8")
             )
+            trace = (runs_dir / "blocked-company-run_agent_trace.jsonl").read_text(encoding="utf-8")
+
+        self.assertTrue(summary["extra"]["publication_blocked"])
+        self.assertEqual(summary["extra"]["overall_status"], "partial")
+        self.assertEqual(reports, [{"company": "AWS", "status": "conflict"}])
+        self.assertIn("发布阻断", trace)
 
     def test_run_workflow_resumes_same_thread_from_checkpoint(self) -> None:
         graph = unittest.mock.Mock()

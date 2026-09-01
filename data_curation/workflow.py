@@ -3171,6 +3171,55 @@ def recrawl_gaps(state: CurationState) -> dict[str, Any]:
     }
 
 
+def _persist_blocked_company_agent_audit(
+    state: CurationState,
+    company_agent_summary: dict[str, Any],
+    reason: str,
+) -> None:
+    """Keep failed multi-agent evidence without mutating the published fact layer."""
+    candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
+    completed_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    blocked_event = _event("发布阻断", reason)
+    summary = RunSummary(
+        run_id=state["run_id"],
+        started_at=state["started_at"],
+        completed_at=completed_at,
+        tasks=len(state.get("tasks", [])),
+        accepted=sum(item.decision == "accepted" for item in candidates),
+        rejected=sum(item.decision == "rejected" for item in candidates),
+        review=sum(item.decision == "review" for item in candidates),
+        gaps=len(state.get("gaps", [])),
+        recrawl_rows=state.get("executed_recrawl_rows", []),
+        recrawl_performed=bool(state.get("recrawl_performed")),
+        online_ai=bool((state.get("summary") or {}).get("onlineAiUsed")),
+        node_events=[*state.get("node_events", []), blocked_event],
+    )
+    summary.extra["search_verification"] = state.get("search_verification", {})
+    summary.extra["company_agent_summary"] = company_agent_summary
+    summary.extra["overall_status"] = "partial"
+    summary.extra["publication_blocked"] = True
+    summary.extra["publication_blocked_reason"] = reason
+    blocked_trace = [
+        *state.get("agent_trace", []),
+        _trace(
+            state,
+            "发布阻断",
+            "decision",
+            reason,
+            status="error",
+            decision="block_publish",
+            output={"company_agent_summary": company_agent_summary},
+        ),
+    ]
+    atomic_write_json(DATA_DIR / "company_agent_results.json", state.get("company_agent_results", []))
+    atomic_write_json(
+        RUNS_DIR / f"{state['run_id']}_company_agent_results.json",
+        state.get("company_agent_results", []),
+    )
+    atomic_write_json(RUNS_DIR / f"{state['run_id']}.json", summary.model_dump())
+    atomic_write_jsonl(RUNS_DIR / f"{state['run_id']}_agent_trace.jsonl", blocked_trace)
+
+
 def publish_results(state: CurationState) -> dict[str, Any]:
     search_verification = state.get("search_verification", {})
     if (
@@ -3188,10 +3237,13 @@ def publish_results(state: CurationState) -> dict[str, Any]:
         )
     if company_agent_summary.get("required") and not company_agent_summary.get("publish_ready"):
         unresolved = company_agent_summary.get("unresolved_companies") or []
-        raise RuntimeError(
+        reason = (
             "公司研究 Agent 尚有未解决主体，禁止写入发布层："
             + "、".join(str(company) for company in unresolved)
         )
+        if not state.get("dry_run"):
+            _persist_blocked_company_agent_audit(state, company_agent_summary, reason)
+        raise RuntimeError(reason)
     candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
     for item in candidates:
         if item.decision != "accepted":
