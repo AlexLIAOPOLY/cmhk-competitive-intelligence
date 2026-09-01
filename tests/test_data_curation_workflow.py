@@ -72,15 +72,21 @@ class DataCurationWorkflowTests(unittest.TestCase):
             sources=["https://www.sec.gov/example"],
             decision="accepted",
         )
+        def opened_current_source(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            self.assertEqual(_fact.sources, [])
+            self.assertEqual(extra_urls, ["https://www.sec.gov/example"])
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return [{"url": extra_urls[0], "value": "42,232 million USD"}]
+
         with (
             patch("data_curation.workflow._build_supervisor_model", return_value=ToolCallingCompanyAgent()),
             patch(
                 "data_curation.workflow._public_web_search",
-                return_value=([{"title": "AWS results", "url": "https://www.sec.gov/example", "snippet": "AWS revenue"}], "test"),
+                return_value=([{"title": "AWS 2026 results", "url": "https://www.sec.gov/example", "snippet": "AWS revenue"}], "test"),
             ),
             patch(
                 "data_curation.workflow._votes_from_source_pages",
-                return_value=[{"url": "https://www.sec.gov/example", "value": "42,232 million USD"}],
+                side_effect=opened_current_source,
             ),
         ):
             result, trace = _run_company_research_agent(
@@ -89,10 +95,64 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["status"], "verified_latest")
         self.assertEqual(result["search_count"], 1)
         self.assertEqual(result["evidence_count"], 1)
+        self.assertEqual(result["fresh_official_open_count"], 1)
         self.assertEqual(
             [item.get("tool") for item in trace if item.get("phase") == "tool_call"],
             ["inspect_company_evidence", "search_latest_official", "open_official_pages", "complete_company_research"],
         )
+
+    def test_company_agent_does_not_count_fixed_old_sources_as_latest_evidence(self) -> None:
+        class ToolCallingCompanyAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_company_evidence", "args": {}}],
+                    2: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    3: [{
+                        "id": "open",
+                        "name": "open_official_pages",
+                        "args": {"metric": "收入", "urls": ["https://www.sec.gov/old-report"]},
+                    }],
+                    4: [{
+                        "id": "complete",
+                        "name": "complete_company_research",
+                        "args": {"status": "verified_latest", "rationale": "沿用旧来源"},
+                    }],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        fact = CandidateFact(
+            id="aws-old",
+            company="AWS",
+            metric="收入",
+            value="old value",
+            sources=["https://www.sec.gov/old-report"],
+            decision="accepted",
+        )
+        with (
+            patch("data_curation.workflow._build_supervisor_model", return_value=ToolCallingCompanyAgent()),
+            patch(
+                "data_curation.workflow._public_web_search",
+                return_value=([{
+                    "title": "AWS results 2024",
+                    "url": "https://www.sec.gov/old-report",
+                    "snippet": "old annual report",
+                }], "test"),
+            ),
+            patch("data_curation.workflow._votes_from_source_pages", return_value=[]),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-old-source"}, "AWS", 50, "AWS", [fact]
+            )
+        self.assertEqual(result["status"], "conflict")
+        self.assertEqual(result["evidence_count"], 0)
+        self.assertEqual(result["fresh_official_open_count"], 0)
 
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:

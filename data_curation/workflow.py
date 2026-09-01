@@ -2389,6 +2389,53 @@ def _company_agent_group(company: str) -> str:
     return "international"
 
 
+def _company_research_profile(company: str) -> dict[str, Any]:
+    """Return the governed aliases and official hosts for one research agent."""
+    from executive_intelligence_pipeline import NEWS_ENTITY_SOURCES
+
+    for _group, entity, aliases, source_urls in NEWS_ENTITY_SOURCES:
+        if entity != company:
+            continue
+        hosts = list(
+            dict.fromkeys(
+                urlparse(str(url)).netloc.lower().removeprefix("www.")
+                for url in source_urls
+                if str(url).startswith(("http://", "https://"))
+            )
+        )
+        return {
+            "aliases": list(dict.fromkeys([company, *aliases])),
+            "official_hosts": hosts,
+            "seed_urls": list(source_urls),
+        }
+    return {"aliases": [company], "official_hosts": [], "seed_urls": []}
+
+
+def _host_matches_governed_official(url: str, official_hosts: list[str]) -> bool:
+    host = urlparse(str(url)).netloc.lower().removeprefix("www.")
+    return any(host == expected or host.endswith(f".{expected}") for expected in official_hosts)
+
+
+def _search_result_is_current(result: dict[str, Any], *, current_year: int) -> bool:
+    text = clean_text(
+        f"{result.get('title', '')} {result.get('snippet', '')} {result.get('url', '')}",
+        1000,
+    )
+    if str(current_year) in text:
+        return True
+    years = {int(value) for value in re.findall(r"\b20\d{2}\b", text)}
+    if years:
+        return max(years) >= current_year
+    return bool(
+        re.search(
+            r"latest|quarterly.results|financial.results|earnings|interim|"
+            r"ir.library|investor.relations|reports.presentations",
+            text,
+            re.IGNORECASE,
+        )
+    )
+
+
 def _run_company_research_agent(
     state: CurationState,
     company: str,
@@ -2416,6 +2463,8 @@ def _run_company_research_agent(
     searches: list[dict[str, Any]] = []
     opened: list[dict[str, Any]] = []
     final: dict[str, Any] = {}
+    research_profile = _company_research_profile(company)
+    current_year = datetime.now().year
 
     @tool
     def inspect_company_evidence() -> dict[str, Any]:
@@ -2448,7 +2497,40 @@ def _run_company_research_agent(
         )
         query = _fact_search_query(query_fact)
         results, provider = _public_web_search(query, limit=8, timeout=12.0)
-        record = {"metric": metric, "query": query, "provider": provider, "results": results}
+        official_results = [
+            item
+            for item in results
+            if _host_matches_governed_official(item.get("url", ""), research_profile["official_hosts"])
+            and _search_result_is_current(item, current_year=current_year)
+        ]
+        if not official_results and research_profile["official_hosts"]:
+            host = research_profile["official_hosts"][0]
+            aliases = " OR ".join(f'"{item}"' for item in research_profile["aliases"][:3])
+            targeted_query = clean_text(
+                f"site:{host} ({aliases}) {metric or 'financial results'} {current_year} latest results",
+                260,
+            )
+            targeted_results, targeted_provider = _public_web_search(
+                targeted_query,
+                limit=8,
+                timeout=12.0,
+            )
+            provider = f"{provider}+{targeted_provider}"
+            results.extend(item for item in targeted_results if item.get("url") not in {r.get("url") for r in results})
+            official_results = [
+                item
+                for item in results
+                if _host_matches_governed_official(item.get("url", ""), research_profile["official_hosts"])
+                and _search_result_is_current(item, current_year=current_year)
+            ]
+        record = {
+            "metric": metric,
+            "query": query,
+            "provider": provider,
+            "results": results,
+            "current_official_results": official_results,
+            "official_hosts": research_profile["official_hosts"],
+        }
         searches.append(record)
         return record
 
@@ -2458,7 +2540,7 @@ def _run_company_research_agent(
         discovered = {
             str(item.get("url") or "")
             for search in searches
-            for item in search.get("results", [])
+            for item in search.get("current_official_results", [])
         }
         selected_urls = [url for url in dict.fromkeys(urls) if url in discovered][:8]
         selected = next((item for item in facts if item.metric == metric), None)
@@ -2471,7 +2553,7 @@ def _run_company_research_agent(
         )
         open_attempts: list[dict[str, Any]] = []
         votes = _votes_from_source_pages(
-            query_fact,
+            query_fact.model_copy(update={"sources": []}),
             extra_urls=selected_urls,
             timeout=15.0,
             open_audit=open_attempts,
@@ -2482,6 +2564,7 @@ def _run_company_research_agent(
             "opened_evidence": votes,
             "opened_evidence_count": len(votes),
             "open_attempts": open_attempts,
+            "fresh_official_open_count": sum(bool(item.get("opened")) for item in open_attempts),
             "note": "HTTP 403 只属于原文打开失败，不代表搜索失败。",
         }
         opened.append(result)
@@ -2598,11 +2681,20 @@ def _run_company_research_agent(
         )
     )
     evidence_count = sum(len(item.get("opened_evidence", [])) for item in opened)
-    if final.get("status") in {"verified_latest", "not_disclosed"} and evidence_count == 0:
+    fresh_official_open_count = sum(int(item.get("fresh_official_open_count") or 0) for item in opened)
+    if final.get("status") == "verified_latest" and (evidence_count == 0 or fresh_official_open_count == 0):
         final = {
             "status": "conflict",
             "rationale": (
-                "Agent 声称已核验或未披露，但没有成功打开并回读当期官方原文，"
+                "Agent 声称已核验最新值，但没有成功打开本次搜索发现的当期官方原文并提取指标证据，"
+                "确定性证据门禁已将其改为冲突。"
+            ),
+        }
+    if final.get("status") == "not_disclosed" and fresh_official_open_count == 0:
+        final = {
+            "status": "conflict",
+            "rationale": (
+                "Agent 声称当期未披露，但没有成功打开本次搜索发现的当期官方原文，"
                 "确定性证据门禁已将其改为冲突。"
             ),
         }
@@ -2631,6 +2723,8 @@ def _run_company_research_agent(
             for attempt in item.get("open_attempts", [])
         ][:20],
         "evidence_count": evidence_count,
+        "fresh_official_open_count": fresh_official_open_count,
+        "official_hosts": research_profile["official_hosts"],
         "evidence_urls": evidence_urls[:12],
         "queries": [item.get("query", "") for item in searches[:8]],
         "metrics": list(dict.fromkeys(item.metric for item in facts))[:20],
