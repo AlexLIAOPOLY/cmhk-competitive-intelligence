@@ -248,7 +248,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=321"', html)
+        self.assertIn('src="/static/app.js?v=322"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -314,7 +314,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('模型本次未返回有效内容，已安全保留当前版本，请点击重试', app)
         self.assertIn('Expecting value|JSON|line \\d+ column \\d+|char \\d+', app)
         self.assertNotIn('insightRefreshState.delete(key);\n        const latestDomain = domainById(domainId);\n        if (latestDomain) replaceDomainCard(latestDomain);\n      }, 5000);', app)
-        self.assertIn('src="/static/app.js?v=321"', html)
+        self.assertIn('src="/static/app.js?v=322"', html)
         self.assertIn('.ai-insight-label.is-loading', leadership_styles)
         self.assertIn('white-space: nowrap !important;', leadership_styles)
         self.assertIn('overflow-wrap: normal;', leadership_styles)
@@ -719,6 +719,7 @@ class ReportFileNameTests(unittest.TestCase):
                 "task_kind": "strategic-news",
                 "trigger": "战略新闻定时爬虫",
                 "scope": slot,
+                "run_status": "completed",
                 "started_at_hkt": "2026-08-18T12:00:00+08:00",
             },
             {
@@ -726,6 +727,7 @@ class ReportFileNameTests(unittest.TestCase):
                 "task_kind": "strategic-news",
                 "trigger": "战略新闻定时爬虫",
                 "scope": slot,
+                "run_status": "failed",
                 "started_at_hkt": "2026-08-18T09:00:00+08:00",
             },
             {
@@ -733,6 +735,7 @@ class ReportFileNameTests(unittest.TestCase):
                 "task_kind": "strategic-news",
                 "trigger": "战略新闻定时爬虫",
                 "scope": other_slot,
+                "run_status": "completed",
                 "started_at_hkt": "2026-08-18T15:00:00+08:00",
             },
             {
@@ -740,6 +743,7 @@ class ReportFileNameTests(unittest.TestCase):
                 "task_kind": "strategic-news",
                 "trigger": "战略新闻定时爬虫",
                 "scope": slot,
+                "run_status": "failed",
                 "started_at_hkt": "2026-08-18T10:30:00+08:00",
             },
         ]
@@ -765,6 +769,7 @@ class ReportFileNameTests(unittest.TestCase):
                 "task_kind": "news-selection-agent",
                 "trigger": "新闻自动初筛",
                 "scope": slot,
+                "run_status": "running",
                 "started_at_hkt": "2026-09-01T10:10:22+08:00",
             },
             {
@@ -772,6 +777,7 @@ class ReportFileNameTests(unittest.TestCase):
                 "task_kind": "news-selection-agent",
                 "trigger": "新闻自动初筛",
                 "scope": slot,
+                "run_status": "failed",
                 "started_at_hkt": "2026-09-01T10:10:01+08:00",
             },
         ]
@@ -784,6 +790,41 @@ class ReportFileNameTests(unittest.TestCase):
         retries = {task["task_run_id"]: task["retry_index"] for task in tasks}
         self.assertEqual(retries["selection-1"], 0)
         self.assertEqual(retries["selection-2"], 1)
+
+    def test_successful_repeated_tasks_and_new_days_restart_title_numbering(self) -> None:
+        runs = [
+            {
+                "crawl_run_id": "publish-day-1-a",
+                "task_kind": "quarterly-data-release",
+                "trigger": "季度竞对数据发布",
+                "scope": "quarterly_competitor_metrics",
+                "run_status": "completed",
+                "started_at_hkt": "2026-08-31T03:30:00+08:00",
+            },
+            {
+                "crawl_run_id": "publish-day-1-b",
+                "task_kind": "quarterly-data-release",
+                "trigger": "季度竞对数据发布",
+                "scope": "quarterly_competitor_metrics",
+                "run_status": "completed",
+                "started_at_hkt": "2026-08-31T09:30:00+08:00",
+            },
+            {
+                "crawl_run_id": "publish-day-2",
+                "task_kind": "quarterly-data-release",
+                "trigger": "季度竞对数据发布",
+                "scope": "quarterly_competitor_metrics",
+                "run_status": "completed",
+                "started_at_hkt": "2026-09-01T04:00:00+08:00",
+            },
+        ]
+        with (
+            mock.patch.object(web_app, "_task_read_local_index", return_value=[]),
+            mock.patch.object(web_app, "load_crawl_run_index", return_value=runs),
+        ):
+            tasks = web_app.load_unified_task_index(limit=10)
+
+        self.assertTrue(all(task["retry_index"] == 0 for task in tasks))
 
     def test_task_archive_adds_real_monitor_severity_and_handler(self) -> None:
         incidents = {
@@ -923,7 +964,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
         self.assertIn('href="/static/leadership-board.css?v=21"', html)
-        self.assertIn('src="/static/app.js?v=321"', html)
+        self.assertIn('src="/static/app.js?v=322"', html)
         self.assertIn('self.send_header("Cache-Control", "no-store")', server)
         self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)
         self.assertNotIn('["pointerenter", "focusin", "touchstart"]', snapshot_builder)

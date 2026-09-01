@@ -3626,11 +3626,16 @@ function annotateClientTaskRetries(tasks) {
   tasks.slice().sort(function (left, right) {
     return crawlRunTimeValue(left) - crawlRunTimeValue(right);
   }).forEach(function (task) {
-    const key = [task.kind, task.title, task.scope].map(String).join("\u0000");
-    const fallbackIndex = attempts.get(key) || 0;
+    const startedAt = String(task.started_at_hkt || task.completed_at_hkt || "");
+    const key = [task.kind, task.title, task.scope, startedAt.slice(0, 10)].map(String).join("\u0000");
+    const previous = attempts.get(key) || {};
+    const fallbackIndex = previous.failed ? Number(previous.retryIndex || 0) + 1 : 0;
     const apiIndex = Number(task.retry_index);
     task.retry_index = Number.isFinite(apiIndex) ? Math.max(0, apiIndex) : fallbackIndex;
-    attempts.set(key, Math.max(fallbackIndex, task.retry_index) + 1);
+    attempts.set(key, {
+      retryIndex: task.retry_index,
+      failed: ["failed", "cutoff"].includes(String(task.run_status || "")) || Boolean(task.interrupted),
+    });
   });
 }
 

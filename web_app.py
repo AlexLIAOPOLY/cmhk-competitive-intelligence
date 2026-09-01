@@ -4656,8 +4656,8 @@ def _normalize_crawl_task(run: dict) -> dict:
 
 
 def _annotate_task_retries(tasks: list[dict]) -> None:
-    """Number repeated attempts for the same durable task and scope."""
-    attempts: dict[tuple[str, str, str], int] = {}
+    """Number only failure-driven or explicitly recorded automatic retries."""
+    attempts: dict[tuple[str, str, str, str], dict[str, object]] = {}
     ordered = sorted(
         tasks,
         key=lambda item: str(
@@ -4665,12 +4665,16 @@ def _annotate_task_retries(tasks: list[dict]) -> None:
         ),
     )
     for task in ordered:
+        started_at = str(task.get("started_at_hkt") or task.get("completed_at_hkt") or "")
         key = (
             str(task.get("kind") or ""),
             str(task.get("title") or ""),
             str(task.get("scope") or ""),
+            started_at[:10],
         )
-        retry_index = attempts.get(key, 0)
+        previous = attempts.get(key) or {}
+        previous_failed = bool(previous.get("failed"))
+        retry_index = int(previous.get("retry_index") or 0) + 1 if previous_failed else 0
         explicit_retry_count = task.get("retry_count")
         if explicit_retry_count is not None:
             try:
@@ -4678,7 +4682,13 @@ def _annotate_task_retries(tasks: list[dict]) -> None:
             except (TypeError, ValueError):
                 pass
         task["retry_index"] = retry_index
-        attempts[key] = retry_index + 1
+        attempts[key] = {
+            "retry_index": retry_index,
+            "failed": (
+                str(task.get("run_status") or "") in {"failed", "cutoff"}
+                or bool(task.get("interrupted"))
+            ),
+        }
 
 
 def _project_monitor_handlers() -> dict[str, dict]:
