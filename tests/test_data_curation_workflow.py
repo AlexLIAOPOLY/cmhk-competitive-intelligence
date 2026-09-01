@@ -61,6 +61,9 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertIn("有线电视用户", workflow._company_configured_metrics("中国广电"))
         self.assertIn("云收入", workflow._company_configured_metrics("China Mobile Cloud"))
         self.assertTrue(workflow._company_metric_is_not_applicable("HGC", "派息"))
+        self.assertTrue(workflow._company_agent_metric_requires_direct_value("移动用户数"))
+        self.assertFalse(workflow._company_agent_metric_requires_direct_value("企业通信"))
+        self.assertFalse(workflow._company_agent_metric_requires_direct_value("数据中心"))
 
     def test_company_agent_controls_its_own_search_and_open_sequence(self) -> None:
         class ToolCallingCompanyAgent:

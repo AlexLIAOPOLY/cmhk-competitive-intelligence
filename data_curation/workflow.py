@@ -2465,6 +2465,18 @@ def _company_expected_metrics(company: str, facts: list[CandidateFact]) -> list[
     return defaults[group]
 
 
+def _company_agent_metric_requires_direct_value(metric: str) -> bool:
+    """Separate numeric disclosures from official qualitative evidence."""
+    if QUALITATIVE_METRIC_RE.search(metric):
+        return False
+    return bool(re.search(
+        r"收入|收益|EBITDA|利润|净利润|溢利|用户|客户|ARPU|资本开支|Capex|"
+        r"派息|股息|增速|增长|利润率|占比|渗透率|覆盖率|市场份额|RPO|订单|线数|数量",
+        metric,
+        re.IGNORECASE,
+    ))
+
+
 def _company_research_profile(company: str) -> dict[str, Any]:
     """Return the governed aliases and official hosts for one research agent."""
     from executive_intelligence_pipeline import NEWS_ENTITY_SOURCES
@@ -2752,7 +2764,13 @@ def _run_company_research_agent(
             if not metric_searches:
                 research_incomplete.append(f"{metric}:search_not_run")
                 continue
-            if metric_status == "verified_latest" and not (metric_evidence > 0 and metric_fresh_opens > 0):
+            if metric_status == "verified_latest" and not (
+                metric_fresh_opens > 0
+                and (
+                    not _company_agent_metric_requires_direct_value(metric)
+                    or metric_evidence > 0
+                )
+            ):
                 research_incomplete.append(f"{metric}:fresh_official_evidence_required")
             elif metric_status == "not_disclosed" and metric_fresh_opens <= 0:
                 research_incomplete.append(f"{metric}:fresh_official_open_required")
@@ -3084,7 +3102,10 @@ def _run_company_research_agent(
         if final.get("status") == "agent_error":
             status = "agent_error"
             reason = final.get("rationale", "Agent 未形成逐指标终态。")
-        elif claimed_status == "verified_latest" and metric_evidence > 0 and metric_fresh_opens > 0:
+        elif claimed_status == "verified_latest" and metric_fresh_opens > 0 and (
+            not _company_agent_metric_requires_direct_value(metric)
+            or metric_evidence > 0
+        ):
             status = "verified_latest"
             reason = supplied.get("rationale") or "已回读当期官方原文并提取直接指标证据。"
         elif claimed_status == "not_disclosed" and metric_fresh_opens > 0:
