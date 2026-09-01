@@ -256,12 +256,12 @@ class DataCurationWorkflowTests(unittest.TestCase):
                         "id": "forced-complete",
                         "name": "complete_company_research",
                         "args": {
-                            "status": "verified_latest",
+                            "status": "complete",
                             "rationale": "最终决策 Agent 已核验最新官方值",
                             "metric_statuses": [{
                                 "metric": "收入",
-                                "status": "verified_latest",
-                                "rationale": "已取得当期官方收入值",
+                                "status": "已核验",
+                                "value": "已取得当期官方收入值",
                             }],
                         },
                     }],

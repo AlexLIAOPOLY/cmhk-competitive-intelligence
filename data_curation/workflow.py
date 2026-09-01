@@ -2701,17 +2701,34 @@ def _run_company_research_agent(
         nonlocal completion_called, completion_accepted, completion_rejection
         completion_called = True
         allowed_statuses = {"verified_latest", "not_disclosed", "not_applicable", "search_exhausted", "conflict"}
-        normalized = status if status in allowed_statuses else ""
+        status_aliases = {
+            "verified_latest": "verified_latest",
+            "verified": "verified_latest",
+            "已核验": "verified_latest",
+            "已验证": "verified_latest",
+            "not_disclosed": "not_disclosed",
+            "未披露": "not_disclosed",
+            "not_applicable": "not_applicable",
+            "不适用": "not_applicable",
+            "search_exhausted": "search_exhausted",
+            "搜索穷尽": "search_exhausted",
+            "搜索无直接值": "search_exhausted",
+            "未找到直接值": "search_exhausted",
+            "conflict": "conflict",
+            "冲突": "conflict",
+        }
+        requested_status = clean_text(status, 80).casefold()
+        normalized = status_aliases.get(requested_status, "")
         normalized_metrics: list[dict[str, str]] = []
         for item in metric_statuses or []:
             metric = clean_text(item.get("metric"), 120)
-            metric_status = clean_text(item.get("status"), 80)
+            metric_status = status_aliases.get(clean_text(item.get("status"), 80).casefold(), "")
             if metric not in expected_metrics or metric_status not in allowed_statuses:
                 continue
             normalized_metrics.append({
                 "metric": metric,
                 "status": metric_status,
-                "rationale": clean_text(item.get("rationale"), 400),
+                "rationale": clean_text(item.get("rationale") or item.get("value"), 400),
             })
         supplied_names = [item["metric"] for item in normalized_metrics]
         missing = [metric for metric in expected_metrics if metric not in supplied_names]
@@ -2726,6 +2743,8 @@ def _run_company_research_agent(
             else "not_applicable" if metric_status_set == {"not_applicable"}
             else ""
         )
+        if requested_status in {"complete", "completed", "完成", "已完成"}:
+            normalized = derived_status
         completion_accepted = bool(
             normalized
             and not missing
@@ -2774,6 +2793,7 @@ def _run_company_research_agent(
                     "某个网页打开返回 403 时应继续搜索其他官方入口，不得把 403 说成搜索引擎失败。"
                     f"必须逐一完成这些指标：{expected_metrics}。最后调用 complete_company_research 时，"
                     "metric_statuses 必须逐项覆盖全部预期指标；不得用 0、行业估算或旧值填补未披露项。"
+                    "status 只能使用 verified_latest、not_disclosed、not_applicable、search_exhausted、conflict；"
                     "仅当指标在该公司业务/披露制度上确实不适用时才可用 not_applicable。"
                 )
             ),
@@ -2853,6 +2873,7 @@ def _run_company_research_agent(
             messages.append(HumanMessage(content=(
                 "研究阶段已经结束。你现在是该公司的最终决策 Agent，只能调用 "
                 "complete_company_research；必须逐项覆盖全部预期指标，并让顶层状态与逐指标状态一致。"
+                "所有 status 必须使用 verified_latest、not_disclosed、not_applicable、search_exhausted、conflict。"
             )))
             started = time.monotonic()
             response = _build_supervisor_model().bind_tools(
