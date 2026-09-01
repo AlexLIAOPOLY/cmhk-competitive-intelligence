@@ -39,7 +39,8 @@
 .intelligence-relation::before,
 .intelligence-relation::after { display: none; }
 .intelligence-relation-title { font-size: 10.5px; }
-.intelligence-relation strong { margin-top: 3px; font-size: 13px; }
+.intelligence-relation strong,
+.intelligence-relation-headline { margin-top: 3px; font-size: 13px; }
 
 .intelligence-domain-grid {
   gap: 10px;
@@ -622,7 +623,8 @@
 /* Readability pass: keep decision-critical labels legible without changing the
    four-panel information hierarchy. */
 .intelligence-relation-title { font-size: 13.5px; }
-.intelligence-relation strong {
+.intelligence-relation strong,
+.intelligence-relation-headline {
   display: -webkit-box;
   font-size: 16px;
   line-height: 1.32;
@@ -929,7 +931,8 @@ body.dashboard-page { overflow-x: hidden; }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
 .static-snapshot .ai-insight-label,
-.static-snapshot .intelligence-relation-title { pointer-events: none; cursor: default; }
+.static-snapshot .intelligence-relation-title,
+.static-snapshot .intelligence-relation-headline { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

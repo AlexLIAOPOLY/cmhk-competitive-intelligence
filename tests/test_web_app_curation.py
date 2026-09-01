@@ -4190,6 +4190,8 @@ class IntelligenceEntityScrollTests(unittest.TestCase):
         self.assertIn('<span class="intelligence-domain-heading">', app)
         self.assertNotIn('<button type="button" class="intelligence-domain-heading', app)
         self.assertIn('class="intelligence-relation-title ${relationRefreshState', app)
+        self.assertIn('class="intelligence-relation-headline ${relationRefreshState', app)
+        self.assertIn('aria-label="点击重新生成${safe(relation.title)}"', app)
         self.assertIn('data-intelligence-relation-refresh="${index}"', app)
         self.assertIn('/api/executive-intelligence/regenerate-discovery', app)
         self.assertIn('class="intelligence-relation-skeleton"', app)

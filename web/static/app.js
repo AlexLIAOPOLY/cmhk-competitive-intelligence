@@ -8607,11 +8607,13 @@ document.addEventListener("keydown", (event) => {
           ${relationRefreshPending ? `disabled ${relationRefreshState.get(index)?.status === "loading" ? "aria-busy=\"true\"" : "aria-disabled=\"true\""}` : ""}>
           ${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}
         </button>
-        <strong class="${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""}">${relationRefreshState.get(index)?.status === "loading"
+        <button type="button" class="intelligence-relation-headline ${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""} ${relationRefreshState.get(index)?.status === "error" ? "is-error" : ""}"
+          data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
+          aria-label="点击重新生成${safe(relation.title)}" ${relationRefreshPending ? `disabled ${relationRefreshState.get(index)?.status === "loading" ? "aria-busy=\"true\"" : "aria-disabled=\"true\""}` : ""}>${relationRefreshState.get(index)?.status === "loading"
           ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成数据解读</span>`
           : relationRefreshState.get(index)?.status === "error"
             ? safe(relationRefreshState.get(index)?.message || "本次未生成新内容")
-            : safe(relation.title)}</strong>
+            : safe(relation.title)}</button>
         <small>${safe(relationRefreshState.get(index)?.status === "error" ? "点击重试" : relation.kind === "数据证据解读" ? "数据战略解读" : relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
       </div>
     `).join("");
