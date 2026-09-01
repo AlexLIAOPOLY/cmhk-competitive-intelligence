@@ -2734,6 +2734,37 @@ def _run_company_research_agent(
         missing = [metric for metric in expected_metrics if metric not in supplied_names]
         duplicates = sorted({metric for metric in supplied_names if supplied_names.count(metric) > 1})
         incomplete_reasons = [item["metric"] for item in normalized_metrics if not item["rationale"]]
+        research_incomplete: list[str] = []
+        for item in normalized_metrics:
+            metric = item["metric"]
+            metric_status = item["status"]
+            metric_searches = [record for record in searches if record.get("metric") == metric]
+            metric_opened = [record for record in opened if record.get("metric") == metric]
+            metric_evidence = sum(len(record.get("opened_evidence", [])) for record in metric_opened)
+            metric_fresh_opens = sum(int(record.get("fresh_official_open_count") or 0) for record in metric_opened)
+            metric_open_attempts = [
+                attempt
+                for record in metric_opened
+                for attempt in record.get("open_attempts", [])
+            ]
+            if metric_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
+                continue
+            if not metric_searches:
+                research_incomplete.append(f"{metric}:search_not_run")
+                continue
+            if metric_status == "verified_latest" and not (metric_evidence > 0 and metric_fresh_opens > 0):
+                research_incomplete.append(f"{metric}:fresh_official_evidence_required")
+            elif metric_status == "not_disclosed" and metric_fresh_opens <= 0:
+                research_incomplete.append(f"{metric}:fresh_official_open_required")
+            elif metric_status == "search_exhausted":
+                exhausted = (
+                    not any(record.get("current_official_results") for record in metric_searches)
+                    or (metric_open_attempts and not any(attempt.get("opened") for attempt in metric_open_attempts))
+                )
+                if not exhausted:
+                    research_incomplete.append(f"{metric}:open_current_official_results")
+            elif metric_status == "conflict" and not (metric_open_attempts or metric_evidence):
+                research_incomplete.append(f"{metric}:open_sources_before_conflict")
         metric_status_set = {item["status"] for item in normalized_metrics}
         derived_status = (
             "conflict" if "conflict" in metric_status_set
@@ -2750,13 +2781,14 @@ def _run_company_research_agent(
             and not missing
             and not duplicates
             and not incomplete_reasons
+            and not research_incomplete
             and len(normalized_metrics) == len(expected_metrics)
             and normalized == derived_status
         )
         completion_rejection = clean_text(
             f"missing={missing}; duplicates={duplicates}; empty_rationale={incomplete_reasons}; "
-            f"expected_status={derived_status or 'none'}",
-            600,
+            f"research_incomplete={research_incomplete}; expected_status={derived_status or 'none'}",
+            1200,
         )
         proposed = {
             "status": normalized,
@@ -2771,6 +2803,7 @@ def _run_company_research_agent(
             "missing_metrics": missing,
             "duplicate_metrics": duplicates,
             "empty_rationale_metrics": incomplete_reasons,
+            "research_incomplete_metrics": research_incomplete,
             "expected_status": derived_status,
         }
 
@@ -2804,8 +2837,8 @@ def _run_company_research_agent(
                 )
             ),
         ]
-        for turn_index in range(5):
-            if turn_index == 4 and searches and not final:
+        for turn_index in range(8):
+            if turn_index == 7 and searches and not final:
                 messages.append(HumanMessage(content=(
                     "这是最后一轮。不要再解释研究过程；必须现在调用 complete_company_research，"
                     "并用 metric_statuses 逐项覆盖全部预期指标。"
@@ -2870,67 +2903,72 @@ def _run_company_research_agent(
                 break
         if searches and not completion_accepted:
             completion_forced = True
-            messages.append(HumanMessage(content=(
-                "研究阶段已经结束。你现在是该公司的最终决策 Agent，只能调用 "
-                "complete_company_research；必须逐项覆盖全部预期指标，并让顶层状态与逐指标状态一致。"
-                "所有 status 必须使用 verified_latest、not_disclosed、not_applicable、search_exhausted、conflict。"
-            )))
-            started = time.monotonic()
-            response = _build_supervisor_model().bind_tools(
-                [complete_company_research],
-                tool_choice="complete_company_research",
-            ).invoke(messages)
-            messages.append(response)
-            traces.append(
-                _trace(
-                    state,
-                    "公司研究 Agent",
-                    "finalize",
-                    f"{company} 最终决策 Agent 执行强制收口。",
-                    output={"tool_calls": response.tool_calls},
-                    duration_ms=round((time.monotonic() - started) * 1000),
-                    agent_id=agent_id,
-                    parent_agent_id=parent_agent_id,
-                    company=company,
-                    role="company_research",
+            for repair_index in range(4):
+                messages.append(HumanMessage(content=(
+                    "你是该公司的 Final Decision Agent。上次提交未通过公司和指标证据门禁："
+                    f"{completion_rejection}。必须根据门禁反馈继续调用 search_latest_official、"
+                    "open_official_pages 补齐真实研究，再调用 complete_company_research 重新提交。"
+                    "不得由工作流补写业务结论；所有 status 只能使用 verified_latest、not_disclosed、"
+                    "not_applicable、search_exhausted、conflict。"
+                )))
+                started = time.monotonic()
+                response = _build_supervisor_model().bind_tools(tools).invoke(messages)
+                messages.append(response)
+                traces.append(
+                    _trace(
+                        state,
+                        "公司研究 Agent",
+                        "finalize",
+                        f"{company} 最终决策 Agent 执行第 {repair_index + 1} 次门禁修正。",
+                        output={"tool_calls": response.tool_calls},
+                        duration_ms=round((time.monotonic() - started) * 1000),
+                        agent_id=agent_id,
+                        parent_agent_id=parent_agent_id,
+                        company=company,
+                        role="company_research",
+                    )
                 )
-            )
-            for call in response.tool_calls or []:
-                if str(call.get("name") or "") != "complete_company_research":
+                if not response.tool_calls:
                     continue
-                args = call.get("args") or {}
-                traces.append(
-                    _trace(
-                        state,
-                        "公司研究 Agent",
-                        "tool_call",
-                        f"{company} 最终决策 Agent 调用 complete_company_research。",
-                        event_type="tool_call",
-                        tool="complete_company_research",
-                        input=args,
-                        agent_id=agent_id,
-                        parent_agent_id=parent_agent_id,
-                        company=company,
-                        role="company_research",
+                for call in response.tool_calls:
+                    name = str(call.get("name") or "")
+                    args = call.get("args") or {}
+                    selected_tool = tool_map.get(name)
+                    traces.append(
+                        _trace(
+                            state,
+                            "公司研究 Agent",
+                            "tool_call",
+                            f"{company} 最终决策 Agent 调用 {name}。",
+                            event_type="tool_call",
+                            tool=name,
+                            input=args,
+                            agent_id=agent_id,
+                            parent_agent_id=parent_agent_id,
+                            company=company,
+                            role="company_research",
+                        )
                     )
-                )
-                result = complete_company_research.invoke(args)
-                traces.append(
-                    _trace(
-                        state,
-                        "公司研究 Agent",
-                        "tool_result",
-                        f"{company} 最终决策 Agent 完成 complete_company_research。",
-                        event_type="tool_result",
-                        tool="complete_company_research",
-                        result=result,
-                        status="success" if result.get("accepted") else "error",
-                        agent_id=agent_id,
-                        parent_agent_id=parent_agent_id,
-                        company=company,
-                        role="company_research",
+                    result = selected_tool.invoke(args) if selected_tool else {"ok": False, "error": "unknown tool"}
+                    traces.append(
+                        _trace(
+                            state,
+                            "公司研究 Agent",
+                            "tool_result",
+                            f"{company} 最终决策 Agent 完成 {name}。",
+                            event_type="tool_result",
+                            tool=name,
+                            result=result,
+                            status="success" if not result.get("error") and result.get("accepted", True) else "error",
+                            agent_id=agent_id,
+                            parent_agent_id=parent_agent_id,
+                            company=company,
+                            role="company_research",
+                        )
                     )
-                )
+                    messages.append(ToolMessage(content=json.dumps(result, ensure_ascii=False), tool_call_id=call["id"]))
+                if completion_accepted:
+                    break
     except Exception as exc:
         error = clean_text(exc, 300)
 

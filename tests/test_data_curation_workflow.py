@@ -223,14 +223,15 @@ class DataCurationWorkflowTests(unittest.TestCase):
             result, _trace = _run_company_research_agent(
                 {"run_id": "company-agent-old-source"}, "AWS", 50, "AWS", [fact, second_fact]
             )
-        self.assertEqual(result["status"], "conflict")
+        self.assertEqual(result["status"], "agent_error")
+        self.assertEqual(result["reason_code"], "invalid_terminal_payload")
         self.assertEqual(result["evidence_count"], 0)
         self.assertEqual(result["fresh_official_open_count"], 0)
         self.assertFalse(result["metric_coverage_complete"])
         self.assertEqual(set(result["unresolved_metrics"]), {"收入", "EBITDA"})
         self.assertEqual(
             {item["metric"]: item["status"] for item in result["metric_results"]}["EBITDA"],
-            "unsearched",
+            "agent_error",
         )
 
     def test_company_agent_forces_agent_completion_when_research_turns_omit_it(self) -> None:
