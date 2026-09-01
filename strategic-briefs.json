@@ -1,7 +1,31 @@
 {
   "ok": true,
-  "generated_at": "2026-09-01T04:22:49+08:00",
+  "generated_at": "2026-09-01T12:22:15+08:00",
   "items": [
+    {
+      "id": "NEWS-EA4EDB231699D1",
+      "title": "粤港澳大湾区创新实力跃居全球第一",
+      "summary": "报告显示粤港澳大湾区创新实力超越东京和硅谷，跃居全球第一。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE12VnRTTWo3MGw5VXpjWGpSblBFQXJlenhlcWotYVdENjNNM2dkOVFueDV2dWo4QnZNTkY5V3FOZzVfODdvaHJQdTgzYjBwQWZJUkE?oc=5",
+      "published_at": "2026-08-31T18:47:00+08:00"
+    },
+    {
+      "id": "NEWS-9229617F075E0A",
+      "title": "香港7月存款总额升0.9% 贷款总额升0.2%",
+      "summary": "金管局公布7月存款总额上升0.9%，人民币存款升2.9%至11254亿元，跨境贸易结算人民币汇款13837亿元。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://gbcode.rthk.hk/TuniS/news.rthk.hk/rthk/ch/component/k2/1868261-20260831.htm",
+      "published_at": "2026-08-31T18:31:00+08:00"
+    },
+    {
+      "id": "NEWS-76A4D892D26B95",
+      "title": "香港私隐专员公署发布Agentic AI指引补充AI监管框架",
+      "summary": "香港私隐专员公署发布Agentic AI指引，补充香港AI监管框架，涉及数据合规与个人资料保护。",
+      "category": "政策监管",
+      "source_url": "https://conventuslaw.com/report/completing-the-jigsaw-pcpd-supplements-hong-kongs-ai-regulatory-framework-with-agentic-ai-guidance/",
+      "published_at": "2026-08-31T08:54:00+08:00"
+    },
     {
       "id": "NEWS-12141BFC996222",
       "title": "澳门「三五」规划：内联外通与大湾区城市形成合力",
@@ -41,30 +65,6 @@
       "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
       "source_url": "https://www.scmp.com/opinion/hong-kong-opinion/article/3365219/reusable-rocket-milestone-opens-door-hong-kongs-space-ambitions?pgtype=live",
       "published_at": "2026-08-30T16:30:00+08:00"
-    },
-    {
-      "id": "NEWS-F613BB2ED73CBC",
-      "title": "通讯办守护无线电频谱并支援5G建设",
-      "summary": "通讯办介绍守护无线电频谱、监测电波干扰及支援5G建设的工作，保障全港资讯高速公路畅通。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5GUUVRZHZyN1hiNGlySFhRSkNDbVR3b2hrRERmeXNuY2dOVlFnVGZCTGFQdHhUN3hJRW9CY1cwV2MyS3NSZGZ0T3JRVU9wQUkxRlpTTkszbjZBa2l4TUl3dWxkNzFweXZ2RDFqSUYzaWl5OHo5TFVn?oc=5",
-      "published_at": "2026-08-30T04:50:11+08:00"
-    },
-    {
-      "id": "NEWS-D73B2F986EFA4D",
-      "title": "香港5月固网用户净减少近1300户",
-      "summary": "香港5月固网用户净减少1271户，月底总用户数为167.8万，其中住宅固网约67万户、商业线路约100.8万户。",
-      "category": "行业动态",
-      "source_url": "https://www.telecompaper.com/news/hong-kong-loses-nearly-1300-fixed-line-subscribers-in-may--1581143",
-      "published_at": "2026-08-29T09:11:00+08:00"
-    },
-    {
-      "id": "NEWS-C9B9EB65F881BC",
-      "title": "CSL Mobile独家联乘顶尖网络商推全方位漫游服务",
-      "summary": "CSL Mobile宣布独家联乘顶尖网络商，提供全方位漫游服务并自动升级至「黄金漫游」。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMic0FVX3lxTE9GeTNORVA4RUVMSjJvOFQ0OC1SbVVEVE1MNzRDcktWbXEtV3RQa01oc0V0c3llbldOQkVFQ0U4NlZMdDhYUm9LRm5yeGd1dEJESDRSUFpXQVh1djE0OHFkcnByNTd0OHpBRmxkUTJtUXpDS3M?oc=5",
-      "published_at": "2026-08-29T00:00:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "8b5149cd904856a23c1015d604bb233db7e05cc48a21a4b448b989e02ece054f"
+  "site_version": "6fc1e1dc0c597e7eded32a4b5281357ab8b36e1cf658aa76eebb9821c711c115"
 }

@@ -3618,20 +3618,24 @@ function unifiedTaskKindLabel(task) {
 function unifiedTaskTitle(task) {
   const title = String(task?.title || "后台任务");
   const retryIndex = Math.max(0, Number(task?.retry_index || 0));
-  return retryIndex ? title + "（重试" + retryIndex + "）" : title;
+  return retryIndex ? title + String(retryIndex + 1) : title;
 }
 
-function annotateClientStrategicRetries(tasks) {
+function annotateClientTaskRetries(tasks) {
   const attempts = new Map();
   tasks.slice().sort(function (left, right) {
     return crawlRunTimeValue(left) - crawlRunTimeValue(right);
   }).forEach(function (task) {
-    if (String(task?.kind || "") !== "strategic-news") return;
-    const key = [task.kind, task.title, task.scope].map(String).join("\u0000");
-    const fallbackIndex = attempts.get(key) || 0;
+    const startedAt = String(task.started_at_hkt || task.completed_at_hkt || "");
+    const key = [task.kind, task.title, task.scope, startedAt.slice(0, 10)].map(String).join("\u0000");
+    const previous = attempts.get(key) || {};
+    const fallbackIndex = previous.failed ? Number(previous.retryIndex || 0) + 1 : 0;
     const apiIndex = Number(task.retry_index);
     task.retry_index = Number.isFinite(apiIndex) ? Math.max(0, apiIndex) : fallbackIndex;
-    attempts.set(key, Math.max(fallbackIndex, task.retry_index) + 1);
+    attempts.set(key, {
+      retryIndex: task.retry_index,
+      failed: ["failed", "cutoff"].includes(String(task.run_status || "")) || Boolean(task.interrupted),
+    });
   });
 }
 
@@ -3899,7 +3903,7 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
     });
     if (taskIndex >= 0) state.crawlRuns[taskIndex] = task;
     else state.crawlRuns.unshift(task);
-    annotateClientStrategicRetries(state.crawlRuns);
+    annotateClientTaskRetries(state.crawlRuns);
     renderCrawlRunList();
     const renderSignature = [
       taskId,
@@ -3953,7 +3957,7 @@ async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "任务记录加载失败");
     state.crawlRuns = Array.isArray(data.tasks) ? data.tasks : [];
-    annotateClientStrategicRetries(state.crawlRuns);
+    annotateClientTaskRetries(state.crawlRuns);
     syncCrawlRunFilterControls();
     state.hasRunningTasks = state.crawlRuns.some(function (task) {
       return String(task.run_status || "") === "running";
@@ -8607,12 +8611,12 @@ document.addEventListener("keydown", (event) => {
           ${relationRefreshPending ? `disabled ${relationRefreshState.get(index)?.status === "loading" ? "aria-busy=\"true\"" : "aria-disabled=\"true\""}` : ""}>
           ${safe(domainLabels[relation.from] || relation.from)} · ${safe(domainLabels[relation.to] || relation.to)}
         </button>
-        <strong class="${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""}">${relationRefreshState.get(index)?.status === "loading"
+        <button type="button" class="intelligence-relation-headline ${relationRefreshState.get(index)?.status === "loading" ? "is-generating" : ""} ${relationRefreshState.get(index)?.status === "error" ? "is-error" : ""}"
+          data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
+          aria-label="点击重新生成${safe(relation.title)}" ${relationRefreshPending ? `disabled ${relationRefreshState.get(index)?.status === "loading" ? "aria-busy=\"true\"" : "aria-disabled=\"true\""}` : ""}>${relationRefreshState.get(index)?.status === "loading"
           ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成数据解读</span>`
-          : relationRefreshState.get(index)?.status === "error"
-            ? safe(relationRefreshState.get(index)?.message || "本次未生成新内容")
-            : safe(relation.title)}</strong>
-        <small>${safe(relationRefreshState.get(index)?.status === "error" ? "点击重试" : relation.kind === "数据证据解读" ? "数据战略解读" : relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
+          : safe(relation.title)}</button>
+        <small>${safe(relationRefreshState.get(index)?.status === "error" ? relationRefreshState.get(index)?.message || "生成失败，点击标题重试" : relation.kind === "数据证据解读" ? "数据战略解读" : relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
       </div>
     `).join("");
     patchElementList(rail, markup);
@@ -9084,8 +9088,8 @@ document.addEventListener("keydown", (event) => {
       });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || "数据解读生成失败");
-      await refreshIntelligencePayload(true);
-      const relationAfter = (payload?.relations || [])[index] || {};
+      const relationAfter = { ...relationBefore, ...data };
+      payload.relations[index] = relationAfter;
       const signatureAfter = JSON.stringify([relationAfter.title || "", relationAfter.detail || ""]);
       if (signatureAfter === signatureBefore) {
         throw new Error("服务未返回与当前版本不同的新内容，请点击重试");
