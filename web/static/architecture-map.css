@@ -15,16 +15,53 @@ html, body { min-height: 100%; margin: 0; }
 body {
   overflow-x: hidden;
   background:
-    radial-gradient(circle at 50% 44%, rgba(38, 157, 188, .2), transparent 31%),
-    linear-gradient(rgba(74, 179, 210, .035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(74, 179, 210, .035) 1px, transparent 1px),
-    #030e18;
-  background-size: auto, 36px 36px, 36px 36px, auto;
+    radial-gradient(ellipse at 16% 16%, rgba(36, 139, 255, .22), transparent 34%),
+    radial-gradient(ellipse at 84% 76%, rgba(146, 83, 255, .17), transparent 32%),
+    radial-gradient(circle at 52% 46%, rgba(35, 204, 213, .13), transparent 45%),
+    linear-gradient(135deg, #020a13 0%, #061522 48%, #030914 100%);
+  background-attachment: fixed;
 }
 .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .architecture-page { width: 100%; min-height: 100dvh; padding: 8px; }
-.architecture-diagram { overflow: hidden; }
-.diagram-canvas { position: relative; width: 1600px; height: 900px; transform-origin: top left; }
+.architecture-diagram {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgba(137, 220, 244, .2);
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(13, 38, 56, .68), rgba(3, 17, 29, .5));
+  box-shadow:
+    inset 0 1px rgba(230, 250, 255, .1),
+    inset 0 -1px rgba(89, 186, 224, .06),
+    0 24px 70px rgba(0, 4, 12, .38);
+  -webkit-backdrop-filter: blur(24px) saturate(138%);
+  backdrop-filter: blur(24px) saturate(138%);
+}
+.architecture-diagram::before,
+.architecture-diagram::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.architecture-diagram::before {
+  background-image:
+    linear-gradient(rgba(129, 219, 242, .075) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129, 219, 242, .075) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 82% 90% at 50% 44%, #000 42%, transparent 100%);
+  mask-image: radial-gradient(ellipse 82% 90% at 50% 44%, #000 42%, transparent 100%);
+}
+.architecture-diagram::after {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(62, 149, 255, .14), transparent 31%),
+    radial-gradient(circle at 78% 74%, rgba(172, 99, 255, .11), transparent 29%),
+    linear-gradient(115deg, rgba(255, 255, 255, .045), transparent 25% 74%, rgba(103, 225, 245, .035));
+  mix-blend-mode: screen;
+}
+.diagram-canvas { position: relative; z-index: 1; width: 1600px; height: 900px; transform-origin: top left; }
 
 .ambient-orbit { position: absolute; z-index: 0; top: 50%; left: 50%; border: 1px solid rgba(75, 193, 221, .11); border-radius: 50%; transform: translate(-50%, -50%); }
 .orbit-one { width: 1030px; height: 720px; }
@@ -109,9 +146,9 @@ body {
 @keyframes core-pulse { 0%, 100% { transform: scale(.94); box-shadow: 0 0 18px rgba(72,217,245,.4); } 50% { transform: scale(1.04); box-shadow: 0 0 30px rgba(72,217,245,.7); } }
 
 @media (max-width: 1000px) {
-  body { background-size: auto, 28px 28px, 28px 28px, auto; }
   .architecture-page { padding: 10px; }
   .architecture-diagram { overflow: visible; height: auto !important; }
+  .architecture-diagram::before { background-size: 28px 28px; }
   .diagram-canvas { display: flex; width: auto; height: auto; flex-direction: column; gap: 14px; transform: none !important; }
   .architecture-links, .ambient-orbit { display: none; }
   .sector, .ai-core { position: relative; inset: auto; width: auto; height: auto; }
