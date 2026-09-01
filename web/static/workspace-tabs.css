@@ -585,10 +585,10 @@
 }
 .news-lineage-viewport::before {
   background-image:
-    linear-gradient(rgba(126, 224, 244, .075) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(126, 224, 244, .075) 1px, transparent 1px),
-    linear-gradient(rgba(141, 201, 246, .1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(141, 201, 246, .1) 1px, transparent 1px);
+    linear-gradient(rgba(126, 224, 244, .024) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(126, 224, 244, .024) 1px, transparent 1px),
+    linear-gradient(rgba(141, 201, 246, .04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(141, 201, 246, .04) 1px, transparent 1px);
   background-size: 14px 14px, 14px 14px, 70px 70px, 70px 70px;
   -webkit-mask-image: radial-gradient(ellipse 54% 58% at center, #000 42%, rgba(0,0,0,.82) 60%, rgba(0,0,0,.32) 82%, transparent 100%);
   mask-image: radial-gradient(ellipse 54% 58% at center, #000 42%, rgba(0,0,0,.82) 60%, rgba(0,0,0,.32) 82%, transparent 100%);
