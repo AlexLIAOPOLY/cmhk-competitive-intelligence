@@ -17,21 +17,25 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn('aria-controls="workspace-panel-architecture"', INDEX)
         self.assertIn('id="workspace-panel-architecture"', INDEX)
         self.assertIn('data-workspace-panel="architecture"', INDEX)
-        self.assertIn('data-src="/static/architecture-map.html?v=4"', INDEX)
+        self.assertIn('data-src="/static/architecture-map.html?v=5"', INDEX)
         self.assertIn('architecture: "dashboard"', SCRIPT)
 
     def test_architecture_maps_every_ai_workstream_without_interactions(self):
         for label in (
-            "新闻采集",
-            "新闻审核",
-            "战略总览 · 竞对分析",
-            "监控体系 / 情报图谱",
-            "战略周报",
-            "业绩摘要",
-            "订阅与推送",
+            "新闻情报",
+            "竞对研究",
+            "报告生产",
             "小竞AI",
-            "任务日志",
-            "报警处置",
+            "生产运维",
+            "官网与公开来源",
+            "四大治理数据库",
+            "飞书审核回读",
+            "RAG 与报告知识库",
+            "CMHK AI 智能中枢",
+            "Agent 编排",
+            "模型路由",
+            "工具调用",
+            "上下文记忆",
             "Agentic Search Planner",
             "新闻选材 Agent",
             "公司研究 Agents",
@@ -48,19 +52,29 @@ class ArchitectureMapTests(unittest.TestCase):
             "Qwen3-30B-A3B-Instruct-2507",
             "Kimi-K2.5",
             "Qwen3ASR",
+            "驾驶舱与知识图谱",
+            "飞书审核与战略简报",
+            "Word / PDF / 音频",
+            "AI 回答与引用",
+            "告警闭环",
+            "确定性优先",
+            "失败保留确定性结果",
         ):
             self.assertIn(label, PAGE)
         self.assertNotIn("<button", PAGE)
         self.assertNotIn("<a ", PAGE)
-        self.assertIn('<script src="./architecture-map.js?v=1" defer></script>', PAGE)
+        self.assertIn('<script src="./architecture-map.js?v=2" defer></script>', PAGE)
 
     def test_architecture_is_a_node_link_diagram_in_simplified_chinese(self):
         self.assertIn('<html lang="zh-CN">', PAGE)
         self.assertIn('class="architecture-links"', PAGE)
-        self.assertIn('marker-end="url(#arrow-cyan)"', PAGE)
-        self.assertIn('class="architecture-node agent-core"', PAGE)
-        self.assertIn("五条业务流程在此汇聚", PAGE)
-        self.assertIn('class="layer-box governance-layer"', PAGE)
+        self.assertIn('marker-end="url(#arrow-data)"', PAGE)
+        self.assertIn('class="ai-core"', PAGE)
+        self.assertIn('class="core-capabilities"', PAGE)
+        self.assertIn('class="governance-halo"', PAGE)
+        self.assertIn('class="sector business-sector"', PAGE)
+        self.assertNotIn("页面入口", PAGE)
+        self.assertNotIn("流程编排", PAGE)
         self.assertNotIn('class="architecture-heading"', PAGE)
         self.assertNotIn('class="architecture-legend"', PAGE)
         self.assertNotIn("architecture-lane", PAGE)
@@ -69,9 +83,9 @@ class ArchitectureMapTests(unittest.TestCase):
             self.assertNotIn(traditional, PAGE)
 
     def test_motion_is_directional_and_respects_reduced_motion(self):
-        self.assertIn("@keyframes architecture-flow", STYLE)
-        self.assertIn("@keyframes architecture-pulse", STYLE)
-        self.assertIn("@keyframes architecture-orbit", STYLE)
+        self.assertIn("@keyframes flow-line", STYLE)
+        self.assertIn("@keyframes core-pulse", STYLE)
+        self.assertIn("@keyframes ring-spin", STYLE)
         self.assertIn("stroke-dashoffset", STYLE)
         self.assertIn("@media (prefers-reduced-motion: reduce)", STYLE)
         self.assertIn("animation: none !important", STYLE)

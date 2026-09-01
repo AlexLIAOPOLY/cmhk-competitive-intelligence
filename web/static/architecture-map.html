@@ -3,109 +3,89 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>LLM 与 Agent 全流程架构</title>
-    <link rel="stylesheet" href="./architecture-map.css?v=4" />
+    <title>AI 全流程架构</title>
+    <link rel="stylesheet" href="./architecture-map.css?v=5" />
   </head>
   <body>
     <main class="architecture-page">
-      <section class="architecture-diagram" aria-label="系统节点与数据流架构图">
+      <section class="architecture-diagram" aria-label="以 CMHK AI 智能中枢为核心的项目架构图">
+        <p class="sr-only">数据与知识进入 AI 智能中枢，AI 统一编排 Agent、模型和工具，服务五类业务场景并形成受控交付，治理结果持续反馈到 AI。</p>
         <div class="diagram-canvas">
+          <div class="ambient-orbit orbit-one" aria-hidden="true"></div>
+          <div class="ambient-orbit orbit-two" aria-hidden="true"></div>
           <svg class="architecture-links" viewBox="0 0 1600 900" aria-hidden="true">
             <defs>
-              <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
-              <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
-              <marker id="arrow-violet" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
-              <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-data" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-agent" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-model" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-output" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
+              <marker id="arrow-govern" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" /></marker>
             </defs>
-            <g class="edge-entry">
-              <path d="M258 163H308" marker-end="url(#arrow-cyan)"/><path d="M258 286H308" marker-end="url(#arrow-cyan)"/>
-              <path d="M258 409H308" marker-end="url(#arrow-cyan)"/><path d="M258 532H308" marker-end="url(#arrow-cyan)"/>
-              <path d="M258 655H308" marker-end="url(#arrow-cyan)"/>
-            </g>
-            <g class="edge-domain">
-              <path d="M568 163C600 163 594 208 634 208" marker-end="url(#arrow-green)"/>
-              <path d="M568 286C600 286 594 310 634 310" marker-end="url(#arrow-green)"/>
-              <path d="M568 409C600 409 594 412 634 412" marker-end="url(#arrow-green)"/>
-              <path d="M568 532C600 532 594 514 634 514" marker-end="url(#arrow-green)"/>
-              <path d="M568 655C600 655 594 616 634 616" marker-end="url(#arrow-green)"/>
-            </g>
-            <g class="edge-agent">
-              <path d="M786 208C816 208 818 342 838 370" marker-end="url(#arrow-green)"/>
-              <path d="M786 310C816 310 818 370 838 392" marker-end="url(#arrow-green)"/>
-              <path d="M786 412H838" marker-end="url(#arrow-green)"/>
-              <path d="M786 514C816 514 818 454 838 432" marker-end="url(#arrow-green)"/>
-              <path d="M786 616C816 616 818 482 838 454" marker-end="url(#arrow-green)"/>
-              <path d="M1014 412H1118" marker-end="url(#arrow-violet)"/>
-            </g>
-            <g class="edge-model">
-              <path d="M1358 433C1382 433 1370 163 1396 163" marker-end="url(#arrow-violet)"/>
-              <path d="M1358 433C1382 433 1370 286 1396 286" marker-end="url(#arrow-violet)"/>
-              <path d="M1358 433H1396" marker-end="url(#arrow-violet)"/>
-              <path d="M1358 433C1382 433 1370 532 1396 532" marker-end="url(#arrow-violet)"/>
-              <path d="M1358 433C1382 433 1370 655 1396 655" marker-end="url(#arrow-violet)"/>
-            </g>
-            <g class="edge-feedback">
-              <path d="M1492 713V840H1358" marker-end="url(#arrow-amber)"/>
-              <path d="M834 840H568V732" marker-end="url(#arrow-amber)"/>
-              <path d="M1088 840H1492" marker-end="url(#arrow-amber)"/>
-              <path d="M834 840H939V490" marker-end="url(#arrow-amber)"/>
-            </g>
+            <g class="flow flow-business"><path d="M800 174C800 216 800 228 800 254" marker-end="url(#arrow-data)" /><path d="M614 140C672 176 698 205 710 257" marker-end="url(#arrow-data)" /><path d="M986 140C928 176 902 205 890 257" marker-end="url(#arrow-data)" /></g>
+            <g class="flow flow-data"><path d="M380 294C478 294 510 326 587 357" marker-end="url(#arrow-data)" /><path d="M380 385C482 385 514 396 570 414" marker-end="url(#arrow-data)" /><path d="M380 476C482 476 514 465 570 447" marker-end="url(#arrow-data)" /><path d="M380 567C478 567 510 535 587 504" marker-end="url(#arrow-data)" /></g>
+            <g class="flow flow-agent"><path d="M1015 323C1092 296 1128 270 1195 270" marker-end="url(#arrow-agent)" /><path d="M1030 391C1106 377 1137 363 1195 363" marker-end="url(#arrow-agent)" /><path d="M1030 459C1106 473 1137 456 1195 456" marker-end="url(#arrow-agent)" /><path d="M1015 527C1092 554 1128 549 1195 549" marker-end="url(#arrow-agent)" /></g>
+            <g class="flow flow-model"><path d="M994 576C1082 620 1128 665 1245 681" marker-end="url(#arrow-model)" /><path d="M947 623C1033 694 1110 720 1245 728" marker-end="url(#arrow-model)" /></g>
+            <g class="flow flow-output"><path d="M800 650C800 692 800 706 800 730" marker-end="url(#arrow-output)" /><path d="M718 638C678 690 650 712 626 742" marker-end="url(#arrow-output)" /><path d="M882 638C922 690 950 712 974 742" marker-end="url(#arrow-output)" /></g>
+            <g class="flow flow-govern"><path d="M350 748C438 748 478 664 613 579" marker-end="url(#arrow-govern)" /><path d="M350 800C468 800 548 696 670 627" marker-end="url(#arrow-govern)" /></g>
           </svg>
 
-          <section class="layer-box entry-layer" aria-labelledby="entry-title">
-            <header><span>01</span><div><h2 id="entry-title">页面入口</h2><p>用户、排程与事件触发</p></div></header>
-            <div class="architecture-node"><em>情报采集</em><b>新闻采集 · 新闻审核</b><small>定时扫描 / 人工复核</small></div>
-            <div class="architecture-node"><em>数据研判</em><b>战略总览 · 竞对分析</b><small>监控体系 / 情报图谱</small></div>
-            <div class="architecture-node"><em>报告生产</em><b>战略周报 · 业绩摘要</b><small>订阅与推送</small></div>
-            <div class="architecture-node"><em>智能问答</em><b>小竞AI</b><small>文字 / 图片 / 语音 / 对话</small></div>
-            <div class="architecture-node"><em>生产运维</em><b>任务日志 · 报警处置</b><small>团队管理 / 团队足迹</small></div>
+          <section class="sector business-sector" aria-labelledby="business-title">
+            <h2 id="business-title">业务场景</h2>
+            <div class="business-arc">
+              <div class="scenario-node"><i>情</i><b>新闻情报</b></div><div class="scenario-node"><i>研</i><b>竞对研究</b></div><div class="scenario-node"><i>报</i><b>报告生产</b></div><div class="scenario-node"><i>问</i><b>小竞AI</b></div><div class="scenario-node"><i>运</i><b>生产运维</b></div>
+            </div>
           </section>
 
-          <section class="layer-box orchestration-layer" aria-labelledby="flow-title">
-            <header><span>02</span><div><h2 id="flow-title">流程编排</h2><p>确定性步骤与状态管理</p></div></header>
-            <div class="architecture-node"><b>来源监测与定时爬虫</b><small>查询 → 覆盖盘点 → 时窗门禁</small></div>
-            <div class="architecture-node"><b>LangGraph 数据治理</b><small>采集 → 抽取 → 验证 → 缺口规划</small></div>
-            <div class="architecture-node"><b>报告生产工作流</b><small>事实筛选 → 编写 → 质量复核</small></div>
-            <div class="architecture-node"><b>可续传 SSE 会话</b><small>上下文 → 权限 → 审批 → 恢复</small></div>
-            <div class="architecture-node"><b>Scheduler + Run Registry</b><small>检测 → 合并 → 恢复 → 更新</small></div>
+          <section class="sector data-sector blue" aria-labelledby="data-title">
+            <h2 id="data-title">数据与知识</h2>
+            <div class="sector-list">
+              <div class="orbit-node"><i>源</i><span><b>官网与公开来源</b><small>定时爬虫 · 来源覆盖</small></span></div>
+              <div class="orbit-node"><i>库</i><span><b>四大治理数据库</b><small>本地 · 国际 · 内地 · 云</small></span></div>
+              <div class="orbit-node"><i>审</i><span><b>飞书审核回读</b><small>人工校验 · 完整回读</small></span></div>
+              <div class="orbit-node"><i>知</i><span><b>RAG 与报告知识库</b><small>数据集 · 记忆 · 历史</small></span></div>
+            </div>
           </section>
 
-          <section class="layer-box agent-layer" aria-labelledby="agent-title">
-            <header><span>03</span><div><h2 id="agent-title">AI 智能中枢</h2><p>五条业务流程在此汇聚</p></div></header>
-            <div class="agent-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
-            <div class="architecture-node agent-satellite agent-news"><em>新闻 Agents</em><b>Agentic Search Planner</b><small>AI 文案 / 语义去重 / 新闻选材 Agent</small></div>
-            <div class="architecture-node agent-satellite agent-research"><em>研究 Agents</em><b>公司研究 Agents + 缺口 Supervisor</b><small>跨库洞察 / 竞对洞察</small></div>
-            <div class="architecture-node agent-satellite agent-report"><em>报告 Agents</em><b>Weekly Writer</b><small>Quality Reviewer / Performance Editor</small></div>
-            <div class="architecture-node agent-satellite agent-assistant"><em>小竞AI</em><b>ReAct Agent</b><small>Skills / RAG / 数据集 / 图表 / 预测</small></div>
-            <div class="architecture-node agent-satellite agent-ops"><em>运维 Agents</em><b>AI 故障诊断与影响线路复核</b><small>结案摘要</small></div>
-            <div class="architecture-node agent-core"><span class="core-signal"></span><em>AGENT + LLM CONTROL PLANE</em><b>项目统一 AI 决策与工具中枢</b><small>任务路由 · 边界检查 · 权限审批 · 运行足迹</small></div>
+          <section class="ai-core" aria-labelledby="ai-core-title">
+            <div class="core-radar" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="core-content">
+              <span class="core-mark">AI</span>
+              <h1 id="ai-core-title">CMHK AI 智能中枢</h1>
+              <p>理解任务 · 调用能力 · 生成决策 · 持续校正</p>
+              <div class="core-capabilities"><span><i>编</i>Agent 编排</span><span><i>模</i>模型路由</span><span><i>工</i>工具调用</span><span><i>忆</i>上下文记忆</span></div>
+            </div>
+            <div class="governance-halo"><span>证据门禁</span><span>权限审批</span><span>人工回读</span><span>全程审计</span></div>
           </section>
 
-          <section class="layer-box model-layer" aria-labelledby="model-title">
-            <header><span>04</span><div><h2 id="model-title">共享模型路由</h2><p>任务匹配、Key 轮换与后备</p></div></header>
-            <div class="architecture-node model-router"><em>主模型</em><b>DeepSeek-V4-Pro</b><small>结构化生成与工具判断</small></div>
-            <div class="route-line"><i></i><span>失败切换 / 配额保护</span><i></i></div>
-            <div class="architecture-node"><em>后备模型</em><b>GLM</b><b>Qwen3-30B-A3B-Instruct-2507</b></div>
-            <div class="architecture-node multimodal"><em>多模态路由</em><b>Kimi-K2.5 · 图像</b><b>Qwen3ASR · 语音</b></div>
+          <section class="sector agent-sector green" aria-labelledby="agent-title">
+            <h2 id="agent-title">Agent 团队</h2>
+            <div class="agent-grid">
+              <div class="mini-node"><b>搜索规划</b><small>Agentic Search Planner</small></div><div class="mini-node"><b>新闻智能</b><small>AI 文案 · 语义去重 · 新闻选材 Agent</small></div>
+              <div class="mini-node"><b>公司研究</b><small>公司研究 Agents</small></div><div class="mini-node"><b>缺口监督</b><small>缺口 Supervisor</small></div>
+              <div class="mini-node"><b>竞对洞察</b><small>跨库洞察 · 竞对洞察</small></div><div class="mini-node"><b>报告生产</b><small>Weekly Writer · Quality Reviewer · Performance Editor</small></div>
+              <div class="mini-node"><b>小竞AI</b><small>ReAct Agent · Skills · 图表 · 预测</small></div><div class="mini-node"><b>故障诊断</b><small>AI 故障诊断 · 影响线路复核 · 结案摘要</small></div>
+            </div>
           </section>
 
-          <section class="layer-box output-layer" aria-labelledby="output-title">
-            <header><span>05</span><div><h2 id="output-title">受控输出</h2><p>证据、回读与发布</p></div></header>
-            <div class="architecture-node"><b>飞书新闻审核表</b><small>战略快讯 / 周报候选</small></div>
-            <div class="architecture-node"><b>受管数据与洞察</b><small>看板 / 图谱 / 只读快照</small></div>
-            <div class="architecture-node"><b>Word · PDF · 音频</b><small>报告库 / 飞书订阅</small></div>
-            <div class="architecture-node"><b>回答 · 图表 · 文件</b><small>引用 / 追问 / Agent Run</small></div>
-            <div class="architecture-node output-gate"><b>报警闭环与错误台账</b><small>人工处置 / 恢复证据 / 风险</small></div>
+          <section class="sector governance-sector amber" aria-labelledby="governance-title">
+            <h2 id="governance-title">治理反馈</h2>
+            <div class="governance-list"><span>确定性优先</span><span>质量门禁</span><span>证据追溯</span><span>权限与审计</span><span>失败保留确定性结果</span></div>
           </section>
 
-          <section class="layer-box governance-layer" aria-labelledby="governance-title">
-            <header><span>06</span><div><h2 id="governance-title">横向治理与反馈</h2><p>证据链 · 数据质量 · 人工门禁 · 飞书回读 · 操作审计 · 权限控制</p></div></header>
-            <div class="governance-status"><i></i><span>输出不直接发布</span><i></i><span>失败保留确定性结果</span><i></i><span>反馈持续校正 Agent</span></div>
+          <section class="sector model-sector violet" aria-labelledby="model-title">
+            <h2 id="model-title">模型池</h2>
+            <div class="model-list"><span>DeepSeek-V4-Pro</span><span>GLM</span><span>Qwen3-30B-A3B-Instruct-2507</span><span>Kimi-K2.5 · 图像</span><span>Qwen3ASR · 语音</span></div>
+          </section>
+
+          <section class="sector output-sector cyan" aria-labelledby="output-title">
+            <h2 id="output-title">受控交付</h2>
+            <div class="output-arc">
+              <div class="delivery-node"><i>图</i><b>驾驶舱与知识图谱</b></div><div class="delivery-node"><i>飞</i><b>飞书审核与战略简报</b></div><div class="delivery-node"><i>档</i><b>Word / PDF / 音频</b></div><div class="delivery-node"><i>答</i><b>AI 回答与引用</b></div><div class="delivery-node"><i>警</i><b>告警闭环</b></div>
+            </div>
           </section>
         </div>
       </section>
-      <footer class="architecture-footer"><strong>静态架构图</strong><span>动画仅表示流程方向，不代表当前有任务正在运行。</span></footer>
     </main>
-    <script src="./architecture-map.js?v=1" defer></script>
+    <script src="./architecture-map.js?v=2" defer></script>
   </body>
 </html>
