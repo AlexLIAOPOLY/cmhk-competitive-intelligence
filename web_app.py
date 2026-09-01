@@ -4655,8 +4655,8 @@ def _normalize_crawl_task(run: dict) -> dict:
     }
 
 
-def _annotate_strategic_task_retries(tasks: list[dict]) -> None:
-    """Number repeated attempts for the same durable strategic scan slot."""
+def _annotate_task_retries(tasks: list[dict]) -> None:
+    """Number repeated attempts for the same durable task and scope."""
     attempts: dict[tuple[str, str, str], int] = {}
     ordered = sorted(
         tasks,
@@ -4665,15 +4665,18 @@ def _annotate_strategic_task_retries(tasks: list[dict]) -> None:
         ),
     )
     for task in ordered:
-        if str(task.get("kind") or "") != "strategic-news":
-            task["retry_index"] = 0
-            continue
         key = (
             str(task.get("kind") or ""),
             str(task.get("title") or ""),
             str(task.get("scope") or ""),
         )
         retry_index = attempts.get(key, 0)
+        explicit_retry_count = task.get("retry_count")
+        if explicit_retry_count is not None:
+            try:
+                retry_index = max(retry_index, int(explicit_retry_count or 0))
+            except (TypeError, ValueError):
+                pass
         task["retry_index"] = retry_index
         attempts[key] = retry_index + 1
 
@@ -6208,7 +6211,7 @@ def load_unified_task_index(limit: int = 50) -> list[dict]:
         for item in load_crawl_run_index()
         if isinstance(item, dict) and item.get("crawl_run_id")
     )
-    _annotate_strategic_task_retries(tasks)
+    _annotate_task_retries(tasks)
     _annotate_task_incidents(tasks)
     tasks.sort(
         key=lambda item: str(item.get("started_at_hkt") or item.get("completed_at_hkt") or ""),

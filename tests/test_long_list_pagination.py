@@ -37,7 +37,7 @@ class LongListScrollTests(unittest.TestCase):
             "/static/styles.css?v=293",
             "/static/workspace-tabs.css?v=138",
             "/static/organization-admin.css?v=28",
-            "/static/app.js?v=320",
+            "/static/app.js?v=321",
             "/static/organization-admin.js?v=35",
             "/static/workspace-tabs.js?v=167",
         ):

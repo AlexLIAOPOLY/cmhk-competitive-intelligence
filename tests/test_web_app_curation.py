@@ -248,7 +248,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('.dashboard-page #logModal .agent-audit-timeline,', styles)
         self.assertIn('.dashboard-page #logModal .agent-quality-records,', styles)
         self.assertIn('.dashboard-page #logModal .agent-audit-sample header {', styles)
-        self.assertIn('src="/static/app.js?v=320"', html)
+        self.assertIn('src="/static/app.js?v=321"', html)
         self.assertIn('id="crawlRunFilter"', html)
         self.assertIn('id="crawlRunStatusFilter"', html)
         self.assertIn('id="crawlRunKindFilter"', html)
@@ -314,7 +314,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn('模型本次未返回有效内容，已安全保留当前版本，请点击重试', app)
         self.assertIn('Expecting value|JSON|line \\d+ column \\d+|char \\d+', app)
         self.assertNotIn('insightRefreshState.delete(key);\n        const latestDomain = domainById(domainId);\n        if (latestDomain) replaceDomainCard(latestDomain);\n      }, 5000);', app)
-        self.assertIn('src="/static/app.js?v=320"', html)
+        self.assertIn('src="/static/app.js?v=321"', html)
         self.assertIn('.ai-insight-label.is-loading', leadership_styles)
         self.assertIn('white-space: nowrap !important;', leadership_styles)
         self.assertIn('overflow-wrap: normal;', leadership_styles)
@@ -757,6 +757,34 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(retries["attempt-3"], 2)
         self.assertEqual(retries["afternoon-1"], 0)
 
+    def test_same_non_strategic_task_scope_is_numbered_as_retry_chain(self) -> None:
+        slot = "爬虫后选材（2026-09-01@07:30）"
+        runs = [
+            {
+                "crawl_run_id": "selection-2",
+                "task_kind": "news-selection-agent",
+                "trigger": "新闻自动初筛",
+                "scope": slot,
+                "started_at_hkt": "2026-09-01T10:10:22+08:00",
+            },
+            {
+                "crawl_run_id": "selection-1",
+                "task_kind": "news-selection-agent",
+                "trigger": "新闻自动初筛",
+                "scope": slot,
+                "started_at_hkt": "2026-09-01T10:10:01+08:00",
+            },
+        ]
+        with (
+            mock.patch.object(web_app, "_task_read_local_index", return_value=[]),
+            mock.patch.object(web_app, "load_crawl_run_index", return_value=runs),
+        ):
+            tasks = web_app.load_unified_task_index(limit=10)
+
+        retries = {task["task_run_id"]: task["retry_index"] for task in tasks}
+        self.assertEqual(retries["selection-1"], 0)
+        self.assertEqual(retries["selection-2"], 1)
+
     def test_task_archive_adds_real_monitor_severity_and_handler(self) -> None:
         incidents = {
             "incidents": {
@@ -854,11 +882,11 @@ class ReportFileNameTests(unittest.TestCase):
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
 
         self.assertIn("function unifiedTaskTitle(task)", app)
-        self.assertIn("function annotateClientStrategicRetries(tasks)", app)
-        self.assertIn("annotateClientStrategicRetries(state.crawlRuns)", app)
+        self.assertIn("function annotateClientTaskRetries(tasks)", app)
+        self.assertIn("annotateClientTaskRetries(state.crawlRuns)", app)
         self.assertIn("Object.assign({}, indexedTask || {}, data.task || {}", app)
         self.assertIn("els.logRunTitle.textContent = unifiedTaskTitle(task)", app)
-        self.assertIn('title + "（重试" + retryIndex + "）"', app)
+        self.assertIn('title + String(retryIndex + 1)', app)
         self.assertGreaterEqual(app.count("unifiedTaskTitle(task)"), 3)
 
     def test_homepage_uses_candidate_activity_when_no_confirmed_signals_exist(self) -> None:
@@ -895,7 +923,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
         self.assertIn('href="/static/leadership-board.css?v=21"', html)
-        self.assertIn('src="/static/app.js?v=320"', html)
+        self.assertIn('src="/static/app.js?v=321"', html)
         self.assertIn('self.send_header("Cache-Control", "no-store")', server)
         self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)
         self.assertNotIn('["pointerenter", "focusin", "touchstart"]', snapshot_builder)

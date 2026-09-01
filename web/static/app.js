@@ -3618,15 +3618,14 @@ function unifiedTaskKindLabel(task) {
 function unifiedTaskTitle(task) {
   const title = String(task?.title || "后台任务");
   const retryIndex = Math.max(0, Number(task?.retry_index || 0));
-  return retryIndex ? title + "（重试" + retryIndex + "）" : title;
+  return retryIndex ? title + String(retryIndex + 1) : title;
 }
 
-function annotateClientStrategicRetries(tasks) {
+function annotateClientTaskRetries(tasks) {
   const attempts = new Map();
   tasks.slice().sort(function (left, right) {
     return crawlRunTimeValue(left) - crawlRunTimeValue(right);
   }).forEach(function (task) {
-    if (String(task?.kind || "") !== "strategic-news") return;
     const key = [task.kind, task.title, task.scope].map(String).join("\u0000");
     const fallbackIndex = attempts.get(key) || 0;
     const apiIndex = Number(task.retry_index);
@@ -3899,7 +3898,7 @@ async function loadCrawlRunLog(crawlRunId, { silent = false, managePolling = tru
     });
     if (taskIndex >= 0) state.crawlRuns[taskIndex] = task;
     else state.crawlRuns.unshift(task);
-    annotateClientStrategicRetries(state.crawlRuns);
+    annotateClientTaskRetries(state.crawlRuns);
     renderCrawlRunList();
     const renderSignature = [
       taskId,
@@ -3953,7 +3952,7 @@ async function loadCrawlRuns({ selectLatest = false, selectRunId = "" } = {}) {
     const data = await response.json();
     if (!data.ok) throw new Error(data.error || "任务记录加载失败");
     state.crawlRuns = Array.isArray(data.tasks) ? data.tasks : [];
-    annotateClientStrategicRetries(state.crawlRuns);
+    annotateClientTaskRetries(state.crawlRuns);
     syncCrawlRunFilterControls();
     state.hasRunningTasks = state.crawlRuns.some(function (task) {
       return String(task.run_status || "") === "running";
