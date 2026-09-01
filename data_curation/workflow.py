@@ -118,6 +118,13 @@ COMMERCIAL_HOST_TERMS = (
 )
 CORE_COMPANY_ROWS = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18}
 PRIMARY_PERFORMANCE_ROWS = {2, 5, 8, 11, 15, 17}
+CURRENT_VALUE_DATABASE_ROWS = {19, 20, 21, 47, 48, 49, 50, 52, 53, 54, 55, 56, 57, 58}
+RECRAWLABLE_EVIDENCE_REASONS = {
+    "抽取结果不可用",
+    "数值或事实依据不足",
+    "缺少可核验公开来源",
+    "没有可发布候选",
+}
 AUDIT_REASON_TEXTS = {
     "来源域名或证据文本不支持该主体",
     "主体归属未通过",
@@ -2247,6 +2254,7 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
         ranked_rows = sorted(
             row_stats.items(),
             key=lambda item: (
+                int(item[0].removeprefix("row_") or 0) in CURRENT_VALUE_DATABASE_ROWS,
                 int(item[0].removeprefix("row_") or 0) in PRIMARY_PERFORMANCE_ROWS,
                 item[1]["crawl_status"] in {"failed", "error"},
                 int(item[0].removeprefix("row_") or 0) in CORE_COMPANY_ROWS,
@@ -2256,24 +2264,35 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
         )
         for row_ref, stats in ranked_rows:
             match = re.fullmatch(r"row_(\d+)", row_ref or "")
-            # Failed/error rows are retryable. A partial row is retryable only
-            # when the gap is genuinely caused by missing public evidence;
-            # semantic, entity, confidence and model-output problems require
-            # extraction/quality handling, not another network crawl.
+            # Failed/error rows are retryable. Partial rows and current-value
+            # database rows are retryable only when an official-source refresh
+            # can plausibly repair the gap. Pure entity/metric/confidence
+            # failures still require extraction or quality handling instead.
             crawl_status = str(stats.get("crawl_status") or "")
-            partial_evidence_gap = crawl_status == "partial" and any(
-                reason in {"缺少可核验公开来源", "没有可发布候选"}
-                for reason in stats.get("reasons", [])
+            row_number = int(match.group(1)) if match else 0
+            has_recrawlable_evidence_gap = any(
+                reason in RECRAWLABLE_EVIDENCE_REASONS for reason in stats.get("reasons", [])
+            )
+            partial_evidence_gap = crawl_status == "partial" and has_recrawlable_evidence_gap
+            current_value_quality_gap = (
+                row_number in CURRENT_VALUE_DATABASE_ROWS
+                and crawl_status in {"quality_rejected", "no_extraction"}
+                and has_recrawlable_evidence_gap
             )
             if not match or not (
-                crawl_status in {"failed", "error"} or partial_evidence_gap
+                crawl_status in {"failed", "error"}
+                or partial_evidence_gap
+                or current_value_quality_gap
             ):
                 continue
             recrawl_tasks.append(
                 RecrawlTask(
                     row_ref=row_ref,
                     row_number=int(match.group(1)),
-                    reason=f"{stats['gaps']} 个指标缺口，原爬取状态非完整成功",
+                    reason=(
+                        f"{stats['gaps']} 个指标缺口，"
+                        f"原爬取状态为 {crawl_status} 且存在可补爬的公开证据缺口"
+                    ),
                     priority=100,
                     attempts=int(state.get("recrawl_round") or 0),
                     companies=stats["companies"],

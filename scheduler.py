@@ -860,7 +860,7 @@ def _run_scheduled_agent_audit(
         str(ROOT / "run_data_curation.py"),
         "--recrawl-gaps",
         "--max-recrawl-rows",
-        "6",
+        "14",
         "--max-recrawl-rounds",
         "1",
         "--ai-workers",

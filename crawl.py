@@ -82,10 +82,14 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
         "iCable": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf"],
     },
     19: {
+        "Singtel": ["https://www.singtel.com/about-us/investor-relations/financial-results", "https://www.singtel.com/about-us/investor-relations/financial-summary"],
         "Telstra": ["https://www.telstra.com.au/aboutus/investors/financial-results"],
         "SK Telecom": ["https://news.sktelecom.com/en/3218"],
+        "KT": ["https://corp.kt.com/eng/html/investors/main.html", "https://corp.kt.com/eng/html/investors/financial/business.html"],
+        "NTT Docomo": ["https://www.docomo.ne.jp/english/corporate/ir/", "https://www.docomo.ne.jp/english/corporate/ir/library/presentation/"],
         "KDDI": ["https://www.kddi.com/english/corporate/ir/ir-library/earning/"],
         "SoftBank": ["https://www.softbank.jp/en/corp/ir/"],
+        "Jio": ["https://www.ril.com/investors/financial-reporting", "https://www.ril.com/sites/default/files/2026-05/Jio-Factsheet-2026.pdf"],
         "Airtel": ["https://www.airtel.in/about-bharti/equity/results"],
     },
     20: {
@@ -101,17 +105,26 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
     },
     21: {
         "e&": ["https://www.eand.com/en/investors/financial-results.html"],
+        "stc": ["https://www.stc.com.sa/content/stcgroupwebsite/sa/en/investors/financial-information.html"],
+        "中国移动": ["https://www.chinamobileltd.com/en/ir/reports.php"],
         "中国电信": ["https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf"],
         "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
     },
     47: {
+        "HKT": ["https://www.hkt.com/en/about-hkt/investor-relations/financial-results/"],
+        "3HK": ["https://www.hthkh.com/en/ir/reports.php"],
+        "SmarTone": ["https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp"],
+        "HKBN": ["https://www.hkbn.net/group/en/investor-engagement/financial-results"],
         "i-CABLE": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf"],
     },
     48: {
+        "Verizon": ["https://www.verizon.com/about/news/verizon-delivers-record-2q26-results"],
         "AT&T": ["https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"],
         "Deutsche Telekom": ["https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292"],
+        "NTT": ["https://group.ntt/en/ir/library/presentation/"],
     },
     49: {
+        "中国移动": ["https://www.chinamobileltd.com/en/ir/reports.php"],
         "中国电信": ["https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf"],
         "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
     },
@@ -131,6 +144,49 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
     56: {"Tencent Cloud": ["https://www.tencent.com/wp-content/uploads/2026/08/Tencent-Announces-2026-Second-Quarter-Results.pdf"]},
     57: {"Huawei Cloud": ["https://www.huawei.com/en/annual-report/2025"]},
     58: {"Oracle Cloud": ["https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/"]},
+}
+
+# Canonical 01:00 discovery entities mapped to the 03:00 row/entity that must
+# consume a current official result. This is an explicit completeness gate:
+# adding a company to discovery without a current-result lane is a test and
+# audit failure instead of a silent omission.
+ALL_COMPANY_CURRENT_RESULT_TARGETS: Dict[str, tuple[int, str]] = {
+    "HKT": (47, "HKT"),
+    "SmarTone": (47, "SmarTone"),
+    "3HK": (47, "3HK"),
+    "HKBN": (47, "HKBN"),
+    "i-CABLE": (47, "i-CABLE"),
+    "Singtel": (19, "Singtel"),
+    "Telstra": (19, "Telstra"),
+    "SK Telecom": (19, "SK Telecom"),
+    "KT": (19, "KT"),
+    "NTT Docomo": (19, "NTT Docomo"),
+    "KDDI": (19, "KDDI"),
+    "SoftBank": (19, "SoftBank"),
+    "Bharti Airtel": (19, "Airtel"),
+    "Reliance Jio": (19, "Jio"),
+    "Vodafone": (20, "Vodafone"),
+    "Verizon": (48, "Verizon"),
+    "AT&T": (48, "AT&T"),
+    "Deutsche Telekom": (48, "Deutsche Telekom"),
+    "NTT": (48, "NTT"),
+    "Orange": (20, "Orange"),
+    "Telefonica": (20, "Telefonica"),
+    "BT": (20, "BT/EE"),
+    "TIM": (20, "TIM"),
+    "T-Mobile US": (20, "T-Mobile US"),
+    "e&": (21, "e&"),
+    "stc": (21, "stc"),
+    "中国移动": (49, "中国移动"),
+    "中国电信": (49, "中国电信"),
+    "中国联通": (49, "中国联通"),
+    "AWS": (50, "AWS"),
+    "Microsoft Azure": (50, "Microsoft Azure"),
+    "Google Cloud": (50, "Google Cloud"),
+    "Alibaba Cloud": (50, "Alibaba Cloud"),
+    "Tencent Cloud": (50, "Tencent Cloud"),
+    "Huawei Cloud": (50, "Huawei Cloud"),
+    "Oracle Cloud": (50, "Oracle Cloud"),
 }
 
 NEWS_CHILD_FOLLOW_ROWS = frozenset({22, 24, 25, 26, 27, 28, 29, 31, 32, 33})
@@ -2730,6 +2786,92 @@ def log_live_fetch_status(record: Dict[str, Any]) -> str:
     )
 
 
+def build_all_company_current_value_audit(
+    row_results: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Return an auditable 36-company current-result coverage matrix."""
+    results_by_row = {int(item.get("row") or 0): item for item in row_results}
+    companies: list[Dict[str, Any]] = []
+    for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
+        configured_urls = CURRENT_OFFICIAL_RESULT_CANDIDATES.get(row_number, {}).get(row_entity, [])
+        row_result = results_by_row.get(row_number, {})
+        entity_result = next(
+            (
+                item
+                for item in row_result.get("entity_results", [])
+                if str(item.get("entity") or "") == row_entity
+            ),
+            {},
+        )
+        raw_records = entity_result.get("raw_records", [])
+        attempted_urls = {str(item.get("url") or "") for item in raw_records}
+        current_attempted = [url for url in configured_urls if url in attempted_urls]
+        current_live_success = [
+            url
+            for url in current_attempted
+            if any(
+                str(item.get("url") or "") == url
+                and 200 <= int(item.get("status") or 0) < 400
+                and not item.get("evidence_fallback_used")
+                for item in raw_records
+            )
+        ]
+        extracted = entity_result.get("extracted", {})
+        numeric_fields = [
+            field
+            for field, value in extracted.items()
+            if re.search(r"\d", str(value or ""))
+            and "未发现" not in str(value or "")
+            and "未披露" not in str(value or "")
+        ]
+        if not row_result:
+            coverage_status = "not_run"
+        elif not configured_urls:
+            coverage_status = "missing_current_official_lane"
+        elif not current_attempted:
+            coverage_status = "current_official_lane_not_attempted"
+        elif not current_live_success:
+            coverage_status = "current_official_source_fetch_failed"
+        elif numeric_fields:
+            coverage_status = "current_value_extracted_pending_quality_gate"
+        else:
+            coverage_status = "official_source_fetched_no_numeric_value"
+        companies.append(
+            {
+                "company": company,
+                "row": row_number,
+                "row_entity": row_entity,
+                "row_status": row_result.get("status", "not_run"),
+                "entity_status": entity_result.get("status", "not_run"),
+                "configured_current_official_urls": configured_urls,
+                "attempted_current_official_urls": current_attempted,
+                "live_success_current_official_urls": current_live_success,
+                "extracted_fields": sorted(extracted),
+                "numeric_fields": sorted(numeric_fields),
+                "missing_fields": entity_result.get("missing_fields", []),
+                "coverage_status": coverage_status,
+            }
+        )
+    counts: Dict[str, int] = {}
+    for item in companies:
+        status = item["coverage_status"]
+        counts[status] = counts.get(status, 0) + 1
+    return {
+        "schema_version": 1,
+        "generated_at": datetime.now().astimezone().isoformat(),
+        "expected_company_count": len(ALL_COMPANY_CURRENT_RESULT_TARGETS),
+        "configured_company_count": sum(
+            bool(item["configured_current_official_urls"]) for item in companies
+        ),
+        "live_current_official_company_count": sum(
+            bool(item["live_success_current_official_urls"]) for item in companies
+        ),
+        "numeric_value_company_count": sum(bool(item["numeric_fields"]) for item in companies),
+        "status_counts": counts,
+        "companies": companies,
+    }
+
+
 def write_outputs(row_results: List[Dict[str, Any]]) -> None:
     f_values = []
     ij_values = []
@@ -2851,6 +2993,11 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         writer.writeheader()
         writer.writerows(log_rows)
     (ROOT / "run_log.json").write_text(json.dumps(log_rows, ensure_ascii=False, indent=2), encoding="utf-8")
+    all_company_audit = build_all_company_current_value_audit(row_results)
+    (ROOT / "all_company_current_value_audit.json").write_text(
+        json.dumps(all_company_audit, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
     outcome_counts = row_outcome_counts(row_results)
     ok = outcome_counts["ok"]
@@ -2906,10 +3053,21 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         f"- Live URL failures: {live_failed_urls}",
         f"- URLs restored from previous evidence: {evidence_fallback_urls}",
         f"- Source registry: {SOURCE_REGISTRY_JSON.name}",
+        (
+            "- All-company current official coverage: "
+            f"{all_company_audit['live_current_official_company_count']}/"
+            f"{all_company_audit['expected_company_count']}"
+        ),
+        (
+            "- Companies with numeric current-value extraction before quality gate: "
+            f"{all_company_audit['numeric_value_company_count']}/"
+            f"{all_company_audit['expected_company_count']}"
+        ),
         f"- Raw body persistence: {'enabled' if CMHK_SAVE_RAW_BODY else 'disabled'}",
         "",
         "See `coverage_report.tsv` and `results/row_<n>.json` for row-level evidence.",
         "See `run_log.tsv` for per-URL status code, elapsed time, and extraction coverage.",
+        "See `all_company_current_value_audit.json` for the 36-company current-value matrix.",
     ]
     (ROOT / "final_audit.md").write_text("\n".join(audit) + "\n", encoding="utf-8")
 

@@ -11,6 +11,7 @@ from data_curation.workflow import (
     audit_quality,
     build_graph,
     extract_facts,
+    plan_gaps,
     publish_results,
     search_verify_facts,
     supervise_gap_actions,
@@ -30,6 +31,52 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    @patch("data_curation.workflow._result_status", return_value="quality_rejected")
+    def test_current_value_quality_gap_is_scheduled_for_recrawl(self, _status) -> None:
+        result = plan_gaps(
+            {
+                "run_id": "unit-test",
+                "allow_recrawl": True,
+                "max_recrawl_rows": 14,
+                "max_recrawl_rounds": 1,
+                "recrawl_round": 0,
+                "candidates": [
+                    CandidateFact(
+                        id="aws-revenue",
+                        company="AWS",
+                        metric="收入",
+                        row_ref="row_50",
+                        decision="rejected",
+                        reasons=["缺少可核验公开来源"],
+                    ).model_dump()
+                ],
+            }
+        )
+        self.assertEqual([item["row_number"] for item in result["recrawl_tasks"]], [50])
+
+    @patch("data_curation.workflow._result_status", return_value="quality_rejected")
+    def test_semantic_only_quality_gap_is_not_recrawled(self, _status) -> None:
+        result = plan_gaps(
+            {
+                "run_id": "unit-test",
+                "allow_recrawl": True,
+                "max_recrawl_rows": 14,
+                "max_recrawl_rounds": 1,
+                "recrawl_round": 0,
+                "candidates": [
+                    CandidateFact(
+                        id="aws-semantic",
+                        company="AWS",
+                        metric="收入",
+                        row_ref="row_50",
+                        decision="rejected",
+                        reasons=["指标语义未通过"],
+                    ).model_dump()
+                ],
+            }
+        )
+        self.assertEqual(result["recrawl_tasks"], [])
+
     def test_publish_blocks_incomplete_online_coverage(self) -> None:
         with self.assertRaisesRegex(RuntimeError, "未完成全部主体×指标联网补充搜索"):
             publish_results(

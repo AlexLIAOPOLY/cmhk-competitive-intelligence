@@ -201,6 +201,27 @@ class CrawlRecoveryTests(unittest.TestCase):
         ]
         self.assertFalse(blocked.intersection(candidates))
 
+    def test_all_36_companies_have_current_official_result_lanes(self):
+        self.assertEqual(len(crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS), 36)
+        from executive_intelligence_pipeline import NEWS_ENTITY_SOURCES
+
+        self.assertEqual(
+            set(crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS),
+            {company for _domain, company, _aliases, _urls in NEWS_ENTITY_SOURCES},
+        )
+        missing = []
+        for company, (row_number, row_entity) in crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
+            if not crawl.CURRENT_OFFICIAL_RESULT_CANDIDATES.get(row_number, {}).get(row_entity):
+                missing.append(company)
+        self.assertEqual(missing, [])
+
+    def test_all_company_audit_does_not_call_unrun_company_complete(self):
+        audit = crawl.build_all_company_current_value_audit([])
+        self.assertEqual(audit["expected_company_count"], 36)
+        self.assertEqual(audit["live_current_official_company_count"], 0)
+        self.assertEqual(audit["numeric_value_company_count"], 0)
+        self.assertEqual(audit["status_counts"], {"not_run": 36})
+
     def test_retired_censtatd_retail_url_uses_current_official_pages(self):
         targets = crawl.candidate_targets(
             23,
