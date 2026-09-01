@@ -2740,6 +2740,7 @@ def _run_company_research_agent(
             "opened_evidence_count": len(current_votes),
             "opened_lead_count": len(votes),
             "open_attempts": open_attempts,
+            "live_official_open_count": sum(bool(item.get("opened")) for item in open_attempts),
             "fresh_official_open_count": sum(bool(item.get("opened")) for item in current_open_attempts),
             "note": "HTTP 403/466 等只属于该原文入口打开失败，不代表搜索失败。",
         }
@@ -2797,6 +2798,14 @@ def _run_company_research_agent(
             metric_opened = [record for record in opened if record.get("metric") == metric]
             metric_evidence = sum(len(record.get("opened_evidence", [])) for record in metric_opened)
             metric_fresh_opens = sum(int(record.get("fresh_official_open_count") or 0) for record in metric_opened)
+            metric_live_official_opens = sum(
+                int(record.get("live_official_open_count") or 0) for record in metric_opened
+            )
+            metric_qualifying_opens = (
+                metric_fresh_opens
+                if _company_agent_metric_requires_direct_value(metric)
+                else metric_live_official_opens
+            )
             metric_open_attempts = [
                 attempt
                 for record in metric_opened
@@ -2808,7 +2817,7 @@ def _run_company_research_agent(
                 research_incomplete.append(f"{metric}:search_not_run")
                 continue
             if metric_status == "verified_latest" and not (
-                metric_fresh_opens > 0
+                metric_qualifying_opens > 0
                 and (
                     not _company_agent_metric_requires_direct_value(metric)
                     or metric_evidence > 0
@@ -3130,6 +3139,14 @@ def _run_company_research_agent(
         metric_opened = [item for item in opened if item.get("metric") == metric]
         metric_evidence = sum(len(item.get("opened_evidence", [])) for item in metric_opened)
         metric_fresh_opens = sum(int(item.get("fresh_official_open_count") or 0) for item in metric_opened)
+        metric_live_official_opens = sum(
+            int(item.get("live_official_open_count") or 0) for item in metric_opened
+        )
+        metric_qualifying_opens = (
+            metric_fresh_opens
+            if _company_agent_metric_requires_direct_value(metric)
+            else metric_live_official_opens
+        )
         metric_open_attempts = [
             attempt
             for item in metric_opened
@@ -3145,7 +3162,7 @@ def _run_company_research_agent(
         if final.get("status") == "agent_error":
             status = "agent_error"
             reason = final.get("rationale", "Agent 未形成逐指标终态。")
-        elif claimed_status == "verified_latest" and metric_fresh_opens > 0 and (
+        elif claimed_status == "verified_latest" and metric_qualifying_opens > 0 and (
             not _company_agent_metric_requires_direct_value(metric)
             or metric_evidence > 0
         ):
@@ -3176,6 +3193,7 @@ def _run_company_research_agent(
             "rationale": clean_text(reason, 400),
             "search_count": len(metric_searches),
             "fresh_official_open_count": metric_fresh_opens,
+            "live_official_open_count": metric_live_official_opens,
             "evidence_count": metric_evidence,
             "evidence_urls": list(dict.fromkeys(
                 str(vote.get("url") or "")
