@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>LLM 與 Agent 全流程架構</title>
+    <link rel="stylesheet" href="./architecture-map.css?v=1" />
+  </head>
+  <body>
+    <main class="architecture-page">
+      <header class="architecture-heading">
+        <div>
+          <p>CODE-MAPPED ARCHITECTURE</p>
+          <h1>LLM 與 Agent 全流程架構</h1>
+          <span>依據目前程式碼映射頁面、確定性工作流、專責 Agent、模型路由及受管制輸出</span>
+        </div>
+        <aside class="architecture-legend" aria-label="圖例">
+          <span><i data-tone="page"></i>頁面入口</span>
+          <span><i data-tone="flow"></i>確定性流程</span>
+          <span><i data-tone="agent"></i>Agent</span>
+          <span><i data-tone="llm"></i>LLM 路由</span>
+          <span><i data-tone="gate"></i>人工／品質門禁</span>
+        </aside>
+      </header>
+
+      <section class="architecture-stage" aria-label="五層架構">
+        <div><b>01</b><span>頁面入口</span><small>使用者與排程觸發</small></div>
+        <div><b>02</b><span>流程編排</span><small>固定步驟與狀態管理</small></div>
+        <div><b>03</b><span>專責 Agent</span><small>判斷、工具與迭代</small></div>
+        <div><b>04</b><span>共享模型層</span><small>模型、Key 與工具路由</small></div>
+        <div><b>05</b><span>受管制輸出</span><small>證據、回讀與發布</small></div>
+      </section>
+
+      <section class="architecture-lanes" aria-label="頁面與 AI 流程關係">
+        <article class="architecture-lane" data-lane="news">
+          <header><span>情報採集</span><strong>新聞發現與審核</strong><small>候選進入人工審核前，先完成補搜、文案及偏好判斷</small></header>
+          <div class="architecture-cell" data-kind="page">
+            <em>頁面</em><b>新聞採集</b><b>新聞審核</b><small>定時掃描／人工回讀</small>
+          </div>
+          <div class="architecture-cell" data-kind="flow">
+            <em>固定流程</em><b>來源監測＋定時爬蟲</b><small>固定查詢 → 覆蓋盤點 → 時窗門禁</small>
+          </div>
+          <div class="architecture-cell" data-kind="agent">
+            <em>Agents</em><b>Agentic Search Planner</b><b>AI 文案與語義去重</b><b>新聞選材 Agent</b>
+          </div>
+          <div class="architecture-cell" data-kind="llm">
+            <em>模型路由</em><b>DeepSeek-V4-Pro</b><small>可按設定路由模型／Key；失敗保留確定性補搜</small>
+          </div>
+          <div class="architecture-cell" data-kind="output">
+            <em>輸出</em><b>飛書新聞審核表</b><b>戰略快訊／周報候選</b><small>人工作者身份、內容與回讀驗證</small>
+          </div>
+        </article>
+
+        <article class="architecture-lane" data-lane="intelligence">
+          <header><span>數據研判</span><strong>競對數據與戰略洞察</strong><small>先治理可驗證事實，再讓模型在口徑及證據門禁內研判</small></header>
+          <div class="architecture-cell" data-kind="page">
+            <em>頁面</em><b>戰略總覽／監控體系</b><b>競對分析／情報圖譜</b>
+          </div>
+          <div class="architecture-cell" data-kind="flow">
+            <em>LangGraph</em><b>擷取 → 分類 → 抽取</b><b>實體驗證 → 品質審核</b><small>衝突處理 → 搜尋核驗 → 缺口規劃 → 發布</small>
+          </div>
+          <div class="architecture-cell" data-kind="agent">
+            <em>Agents</em><b>公司研究 Agents</b><b>缺口 Supervisor</b><b>跨庫洞察／競對洞察</b>
+          </div>
+          <div class="architecture-cell" data-kind="llm">
+            <em>模型路由</em><b>DeepSeek-V4-Pro</b><small>GLM → Qwen3-30B-A3B-Instruct-2507 後備</small>
+          </div>
+          <div class="architecture-cell" data-kind="output">
+            <em>受管資料</em><b>本地／國際／內地／雲</b><b>證據快照與不可比邊界</b><small>API → 看板 → GitHub Pages 只讀快照</small>
+          </div>
+        </article>
+
+        <article class="architecture-lane" data-lane="reports">
+          <header><span>報告產製</span><strong>周報與業績摘要</strong><small>模型負責編輯與複核，數字、來源和成品仍通過獨立品質門禁</small></header>
+          <div class="architecture-cell" data-kind="page">
+            <em>頁面</em><b>戰略周報</b><b>業績摘要</b><b>訂閱與推送</b>
+          </div>
+          <div class="architecture-cell" data-kind="flow">
+            <em>工作流</em><b>審核新聞＋已驗證事實</b><small>期間篩選 → 來源整理 → 成品驗證</small>
+          </div>
+          <div class="architecture-cell" data-kind="agent">
+            <em>Agents</em><b>Weekly Writer</b><b>Quality Reviewer</b><b>Performance Editor</b>
+          </div>
+          <div class="architecture-cell" data-kind="llm">
+            <em>模型路由</em><b>共用內部模型網關</b><small>結構化輸出、Key 輪換、失敗時保留有限版</small>
+          </div>
+          <div class="architecture-cell" data-kind="output">
+            <em>輸出</em><b>Word／PDF／音頻摘要</b><b>報告庫／飛書訂閱</b><small>生成紀錄、內容品質與發送回讀</small>
+          </div>
+        </article>
+
+        <article class="architecture-lane" data-lane="assistant">
+          <header><span>智能工具</span><strong>小競AI 工具循環</strong><small>單一 ReAct Agent 自主選擇 Skill、資料集與工具；有副作用操作另行審批</small></header>
+          <div class="architecture-cell" data-kind="page">
+            <em>頁面</em><b>小競AI</b><small>文字／圖片／語音／歷史對話</small>
+          </div>
+          <div class="architecture-cell" data-kind="flow">
+            <em>會話層</em><b>可續傳 SSE Session</b><small>上下文 → 權限 → 審批 → 事件序列 → 恢復</small>
+          </div>
+          <div class="architecture-cell" data-kind="agent">
+            <em>ReAct Agent</em><b>規劃 → 工具 → 觀察 → 回答</b><small>RAG／Skills／資料集／記憶／搜尋／圖表／預測／任務</small>
+          </div>
+          <div class="architecture-cell" data-kind="llm">
+            <em>模型路由</em><b>設定模型＋Key 輪換</b><small>Kimi-K2.5 圖像路由 · Qwen3ASR 語音路由</small>
+          </div>
+          <div class="architecture-cell" data-kind="output">
+            <em>回答</em><b>Markdown＋文內引用</b><b>圖表／檔案／三個追問</b><small>完整答案、工具足跡與 Agent Run 稽核</small>
+          </div>
+        </article>
+
+        <article class="architecture-lane" data-lane="operations">
+          <header><span>生產運維</span><strong>任務監控與告警閉環</strong><small>確定性檢測先建立故障證據，LLM 只在候選線路與證據邊界內分析</small></header>
+          <div class="architecture-cell" data-kind="page">
+            <em>頁面</em><b>任務日誌</b><b>報警處置</b><small>團隊管理／團隊足跡提供權限與操作稽核</small>
+          </div>
+          <div class="architecture-cell" data-kind="flow">
+            <em>監控流程</em><b>Scheduler＋Run Registry</b><small>健康檢測 → 事件合併 → 恢復證據 → 狀態更新</small>
+          </div>
+          <div class="architecture-cell" data-kind="agent">
+            <em>Agents</em><b>AI 故障診斷</b><b>影響線路複核</b><b>結案摘要</b>
+          </div>
+          <div class="architecture-cell" data-kind="llm">
+            <em>模型路由</em><b>設定模型</b><small>救援模型 → GLM → Qwen3-30B-A3B-Instruct-2507</small>
+          </div>
+          <div class="architecture-cell" data-kind="gate">
+            <em>閉環門禁</em><b>飛書原卡更新與回讀</b><b>錯誤台帳／操作足跡</b><small>人工處理、恢復證據、剩餘風險</small>
+          </div>
+        </article>
+      </section>
+
+      <footer class="architecture-footer">
+        <p><strong>靜態關係圖</strong> 動畫只表示既定流程方向，不代表目前有任務正在執行。</p>
+        <div><span>確定性優先</span><span>Agent 自主判斷</span><span>LLM 不直接發布</span><span>人工與回讀閉環</span></div>
+      </footer>
+    </main>
+  </body>
+</html>

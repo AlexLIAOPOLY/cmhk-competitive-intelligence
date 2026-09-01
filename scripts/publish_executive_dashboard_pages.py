@@ -31,6 +31,8 @@ DEFAULT_REPOSITORY = "https://github.com/AlexLIAOPOLY/cmhk-competitive-intellige
 DEFAULT_PUBLIC_URL = "https://alexliaopoly.github.io/cmhk-competitive-intelligence/"
 DEFAULT_INTELLIGENCE_SOURCE_URL = "http://127.0.0.1:8765/"
 PUBLIC_STATIC_FILES = (
+    "architecture-map.css",
+    "architecture-map.html",
     "app.js",
     "auth-client.js",
     "company-data.js",
