@@ -73,7 +73,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 2
+COMPANY_AGENT_PROGRESS_VERSION = 3
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -2802,6 +2802,117 @@ def _run_company_research_agent(
         return result
 
     @tool
+    def research_all_metrics() -> dict[str, Any]:
+        """批量检索全部预期指标，并仅对冲突或摘要无直接值的来源做原文核实。"""
+        for metric in expected_metrics:
+            if _company_metric_is_not_applicable(company, metric):
+                continue
+            search_latest_official.invoke({"metric": metric})
+
+        for metric in expected_metrics:
+            if _company_metric_is_not_applicable(company, metric):
+                continue
+            search = next((item for item in searches if item.get("metric") == metric), {})
+            search_evidence = search.get("search_evidence") or []
+            search_values = {
+                str(vote.get("canonical") or "")
+                for vote in search_evidence
+                if vote.get("canonical")
+            }
+            if len(search_values) == 1:
+                continue
+            candidate_urls = [
+                str(vote.get("url") or "")
+                for vote in search_evidence
+                if str(vote.get("url") or "")
+            ]
+            candidate_urls.extend(
+                str(item.get("url") or "")
+                for item in [
+                    *(search.get("current_official_results") or []),
+                    *(search.get("current_results") or []),
+                ]
+                if str(item.get("url") or "")
+            )
+            candidate_urls = list(dict.fromkeys(candidate_urls))[:3]
+            if candidate_urls:
+                open_official_pages.invoke({"metric": metric, "urls": candidate_urls})
+
+        recommendations: list[dict[str, Any]] = []
+        for metric in expected_metrics:
+            if _company_metric_is_not_applicable(company, metric):
+                recommendations.append({
+                    "metric": metric,
+                    "recommended_status": "not_applicable",
+                    "rationale": "该指标对该主体不适用。",
+                    "value": "",
+                    "evidence_urls": [],
+                })
+                continue
+            metric_searches = [item for item in searches if item.get("metric") == metric]
+            metric_opened = [item for item in opened if item.get("metric") == metric]
+            search_evidence = [
+                vote
+                for item in metric_searches
+                for vote in item.get("search_evidence", [])
+            ]
+            open_evidence = [
+                vote
+                for item in metric_opened
+                for vote in item.get("opened_evidence", [])
+            ]
+            search_values = {
+                str(vote.get("canonical") or "")
+                for vote in search_evidence
+                if vote.get("canonical")
+            }
+            open_values = {
+                str(vote.get("canonical") or "")
+                for vote in open_evidence
+                if vote.get("canonical")
+            }
+            fresh_official_opens = sum(
+                int(item.get("fresh_official_open_count") or 0) for item in metric_opened
+            )
+            selected_votes = open_evidence or search_evidence
+            selected_vote = selected_votes[0] if selected_votes else {}
+            unresolved_conflict = len(open_values) > 1 or (
+                not open_values and len(search_values) > 1
+            )
+            if unresolved_conflict:
+                recommended_status = "conflict"
+                rationale = "当期来源数值不一致，打开原文后仍无法消除冲突。"
+                selected_vote = {}
+            elif open_values or len(search_values) == 1:
+                recommended_status = "verified_latest"
+                rationale = "已从当期搜索结果或打开的来源核实直接指标值。"
+            elif fresh_official_opens > 0:
+                recommended_status = "not_disclosed"
+                rationale = "已回读当期官方页面，未取得该指标的单独披露值。"
+            else:
+                recommended_status = "search_exhausted"
+                rationale = "已执行当期网络检索并尝试回读相关来源，未取得可核验直接值。"
+            recommendations.append({
+                "metric": metric,
+                "recommended_status": recommended_status,
+                "rationale": rationale,
+                "value": selected_vote.get("normalized_value") or selected_vote.get("value") or "",
+                "search_value_conflict": len(search_values) > 1,
+                "evidence_urls": list(dict.fromkeys(
+                    str(vote.get("url") or "")
+                    for vote in [*open_evidence, *search_evidence]
+                    if str(vote.get("url") or "")
+                ))[:4],
+            })
+        return {
+            "company": company,
+            "expected_metric_count": len(expected_metrics),
+            "searched_metric_count": len(searches),
+            "opened_metric_count": len({item.get("metric") for item in opened}),
+            "recommendations": recommendations,
+        }
+
+    @tool
     def complete_company_research(
         status: str,
         rationale: str,
@@ -2991,6 +3102,7 @@ def _run_company_research_agent(
 
     tools = [
         inspect_company_evidence,
+        research_all_metrics,
         search_latest_official,
         open_official_pages,
         complete_company_research,
@@ -3022,13 +3134,48 @@ def _run_company_research_agent(
 
     error = ""
     try:
+        bulk_bootstrap: dict[str, Any] = {}
+        if len(expected_metrics) > 6:
+            traces.append(
+                _trace(
+                    state,
+                    "公司研究 Agent",
+                    "tool_call",
+                    f"{company} Agent 预先批量检索全部 {len(expected_metrics)} 个指标。",
+                    event_type="tool_call",
+                    tool="research_all_metrics",
+                    input={},
+                    agent_id=agent_id,
+                    parent_agent_id=parent_agent_id,
+                    company=company,
+                    role="company_research",
+                )
+            )
+            bulk_bootstrap = invoke_company_tool("research_all_metrics", {})
+            traces.append(
+                _trace(
+                    state,
+                    "公司研究 Agent",
+                    "tool_result",
+                    f"{company} Agent 已完成全指标批量检索。",
+                    event_type="tool_result",
+                    tool="research_all_metrics",
+                    result=bulk_bootstrap,
+                    status="success" if not bulk_bootstrap.get("error") else "error",
+                    agent_id=agent_id,
+                    parent_agent_id=parent_agent_id,
+                    company=company,
+                    role="company_research",
+                )
+            )
         model = _build_supervisor_model().bind_tools(tools)
         messages: list[Any] = [
             SystemMessage(
                 content=(
                     f"你是只负责 {company} 的 Company Research Agent，不得研究或引用其他公司的数值。"
-                    "必须先读取已有证据，再自主调用搜索引擎寻找最新官方 IR、业绩公告、交易所或监管披露，"
-                    "并继续打开搜索命中的官方网页或 PDF。固定 URL 只是线索，不是限定入口。"
+                    "优先调用 research_all_metrics，一次完成全部预期指标的搜索和必要原文核实；"
+                    "不要逐指标重复调用 search_latest_official。证据可来自官网、交易所、监管披露或第三方新闻，"
+                    "固定 URL 只是线索，不是限定入口。"
                     "某个网页打开返回 403 时应继续搜索其他官方入口，不得把 403 说成搜索引擎失败。"
                     f"必须逐一完成这些指标：{expected_metrics}。最后调用 complete_company_research 时，"
                     "metric_statuses 必须逐项覆盖全部预期指标；不得用 0、行业估算或旧值填补未披露项。"
@@ -3043,6 +3190,17 @@ def _run_company_research_agent(
                 content=(
                     f"调度行 {row_number}，库内主体 {row_entity}，"
                     f"预期指标 {expected_metrics}。"
+                    + (
+                        "批量检索已执行，请优先根据以下建议终态调用 "
+                        "complete_company_research："
+                        + json.dumps(
+                            bulk_bootstrap.get("recommendations") or [],
+                            ensure_ascii=False,
+                            separators=(",", ":"),
+                        )
+                        if bulk_bootstrap
+                        else ""
+                    )
                 )
             ),
         ]

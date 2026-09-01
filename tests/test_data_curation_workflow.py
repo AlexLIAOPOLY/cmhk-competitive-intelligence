@@ -173,6 +173,65 @@ class DataCurationWorkflowTests(unittest.TestCase):
             ["inspect_company_evidence", "search_latest_official", "open_official_pages", "complete_company_research"],
         )
 
+    def test_company_agent_bulk_research_covers_metric_plan_larger_than_turn_limit(self) -> None:
+        metrics = [f"指标{i}" for i in range(12)]
+
+        class BulkResearchAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                if self.turn == 1:
+                    calls = [{"id": "bulk", "name": "research_all_metrics", "args": {}}]
+                else:
+                    calls = [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "批量检索已覆盖全部指标",
+                        "metric_statuses": [
+                            {
+                                "metric": metric,
+                                "status": "verified_latest",
+                                "rationale": "当期搜索结果含直接值",
+                            }
+                            for metric in metrics
+                        ],
+                    }}]
+                return SimpleNamespace(content="", tool_calls=calls)
+
+        model = BulkResearchAgent()
+        search = Mock(return_value=([{
+            "title": "Example 2026 results",
+            "url": "https://news.example.com/example-results",
+            "snippet": "Example metric was 10 for 2026.",
+            "provider": "news_search",
+        }], "test"))
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=metrics),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Example"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=model),
+            patch("data_curation.workflow._public_web_search", search),
+            patch("data_curation.workflow._votes_from_web_search", return_value=[{
+                "value": "10",
+                "normalized_value": "10",
+                "canonical": "10",
+                "url": "https://news.example.com/example-results",
+            }]),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-bulk"}, "Example", 2, "Example", []
+            )
+        self.assertEqual(model.turn, 2)
+        self.assertEqual(search.call_count, len(metrics))
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertEqual(len(result["metric_results"]), len(metrics))
+        self.assertTrue(result["metric_coverage_complete"])
+
     def test_company_agent_does_not_count_fixed_old_sources_as_latest_evidence(self) -> None:
         class ToolCallingCompanyAgent:
             def __init__(self) -> None:
