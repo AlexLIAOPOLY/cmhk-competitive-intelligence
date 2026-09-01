@@ -803,6 +803,13 @@
 .company-agent-detail dt { color: #7297a2; font-size: 8px; }
 .company-agent-detail dd { margin: 0; color: #bfd4d9; font-size: 9px; line-height: 1.55; overflow-wrap: anywhere; }
 .company-agent-detail a { color: #78d2e1; }
+.company-agent-metric-results { display: grid; gap: 6px; }
+.company-agent-metric-results > span { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 3px 8px; padding: 7px; border: 1px solid rgba(65,108,124,.5); border-radius: 6px; background: rgba(11,43,56,.78); }
+.company-agent-metric-results strong { color: #dcecef; font-size: 9px; }
+.company-agent-metric-results em { color: #65cdb0; font-size: 8px; font-style: normal; }
+.company-agent-metric-results small,.company-agent-metric-results p { grid-column: 1/-1; margin: 0; color: #7798a2; font-size: 8px; line-height: 1.45; }
+.company-agent-metric-results > span.is-not_disclosed em,.company-agent-metric-results > span.is-not_applicable em { color: #e8bd67; }
+.company-agent-metric-results > span.is-conflict em,.company-agent-metric-results > span.is-unsearched em,.company-agent-metric-results > span.is-search_exhausted em,.company-agent-metric-results > span.is-agent_error em { color: #ef9c84; }
 .company-agent-graph-empty { display: grid; min-height: 280px; place-content: center; gap: 9px; padding: 24px; text-align: center; }
 .company-agent-graph-empty strong { color: #dcecef; font-size: 15px; }
 .company-agent-graph-empty p { max-width: 720px; margin: 0; color: #8eabb3; font-size: 12px; line-height: 1.7; }

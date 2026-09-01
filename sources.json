@@ -750,11 +750,288 @@
     "need": "地缘政治与经济、重大政策/声明等",
     "sources": "【政治新闻】\n- https://www.gov.cn/（中国政府网_中央人民政府门户网站）\n- https://english.www.gov.cn/（The State Council of the People's Republic of China）\n- https://www.mfa.gov.cn/eng/（Ministry of Foreign Affairs of the People's Republic of China）",
     "channel": "验证-only爬虫：官网/监管/权威机构长期页优先，httpx/curl 真实访问，BeautifulSoup/lxml 抽正文；按政策/事件字段抽取证据，保存状态码、标题、正文片段、hash。",
-    "frequency": "每日扫描官方新闻/公告；每周汇总复核",
+    "frequency": "每天 03:00",
     "selected_fields": [
       "地缘政治",
       "经济",
       "重大政策/声明"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "47",
+    "block": "本地运营商",
+    "object": "CMHK、HKT、3HK、SmarTone、HKBN、HGC、i-CABLE",
+    "object_cell": "CMHK、HKT、3HK、SmarTone、HKBN、HGC、i-CABLE",
+    "entities": [
+      "CMHK",
+      "HKT",
+      "3HK",
+      "SmarTone",
+      "HKBN",
+      "HGC",
+      "i-CABLE"
+    ],
+    "package": "四库自动更新｜财报经营指标",
+    "need": "收入、EBITDA、净利润、用户数、ARPU、资本开支、派息；只接受官方披露并保留期间、单位和原文链接",
+    "sources": "CMHK https://www.hk.chinamobile.com/en/\nHKT https://www.hkt.com/en/about-hkt/investor-relations/financial-results/\n3HK https://www.hthkh.com/en/ir/reports.php\nSmarTone https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp\nHKBN https://www.hkbn.net/group/en/investor-engagement/financial-results\nHGC https://www.hgc-intl.com/\ni-CABLE https://www.i-cablecomm.com/en/annual-interim-reports",
+    "channel": "官方 IR 索引每日检查；自动发现最新财报/业绩公告并跟进 PDF/HTML；变更须通过字段、期间、单位、来源和哈希门禁",
+    "frequency": "每日 03:00",
+    "selected_fields": [
+      "收入",
+      "EBITDA",
+      "净利润",
+      "用户数",
+      "ARPU",
+      "资本开支",
+      "派息"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "48",
+    "block": "国际运营商",
+    "object": "Verizon、AT&T、Deutsche Telekom、NTT",
+    "object_cell": "Verizon、AT&T、Deutsche Telekom、NTT",
+    "entities": [
+      "Verizon",
+      "AT&T",
+      "Deutsche Telekom",
+      "NTT"
+    ],
+    "package": "四库自动更新｜财报经营指标",
+    "need": "收入、服务收入、EBITDA/经营利润、净利润、用户数、ARPU、资本开支、自由现金流；只接受官方披露",
+    "sources": "Verizon索引 https://www.verizon.com/about/investors/financial-reporting\nVerizon最新业绩 https://www.verizon.com/about/news/verizon-delivers-record-2q26-results\nAT&T最新指标 https://investors.att.com/\nAT&T业绩索引 https://investors.att.com/financial-reports/quarterly-earnings/2026\nDeutsche Telekom https://www.telekom.com/en/investor-relations/publications/financial-results\nNTT https://group.ntt/en/ir/library/results/",
+    "channel": "官方 IR 索引与 SEC 提交清单每日检查；发现新季度材料后跟进原始文件，解析成功才允许更新数据库",
+    "frequency": "每日 03:00",
+    "selected_fields": [
+      "收入",
+      "EBITDA或经营利润",
+      "净利润",
+      "用户数",
+      "ARPU",
+      "资本开支",
+      "自由现金流"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "49",
+    "block": "内地运营商",
+    "object": "中国移动、中国电信、中国联通、中国铁塔、中国广电",
+    "object_cell": "中国移动、中国电信、中国联通、中国铁塔、中国广电",
+    "entities": [
+      "中国移动",
+      "中国电信",
+      "中国联通",
+      "中国铁塔",
+      "中国广电"
+    ],
+    "package": "四库自动更新｜财报经营指标",
+    "need": "收入、通信服务收入、EBITDA、净利润、移动/5G/有线宽带/有线电视用户、ARPU、站址数、塔类租户数、塔均租户数、资本开支、云收入；只接受公司官网/交易所披露",
+    "sources": "中国移动 https://www.chinamobileltd.com/en/ir/reports.php\n中国电信 https://www.chinatelecom-h.com/en/ir/reports.php\n中国联通 https://www.chinaunicom.com.hk/en/ir/reports.php\n中国铁塔 https://ir.china-tower.com/en/ir/reports.php\n中国广电 https://www.cbn.cn/",
+    "channel": "官方 IR 索引每日检查；发现新报告或运营数据公告后跟进原始 PDF/HTML；异口径数据不得覆盖",
+    "frequency": "每日 03:00",
+    "selected_fields": [
+      "收入",
+      "通信服务收入",
+      "EBITDA",
+      "净利润",
+      "移动及5G用户",
+      "有线宽带用户",
+      "有线电视用户",
+      "站址数",
+      "塔类租户数",
+      "塔均租户数",
+      "ARPU",
+      "资本开支",
+      "云收入"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "50",
+    "block": "云厂商",
+    "object": "AWS、Microsoft Azure、Google Cloud、Alibaba Cloud、Tencent Cloud、Huawei Cloud、Oracle Cloud、China Mobile Cloud",
+    "object_cell": "AWS、Microsoft Azure、Google Cloud、Alibaba Cloud、Tencent Cloud、Huawei Cloud、Oracle Cloud、China Mobile Cloud",
+    "entities": [
+      "AWS",
+      "Microsoft Azure",
+      "Google Cloud",
+      "Alibaba Cloud",
+      "Tencent Cloud",
+      "Huawei Cloud",
+      "Oracle Cloud",
+      "China Mobile Cloud"
+    ],
+    "package": "四库自动更新｜云业务指标",
+    "need": "云收入、同比增速、经营利润/利润率、积压订单或 RPO、资本开支；分部口径不可比时明确标注",
+    "sources": "AWS https://ir.aboutamazon.com/quarterly-results/default.aspx\nMicrosoft https://www.microsoft.com/en-us/Investor/earnings\nAlphabet https://abc.xyz/investor/\nAlibaba https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results\nTencent https://www.tencent.com/investors/results/\nHuawei https://www.huawei.com/en/annual-report\nOracle https://investor.oracle.com/financials/\nChina Mobile Cloud https://www.chinamobileltd.com/en/ir/reports.php",
+    "channel": "官方业绩索引与 SEC 提交清单每日检查；自动发现最新原始材料，解析分部字段并完成单位/期间/来源门禁后才更新",
+    "frequency": "每日 03:00",
+    "selected_fields": [
+      "云收入",
+      "同比增速",
+      "经营利润或利润率",
+      "积压订单或RPO",
+      "资本开支"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "52",
+    "block": "云厂商",
+    "object": "AWS",
+    "object_cell": "AWS",
+    "entities": [
+      "AWS"
+    ],
+    "package": "财报经营指标",
+    "need": "AWS分部收入、经营利润、同比增速、资本开支、AI基础设施投入及管理层指引",
+    "sources": "https://ir.aboutamazon.com/quarterly-results/default.aspx\nhttps://ir.aboutamazon.com/annual-reports-proxies-and-shareholder-letters/default.aspx",
+    "channel": "官方投资者关系页面优先；真实访问并抽取最新季度/年度报告链接、正文证据、发布日期和hash；Agent仅发布有官方证据支持的事实",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "AWS分部收入",
+      "AWS经营利润",
+      "同比增速",
+      "资本开支",
+      "AI基础设施投入",
+      "管理层指引"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "53",
+    "block": "云厂商",
+    "object": "Microsoft Azure",
+    "object_cell": "Microsoft Azure",
+    "entities": [
+      "Microsoft Azure"
+    ],
+    "package": "财报经营指标",
+    "need": "Intelligent Cloud收入与经营利润、Azure及其他云服务增速、资本开支、AI基础设施投入及管理层指引",
+    "sources": "https://www.microsoft.com/en-us/Investor/earnings\nhttps://www.microsoft.com/en-us/investor/annual-reports",
+    "channel": "官方投资者关系页面优先；Azure未单独披露收入时必须保留Intelligent Cloud代理口径，禁止估算纯Azure收入",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "Intelligent Cloud收入",
+      "Intelligent Cloud经营利润",
+      "Azure及其他云服务增速",
+      "资本开支",
+      "AI基础设施投入",
+      "管理层指引"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "54",
+    "block": "云厂商",
+    "object": "Google Cloud",
+    "object_cell": "Google Cloud",
+    "entities": [
+      "Google Cloud"
+    ],
+    "package": "财报经营指标",
+    "need": "Google Cloud收入、经营利润、同比增速、资本开支、AI基础设施投入及管理层指引",
+    "sources": "https://abc.xyz/investor/\nhttps://abc.xyz/investor/sec-filings/",
+    "channel": "官方投资者关系及SEC文件优先；真实访问并抽取Google Cloud分部表，保存正文证据、发布日期和hash",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "Google Cloud收入",
+      "Google Cloud经营利润",
+      "同比增速",
+      "资本开支",
+      "AI基础设施投入",
+      "管理层指引"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "55",
+    "block": "云厂商",
+    "object": "Alibaba Cloud",
+    "object_cell": "Alibaba Cloud",
+    "entities": [
+      "Alibaba Cloud"
+    ],
+    "package": "财报经营指标",
+    "need": "Cloud Intelligence Group收入、调整后EBITA、同比增速、AI相关云产品增长及管理层指引",
+    "sources": "https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",
+    "channel": "官方投资者关系页面优先；保留财年季度及调整后EBITA非GAAP口径，禁止与经营利润混用",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "Cloud Intelligence Group收入",
+      "调整后EBITA",
+      "同比增速",
+      "AI相关云产品增长",
+      "管理层指引"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "56",
+    "block": "云厂商",
+    "object": "Tencent Cloud",
+    "object_cell": "Tencent Cloud",
+    "entities": [
+      "Tencent Cloud"
+    ],
+    "package": "财报经营指标",
+    "need": "FinTech and Business Services代理分部收入、毛利、同比增速、云与AI业务披露及管理层指引",
+    "sources": "https://www.tencent.com/investors/results/",
+    "channel": "官方投资者关系页面优先；腾讯未单独披露云收入时必须标记FBS代理口径，禁止表述为纯腾讯云收入",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "FinTech及企业服务收入",
+      "FinTech及企业服务毛利",
+      "同比增速",
+      "云与AI业务披露",
+      "管理层指引"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "57",
+    "block": "云厂商",
+    "object": "Huawei Cloud",
+    "object_cell": "Huawei Cloud",
+    "entities": [
+      "Huawei Cloud"
+    ],
+    "package": "财报经营指标",
+    "need": "Cloud Computing分部收入、含其他分部云计算收入、同比变化、研发与AI基础设施投入",
+    "sources": "https://www.huawei.com/en/annual-report",
+    "channel": "华为官方年报入口优先；只使用年度已披露Cloud Computing口径，未公开季度数据时登记披露缺口并禁止拆分估算",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "云计算收入",
+      "同比变化",
+      "研发投入",
+      "AI基础设施投入"
+    ],
+    "ignored_selected_fields": []
+  },
+  {
+    "row": "58",
+    "block": "云厂商",
+    "object": "Oracle Cloud",
+    "object_cell": "Oracle Cloud",
+    "entities": [
+      "Oracle Cloud"
+    ],
+    "package": "财报经营指标",
+    "need": "Cloud Services收入、IaaS与SaaS收入及增速、Cloud and License口径、资本开支与管理层指引",
+    "sources": "https://investor.oracle.com/financials/\nhttps://investor.oracle.com/sec-filings/default.aspx",
+    "channel": "官方投资者关系及SEC文件优先；区分Cloud Services产品线与Cloud and License分部，禁止跨口径替代",
+    "frequency": "每天 03:00",
+    "selected_fields": [
+      "Cloud Services收入",
+      "IaaS收入及增速",
+      "SaaS收入及增速",
+      "Cloud and License收入",
+      "资本开支",
+      "管理层指引"
     ],
     "ignored_selected_fields": []
   }

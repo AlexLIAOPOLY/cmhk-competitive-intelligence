@@ -2380,13 +2380,89 @@ def _build_supervisor_model() -> ChatDeepSeek:
 
 
 def _company_agent_group(company: str) -> str:
-    if company in {"HKT", "SmarTone", "3HK", "HKBN", "i-CABLE"}:
+    if company in {"CMHK", "HKT", "SmarTone", "3HK", "HKBN", "HGC", "i-CABLE"}:
         return "local"
-    if company in {"中国移动", "中国电信", "中国联通"}:
+    if company in {"中国移动", "中国电信", "中国联通", "中国铁塔", "中国广电"}:
         return "mainland"
-    if company in CLOUD_METRIC_COMPANIES:
+    if company in CLOUD_METRIC_COMPANIES or company == "China Mobile Cloud":
         return "cloud"
     return "international"
+
+
+COMPANY_FACT_ENTITY_ALIASES: dict[str, set[str]] = {
+    "CMHK": {"CMHK", "China Mobile Hong Kong", "China Mobile Hong Kong Company Limited"},
+    "HKT": {"HKT", "csl", "1O1O"},
+    "3HK": {"3HK", "3HK / Hutchison", "Hutchison"},
+    "HGC": {"HGC"},
+    "i-CABLE": {"i-CABLE", "iCable"},
+    "Bharti Airtel": {"Bharti Airtel", "Airtel"},
+    "Reliance Jio": {"Reliance Jio", "Jio"},
+    "BT": {"BT", "BT/EE"},
+    "中国铁塔": {"中国铁塔", "China Tower", "China Tower Corporation Limited"},
+    "中国广电": {"中国广电", "China Broadnet", "China Broadcasting Network Group Corporation Ltd. / China Broadnet"},
+    "China Mobile Cloud": {"China Mobile Cloud", "Mobile Cloud", "移动云"},
+}
+
+COMPANY_REQUIRED_METRICS: dict[str, list[str]] = {
+    "CMHK": ["收入", "服务收入", "移动及5G用户", "ARPU", "网络覆盖", "资本开支"],
+    "中国铁塔": ["收入", "EBITDA", "净利润", "站址数", "塔类租户数", "塔均租户数", "资本开支", "派息"],
+    "中国广电": ["收入", "移动及5G用户", "有线电视用户", "家庭宽带用户", "ARPU", "资本开支"],
+    "China Mobile Cloud": ["云收入", "同比增速", "经营利润或利润率", "积压订单或RPO", "资本开支"],
+}
+
+
+def _company_fact_entities(company: str) -> set[str]:
+    return COMPANY_FACT_ENTITY_ALIASES.get(company, {company})
+
+
+def _company_configured_metrics(company: str) -> list[str]:
+    """Return every selected source-registry field for one canonical company."""
+    if company in COMPANY_REQUIRED_METRICS:
+        return list(COMPANY_REQUIRED_METRICS[company])
+    aliases = {item.casefold() for item in _company_fact_entities(company)}
+    try:
+        rows = json.loads((ROOT / "sources.json").read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, TypeError):
+        return []
+    metrics: list[str] = []
+    for row in rows if isinstance(rows, list) else []:
+        if not isinstance(row, dict):
+            continue
+        row_entities = {
+            clean_text(value, 120).casefold()
+            for value in [row.get("object"), row.get("object_cell"), *(row.get("entities") or [])]
+            if clean_text(value, 120)
+        }
+        if not aliases.intersection(row_entities):
+            continue
+        ignored = {clean_text(value, 120) for value in row.get("ignored_selected_fields") or []}
+        metrics.extend(
+            clean_text(value, 120)
+            for value in row.get("selected_fields") or []
+            if clean_text(value, 120) and clean_text(value, 120) not in ignored
+        )
+    return list(dict.fromkeys(metrics))
+
+
+def _company_metric_is_not_applicable(company: str, metric: str) -> bool:
+    return company == "HGC" and metric in {"派息", "券商观点", "市场反应"}
+
+
+def _company_expected_metrics(company: str, facts: list[CandidateFact]) -> list[str]:
+    metrics = [
+        *_company_configured_metrics(company),
+        *(clean_text(item.metric, 120) for item in facts if clean_text(item.metric, 120)),
+    ]
+    if metrics:
+        return list(dict.fromkeys(metrics))
+    group = _company_agent_group(company)
+    defaults = {
+        "local": ["收入", "EBITDA", "净利润", "用户数", "ARPU", "资本开支"],
+        "international": ["收入", "EBITDA", "净利润", "用户数", "资本开支"],
+        "mainland": ["收入", "EBITDA", "净利润", "用户数", "资本开支"],
+        "cloud": ["云收入", "同比增速", "经营利润或利润率"],
+    }
+    return defaults[group]
 
 
 def _company_research_profile(company: str) -> dict[str, Any]:
@@ -2465,6 +2541,7 @@ def _run_company_research_agent(
     final: dict[str, Any] = {}
     research_profile = _company_research_profile(company)
     current_year = datetime.now().year
+    expected_metrics = _company_expected_metrics(company, facts)
 
     @tool
     def inspect_company_evidence() -> dict[str, Any]:
@@ -2589,11 +2666,30 @@ def _run_company_research_agent(
         return result
 
     @tool
-    def complete_company_research(status: str, rationale: str) -> dict[str, Any]:
-        """完成公司研究；状态只能是 verified_latest/not_disclosed/search_exhausted/conflict。"""
-        allowed_statuses = {"verified_latest", "not_disclosed", "search_exhausted", "conflict"}
+    def complete_company_research(
+        status: str,
+        rationale: str,
+        metric_statuses: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """逐指标完成研究；状态可为已核验、未披露、不适用、搜索穷尽或冲突。"""
+        allowed_statuses = {"verified_latest", "not_disclosed", "not_applicable", "search_exhausted", "conflict"}
         normalized = status if status in allowed_statuses else "conflict"
-        final.update({"status": normalized, "rationale": clean_text(rationale, 600)})
+        normalized_metrics: list[dict[str, str]] = []
+        for item in metric_statuses or []:
+            metric = clean_text(item.get("metric"), 120)
+            metric_status = clean_text(item.get("status"), 80)
+            if metric not in expected_metrics or metric_status not in allowed_statuses:
+                continue
+            normalized_metrics.append({
+                "metric": metric,
+                "status": metric_status,
+                "rationale": clean_text(item.get("rationale"), 400),
+            })
+        final.update({
+            "status": normalized,
+            "rationale": clean_text(rationale, 600),
+            "metric_statuses": normalized_metrics,
+        })
         return {"accepted": status in allowed_statuses, **final}
 
     tools = [
@@ -2613,13 +2709,15 @@ def _run_company_research_agent(
                     "必须先读取已有证据，再自主调用搜索引擎寻找最新官方 IR、业绩公告、交易所或监管披露，"
                     "并继续打开搜索命中的官方网页或 PDF。固定 URL 只是线索，不是限定入口。"
                     "某个网页打开返回 403 时应继续搜索其他官方入口，不得把 403 说成搜索引擎失败。"
-                    "最后必须调用 complete_company_research；不得用 0、行业估算或旧值填补未披露项。"
+                    f"必须逐一完成这些指标：{expected_metrics}。最后调用 complete_company_research 时，"
+                    "metric_statuses 必须逐项覆盖全部预期指标；不得用 0、行业估算或旧值填补未披露项。"
+                    "仅当指标在该公司业务/披露制度上确实不适用时才可用 not_applicable。"
                 )
             ),
             HumanMessage(
                 content=(
                     f"调度行 {row_number}，库内主体 {row_entity}，"
-                    f"当前指标 {list(dict.fromkeys(item.metric for item in facts))[:20] or ['尚无候选事实']}。"
+                    f"预期指标 {expected_metrics}。"
                 )
             ),
         ]
@@ -2700,22 +2798,78 @@ def _run_company_research_agent(
     )
     evidence_count = sum(len(item.get("opened_evidence", [])) for item in opened)
     fresh_official_open_count = sum(int(item.get("fresh_official_open_count") or 0) for item in opened)
-    if final.get("status") == "verified_latest" and (evidence_count == 0 or fresh_official_open_count == 0):
-        final = {
-            "status": "conflict",
-            "rationale": (
-                "Agent 声称已核验最新值，但没有成功打开本次搜索发现的当期官方原文并提取指标证据，"
-                "确定性证据门禁已将其改为冲突。"
-            ),
-        }
-    if final.get("status") == "not_disclosed" and fresh_official_open_count == 0:
-        final = {
-            "status": "conflict",
-            "rationale": (
-                "Agent 声称当期未披露，但没有成功打开本次搜索发现的当期官方原文，"
-                "确定性证据门禁已将其改为冲突。"
-            ),
-        }
+    supplied_metric_statuses = {
+        item["metric"]: item
+        for item in final.get("metric_statuses", [])
+        if item.get("metric") in expected_metrics
+    }
+    metric_results: list[dict[str, Any]] = []
+    for metric in expected_metrics:
+        metric_searches = [item for item in searches if item.get("metric") == metric]
+        metric_opened = [item for item in opened if item.get("metric") == metric]
+        metric_evidence = sum(len(item.get("opened_evidence", [])) for item in metric_opened)
+        metric_fresh_opens = sum(int(item.get("fresh_official_open_count") or 0) for item in metric_opened)
+        supplied = supplied_metric_statuses.get(metric) or {}
+        claimed_status = supplied.get("status")
+        if final.get("status") == "agent_error":
+            status = "agent_error"
+            reason = final.get("rationale", "Agent 未形成逐指标终态。")
+        elif claimed_status == "verified_latest" and metric_evidence > 0 and metric_fresh_opens > 0:
+            status = "verified_latest"
+            reason = supplied.get("rationale") or "已回读当期官方原文并提取直接指标证据。"
+        elif claimed_status == "not_disclosed" and metric_fresh_opens > 0:
+            status = "not_disclosed"
+            reason = supplied.get("rationale") or "已回读当期官方原文，发行人未单独披露该指标。"
+        elif claimed_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
+            status = "not_applicable"
+            reason = supplied.get("rationale") or "该指标对该公司主体不适用。"
+        elif claimed_status == "search_exhausted" and metric_searches:
+            status = "search_exhausted"
+            reason = supplied.get("rationale") or "已搜索但未取得可核验当期官方原文。"
+        elif claimed_status == "conflict":
+            status = "conflict"
+            reason = supplied.get("rationale") or "当期官方证据存在口径或数值冲突。"
+        else:
+            status = "conflict" if metric_searches or metric_opened else "unsearched"
+            reason = (
+                "Agent 声称完成，但该指标没有当期官方原文和直接证据。"
+                if metric_searches or metric_opened
+                else "Agent 未搜索该预期指标，也未提交逐指标终态。"
+            )
+        metric_results.append({
+            "metric": metric,
+            "status": status,
+            "rationale": clean_text(reason, 400),
+            "search_count": len(metric_searches),
+            "fresh_official_open_count": metric_fresh_opens,
+            "evidence_count": metric_evidence,
+            "evidence_urls": list(dict.fromkeys(
+                str(vote.get("url") or "")
+                for item in metric_opened
+                for vote in item.get("opened_evidence", [])
+                if str(vote.get("url") or "")
+            ))[:8],
+        })
+    unresolved_metrics = [
+        item["metric"]
+        for item in metric_results
+        if item["status"] not in {"verified_latest", "not_disclosed", "not_applicable"}
+    ]
+    if final.get("status") != "agent_error":
+        if unresolved_metrics:
+            final["status"] = (
+                "search_exhausted"
+                if all(item["status"] == "search_exhausted" for item in metric_results if item["metric"] in unresolved_metrics)
+                else "conflict"
+            )
+            final["rationale"] = f"仍有 {len(unresolved_metrics)} 个预期指标没有合规终态：{', '.join(unresolved_metrics[:8])}。"
+        else:
+            final["status"] = (
+                "verified_latest"
+                if any(item["status"] == "verified_latest" for item in metric_results)
+                else "not_disclosed"
+            )
+            final["rationale"] = f"全部 {len(metric_results)} 个预期指标均有当期官方终态。"
     result = {
         "agent_id": agent_id,
         "parent_agent_id": parent_agent_id,
@@ -2742,10 +2896,13 @@ def _run_company_research_agent(
         ][:20],
         "evidence_count": evidence_count,
         "fresh_official_open_count": fresh_official_open_count,
+        "metric_results": metric_results,
+        "metric_coverage_complete": not unresolved_metrics,
+        "unresolved_metrics": unresolved_metrics,
         "official_hosts": research_profile["official_hosts"],
         "evidence_urls": evidence_urls[:12],
         "queries": [item.get("query", "") for item in searches[:8]],
-        "metrics": list(dict.fromkeys(item.metric for item in facts))[:20],
+        "metrics": expected_metrics,
     }
     traces.append(
         _trace(
@@ -2771,11 +2928,12 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
 
     required = bool(state.get("online_ai", True) and state.get("search_verify_online"))
     if not required:
-        summary = {"required": False, "expected": 36, "completed": 0, "coverage_complete": False}
+        expected_companies = len(ALL_COMPANY_CURRENT_RESULT_TARGETS)
+        summary = {"required": False, "expected": expected_companies, "completed": 0, "coverage_complete": False}
         return {
             "company_agent_results": [],
             "company_agent_summary": summary,
-            "node_events": [_event("公司研究 Agent", "本轮未启用联网多 Agent 研究，不声称已完成 36 家。")],
+            "node_events": [_event("公司研究 Agent", f"本轮未启用联网多 Agent 研究，不声称已完成 {expected_companies} 家。")],
             "agent_trace": [
                 _trace(state, "公司研究 Agent", "skip", "本轮未启用联网多 Agent 研究。", output=summary)
             ],
@@ -2787,17 +2945,20 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
             state,
             "公司研究 Agent",
             "fan_out",
-            "Lead Research Agent 确定性派发 36 个公司 Agent。",
+            f"Lead Research Agent 确定性派发 {len(ALL_COMPANY_CURRENT_RESULT_TARGETS)} 个公司 Agent。",
             input={"expected_companies": list(ALL_COMPANY_CURRENT_RESULT_TARGETS), "workers": workers},
             agent_id=f"lead-{state.get('run_id', '')}",
             role="lead_research",
         )
     ]
     results: list[dict[str, Any]] = []
+    expected_metric_plan: dict[str, list[str]] = {}
     with ThreadPoolExecutor(max_workers=workers) as executor:
         futures = {}
         for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
-            company_facts = [item for item in candidates if item.company in {company, row_entity}]
+            fact_entities = _company_fact_entities(company) | {row_entity}
+            company_facts = [item for item in candidates if item.company in fact_entities]
+            expected_metric_plan[company] = _company_expected_metrics(company, company_facts)
             future = executor.submit(
                 _run_company_research_agent,
                 state,
@@ -2822,6 +2983,22 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
                     "evidence_count": 0,
                 }
                 child_traces = []
+            if not result.get("metric_results"):
+                fallback_status = "agent_error" if result.get("status") == "agent_error" else "conflict"
+                result["metric_results"] = [
+                    {
+                        "metric": metric,
+                        "status": fallback_status,
+                        "rationale": result.get("rationale") or "公司 Agent 未返回逐指标终态。",
+                        "search_count": 0,
+                        "fresh_official_open_count": 0,
+                        "evidence_count": 0,
+                        "evidence_urls": [],
+                    }
+                    for metric in expected_metric_plan.get(company, [])
+                ]
+                result["metric_coverage_complete"] = False
+                result["unresolved_metrics"] = list(expected_metric_plan.get(company, []))
             results.append(result)
             trace_events.extend(child_traces)
     order = {company: index for index, company in enumerate(ALL_COMPANY_CURRENT_RESULT_TARGETS)}
@@ -2833,6 +3010,18 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
         for item in results
         if item.get("status") in {"search_exhausted", "conflict", "agent_error"}
     ]
+    expected_metric_count = sum(len(item.get("metric_results") or []) for item in results)
+    completed_metric_count = sum(
+        metric.get("status") in {"verified_latest", "not_disclosed", "not_applicable"}
+        for item in results
+        for metric in item.get("metric_results") or []
+    )
+    unresolved_metric_results = [
+        {"company": item.get("company"), "metric": metric.get("metric"), "status": metric.get("status")}
+        for item in results
+        for metric in item.get("metric_results") or []
+        if metric.get("status") not in {"verified_latest", "not_disclosed", "not_applicable"}
+    ]
     summary = {
         "required": True,
         "expected": len(ALL_COMPANY_CURRENT_RESULT_TARGETS),
@@ -2841,11 +3030,23 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
         "publish_ready": completed == len(ALL_COMPANY_CURRENT_RESULT_TARGETS) and not unresolved,
         "agent_errors": errors,
         "unresolved_companies": unresolved,
+        "expected_metrics": expected_metric_count,
+        "completed_metrics": completed_metric_count,
+        "metric_coverage_complete": (
+            expected_metric_count > 0
+            and completed_metric_count == expected_metric_count
+            and not unresolved_metric_results
+        ),
+        "unresolved_metric_count": len(unresolved_metric_results),
+        "unresolved_metrics": unresolved_metric_results[:200],
         "workers": workers,
         "searches": sum(int(item.get("search_count") or 0) for item in results),
         "opened_pages": sum(int(item.get("opened_page_count") or 0) for item in results),
         "evidence": sum(int(item.get("evidence_count") or 0) for item in results),
     }
+    summary["publish_ready"] = bool(
+        summary["publish_ready"] and summary["metric_coverage_complete"]
+    )
     trace_events.append(
         _trace(
             state,
@@ -2861,7 +3062,7 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
     return {
         "company_agent_results": results,
         "company_agent_summary": summary,
-        "node_events": [_event("公司研究 Agent", f"收齐 {completed}/36 家公司 Agent 终态。")],
+        "node_events": [_event("公司研究 Agent", f"收齐 {completed}/{len(ALL_COMPANY_CURRENT_RESULT_TARGETS)} 家公司 Agent 终态。")],
         "agent_trace": trace_events,
     }
 
@@ -3345,7 +3546,7 @@ def publish_results(state: CurationState) -> dict[str, Any]:
     if company_agent_summary.get("required") and not company_agent_summary.get("coverage_complete"):
         raise RuntimeError(
             f"公司研究 Agent 仅完成 {company_agent_summary.get('completed', 0)}/"
-            f"{company_agent_summary.get('expected', 36)}，禁止把不完整结果标成成功"
+            f"{company_agent_summary.get('expected', 41)}，禁止把不完整结果标成成功"
         )
     if company_agent_summary.get("required") and not company_agent_summary.get("publish_ready"):
         unresolved = company_agent_summary.get("unresolved_companies") or []

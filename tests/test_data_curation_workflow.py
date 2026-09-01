@@ -51,6 +51,17 @@ class DataCurationWorkflowTests(unittest.TestCase):
             workflow._company_research_profile("stc")["official_hosts"],
         )
 
+    def test_company_agents_merge_brands_and_keep_distinct_four_database_subjects(self) -> None:
+        self.assertEqual(workflow._company_fact_entities("HKT"), {"HKT", "csl", "1O1O"})
+        self.assertEqual(
+            workflow._company_fact_entities("3HK"),
+            {"3HK", "3HK / Hutchison", "Hutchison"},
+        )
+        self.assertIn("站址数", workflow._company_configured_metrics("中国铁塔"))
+        self.assertIn("有线电视用户", workflow._company_configured_metrics("中国广电"))
+        self.assertIn("云收入", workflow._company_configured_metrics("China Mobile Cloud"))
+        self.assertTrue(workflow._company_metric_is_not_applicable("HGC", "派息"))
+
     def test_company_agent_controls_its_own_search_and_open_sequence(self) -> None:
         class ToolCallingCompanyAgent:
             def __init__(self) -> None:
@@ -72,7 +83,15 @@ class DataCurationWorkflowTests(unittest.TestCase):
                     4: [{
                         "id": "complete",
                         "name": "complete_company_research",
-                        "args": {"status": "verified_latest", "rationale": "已回读最新官方原文"},
+                        "args": {
+                            "status": "verified_latest",
+                            "rationale": "已回读最新官方原文",
+                            "metric_statuses": [{
+                                "metric": "收入",
+                                "status": "verified_latest",
+                                "rationale": "已取得当期官方收入值",
+                            }],
+                        },
                     }],
                 }
                 return SimpleNamespace(content="", tool_calls=calls[self.turn])
@@ -93,6 +112,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
             return [{"url": extra_urls[0], "value": "42,232 million USD"}]
 
         with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
             patch("data_curation.workflow._build_supervisor_model", return_value=ToolCallingCompanyAgent()),
             patch(
                 "data_curation.workflow._public_web_search",
@@ -110,6 +130,8 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["search_count"], 1)
         self.assertEqual(result["evidence_count"], 1)
         self.assertEqual(result["fresh_official_open_count"], 1)
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(result["metric_results"][0]["status"], "verified_latest")
         self.assertEqual(
             [item.get("tool") for item in trace if item.get("phase") == "tool_call"],
             ["inspect_company_evidence", "search_latest_official", "open_official_pages", "complete_company_research"],
@@ -136,7 +158,15 @@ class DataCurationWorkflowTests(unittest.TestCase):
                     4: [{
                         "id": "complete",
                         "name": "complete_company_research",
-                        "args": {"status": "verified_latest", "rationale": "沿用旧来源"},
+                        "args": {
+                            "status": "verified_latest",
+                            "rationale": "沿用旧来源",
+                            "metric_statuses": [{
+                                "metric": "收入",
+                                "status": "verified_latest",
+                                "rationale": "沿用旧来源",
+                            }],
+                        },
                     }],
                 }
                 return SimpleNamespace(content="", tool_calls=calls[self.turn])
@@ -149,7 +179,16 @@ class DataCurationWorkflowTests(unittest.TestCase):
             sources=["https://www.sec.gov/old-report"],
             decision="accepted",
         )
+        second_fact = CandidateFact(
+            id="aws-unsearched-ebitda",
+            company="AWS",
+            metric="EBITDA",
+            value="old EBITDA",
+            sources=["https://www.sec.gov/old-report"],
+            decision="accepted",
+        )
         with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入", "EBITDA"]),
             patch("data_curation.workflow._build_supervisor_model", return_value=ToolCallingCompanyAgent()),
             patch(
                 "data_curation.workflow._public_web_search",
@@ -162,11 +201,17 @@ class DataCurationWorkflowTests(unittest.TestCase):
             patch("data_curation.workflow._votes_from_source_pages", return_value=[]),
         ):
             result, _trace = _run_company_research_agent(
-                {"run_id": "company-agent-old-source"}, "AWS", 50, "AWS", [fact]
+                {"run_id": "company-agent-old-source"}, "AWS", 50, "AWS", [fact, second_fact]
             )
         self.assertEqual(result["status"], "conflict")
         self.assertEqual(result["evidence_count"], 0)
         self.assertEqual(result["fresh_official_open_count"], 0)
+        self.assertFalse(result["metric_coverage_complete"])
+        self.assertEqual(set(result["unresolved_metrics"]), {"收入", "EBITDA"})
+        self.assertEqual(
+            {item["metric"]: item["status"] for item in result["metric_results"]}["EBITDA"],
+            "unsearched",
+        )
 
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
@@ -322,8 +367,8 @@ class DataCurationWorkflowTests(unittest.TestCase):
                 "search_verification": {"online_coverage_complete": True},
                 "company_agent_summary": {
                     "required": True,
-                    "expected": 36,
-                    "completed": 36,
+                    "expected": 41,
+                    "completed": 41,
                     "coverage_complete": True,
                     "publish_ready": False,
                     "unresolved_companies": ["AWS"],
@@ -1389,11 +1434,13 @@ class DataCurationWorkflowTests(unittest.TestCase):
                 "search_verify_online": True,
                 "candidates": [],
             })
-        self.assertEqual(result["company_agent_summary"]["expected"], 36)
-        self.assertEqual(result["company_agent_summary"]["completed"], 36)
+        self.assertEqual(result["company_agent_summary"]["expected"], 41)
+        self.assertEqual(result["company_agent_summary"]["completed"], 41)
         self.assertTrue(result["company_agent_summary"]["coverage_complete"])
         self.assertFalse(result["company_agent_summary"]["publish_ready"])
-        self.assertEqual(len({item["company"] for item in result["company_agent_results"]}), 36)
+        self.assertGreater(result["company_agent_summary"]["expected_metrics"], 0)
+        self.assertFalse(result["company_agent_summary"]["metric_coverage_complete"])
+        self.assertEqual(len({item["company"] for item in result["company_agent_results"]}), 41)
         self.assertTrue(all(item["facts_seen"] == 0 for item in result["company_agent_results"]))
 
     def test_search_verifier_majority_corrects_candidate_value(self) -> None:

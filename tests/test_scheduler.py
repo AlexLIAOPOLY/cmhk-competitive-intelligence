@@ -274,9 +274,12 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                             },
                             "company_agent_summary": {
                                 "required": True,
-                                "expected": 36,
-                                "completed": 36,
+                                "expected": 41,
+                                "completed": 41,
                                 "coverage_complete": True,
+                                "expected_metrics": 120,
+                                "completed_metrics": 119,
+                                "metric_coverage_complete": False,
                                 "publish_ready": False,
                                 "unresolved_companies": ["AWS"],
                             },
@@ -298,6 +301,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 _summary, problems = scheduler._validated_curation_summary(run_id)
 
         self.assertTrue(any("尚有未解决主体：AWS" in problem for problem in problems))
+        self.assertTrue(any("尚有未解决指标：119/120" in problem for problem in problems))
         self.assertTrue(any("总体状态未完成：partial" in problem for problem in problems))
 
     def test_scheduled_agent_uses_stable_checkpoint_and_bounded_online_search(self) -> None:

@@ -95,10 +95,12 @@ NEWS_METRIC_RE = re.compile(
     re.I,
 )
 NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ...] = (
+    ("local", "CMHK", ("CMHK", "China Mobile Hong Kong", "中国移动香港", "中國移動香港"), ("https://www.hk.chinamobile.com/en/", "https://www.hk.chinamobile.com/en/about_us/", "https://www.chinamobileltd.com/en/ir/reports.php")),
     ("local", "HKT", ("HKT", "香港电讯", "香港電訊"), ("https://www.hkt.com/en/about-hkt/investor-relations/financial-results/", "https://www.hkt.com/en/about-hkt/press-release/hkt-reports-solid-interim-results-for-2026/")),
     ("local", "SmarTone", ("SmarTone", "数码通", "數碼通"), ("https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",)),
     ("local", "3HK", ("3HK", "3 Hong Kong", "和记电讯香港", "和記電訊香港"), ("https://www.hthkh.com/en/ir/reports.php", "https://www.hthkh.com/en/media/press.php?prid=/press/p260810")),
     ("local", "HKBN", ("HKBN", "香港宽频", "香港寬頻"), ("https://www.hkbn.net/group/en/investor-engagement/financial-results",)),
+    ("local", "HGC", ("HGC", "HGC Global Communications", "环电", "環電", "环球全域电讯", "環球全域電訊"), ("https://www.hgc-intl.com/", "https://www.hgc-intl.com/press-releases", "https://www.hgc-intl.com/insight")),
     ("local", "i-CABLE", ("i-CABLE", "CTF Media & Entertainment", "有線寬頻", "01097", "1097.HK"), ("https://www.ctfme.com/en/annual-interim-reports", "https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=en", "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf")),
     ("international", "Singtel", ("Singtel", "Singapore Telecommunications"), ("https://www.singtel.com/about-us/investor-relations/financial-results", "https://www.singtel.com/about-us/investor-relations/financial-summary")),
     ("international", "Telstra", ("Telstra",), ("https://www.telstra.com.au/aboutus/investors/financial-results",)),
@@ -137,6 +139,8 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
         "https://www.chinaunicom.com.hk/en/ir/reports.php",
         "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
     )),
+    ("mainland", "中国铁塔", ("中国铁塔", "中國鐵塔", "China Tower", "0788.HK"), ("https://ir.china-tower.com/", "https://ir.china-tower.com/en/ir/reports.php", "https://ir.china-tower.com/en/ir/presentation.php")),
+    ("mainland", "中国广电", ("中国广电", "中國廣電", "China Broadnet", "China Broadcasting Network"), ("https://www.cbn.cn/",)),
     ("cloud", "AWS", ("AWS", "Amazon Web Services"), ("https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm", "https://ir.aboutamazon.com/quarterly-results/default.aspx")),
     ("cloud", "Microsoft Azure", ("Azure", "Microsoft cloud"), ("https://www.microsoft.com/en-us/Investor/earnings",)),
     ("cloud", "Google Cloud", ("Google Cloud", "Alphabet"), ("https://abc.xyz/investor/",)),
@@ -144,6 +148,7 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
     ("cloud", "Tencent Cloud", ("Tencent Cloud", "腾讯云", "騰訊雲"), ("https://www.tencent.com/investors/results/",)),
     ("cloud", "Huawei Cloud", ("Huawei Cloud", "华为云", "華為雲"), ("https://www.huawei.com/en/annual-report",)),
     ("cloud", "Oracle Cloud", ("Oracle Cloud",), ("https://www.sec.gov/Archives/edgar/data/1341439/000119312526265848/orcl-ex99_1.htm", "https://investor.oracle.com/financials/")),
+    ("cloud", "China Mobile Cloud", ("China Mobile Cloud", "Mobile Cloud", "移动云", "移動雲"), ("https://ecloud.10086.cn/", "https://www.chinamobileltd.com/en/ir/reports.php")),
 )
 FACT_DOMAIN_IDS = (*UI_DOMAIN_IDS, *SUPPORTING_DOMAIN_IDS)
 

@@ -201,8 +201,11 @@ class CrawlRecoveryTests(unittest.TestCase):
         ]
         self.assertFalse(blocked.intersection(candidates))
 
-    def test_all_36_companies_have_current_official_result_lanes(self):
-        self.assertEqual(len(crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS), 36)
+    def test_all_41_companies_have_current_official_result_lanes(self):
+        self.assertEqual(len(crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS), 41)
+        self.assertTrue({"CMHK", "HGC", "中国铁塔", "中国广电", "China Mobile Cloud"}.issubset(
+            crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS
+        ))
         from executive_intelligence_pipeline import NEWS_ENTITY_SOURCES
 
         self.assertEqual(
@@ -217,10 +220,10 @@ class CrawlRecoveryTests(unittest.TestCase):
 
     def test_all_company_audit_does_not_call_unrun_company_complete(self):
         audit = crawl.build_all_company_current_value_audit([])
-        self.assertEqual(audit["expected_company_count"], 36)
+        self.assertEqual(audit["expected_company_count"], 41)
         self.assertEqual(audit["live_current_official_company_count"], 0)
         self.assertEqual(audit["numeric_value_company_count"], 0)
-        self.assertEqual(audit["status_counts"], {"not_run": 36})
+        self.assertEqual(audit["status_counts"], {"not_run": 41})
 
     def test_retired_censtatd_retail_url_uses_current_official_pages(self):
         targets = crawl.candidate_targets(

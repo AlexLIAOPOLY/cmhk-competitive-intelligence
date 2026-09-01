@@ -34,8 +34,11 @@ class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
         icable = next(plan for plan in plans if plan["entity"] == "i-CABLE")
         self.assertIn('"CTF Media & Entertainment"', icable["query"])
         entities = {plan["entity"] for plan in plans}
-        self.assertTrue({"Singtel", "KT", "NTT Docomo", "Reliance Jio"}.issubset(entities))
-        self.assertEqual(len(entities), 36)
+        self.assertTrue({
+            "CMHK", "HGC", "Singtel", "KT", "NTT Docomo", "Reliance Jio",
+            "中国铁塔", "中国广电", "China Mobile Cloud",
+        }.issubset(entities))
+        self.assertEqual(len(entities), 41)
 
     def test_search_audit_keeps_per_domain_queries_results_and_zero_result_reason(self) -> None:
         plans = [

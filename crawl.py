@@ -78,6 +78,13 @@ FINANCIAL_IR_INDEX_URLS: Dict[int, List[str]] = {
 # actually read by the next 03:00 crawl rather than reporting a false green
 # from an HTTP-200 landing page.
 CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
+    15: {
+        "HGC": [
+            "https://www.hgc-intl.com/",
+            "https://www.hgc-intl.com/press-releases",
+            "https://www.hgc-intl.com/insight",
+        ],
+    },
     17: {
         "iCable": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf"],
     },
@@ -111,10 +118,12 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
         "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
     },
     47: {
+        "CMHK": ["https://www.hk.chinamobile.com/en/", "https://www.chinamobileltd.com/en/ir/reports.php"],
         "HKT": ["https://www.hkt.com/en/about-hkt/investor-relations/financial-results/"],
         "3HK": ["https://www.hthkh.com/en/ir/reports.php"],
         "SmarTone": ["https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp"],
         "HKBN": ["https://www.hkbn.net/group/en/investor-engagement/financial-results"],
+        "HGC": ["https://www.hgc-intl.com/", "https://www.hgc-intl.com/press-releases", "https://www.hgc-intl.com/insight"],
         "i-CABLE": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf"],
     },
     48: {
@@ -127,6 +136,8 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
         "中国移动": ["https://www.chinamobileltd.com/en/ir/reports.php"],
         "中国电信": ["https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf"],
         "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
+        "中国铁塔": ["https://ir.china-tower.com/", "https://ir.china-tower.com/en/ir/reports.php"],
+        "中国广电": ["https://www.cbn.cn/"],
     },
     50: {
         "AWS": [
@@ -142,6 +153,7 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
             "https://www.sec.gov/Archives/edgar/data/1341439/000119312526265848/orcl-ex99_1.htm",
             "https://investor.oracle.com/investor-news/news-details/2026/Oracle-Announces-Record-Q4-and-FY-2026-Results-Driven-by-Cloud-Infrastructure--Cloud-Applications/",
         ],
+        "China Mobile Cloud": ["https://ecloud.10086.cn/", "https://www.chinamobileltd.com/en/ir/reports.php"],
     },
     52: {"AWS": ["https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm"]},
     53: {"Microsoft Azure": ["https://www.microsoft.com/en-us/investor/earnings/fy-2026-q4/press-release-webcast"]},
@@ -157,10 +169,12 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
 # adding a company to discovery without a current-result lane is a test and
 # audit failure instead of a silent omission.
 ALL_COMPANY_CURRENT_RESULT_TARGETS: Dict[str, tuple[int, str]] = {
+    "CMHK": (47, "CMHK"),
     "HKT": (47, "HKT"),
     "SmarTone": (47, "SmarTone"),
     "3HK": (47, "3HK"),
     "HKBN": (47, "HKBN"),
+    "HGC": (47, "HGC"),
     "i-CABLE": (47, "i-CABLE"),
     "Singtel": (19, "Singtel"),
     "Telstra": (19, "Telstra"),
@@ -186,6 +200,8 @@ ALL_COMPANY_CURRENT_RESULT_TARGETS: Dict[str, tuple[int, str]] = {
     "中国移动": (49, "中国移动"),
     "中国电信": (49, "中国电信"),
     "中国联通": (49, "中国联通"),
+    "中国铁塔": (49, "中国铁塔"),
+    "中国广电": (49, "中国广电"),
     "AWS": (50, "AWS"),
     "Microsoft Azure": (50, "Microsoft Azure"),
     "Google Cloud": (50, "Google Cloud"),
@@ -193,6 +209,7 @@ ALL_COMPANY_CURRENT_RESULT_TARGETS: Dict[str, tuple[int, str]] = {
     "Tencent Cloud": (50, "Tencent Cloud"),
     "Huawei Cloud": (50, "Huawei Cloud"),
     "Oracle Cloud": (50, "Oracle Cloud"),
+    "China Mobile Cloud": (50, "China Mobile Cloud"),
 }
 
 NEWS_CHILD_FOLLOW_ROWS = frozenset({22, 24, 25, 26, 27, 28, 29, 31, 32, 33})
@@ -2795,7 +2812,7 @@ def log_live_fetch_status(record: Dict[str, Any]) -> str:
 def build_all_company_current_value_audit(
     row_results: List[Dict[str, Any]],
 ) -> Dict[str, Any]:
-    """Return an auditable 36-company current-result coverage matrix."""
+    """Return an auditable all-company current-result coverage matrix."""
     results_by_row = {int(item.get("row") or 0): item for item in row_results}
     companies: list[Dict[str, Any]] = []
     for company, (row_number, row_entity) in ALL_COMPANY_CURRENT_RESULT_TARGETS.items():
@@ -3073,7 +3090,7 @@ def write_outputs(row_results: List[Dict[str, Any]]) -> None:
         "",
         "See `coverage_report.tsv` and `results/row_<n>.json` for row-level evidence.",
         "See `run_log.tsv` for per-URL status code, elapsed time, and extraction coverage.",
-        "See `all_company_current_value_audit.json` for the 36-company current-value matrix.",
+        "See `all_company_current_value_audit.json` for the all-company current-value matrix.",
     ]
     (ROOT / "final_audit.md").write_text("\n".join(audit) + "\n", encoding="utf-8")
 
