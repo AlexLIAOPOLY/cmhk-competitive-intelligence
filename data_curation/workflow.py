@@ -2937,6 +2937,30 @@ def _run_company_research_agent(
         complete_company_research,
     ]
     tool_map = {item.name: item for item in tools}
+
+    def invoke_company_tool(name: str, args: dict[str, Any]) -> dict[str, Any]:
+        """Normalize common model JSON encodings before strict tool validation."""
+        normalized = dict(args or {})
+        if name == "complete_company_research":
+            metric_statuses = normalized.get("metric_statuses")
+            if isinstance(metric_statuses, str):
+                try:
+                    metric_statuses = json.loads(metric_statuses)
+                except json.JSONDecodeError:
+                    metric_statuses = []
+            if isinstance(metric_statuses, dict):
+                metric_statuses = [metric_statuses]
+            normalized["metric_statuses"] = metric_statuses
+        elif name == "open_official_pages" and isinstance(normalized.get("urls"), str):
+            encoded_urls = normalized["urls"]
+            try:
+                decoded_urls = json.loads(encoded_urls)
+            except json.JSONDecodeError:
+                decoded_urls = [encoded_urls]
+            normalized["urls"] = decoded_urls if isinstance(decoded_urls, list) else [encoded_urls]
+        selected_tool = tool_map.get(name)
+        return selected_tool.invoke(normalized) if selected_tool else {"ok": False, "error": "unknown tool"}
+
     error = ""
     try:
         model = _build_supervisor_model().bind_tools(tools)
@@ -3003,8 +3027,7 @@ def _run_company_research_agent(
                         role="company_research",
                     )
                 )
-                selected_tool = tool_map.get(name)
-                result = selected_tool.invoke(args) if selected_tool else {"ok": False, "error": "unknown tool"}
+                result = invoke_company_tool(name, args)
                 traces.append(
                     _trace(
                         state,
@@ -3099,7 +3122,6 @@ def _run_company_research_agent(
                     name = str(call.get("name") or "")
                     completion_called_this_repair = completion_called_this_repair or name == "complete_company_research"
                     args = call.get("args") or {}
-                    selected_tool = tool_map.get(name)
                     traces.append(
                         _trace(
                             state,
@@ -3115,7 +3137,7 @@ def _run_company_research_agent(
                             role="company_research",
                         )
                     )
-                    result = selected_tool.invoke(args) if selected_tool else {"ok": False, "error": "unknown tool"}
+                    result = invoke_company_tool(name, args)
                     traces.append(
                         _trace(
                             state,
@@ -3177,7 +3199,7 @@ def _run_company_research_agent(
                                 role="company_research",
                             )
                         )
-                        result = complete_company_research.invoke(args)
+                        result = invoke_company_tool("complete_company_research", args)
                         traces.append(
                             _trace(
                                 state,

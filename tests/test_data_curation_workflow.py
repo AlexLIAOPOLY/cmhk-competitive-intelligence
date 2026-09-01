@@ -419,6 +419,44 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["unresolved_metrics"], [])
         self.assertEqual(result["metric_results"][0]["status"], "search_exhausted")
 
+    def test_company_agent_accepts_json_encoded_metric_statuses(self) -> None:
+        class JsonEncodedCompanyAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    2: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "search_exhausted",
+                        "rationale": "定向搜索未找到当期官方直接值",
+                        "metric_statuses": json.dumps([{
+                            "metric": "收入",
+                            "status": "search_exhausted",
+                            "rationale": "定向搜索未找到当期官方直接值",
+                        }], ensure_ascii=False),
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Example"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=JsonEncodedCompanyAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([], "test")),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-json-tool-args"}, "Example", 2, "Example", []
+            )
+        self.assertEqual(result["status"], "search_exhausted")
+        self.assertTrue(result["metric_coverage_complete"])
+
     def test_company_agent_accepts_exhaustion_after_current_official_page_has_no_metric(self) -> None:
         current_url = "https://example.com/2026-results"
 
