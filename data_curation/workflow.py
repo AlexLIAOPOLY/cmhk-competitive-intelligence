@@ -2791,6 +2791,9 @@ def _run_company_research_agent(
         duplicates = sorted({metric for metric in supplied_names if supplied_names.count(metric) > 1})
         incomplete_reasons = [item["metric"] for item in normalized_metrics if not item["rationale"]]
         research_incomplete: list[str] = []
+        company_fresh_official_opens = sum(
+            int(record.get("fresh_official_open_count") or 0) for record in opened
+        )
         for item in normalized_metrics:
             metric = item["metric"]
             metric_status = item["status"]
@@ -2811,6 +2814,23 @@ def _run_company_research_agent(
                 for record in metric_opened
                 for attempt in record.get("open_attempts", [])
             ]
+            metric_has_organic_current_result = any(
+                result.get("provider") != "governed_seed"
+                for record in metric_searches
+                for result in record.get("current_official_results", [])
+            )
+            # A targeted search against a private/non-reporting company may
+            # find no current disclosure at all.  In that case "not disclosed"
+            # would overstate the evidence, so the validator conservatively
+            # downgrades the Agent's claim to audited search exhaustion.
+            if (
+                metric_status == "not_disclosed"
+                and metric_fresh_opens <= 0
+                and not metric_has_organic_current_result
+                and company_fresh_official_opens > 0
+            ):
+                item["status"] = "search_exhausted"
+                metric_status = "search_exhausted"
             if metric_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
                 continue
             if not metric_searches:
@@ -2828,7 +2848,7 @@ def _run_company_research_agent(
                 research_incomplete.append(f"{metric}:fresh_official_open_required")
             elif metric_status == "search_exhausted":
                 exhausted = (
-                    not any(record.get("current_official_results") for record in metric_searches)
+                    not metric_has_organic_current_result
                     or (metric_open_attempts and not any(attempt.get("opened") for attempt in metric_open_attempts))
                 )
                 if not exhausted:
@@ -3152,9 +3172,14 @@ def _run_company_research_agent(
             for item in metric_opened
             for attempt in item.get("open_attempts", [])
         ]
+        metric_has_organic_current_result = any(
+            result.get("provider") != "governed_seed"
+            for item in metric_searches
+            for result in item.get("current_official_results", [])
+        )
         metric_search_exhausted = bool(metric_searches) and (
             metric_fresh_opens > 0
-            or not any(item.get("current_official_results") for item in metric_searches)
+            or not metric_has_organic_current_result
             or (metric_open_attempts and not any(item.get("opened") for item in metric_open_attempts))
         )
         supplied = supplied_metric_statuses.get(metric) or {}

@@ -392,6 +392,59 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["unresolved_metrics"], [])
         self.assertEqual(result["metric_results"][0]["status"], "search_exhausted")
 
+    def test_company_agent_downgrades_unsupported_not_disclosed_claim(self) -> None:
+        seed_url = "https://example.com/current"
+
+        class PrivateCompanyAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "inspect", "name": "inspect_company_evidence", "args": {}}],
+                    2: [{"id": "search-network", "name": "search_latest_official", "args": {"metric": "网络覆盖"}}],
+                    3: [{"id": "open-network", "name": "open_official_pages", "args": {
+                        "metric": "网络覆盖", "urls": [seed_url],
+                    }}],
+                    4: [{"id": "search-income", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    5: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "completed",
+                        "rationale": "官网可读，但定向搜索无收入直接披露值",
+                        "metric_statuses": [
+                            {"metric": "网络覆盖", "status": "verified_latest", "rationale": "当前官网可读"},
+                            {"metric": "收入", "status": "not_disclosed", "rationale": "未找到直接披露值"},
+                        ],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_seed(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return []
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["网络覆盖", "收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["HGC"], "official_hosts": ["example.com"], "seed_urls": [seed_url],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=PrivateCompanyAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_seed),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-private"}, "HGC", 10, "HGC", []
+            )
+        self.assertEqual(result["status"], "search_exhausted")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(
+            {item["metric"]: item["status"] for item in result["metric_results"]},
+            {"网络覆盖": "verified_latest", "收入": "search_exhausted"},
+        )
+
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
             def __init__(self) -> None:
