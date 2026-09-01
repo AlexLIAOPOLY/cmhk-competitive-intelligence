@@ -24,6 +24,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("background-size: 14px 14px, 14px 14px, 70px 70px, 70px 70px", STYLE)
         self.assertIn("backdrop-filter: blur(14px) saturate(128%)", STYLE)
         self.assertIn("rgba(126, 224, 244, .075)", STYLE)
+        self.assertIn("radial-gradient(ellipse 54% 58% at center, #000 42%", STYLE)
+        self.assertIn("backdrop-filter: blur(6px)", STYLE)
+        self.assertIn("radial-gradient(ellipse 54% 58% at center, transparent 42%", STYLE)
 
     def test_quiet_fault_poll_does_not_rebuild_unchanged_news_lineage(self):
         self.assertIn("function newsLineageIncidentSignature(tasks)", SCRIPT)
@@ -34,7 +37,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertNotIn("transition: transform .18s ease", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=143', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=145', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=168', INDEX)
 
 
