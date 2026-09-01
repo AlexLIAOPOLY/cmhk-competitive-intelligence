@@ -1,4 +1,114 @@
 {
+  "20260901_140041_929355": [
+    {
+      "newsId": "NEWS-6C34A49EEA6695",
+      "title": "AI与智慧医疗：当算法开始“把脉” 一场正在发生的医疗变革",
+      "summary": "导读：本文梳理人工智能与智慧医疗的最新进展：政策层面，AI辅助诊断正式纳入国家医保，中国成为全球首个将AI诊断大规模纳入医保体系的国家；技术层面，医学影像AI、罕见病诊疗、AI药物研发多点开…",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "智能制造网",
+      "publishedAt": "2026-09-01T07:02:00+08:00",
+      "url": "https://www.gkzhan.com/news/detail/195131.html",
+      "inclusionReason": "AI与智慧医疗：当算法开始“把脉” 一场正在发生的医疗变革属于可验证的监管政策事件，影响合规与牌照。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-DBA1AA41D75753",
+      "title": "2026年10月环球资源香港展买家预登记量增长25%，欧美领涨",
+      "summary": "2026年10月环球资源香港展买家预登记量同比增长25%，欧洲和北美买家增长领先，反映采购需求回暖。",
+      "category": "行业动态",
+      "region": "香港本地",
+      "source": "Malaysia Sun",
+      "publishedAt": "2026-09-01T07:01:00+08:00",
+      "url": "https://www.malaysiasun.com/news/279278161/october-2026-global-sources-hong-kong-shows-25-jump-in-buyer-pre-registration-as-europe-north-america-lead-the-surge",
+      "inclusionReason": "香港展会买家预登记量增长25%反映本地商贸活动回暖，可能带动企业客户需求、跨境通信和网络服务需求，对运营商企业业务有潜在积极影响。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-98EF97434BC137",
+      "title": "OnePlus 16传闻将搭载200MP主摄与9000mAh电池",
+      "summary": "OnePlus 16据传将配备200MP主摄、9000mAh电池及骁龙8 Elite Gen 6 Pro处理器，支持5G。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "दैनिक जागरण",
+      "publishedAt": "2026-09-01T06:33:00+08:00",
+      "url": "https://www.jagran.com/technology/tech-news-oneplus-16-detailed-camera-specs-leak-reveals-200mp-main-sensor-50mp-af-selfie-camera-40358507.html",
+      "inclusionReason": "OnePlus 16新机传闻披露5G终端规格，反映5G设备产品迭代。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-76659DF8808111",
+      "title": "分析指俄罗斯SCO峰会掩盖其影响力萎缩",
+      "summary": "分析人士称俄罗斯对中伊朝的依赖反映其影响力萎缩、软实力流失及对乌战争成本上升。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "Kyiv Post",
+      "publishedAt": "2026-09-01T07:01:00+08:00",
+      "url": "https://www.kyivpost.com/post/83455",
+      "inclusionReason": "俄罗斯对乌战争及地缘影响力变化，涉及宏观地缘风险。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-3D242289F16713",
+      "title": "SpaceX拟在德州建涡轮叶片铸造厂以满足AI数据中心电力需求",
+      "summary": "SpaceX计划在德克萨斯州建设涡轮叶片铸造厂，以提升燃气轮机产能，解决AI数据中心供应链瓶颈。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "ET CIO",
+      "publishedAt": "2026-09-01T06:43:00+08:00",
+      "url": "https://cio.economictimes.indiatimes.com/news/next-gen-technologies/spacex-to-set-up-turbine-blade-foundry-in-texas-to-meet-ai-power-demand/133669357",
+      "inclusionReason": "SpaceX新建涡轮叶片铸造厂直接服务于AI数据中心电力供应，涉及数据中心基础设施供应链的具体投资与产能扩张。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-962D74EC3D847D",
+      "title": "Starlink在阿联酋推出互联网服务，与du和e&展开竞争",
+      "summary": "Starlink利用低轨卫星网络在阿联酋提供互联网连接服务，成为当地运营商du和e&之外的新选择。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "Khaleej Times",
+      "publishedAt": "2026-09-01T07:00:00+08:00",
+      "url": "https://www.khaleejtimes.com/business/uae-starlink-new-internet-option-du-e-comparison",
+      "inclusionReason": "Starlink作为卫星互联网服务商进入阿联酋市场，与当地运营商形成竞争，涉及卫星通信对传统电信市场的替代威胁。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-87220FFFFDA4D1",
+      "title": "四川首个Token工厂落地雅安 点亮川西算力新版图",
+      "summary": "四川省首个Token工厂在雅安经开区上线运营，依托水电和算力基础生产智谱、Kimi等大模型Token，投产当月即销售放量。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "封面新闻 on MSN",
+      "publishedAt": "2026-09-01T06:40:51+08:00",
+      "url": "https://www.msn.cn/zh-cn/%E6%8A%80%E6%9C%AF/%E6%8A%80%E6%9C%AF%E5%85%AC%E5%8F%B8/%E5%9B%9B%E5%B7%9D%E9%A6%96%E4%B8%AAtoken%E5%B7%A5%E5%8E%82%E8%90%BD%E5%9C%B0%E9%9B%85%E5%AE%89-%E7%82%B9%E4%BA%AE%E5%B7%9D%E8%A5%BF%E7%AE%97%E5%8A%9B%E6%96%B0%E7%89%88%E5%9B%BE/ar-AA2bk0PO",
+      "inclusionReason": "四川Token工厂投产并销售放量，体现AI算力基础设施部署与绿色能源成本优势，可影响数据中心与算力供给。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-8F990EA083D138",
+      "title": "湖北鄂州华容区加速创建“双碳”示范区",
+      "summary": "仲夏八月，长江奔流。 站在湖北鄂州市华容区红莲湖畔远眺，湖面碧波荡漾，岸线绿意葱茏。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "新华网客户端",
+      "publishedAt": "2026-09-01T07:01:00+08:00",
+      "url": "https://app.xinhuanet.com/news/article.html?articleId=202609017516ad34461c4cdab3f9b60c426da54e",
+      "inclusionReason": "湖北鄂州华容区加速创建“双碳”示范区属于可验证的基础设施事件，影响成本与效率。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-12BFAA78224A56",
+      "title": "英伟达背书：Anthropic签署350亿美元云服务协议",
+      "summary": "Anthropic与英伟达投资的云服务商Lambda达成350亿美元云计算协议，数据中心位于得州并由Hut 8建设。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-09-01T07:01:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5069555",
+      "inclusionReason": "Anthropic签署350亿美元云服务协议并锁定得州数据中心算力，显示AI算力与数据中心需求强劲。",
+      "businessImpact": "收入与需求"
+    }
+  ],
   "20260901_073020_300627": [
     {
       "newsId": "NEWS-B5DD1F9A287DD6",

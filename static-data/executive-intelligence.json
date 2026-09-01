@@ -1233,10 +1233,14 @@
           ],
           "ai_summary": {
             "id": "revenue",
-            "headline": "收入断层决定投入容错",
-            "analysis": "HKT FY2025营收36553.0百万港元，而SmarTone为6253.4百万港元、3HK为5448.0百万港元，收入基础呈明显断层，HKT的持续投入与价格竞争容错主要来自更厚的资源承载，CMHK为2026首7月累计口径。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "HKT资源底盘最厚",
+            "analysis": "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -2524,14 +2528,10 @@
           ],
           "ai_summary": {
             "id": "net_profit",
-            "headline": "HKT稳健三港承压",
-            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-            ],
+            "headline": "HKT再投资弹药更足",
+            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "CMHK",
@@ -3478,10 +3478,14 @@
         "focuses": [
           {
             "id": "revenue",
-            "headline": "收入断层决定投入容错",
-            "analysis": "HKT FY2025营收36553.0百万港元，而SmarTone为6253.4百万港元、3HK为5448.0百万港元，收入基础呈明显断层，HKT的持续投入与价格竞争容错主要来自更厚的资源承载，CMHK为2026首7月累计口径。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "HKT资源底盘最厚",
+            "analysis": "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -3597,14 +3601,10 @@
           },
           {
             "id": "net_profit",
-            "headline": "HKT稳健三港承压",
-            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-            ],
+            "headline": "HKT再投资弹药更足",
+            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "CMHK",
@@ -14436,12 +14436,12 @@
     {
       "from": "local",
       "to": "international",
-      "title": "规模优势并非经营质量的自然延伸",
-      "detail": "HKT的36553百万港元与Verizon的138.19十亿美元反映本地深耕与跨国规模经营处于不同竞争层次，表明两者在经营结构上的边界不同，规模差距不等于盈利能力的简单映射。",
-      "kind": "AI综合研判",
+      "title": "本地与跨国运营商处于不同竞争层次",
+      "detail": "本地运营商营收36553百万港元、跨国运营商营收138.19十亿美元采用不同主体与币种口径；差距反映两域资源规模分层，而非同一维度的经营效率比较。",
+      "kind": "数据证据解读",
       "source_urls": [
-        "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
-        "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+        "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf",
+        "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf"
       ],
       "origin": "ai"
     },
@@ -42965,8 +42965,8 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-01T12:07:01+08:00",
-      "model": "GLM",
+      "generated_at_hkt": "2026-09-01T17:26:01+08:00",
+      "model": "DeepSeek-V4-Pro",
       "summaries": [
         {
           "domain": "local",
@@ -42981,10 +42981,14 @@
           "focuses": [
             {
               "id": "revenue",
-              "headline": "收入断层决定投入容错",
-              "analysis": "HKT FY2025营收36553.0百万港元，而SmarTone为6253.4百万港元、3HK为5448.0百万港元，收入基础呈明显断层，HKT的持续投入与价格竞争容错主要来自更厚的资源承载，CMHK为2026首7月累计口径。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "HKT资源底盘最厚",
+              "analysis": "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
               "entities": [
                 {
                   "name": "CMHK",
@@ -43100,14 +43104,10 @@
             },
             {
               "id": "net_profit",
-              "headline": "HKT稳健三港承压",
-              "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-              "source_urls": [
-                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-              ],
+              "headline": "HKT再投资弹药更足",
+              "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。",
+              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+              "source_urls": [],
               "entities": [
                 {
                   "name": "CMHK",
@@ -44031,12 +44031,12 @@
         {
           "from": "local",
           "to": "international",
-          "title": "规模优势并非经营质量的自然延伸",
-          "detail": "HKT的36553百万港元与Verizon的138.19十亿美元反映本地深耕与跨国规模经营处于不同竞争层次，表明两者在经营结构上的边界不同，规模差距不等于盈利能力的简单映射。",
-          "kind": "AI综合研判",
+          "title": "本地与跨国运营商处于不同竞争层次",
+          "detail": "本地运营商营收36553百万港元、跨国运营商营收138.19十亿美元采用不同主体与币种口径；差距反映两域资源规模分层，而非同一维度的经营效率比较。",
+          "kind": "数据证据解读",
           "source_urls": [
-            "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
-            "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+            "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260309.pdf",
+            "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf"
           ]
         },
         {
@@ -44073,8 +44073,8 @@
           ]
         }
       ],
-      "discovery_model": "GLM",
-      "discovery_generated_at_hkt": "2026-09-01T12:07:01+08:00",
+      "discovery_model": "evidence-rule-fallback",
+      "discovery_generated_at_hkt": "2026-09-01T17:26:01+08:00",
       "discovery_evidence_repair_count": 3,
       "evidence_hash": "f347194ab0ca9949578294d6648cb08de98caaae2ecc278b9d2e50dedc5f4c9b",
       "insight_format": "strategic_operating_judgement_v9",
@@ -44084,26 +44084,35 @@
           "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
           "HKT FY2025营收36553.0百万港元，3HK为5448.0百万港元，为最低，但营收绝对值并非效率证明，SmarTone 6253.4百万港元与CMHK 4544.6百万港元（2026首7月累计）口径期间不同，不纳入该分层比较。",
           "HKT FY2025营收36553.0百万港元，而SmarTone为6253.4百万港元、3HK为5448.0百万港元，收入基础呈明显断层，HKT的持续投入与价格竞争容错主要来自更厚的资源承载，CMHK为2026首7月累计口径。"
+        ],
+        "local.net_profit": [
+          "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+          "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。"
         ]
       },
       "manual_focus_regeneration_counts": {
-        "local.revenue": 2
+        "local.revenue": 2,
+        "local.net_profit": 1
       },
       "manual_focus_regeneration_title_history": {
         "local.revenue": [
           "HKT资源底盘最厚",
           "HKT承载最厚HK容错最窄",
           "收入断层决定投入容错"
+        ],
+        "local.net_profit": [
+          "HKT稳健三港承压",
+          "HKT再投资弹药更足"
         ]
       },
       "manual_focus_regeneration": {
         "domain": "local",
-        "focus": "revenue",
-        "generated_at_hkt": "2026-09-01T09:53:02+08:00"
+        "focus": "net_profit",
+        "generated_at_hkt": "2026-09-01T14:43:02+08:00"
       },
       "manual_discovery_regeneration_counts": {
         "international.cloud": 4,
-        "local.international": 2,
+        "local.international": 6,
         "local.mainland": 4,
         "mainland.cloud": 2
       },
@@ -44118,7 +44127,11 @@
         "local.international": [
           "本地与跨国营收规模及造血能力背离这表明HKT营收36553百万港元、EBITDA14234百万港元，Verizon营收138.19十亿美元、EBITDA50.00十亿美元；差距表明两域收入与盈利结构分化，并非同一口径的直接排名。",
           "本地深耕与跨国规模经营处于不同竞争层次HKT全年收入36553百万港元与Verizon的138.19十亿美元反映两者并非同一量级的竞争主体，本地市场深耕聚焦单一区域服务密度，跨国规模经营则面向多国市场广度，这种分层表明两者在经营结构上存在边界差异。",
-          "规模优势并非经营质量的自然延伸HKT的36553百万港元与Verizon的138.19十亿美元反映本地深耕与跨国规模经营处于不同竞争层次，表明两者在经营结构上的边界不同，规模差距不等于盈利能力的简单映射。"
+          "规模优势并非经营质量的自然延伸HKT的36553百万港元与Verizon的138.19十亿美元反映本地深耕与跨国规模经营处于不同竞争层次，表明两者在经营结构上的边界不同，规模差距不等于盈利能力的简单映射。",
+          "本地深耕与跨国规模分处不同竞争层级HKT收入36553百万港元与Verizon收入138.19十亿美元的量级差距，表明两者竞争边界并非重合：前者以本地市场为经营半径，后者以跨国规模为资源底盘，分层而非同层较量。",
+          "本地深耕与跨国规模经营呈现分层本地运营商营收36553百万港元与跨国运营商营收138.19十亿美元的主体和币种范围不同；规模差异表明两域经营分层，并非同一竞争边界下的直接排名。",
+          "跨国规模优势不等同本地经营质量本地运营商营收36553百万港元与跨国运营商营收138.19十亿美元分属不同市场范围；这说明绝对值差异不能等同经营质量，战略含义在于竞争层次不同。",
+          "本地与跨国运营商处于不同竞争层次本地运营商营收36553百万港元、跨国运营商营收138.19十亿美元采用不同主体与币种口径；差距反映两域资源规模分层，而非同一维度的经营效率比较。"
         ],
         "local.mainland": [
           "本地与内地客户底盘厚度及盈利承压差异这表明HKT后付费用户3.494百万户、净利润5286百万港元，中国移动后付费用户10.05亿户、净利润1370.95亿元。",
@@ -44144,7 +44157,11 @@
         "local.international": [
           "本地与跨国营收规模及造血能力背离",
           "本地深耕与跨国规模经营处于不同竞争层次",
-          "规模优势并非经营质量的自然延伸"
+          "规模优势并非经营质量的自然延伸",
+          "本地深耕与跨国规模分处不同竞争层级",
+          "本地深耕与跨国规模经营呈现分层",
+          "跨国规模优势不等同本地经营质量",
+          "本地与跨国运营商处于不同竞争层次"
         ],
         "local.mainland": [
           "本地与内地客户底盘厚度及盈利承压差异",
@@ -44160,13 +44177,13 @@
         ]
       },
       "manual_discovery_regeneration": {
-        "index": 2,
-        "from": "international",
-        "to": "cloud",
-        "generated_at_hkt": "2026-09-01T12:07:01+08:00",
-        "count": 4,
-        "fallback_used": false,
-        "fallback_reason": ""
+        "index": 0,
+        "from": "local",
+        "to": "international",
+        "generated_at_hkt": "2026-09-01T17:26:01+08:00",
+        "count": 6,
+        "fallback_used": true,
+        "fallback_reason": "跨库AI发现重生成只有思考内容，没有最终输出"
       }
     },
     "evidence_hash": "f347194ab0ca9949578294d6648cb08de98caaae2ecc278b9d2e50dedc5f4c9b",

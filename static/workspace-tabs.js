@@ -211,9 +211,10 @@
     allowedModules = MODULES.filter((module) => window.CMHKAuth?.hasModule(permissionModule(module)));
     tabs.forEach((tab) => {
       const allowed = can(tab.dataset.workspaceTab);
-      tab.hidden = !allowed;
-      tab.disabled = !allowed;
-      tab.setAttribute("aria-hidden", String(!allowed));
+      const hiddenFromNavigation = tab.hasAttribute("data-workspace-tab-hidden");
+      tab.hidden = !allowed || hiddenFromNavigation;
+      tab.disabled = !allowed || hiddenFromNavigation;
+      tab.setAttribute("aria-hidden", String(!allowed || hiddenFromNavigation));
     });
     panels.forEach((panel) => {
       const allowed = can(panel.dataset.workspacePanel);
