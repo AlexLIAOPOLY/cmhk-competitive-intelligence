@@ -73,6 +73,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
+COMPANY_AGENT_PROGRESS_VERSION = 2
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -2612,7 +2613,7 @@ def _run_company_research_agent(
 
     @tool
     def search_latest_official(metric: str) -> dict[str, Any]:
-        """使用搜索引擎查找该公司最新官方业绩、IR、交易所或监管披露。"""
+        """查找该公司最新业绩指标；官方、交易所和第三方新闻均可作证据。"""
         previous = next((item for item in searches if item.get("metric") == metric), None)
         if previous is not None:
             return {**previous, "reused": True}
@@ -2670,20 +2671,33 @@ def _run_company_research_agent(
                 and _host_matches_governed_official(seed_url, research_profile["official_hosts"])
             ):
                 official_results.append(seed)
+        current_results = [
+            item
+            for item in results
+            if _search_result_is_current(item, current_year=current_year)
+        ]
+        search_evidence = _votes_from_web_search(query_fact, current_results)
+        search_values = {
+            str(vote.get("canonical") or "") for vote in search_evidence if vote.get("canonical")
+        }
         record = {
             "metric": metric,
             "query": query,
             "provider": provider,
             "results": results,
+            "current_results": current_results,
             "current_official_results": official_results,
             "official_hosts": research_profile["official_hosts"],
+            "search_evidence": search_evidence,
+            "search_evidence_count": len(search_evidence),
+            "search_value_conflict": len(search_values) > 1,
         }
         searches.append(record)
         return record
 
     @tool
     def open_official_pages(metric: str, urls: list[str]) -> dict[str, Any]:
-        """打开搜索命中的官方网页或 PDF 正文并提取可核验票据。"""
+        """打开搜索命中的官方或第三方网页、新闻、PDF 并提取可核验票据。"""
         current_discovered_by_key = {
             _company_agent_url_key(str(item.get("url") or "")): str(item.get("url") or "")
             for search in searches
@@ -2698,6 +2712,12 @@ def _run_company_research_agent(
             and _host_matches_governed_official(
                 str(item.get("url") or ""), research_profile["official_hosts"]
             )
+        }
+        public_discovered_by_key = {
+            _company_agent_url_key(str(item.get("url") or "")): str(item.get("url") or "")
+            for search in searches
+            for item in search.get("current_results", [])
+            if _company_agent_url_key(str(item.get("url") or ""))
         }
         # A previously accepted official source is also a governed lead.  It is
         # deliberately limited to exact URLs already attached to this company's
@@ -2718,6 +2738,7 @@ def _run_company_research_agent(
         }
         discovered_by_key = {
             **known_fact_urls_by_key,
+            **public_discovered_by_key,
             **official_discovered_by_key,
             **current_discovered_by_key,
         }
@@ -2755,7 +2776,7 @@ def _run_company_research_agent(
             open_audit=open_attempts,
         )
         current_discovered_keys = set(current_discovered_by_key)
-        current_votes = [
+        current_official_votes = [
             vote
             for vote in votes
             if _company_agent_url_key(str(vote.get("url") or "")) in current_discovered_keys
@@ -2768,8 +2789,9 @@ def _run_company_research_agent(
         result = {
             "metric": metric,
             "requested_urls": selected_urls,
-            "opened_evidence": current_votes,
-            "opened_evidence_count": len(current_votes),
+            "opened_evidence": votes,
+            "opened_evidence_count": len(votes),
+            "opened_official_evidence_count": len(current_official_votes),
             "opened_lead_count": len(votes),
             "open_attempts": open_attempts,
             "live_official_open_count": sum(bool(item.get("opened")) for item in open_attempts),
@@ -2831,7 +2853,34 @@ def _run_company_research_agent(
             metric_status = item["status"]
             metric_searches = [record for record in searches if record.get("metric") == metric]
             metric_opened = [record for record in opened if record.get("metric") == metric]
-            metric_evidence = sum(len(record.get("opened_evidence", [])) for record in metric_opened)
+            metric_open_evidence = [
+                vote
+                for record in metric_opened
+                for vote in record.get("opened_evidence", [])
+            ]
+            metric_evidence = len(metric_open_evidence)
+            metric_search_evidence = [
+                vote
+                for record in metric_searches
+                for vote in record.get("search_evidence", [])
+            ]
+            metric_search_values = {
+                str(vote.get("canonical") or "")
+                for vote in metric_search_evidence
+                if vote.get("canonical")
+            }
+            metric_search_conflict = len(metric_search_values) > 1
+            metric_open_values = {
+                str(vote.get("canonical") or "")
+                for vote in metric_open_evidence
+                if vote.get("canonical")
+            }
+            # Search snippets are sufficient when they agree.  If they differ,
+            # opening a source may resolve the discrepancy; conflicting values
+            # in the opened source bodies remain an unresolved conflict.
+            metric_value_conflict = len(metric_open_values) > 1 or (
+                not metric_open_values and metric_search_conflict
+            )
             metric_fresh_opens = sum(int(record.get("fresh_official_open_count") or 0) for record in metric_opened)
             metric_live_official_opens = sum(
                 int(record.get("live_official_open_count") or 0) for record in metric_opened
@@ -2869,16 +2918,24 @@ def _run_company_research_agent(
                 research_incomplete.append(f"{metric}:search_not_run")
                 continue
             if metric_status == "verified_latest" and not (
-                metric_qualifying_opens > 0
-                and (
+                metric_evidence > 0
+                or (metric_search_evidence and not metric_value_conflict)
+                or (
                     not _company_agent_metric_requires_direct_value(metric)
-                    or metric_evidence > 0
+                    and metric_qualifying_opens > 0
                 )
             ):
-                research_incomplete.append(f"{metric}:fresh_official_evidence_required")
+                research_incomplete.append(
+                    f"{metric}:resolve_conflicting_search_values"
+                    if metric_value_conflict
+                    else f"{metric}:search_or_open_evidence_required"
+                )
             elif metric_status == "not_disclosed" and metric_fresh_opens <= 0:
                 research_incomplete.append(f"{metric}:fresh_official_open_required")
             elif metric_status == "search_exhausted":
+                if metric_search_evidence:
+                    research_incomplete.append(f"{metric}:search_value_available")
+                    continue
                 exhausted = (
                     metric_fresh_opens > 0
                     or not metric_has_organic_current_result
@@ -2886,7 +2943,9 @@ def _run_company_research_agent(
                 )
                 if not exhausted:
                     research_incomplete.append(f"{metric}:open_current_official_results")
-            elif metric_status == "conflict" and not (metric_open_attempts or metric_evidence):
+            elif metric_status == "conflict" and not (
+                metric_value_conflict or metric_open_attempts or metric_evidence
+            ):
                 research_incomplete.append(f"{metric}:open_sources_before_conflict")
         metric_status_set = {item["status"] for item in normalized_metrics}
         derived_status = (
@@ -2973,6 +3032,9 @@ def _run_company_research_agent(
                     "某个网页打开返回 403 时应继续搜索其他官方入口，不得把 403 说成搜索引擎失败。"
                     f"必须逐一完成这些指标：{expected_metrics}。最后调用 complete_company_research 时，"
                     "metric_statuses 必须逐项覆盖全部预期指标；不得用 0、行业估算或旧值填补未披露项。"
+                    "搜索摘要或第三方新闻如果含有当期直接指标值，可以作为 verified_latest 证据，"
+                    "不要为了找 PDF 而否定已检索到的值；如果同一指标出现不同值，必须继续打开来源核实，"
+                    "无法消除冲突时只能标记 conflict，不得写入数值。"
                     "status 只能使用 verified_latest、not_disclosed、not_applicable、search_exhausted、conflict；"
                     "仅当指标在该公司业务/披露制度上确实不适用时才可用 not_applicable。"
                 )
@@ -3237,12 +3299,16 @@ def _run_company_research_agent(
     evidence_urls = list(
         dict.fromkeys(
             str(vote.get("url") or "")
-            for item in opened
-            for vote in item.get("opened_evidence", [])
+            for vote in [
+                *(vote for item in opened for vote in item.get("opened_evidence", [])),
+                *(vote for item in searches for vote in item.get("search_evidence", [])),
+            ]
             if str(vote.get("url") or "")
         )
     )
-    evidence_count = sum(len(item.get("opened_evidence", [])) for item in opened)
+    evidence_count = sum(len(item.get("opened_evidence", [])) for item in opened) + sum(
+        len(item.get("search_evidence", [])) for item in searches
+    )
     fresh_official_open_count = sum(int(item.get("fresh_official_open_count") or 0) for item in opened)
     supplied_metric_statuses = {
         item["metric"]: item
@@ -3253,7 +3319,31 @@ def _run_company_research_agent(
     for metric in expected_metrics:
         metric_searches = [item for item in searches if item.get("metric") == metric]
         metric_opened = [item for item in opened if item.get("metric") == metric]
-        metric_evidence = sum(len(item.get("opened_evidence", [])) for item in metric_opened)
+        metric_open_evidence = [
+            vote
+            for item in metric_opened
+            for vote in item.get("opened_evidence", [])
+        ]
+        metric_evidence = len(metric_open_evidence)
+        metric_search_evidence = [
+            vote
+            for item in metric_searches
+            for vote in item.get("search_evidence", [])
+        ]
+        metric_search_values = {
+            str(vote.get("canonical") or "")
+            for vote in metric_search_evidence
+            if vote.get("canonical")
+        }
+        metric_search_conflict = len(metric_search_values) > 1
+        metric_open_values = {
+            str(vote.get("canonical") or "")
+            for vote in metric_open_evidence
+            if vote.get("canonical")
+        }
+        metric_value_conflict = len(metric_open_values) > 1 or (
+            not metric_open_values and metric_search_conflict
+        )
         metric_fresh_opens = sum(int(item.get("fresh_official_open_count") or 0) for item in metric_opened)
         metric_live_official_opens = sum(
             int(item.get("live_official_open_count") or 0) for item in metric_opened
@@ -3283,9 +3373,13 @@ def _run_company_research_agent(
         if final.get("status") == "agent_error":
             status = "agent_error"
             reason = final.get("rationale", "Agent 未形成逐指标终态。")
-        elif claimed_status == "verified_latest" and metric_qualifying_opens > 0 and (
-            not _company_agent_metric_requires_direct_value(metric)
-            or metric_evidence > 0
+        elif claimed_status == "verified_latest" and (
+            metric_evidence > 0
+            or (metric_search_evidence and not metric_value_conflict)
+            or (
+                not _company_agent_metric_requires_direct_value(metric)
+                and metric_qualifying_opens > 0
+            )
         ):
             status = "verified_latest"
             reason = supplied.get("rationale") or "已回读当期官方原文并提取直接指标证据。"
@@ -3295,10 +3389,16 @@ def _run_company_research_agent(
         elif claimed_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
             status = "not_applicable"
             reason = supplied.get("rationale") or "该指标对该公司主体不适用。"
-        elif claimed_status == "search_exhausted" and metric_search_exhausted:
+        elif (
+            claimed_status == "search_exhausted"
+            and metric_search_exhausted
+            and not metric_search_evidence
+        ):
             status = "search_exhausted"
             reason = supplied.get("rationale") or "已搜索但未取得可核验当期官方原文。"
-        elif claimed_status == "conflict" and (metric_searches or metric_opened):
+        elif claimed_status == "conflict" and (
+            metric_value_conflict or metric_searches or metric_opened
+        ):
             status = "conflict"
             reason = supplied.get("rationale") or "当期官方证据存在口径或数值冲突。"
         else:
@@ -3308,18 +3408,24 @@ def _run_company_research_agent(
                 if metric_searches or metric_opened
                 else "Agent 未搜索该预期指标，也未提交逐指标终态。"
             )
+        evidence_votes = [*metric_open_evidence, *metric_search_evidence]
+        resolved_votes = metric_open_evidence or metric_search_evidence
+        selected_vote = resolved_votes[0] if resolved_votes and not metric_value_conflict else {}
         metric_results.append({
             "metric": metric,
             "status": status,
             "rationale": clean_text(reason, 400),
+            "value": selected_vote.get("normalized_value") or selected_vote.get("value") or "",
             "search_count": len(metric_searches),
+            "search_evidence_count": len(metric_search_evidence),
+            "search_value_conflict": metric_search_conflict,
+            "evidence_value_conflict": metric_value_conflict,
             "fresh_official_open_count": metric_fresh_opens,
             "live_official_open_count": metric_live_official_opens,
-            "evidence_count": metric_evidence,
+            "evidence_count": len(evidence_votes),
             "evidence_urls": list(dict.fromkeys(
                 str(vote.get("url") or "")
-                for item in metric_opened
-                for vote in item.get("opened_evidence", [])
+                for vote in evidence_votes
                 if str(vote.get("url") or "")
             ))[:8],
         })
@@ -3437,11 +3543,12 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
     if progress_enabled and progress_path.exists():
         try:
             progress_payload = json.loads(progress_path.read_text(encoding="utf-8"))
-            progress_results = {
-                str(company): item
-                for company, item in (progress_payload.get("companies") or {}).items()
-                if isinstance(item, dict)
-            }
+            if progress_payload.get("version") == COMPANY_AGENT_PROGRESS_VERSION:
+                progress_results = {
+                    str(company): item
+                    for company, item in (progress_payload.get("companies") or {}).items()
+                    if isinstance(item, dict)
+                }
         except Exception:
             progress_results = {}
 
@@ -3450,6 +3557,7 @@ def run_company_research_agents(state: CurationState) -> dict[str, Any]:
             atomic_write_json(
                 progress_path,
                 {
+                    "version": COMPANY_AGENT_PROGRESS_VERSION,
                     "run_id": run_id,
                     "updated_at": datetime.now().astimezone().isoformat(timespec="seconds"),
                     "companies": progress_results,

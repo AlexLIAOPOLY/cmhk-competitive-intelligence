@@ -49,7 +49,7 @@ PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
 AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "5400")))
 DEFAULT_AGENT_AUDIT_ONLINE_LIMIT = "0"
-AGENT_AUDIT_CONTROL_VERSION = 6
+AGENT_AUDIT_CONTROL_VERSION = 7
 REQUIRED_AGENT_NODES = {
     "证据接收",
     "来源分类",

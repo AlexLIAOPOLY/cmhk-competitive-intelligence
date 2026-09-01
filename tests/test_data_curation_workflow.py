@@ -457,6 +457,178 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["status"], "search_exhausted")
         self.assertTrue(result["metric_coverage_complete"])
 
+    def test_company_agent_accepts_current_third_party_search_value_without_pdf(self) -> None:
+        class NewsSearchCompanyAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    2: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "当期新闻搜索摘要含直接收入值",
+                        "metric_statuses": [{
+                            "metric": "收入",
+                            "status": "verified_latest",
+                            "rationale": "Example 2026 results reported revenue HK$10 million",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Example"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=NewsSearchCompanyAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([{
+                "title": "Example 2026 results",
+                "url": "https://news.example.com/example-results",
+                "snippet": "Example revenue was HK$10 million for 2026.",
+                "provider": "news_search",
+            }], "test")),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-news-value"}, "Example", 2, "Example", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(metric["value"], "0.1亿港元")
+        self.assertEqual(metric["search_evidence_count"], 1)
+        self.assertEqual(metric["fresh_official_open_count"], 0)
+
+    def test_company_agent_blocks_conflicting_search_values_until_verified(self) -> None:
+        class ConflictingNewsAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    2: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "conflict",
+                        "rationale": "两条当期新闻的收入值不同，需继续核实",
+                        "metric_statuses": [{
+                            "metric": "收入",
+                            "status": "conflict",
+                            "rationale": "HK$10 million 与 HK$12 million 冲突",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        results = [
+            {
+                "title": "Example 2026 results A",
+                "url": "https://news-a.example.com/results",
+                "snippet": "Example revenue was HK$10 million for 2026.",
+                "provider": "news_search",
+            },
+            {
+                "title": "Example 2026 results B",
+                "url": "https://news-b.example.com/results",
+                "snippet": "Example revenue was HK$12 million for 2026.",
+                "provider": "news_search",
+            },
+        ]
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Example"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=ConflictingNewsAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=(results, "test")),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-news-conflict"}, "Example", 2, "Example", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "conflict")
+        self.assertFalse(result["metric_coverage_complete"])
+        self.assertTrue(metric["search_value_conflict"])
+        self.assertEqual(metric["value"], "")
+
+    def test_company_agent_accepts_opened_source_that_resolves_search_conflict(self) -> None:
+        source_url = "https://news-a.example.com/results"
+
+        class VerifiedConflictAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "收入"}}],
+                    2: [{"id": "open", "name": "open_official_pages", "args": {
+                        "metric": "收入", "urls": [source_url],
+                    }}],
+                    3: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "打开新闻原文后确认收入为 HK$10 million",
+                        "metric_statuses": [{
+                            "metric": "收入",
+                            "status": "verified_latest",
+                            "rationale": "已打开原文核实",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        results = [
+            {
+                "title": "Example 2026 results A",
+                "url": source_url,
+                "snippet": "Example revenue was HK$10 million for 2026.",
+                "provider": "news_search",
+            },
+            {
+                "title": "Example 2026 results B",
+                "url": "https://news-b.example.com/results",
+                "snippet": "Example revenue was HK$12 million for 2026.",
+                "provider": "news_search",
+            },
+        ]
+
+        def verified_open(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return [{
+                "url": source_url,
+                "canonical": "10000000:HKD",
+                "normalized_value": "10000000",
+            }]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Example"], "official_hosts": [], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=VerifiedConflictAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=(results, "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=verified_open),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-news-conflict-resolved"}, "Example", 2, "Example", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertTrue(metric["search_value_conflict"])
+        self.assertFalse(metric["evidence_value_conflict"])
+        self.assertEqual(metric["value"], "10000000")
+
     def test_company_agent_accepts_exhaustion_after_current_official_page_has_no_metric(self) -> None:
         current_url = "https://example.com/2026-results"
 
@@ -545,7 +717,37 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(worker.call_count, 1)
         self.assertTrue(first["company_agent_summary"]["metric_coverage_complete"])
         self.assertTrue(second["company_agent_summary"]["metric_coverage_complete"])
+        self.assertEqual(progress["version"], workflow.COMPANY_AGENT_PROGRESS_VERSION)
         self.assertIn("Example", progress["companies"])
+
+    def test_scheduled_company_progress_rejects_previous_policy_version(self) -> None:
+        complete = {
+            "company": "Example",
+            "status": "verified_latest",
+            "metric_coverage_complete": True,
+            "metric_results": [{"metric": "收入", "status": "verified_latest"}],
+        }
+        worker = Mock(return_value=(complete, []))
+        with (
+            tempfile.TemporaryDirectory() as temp_dir,
+            patch.object(workflow, "RUNS_DIR", Path(temp_dir)),
+            patch("crawl.ALL_COMPANY_CURRENT_RESULT_TARGETS", {"Example": (2, "Example")}),
+            patch("data_curation.workflow._company_expected_metrics", return_value=["收入"]),
+            patch("data_curation.workflow._run_company_research_agent", worker),
+        ):
+            progress_path = Path(temp_dir) / "scheduled_old_policy_company_agent_progress.json"
+            progress_path.write_text(json.dumps({
+                "version": workflow.COMPANY_AGENT_PROGRESS_VERSION - 1,
+                "companies": {"Example": complete},
+            }), encoding="utf-8")
+            result = run_company_research_agents({
+                "run_id": "scheduled_old_policy",
+                "online_ai": True,
+                "search_verify_online": True,
+                "candidates": [],
+            })
+        self.assertEqual(worker.call_count, 1)
+        self.assertTrue(result["company_agent_summary"]["metric_coverage_complete"])
 
     def test_company_agents_run_smallest_metric_plan_first(self) -> None:
         observed: list[str] = []
