@@ -556,6 +556,7 @@ def record_subscription_operation_footprint(
     operation_result: dict | None = None,
     audit_result: str = "success",
     error: str = "",
+    origin: str = "",
 ) -> dict | None:
     """Write a subscription footprint without turning a completed send into a retry risk."""
     audit_payload = subscription_operation_audit_payload(action, payload, operation_result)
@@ -567,7 +568,12 @@ def record_subscription_operation_footprint(
             "details": {**audit_payload["details"], "error": str(error)[:240]},
         }
     try:
-        return AUTH.record_operation(actor=actor, result=audit_result, **audit_payload)
+        return AUTH.record_operation(
+            actor=actor,
+            result=audit_result,
+            origin=origin,
+            **audit_payload,
+        )
     except Exception:
         logging.exception("failed to record subscription operation footprint: %s", action)
         return None
@@ -7093,6 +7099,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     actor=actor,
                     action="fault.mark_handled",
                     target=incident_id,
+                    origin=AUTH.operation_origin(self),
                     details={
                         "handler_name": result.get("operator_name"),
                         "feishu_sync": result.get("feishu_sync"),
@@ -7108,6 +7115,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     action="fault.mark_handled",
                     target=incident_id,
                     result="failure",
+                    origin=AUTH.operation_origin(self),
                     details={"error": str(exc)[:240]},
                 )
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
@@ -7117,6 +7125,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     action="fault.mark_handled",
                     target=incident_id,
                     result="failure",
+                    origin=AUTH.operation_origin(self),
                     details={"error": str(exc)[:240]},
                 )
                 try:
@@ -7135,6 +7144,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     action="fault.mark_handled",
                     target=incident_id,
                     result="failure",
+                    origin=AUTH.operation_origin(self),
                     details={"error": "飞书同步失败"},
                 )
                 try:
@@ -7356,6 +7366,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     action=action,
                     payload=payload,
                     operation_result=result,
+                    origin=AUTH.operation_origin(self),
                 )
                 subscriptions = service.list_summary()
                 json_response(self, {"ok": True, "result": result, "subscriptions": subscriptions})
@@ -7367,6 +7378,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         payload=payload,
                         audit_result="failure",
                         error=str(exc),
+                        origin=AUTH.operation_origin(self),
                     )
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             except Exception as exc:
@@ -7377,6 +7389,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         payload=payload,
                         audit_result="failure",
                         error=str(exc),
+                        origin=AUTH.operation_origin(self),
                     )
                 json_response(self, {"ok": False, "error": str(exc)}, 500)
             return
@@ -7584,6 +7597,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     actor=actor,
                     action="news_review.update",
                     target=str(result.get("sheetId") or "news-review-sheet"),
+                    origin=AUTH.operation_origin(self),
                     details={
                         "changed_count": int(result.get("changedCount") or 0),
                         "decision_rows": decision_rows,
@@ -7598,6 +7612,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     action="news_review.update",
                     target="news-review-sheet",
                     result="failure",
+                    origin=AUTH.operation_origin(self),
                     details={"error": str(exc)[:240]},
                 )
                 json_response(self, {"ok": False, "error": str(exc)}, 409)
@@ -7607,6 +7622,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     action="news_review.update",
                     target="news-review-sheet",
                     result="failure",
+                    origin=AUTH.operation_origin(self),
                     details={"error": str(exc)[:240]},
                 )
                 json_response(self, {"ok": False, "error": str(exc)}, 500)
@@ -8047,6 +8063,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         action="report.content_edit",
                         target=str(result.get("path") or "")[:240],
                         result="success",
+                        origin=AUTH.operation_origin(self),
                         details={
                             "source_label": "报告全屏编辑器",
                             "page": "weekly" if (result.get("file") or {}).get("reportType") == "weekly" else "performance",

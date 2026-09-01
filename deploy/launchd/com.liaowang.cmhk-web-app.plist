@@ -50,6 +50,8 @@
     <string>1</string>
     <key>CMHK_AUTH_BOOTSTRAP_FIRST_FEISHU_ADMIN</key>
     <string>1</string>
+    <key>CMHK_AUDIT_RUNTIME_ORIGIN</key>
+    <string>local</string>
     <key>CMHK_AUTH_ENV_FILE</key>
     <string>/Users/liaowang/Desktop/揭榜挂帅需求/高华军/demo/.env.feishu.local</string>
     <key>TTS_BACKEND</key>

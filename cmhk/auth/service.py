@@ -171,6 +171,14 @@ class AuthService:
             or ""
         ).strip()
         self.trust_proxy_headers = os.environ.get("CMHK_AUTH_TRUST_PROXY_HEADERS", "0") == "1"
+        configured_audit_origin = str(
+            os.environ.get("CMHK_AUDIT_RUNTIME_ORIGIN") or "local"
+        ).strip().lower()
+        self.audit_runtime_origin = (
+            configured_audit_origin
+            if configured_audit_origin in {"local", "server"}
+            else "local"
+        )
         self.email_domain = (os.environ.get("CMHK_AUTH_EMAIL_DOMAIN") or "hk.chinamobile.com").strip().lower().lstrip("@")
         self.allowed_origins = {
             item.strip() for item in os.environ.get("CMHK_AUTH_ALLOWED_ORIGINS", "").split(",") if item.strip()
@@ -510,6 +518,7 @@ class AuthService:
         target: str = "",
         result: str = "success",
         source: str = "local_app",
+        origin: str = "",
         details: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Append a standalone, administrator-readable operation audit event."""
@@ -526,6 +535,11 @@ class AuthService:
             "target": str(target or "")[:240],
             "result": "failure" if result == "failure" else "success",
             "source": source if source in {"feishu_sheet", "feishu_card"} else "local_app",
+            "origin": (
+                origin
+                if origin in {"local", "ngrok", "server"}
+                else self.audit_runtime_origin
+            ),
             "details": details if isinstance(details, dict) else {},
         }
         line = json.dumps(event, ensure_ascii=False, separators=(",", ":")) + "\n"
@@ -535,6 +549,40 @@ class AuthService:
                 handle.write(line)
             os.chmod(self.operation_audit_path, 0o600)
         return event
+
+    @staticmethod
+    def _ngrok_hostname(value: str) -> bool:
+        try:
+            hostname = str(
+                urlparse(value if "://" in value else f"//{value}").hostname
+                or ""
+            ).lower()
+        except ValueError:
+            return False
+        return hostname.endswith((".ngrok-free.app", ".ngrok.app", ".ngrok.io"))
+
+    def operation_origin(self, handler=None) -> str:
+        """Return the audited runtime entry point without trusting public headers alone."""
+        if handler is not None:
+            try:
+                direct_client = str(handler.client_address[0] or "")
+            except (AttributeError, IndexError, TypeError):
+                direct_client = ""
+            forwarded_proto = str(
+                handler.headers.get("X-Forwarded-Proto") or ""
+            ).split(",", 1)[0].strip().lower()
+            forwarded_host = str(
+                handler.headers.get("X-Forwarded-Host") or ""
+            ).split(",", 1)[0].strip()
+            request_host = str(handler.headers.get("Host") or "").split(",", 1)[0].strip()
+            if (
+                direct_client in {"127.0.0.1", "::1"}
+                and forwarded_proto == "https"
+                and self._ngrok_hostname(forwarded_host or request_host)
+                and self._ngrok_hostname(request_host)
+            ):
+                return "ngrok"
+        return self.audit_runtime_origin
 
     def operation_audit(self, *, limit: int | None = 200) -> list[dict[str, Any]]:
         try:
@@ -1283,6 +1331,7 @@ class AuthService:
                     actor=admin,
                     action="organization.user_import",
                     target=str(user.get("id") or email),
+                    origin=self.operation_origin(handler),
                     details={"email": email, "name": str(user.get("name") or "")},
                 )
                 self._send_json(handler, 201, {"ok": True, "user": self._public_user(user)})
@@ -1334,6 +1383,7 @@ class AuthService:
                     actor=admin,
                     action="organization.user_delete",
                     target=str(target.get("id") or ""),
+                    origin=self.operation_origin(handler),
                     details=removed,
                 )
             self._send_json(handler, 200, {"ok": True, "deleted": removed})
@@ -1391,6 +1441,7 @@ class AuthService:
                     actor=admin,
                     action="organization.user_update",
                     target=str(target.get("id") or ""),
+                    origin=self.operation_origin(handler),
                     details={"before": before, "after": after},
                 )
             self._send_json(handler, 200, {"ok": True, "user": self._public_user(target)})

@@ -48,6 +48,7 @@ CMHK_FEISHU_APP_SECRET=<secret manager injection>
 CMHK_FEISHU_TENANT_KEY=<tenant key>
 CMHK_FEISHU_REDIRECT_URI=https://cmhk-intelligence.internal/api/auth/feishu/callback
 CMHK_AUTH_TRUST_PROXY_HEADERS=1
+CMHK_AUDIT_RUNTIME_ORIGIN=server
 
 CMHK_FEISHU_PROFILE=cli_xxx
 CMHK_FEISHU_ENTRY_PROFILE=cli_xxx

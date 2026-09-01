@@ -36,9 +36,9 @@ class LongListScrollTests(unittest.TestCase):
         for asset in (
             "/static/styles.css?v=293",
             "/static/workspace-tabs.css?v=140",
-            "/static/organization-admin.css?v=28",
+            "/static/organization-admin.css?v=29",
             "/static/app.js?v=322",
-            "/static/organization-admin.js?v=35",
+            "/static/organization-admin.js?v=36",
             "/static/workspace-tabs.js?v=167",
         ):
             self.assertIn(asset, INDEX)

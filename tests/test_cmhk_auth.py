@@ -82,6 +82,7 @@ class AuthServiceTest(unittest.TestCase):
             "CMHK_FEISHU_REDIRECT_URI": "",
             "FEISHU_REDIRECT_URI": "",
             "CMHK_AUTH_TRUST_PROXY_HEADERS": "0",
+            "CMHK_AUDIT_RUNTIME_ORIGIN": "local",
         }, clear=False)
         self.env.start()
         self.service = AuthService(Path(self.temp.name))
@@ -370,6 +371,7 @@ class AuthServiceTest(unittest.TestCase):
             target="incident-1",
             details={"feishu_sync": "readback_verified"},
         )
+        self.assertEqual(event["origin"], "local")
         self.assertTrue(self.service.operation_audit_path.exists())
         self.assertNotEqual(self.service.operation_audit_path, self.service.audit_path)
         self.assertEqual(self.service.operation_audit()[0]["id"], event["id"])
@@ -381,6 +383,59 @@ class AuthServiceTest(unittest.TestCase):
         denied = FakeHandler(cookie=operations_session, origin="")
         self.service.handle(denied, "GET", urlparse("/api/auth/admin/audit"))
         self.assertEqual(denied.status, 403)
+
+    def test_operation_origin_distinguishes_local_ngrok_and_server(self):
+        local = FakeHandler(origin="", host="127.0.0.1:8765")
+        self.assertEqual(self.service.operation_origin(local), "local")
+
+        ngrok = FakeHandler(
+            origin="",
+            client="127.0.0.1",
+            host="audit-example.ngrok-free.app",
+        )
+        ngrok.headers["X-Forwarded-Proto"] = "https"
+        ngrok.headers["X-Forwarded-Host"] = "audit-example.ngrok-free.app"
+        ngrok.headers["X-Forwarded-For"] = "203.0.113.10"
+        self.assertEqual(self.service.operation_origin(ngrok), "ngrok")
+
+        forged = FakeHandler(
+            origin="",
+            client="203.0.113.20",
+            host="audit-example.ngrok-free.app",
+        )
+        forged.headers["X-Forwarded-Proto"] = "https"
+        forged.headers["X-Forwarded-Host"] = "audit-example.ngrok-free.app"
+        self.assertEqual(self.service.operation_origin(forged), "local")
+
+        with patch.dict(os.environ, {"CMHK_AUDIT_RUNTIME_ORIGIN": "server"}):
+            server = AuthService(Path(self.temp.name) / "server-runtime")
+        self.assertEqual(server.operation_origin(local), "server")
+        self.assertEqual(
+            server.record_operation(actor=None, action="server.test")["origin"],
+            "server",
+        )
+
+    def test_ngrok_admin_mutation_persists_ngrok_origin(self):
+        _, admin_session = self.dev_login()
+        handler = FakeHandler(
+            body={"role": "OPERATIONS", "status": "active"},
+            cookie=admin_session,
+            origin="https://audit-example.ngrok-free.app",
+            client="127.0.0.1",
+            host="audit-example.ngrok-free.app",
+        )
+        handler.headers["X-Forwarded-Proto"] = "https"
+        handler.headers["X-Forwarded-Host"] = "audit-example.ngrok-free.app"
+        handler.headers["X-Forwarded-For"] = "203.0.113.10"
+        self.assertTrue(
+            self.service.handle(
+                handler,
+                "POST",
+                urlparse("/api/auth/admin/users/local-operations"),
+            )
+        )
+        self.assertEqual(handler.status, 200)
+        self.assertEqual(self.service.operation_audit()[0]["origin"], "ngrok")
 
     def test_operation_audit_all_returns_more_than_the_default_200_events(self):
         _, admin_session = self.dev_login()

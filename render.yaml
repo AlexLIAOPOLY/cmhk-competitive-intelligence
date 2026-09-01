@@ -42,5 +42,7 @@ services:
         value: ZrzWsMF4Dhq5zDtXZZ4cpHcKnfA
       - key: CMHK_REQUIRE_ROBOTS
         value: "1"
+      - key: CMHK_AUDIT_RUNTIME_ORIGIN
+        value: server
       - key: CMHK_SAVE_RAW_BODY
         value: "0"

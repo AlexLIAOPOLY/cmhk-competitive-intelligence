@@ -53,8 +53,8 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
-        self.assertIn('/static/organization-admin.js?v=35', INDEX)
-        self.assertIn('/static/organization-admin.css?v=28', INDEX)
+        self.assertIn('/static/organization-admin.js?v=36', INDEX)
+        self.assertIn('/static/organization-admin.css?v=29', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=167', INDEX)
         self.assertIn('/static/app.js?v=322', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)

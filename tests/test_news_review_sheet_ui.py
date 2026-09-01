@@ -479,11 +479,16 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertIn("tr.is-local-history", css)
         self.assertIn(".news-review-pagination", css)
         self.assertIn('<th>来源</th>', organization_script)
-        self.assertIn('label: "飞书表格"', organization_script)
-        self.assertIn('label: "本地 APP"', organization_script)
+        self.assertIn('label: "本机"', organization_script)
+        self.assertIn('label: "ngrok"', organization_script)
+        self.assertIn('label: "服务器"', organization_script)
+        self.assertIn("eventBusinessSource", organization_script)
+        self.assertIn("足迹来源", organization_script)
+        self.assertIn("业务来源", organization_script)
         self.assertIn("CMHKNewsReviewSheetSyncPromise", organization_script)
         self.assertIn("window.CMHKSyncNewsReviewSheet", organization_script)
-        self.assertIn("organization-audit-source.is-feishu", organization_css)
+        self.assertIn("organization-audit-source.is-ngrok", organization_css)
+        self.assertIn("organization-audit-source.is-server", organization_css)
 
 
 class NewsReviewActorTests(unittest.TestCase):

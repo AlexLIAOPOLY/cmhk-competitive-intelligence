@@ -16,7 +16,7 @@ class WorkspaceResponsiveSystemTests(unittest.TestCase):
     def test_responsive_contract_is_loaded_last_and_published(self):
         href = '/static/workspace-responsive-system.css?v=5'
         self.assertIn(href, INDEX)
-        self.assertGreater(INDEX.index(href), INDEX.index('/static/organization-admin.css?v=28'))
+        self.assertGreater(INDEX.index(href), INDEX.index('/static/organization-admin.css?v=29'))
         self.assertIn('"workspace-responsive-system.css"', PUBLISHER)
 
     def test_compact_header_has_non_overlapping_grid_columns(self):
