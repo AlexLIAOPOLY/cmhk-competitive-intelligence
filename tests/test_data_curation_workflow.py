@@ -64,6 +64,12 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertTrue(workflow._company_agent_metric_requires_direct_value("移动用户数"))
         self.assertFalse(workflow._company_agent_metric_requires_direct_value("企业通信"))
         self.assertFalse(workflow._company_agent_metric_requires_direct_value("数据中心"))
+        self.assertEqual(
+            workflow._company_agent_url_key(
+                "https://CDN.HGC-INTL.com/assets/Carrier-Network-%E2%80%94-Plus.pdf/"
+            ),
+            "https://cdn.hgc-intl.com/assets/Carrier-Network-—-Plus.pdf",
+        )
 
     def test_company_agent_controls_its_own_search_and_open_sequence(self) -> None:
         class ToolCallingCompanyAgent:

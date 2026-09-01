@@ -15,7 +15,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 from typing import Annotated, Any, TypedDict
-from urllib.parse import urlencode, urlparse
+from urllib.parse import unquote, urlencode, urlparse
 
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
@@ -2524,6 +2524,21 @@ def _search_result_is_current(result: dict[str, Any], *, current_year: int) -> b
     )
 
 
+def _company_agent_url_key(url: str) -> str:
+    """Canonicalize a discovered URL without weakening the official-host gate."""
+    try:
+        parsed = urlparse(unquote(clean_text(url, 4000)))
+    except Exception:
+        return ""
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return ""
+    path = re.sub(r"/{2,}", "/", parsed.path or "/")
+    if path != "/":
+        path = path.rstrip("/")
+    query = f"?{parsed.query}" if parsed.query else ""
+    return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{path}{query}"
+
+
 def _run_company_research_agent(
     state: CurationState,
     company: str,
@@ -2648,10 +2663,20 @@ def _run_company_research_agent(
     @tool
     def open_official_pages(metric: str, urls: list[str]) -> dict[str, Any]:
         """打开搜索命中的官方网页或 PDF 正文并提取可核验票据。"""
-        current_discovered = {
-            str(item.get("url") or "")
+        current_discovered_by_key = {
+            _company_agent_url_key(str(item.get("url") or "")): str(item.get("url") or "")
             for search in searches
             for item in search.get("current_official_results", [])
+            if _company_agent_url_key(str(item.get("url") or ""))
+        }
+        official_discovered_by_key = {
+            _company_agent_url_key(str(item.get("url") or "")): str(item.get("url") or "")
+            for search in searches
+            for item in search.get("results", [])
+            if _company_agent_url_key(str(item.get("url") or ""))
+            and _host_matches_governed_official(
+                str(item.get("url") or ""), research_profile["official_hosts"]
+            )
         }
         # A previously accepted official source is also a governed lead.  It is
         # deliberately limited to exact URLs already attached to this company's
@@ -2667,8 +2692,21 @@ def _run_company_research_agent(
                 or _host_matches_governed_official(str(url), research_profile["official_hosts"])
             )
         }
-        discovered = {*current_discovered, *known_fact_urls}
-        selected_urls = [url for url in dict.fromkeys(urls) if url in discovered][:8]
+        known_fact_urls_by_key = {
+            _company_agent_url_key(url): url for url in known_fact_urls if _company_agent_url_key(url)
+        }
+        discovered_by_key = {
+            **known_fact_urls_by_key,
+            **official_discovered_by_key,
+            **current_discovered_by_key,
+        }
+        selected_urls = []
+        for requested_url in dict.fromkeys(urls):
+            selected_url = discovered_by_key.get(_company_agent_url_key(requested_url))
+            if selected_url and selected_url not in selected_urls:
+                selected_urls.append(selected_url)
+            if len(selected_urls) >= 8:
+                break
         selected = next((item for item in facts if item.metric == metric), None)
         query_fact = selected or CandidateFact(
             id=f"{agent_id}-open-{metric or 'latest'}",
@@ -2684,11 +2722,16 @@ def _run_company_research_agent(
             timeout=15.0,
             open_audit=open_attempts,
         )
-        current_votes = [vote for vote in votes if str(vote.get("url") or "") in current_discovered]
+        current_discovered_keys = set(current_discovered_by_key)
+        current_votes = [
+            vote
+            for vote in votes
+            if _company_agent_url_key(str(vote.get("url") or "")) in current_discovered_keys
+        ]
         current_open_attempts = [
             attempt
             for attempt in open_attempts
-            if str(attempt.get("url") or "") in current_discovered
+            if _company_agent_url_key(str(attempt.get("url") or "")) in current_discovered_keys
         ]
         result = {
             "metric": metric,
