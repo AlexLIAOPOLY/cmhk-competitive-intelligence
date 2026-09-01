@@ -8615,10 +8615,8 @@ document.addEventListener("keydown", (event) => {
           data-intelligence-relation-refresh="${index}" data-relation-from="${safe(relation.from)}" data-relation-to="${safe(relation.to)}"
           aria-label="点击重新生成${safe(relation.title)}" ${relationRefreshPending ? `disabled ${relationRefreshState.get(index)?.status === "loading" ? "aria-busy=\"true\"" : "aria-disabled=\"true\""}` : ""}>${relationRefreshState.get(index)?.status === "loading"
           ? `<span class="intelligence-relation-skeleton" aria-hidden="true"><i></i><i></i><i></i></span><span class="sr-only" role="status">正在重新生成数据解读</span>`
-          : relationRefreshState.get(index)?.status === "error"
-            ? safe(relationRefreshState.get(index)?.message || "本次未生成新内容")
-            : safe(relation.title)}</button>
-        <small>${safe(relationRefreshState.get(index)?.status === "error" ? "点击重试" : relation.kind === "数据证据解读" ? "数据战略解读" : relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
+          : safe(relation.title)}</button>
+        <small>${safe(relationRefreshState.get(index)?.status === "error" ? relationRefreshState.get(index)?.message || "生成失败，点击标题重试" : relation.kind === "数据证据解读" ? "数据战略解读" : relation.origin === "ai" ? "AI 战略解读" : relation.kind)}</small>
       </div>
     `).join("");
     patchElementList(rail, markup);
@@ -9090,8 +9088,8 @@ document.addEventListener("keydown", (event) => {
       });
       const data = await response.json();
       if (!response.ok || !data.ok) throw new Error(data.error || "数据解读生成失败");
-      await refreshIntelligencePayload(true);
-      const relationAfter = (payload?.relations || [])[index] || {};
+      const relationAfter = { ...relationBefore, ...data };
+      payload.relations[index] = relationAfter;
       const signatureAfter = JSON.stringify([relationAfter.title || "", relationAfter.detail || ""]);
       if (signatureAfter === signatureBefore) {
         throw new Error("服务未返回与当前版本不同的新内容，请点击重试");

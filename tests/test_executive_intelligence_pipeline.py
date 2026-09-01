@@ -137,7 +137,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         evidence = pipeline._analysis_input_snapshot()
         expected = {
             ("mainland", "local"): {"10501.9亿元", "36553百万港元"},
+            ("local", "international"): {"36553百万港元", "138.19十亿美元"},
+            ("local", "mainland"): {"36553百万港元", "10501.9亿元"},
             ("international", "cloud"): {"138.19十亿美元", "128725百万美元"},
+            ("mainland", "cloud"): {"10501.9亿元", "128725百万美元"},
             ("local", "cloud"): {"36553百万港元", "128725百万美元"},
             ("mainland", "international"): {"10501.9亿元", "138.19十亿美元"},
         }
@@ -198,7 +201,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("内地移动用户与国际后付费口径属于不同层面", bodies[0]["messages"][-1]["content"])
         self.assertIn("用户总量不能替代客户价值判断", bodies[1]["messages"][-1]["content"])
         self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
-        self.assertEqual(request.call_args_list[0].kwargs["timeout"], 15)
+        self.assertEqual(request.call_args_list[0].kwargs["timeout"], 12)
         self.assertEqual(result["title"], "新标题")
         self.assertEqual(result["model"], "GLM")
 
@@ -259,6 +262,31 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertTrue(all(item["model"] == "evidence-rule-fallback" for item in results))
         self.assertEqual(len({item["title"] for item in results}), 4)
         self.assertTrue(all(item["kind"] == "数据证据解读" for item in results))
+
+    def test_manual_discovery_fallback_covers_current_overview_pairs_with_strategic_sentences(self):
+        evidence = pipeline._analysis_input_snapshot()
+        current_pairs = (
+            ("local", "international"),
+            ("local", "mainland"),
+            ("international", "cloud"),
+            ("mainland", "cloud"),
+        )
+        titles = []
+        for source_domain, target_domain in current_pairs:
+            fallback = pipeline._safe_discovery_regeneration_fallback(
+                evidence,
+                source_domain,
+                target_domain,
+                current={"title": "当前判断", "detail": "当前内容"},
+                regeneration_index=0,
+            )
+            self.assertIsNotNone(fallback)
+            self.assertLessEqual(len(fallback["title"]), 28)
+            self.assertTrue(any(term in fallback["title"] for term in ("经营", "竞争", "业务", "生态")))
+            scoped = pipeline._manual_discovery_evidence(evidence, source_domain, target_domain)
+            self.assertTrue(all(value in fallback["detail"] for value in scoped["required_values"]))
+            titles.append(fallback["title"])
+        self.assertEqual(len(set(titles)), 4)
 
     def test_focus_generation_changes_cache_busting_prompt_each_time(self):
         focus = {

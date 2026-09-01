@@ -2288,81 +2288,74 @@ def _safe_discovery_regeneration_fallback(
                 return f"{_display_number(item.get('value'))}{str(item.get('unit') or '')}"
         return ""
 
-    local_revenue = metric("local", "revenue")
-    international_revenue = metric("international", "revenue")
-    mainland_revenue = metric("mainland", "revenue")
-    cloud_revenue = metric("cloud", "revenue")
-    variants: dict[tuple[str, str], list[tuple[str, str]]] = {
-        ("mainland", "local"): [
-            (
-                "香港与内地财务分口径",
-                f"内地营收卡片{mainland_revenue}与香港营收卡片{local_revenue}分属不同币种和主体范围，"
-                "说明绝对规模不能直接等同经营质量。",
-            ),
-            (
-                "两地营收规模不能混排",
-                f"香港营收卡片{local_revenue}与内地营收卡片{mainland_revenue}采用不同货币和企业范围，"
-                "表明两组绝对值存在结构差异，只能在各自市场内解释。",
-            ),
-            (
-                "香港与内地主体边界不同",
-                f"内地营收{mainland_revenue}描述内地运营商集团，香港营收{local_revenue}描述本地运营主体，"
-                "说明市场边界不同，金额高低不能直接比较。",
-            ),
-        ],
-        ("international", "cloud"): [
-            (
-                "运营商与云收入分口径",
-                f"国际运营商营收卡片{international_revenue}与云收入卡片{cloud_revenue}分属集团和分部口径，"
-                "说明两域主体结构不同，绝对规模不能直接换算经营能力。",
-            ),
-            (
-                "集团营收与云分部收入分层",
-                f"国际运营商营收{international_revenue}与云收入{cloud_revenue}分属集团财务和业务分部，"
-                "表明两者范围不同，不能按同一维度混排。",
-            ),
-            (
-                "两类市场绝对规模分层",
-                f"云收入{cloud_revenue}与国际运营商营收{international_revenue}分属不同主体和币种口径，"
-                "说明两域形成分层信号，不能直接作经营效率比较。",
-            ),
-        ],
-        ("local", "cloud"): [
-            (
-                "香港与云收入边界不同",
-                f"香港营收卡片{local_revenue}衡量公司收入，云收入卡片{cloud_revenue}衡量云分部规模，"
-                "说明两项指标存在主体和币种差异，不能直接比较。",
-            ),
-            (
-                "公司营收不等同云分部收入",
-                f"香港营收卡片为{local_revenue}，云收入卡片为{cloud_revenue}，"
-                "表明公司整体与云分部属于不同口径，两者不能直接换算。",
-            ),
-            (
-                "两类收入绝对值不能混排",
-                f"香港营收{local_revenue}与云收入{cloud_revenue}分别描述公司整体和云分部绝对规模，"
-                "说明两域指标主体、币种与范围不同。",
-            ),
-        ],
-        ("mainland", "international"): [
-            (
-                "内地与国际客户口径分开",
-                f"内地运营商营收卡片{mainland_revenue}与国际运营商营收卡片{international_revenue}采用不同币种和集团范围，"
-                "说明绝对金额不能替代跨市场客户价值判断。",
-            ),
-            (
-                "两类运营商披露边界不同",
-                f"内地营收{mainland_revenue}与国际营收{international_revenue}覆盖不同企业和币种，"
-                "表明两组集团收入不能混作统一客户价值排名。",
-            ),
-            (
-                "内地与国际指标不可替代",
-                f"国际营收卡片{international_revenue}与内地营收卡片{mainland_revenue}分属不同市场，"
-                "说明两域收入规模不能用来互相替代用户质量判断。",
-            ),
-        ],
+    values = {
+        domain_id: metric(domain_id, "revenue")
+        for domain_id in ("local", "international", "mainland", "cloud")
     }
-    options = variants.get((source_domain, target_domain))
+    domain_names = {
+        "local": "本地运营商",
+        "international": "跨国运营商",
+        "mainland": "内地运营商",
+        "cloud": "全球云厂商",
+    }
+    pair = frozenset((source_domain, target_domain))
+    titles: dict[frozenset[str], tuple[str, str, str]] = {
+        frozenset(("local", "international")): (
+            "本地深耕与跨国规模经营呈现分层",
+            "跨国规模优势不等同本地经营质量",
+            "本地与跨国运营商处于不同竞争层次",
+        ),
+        frozenset(("local", "mainland")): (
+            "本地精细经营与内地规模经营呈现分层",
+            "内地规模优势不等同本地经营质量",
+            "本地与内地运营商处于不同竞争层次",
+        ),
+        frozenset(("international", "cloud")): (
+            "运营商规模与云业务规模处于不同阶段",
+            "云业务规模不等同运营商综合经营质量",
+            "传统连接与云业务形成两类竞争层次",
+        ),
+        frozenset(("mainland", "cloud")): (
+            "连接底盘与云业务规模形成生态分层",
+            "内地运营规模不等同全球云竞争质量",
+            "运营商与云厂商处于不同竞争层次",
+        ),
+        frozenset(("local", "cloud")): (
+            "本地经营与全球云业务形成范围分层",
+            "公司整体规模不等同云业务经营质量",
+            "本地运营商与云厂商处于不同竞争层次",
+        ),
+        frozenset(("mainland", "international")): (
+            "内地与跨国规模经营形成市场分层",
+            "跨市场规模优势不等同客户经营质量",
+            "内地与跨国运营商处于不同竞争层次",
+        ),
+    }
+    pair_titles = titles.get(pair)
+    if pair_titles:
+        source_value = values[source_domain]
+        target_value = values[target_domain]
+        source_name = domain_names[source_domain]
+        target_name = domain_names[target_domain]
+        options = [
+            (
+                pair_titles[0],
+                f"{source_name}营收{source_value}与{target_name}营收{target_value}的主体和币种范围不同；"
+                "规模差异表明两域经营分层，并非同一竞争边界下的直接排名。",
+            ),
+            (
+                pair_titles[1],
+                f"{source_name}营收{source_value}与{target_name}营收{target_value}分属不同市场范围；"
+                "这说明绝对值差异不能等同经营质量，战略含义在于竞争层次不同。",
+            ),
+            (
+                pair_titles[2],
+                f"{source_name}营收{source_value}、{target_name}营收{target_value}采用不同主体与币种口径；"
+                "差距反映两域资源规模分层，而非同一维度的经营效率比较。",
+            ),
+        ]
+    else:
+        options = None
     if not options:
         return None
     source_urls = [
@@ -3668,15 +3661,7 @@ def _manual_discovery_evidence(
         for focus in domain.get("focuses") or []
         if isinstance(focus, dict)
     }
-    anchor_focus_ids = {
-        ("mainland", "local"): (("mainland", "revenue"), ("local", "revenue")),
-        ("international", "cloud"): (("international", "revenue"), ("cloud", "revenue")),
-        ("local", "cloud"): (("local", "revenue"), ("cloud", "revenue")),
-        ("mainland", "international"): (("mainland", "revenue"), ("international", "revenue")),
-    }
-    selected = anchor_focus_ids.get((source_domain, target_domain))
-    if not selected:
-        return {"required_values": [], "evidence": []}
+    selected = ((source_domain, "revenue"), (target_domain, "revenue"))
     anchors: list[dict[str, Any]] = []
     for domain_id, focus_id in selected:
         focus = focus_map.get((domain_id, focus_id)) or {}
@@ -3698,11 +3683,13 @@ def _manual_discovery_evidence(
             "source_url": source_url,
         })
     required_lens = {
-        ("mainland", "local"): "区分内地与香港运营主体、币种和市场范围，不能用绝对金额直接判断经营质量。",
-        ("international", "cloud"): "判断传统运营商与云业务所处增长阶段是否分层，不把增速差直接等同经营效率。",
-        ("local", "cloud"): "区分香港运营商整体财务与全球云分部收入，解释主体、币种和范围边界。",
-        ("mainland", "international"): "区分内地移动用户披露与国际后付费、订阅及集团财务口径，不能互相替代。",
-    }.get((source_domain, target_domain), "解释两项指标的口径和市场阶段边界。")
+        frozenset(("local", "international")): "比较本地市场深耕与跨国规模经营，解释两者所处竞争层次。",
+        frozenset(("local", "mainland")): "比较本地精细经营与内地规模经营，解释两者所处竞争层次。",
+        frozenset(("international", "cloud")): "判断传统运营商与云业务所处阶段是否分层，不把规模差直接等同经营效率。",
+        frozenset(("mainland", "cloud")): "区分内地运营商连接底盘与全球云业务规模，解释两类生态竞争边界。",
+        frozenset(("local", "cloud")): "区分香港运营商整体财务与全球云分部收入，解释主体、币种和范围边界。",
+        frozenset(("mainland", "international")): "区分内地与跨国运营商的主体、币种和市场范围，不能用绝对金额直接判断经营质量。",
+    }.get(frozenset((source_domain, target_domain)), "解释两项指标的口径和市场阶段边界。")
     return {
         "required_values": [item["value"] for item in anchors],
         "required_lens": required_lens,
@@ -3879,8 +3866,9 @@ def regenerate_model_discovery(
             "content": (
                 "你是电信竞争情报分析员。只重新生成指定两个领域的一条跨库发现。"
                 "只返回JSON对象{from,to,title,detail,kind,source_urls}。from和to必须保持输入顺序；"
-                "title不超过28字，detail不超过110字，kind写AI综合研判。detail必须逐字包含required_values中的"
-                "两个值，且两个领域各一个；只解释结构、口径边界或市场阶段；"
+                "title必须是一句有战略含义的判断、不超过28字，detail不超过110字，kind写AI综合研判。"
+                "detail必须逐字包含required_values中的两个值，且两个领域各一个；解释竞争层次、经营结构、"
+                "口径边界或市场阶段，以及这组比较对理解竞争格局意味着什么；"
                 "禁止建议、应、需、优先、关注、评估、验证等行动话术。"
                 "detail必须遵守required_lens；detail必须包含“表明、反映、说明”三者之一且只用一个即可；"
                 "关系判断可使用分层、差距、不同、并非、不等于、重合、错位、边界等最贴合证据的词。"
@@ -3897,7 +3885,7 @@ def regenerate_model_discovery(
         },
     ]
     base_models = _executive_model_route()
-    models = [*base_models, *base_models]
+    models = base_models[:2]
     last_error: Exception | None = None
     replacement: dict[str, Any] | None = None
     used_model = models[0]
@@ -3926,7 +3914,7 @@ def regenerate_model_discovery(
     comparison_history = [*relation_history, current_text]
     fallback_used = False
     report("正在生成新的跨库判断")
-    regeneration_angles = {
+    regeneration_angles_by_pair = {
         ("mainland", "local"): (
             "内地与香港运营主体属于不同市场范围",
             "人民币与港元绝对金额不能直接混排",
@@ -3951,7 +3939,32 @@ def regenerate_model_discovery(
             "集团营收与后付费客户指标不能混排",
             "披露缺口限制跨市场客户质量比较",
         ),
-    }.get((source_domain, target_domain), ("口径边界", "市场阶段", "范围差异", "测量层次"))
+        ("local", "international"): (
+            "本地市场深耕与跨国规模经营的竞争层次",
+            "规模优势为何不等同经营质量",
+            "不同市场范围对应的战略定位",
+            "资源体量与竞争边界的关系",
+        ),
+        ("local", "mainland"): (
+            "本地精细经营与内地规模经营的竞争层次",
+            "规模优势为何不等同经营质量",
+            "不同市场范围对应的战略定位",
+            "资源体量与竞争边界的关系",
+        ),
+        ("mainland", "cloud"): (
+            "连接底盘与云业务规模对应的生态层次",
+            "运营商规模为何不等同云竞争质量",
+            "两类主体的竞争边界",
+            "资源体量与生态位置的关系",
+        ),
+    }
+    regeneration_angles = regeneration_angles_by_pair.get(
+        (source_domain, target_domain),
+        regeneration_angles_by_pair.get(
+            (target_domain, source_domain),
+            ("口径边界", "市场阶段", "范围差异", "竞争层次"),
+        ),
+    )
     grounded_seed = _safe_discovery_regeneration_fallback(
         evidence,
         source_domain,
@@ -4015,7 +4028,7 @@ def regenerate_model_discovery(
         try:
             with open_llm_request(
                 request,
-                timeout=15,
+                timeout=12,
                 config=config,
                 requested_key=api_key,
                 model=model,
