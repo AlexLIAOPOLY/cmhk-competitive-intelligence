@@ -105,7 +105,7 @@ CURRENT_OFFICIAL_RESULT_CANDIDATES: Dict[int, Dict[str, List[str]]] = {
     },
     21: {
         "e&": ["https://www.eand.com/en/investors/financial-results.html"],
-        "stc": ["https://www.stc.com.sa/content/stcgroupwebsite/sa/en/investors/financial-information.html"],
+        "stc": ["https://www.stc.com/en/investors.html"],
         "中国移动": ["https://www.chinamobileltd.com/en/ir/reports.php"],
         "中国电信": ["https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf"],
         "中国联通": ["https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"],
