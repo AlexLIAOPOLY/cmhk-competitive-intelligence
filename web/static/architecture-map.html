@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>LLM 与 Agent 全流程架构</title>
-    <link rel="stylesheet" href="./architecture-map.css?v=2" />
+    <link rel="stylesheet" href="./architecture-map.css?v=3" />
   </head>
   <body>
     <main class="architecture-page">
       <header class="architecture-heading">
-        <div><h1>LLM 与 Agent 全流程架构</h1><p>从页面入口到流程编排、Agent 协同、模型调用与受控发布的完整关系</p></div>
+        <div><h1>LLM 与 Agent 全流程架构</h1><p>整个项目以 AI 智能中枢为核心：五条业务流程统一汇入 Agent、模型与治理闭环</p></div>
         <aside class="architecture-legend" aria-label="图例">
           <span><i data-tone="page"></i>页面入口</span><span><i data-tone="flow"></i>流程编排</span>
           <span><i data-tone="agent"></i>Agent</span><span><i data-tone="llm"></i>LLM 路由</span>
@@ -80,14 +80,14 @@
           </section>
 
           <section class="layer-box agent-layer" aria-labelledby="agent-title">
-            <header><span>03</span><div><h2 id="agent-title">Agent 协同中枢</h2><p>规划、工具调用、观察与复核</p></div></header>
+            <header><span>03</span><div><h2 id="agent-title">AI 智能中枢</h2><p>五条业务流程在此汇聚</p></div></header>
             <div class="agent-orbit" aria-hidden="true"><i></i><i></i><i></i></div>
             <div class="architecture-node agent-satellite agent-news"><em>新闻 Agents</em><b>Agentic Search Planner</b><small>AI 文案 / 语义去重 / 新闻选材 Agent</small></div>
             <div class="architecture-node agent-satellite agent-research"><em>研究 Agents</em><b>公司研究 Agents + 缺口 Supervisor</b><small>跨库洞察 / 竞对洞察</small></div>
             <div class="architecture-node agent-satellite agent-report"><em>报告 Agents</em><b>Weekly Writer</b><small>Quality Reviewer / Performance Editor</small></div>
             <div class="architecture-node agent-satellite agent-assistant"><em>小竞AI</em><b>ReAct Agent</b><small>Skills / RAG / 数据集 / 图表 / 预测</small></div>
             <div class="architecture-node agent-satellite agent-ops"><em>运维 Agents</em><b>AI 故障诊断与影响线路复核</b><small>结案摘要</small></div>
-            <div class="architecture-node agent-core"><span class="core-signal"></span><em>AGENT GATEWAY</em><b>统一任务与工具路由</b><small>边界检查 · 权限 · 审批 · 运行足迹</small></div>
+            <div class="architecture-node agent-core"><span class="core-signal"></span><em>AGENT + LLM CONTROL PLANE</em><b>项目统一 AI 决策与工具中枢</b><small>任务路由 · 边界检查 · 权限审批 · 运行足迹</small></div>
           </section>
 
           <section class="layer-box model-layer" aria-labelledby="model-title">
@@ -115,5 +115,6 @@
       </section>
       <footer class="architecture-footer"><strong>静态架构图</strong><span>动画仅表示流程方向，不代表当前有任务正在运行。</span></footer>
     </main>
+    <script src="./architecture-map.js?v=1" defer></script>
   </body>
 </html>

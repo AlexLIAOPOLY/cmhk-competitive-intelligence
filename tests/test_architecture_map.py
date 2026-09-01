@@ -7,6 +7,7 @@ INDEX = (ROOT / "web/static/index.html").read_text(encoding="utf-8")
 SCRIPT = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
 PAGE = (ROOT / "web/static/architecture-map.html").read_text(encoding="utf-8")
 STYLE = (ROOT / "web/static/architecture-map.css").read_text(encoding="utf-8")
+RESPONSIVE_SCRIPT = (ROOT / "web/static/architecture-map.js").read_text(encoding="utf-8")
 PUBLISHER = (ROOT / "scripts/publish_executive_dashboard_pages.py").read_text(encoding="utf-8")
 
 
@@ -16,7 +17,7 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn('aria-controls="workspace-panel-architecture"', INDEX)
         self.assertIn('id="workspace-panel-architecture"', INDEX)
         self.assertIn('data-workspace-panel="architecture"', INDEX)
-        self.assertIn('data-src="/static/architecture-map.html?v=2"', INDEX)
+        self.assertIn('data-src="/static/architecture-map.html?v=3"', INDEX)
         self.assertIn('architecture: "dashboard"', SCRIPT)
 
     def test_architecture_maps_every_ai_workstream_without_interactions(self):
@@ -51,13 +52,15 @@ class ArchitectureMapTests(unittest.TestCase):
             self.assertIn(label, PAGE)
         self.assertNotIn("<button", PAGE)
         self.assertNotIn("<a ", PAGE)
-        self.assertNotIn("<script", PAGE)
+        self.assertIn('<script src="./architecture-map.js?v=1" defer></script>', PAGE)
 
     def test_architecture_is_a_node_link_diagram_in_simplified_chinese(self):
         self.assertIn('<html lang="zh-CN">', PAGE)
         self.assertIn('class="architecture-links"', PAGE)
         self.assertIn('marker-end="url(#arrow-cyan)"', PAGE)
         self.assertIn('class="architecture-node agent-core"', PAGE)
+        self.assertIn("整个项目以 AI 智能中枢为核心", PAGE)
+        self.assertIn("五条业务流程在此汇聚", PAGE)
         self.assertIn('class="layer-box governance-layer"', PAGE)
         self.assertNotIn("architecture-lane", PAGE)
         self.assertNotIn("architecture-cell", PAGE)
@@ -71,11 +74,15 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn("stroke-dashoffset", STYLE)
         self.assertIn("@media (prefers-reduced-motion: reduce)", STYLE)
         self.assertIn("animation: none !important", STYLE)
-        self.assertIn("@media (max-width: 720px)", STYLE)
+        self.assertIn("@media (max-width: 1000px)", STYLE)
+        self.assertIn("ResizeObserver", RESPONSIVE_SCRIPT)
+        self.assertIn("availableWidth / CANVAS_WIDTH", RESPONSIVE_SCRIPT)
+        self.assertIn("availableHeight / CANVAS_HEIGHT", RESPONSIVE_SCRIPT)
 
     def test_public_snapshot_copies_the_static_architecture_assets(self):
         self.assertIn('"architecture-map.css"', PUBLISHER)
         self.assertIn('"architecture-map.html"', PUBLISHER)
+        self.assertIn('"architecture-map.js"', PUBLISHER)
 
 
 if __name__ == "__main__":
