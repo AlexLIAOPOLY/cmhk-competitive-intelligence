@@ -2523,6 +2523,24 @@ def _run_company_research_agent(
                 if _host_matches_governed_official(item.get("url", ""), research_profile["official_hosts"])
                 and _search_result_is_current(item, current_year=current_year)
             ]
+        # Governed URLs are fallback seeds, never the only path. Search runs
+        # first; seeds are then exposed to the Agent so dynamic/JS indexes,
+        # regulator mirrors and search-engine omissions do not become false
+        # "not found" outcomes.
+        for seed_url in research_profile["seed_urls"]:
+            seed = {
+                "title": f"{company} governed official seed",
+                "url": seed_url,
+                "snippet": f"current official results entry {current_year}",
+                "provider": "governed_seed",
+            }
+            if seed_url not in {item.get("url") for item in results}:
+                results.append(seed)
+            if (
+                seed_url not in {item.get("url") for item in official_results}
+                and _host_matches_governed_official(seed_url, research_profile["official_hosts"])
+            ):
+                official_results.append(seed)
         record = {
             "metric": metric,
             "query": query,

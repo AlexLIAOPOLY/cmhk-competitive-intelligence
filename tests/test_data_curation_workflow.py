@@ -37,6 +37,20 @@ from normalize_company_metrics_ai import (
 
 
 class DataCurationWorkflowTests(unittest.TestCase):
+    def test_company_profiles_include_verified_regulator_fallbacks(self) -> None:
+        self.assertIn(
+            "sec.gov",
+            workflow._company_research_profile("KT")["official_hosts"],
+        )
+        self.assertIn(
+            "www1.hkexnews.hk",
+            workflow._company_research_profile("中国移动")["official_hosts"],
+        )
+        self.assertIn(
+            "saudiexchange.sa",
+            workflow._company_research_profile("stc")["official_hosts"],
+        )
+
     def test_company_agent_controls_its_own_search_and_open_sequence(self) -> None:
         class ToolCallingCompanyAgent:
             def __init__(self) -> None:
