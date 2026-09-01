@@ -855,6 +855,14 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
             f"{company_agent_summary.get('completed', 0)}/"
             f"{company_agent_summary.get('expected', 36)}"
         )
+    elif not company_agent_summary.get("publish_ready"):
+        unresolved = company_agent_summary.get("unresolved_companies") or []
+        problems.append(
+            "公司 Agent 尚有未解决主体："
+            + "、".join(str(company) for company in unresolved)
+        )
+    if summary["overall_status"] != "complete":
+        problems.append(f"Agent 审核总体状态未完成：{summary['overall_status'] or '缺失'}")
     return summary, problems
 
 

@@ -256,6 +256,50 @@ class CrawlRunReconciliationTests(unittest.TestCase):
 
 
 class ScheduledAgentAuditTests(unittest.TestCase):
+    def test_validated_summary_rejects_unresolved_company_agents(self) -> None:
+        run_id = "scheduled-unresolved"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            runs = root / "curation_data" / "runs"
+            runs.mkdir(parents=True)
+            (runs / f"{run_id}.json").write_text(
+                json.dumps(
+                    {
+                        "run_id": run_id,
+                        "completed_at": "2026-09-01T09:00:00+08:00",
+                        "extra": {
+                            "search_verification": {
+                                "online_search": True,
+                                "online_coverage_complete": True,
+                            },
+                            "company_agent_summary": {
+                                "required": True,
+                                "expected": 36,
+                                "completed": 36,
+                                "coverage_complete": True,
+                                "publish_ready": False,
+                                "unresolved_companies": ["AWS"],
+                            },
+                            "overall_status": "partial",
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+            (runs / f"{run_id}_agent_trace.jsonl").write_text(
+                "".join(
+                    json.dumps({"run_id": run_id, "node": node}, ensure_ascii=False) + "\n"
+                    for node in scheduler.REQUIRED_AGENT_NODES
+                ),
+                encoding="utf-8",
+            )
+            with mock.patch.object(scheduler, "ROOT", root):
+                _summary, problems = scheduler._validated_curation_summary(run_id)
+
+        self.assertTrue(any("尚有未解决主体：AWS" in problem for problem in problems))
+        self.assertTrue(any("总体状态未完成：partial" in problem for problem in problems))
+
     def test_scheduled_agent_uses_stable_checkpoint_and_bounded_online_search(self) -> None:
         self.assertIn("公司研究 Agent", scheduler.REQUIRED_AGENT_NODES)
         with tempfile.TemporaryDirectory() as temp_dir:

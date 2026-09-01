@@ -233,6 +233,24 @@ class DataCurationWorkflowTests(unittest.TestCase):
                 }
             )
 
+    def test_publish_blocks_unresolved_company_agents(self) -> None:
+        with self.assertRaisesRegex(RuntimeError, "尚有未解决主体.*AWS"):
+            publish_results(
+                {
+                    "search_verify_online": True,
+                    "search_verification": {"online_coverage_complete": True},
+                    "company_agent_summary": {
+                        "required": True,
+                        "expected": 36,
+                        "completed": 36,
+                        "coverage_complete": True,
+                        "publish_ready": False,
+                        "unresolved_companies": ["AWS"],
+                    },
+                    "candidates": [],
+                }
+            )
+
     def test_run_workflow_resumes_same_thread_from_checkpoint(self) -> None:
         graph = unittest.mock.Mock()
         graph.get_state.return_value = SimpleNamespace(
@@ -1275,6 +1293,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["company_agent_summary"]["expected"], 36)
         self.assertEqual(result["company_agent_summary"]["completed"], 36)
         self.assertTrue(result["company_agent_summary"]["coverage_complete"])
+        self.assertFalse(result["company_agent_summary"]["publish_ready"])
         self.assertEqual(len({item["company"] for item in result["company_agent_results"]}), 36)
         self.assertTrue(all(item["facts_seen"] == 0 for item in result["company_agent_results"]))
 

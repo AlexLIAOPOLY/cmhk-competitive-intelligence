@@ -3186,6 +3186,12 @@ def publish_results(state: CurationState) -> dict[str, Any]:
             f"公司研究 Agent 仅完成 {company_agent_summary.get('completed', 0)}/"
             f"{company_agent_summary.get('expected', 36)}，禁止把不完整结果标成成功"
         )
+    if company_agent_summary.get("required") and not company_agent_summary.get("publish_ready"):
+        unresolved = company_agent_summary.get("unresolved_companies") or []
+        raise RuntimeError(
+            "公司研究 Agent 尚有未解决主体，禁止写入发布层："
+            + "、".join(str(company) for company in unresolved)
+        )
     candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
     for item in candidates:
         if item.decision != "accepted":
