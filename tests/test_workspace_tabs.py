@@ -55,7 +55,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.js?v=36', INDEX)
         self.assertIn('/static/organization-admin.css?v=29', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=167', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=168', INDEX)
         self.assertIn('/static/app.js?v=322', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -308,6 +308,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("AI问数", INDEX)
         self.assertNotIn("小竞AI", operations)
         self.assertIn("项目系统架构", operations)
+        self.assertIn('data-workspace-tab="architecture" data-workspace-tab-hidden hidden', operations)
+        self.assertIn('tab.hasAttribute("data-workspace-tab-hidden")', SCRIPT)
 
     def test_navigation_uses_semantic_icons_instead_of_numeric_badges(self):
         navigation = INDEX[INDEX.index('id="workspace-group-overview"'):INDEX.index('id="workspace-panel-dashboard"')]
@@ -670,7 +672,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
         self.assertIn('workspace-tabs.css?v=140', INDEX)
-        self.assertIn('workspace-tabs.js?v=167', INDEX)
+        self.assertIn('workspace-tabs.js?v=168', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
         self.assertIn('workspace-tabs.css?v=140', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)

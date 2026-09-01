@@ -12,9 +12,10 @@ PUBLISHER = (ROOT / "scripts/publish_executive_dashboard_pages.py").read_text(en
 
 
 class ArchitectureMapTests(unittest.TestCase):
-    def test_static_architecture_tab_is_accessible_and_permission_gated(self):
+    def test_static_architecture_tab_is_hidden_but_the_page_is_retained(self):
         self.assertIn('id="workspace-tab-architecture"', INDEX)
         self.assertIn('aria-controls="workspace-panel-architecture"', INDEX)
+        self.assertIn('data-workspace-tab="architecture" data-workspace-tab-hidden hidden', INDEX)
         self.assertIn('id="workspace-panel-architecture"', INDEX)
         self.assertIn('data-workspace-panel="architecture"', INDEX)
         self.assertIn('data-src="/static/architecture-map.html?v=7"', INDEX)
