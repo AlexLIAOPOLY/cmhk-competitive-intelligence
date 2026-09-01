@@ -2930,8 +2930,10 @@ def _run_company_research_agent(
                 )
                 if not response.tool_calls:
                     continue
+                completion_called_this_repair = False
                 for call in response.tool_calls:
                     name = str(call.get("name") or "")
+                    completion_called_this_repair = completion_called_this_repair or name == "complete_company_research"
                     args = call.get("args") or {}
                     selected_tool = tool_map.get(name)
                     traces.append(
@@ -2967,6 +2969,68 @@ def _run_company_research_agent(
                         )
                     )
                     messages.append(ToolMessage(content=json.dumps(result, ensure_ascii=False), tool_call_id=call["id"]))
+                if not completion_accepted and not completion_called_this_repair:
+                    messages.append(HumanMessage(content=(
+                        "本轮门禁补搜和原文打开工具已经执行完成。现在不要重复研究工具；"
+                        "必须只调用 complete_company_research，基于最新工具结果逐项重新提交全部预期指标。"
+                    )))
+                    started = time.monotonic()
+                    completion_response = _build_supervisor_model().bind_tools(
+                        [complete_company_research],
+                        tool_choice="complete_company_research",
+                    ).invoke(messages)
+                    messages.append(completion_response)
+                    traces.append(
+                        _trace(
+                            state,
+                            "公司研究 Agent",
+                            "finalize",
+                            f"{company} 最终决策 Agent 执行第 {repair_index + 1} 次强制重提。",
+                            output={"tool_calls": completion_response.tool_calls},
+                            duration_ms=round((time.monotonic() - started) * 1000),
+                            agent_id=agent_id,
+                            parent_agent_id=parent_agent_id,
+                            company=company,
+                            role="company_research",
+                        )
+                    )
+                    for call in completion_response.tool_calls or []:
+                        if str(call.get("name") or "") != "complete_company_research":
+                            continue
+                        args = call.get("args") or {}
+                        traces.append(
+                            _trace(
+                                state,
+                                "公司研究 Agent",
+                                "tool_call",
+                                f"{company} 最终决策 Agent 强制重提 complete_company_research。",
+                                event_type="tool_call",
+                                tool="complete_company_research",
+                                input=args,
+                                agent_id=agent_id,
+                                parent_agent_id=parent_agent_id,
+                                company=company,
+                                role="company_research",
+                            )
+                        )
+                        result = complete_company_research.invoke(args)
+                        traces.append(
+                            _trace(
+                                state,
+                                "公司研究 Agent",
+                                "tool_result",
+                                f"{company} 最终决策 Agent 完成强制重提。",
+                                event_type="tool_result",
+                                tool="complete_company_research",
+                                result=result,
+                                status="success" if result.get("accepted") else "error",
+                                agent_id=agent_id,
+                                parent_agent_id=parent_agent_id,
+                                company=company,
+                                role="company_research",
+                            )
+                        )
+                        messages.append(ToolMessage(content=json.dumps(result, ensure_ascii=False), tool_call_id=call["id"]))
                 if completion_accepted:
                     break
     except Exception as exc:
