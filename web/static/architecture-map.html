@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>项目系统架构</title>
-    <link rel="stylesheet" href="./architecture-map.css?v=6" />
+    <link rel="stylesheet" href="./architecture-map.css?v=7" />
   </head>
   <body>
     <main class="architecture-page">
@@ -32,17 +32,17 @@
           <section class="sector business-sector" aria-labelledby="business-title">
             <h2 id="business-title">业务场景</h2>
             <div class="business-arc">
-              <div class="scenario-node"><i><img class="architecture-icon" src="./assets/architecture-icons/business-news.png" alt="" /></i><b>新闻情报</b></div><div class="scenario-node"><i><img class="architecture-icon" src="./assets/architecture-icons/business-research.png" alt="" /></i><b>竞对研究</b></div><div class="scenario-node"><i><img class="architecture-icon" src="./assets/architecture-icons/business-report.png" alt="" /></i><b>报告生产</b></div><div class="scenario-node"><i><img class="architecture-icon" src="./assets/architecture-icons/business-assistant.png" alt="" /></i><b>小竞AI</b></div><div class="scenario-node"><i><img class="architecture-icon" src="./assets/architecture-icons/business-operations.png" alt="" /></i><b>生产运维</b></div>
+              <div class="scenario-node"><i class="architecture-symbol" aria-hidden="true">📰</i><b>新闻情报</b></div><div class="scenario-node"><i class="architecture-symbol" aria-hidden="true">🔍</i><b>竞对研究</b></div><div class="scenario-node"><i class="architecture-symbol" aria-hidden="true">📃</i><b>报告生产</b></div><div class="scenario-node"><i class="architecture-symbol" aria-hidden="true">💬</i><b>小竞AI</b></div><div class="scenario-node"><i class="architecture-symbol" aria-hidden="true">🛠️</i><b>生产运维</b></div>
             </div>
           </section>
 
           <section class="sector data-sector blue" aria-labelledby="data-title">
             <h2 id="data-title">数据与知识</h2>
             <div class="sector-list">
-              <div class="orbit-node"><i><img class="architecture-icon" src="./assets/architecture-icons/data-public-sources.png" alt="" /></i><span><b>官网与公开来源</b><small>定时爬虫 · 来源覆盖</small></span></div>
-              <div class="orbit-node"><i><img class="architecture-icon" src="./assets/architecture-icons/data-governed-databases.png" alt="" /></i><span><b>四大治理数据库</b><small>本地 · 国际 · 内地 · 云</small></span></div>
-              <div class="orbit-node"><i><img class="architecture-icon" src="./assets/architecture-icons/data-review-readback.png" alt="" /></i><span><b>飞书审核回读</b><small>人工校验 · 完整回读</small></span></div>
-              <div class="orbit-node"><i><img class="architecture-icon" src="./assets/architecture-icons/data-knowledge-base.png" alt="" /></i><span><b>RAG 与报告知识库</b><small>数据集 · 记忆 · 历史</small></span></div>
+              <div class="orbit-node"><i class="architecture-symbol" aria-hidden="true">🌐</i><span><b>官网与公开来源</b><small>定时爬虫 · 来源覆盖</small></span></div>
+              <div class="orbit-node"><i class="architecture-symbol" aria-hidden="true">🗄️</i><span><b>四大治理数据库</b><small>本地 · 国际 · 内地 · 云</small></span></div>
+              <div class="orbit-node"><i class="architecture-symbol" aria-hidden="true">✅</i><span><b>飞书审核回读</b><small>人工校验 · 完整回读</small></span></div>
+              <div class="orbit-node"><i class="architecture-symbol" aria-hidden="true">📚</i><span><b>RAG 与报告知识库</b><small>数据集 · 记忆 · 历史</small></span></div>
             </div>
           </section>
 
@@ -52,7 +52,7 @@
               <span class="core-mark"><img class="architecture-icon" src="./assets/architecture-icons/ai-core.png" alt="" /></span>
               <h1 id="ai-core-title">CMHK AI 智能中枢</h1>
               <p>理解任务 · 调用能力 · 生成决策 · 持续校正</p>
-              <div class="core-capabilities"><span><i><img class="architecture-icon" src="./assets/architecture-icons/core-agent-orchestration.png" alt="" /></i>Agent 编排</span><span><i><img class="architecture-icon" src="./assets/architecture-icons/core-model-routing.png" alt="" /></i>模型路由</span><span><i><img class="architecture-icon" src="./assets/architecture-icons/core-tool-calling.png" alt="" /></i>工具调用</span><span><i><img class="architecture-icon" src="./assets/architecture-icons/core-context-memory.png" alt="" /></i>上下文记忆</span></div>
+              <div class="core-capabilities"><span><i class="architecture-symbol" aria-hidden="true">🧩</i>Agent 编排</span><span><i class="architecture-symbol" aria-hidden="true">⇄</i>模型路由</span><span><i class="architecture-symbol" aria-hidden="true">🔧</i>工具调用</span><span><i class="architecture-symbol" aria-hidden="true">🗂️</i>上下文记忆</span></div>
             </div>
             <div class="governance-halo"><span>证据门禁</span><span>权限审批</span><span>人工回读</span><span>全程审计</span></div>
           </section>
@@ -80,7 +80,7 @@
           <section class="sector output-sector cyan" aria-labelledby="output-title">
             <h2 id="output-title">受控交付</h2>
             <div class="output-arc">
-              <div class="delivery-node"><i><img class="architecture-icon" src="./assets/architecture-icons/delivery-dashboard-graph.png" alt="" /></i><b>驾驶舱与知识图谱</b></div><div class="delivery-node"><i><img class="architecture-icon" src="./assets/architecture-icons/delivery-review-brief.png" alt="" /></i><b>飞书审核与战略简报</b></div><div class="delivery-node"><i><img class="architecture-icon" src="./assets/architecture-icons/delivery-documents-audio.png" alt="" /></i><b>Word / PDF / 音频</b></div><div class="delivery-node"><i><img class="architecture-icon" src="./assets/architecture-icons/delivery-ai-answer-citations.png" alt="" /></i><b>AI 回答与引用</b></div><div class="delivery-node"><i><img class="architecture-icon" src="./assets/architecture-icons/delivery-alert-closure.png" alt="" /></i><b>告警闭环</b></div>
+              <div class="delivery-node"><i class="architecture-symbol" aria-hidden="true">📊</i><b>驾驶舱与知识图谱</b></div><div class="delivery-node"><i class="architecture-symbol" aria-hidden="true">☑️</i><b>飞书审核与战略简报</b></div><div class="delivery-node"><i class="architecture-symbol" aria-hidden="true">📃</i><b>Word / PDF / 音频</b></div><div class="delivery-node"><i class="architecture-symbol" aria-hidden="true">💬</i><b>AI 回答与引用</b></div><div class="delivery-node"><i class="architecture-symbol" aria-hidden="true">🔔</i><b>告警闭环</b></div>
             </div>
           </section>
         </div>

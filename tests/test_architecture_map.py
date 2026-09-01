@@ -17,7 +17,7 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertIn('aria-controls="workspace-panel-architecture"', INDEX)
         self.assertIn('id="workspace-panel-architecture"', INDEX)
         self.assertIn('data-workspace-panel="architecture"', INDEX)
-        self.assertIn('data-src="/static/architecture-map.html?v=6"', INDEX)
+        self.assertIn('data-src="/static/architecture-map.html?v=7"', INDEX)
         self.assertIn('<span class="workspace-tab-label">项目系统架构</span>', INDEX)
         self.assertIn('architecture: "dashboard"', SCRIPT)
 
@@ -65,10 +65,13 @@ class ArchitectureMapTests(unittest.TestCase):
         self.assertNotIn("<button", PAGE)
         self.assertNotIn("<a ", PAGE)
         self.assertIn('<script src="./architecture-map.js?v=2" defer></script>', PAGE)
-        self.assertEqual(PAGE.count('class="architecture-icon"'), 19)
+        self.assertEqual(PAGE.count('class="architecture-icon"'), 1)
+        self.assertEqual(PAGE.count('class="architecture-symbol"'), 18)
         for placeholder in (">情<", ">研<", ">报<", ">问<", ">运<", ">源<", ">库<", ">审<", ">知<", ">编<", ">模<", ">工<", ">忆<", ">图<", ">飞<", ">档<", ">答<", ">警<"):
             self.assertNotIn(placeholder, PAGE)
         self.assertIn("assets/architecture-icons/ai-core.png", PAGE)
+        self.assertNotIn("business-news.png", PAGE)
+        self.assertIn("📃", PAGE)
 
     def test_architecture_is_a_node_link_diagram_in_simplified_chinese(self):
         self.assertIn('<html lang="zh-CN">', PAGE)
