@@ -142,7 +142,8 @@
 .intelligence-relation:focus-visible::before { opacity: 1; }
 .intelligence-relation-title,
 .intelligence-relation small { display: block; color: #6f9bad; font-size: 10px; }
-.intelligence-relation strong {
+.intelligence-relation strong,
+.intelligence-relation-headline {
   display: block;
   overflow: hidden;
   margin: 5px 0 3px;
@@ -152,7 +153,8 @@
   white-space: nowrap;
 }
 
-.intelligence-relation strong.is-generating {
+.intelligence-relation strong.is-generating,
+.intelligence-relation-headline.is-generating {
   align-self: center;
   overflow: visible;
 }

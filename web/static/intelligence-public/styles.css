@@ -142,7 +142,8 @@
 .intelligence-relation:focus-visible::before { opacity: 1; }
 .intelligence-relation-title,
 .intelligence-relation small { display: block; color: #6f9bad; font-size: 10px; }
-.intelligence-relation strong {
+.intelligence-relation strong,
+.intelligence-relation-headline {
   display: block;
   overflow: hidden;
   margin: 5px 0 3px;
@@ -152,7 +153,8 @@
   white-space: nowrap;
 }
 
-.intelligence-relation strong.is-generating {
+.intelligence-relation strong.is-generating,
+.intelligence-relation-headline.is-generating {
   align-self: center;
   overflow: visible;
 }
@@ -16226,7 +16228,8 @@ body.dashboard-page { overflow-x: hidden; }
 .static-snapshot .intelligence-scroll-label-track { animation-play-state: running !important; }
 .static-snapshot .header-tools button { cursor: default; }
 .static-snapshot .ai-insight-label,
-.static-snapshot .intelligence-relation-title { pointer-events: none; cursor: default; }
+.static-snapshot .intelligence-relation-title,
+.static-snapshot .intelligence-relation-headline { pointer-events: none; cursor: default; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
