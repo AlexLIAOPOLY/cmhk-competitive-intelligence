@@ -704,6 +704,50 @@
           "organization": true
         }
       }
+    },
+    {
+      "id": "member-017",
+      "name": "谢琪瑶 Jill XIE Qiyao",
+      "account": "",
+      "email": "",
+      "department": "Technology & Innovation Management",
+      "title": "助理项目经理",
+      "role": "UNCONFIGURED",
+      "roleLabel": "待分配",
+      "status": "active",
+      "authProvider": "feishu",
+      "current": false,
+      "developmentAccount": false,
+      "modules": {
+        "dashboard": false,
+        "monitoring": false,
+        "news": false,
+        "review": false,
+        "competitor": false,
+        "weekly": false,
+        "performance": false,
+        "subscriptions": false,
+        "ai": false,
+        "log": false,
+        "fault": false,
+        "organization": false
+      },
+      "permissions": {
+        "modules": {
+          "dashboard": false,
+          "monitoring": false,
+          "news": false,
+          "review": false,
+          "competitor": false,
+          "weekly": false,
+          "performance": false,
+          "subscriptions": false,
+          "ai": false,
+          "log": false,
+          "fault": false,
+          "organization": false
+        }
+      }
     }
   ],
   "departments": [

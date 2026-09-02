@@ -1,4 +1,66 @@
 {
+  "20260902_140022_550070": [
+    {
+      "newsId": "NEWS-B3C26C7F4C3FBF",
+      "title": "Anthropic发布Claude Fable 5.1与Mythos 5.1：缓存读取降价75%",
+      "summary": "Anthropic发布Fable 5.1与Mythos 5.1，缓存读取降价75%，代理任务成本最高降低45%。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "電腦王阿達",
+      "publishedAt": "2026-09-02T07:00:00+08:00",
+      "url": "https://www.kocpc.com.tw/archives/667441",
+      "inclusionReason": "Anthropic发布新模型并大幅降低缓存读取与代理任务成本，具体降价数据影响AI应用成本与采用。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-593754AF648A54",
+      "title": "Axis Securities将Bharti Airtel列为首选买入股，目标价2530卢比",
+      "summary": "Axis Securities将Bharti Airtel列为15只买入股首选，目标价2530卢比，预计上涨40%。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "NDTV Profit on MSN",
+      "publishedAt": "2026-09-02T06:30:09+08:00",
+      "url": "https://www.msn.com/en-in/news/other/axis-securities-top-picks-bharti-airtel-tops-list-of-15-stocks-to-buy-check-full-list/ar-AA2bopHj",
+      "inclusionReason": "Bharti Airtel获券商列为最高确信买入股并给出目标价，反映资本市场对竞对估值与前景判断。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-E68ABD84CF4B48",
+      "title": "本源悟空量子计算机实现相干量子路由系统，破解QRAM扩展难题",
+      "summary": "本源量子联合中科大等团队在'本源悟空'超导量子计算机上研发出相干量子路由系统，有效解决QRAM扩展难题，论文发表于《Physical Review X》。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-09-02T07:00:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5072102",
+      "inclusionReason": "量子路由系统为数据中心架设'快速路'，解决了QRAM扩展的行业难题，属于数据中心与算力基础设施领域的具体技术突破，与监控关键词'数据中心'存在实质语义关联。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-DEFF9B363017DA",
+      "title": "南区青年团见证香港 eVTOL 首航试飞 走向未来交通的第一步",
+      "summary": "南区青年团见证香港 eVTOL 首航试飞 走向未来交通的第一步 PR Newswire",
+      "category": "基础设施/网络/技术类",
+      "region": "香港本地",
+      "source": "PR Newswire",
+      "publishedAt": "2026-09-02T13:12:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMifEFVX3lxTE5uSnhRNDRVYlBBZ241bnpnVEtfVnpvdEozZENiQnl4T0tHQ2N3NWdPU1NyZHBDNjVlbEJ1VVAzNzV0aWplN0dDc2tZbUJCRTBfMmd2QkliOS1DNzFxeDJYZ0E4bHFhbXF6SjZSUXNfVFdJaUo5a2FQZlhzU1E?oc=5",
+      "inclusionReason": "南区青年团见证香港 eVTOL 首航试飞 走向未来交通的第一步属于可验证的关键技术事件，影响产品与定价。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-CA2204A084A48D",
+      "title": "百度集团最快9月7日有望纳入港股通 全栈AI价值重估在即｜彭伟新",
+      "summary": "百度集团最快9月7日有望纳入港股通 全栈AI价值重估在即｜彭伟新 hk01.com",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "hk01.com",
+      "publishedAt": "2026-09-02T10:14:13+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFBJbWNPN1ZYWUhrY0Y2TnBtbnRMVXZ2aUVucnNQem9pc3Q0SmI5N0dhWlB5dGItak1pbDJCQ3lxTHNteURMMkk5eEYzaTFJZw?oc=5",
+      "inclusionReason": "百度集团最快9月7日有望纳入港股通 全栈AI价值重估在即｜彭伟新属于可验证的关键技术事件，影响竞争格局。",
+      "businessImpact": "竞争格局"
+    }
+  ],
   "20260902_073000_974768": [
     {
       "newsId": "NEWS-FEFAD6F459702A",

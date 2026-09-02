@@ -1738,6 +1738,9 @@
     ] : ["所选日期没有主爬虫运行记录"];
     const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
     const archivedAgentCandidateCount = Number(mainRunDetail.agentReviewSummary?.total || 0);
+    const companyAgentProgress = mainRunDetail.companyAgentProgress || {};
+    const hasCompanyAgentProgress = Number(companyAgentProgress.recordedCompanies || 0) > 0;
+    const companyAgentVersion = Number(companyAgentProgress.version || 0);
     const reviewResults = dailyNewsReviewResults(selectedDate);
     const selectionSummary = selectionRuns.reduce((summary, run) => {
       const item = run.operational_summary || {};
@@ -1766,7 +1769,7 @@
       { key: "previous-news", label: "前一日战略新闻", value: number(sourceDiscoverySummary.previous_day_reference_count || 0), unit: "条参考", note: `${number((sourceDiscoverySummary.previous_day_news_runs || []).length)} 轮新闻归档`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: ["读取前一日战略新闻任务归档", "只筛选与四库主体及指标相关的内容", "新闻摘要只作追证线索，不直接成为数据库事实"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日新闻归档" },
       { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [300, 250], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
       { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [300, 455], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted === undefined ? "—" : number(mainRun.curation.accepted), unit: mainRun.curation?.accepted === undefined ? "" : "条审核通过", note: mainRun.curation?.agent_run_id ? "审核通过量 · 非入库变化量" : "当天未留下 Agent 轨迹", health: mainRun.curation ? mainHealth : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [530, 455], details: mainRun.curation ? [`原始指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选事实 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选事实` : ""}` : "候选事实逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || mainRun.status_detail || "当天未留下 Agent 审核证据" },
+      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted !== undefined ? number(mainRun.curation.accepted) : hasCompanyAgentProgress ? `${number(companyAgentProgress.recordedCompanies)}/${number(companyAgentProgress.expectedCompanies || 41)}` : "—", unit: mainRun.curation?.accepted !== undefined ? "条审核通过" : hasCompanyAgentProgress ? "家公司已记录" : "", note: mainRun.curation?.accepted !== undefined ? "审核通过量 · 非入库变化量" : hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 检查点 · ${number(companyAgentProgress.recordedMetrics)} 项指标` : "当天未留下 Agent 轨迹", health: mainRun.curation?.accepted !== undefined ? mainHealth : hasCompanyAgentProgress ? { key: "warning", label: "待续跑" } : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [530, 455], details: mainRun.curation?.accepted !== undefined ? [`原始指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选事实 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选事实` : ""}` : "候选事实逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : hasCompanyAgentProgress ? [`V${number(companyAgentVersion)} 最后更新 ${String(companyAgentProgress.updatedAt || "未记录").replace("T", " ")}`, `已记录 ${number(companyAgentProgress.recordedCompanies)} / ${number(companyAgentProgress.expectedCompanies || 41)} 家公司`, `指标记录 ${number(companyAgentProgress.recordedMetrics)} 项；合规终态 ${number(companyAgentProgress.terminalMetrics)} 项`, `未解决公司 ${number(companyAgentProgress.unresolvedCompanies)} 家；冲突指标 ${number(companyAgentProgress.conflictMetrics)} 项；Agent 未完成指标 ${number(companyAgentProgress.agentErrorMetrics)} 项`, "当前展示持久检查点；正常调度续跑后自动更新，最终结果文件生成后自动优先显示正式结果"] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || (hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 公司 Agent 检查点：${number(companyAgentProgress.recordedCompanies)} 家、${number(companyAgentProgress.recordedMetrics)} 项指标，更新时间 ${companyAgentProgress.updatedAt || "未记录"}` : mainRun.status_detail || "当天未留下 Agent 审核证据") },
       { key: "database-hub", label: "新增数据入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数值变化 ${numericChangeText}` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [760, 469], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数值变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数值变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`, numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测变化数量", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [990, 410], "database-local"),
       domainNode("international", "国际运营商", [1155, 410], "database-international"),
@@ -2347,6 +2350,11 @@
       const detail = state.newsRunDetails[run.crawl_run_id] || {};
       return Array.isArray(detail.companyAgentTrace) ? detail.companyAgentTrace : [];
     });
+    const progressRows = relatedRuns.map((run) => {
+      const detail = state.newsRunDetails[run.crawl_run_id] || {};
+      return detail.companyAgentProgress || {};
+    }).filter((progress) => Number(progress.recordedCompanies || 0) > 0);
+    const progress = progressRows.sort((left, right) => String(right.updatedAt || "").localeCompare(String(left.updatedAt || "")))[0] || {};
     const unique = new Map();
     reports.forEach((report) => unique.set(report.company, report));
     const groupLabels = { local: "香港运营商", international: "国际运营商", mainland: "内地运营商", cloud: "云厂商" };
@@ -2359,10 +2367,16 @@
       reports: [...unique.values()],
       groups,
       traces,
-      expected: 41,
-      completed: [...unique.values()].filter((report) => report.status && report.status !== "agent_error").length,
-      expectedMetrics: [...unique.values()].reduce((sum, report) => sum + (Array.isArray(report.metric_results) ? report.metric_results.length : 0), 0),
-      completedMetrics: [...unique.values()].reduce((sum, report) => sum + (Array.isArray(report.metric_results) ? report.metric_results.filter((metric) => ["verified_latest", "not_disclosed", "not_applicable"].includes(metric.status)).length : 0), 0),
+      expected: Number(progress.expectedCompanies || 41),
+      recorded: [...unique.values()].length,
+      completed: [...unique.values()].filter((report) => ["verified_latest", "not_disclosed", "not_applicable", "search_exhausted"].includes(report.status)).length,
+      recordedMetrics: Number(progress.recordedMetrics || [...unique.values()].reduce((sum, report) => sum + (Array.isArray(report.metric_results) ? report.metric_results.length : 0), 0)),
+      completedMetrics: Number(progress.terminalMetrics || [...unique.values()].reduce((sum, report) => sum + (Array.isArray(report.metric_results) ? report.metric_results.filter((metric) => ["verified_latest", "not_disclosed", "not_applicable", "search_exhausted"].includes(metric.status)).length : 0), 0)),
+      unresolvedCompanies: Number(progress.unresolvedCompanies || 0),
+      conflictMetrics: Number(progress.conflictMetrics || 0),
+      agentErrorMetrics: Number(progress.agentErrorMetrics || 0),
+      version: Number(progress.version || 0),
+      updatedAt: progress.updatedAt || "",
     };
   }
 
@@ -2379,11 +2393,14 @@
       const evidenceUrls = Array.isArray(report.evidence_urls) ? report.evidence_urls : [];
       const openAttempts = Array.isArray(report.open_attempts) ? report.open_attempts : [];
       const metricResults = Array.isArray(report.metric_results) ? report.metric_results : [];
-      const completedMetrics = metricResults.filter((metric) => ["verified_latest", "not_disclosed", "not_applicable"].includes(metric.status)).length;
-      const metricDetails = metricResults.length ? `<div><dt>逐指标终态</dt><dd class="company-agent-metric-results">${metricResults.map((metric) => `<span class="is-${esc(metric.status || "conflict")}"><strong>${esc(metric.metric || "未命名指标")}</strong><em>${esc(statusLabels[metric.status] || metric.status || "未记录")}</em><small>搜索 ${number(metric.search_count || 0)} · 当期原文 ${number(metric.fresh_official_open_count || 0)} · 证据 ${number(metric.evidence_count || 0)}</small><p>${esc(metric.rationale || "未留存逐指标理由")}</p></span>`).join("")}</dd></div>` : "";
+      const completedMetrics = metricResults.filter((metric) => ["verified_latest", "not_disclosed", "not_applicable", "search_exhausted"].includes(metric.status)).length;
+      const metricDetails = metricResults.length ? `<div><dt>逐指标终态</dt><dd class="company-agent-metric-results">${metricResults.map((metric) => {
+        const metricEvidenceUrls = Array.isArray(metric.evidence_urls) ? metric.evidence_urls : [];
+        return `<span class="is-${esc(metric.status || "conflict")}"><strong>${esc(metric.metric || "未命名指标")}</strong><em>${esc(statusLabels[metric.status] || metric.status || "未记录")}</em><small class="company-agent-metric-value">记录值：${esc(String(metric.value || "未写入"))}</small><small>搜索 ${number(metric.search_count || 0)} · 当期原文 ${number(metric.fresh_official_open_count || 0)} · 证据 ${number(metric.evidence_count || 0)}</small><p>${esc(metric.rationale || "未留存逐指标理由")}</p>${metricEvidenceUrls.length ? `<p class="company-agent-metric-links">${metricEvidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">指标证据 ${number(urlIndex + 1)}</a>`).join(" · ")}</p>` : ""}</span>`;
+      }).join("")}</dd></div>` : "";
       return `<li><button type="button" class="company-agent-node is-${esc(status)}" data-company-agent-node="${esc(report.company)}" aria-expanded="false" aria-controls="${panelId}"><span>${esc(report.company || "未记录公司")}</span><strong>${esc(statusLabels[status] || status)}</strong><em>指标 ${number(completedMetrics)}/${number(metricResults.length)} · 搜索 ${number(report.search_count || 0)} · 原文成功 ${number(report.open_success_count || 0)} · 被拒 ${number(report.open_blocked_count || 0)} · 证据 ${number(report.evidence_count || 0)}</em></button><div class="company-agent-detail" id="${panelId}" hidden><dl><div><dt>最终判断</dt><dd>${esc(report.rationale || "未留存判断理由")}</dd></div><div><dt>研究路径</dt><dd>规划查询 → 搜索引擎 → 打开官方原文 → 逐指标证据门禁 → 提交</dd></div>${metricDetails}${queries.length ? `<div><dt>搜索查询</dt><dd>${queries.map((query) => esc(query)).join("<br>")}</dd></div>` : ""}${openAttempts.length ? `<div><dt>原文打开</dt><dd>${openAttempts.map((attempt) => `${esc(attempt.opened ? "成功" : attempt.blocked_reason || "失败")} · ${esc(attempt.url || "未记录 URL")}`).join("<br>")}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>官方证据</dt><dd>${evidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">证据 ${number(urlIndex + 1)}</a>`).join(" · ")}</dd></div>` : ""}</dl></div></li>`;
     }).join("")}</ol></section>`).join("");
-    return `<section class="news-lineage-dialog-section company-agent-graph-section"><header><h3>公司 Agent 执行图</h3><span>${number(model.completed)}/${number(model.expected)} 家 · ${number(model.completedMetrics)}/${number(model.expectedMetrics)} 个指标合规终态 · ${number(model.traces.length)} 条真实轨迹</span></header><div class="company-agent-graph" aria-label="Lead Research Agent 到 ${number(model.expected)} 个公司 Agent 再到公司和指标完整性门禁的执行图"><article class="company-agent-lead"><span>LEAD</span><strong>Lead Research Agent</strong><em>确定性派发 ${number(model.expected)} 家</em></article><i class="company-agent-connector" aria-hidden="true"></i><div class="company-agent-groups">${groups}</div><i class="company-agent-connector" aria-hidden="true"></i><article class="company-agent-gate"><span>GATE</span><strong>公司＋指标完整性门禁</strong><em>${number(model.completed)}/${number(model.expected)} 家 · ${number(model.completedMetrics)}/${number(model.expectedMetrics)} 指标 → 补爬或发布</em></article></div></section>`;
+    return `<section class="news-lineage-dialog-section company-agent-graph-section"><header><h3>公司 Agent 执行图</h3><span>${model.version ? `V${number(model.version)} · ` : ""}${number(model.recorded)}/${number(model.expected)} 家已记录 · ${number(model.completedMetrics)}/${number(model.recordedMetrics)} 项合规终态${model.updatedAt ? ` · ${esc(String(model.updatedAt).replace("T", " "))}` : ""}</span></header><div class="company-agent-graph" aria-label="Lead Research Agent 到 ${number(model.expected)} 个公司 Agent 再到公司和指标完整性门禁的执行图"><article class="company-agent-lead"><span>LEAD</span><strong>Lead Research Agent</strong><em>确定性派发 ${number(model.expected)} 家</em></article><i class="company-agent-connector" aria-hidden="true"></i><div class="company-agent-groups">${groups}</div><i class="company-agent-connector" aria-hidden="true"></i><article class="company-agent-gate"><span>GATE</span><strong>公司＋指标完整性门禁</strong><em>${number(model.recorded)}/${number(model.expected)} 家已记录 · ${number(model.completedMetrics)}/${number(model.recordedMetrics)} 项终态 · ${number(model.unresolvedCompanies)} 家待复核 · 冲突 ${number(model.conflictMetrics)} 项 · Agent 未完成 ${number(model.agentErrorMetrics)} 项</em></article></div></section>`;
   }
 
   function bindCompanyAgentGraphInteractions(dialog) {
@@ -2503,6 +2520,12 @@
     });
   }
 
+  function newsLineageMotionStyle() {
+    const wallClock = Date.now();
+    const delay = (duration, alternate = false) => `-${wallClock % (duration * (alternate ? 2 : 1))}ms`;
+    return `--news-flow-delay:${delay(2400)};--news-degraded-delay:${delay(4800)};--news-schedule-delay:${delay(2100)};--news-schedule-global-delay:${delay(2250)};--news-schedule-degraded-delay:${delay(4500)};--news-feedback-delay:${delay(4200)};--news-feedback-global-delay:${delay(4400)};--news-feedback-degraded-delay:${delay(8800)};--news-breathe-delay:${delay(2100, true)};`;
+  }
+
   function renderNews({ preserveView = false } = {}) {
     const panel = document.querySelector('[data-workspace-panel="news"]');
     const viewSnapshot = preserveView ? newsViewSnapshot(panel) : null;
@@ -2530,7 +2553,7 @@
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
             <div class="news-lineage-stage" data-news-lineage-stage style="width:${initialLineageWidth}px;height:${initialLineageHeight}px">
-            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
+            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};${newsLineageMotionStyle()}width:${lineageWidth}px;height:${lineageHeight}px">
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRoutine" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowFeedback" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" title="${esc(line.reason || "")}">${lineageStatusIcon(line.key)}${esc(line.label)}</span>` : "").join("")}</div>
@@ -2588,6 +2611,69 @@
     });
   }
 
+  function patchNewsLiveView() {
+    const panel = document.querySelector('[data-workspace-panel="news"]');
+    const canvas = panel?.querySelector("[data-news-lineage-canvas]");
+    if (!panel || !canvas) return false;
+    const attemptRuns = selectedNewsRuns();
+    const runs = authoritativeStrategicNewsRuns(attemptRuns);
+    const stages = runs.length ? aggregateNewsStages(runs) : [];
+    const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
+    const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
+    const currentNodes = [...canvas.querySelectorAll("[data-news-lineage-node]")];
+    const currentEdges = [...canvas.querySelectorAll(".news-lineage-edge")];
+    const nodeKeys = currentNodes.map((node) => node.dataset.newsLineageNode);
+    const routeIds = currentEdges.map((edge) => edge.dataset.routeId);
+    const nextNodeKeys = lineage.nodes.map((node) => node.key);
+    const nextRouteIds = lineage.edges.map(([from, to]) => newsLineageRouteId(from, to));
+    if (JSON.stringify(nodeKeys) !== JSON.stringify(nextNodeKeys)
+      || JSON.stringify(routeIds) !== JSON.stringify(nextRouteIds)) return false;
+
+    lineage.nodes.forEach((node, index) => {
+      const element = currentNodes[index];
+      element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
+      element.dataset.health = node.health?.key || "unknown";
+      element.setAttribute("aria-label", `${node.label}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
+      const health = element.querySelector(".news-lineage-health");
+      const label = element.querySelector(":scope > span");
+      const value = element.querySelector(":scope > strong");
+      const note = element.querySelector(":scope > em");
+      if (health && health.textContent !== (node.health?.label || "无记录")) {
+        health.innerHTML = `${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}`;
+      }
+      if (label) label.textContent = node.label;
+      if (value) {
+        value.textContent = node.value;
+        if (node.unit) {
+          const unit = document.createElement("small");
+          unit.textContent = node.unit;
+          value.appendChild(unit);
+        }
+      }
+      if (note) note.textContent = node.note || "";
+    });
+
+    lineage.edges.forEach(([, , label, kind, line], index) => {
+      const edge = currentEdges[index];
+      edge.setAttribute("class", `news-lineage-edge is-${kind} is-line-${line?.key || "unknown"}`);
+      edge.dataset.lineState = line?.key || "unknown";
+      const edgeLabel = canvas.querySelector(`[data-news-lineage-label][data-edge-index="${index}"]`);
+      if (edgeLabel && label) {
+        edgeLabel.className = `news-lineage-edge-label is-${kind} is-line-${line?.key || "unknown"}`;
+        edgeLabel.textContent = label;
+      }
+    });
+
+    const currentItems = panel.querySelector(".news-real-items");
+    if (currentItems) {
+      const holder = document.createElement("div");
+      holder.innerHTML = renderNewsItems(runs);
+      const nextItems = holder.firstElementChild;
+      if (nextItems && currentItems.innerHTML !== nextItems.innerHTML) currentItems.replaceWith(nextItems);
+    }
+    return true;
+  }
+
   async function refreshNewsLiveData() {
     if (state.newsLiveRefreshInFlight || document.visibilityState !== "visible" || activeWorkspaceModule() !== "news") return;
     state.newsLiveRefreshInFlight = true;
@@ -2631,8 +2717,11 @@
       }
       const nextSignature = newsLiveRenderSignature();
       if (nextSignature !== state.newsLiveSignature) {
-        state.newsLiveSignature = nextSignature;
-        if (!document.querySelector("#newsLineageDialog")?.open) renderNews({ preserveView: true });
+        const dialogOpen = document.querySelector("#newsLineageDialog")?.open;
+        if (!dialogOpen) {
+          state.newsLiveSignature = nextSignature;
+          if (!patchNewsLiveView()) renderNews({ preserveView: true });
+        }
       }
     } catch (error) {
       console.warn("News live refresh unavailable", error);
@@ -2978,7 +3067,13 @@
       observeFaultSignals(nextTasks);
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
-      if (newsLineageChanged && document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
+      if (newsLineageChanged && document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) {
+        const dialogOpen = document.querySelector("#newsLineageDialog")?.open;
+        if (!dialogOpen) {
+          state.newsLiveSignature = newsLiveRenderSignature();
+          if (!patchNewsLiveView()) renderNews({ preserveView: true });
+        }
+      }
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");

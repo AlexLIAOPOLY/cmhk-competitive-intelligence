@@ -619,27 +619,30 @@
 #newsLineageArrowFeedback path { fill: #6ba6ff; }
 #newsLineageArrowAmber path { fill: #dda148; }
 #newsLineageArrowRed path { fill: #f08078; }
-.news-lineage-edge .news-lineage-pulse { fill: none; stroke: #78d9e8; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1 20; opacity: .86; filter: drop-shadow(0 0 4px rgba(98,207,225,.7)); animation: news-lineage-flow 2.4s linear infinite; }
+.news-lineage-edge .news-lineage-pulse { fill: none; stroke: #78d9e8; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1 20; opacity: .86; filter: drop-shadow(0 0 4px rgba(98,207,225,.7)); animation: news-lineage-flow 2.4s linear infinite; animation-delay: var(--news-flow-delay,0ms); }
 .news-lineage-edge.is-amber > path:first-of-type,.news-lineage-edge.is-handoff-down > path:first-of-type { stroke-dasharray: 2 7; }
-.news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke: #b0a4ff; stroke-dasharray: 2 14; filter: drop-shadow(0 0 4px rgba(155,144,242,.68)); animation: news-lineage-schedule-flow 2.1s linear infinite; }
+.news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke: #b0a4ff; stroke-dasharray: 2 14; filter: drop-shadow(0 0 4px rgba(155,144,242,.68)); animation: news-lineage-schedule-flow 2.1s linear infinite; animation-delay: var(--news-schedule-delay,0ms); }
 .news-lineage-edge.is-feedback > path:first-of-type,.news-lineage-edge.is-feedback-side > path:first-of-type { stroke-dasharray: 18 8; }
-.news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke: #74adff; stroke-width: 3.2; stroke-dasharray: 22 7 4 15; opacity: .9; filter: drop-shadow(0 0 6px rgba(83,145,244,.78)); animation: news-lineage-feedback-flow 4.2s linear infinite,news-lineage-feedback-breathe 2.1s ease-in-out infinite alternate; }
+.news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke: #74adff; stroke-width: 3.2; stroke-dasharray: 22 7 4 15; opacity: .9; filter: drop-shadow(0 0 6px rgba(83,145,244,.78)); animation: news-lineage-feedback-flow 4.2s linear infinite,news-lineage-feedback-breathe 2.1s ease-in-out infinite alternate; animation-delay: var(--news-feedback-delay,0ms),var(--news-breathe-delay,0ms); }
 .news-lineage-edge.is-line-degraded > path:first-of-type,.news-lineage-edge.is-line-at-risk > path:first-of-type { stroke: rgba(242,189,98,.92); marker-end: url(#newsLineageArrowAmber); }
-.news-lineage-edge.is-line-degraded .news-lineage-pulse,.news-lineage-edge.is-line-at-risk .news-lineage-pulse { stroke: #f2bd62; filter: drop-shadow(0 0 5px rgba(242,189,98,.65)); }
-.news-lineage-edge.is-line-interrupted > path:first-of-type { stroke: #f08078; stroke-width: 2.5; stroke-dasharray: 16 11; marker-end: url(#newsLineageArrowRed); filter: drop-shadow(0 0 5px rgba(240,128,120,.56)); animation: news-lineage-interruption .9s ease-in-out infinite alternate; }
-.news-lineage-edge.is-line-interrupted .news-lineage-pulse { display: none; }
+.news-lineage-edge.is-line-degraded .news-lineage-pulse,.news-lineage-edge.is-line-at-risk .news-lineage-pulse { stroke: #f2bd62; stroke-dasharray: 1 41; filter: drop-shadow(0 0 5px rgba(242,189,98,.65)); animation-duration: 4.8s; animation-delay: var(--news-degraded-delay,0ms); }
+.news-lineage-edge.is-line-interrupted > path:first-of-type { stroke: #f08078; stroke-width: 2.5; stroke-dasharray: 16 11; marker-end: url(#newsLineageArrowRed); filter: drop-shadow(0 0 5px rgba(240,128,120,.56)); animation: none; }
+.news-lineage-edge.is-line-interrupted .news-lineage-pulse,.news-lineage-edge.is-line-unknown .news-lineage-pulse { display: none; }
 .news-lineage-edge.is-line-unknown > path:first-of-type { stroke: rgba(135,155,163,.38); stroke-dasharray: 4 6; }
 .news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
 .news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; animation-name: news-lineage-flow-global; }
-.news-lineage.is-global .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke-dasharray: 3 18; animation-name: news-lineage-schedule-flow-global; animation-duration: 2.25s; }
-.news-lineage.is-global .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-width: 3.6; stroke-dasharray: 26 9 5 18; animation-name: news-lineage-feedback-flow-global,news-lineage-feedback-breathe; animation-duration: 4.4s,2.1s; }
+.news-lineage.is-global .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke-dasharray: 3 18; animation-name: news-lineage-schedule-flow-global; animation-duration: 2.25s; animation-delay: var(--news-schedule-global-delay,0ms); }
+.news-lineage.is-global .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-width: 3.6; stroke-dasharray: 26 9 5 18; animation-name: news-lineage-feedback-flow-global,news-lineage-feedback-breathe; animation-duration: 4.4s,2.1s; animation-delay: var(--news-feedback-global-delay,0ms),var(--news-breathe-delay,0ms); }
+.news-lineage.is-global .news-lineage-edge.is-line-degraded .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-at-risk .news-lineage-pulse { stroke-dasharray: 2 50; animation-duration: 4.8s; animation-delay: var(--news-degraded-delay,0ms); }
+.news-lineage.is-global .news-lineage-edge.is-line-degraded.is-amber .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-degraded.is-handoff-down .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-at-risk.is-amber .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-at-risk.is-handoff-down .news-lineage-pulse { stroke-dasharray: 3 39; animation-duration: 4.5s; animation-delay: var(--news-schedule-degraded-delay,0ms); }
+.news-lineage.is-global .news-lineage-edge.is-line-degraded.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-degraded.is-feedback-side .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-at-risk.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-line-at-risk.is-feedback-side .news-lineage-pulse { stroke-dasharray: 26 38 5 47; animation-duration: 8.8s,2.1s; animation-delay: var(--news-feedback-degraded-delay,0ms),var(--news-breathe-delay,0ms); }
 .news-lineage-canvas.is-paused .news-lineage-pulse { animation-play-state: paused; }
 @keyframes news-lineage-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
 @keyframes news-lineage-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -104; } }
 @keyframes news-lineage-schedule-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -64; } }
 @keyframes news-lineage-schedule-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
-@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 108; } }
-@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 132; } }
+@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -108; } }
+@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -132; } }
 @keyframes news-lineage-feedback-breathe { from { opacity: .48; } to { opacity: .96; } }
 @keyframes news-lineage-interruption { from { opacity: .64; } to { opacity: 1; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }
@@ -865,6 +868,9 @@
 .company-agent-metric-results strong { color: #dcecef; font-size: 9px; }
 .company-agent-metric-results em { color: #65cdb0; font-size: 8px; font-style: normal; }
 .company-agent-metric-results small,.company-agent-metric-results p { grid-column: 1/-1; margin: 0; color: #7798a2; font-size: 8px; line-height: 1.45; }
+.company-agent-metric-results .company-agent-metric-value { color: #d7e8eb; font-size: 9px; font-weight: 700; overflow-wrap: anywhere; }
+.company-agent-metric-results .company-agent-metric-links { display: flex; flex-wrap: wrap; gap: 3px 8px; }
+.company-agent-metric-results .company-agent-metric-links a { color: #78d2e1; }
 .company-agent-metric-results > span.is-not_disclosed em,.company-agent-metric-results > span.is-not_applicable em { color: #e8bd67; }
 .company-agent-metric-results > span.is-conflict em,.company-agent-metric-results > span.is-unsearched em,.company-agent-metric-results > span.is-search_exhausted em,.company-agent-metric-results > span.is-agent_error em { color: #ef9c84; }
 .company-agent-graph-empty { display: grid; min-height: 280px; place-content: center; gap: 9px; padding: 24px; text-align: center; }
@@ -1055,7 +1061,7 @@
 .news-lineage-edge-states { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
 .news-lineage-edge-state { position: absolute; display: inline-flex; min-height: 24px; align-items: center; gap: 5px; padding: 3px 8px 3px 5px; border: 1px solid currentColor; border-radius: 999px; font-size: 10px; font-weight: 800; line-height: 1; white-space: nowrap; transform: translate(-50%,-50%); }
 .news-lineage-edge-state .news-lineage-status-icon { width: 16px; height: 16px; }
-.news-lineage-edge-state.is-interrupted { color: #f08078; background: rgba(63,25,29,.97); box-shadow: 0 0 15px rgba(240,128,120,.34); animation: news-lineage-interruption .9s ease-in-out infinite alternate; }
+.news-lineage-edge-state.is-interrupted { color: #f08078; background: rgba(63,25,29,.97); box-shadow: 0 0 15px rgba(240,128,120,.34); animation: news-lineage-interruption .9s ease-in-out infinite alternate; animation-delay: var(--news-interruption-delay,0ms); }
 .news-lineage-edge-state.is-degraded,.news-lineage-edge-state.is-at-risk { color: #f2bd62; background: rgba(49,36,18,.97); box-shadow: 0 0 13px rgba(242,189,98,.24); }
 @keyframes news-lineage-activity { from { opacity: .48; transform: translateY(1px); } to { opacity: 1; transform: translateY(-1px); } }
 
