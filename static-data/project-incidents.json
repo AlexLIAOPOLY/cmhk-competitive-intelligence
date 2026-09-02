@@ -488,7 +488,7 @@
       ],
       "occurred_at_hkt": "2026-09-02T14:13:43+08:00",
       "started_at_hkt": "2026-09-02T14:14:04+08:00",
-      "heartbeat_at_hkt": "2026-09-02T15:13:06+08:00",
+      "heartbeat_at_hkt": "2026-09-02T15:18:10+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -4655,7 +4655,7 @@
       ],
       "occurred_at_hkt": "2026-09-02 03:13:47",
       "started_at_hkt": "2026-09-02T14:29:34+08:00",
-      "heartbeat_at_hkt": "2026-09-02T15:13:06+08:00",
+      "heartbeat_at_hkt": "2026-09-02T15:18:10+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },

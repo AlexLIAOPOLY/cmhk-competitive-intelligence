@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-02T15:12:41+08:00",
+  "generated_at": "2026-09-02T15:17:58+08:00",
   "items": [
     {
       "id": "NEWS-12962013BBF38F",
@@ -9,14 +9,6 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxPaFltYVpRTmxlTS1JYlVLdEctekRZUmFlN2EzY1RLZDFkdGZtanJtU3c4b1QxWnRmQ1QxS3ktcFREMTd0dW84QVY0bjM1SXhGT1QxeHZfTGxpNEFFcGxOOHJ6d0xPT3hRQmQyNklTTXJ4THdtN0M0aW9PeGd2dkV5TkhnUGNWb2RCd3I3dURUMlpLRVVRLXFlWi1nRlNia0ZOeDVLN1dGZjVoSWt2U29XU3pFVUlnMmhPM0JuTzEtZ2VSS2JIOUtGODFXdkR1RUdaQmZMendQYmVXa3RYWTNhZ0M3YnhabEdLYmQ4?oc=5",
       "published_at": "2026-09-02T05:13:16+08:00"
-    },
-    {
-      "id": "NEWS-0C0D804989D35C",
-      "title": "InnoHK首两平台聚焦医疗及AI研发",
-      "summary": "香港InnoHK创新平台首两个研发平台将聚焦医疗科技和人工智能领域。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1IWlhjUjhsSm8yRmFOOFlWLVlWdFZkTlR3YVlSbVN4ZEozLTM0SGxXZjZWMkpsRXlQc0NYVjRpN1ctS08yLXRXVi1TTnJIRVdUdmE5ZmY4NEczSU5kYTk3cnFwa25yNXV1VE9lT1lVX241cFpn?oc=5",
-      "published_at": "2026-09-02T04:26:11+08:00"
     },
     {
       "id": "NEWS-0A1BB86B4EC3FD",
@@ -65,6 +57,14 @@
       "category": "行业动态",
       "source_url": "https://www.ctee.com.tw/news/20260902700189-439901",
       "published_at": "2026-09-01T11:00:00+08:00"
+    },
+    {
+      "id": "NEWS-EA4EDB231699D1",
+      "title": "粤港澳大湾区创新实力跃居全球第一",
+      "summary": "报告显示粤港澳大湾区创新实力超越东京和硅谷，跃居全球第一。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiUkFVX3lxTE12VnRTTWo3MGw5VXpjWGpSblBFQXJlenhlcWotYVdENjNNM2dkOVFueDV2dWo4QnZNTkY5V3FOZzVfODdvaHJQdTgzYjBwQWZJUkE?oc=5",
+      "published_at": "2026-08-31T18:47:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "92e7f59d10355092d612aa3db73343d4f9ad997408ad2ce4512e35067e1bc5be"
+  "site_version": "1674b294454b66c8e9d463042a79dd2859ea502b3a5f5c5a9312a144b1f5255b"
 }
