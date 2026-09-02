@@ -1120,6 +1120,28 @@ class DataCurationWorkflowTests(unittest.TestCase):
             selected["value"],
             "This year, we have invested $5 billion in CapEx and mobile spectrum payments.",
         )
+        self.assertTrue(workflow._company_research_excerpt_incomplete(
+            "Disciplined BAU capex included increased mobile in"
+        ))
+        self.assertTrue(workflow._company_research_excerpt_incomplete(
+            "This includes working with enterprise customers, and s"
+        ))
+        self.assertFalse(workflow._company_research_excerpt_incomplete(
+            "This year, we have invested $5 billion in CapEx and mobile spectrum payments."
+        ))
+        long_excerpt = (
+            "Telstra is increasing mobile investment and directing capital expenditure toward "
+            "network resilience, spectrum, autonomous operations, enterprise connectivity, and "
+            "customer experience while maintaining disciplined business-as-usual investment "
+            "through the current financial year."
+        )
+        vote = workflow._verification_vote(
+            value=long_excerpt,
+            source="test",
+            kind="source_page",
+            metric="Capex方向",
+        )
+        self.assertGreater(len(vote["normalized_value"]), 220)
 
     def test_company_agent_adds_metric_targeted_official_search(self) -> None:
         generic_url = "https://www.singtel.com/about-us/investor-relations/financial-results"

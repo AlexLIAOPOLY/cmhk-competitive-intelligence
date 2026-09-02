@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 11
+COMPANY_AGENT_PROGRESS_VERSION = 12
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -1572,7 +1572,20 @@ def _qualitative_source_evidence(fact: CandidateFact, text: str, url: str) -> st
     if not candidates:
         return ""
     recovered = max(candidates, key=lambda item: (item[0], -len(item[1])))[1]
+    if _company_research_excerpt_incomplete(recovered):
+        return ""
     return recovered if _passes_metric_gate(fact.metric, recovered) else ""
+
+
+def _company_research_excerpt_incomplete(value: str) -> bool:
+    text = clean_text(value, 500).strip()
+    if not text:
+        return True
+    return bool(re.search(
+        r"(?:\b(?:and|or|to|with|for|of|in|on|the|a|an|its|their)|\b[A-Za-z])[,;:\s-]*$",
+        text,
+        re.IGNORECASE,
+    ))
 
 
 def _quoted_phrases(text: str) -> list[str]:
@@ -1643,11 +1656,11 @@ def _verification_vote(
     url: str = "",
     metric: str = "",
 ) -> dict[str, Any] | None:
-    raw_value = clean_text(value, 220)
+    qualitative = bool(COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric))
+    raw_value = clean_text(value, 360 if qualitative else 220)
     canonical = _canonical_fact_value(metric, raw_value)
     if not raw_value or not canonical:
         return None
-    qualitative = bool(COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric))
     return {
         "value": raw_value,
         # Qualitative evidence is a readable source-bound excerpt.  Numeric
