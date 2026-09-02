@@ -1,6 +1,69 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260902_150537_150592": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260902_150537_150592",
+        "task_run_id": "20260902_150537_150592",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-09-02@07:30）",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "新闻自动初筛完成；处理 166 条，验证 320 格，本次新写 170 格，已有 150 格；逐格回读通过。",
+        "status_detail": "新闻自动初筛完成；处理 166 条，验证 320 格，本次新写 170 格，已有 150 格；逐格回读通过。",
+        "started_at_hkt": "2026-09-02T15:05:37+08:00",
+        "heartbeat_at_hkt": "2026-09-02T15:06:34+08:00",
+        "completed_at_hkt": "2026-09-02T15:06:34+08:00",
+        "duration_ms": 57128,
+        "retry_index": 19
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260902_150414_868425": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260902_150414_868425",
+        "task_run_id": "20260902_150414_868425",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-09-02@07:30）",
+        "run_status": "failed",
+        "phase": "失败",
+        "progress_detail": "新闻自动初筛失败：没有需要保存的单元格",
+        "status_detail": "新闻自动初筛失败：没有需要保存的单元格",
+        "started_at_hkt": "2026-09-02T15:04:14+08:00",
+        "heartbeat_at_hkt": "2026-09-02T15:04:17+08:00",
+        "completed_at_hkt": "2026-09-02T15:04:17+08:00",
+        "duration_ms": 3077,
+        "retry_index": 18
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260902_150303_338833": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260902_150303_338833",
+        "task_run_id": "20260902_150303_338833",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-09-02@07:30）",
+        "run_status": "failed",
+        "phase": "失败",
+        "progress_detail": "新闻自动初筛失败：第 22 行“纳入滚动栏”已被其他用户修改，请刷新后重试",
+        "status_detail": "新闻自动初筛失败：第 22 行“纳入滚动栏”已被其他用户修改，请刷新后重试",
+        "started_at_hkt": "2026-09-02T15:03:03+08:00",
+        "heartbeat_at_hkt": "2026-09-02T15:03:07+08:00",
+        "completed_at_hkt": "2026-09-02T15:03:07+08:00",
+        "duration_ms": 4591,
+        "retry_index": 17
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260902_145815_128020": {
       "ok": true,
       "run": {
@@ -474,8 +537,8 @@
         "scope": "晨间扫描（2026-09-02@07:30）",
         "run_status": "completed",
         "phase": "已完成",
-        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 669 条，AI保留 224 条，历史重复 58 条，新增 166 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
-        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 669 条，AI保留 224 条，历史重复 58 条，新增 166 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 320 格，未重跑爬虫或重复发送群消息。",
+        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 320 格，未重跑爬虫或重复发送群消息。",
         "started_at_hkt": "2026-09-02T07:30:00+08:00",
         "heartbeat_at_hkt": "2026-09-02T10:36:14+08:00",
         "completed_at_hkt": "2026-09-02T10:36:14+08:00",
@@ -493,13 +556,13 @@
         "kind": "crawl",
         "kind_label": "爬虫",
         "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-        "run_status": "failed",
-        "phase": "失败",
-        "progress_detail": "续跑 Agent 审核未通过：Agent 审核超过 5400 秒",
+        "run_status": "running",
+        "phase": "Agent审核",
+        "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
         "status_detail": "",
         "started_at_hkt": "2026-09-02T03:00:51+08:00",
-        "heartbeat_at_hkt": "2026-09-02T14:36:39+08:00",
-        "completed_at_hkt": "2026-09-02T14:36:39+08:00",
+        "heartbeat_at_hkt": "2026-09-02T15:12:43+08:00",
+        "completed_at_hkt": "",
         "duration_ms": 41748301,
         "retry_index": 0
       },
@@ -984,69 +1047,6 @@
         "heartbeat_at_hkt": "2026-09-01T01:02:18+08:00",
         "completed_at_hkt": "2026-09-01T01:02:18+08:00",
         "duration_ms": 87099,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260831_144605_107267": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260831_144605_107267",
-        "task_run_id": "20260831_144605_107267",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-31@review-28764945adc18ebb）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "新闻自动初筛完成；处理 2 条，验证 4 格，本次新写 4 格，已有 0 格；逐格回读通过。",
-        "status_detail": "新闻自动初筛完成；处理 2 条，验证 4 格，本次新写 4 格，已有 0 格；逐格回读通过。",
-        "started_at_hkt": "2026-08-31T14:46:05+08:00",
-        "heartbeat_at_hkt": "2026-08-31T14:46:35+08:00",
-        "completed_at_hkt": "2026-08-31T14:46:35+08:00",
-        "duration_ms": 30416,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260831_144547_332440": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260831_144547_332440",
-        "task_run_id": "20260831_144547_332440",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-08-31@14:00）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "新闻自动初筛完成；处理 13 条，验证 26 格，本次新写 26 格，已有 0 格；逐格回读通过。",
-        "status_detail": "新闻自动初筛完成；处理 13 条，验证 26 格，本次新写 26 格，已有 0 格；逐格回读通过。",
-        "started_at_hkt": "2026-08-31T14:45:47+08:00",
-        "heartbeat_at_hkt": "2026-08-31T14:46:04+08:00",
-        "completed_at_hkt": "2026-08-31T14:46:04+08:00",
-        "duration_ms": 17391,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260831_143302_156182": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260831_143302_156182",
-        "task_run_id": "20260831_143302_156182",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "午后扫描（2026-08-31@14:00）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 26 格，未重跑爬虫或重复发送群消息。",
-        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 26 格，未重跑爬虫或重复发送群消息。",
-        "started_at_hkt": "2026-08-31T14:33:02+08:00",
-        "heartbeat_at_hkt": "2026-08-31T14:45:47+08:00",
-        "completed_at_hkt": "2026-08-31T14:45:47+08:00",
-        "duration_ms": 765132,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"

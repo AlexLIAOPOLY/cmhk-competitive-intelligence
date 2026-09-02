@@ -1316,8 +1316,8 @@
         "task_kind": "strategic-news",
         "run_status": "completed",
         "phase": "已完成",
-        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 669 条，AI保留 224 条，历史重复 58 条，新增 166 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
-        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 669 条，AI保留 224 条，历史重复 58 条，新增 166 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 320 格，未重跑爬虫或重复发送群消息。",
+        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 320 格，未重跑爬虫或重复发送群消息。",
         "failure_stage": "",
         "heartbeat_at_hkt": "2026-09-02T10:36:14+08:00",
         "started_at_hkt": "2026-09-02T07:30:00+08:00",
@@ -1340,11 +1340,14 @@
             "om_x100b664cf7108904b14c5a5c96fea0e"
           ],
           "notification_destination_count": 2,
-          "selection_agent_status": "retry_pending",
-          "selection_agent_changed": 0
+          "selection_agent_status": "completed",
+          "selection_agent_changed": 332,
+          "selection_agent_recovered": true,
+          "selection_agent_recovery_task_run_id": "20260902_150537_150592",
+          "selection_agent_recovered_at": "2026-09-02T15:06:34+08:00"
         }
       },
-      "lines": 585,
+      "lines": 586,
       "newsItems": [
         {
           "newsId": "NEWS-FEFAD6F459702A",
