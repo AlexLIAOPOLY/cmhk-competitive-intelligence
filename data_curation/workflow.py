@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 10
+COMPANY_AGENT_PROGRESS_VERSION = 11
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -2702,6 +2702,19 @@ def _rank_company_research_results(
     )
 
 
+def _company_research_results_cover_metric(
+    metric: str,
+    results: list[dict[str, Any]],
+) -> bool:
+    return any(
+        _evidence_mentions_metric(
+            metric,
+            f"{item.get('title', '')} {item.get('snippet', '')} {item.get('url', '')}",
+        )
+        for item in results
+    )
+
+
 def _select_company_research_vote(
     metric: str,
     votes: list[dict[str, Any]],
@@ -2813,12 +2826,19 @@ def _run_company_research_agent(
             if _host_matches_governed_official(item.get("url", ""), research_profile["official_hosts"])
             and _search_result_is_current(item, current_year=current_year)
         ]
-        if not official_results and research_profile["official_hosts"]:
+        if (
+            research_profile["official_hosts"]
+            and not _company_research_results_cover_metric(metric, official_results)
+        ):
             host = research_profile["official_hosts"][0]
             aliases = " OR ".join(f'"{item}"' for item in research_profile["aliases"][:3])
+            metric_aliases = " OR ".join(
+                f'"{item}"' for item in _metric_evidence_terms(metric)[:5]
+            )
             targeted_query = clean_text(
-                f"site:{host} ({aliases}) {metric or 'financial results'} {current_year} latest results",
-                260,
+                f"site:{host} ({aliases}) ({metric_aliases or metric or 'financial results'}) "
+                f"{current_year} latest results",
+                360,
             )
             targeted_results, targeted_provider = _public_web_search(
                 targeted_query,

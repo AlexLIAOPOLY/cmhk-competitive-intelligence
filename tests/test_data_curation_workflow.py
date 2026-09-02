@@ -1101,6 +1101,8 @@ class DataCurationWorkflowTests(unittest.TestCase):
         ]
         ranked = workflow._rank_company_research_results("5G-A", results)
         self.assertEqual(ranked[0]["url"], "https://www.singtel.com/news/5g-advanced")
+        self.assertFalse(workflow._company_research_results_cover_metric("5G-A", results[:3]))
+        self.assertTrue(workflow._company_research_results_cover_metric("5G-A", results))
 
     def test_company_research_prefers_capex_investment_over_accounting_definition(self) -> None:
         selected = workflow._select_company_research_vote("Capex方向", [
@@ -1118,6 +1120,78 @@ class DataCurationWorkflowTests(unittest.TestCase):
             selected["value"],
             "This year, we have invested $5 billion in CapEx and mobile spectrum payments.",
         )
+
+    def test_company_agent_adds_metric_targeted_official_search(self) -> None:
+        generic_url = "https://www.singtel.com/about-us/investor-relations/financial-results"
+        metric_url = "https://www.singtel.com/news/5g-advanced"
+
+        class TargetedSearchAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "5G-A"}}],
+                    2: [{"id": "open", "name": "open_official_pages", "args": {
+                        "metric": "5G-A", "urls": [metric_url],
+                    }}],
+                    3: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "官方新闻确认 5G Advanced 合作",
+                        "metric_statuses": [{
+                            "metric": "5G-A",
+                            "status": "verified_latest",
+                            "rationale": "官方新闻确认 5G Advanced 合作",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def search(query, **_kwargs):
+            if query.startswith("site:"):
+                return ([{
+                    "title": "Singtel partners Ericsson on 5G Advanced",
+                    "url": metric_url,
+                    "snippet": "3 March 2026 industry transformation with 5G Advanced",
+                    "provider": "test",
+                }], "targeted")
+            return ([{
+                "title": "Singtel financial results",
+                "url": generic_url,
+                "snippet": "FY26 group results",
+                "provider": "test",
+            }], "generic")
+
+        def open_metric(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            value = "Singtel partners Ericsson to accelerate industry transformation with 5G Advanced in 2026."
+            return [{
+                "url": metric_url,
+                "canonical": "5gadvanced2026",
+                "normalized_value": value,
+                "value": value,
+            }]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["5G-A"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Singtel"], "official_hosts": ["singtel.com"], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=TargetedSearchAgent()),
+            patch("data_curation.workflow._public_web_search", side_effect=search) as web_search,
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_metric),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-targeted-official-search"}, "Singtel", 15, "Singtel", []
+            )
+        self.assertEqual(web_search.call_count, 2)
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertEqual(result["metric_results"][0]["status"], "verified_latest")
+        self.assertIn("5G Advanced", result["metric_results"][0]["value"])
 
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
