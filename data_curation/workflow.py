@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 8
+COMPANY_AGENT_PROGRESS_VERSION = 9
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -2687,6 +2687,21 @@ def _company_agent_url_key(url: str) -> str:
     return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}{path}{query}"
 
 
+def _rank_company_research_results(
+    metric: str,
+    results: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Put metric-bound pages ahead of generic investor landing pages."""
+    return sorted(
+        results,
+        key=lambda item: bool(_evidence_mentions_metric(
+            metric,
+            f"{item.get('title', '')} {item.get('snippet', '')} {item.get('url', '')}",
+        )),
+        reverse=True,
+    )
+
+
 def _run_company_research_agent(
     state: CurationState,
     company: str,
@@ -2954,17 +2969,18 @@ def _run_company_research_agent(
                 for vote in search_evidence
                 if str(vote.get("url") or "")
             ]
+            candidate_results = _rank_company_research_results(metric, [
+                *(search.get("current_official_results") or []),
+                *(search.get("current_results") or []),
+                *(
+                    item
+                    for item in search.get("results") or []
+                    if item.get("provider") == "governed_seed"
+                ),
+            ])
             candidate_urls.extend(
                 str(item.get("url") or "")
-                for item in [
-                    *(search.get("current_official_results") or []),
-                    *(search.get("current_results") or []),
-                    *(
-                        item
-                        for item in search.get("results") or []
-                        if item.get("provider") == "governed_seed"
-                    ),
-                ]
+                for item in candidate_results
                 if str(item.get("url") or "")
             )
             candidate_urls = list(dict.fromkeys(candidate_urls))[:3]

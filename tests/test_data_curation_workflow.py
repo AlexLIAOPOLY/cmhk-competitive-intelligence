@@ -1076,6 +1076,32 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertIsNotNone(workflow.COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search("5G Advanced"))
         self.assertIsNotNone(workflow.COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search("5.5G"))
 
+    def test_company_research_prioritizes_metric_bound_page(self) -> None:
+        results = [
+            {
+                "title": "Singtel financial results",
+                "url": "https://www.singtel.com/about-us/investor-relations/financial-results",
+                "snippet": "FY26 group results",
+            },
+            {
+                "title": "Singtel financial summary",
+                "url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
+                "snippet": "FY26 financial highlights",
+            },
+            {
+                "title": "Singtel media centre",
+                "url": "https://www.singtel.com/about-us/media-centre",
+                "snippet": "Latest news",
+            },
+            {
+                "title": "Singtel partners Ericsson on 5G Advanced",
+                "url": "https://www.singtel.com/news/5g-advanced",
+                "snippet": "Industry transformation with 5G Advanced",
+            },
+        ]
+        ranked = workflow._rank_company_research_results("5G-A", results)
+        self.assertEqual(ranked[0]["url"], "https://www.singtel.com/news/5g-advanced")
+
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
             def __init__(self) -> None:
