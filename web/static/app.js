@@ -1562,7 +1562,7 @@ function renderInsights(status) {
   if (els.qualityScore) {
     els.qualityScore.textContent = totalUrls ? `成功 ${successRate}%` : "--";
     els.qualityScore.title = totalUrls
-      ? `本轮共抓取 ${totalUrls} 个 URL：实时成功 ${successUrls} 个，实时失败 ${failedUrls} 个，其中历史证据回退 ${fallbackUrls} 个`
+      ? `本轮共抓取 ${totalUrls} 个 URL：本轮成功 ${successUrls} 个，本轮失败 ${failedUrls} 个，其中历史证据回退 ${fallbackUrls} 个`
       : "暂无本轮 URL 抓取结果";
   }
 
@@ -1570,7 +1570,7 @@ function renderInsights(status) {
   initOrUpdateChart('qualityCanvas', {
     type: 'doughnut',
     data: {
-      labels: ['实时成功', '实时失败', '历史证据回退'],
+      labels: ['本轮成功', '本轮失败', '历史证据回退'],
       datasets: [{
         data: [successUrls, Math.max(0, failedUrls - fallbackUrls), fallbackUrls],
         backgroundColor: [
@@ -4600,7 +4600,7 @@ if (els.audioCloseBtn) {
 async function runCrawl(source = "按钮") {
   if (els.logModal) els.logModal.hidden = false;
   loadCrawlRuns();
-  if (els.logRunTitle) els.logRunTitle.textContent = "实时日志（运行开始后即自动归档）";
+  if (els.logRunTitle) els.logRunTitle.textContent = "任务日志（运行开始后即自动归档）";
   setBusy(true, "正在重新爬取", "crawl");
   setLog(`[${new Date().toLocaleTimeString("zh-CN", { hour12: false })}] 开始启动后台爬虫任务...\n`, true);
   try {
@@ -6397,7 +6397,7 @@ function startLiveVoiceRecognition() {
   });
   recognition.addEventListener("error", (event) => {
     if (!["aborted", "no-speech"].includes(event.error)) {
-      showTaskOperationNotice("实时语音识别暂时不可用，停止后仍会完成文字识别");
+      showTaskOperationNotice("语音识别暂时不可用，停止后仍会完成文字识别");
     }
   });
   recognition.addEventListener("end", () => {
@@ -9508,7 +9508,7 @@ document.addEventListener("keydown", (event) => {
     syncStatus.classList.toggle("is-degraded", degraded);
     syncStatus.title = monitor.last_error || "";
     syncStatus.innerHTML =
-      '<i aria-hidden="true"></i>' + (degraded ? "同步待恢复" : "实时轮播");
+      '<i aria-hidden="true"></i>' + (degraded ? "同步待恢复" : "自动轮播");
     const scanTimes = Array.isArray(monitor.scan_times) ? monitor.scan_times : [];
     scheduleText.textContent = scanTimes.length
       ? "每日 " + scanTimes.join(" / ") + " 扫描"

@@ -13,7 +13,7 @@ class CustomSelectAssetTests(unittest.TestCase):
 
         self.assertIn('/static/custom-select.css?v=2', index)
         self.assertIn('/static/custom-select.css?v=2', company)
-        self.assertLess(index.index('/static/custom-select.js?v=2'), index.index('/static/app.js?v=322'))
+        self.assertLess(index.index('/static/custom-select.js?v=2'), index.index('/static/app.js?v=323'))
         self.assertLess(company.index('/static/custom-select.js?v=2'), company.index('/static/company-data.js?v=14'))
 
     def test_component_covers_dynamic_selects_and_accessible_interaction(self):

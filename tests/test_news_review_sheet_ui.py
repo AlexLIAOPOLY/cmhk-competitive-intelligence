@@ -442,7 +442,7 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
 
         self.assertIn('id="openNewsReviewSheetButton"', html)
         self.assertIn('id="newsReviewWorkspace"', html)
-        self.assertIn('/static/news-review-sheet.js?v=10', html)
+        self.assertIn('/static/news-review-sheet.js?v=11', html)
         self.assertNotIn('id="newsReviewRefreshButton"', html)
         self.assertNotIn('id="newsReviewCopyButton"', html)
         self.assertNotIn('id="newsReviewExportButton"', html)
@@ -454,7 +454,7 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertIn("document.visibilityState", script)
         self.assertIn("系统每 15 秒自动重试", script)
         self.assertIn('controller.abort()', script)
-        self.assertIn("显示缓存 · 实时刷新暂不可用", script)
+        self.assertIn("显示缓存 · 数据刷新暂不可用", script)
         self.assertIn('event.clipboardData.setData("text/plain", payload.text)', script)
         self.assertIn('event.clipboardData.setData("text/html", payload.html)', script)
         self.assertIn('value === "暂缓"', script)

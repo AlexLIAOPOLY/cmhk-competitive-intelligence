@@ -35,11 +35,11 @@ class LongListScrollTests(unittest.TestCase):
     def test_changed_assets_are_cache_busted(self):
         for asset in (
             "/static/styles.css?v=294",
-            "/static/workspace-tabs.css?v=150",
+            "/static/workspace-tabs.css?v=159",
             "/static/organization-admin.css?v=29",
-            "/static/app.js?v=322",
+            "/static/app.js?v=323",
             "/static/organization-admin.js?v=36",
-            "/static/workspace-tabs.js?v=171",
+            "/static/workspace-tabs.js?v=185",
         ):
             self.assertIn(asset, INDEX)
 

@@ -38,7 +38,7 @@ class ChatUserAvatarTests(unittest.TestCase):
         self.assertIn('/static/styles.css?v=294', INDEX)
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.css?v=29', INDEX)
-        self.assertIn('/static/app.js?v=322', INDEX)
+        self.assertIn('/static/app.js?v=323', INDEX)
 
 
 if __name__ == "__main__":
