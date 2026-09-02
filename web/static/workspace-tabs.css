@@ -868,6 +868,9 @@
 .company-agent-metric-results strong { color: #dcecef; font-size: 9px; }
 .company-agent-metric-results em { color: #65cdb0; font-size: 8px; font-style: normal; }
 .company-agent-metric-results small,.company-agent-metric-results p { grid-column: 1/-1; margin: 0; color: #7798a2; font-size: 8px; line-height: 1.45; }
+.company-agent-metric-results .company-agent-metric-value { color: #d7e8eb; font-size: 9px; font-weight: 700; overflow-wrap: anywhere; }
+.company-agent-metric-results .company-agent-metric-links { display: flex; flex-wrap: wrap; gap: 3px 8px; }
+.company-agent-metric-results .company-agent-metric-links a { color: #78d2e1; }
 .company-agent-metric-results > span.is-not_disclosed em,.company-agent-metric-results > span.is-not_applicable em { color: #e8bd67; }
 .company-agent-metric-results > span.is-conflict em,.company-agent-metric-results > span.is-unsearched em,.company-agent-metric-results > span.is-search_exhausted em,.company-agent-metric-results > span.is-agent_error em { color: #ef9c84; }
 .company-agent-graph-empty { display: grid; min-height: 280px; place-content: center; gap: 9px; padding: 24px; text-align: center; }

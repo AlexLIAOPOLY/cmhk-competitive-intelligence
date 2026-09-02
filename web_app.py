@@ -1770,7 +1770,53 @@ def load_agent_research_for_run(run_id: str) -> tuple[list[dict], list[dict]]:
                 reports = [item for item in payload if isinstance(item, dict)]
         except Exception:
             reports = []
+    if not reports:
+        progress = load_company_agent_progress_for_run(safe_run_id)
+        reports = progress.get("reports", []) if progress.get("ok") else []
     return traces, reports
+
+
+def load_company_agent_progress_for_run(run_id: str) -> dict:
+    """Expose the latest durable company-Agent checkpoint before final publication."""
+    safe_run_id = re.sub(r"[^A-Za-z0-9_.-]", "", str(run_id or ""))
+    if not safe_run_id:
+        return {"ok": False, "reports": []}
+    progress_path = ROOT / "curation_data" / "runs" / f"{safe_run_id}_company_agent_progress.json"
+    if not progress_path.exists():
+        return {"ok": False, "reports": []}
+    try:
+        payload = json.loads(progress_path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"ok": False, "reports": []}
+    companies = payload.get("companies") if isinstance(payload, dict) else {}
+    if not isinstance(companies, dict):
+        companies = {}
+    reports = sorted(
+        (item for item in companies.values() if isinstance(item, dict)),
+        key=lambda item: (int(item.get("row_number") or 10_000), str(item.get("company") or "")),
+    )
+    terminal_statuses = {"verified_latest", "not_disclosed", "not_applicable", "search_exhausted"}
+    metric_rows = [
+        metric
+        for report in reports
+        for metric in (report.get("metric_results") or [])
+        if isinstance(metric, dict)
+    ]
+    return {
+        "ok": True,
+        "source": "checkpoint",
+        "version": int(payload.get("version") or 0),
+        "updatedAt": str(payload.get("updated_at") or ""),
+        "expectedCompanies": 41,
+        "recordedCompanies": len(reports),
+        "terminalCompanies": sum(1 for report in reports if report.get("status") in terminal_statuses),
+        "unresolvedCompanies": sum(1 for report in reports if report.get("status") not in terminal_statuses),
+        "recordedMetrics": len(metric_rows),
+        "terminalMetrics": sum(1 for metric in metric_rows if metric.get("status") in terminal_statuses),
+        "conflictMetrics": sum(1 for metric in metric_rows if metric.get("status") == "conflict"),
+        "agentErrorMetrics": sum(1 for metric in metric_rows if metric.get("status") == "agent_error"),
+        "reports": reports,
+    }
 
 
 def read_request_json(handler: BaseHTTPRequestHandler) -> dict:
@@ -7012,6 +7058,10 @@ class AppHandler(BaseHTTPRequestHandler):
                 research_trace, research_reports = load_agent_research_for_run(agent_run_id)
                 result["companyAgentTrace"] = research_trace
                 result["companyAgentReports"] = research_reports
+                progress = load_company_agent_progress_for_run(agent_run_id)
+                result["companyAgentProgress"] = {
+                    key: value for key, value in progress.items() if key != "reports"
+                }
                 result["newsSelectionItems"] = news_selection_items_for_crawl_run(run)
             json_response(self, result, 200 if result.get("ok") else 404)
             return

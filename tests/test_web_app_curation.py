@@ -562,6 +562,56 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(items[1]["status"], "failed")
         self.assertEqual(items[1]["errors"], ["timeout"])
 
+    def test_company_agent_progress_is_visible_before_final_report_exists(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            runs_dir = root / "curation_data" / "runs"
+            runs_dir.mkdir(parents=True)
+            (runs_dir / "scheduled-test_company_agent_progress.json").write_text(
+                json.dumps(
+                    {
+                        "version": 15,
+                        "updated_at": "2026-09-02T14:36:17+08:00",
+                        "companies": {
+                            "HKT": {
+                                "company": "HKT",
+                                "group": "local",
+                                "row_number": 2,
+                                "status": "verified_latest",
+                                "metric_results": [
+                                    {"metric": "收入", "status": "verified_latest", "value": "HK$18.7B"},
+                                    {"metric": "资本开支", "status": "search_exhausted", "value": ""},
+                                ],
+                            },
+                            "AWS": {
+                                "company": "AWS",
+                                "group": "cloud",
+                                "row_number": 50,
+                                "status": "agent_error",
+                                "metric_results": [
+                                    {"metric": "AWS分部收入", "status": "agent_error", "value": ""}
+                                ],
+                            },
+                        },
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            with mock.patch.object(web_app, "ROOT", root):
+                progress = web_app.load_company_agent_progress_for_run("scheduled-test")
+                traces, reports = web_app.load_agent_research_for_run("scheduled-test")
+
+        self.assertTrue(progress["ok"])
+        self.assertEqual(progress["version"], 15)
+        self.assertEqual(progress["recordedCompanies"], 2)
+        self.assertEqual(progress["recordedMetrics"], 3)
+        self.assertEqual(progress["terminalMetrics"], 2)
+        self.assertEqual(progress["agentErrorMetrics"], 1)
+        self.assertEqual([report["company"] for report in reports], ["HKT", "AWS"])
+        self.assertEqual(traces, [])
+
     def test_news_selection_items_expose_robot_identity_and_per_news_decision(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
