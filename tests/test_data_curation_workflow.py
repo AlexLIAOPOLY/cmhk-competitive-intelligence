@@ -2763,6 +2763,90 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(len(votes), 1)
         self.assertIn("capex investment plan", votes[0]["value"].lower())
 
+    def test_qualitative_source_rejects_boilerplate_and_keeps_readable_excerpt(self) -> None:
+        fact = CandidateFact(
+            id="telstra-ai",
+            company="Telstra",
+            metric="AI",
+            row_ref="row_19",
+            decision="review",
+        )
+        boilerplate = {
+            "url": "https://www.telstra.com.au/aboutus/investors/annual-report-2026.pdf",
+            "final_url": "https://www.telstra.com.au/aboutus/investors/annual-report-2026.pdf",
+            "http_status": 200,
+            "opened": True,
+            "blocked_reason": "",
+            "text": (
+                "Telstra Annual Report 2026. Responsible use of artificial intelligence. "
+                "Some of this content was created with the support of AI. We used human "
+                "judgement and governance and assurance processes to confirm the content."
+            ),
+            "cache_hit": False,
+        }
+        direct_page = {
+            **boilerplate,
+            "url": "https://www.telstra.com.au/exchange/ai-at-telstra",
+            "final_url": "https://www.telstra.com.au/exchange/ai-at-telstra",
+            "text": (
+                "Telstra launched Ask Telstra in 2026, an AI service platform that helps "
+                "customers resolve account and network questions."
+            ),
+        }
+        profile = {
+            "aliases": ["Telstra"],
+            "official_hosts": ["telstra.com.au"],
+            "seed_urls": [],
+        }
+        with (
+            patch("data_curation.workflow._read_source_page", return_value=boilerplate),
+            patch("data_curation.workflow._company_research_profile", return_value=profile),
+        ):
+            self.assertEqual(
+                _votes_from_source_pages(fact, extra_urls=[boilerplate["url"]]),
+                [],
+            )
+        with (
+            patch("data_curation.workflow._read_source_page", return_value=direct_page),
+            patch("data_curation.workflow._company_research_profile", return_value=profile),
+        ):
+            votes = _votes_from_source_pages(fact, extra_urls=[direct_page["url"]])
+        self.assertEqual(len(votes), 1)
+        self.assertEqual(votes[0]["normalized_value"], votes[0]["value"])
+        self.assertIn("Ask Telstra in 2026", votes[0]["normalized_value"])
+        self.assertIn(" ", votes[0]["normalized_value"])
+
+    def test_enterprise_ict_does_not_match_generic_product_or_service_text(self) -> None:
+        fact = CandidateFact(
+            id="telstra-enterprise-ict",
+            company="Telstra",
+            metric="企业ICT",
+            row_ref="row_19",
+            decision="review",
+        )
+        page = {
+            "url": "https://www.telstra.com.au/aboutus/investors/results",
+            "final_url": "https://www.telstra.com.au/aboutus/investors/results",
+            "http_status": 200,
+            "opened": True,
+            "blocked_reason": "",
+            "text": "Telstra launched new consumer products and mobile services in 2026.",
+            "cache_hit": False,
+        }
+        profile = {
+            "aliases": ["Telstra"],
+            "official_hosts": ["telstra.com.au"],
+            "seed_urls": [],
+        }
+        with (
+            patch("data_curation.workflow._read_source_page", return_value=page),
+            patch("data_curation.workflow._company_research_profile", return_value=profile),
+        ):
+            self.assertEqual(
+                _votes_from_source_pages(fact, extra_urls=[page["url"]]),
+                [],
+            )
+
     def test_company_agent_does_not_treat_different_qualitative_prose_as_value_conflict(self) -> None:
         source_url = "https://www.telstra.com.au/aboutus/investors/results"
 

@@ -73,7 +73,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 5
+COMPANY_AGENT_PROGRESS_VERSION = 6
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -1425,7 +1425,13 @@ def _metric_evidence_terms(metric: str) -> list[str]:
         (r"派息|股息|分派", ["派息", "股息", "分派", "dividend", "distribution"]),
         (r"资本开支|Capex", ["资本开支", "capex", "capital expenditure"]),
         (r"资费|套餐", ["资费", "套餐", "月费", "计划", "tariff", "price", "fee", "plan"]),
-        (r"产品规格|增值服务|漫游|企业|Open RAN|5G-A|SoSIM", ["产品", "规格", "服务", "漫游", "enterprise", "roaming", "open ran", "5g-a", "sosim"]),
+        (r"企业\s*ICT|enterprise\s*ICT", ["企业ict", "企业 ict", "enterprise ict", "enterprise"]),
+        (r"产品规格", ["产品规格", "product specification", "specification"]),
+        (r"增值服务", ["增值服务", "value-added service", "value added service"]),
+        (r"漫游", ["漫游", "roaming"]),
+        (r"Open RAN", ["open ran", "open-ran", "o-ran"]),
+        (r"5G-A", ["5g-a", "5g advanced", "5g-advanced", "5.5g"]),
+        (r"SoSIM", ["sosim"]),
         (r"董事会|股东大会|关联交易|合规|政策", ["董事会", "股东", "关联交易", "合规", "policy", "board", "governance"]),
         (r"市场反应|券商观点", ["市场", "股价", "收盘", "评级", "目标价", "market", "rating", "target price"]),
     ]
@@ -1500,9 +1506,6 @@ def _qualitative_source_evidence(fact: CandidateFact, text: str, url: str) -> st
     host = urlparse(url).netloc.lower()
     if any(term in host for term in ("gettyimages.", "shutterstock.", "alamy.", "pinterest.")):
         return ""
-    focused = _metric_focused_window(fact.metric, text)
-    if not _evidence_mentions_metric(fact.metric, focused):
-        return ""
     profile = _company_research_profile(fact.company)
     company_bound = any(
         alias and alias.casefold() in text.casefold()
@@ -1510,17 +1513,60 @@ def _qualitative_source_evidence(fact: CandidateFact, text: str, url: str) -> st
     ) or _host_matches_governed_official(url, profile.get("official_hosts", []))
     if not company_bound:
         return ""
-    if not re.search(
+    normalized = re.sub(r"\s+", " ", str(text or "")).strip()
+    if not normalized:
+        return ""
+    segments = [
+        clean_text(item, 420)
+        for item in re.split(r"(?<=[.!?。！？])\s+|[\r\n•]+", normalized)
+        if clean_text(item, 420)
+    ]
+    action_re = re.compile(
         r"strategy|strategic|launch(?:ed)?|deploy(?:ed|ment)?|adoption|partnership|"
         r"service|platform|network|investment|investing|plans?|ambition|transformation|"
-        r"capex|capital expenditure|cloud|enterprise|5g-a|5g advanced|"
+        r"reinvent|deliver|opportunit|capex|capital expenditure|cloud|enterprise|"
+        r"5g-a|5g advanced|dynamic 5g|adaptive|"
         r"战略|推出|部署|合作|投资|规划|转型|服务|平台|网络|云|企业",
-        focused,
         re.IGNORECASE,
-    ):
+    )
+    noise_re = re.compile(
+        r"skip to main content|family friendly|language:|search close|suggestions found|"
+        r"responsible use of artificial intelligence|created with the support of ai|"
+        r"human judgement|governance and assurance processes|cookie|privacy policy|"
+        r"group company secretary|forward-looking statements?",
+        re.IGNORECASE,
+    )
+    candidates: list[tuple[int, str]] = []
+    aliases = [alias.casefold() for alias in profile.get("aliases", [fact.company]) if alias]
+    for index, segment in enumerate(segments):
+        if not _evidence_mentions_metric(fact.metric, segment):
+            continue
+        contexts = [segment]
+        if len(segment) < 260 and not action_re.search(segment) and index + 1 < len(segments):
+            contexts.append(clean_text(f"{segment} {segments[index + 1]}", 420))
+        for excerpt in contexts:
+            # PDF extraction commonly appends the slide footer to an otherwise
+            # useful bullet.  Remove that suffix before applying noise gates.
+            excerpt = clean_text(
+                re.split(r"\s+Copyright\s+Telstra\s+©", excerpt, maxsplit=1, flags=re.IGNORECASE)[0],
+                360,
+            )
+            if len(excerpt) < 24 or not _evidence_mentions_metric(fact.metric, excerpt):
+                continue
+            if not action_re.search(excerpt) or noise_re.search(excerpt):
+                continue
+            alnum = len(re.findall(r"[A-Za-z0-9\u4e00-\u9fff]", excerpt))
+            if alnum < 18 or alnum / max(1, len(excerpt)) < 0.45:
+                continue
+            score = 4
+            score += 3 if any(alias in excerpt.casefold() for alias in aliases) else 0
+            score += 2 if re.search(r"\b20\d{2}\b|\bFY\s*\d{2}\b", excerpt, re.IGNORECASE) else 0
+            score -= max(0, len(excerpt) - 260) // 80
+            candidates.append((score, excerpt))
+    if not candidates:
         return ""
-    recovered = _direct_value(fact.metric, focused)
-    return recovered if recovered and _passes_metric_gate(fact.metric, recovered) else ""
+    recovered = max(candidates, key=lambda item: (item[0], -len(item[1])))[1]
+    return recovered if _passes_metric_gate(fact.metric, recovered) else ""
 
 
 def _quoted_phrases(text: str) -> list[str]:
@@ -1595,9 +1641,15 @@ def _verification_vote(
     canonical = _canonical_fact_value(metric, raw_value)
     if not raw_value or not canonical:
         return None
+    qualitative = bool(QUALITATIVE_METRIC_RE.search(metric))
     return {
         "value": raw_value,
-        "normalized_value": canonical if re.search(r"\d", canonical) else raw_value,
+        # Qualitative evidence is a readable source-bound excerpt.  Numeric
+        # canonicalisation removes whitespace and can turn page prose (or a
+        # year inside it) into an unreadable pseudo-value.
+        "normalized_value": raw_value if qualitative else (
+            canonical if re.search(r"\d", canonical) else raw_value
+        ),
         "canonical": canonical,
         "source": clean_text(source, 160),
         "kind": kind,
