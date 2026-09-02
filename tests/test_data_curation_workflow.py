@@ -956,6 +956,68 @@ class DataCurationWorkflowTests(unittest.TestCase):
             {"网络覆盖": "search_exhausted", "收入": "search_exhausted"},
         )
 
+    def test_company_agent_fills_blank_terminal_rationale_from_audited_research(self) -> None:
+        source_url = "https://news.sktelecom.com/en/2026-results"
+
+        class BlankRationaleAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "research", "name": "research_all_metrics", "args": {}}],
+                    2: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "AI 有直接证据，5G-A 已回读但未单独披露",
+                        "metric_statuses": [
+                            {"metric": "AI", "status": "verified_latest", "rationale": "SKT AI 战略原文"},
+                            {"metric": "5G-A", "status": "not_disclosed", "rationale": ""},
+                        ],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_current(fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            if fact.metric != "AI":
+                return []
+            value = "SK Telecom launched an AI service platform in 2026."
+            return [{
+                "url": source_url,
+                "canonical": value.casefold().replace(" ", ""),
+                "normalized_value": value,
+                "value": value,
+            }]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["AI", "5G-A"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["SK Telecom", "SKT"],
+                "official_hosts": ["sktelecom.com"],
+                "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=BlankRationaleAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([{
+                "title": "SK Telecom 2026 results",
+                "url": source_url,
+                "snippet": "SK Telecom FY26 strategy and results.",
+                "provider": "test",
+            }], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_current),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-blank-rationale"}, "SK Telecom", 19, "SK Telecom", []
+            )
+        by_metric = {item["metric"]: item for item in result["metric_results"]}
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(by_metric["5G-A"]["status"], "not_disclosed")
+        self.assertTrue(by_metric["5G-A"]["rationale"])
+
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
             def __init__(self) -> None:

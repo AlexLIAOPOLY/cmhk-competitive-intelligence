@@ -73,7 +73,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 6
+COMPANY_AGENT_PROGRESS_VERSION = 7
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -3083,7 +3083,6 @@ def _run_company_research_agent(
         supplied_names = [item["metric"] for item in normalized_metrics]
         missing = [metric for metric in expected_metrics if metric not in supplied_names]
         duplicates = sorted({metric for metric in supplied_names if supplied_names.count(metric) > 1})
-        incomplete_reasons = [item["metric"] for item in normalized_metrics if not item["rationale"]]
         research_incomplete: list[str] = []
         for item in normalized_metrics:
             metric = item["metric"]
@@ -3144,6 +3143,14 @@ def _run_company_research_agent(
             ):
                 item["status"] = "search_exhausted"
                 metric_status = "search_exhausted"
+            if not item["rationale"]:
+                item["rationale"] = {
+                    "verified_latest": "已通过当期搜索或打开来源取得该指标直接证据。",
+                    "not_disclosed": "已回读当期来源，未取得该指标的单独披露值。",
+                    "search_exhausted": "已执行当期检索并尝试回读来源，未取得可核验直接值。",
+                    "not_applicable": "该指标依据主体口径确认为不适用。",
+                    "conflict": "当期来源存在未消除的口径或数值冲突。",
+                }.get(metric_status, "")
             if metric_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
                 continue
             if not metric_searches:
@@ -3175,6 +3182,7 @@ def _run_company_research_agent(
                 metric_value_conflict or metric_open_attempts or metric_evidence
             ):
                 research_incomplete.append(f"{metric}:open_sources_before_conflict")
+        incomplete_reasons = [item["metric"] for item in normalized_metrics if not item["rationale"]]
         metric_status_set = {item["status"] for item in normalized_metrics}
         derived_status = (
             "conflict" if "conflict" in metric_status_set
