@@ -1102,6 +1102,23 @@ class DataCurationWorkflowTests(unittest.TestCase):
         ranked = workflow._rank_company_research_results("5G-A", results)
         self.assertEqual(ranked[0]["url"], "https://www.singtel.com/news/5g-advanced")
 
+    def test_company_research_prefers_capex_investment_over_accounting_definition(self) -> None:
+        selected = workflow._select_company_research_vote("Capex方向", [
+            {
+                "value": "Cash EBIT reflects Underlying EBITDAaL less business-as-usual capex and spectrum amortisation.",
+            },
+            {
+                "value": "Invested $19b+ overall capex and spectrum over last 5 years",
+            },
+            {
+                "value": "This year, we have invested $5 billion in CapEx and mobile spectrum payments.",
+            },
+        ])
+        self.assertEqual(
+            selected["value"],
+            "This year, we have invested $5 billion in CapEx and mobile spectrum payments.",
+        )
+
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
             def __init__(self) -> None:

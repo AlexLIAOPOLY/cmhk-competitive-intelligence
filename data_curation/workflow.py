@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 9
+COMPANY_AGENT_PROGRESS_VERSION = 10
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -2702,6 +2702,42 @@ def _rank_company_research_results(
     )
 
 
+def _select_company_research_vote(
+    metric: str,
+    votes: list[dict[str, Any]],
+) -> dict[str, Any]:
+    """Choose the most decision-useful evidence instead of the first page hit."""
+    if not votes:
+        return {}
+    if not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric):
+        return votes[0]
+
+    def score(vote: dict[str, Any]) -> int:
+        value = clean_text(vote.get("normalized_value") or vote.get("value"), 500)
+        result = 0
+        if re.search(r"\b20\d{2}\b|\bFY\s*\d{2}\b|this year|current year|本年|当期", value, re.IGNORECASE):
+            result += 3
+        if re.search(r"\d", value):
+            result += 1
+        if re.search(r"Capex方向|资本开支方向|投资方向", metric, re.IGNORECASE):
+            if re.search(
+                r"invest(?:ed|ment|ing)?|spend(?:ing)?|allocated?|guidance|plan(?:ned)?|"
+                r"deploy(?:ed|ment)?|投入|投资|开支|规划",
+                value,
+                re.IGNORECASE,
+            ):
+                result += 8
+            if re.search(r"\$|HKD|USD|RMB|million|billion|bn|亿|万|%", value, re.IGNORECASE):
+                result += 4
+            if re.search(r"reflects?|defined as|calculated as|less .*capex|amortisation", value, re.IGNORECASE):
+                result -= 12
+            if re.search(r"last\s+\d+\s+years|past\s+(?:five|\d+)\s+years", value, re.IGNORECASE):
+                result -= 2
+        return result
+
+    return max(enumerate(votes), key=lambda item: (score(item[1]), -item[0]))[1]
+
+
 def _run_company_research_agent(
     state: CurationState,
     company: str,
@@ -3024,7 +3060,7 @@ def _run_company_research_agent(
                 int(item.get("fresh_official_open_count") or 0) for item in metric_opened
             )
             selected_votes = open_evidence or search_evidence
-            selected_vote = selected_votes[0] if selected_votes else {}
+            selected_vote = _select_company_research_vote(metric, selected_votes)
             unresolved_conflict = not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and (
                 len(open_values) > 1 or (not open_values and len(search_values) > 1)
             )
@@ -3743,7 +3779,11 @@ def _run_company_research_agent(
             )
         evidence_votes = [*metric_open_evidence, *metric_search_evidence]
         resolved_votes = metric_open_evidence or metric_search_evidence
-        selected_vote = resolved_votes[0] if resolved_votes and not metric_value_conflict else {}
+        selected_vote = (
+            _select_company_research_vote(metric, resolved_votes)
+            if resolved_votes and not metric_value_conflict
+            else {}
+        )
         metric_results.append({
             "metric": metric,
             "status": status,
