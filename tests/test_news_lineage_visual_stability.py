@@ -77,8 +77,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("animation-delay: var(--news-feedback-degraded-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=151', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=172', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=152', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=173', INDEX)
 
 
 if __name__ == "__main__":
