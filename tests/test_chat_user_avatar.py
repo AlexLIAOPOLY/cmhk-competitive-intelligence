@@ -35,7 +35,7 @@ class ChatUserAvatarTests(unittest.TestCase):
         self.assertIn('.organization-profile-card.auth-user-profile-card', ORGANIZATION_STYLE)
 
     def test_changed_assets_are_cache_busted(self):
-        self.assertIn('/static/styles.css?v=293', INDEX)
+        self.assertIn('/static/styles.css?v=294', INDEX)
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.css?v=29', INDEX)
         self.assertIn('/static/app.js?v=322', INDEX)
