@@ -55,7 +55,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.js?v=36', INDEX)
         self.assertIn('/static/organization-admin.css?v=29', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=177', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=178', INDEX)
         self.assertIn('/static/app.js?v=322', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -172,7 +172,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('event.data?.type !== "cmhk-workspace-motion"', SCRIPT)
         self.assertIn("calc(100vh / 1044px)", responsive_style)
         self.assertIn("calc((100vh - 8px) / 1096px)", responsive_style)
-        self.assertIn("height: 132px; gap: 3px; padding: 10px 12px 9px", STYLE)
+        self.assertIn("height: 154px; gap: 3px; padding: 10px 12px 9px", STYLE)
         self.assertIn('refreshFaultData({ quiet: true })', SCRIPT)
         self.assertNotIn("workspace-running-dot", STYLE)
         self.assertIn('class="workspace-nav-icon"', INDEX)
@@ -658,7 +658,7 @@ class WorkspaceTabsTests(unittest.TestCase):
             "新闻历史去重",
             "新增战略新闻",
             "01:00 四库数据资料补缺",
-            "03:00 固定源抓取",
+            "03:00 固定链接入口与抓取",
             "Agent 数据证据审核",
             "本地运营商",
             "国际运营商",
@@ -675,10 +675,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=154', INDEX)
-        self.assertIn('workspace-tabs.js?v=177', INDEX)
+        self.assertIn('workspace-tabs.css?v=155', INDEX)
+        self.assertIn('workspace-tabs.js?v=178', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=154', INDEX)
+        self.assertIn('workspace-tabs.css?v=155', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
@@ -694,6 +694,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1850, 680]", SCRIPT)
         self.assertIn('key: "news-selection-agent", label: "新闻自动初筛"', SCRIPT)
+        self.assertIn("const nodePurposes = {", SCRIPT)
+        self.assertIn('main: "读取飞书固定链接，并抓取网页和官方原文"', SCRIPT)
+        self.assertIn('<p>作用：${esc(node.purpose || "未说明")}</p>', SCRIPT)
+        self.assertIn('const mainUnit = "条当前固定链接"', SCRIPT)
+        self.assertIn('fixedSourceSummary', SCRIPT)
         self.assertIn('`周报新闻 ${number(selectionSummary.weeklyAccepted)} 条`', SCRIPT)
         self.assertIn('`滚动栏新闻 ${number(selectionSummary.appAccepted)} 条`', SCRIPT)
         self.assertIn('appMachineRows', SCRIPT)
@@ -796,7 +801,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('domainNode("mainland", "内地运营商", [1155, 535]', SCRIPT)
         self.assertIn('position: [1385, 455]', SCRIPT)
         self.assertIn('label: "四库主体数据发布到 UI", position: [950, 370], size: [389, 301]', SCRIPT)
-        self.assertIn('.news-lineage.is-global .news-lineage-node.is-database-hub { width: 144px; height: 104px; min-height: 104px;', STYLE)
+        self.assertIn('.news-lineage.is-global .news-lineage-node.is-database-hub { width: 144px; height: 128px; min-height: 128px;', STYLE)
         self.assertIn('.news-lineage-edge-labels { position: absolute; inset: 0; z-index: 3;', STYLE)
         self.assertIn(".news-lineage-lane-label", STYLE)
         self.assertNotIn('四库更新 · 2 × 2', SCRIPT)
@@ -861,7 +866,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('strategicNewsRunRank(run)', SCRIPT)
         self.assertIn('run?.operational_summary?.readback_verified === true', SCRIPT)
         self.assertIn('const runs = authoritativeStrategicNewsRuns(attemptRuns);', SCRIPT)
-        self.assertIn('`当天${runs.length}轮新闻扫描`', SCRIPT)
+        self.assertIn('unit: newsRun.run_status === "running" ? "" : "轮新闻扫描任务"', SCRIPT)
         self.assertIn('`${attemptRuns.length} 次扫描尝试', SCRIPT)
         self.assertIn('data-health="${esc(node.health?.key || "unknown")}"', SCRIPT)
         self.assertIn('健康状态${esc(node.health?.label || "无记录")}', SCRIPT)

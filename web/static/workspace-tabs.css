@@ -667,18 +667,18 @@
 .news-lineage-node > em { display: -webkit-box; overflow: hidden; color: #789aa5; font-size: 8px; font-style: normal; line-height: 1.5; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .news-lineage-node.is-focus > span { padding: 0; color: #dff6f7; }
 .news-lineage-node.is-focus > em { color: #7fa7af; }
-.news-lineage.is-global .news-lineage-node { width: 150px; height: 132px; gap: 3px; padding: 10px 12px 9px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 11px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 12px 24px rgba(0,8,14,.28),inset 0 1px rgba(221,249,253,.07); }
-.news-lineage.is-global .news-lineage-node.is-focus { width: 150px; height: 132px; min-height: 132px; place-content: start; border-radius: 11px; text-align: left; }
+.news-lineage.is-global .news-lineage-node { width: 150px; height: 154px; gap: 3px; padding: 10px 12px 9px; overflow: hidden; border-color: rgba(73,169,191,.82); border-radius: 11px; background: linear-gradient(155deg,rgba(13,55,75,.98),rgba(5,29,42,.99)); box-shadow: 0 12px 24px rgba(0,8,14,.28),inset 0 1px rgba(221,249,253,.07); }
+.news-lineage.is-global .news-lineage-node.is-focus { width: 150px; height: 154px; min-height: 154px; place-content: start; border-radius: 11px; text-align: left; }
 .news-lineage.is-global .news-lineage-node.is-mint { border-color: rgba(82,187,163,.82); }
-.news-lineage.is-global .news-lineage-node.is-result { height: 108px; min-height: 108px; padding-top: 10px; padding-bottom: 9px; }
+.news-lineage.is-global .news-lineage-node.is-result { height: 132px; min-height: 132px; padding-top: 10px; padding-bottom: 9px; }
 .news-lineage.is-global .news-lineage-node.is-result > span { min-height: 26px; }
 .news-lineage.is-global .news-lineage-node.is-result > strong { font-size: 27px; }
 .news-lineage.is-global .news-lineage-node.is-result > em { font-size: 9.5px; }
-.news-lineage.is-global .news-lineage-node.is-compact { width: 144px; height: 96px; min-height: 96px; gap: 3px; padding: 9px 11px 8px; }
+.news-lineage.is-global .news-lineage-node.is-compact { width: 144px; height: 120px; min-height: 120px; gap: 3px; padding: 9px 11px 8px; }
 .news-lineage.is-global .news-lineage-node.is-compact > span { min-height: 22px; font-size: 11.5px; }
 .news-lineage.is-global .news-lineage-node.is-compact > strong { font-size: 22px; }
 .news-lineage.is-global .news-lineage-node.is-compact > em { font-size: 9px; line-height: 1.35; }
-.news-lineage.is-global .news-lineage-node.is-database-hub { width: 144px; height: 104px; min-height: 104px; border-style: dashed; }
+.news-lineage.is-global .news-lineage-node.is-database-hub { width: 144px; height: 128px; min-height: 128px; border-style: dashed; }
 .news-lineage.is-global .news-lineage-node::before { position: absolute; top: 13px; bottom: 13px; left: 0; width: 3px; border-radius: 0 3px 3px 0; background: var(--node-accent); opacity: .9; content: ""; }
 .news-lineage.is-global .news-lineage-node.is-crawler { --node-accent:#4bb8d1; background: linear-gradient(155deg,rgba(12,60,80,.98),rgba(5,29,42,.99)); }
 .news-lineage.is-global .news-lineage-node.is-source { --node-accent:#62cae4; background: linear-gradient(155deg,rgba(15,67,84,.98),rgba(6,31,43,.99)); }
@@ -723,6 +723,7 @@
 .news-lineage.is-global .news-lineage-node.is-health-unknown { --node-accent:#879ba3; border-color: rgba(112,134,143,.82); background: linear-gradient(155deg,rgba(43,54,59,.98),rgba(22,29,33,.99)); }
 .news-lineage.is-global .news-lineage-group { border-color: rgba(105,164,185,.52); background: linear-gradient(135deg,rgba(18,52,66,.38),rgba(8,34,45,.2)); }
 .news-lineage.is-global .news-lineage-node > span { min-height: 30px; padding-right: 64px; color: #e9f6f8; font-size: 12px; font-weight: 750; line-height: 1.3; }
+.news-lineage.is-global .news-lineage-node > p { display: -webkit-box; min-height: 24px; margin: 0; overflow: hidden; color: #bdd4da; font-size: 9.5px; font-weight: 600; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
 .news-lineage.is-global .news-lineage-node > strong { font-size: 27px; line-height: 1.04; }
 .news-lineage.is-global .news-lineage-node > strong small { margin-left: 4px; font-size: 9.5px; }
 .news-lineage.is-global .news-lineage-node > em { color: #a2bcc3; font-size: 9.5px; line-height: 1.4; -webkit-line-clamp: 2; }
