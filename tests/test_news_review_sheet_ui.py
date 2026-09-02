@@ -1371,6 +1371,116 @@ class NewsReviewActorTests(unittest.TestCase):
             self.assertEqual(events[0]["details"]["agent_run_id"], "agent-run-1")
             self.assertNotIn("feishu_event_id", events[0]["details"])
 
+    def test_mixed_human_and_ai_changesets_are_attributed_per_cell(self) -> None:
+        def snapshot(first_status: str, second_status: str, revision: int) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "spreadsheetRevision": revision,
+                "headers": news_review_sheet.HEADERS,
+                "rows": [
+                    {
+                        "rowNumber": 2,
+                        "recordId": "NEWS-HUMAN",
+                        "values": sheet_row(first_status, "待审核", "未同步", "", "", "", "人工新闻"),
+                    },
+                    {
+                        "rowNumber": 3,
+                        "recordId": "NEWS-AI",
+                        "values": sheet_row(second_status, "待审核", "未同步", "", "", "", "AI 新闻"),
+                    },
+                ],
+            }
+
+        changesets = [{
+            "revision": 101,
+            "create_time": "2026-09-02T14:55:38+08:00",
+            "is_ai_edit": False,
+            "actions": [{
+                "action": "setCell",
+                "sheet_id": "sheet-1",
+                "target": {"row": 1, "col": 1},
+            }],
+        }, {
+            "revision": 102,
+            "create_time": "2026-09-02T14:57:09+08:00",
+            "is_ai_edit": True,
+            "actions": [{
+                "action": "setRangeValues",
+                "sheet_id": "sheet-1",
+                "target": {"row": 2, "row_count": 1, "col": 1, "col_count": 2},
+            }],
+        }]
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            state_path = service.state_dir / "news-review-sheet-audit-state.json"
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(web_app, "sheet_edit_events", side_effect=[[], [{
+                    "event_id": "human-event",
+                    "create_time_ms": 1788332138000,
+                    "operators": [{"open_id": "ou_alice"}],
+                }]]),
+                mock.patch.object(service, "feishu_profile_by_open_id", return_value={
+                    "id": "fs-alice",
+                    "name": "Alice Chen",
+                    "avatar_url": "",
+                    "open_id": "ou_alice",
+                }),
+                mock.patch.object(news_review_sheet, "review_sheet_changesets", return_value=changesets),
+            ):
+                self.assertEqual(
+                    web_app.sync_news_review_sheet_audit(snapshot("待审核", "待审核", 100)),
+                    [],
+                )
+                events = web_app.sync_news_review_sheet_audit(snapshot("不接受", "不接受", 103))
+
+            self.assertEqual(len(events), 2)
+            by_row = {item["details"]["sheet_row"]: item for item in events}
+            self.assertEqual(by_row[2]["actor_name"], "Alice Chen")
+            self.assertFalse(by_row[2]["details"]["feishu_changeset_ai_edit"])
+            self.assertEqual(by_row[3]["actor_id"], "news-auto-screening-bot")
+            self.assertTrue(by_row[3]["details"]["feishu_changeset_ai_edit"])
+            self.assertEqual(by_row[3]["details"]["feishu_changeset_revision"], 102)
+
+    def test_revision_aware_audit_does_not_borrow_a_human_without_cell_evidence(self) -> None:
+        def snapshot(status: str, revision: int) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "spreadsheetRevision": revision,
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{
+                    "rowNumber": 2,
+                    "recordId": "NEWS-UNKNOWN",
+                    "values": sheet_row(status, "待审核", "未同步", "", "", "", "未核验新闻"),
+                }],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            state_path = service.state_dir / "news-review-sheet-audit-state.json"
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(web_app, "sheet_edit_events", side_effect=[[], [{
+                    "event_id": "human-event",
+                    "create_time_ms": 1788332138000,
+                    "operators": [{"open_id": "ou_alice"}],
+                }]]),
+                mock.patch.object(service, "feishu_profile_by_open_id", return_value={
+                    "id": "fs-alice", "name": "Alice Chen", "open_id": "ou_alice",
+                }),
+                mock.patch.object(news_review_sheet, "review_sheet_changesets", return_value=[]),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核", 100)), [])
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("接受", 101)), [])
+
+            saved = service._read(state_path, {})
+            self.assertEqual(saved["rows"]["2"]["decisions"][0], "待审核")
+            self.assertEqual(saved["spreadsheet_revision"], 100)
+            self.assertEqual(service.operation_audit(limit=None), [])
+
     def test_verified_agent_write_is_not_duplicated_after_direct_audit(self) -> None:
         def snapshot(status: str) -> dict:
             return {

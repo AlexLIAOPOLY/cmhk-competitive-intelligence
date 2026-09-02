@@ -107,6 +107,10 @@ NEWS_REVIEW_EVENT_SETTLE_SECONDS = max(
     0,
     int(os.environ.get("CMHK_NEWS_REVIEW_EVENT_SETTLE_SECONDS", "90")),
 )
+NEWS_REVIEW_CHANGESET_MAX_REVISIONS = max(
+    20,
+    int(os.environ.get("CMHK_NEWS_REVIEW_CHANGESET_MAX_REVISIONS", "200")),
+)
 NEWS_REVIEW_AUDIT_LOCK = threading.RLock()
 NEWS_REVIEW_MENTION_IDENTITY_LOCK = threading.RLock()
 NEWS_REVIEW_ACTOR_BACKFILL_LOCK = threading.Lock()
@@ -5653,6 +5657,78 @@ def backfill_news_auto_screening_audit() -> int:
     return written
 
 
+def _news_review_changeset_cell_evidence(
+    *,
+    sheet_id: str,
+    previous_revision: int,
+    current_revision: int,
+    pending_cells: set[tuple[int, int]],
+) -> dict[tuple[int, int], dict]:
+    """Resolve the latest exact Feishu changeset touching each changed B/C cell."""
+    if (
+        not pending_cells
+        or previous_revision <= 0
+        or current_revision <= previous_revision
+    ):
+        return {}
+    from cmhk.intelligence.news_review_sheet import review_sheet_changesets
+
+    evidence: dict[tuple[int, int], dict] = {}
+    lower_revision = max(
+        previous_revision + 1,
+        current_revision - NEWS_REVIEW_CHANGESET_MAX_REVISIONS + 1,
+    )
+    end_revision = current_revision
+    while end_revision >= lower_revision and len(evidence) < len(pending_cells):
+        start_revision = max(lower_revision, end_revision - 19)
+        try:
+            changesets = review_sheet_changesets(start_revision, end_revision)
+        except Exception as exc:
+            logging.warning(
+                "飞书审核表 changeset 归因暂时不可用（%s-%s）：%s",
+                start_revision,
+                end_revision,
+                exc,
+            )
+            return {}
+        for changeset in sorted(
+            changesets,
+            key=lambda item: int(item.get("revision") or 0),
+            reverse=True,
+        ):
+            try:
+                revision = int(changeset.get("revision") or 0)
+            except (TypeError, ValueError):
+                revision = 0
+            for action in changeset.get("actions") or []:
+                if not isinstance(action, dict) or str(action.get("sheet_id") or "") != sheet_id:
+                    continue
+                if str(action.get("action") or "") not in {"setCell", "setRangeValues"}:
+                    continue
+                target = action.get("target") if isinstance(action.get("target"), dict) else {}
+                try:
+                    first_row = int(target.get("row")) + 1
+                    first_column = int(target.get("col"))
+                    row_count = max(1, int(target.get("row_count") or 1))
+                    column_count = max(1, int(target.get("col_count") or 1))
+                except (TypeError, ValueError):
+                    continue
+                for row_number in range(first_row, first_row + row_count):
+                    for column_index in range(first_column, first_column + column_count):
+                        cell = (row_number, column_index)
+                        if cell not in pending_cells:
+                            continue
+                        evidence.setdefault(cell, {
+                            "is_ai_edit": changeset.get("is_ai_edit") is True,
+                            "is_self_edit": changeset.get("is_self_edit") is True,
+                            "revision": revision,
+                            "create_time": str(changeset.get("create_time") or ""),
+                            "action": str(action.get("action") or ""),
+                        })
+        end_revision = start_revision - 1
+    return evidence
+
+
 def sync_news_review_sheet_audit(
     snapshot: dict,
     *,
@@ -5713,6 +5789,14 @@ def sync_news_review_sheet_audit(
         previous_rows = previous.get("rows") if isinstance(previous, dict) else {}
         same_sheet = str(previous.get("sheet_id") or "") == sheet_id if isinstance(previous, dict) else False
         try:
+            previous_revision = int(previous.get("spreadsheet_revision") or 0)
+        except (AttributeError, TypeError, ValueError):
+            previous_revision = 0
+        try:
+            current_revision = int(snapshot.get("spreadsheetRevision") or 0)
+        except (AttributeError, TypeError, ValueError):
+            current_revision = 0
+        try:
             previous_event_ms = int(previous.get("last_feishu_event_ms") or 0)
         except (AttributeError, TypeError, ValueError):
             previous_event_ms = 0
@@ -5765,6 +5849,31 @@ def sync_news_review_sheet_audit(
             and details.get("automation_event_key")
         }
         audit_at = datetime.now().astimezone().isoformat()
+        pending_cells: set[tuple[int, int]] = set()
+        if same_sheet and isinstance(previous_rows, dict):
+            for row_key, current in current_rows.items():
+                before_row = previous_rows.get(row_key)
+                if not isinstance(before_row, dict) or before_row.get("title") != current.get("title"):
+                    continue
+                before_decisions = before_row.get("decisions") if isinstance(before_row.get("decisions"), list) else []
+                after_decisions = current.get("decisions") or []
+                if len(before_decisions) < 2 or len(after_decisions) < 2:
+                    continue
+                for decision_offset, column_index in enumerate(NEWS_REVIEW_DECISION_COLUMNS):
+                    before = str(before_decisions[decision_offset] or "")
+                    after = str(after_decisions[decision_offset] or "")
+                    if before != after and (int(row_key), column_index, before, after) not in ignored:
+                        pending_cells.add((int(row_key), column_index))
+        revision_evidence_expected = bool(
+            previous_revision > 0
+            and current_revision > previous_revision
+        )
+        changeset_evidence = _news_review_changeset_cell_evidence(
+            sheet_id=sheet_id,
+            previous_revision=previous_revision,
+            current_revision=current_revision,
+            pending_cells=pending_cells,
+        )
         observed_decision_change = False
         unresolved_editor_change = False
         if same_sheet and isinstance(previous_rows, dict):
@@ -5796,7 +5905,21 @@ def sync_news_review_sheet_audit(
                         event_at=audit_at,
                         decisions=agent_decisions,
                     )
-                    cell_actor = NEWS_AUTO_SCREENING_ACTOR if agent_match else actor
+                    cell_evidence = changeset_evidence.get((row_number, column_index))
+                    changeset_ai_write = bool(
+                        isinstance(cell_evidence, dict)
+                        and cell_evidence.get("is_ai_edit") is True
+                    )
+                    changeset_human_write = bool(
+                        isinstance(cell_evidence, dict)
+                        and cell_evidence.get("is_ai_edit") is False
+                    )
+                    if changeset_ai_write or agent_match:
+                        cell_actor = NEWS_AUTO_SCREENING_ACTOR
+                    elif changeset_human_write or not revision_evidence_expected:
+                        cell_actor = actor
+                    else:
+                        cell_actor = None
                     if cell_actor is None:
                         # Keep the previous value as the comparison baseline until
                         # either a verified Agent write or a Feishu editor resolves it.
@@ -5804,8 +5927,9 @@ def sync_news_review_sheet_audit(
                         if not agent_match:
                             unresolved_editor_change = True
                         continue
+                    robot_write = bool(changeset_ai_write or agent_match)
                     details = {
-                        "source_label": "新闻自动初筛" if agent_match else "飞书表格",
+                        "source_label": "新闻自动初筛" if robot_write else "飞书表格",
                         "target_label": title,
                         "news_id": str(current.get("record_id") or "")[:120],
                         "sheet_row": row_number,
@@ -5814,30 +5938,59 @@ def sync_news_review_sheet_audit(
                         "before": before,
                         "after": after,
                     }
-                    if agent_match:
-                        automation_event_key = str(
-                            agent_match.get("automation_event_key")
-                            or "|".join((
-                                str(agent_match.get("agent_run_id") or ""),
+                    automation_event_key = ""
+                    if robot_write:
+                        if agent_match:
+                            automation_event_key = str(
+                                agent_match.get("automation_event_key")
+                                or "|".join((
+                                    str(agent_match.get("agent_run_id") or ""),
+                                    str(row_number),
+                                    _news_review_field_label(field_label),
+                                    after,
+                                ))
+                            )
+                        else:
+                            automation_event_key = "|".join((
+                                "changeset",
+                                str(cell_evidence.get("revision") or ""),
+                                sheet_id,
                                 str(row_number),
-                                _news_review_field_label(field_label),
+                                str(column_index),
                                 after,
                             ))
-                        )
                         details.update({
-                            "identity_note": "由新闻自动初筛机器人写入；已按行号、标题、字段、状态和时间窗口与 Agent 决策审计核验",
-                            "agent_run_id": str(agent_match.get("agent_run_id") or ""),
-                            "agent_recorded_at": str(agent_match.get("recorded_at_iso") or ""),
-                            "model": str(agent_match.get("model") or ""),
-                            "writer_profile": str(agent_match.get("writer_profile") or ""),
+                            "identity_note": (
+                                "由新闻自动初筛机器人写入；飞书 changeset 已逐格标记为 AI 编辑"
+                                if changeset_ai_write
+                                else "由新闻自动初筛机器人写入；已按行号、标题、字段、状态和时间窗口与 Agent 决策审计核验"
+                            ),
+                            "agent_run_id": str(agent_match.get("agent_run_id") or "") if agent_match else "",
+                            "agent_recorded_at": str(agent_match.get("recorded_at_iso") or "") if agent_match else "",
+                            "model": str(agent_match.get("model") or "") if agent_match else "",
+                            "writer_profile": str(agent_match.get("writer_profile") or "") if agent_match else "",
                             "automation_event_key": automation_event_key,
                         })
+                        if cell_evidence:
+                            details.update({
+                                "feishu_changeset_revision": int(cell_evidence.get("revision") or 0),
+                                "feishu_changeset_at": str(cell_evidence.get("create_time") or ""),
+                                "feishu_changeset_action": str(cell_evidence.get("action") or ""),
+                                "feishu_changeset_ai_edit": changeset_ai_write,
+                            })
                     else:
                         details.update({
-                            "identity_note": "操作者来自飞书 drive.file.edit_v1 事件，并经组织通讯录解析",
+                            "identity_note": "该单元格由非 AI changeset 修改；操作者来自飞书 drive.file.edit_v1 事件并经组织通讯录解析",
                             "feishu_event_id": str(editor_event.get("event_id") or ""),
                         })
-                    if not agent_match or automation_event_key not in recorded_agent_keys:
+                        if cell_evidence:
+                            details.update({
+                                "feishu_changeset_revision": int(cell_evidence.get("revision") or 0),
+                                "feishu_changeset_at": str(cell_evidence.get("create_time") or ""),
+                                "feishu_changeset_action": str(cell_evidence.get("action") or ""),
+                                "feishu_changeset_ai_edit": False,
+                            })
+                    if not robot_write or automation_event_key not in recorded_agent_keys:
                         events.append(AUTH.record_operation(
                             actor=cell_actor,
                             action="news_review.update",
@@ -5845,7 +5998,7 @@ def sync_news_review_sheet_audit(
                             source="feishu_sheet",
                             details=details,
                         ))
-                        if agent_match:
+                        if robot_write:
                             recorded_agent_keys.add(automation_event_key)
         try:
             cursor_event_ms = int(cursor_event.get("create_time_ms") or 0)
@@ -5864,6 +6017,11 @@ def sync_news_review_sheet_audit(
         next_state = {
             "sheet_id": sheet_id,
             "rows": current_rows,
+            "spreadsheet_revision": int(
+                previous_revision
+                if unresolved_editor_change and revision_evidence_expected
+                else current_revision
+            ),
             "last_feishu_event_ms": int(
                 cursor_event_ms
                 if consume_event_cursor

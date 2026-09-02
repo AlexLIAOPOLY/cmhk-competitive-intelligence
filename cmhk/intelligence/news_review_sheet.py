@@ -1519,13 +1519,13 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
     return padded
 
 
-def _read_rows(
+def _read_rows_with_revision(
     sheet_id: str,
     *,
     format_version: int = FORMAT_VERSION,
     identity: str = "",
     profile: str = "",
-) -> list[list[Any]]:
+) -> tuple[list[list[Any]], int]:
     if format_version <= 5:
         end_column = "J"
     elif format_version == 6:
@@ -1563,7 +1563,62 @@ def _read_rows(
     ]
     while rows and not any(cell not in (None, "") for cell in rows[-1]):
         rows.pop()
-    return rows
+    try:
+        revision = int(_walk_for_key(payload, "revision") or 0)
+    except (TypeError, ValueError):
+        revision = 0
+    return rows, revision
+
+
+def _read_rows(
+    sheet_id: str,
+    *,
+    format_version: int = FORMAT_VERSION,
+    identity: str = "",
+    profile: str = "",
+) -> list[list[Any]]:
+    rows, revision = _read_rows_with_revision(
+        sheet_id,
+        format_version=format_version,
+        identity=identity,
+        profile=profile,
+    )
+    result = _RevisionRows(rows)
+    result.spreadsheet_revision = revision
+    return result
+
+
+class _RevisionRows(list[list[Any]]):
+    spreadsheet_revision = 0
+
+
+def review_sheet_changesets(
+    start_revision: int,
+    end_revision: int,
+    *,
+    identity: str = "",
+    profile: str = "",
+) -> list[dict[str, Any]]:
+    """Return one Feishu revision window for exact per-cell edit attribution."""
+    if start_revision <= 0 or end_revision < start_revision:
+        return []
+    if end_revision - start_revision >= 20:
+        raise ValueError("Feishu changeset windows may contain at most 20 revisions")
+    payload = _lark(
+        "sheets",
+        "+changeset-get",
+        "--spreadsheet-token",
+        SPREADSHEET_TOKEN,
+        "--start-revision",
+        str(start_revision),
+        "--end-revision",
+        str(end_revision),
+        retry_transient=True,
+        identity_override=identity,
+        profile_override=profile,
+    )
+    changesets = _walk_for_key(payload, "changesets")
+    return [item for item in changesets or [] if isinstance(item, dict)]
 
 
 def _validate_sheet_rows(
@@ -3598,6 +3653,7 @@ def review_sheet_snapshot(
     try:
         resolved_sheet_id = _resolved_review_sheet_id(sheet_id)
         rows = _read_rows(resolved_sheet_id, identity=identity, profile=profile)
+        spreadsheet_revision = int(getattr(rows, "spreadsheet_revision", 0) or 0)
         state = _read_json(STATE_PATH, {})
         state = dict(state) if isinstance(state, dict) else {}
         sheet_title = _text(state.get("sheet_title"), 100) or SHEET_TITLE
@@ -3665,6 +3721,7 @@ def review_sheet_snapshot(
         combined_rows = live_rows + local_rows
         return {
             "sheetId": resolved_sheet_id,
+            "spreadsheetRevision": spreadsheet_revision,
             "sheetTitle": sheet_title,
             "sheetUrl": _sheet_url(resolved_sheet_id),
             "headers": list(HEADERS),
