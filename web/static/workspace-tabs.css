@@ -641,8 +641,8 @@
 @keyframes news-lineage-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -104; } }
 @keyframes news-lineage-schedule-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -64; } }
 @keyframes news-lineage-schedule-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
-@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -108; } }
-@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -132; } }
+@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -96; } }
+@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -116; } }
 @keyframes news-lineage-feedback-breathe { from { opacity: .48; } to { opacity: .96; } }
 @keyframes news-lineage-interruption { from { opacity: .64; } to { opacity: 1; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }

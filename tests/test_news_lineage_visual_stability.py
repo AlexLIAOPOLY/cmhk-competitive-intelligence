@@ -66,6 +66,14 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("--news-schedule-degraded-delay:${delay(4500)}", SCRIPT)
         self.assertIn("--news-feedback-degraded-delay:${delay(8800)}", SCRIPT)
 
+    def test_feedback_motion_loops_on_complete_dash_periods(self):
+        self.assertIn("stroke-dasharray: 22 7 4 15", STYLE)
+        self.assertIn("to { stroke-dashoffset: -96; }", STYLE)
+        self.assertIn("stroke-dasharray: 26 9 5 18", STYLE)
+        self.assertIn("to { stroke-dashoffset: -116; }", STYLE)
+        self.assertNotIn("stroke-dashoffset: -108", STYLE)
+        self.assertNotIn("stroke-dashoffset: -132", STYLE)
+
     def test_interrupted_and_unknown_lines_do_not_animate(self):
         self.assertIn(".news-lineage-edge.is-line-interrupted .news-lineage-pulse,.news-lineage-edge.is-line-unknown .news-lineage-pulse { display: none; }", STYLE)
         self.assertIn("filter: drop-shadow(0 0 5px rgba(240,128,120,.56)); animation: none;", STYLE)
@@ -77,8 +85,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("animation-delay: var(--news-feedback-degraded-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=152', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=173', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=153', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=174', INDEX)
 
 
 if __name__ == "__main__":
