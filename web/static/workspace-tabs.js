@@ -2468,6 +2468,8 @@
     window.addEventListener("resize", state.newsLineageWindowResizeHandler, { passive: true });
     window.addEventListener("workspace-tab-change", state.newsLineageTabChangeHandler);
     scheduleFit();
+    synchronizeNewsLineageMotion(canvas);
+    requestAnimationFrame(() => synchronizeNewsLineageMotion(canvas));
     document.fonts?.ready.then(scheduleFit);
   }
 
@@ -2500,6 +2502,20 @@
         viewport.scrollTop = snapshot.viewportTop;
       }
       window.scrollTo(snapshot.windowX, snapshot.windowY);
+    });
+  }
+
+  function synchronizeNewsLineageMotion(canvas) {
+    if (!canvas || motionPreference.matches || typeof canvas.getAnimations !== "function") return;
+    const wallClock = Date.now();
+    canvas.getAnimations({ subtree: true }).forEach((animation) => {
+      const timing = animation.effect?.getTiming?.();
+      const duration = Number(timing?.duration);
+      if (timing?.iterations !== Infinity || !Number.isFinite(duration) || duration <= 0) return;
+      const cycleDuration = duration * (String(timing.direction || "normal").startsWith("alternate") ? 2 : 1);
+      try {
+        animation.currentTime = wallClock % cycleDuration;
+      } catch (_error) { /* unsupported animation effects keep their native timeline */ }
     });
   }
 
@@ -2648,6 +2664,7 @@
       const nextItems = holder.firstElementChild;
       if (nextItems && currentItems.innerHTML !== nextItems.innerHTML) currentItems.replaceWith(nextItems);
     }
+    synchronizeNewsLineageMotion(canvas);
     return true;
   }
 

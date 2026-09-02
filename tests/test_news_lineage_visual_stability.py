@@ -55,9 +55,18 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("function restoreNewsView(panel, snapshot)", SCRIPT)
         self.assertIn("window.scrollTo(snapshot.windowX, snapshot.windowY)", SCRIPT)
 
+    def test_news_lineage_motion_keeps_wall_clock_phase_across_refresh_rebuilds(self):
+        self.assertIn("function synchronizeNewsLineageMotion(canvas)", SCRIPT)
+        self.assertIn("canvas.getAnimations({ subtree: true })", SCRIPT)
+        self.assertIn("timing?.iterations !== Infinity", SCRIPT)
+        self.assertIn('.startsWith("alternate") ? 2 : 1', SCRIPT)
+        self.assertIn("animation.currentTime = wallClock % cycleDuration", SCRIPT)
+        self.assertIn("requestAnimationFrame(() => synchronizeNewsLineageMotion(canvas))", SCRIPT)
+        self.assertIn("synchronizeNewsLineageMotion(canvas);\n    return true;", SCRIPT)
+
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertIn('/static/workspace-tabs.css?v=149', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=170', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=171', INDEX)
 
 
 if __name__ == "__main__":
