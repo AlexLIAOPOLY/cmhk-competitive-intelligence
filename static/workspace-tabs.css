@@ -568,9 +568,9 @@
   justify-content: center;
   overflow: hidden;
   background:
-    radial-gradient(circle at 17% 12%, rgba(26, 160, 214, .14), transparent 40%),
-    radial-gradient(circle at 86% 84%, rgba(126, 82, 226, .1), transparent 38%),
-    linear-gradient(135deg, rgba(11, 43, 59, .64), rgba(3, 18, 29, .56));
+    radial-gradient(circle at 17% 12%, rgba(26, 160, 214, .055), transparent 44%),
+    radial-gradient(circle at 86% 84%, rgba(126, 82, 226, .04), transparent 42%),
+    linear-gradient(135deg, rgba(8, 34, 47, .62), rgba(6, 29, 42, .6));
   box-shadow: inset 0 1px rgba(221, 249, 255, .065), inset 0 0 72px rgba(23, 137, 172, .045);
   -webkit-backdrop-filter: blur(14px) saturate(128%);
   backdrop-filter: blur(14px) saturate(128%);
@@ -618,7 +618,9 @@
 #newsLineageArrowAmber path { fill: #dda148; }
 #newsLineageArrowRed path { fill: #f08078; }
 .news-lineage-edge .news-lineage-pulse { fill: none; stroke: #78d9e8; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1 20; opacity: .86; filter: drop-shadow(0 0 4px rgba(98,207,225,.7)); animation: news-lineage-flow 2.4s linear infinite; }
-.news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke: #a79bf6; filter: drop-shadow(0 0 4px rgba(155,144,242,.62)); animation-duration: 3.2s; }
+.news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke: #a79bf6; filter: drop-shadow(0 0 4px rgba(155,144,242,.62)); animation-duration: 3.2s; }
+.news-lineage-edge.is-feedback > path:first-of-type,.news-lineage-edge.is-feedback-side > path:first-of-type { stroke-dasharray: 5 6; }
+.news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke: #b8aaff; stroke-width: 3.2; stroke-dasharray: 12 7 2 19; opacity: .9; filter: drop-shadow(0 0 6px rgba(164,147,255,.78)); animation: news-lineage-feedback-flow 3.6s linear infinite,news-lineage-feedback-breathe 1.8s ease-in-out infinite alternate; }
 .news-lineage-edge.is-line-degraded > path:first-of-type,.news-lineage-edge.is-line-at-risk > path:first-of-type { stroke: rgba(242,189,98,.92); marker-end: url(#newsLineageArrowAmber); }
 .news-lineage-edge.is-line-degraded .news-lineage-pulse,.news-lineage-edge.is-line-at-risk .news-lineage-pulse { stroke: #f2bd62; filter: drop-shadow(0 0 5px rgba(242,189,98,.65)); }
 .news-lineage-edge.is-line-interrupted > path:first-of-type { stroke: #f08078; stroke-width: 2.5; stroke-dasharray: 16 11; marker-end: url(#newsLineageArrowRed); filter: drop-shadow(0 0 5px rgba(240,128,120,.56)); animation: news-lineage-interruption .9s ease-in-out infinite alternate; }
@@ -626,9 +628,13 @@
 .news-lineage-edge.is-line-unknown > path:first-of-type { stroke: rgba(135,155,163,.38); stroke-dasharray: 4 6; }
 .news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
 .news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; animation-name: news-lineage-flow-global; }
+.news-lineage.is-global .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-width: 3.6; stroke-dasharray: 14 8 2 22; animation-name: news-lineage-feedback-flow-global,news-lineage-feedback-breathe; animation-duration: 3.8s,1.9s; }
 .news-lineage-canvas.is-paused .news-lineage-pulse { animation-play-state: paused; }
 @keyframes news-lineage-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
 @keyframes news-lineage-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -104; } }
+@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -80; } }
+@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -92; } }
+@keyframes news-lineage-feedback-breathe { from { opacity: .48; } to { opacity: .96; } }
 @keyframes news-lineage-interruption { from { opacity: .64; } to { opacity: 1; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }
 .news-lineage-group > strong { color: #bcd9df; font-size: 11px; letter-spacing: .06em; }
@@ -1702,6 +1708,7 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .workspace-report-side > .report-preview:not(.is-placeholder) { animation: none !important; }
   .news-flow-link b { animation: none !important; opacity: .75; transform: translateX(10px); }
   .news-lineage-pulse { animation: none !important; stroke-dasharray: 3 17 !important; opacity: .7; }
+  .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-dasharray: 12 7 2 19 !important; opacity: .82; }
   .news-lineage-canvas { transition: none !important; }
   .news-flow-stage,.news-stage-retention::after { transition: none !important; }
   .fault-resolve-cell input[aria-busy="true"],
