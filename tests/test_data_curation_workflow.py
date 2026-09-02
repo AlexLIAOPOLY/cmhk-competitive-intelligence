@@ -78,6 +78,10 @@ class DataCurationWorkflowTests(unittest.TestCase):
             "saudiexchange.sa",
             workflow._company_research_profile("stc")["official_hosts"],
         )
+        self.assertIn(
+            "https://www.eand.com/en/investors/financial-highlights.html",
+            workflow._company_research_profile("e&")["seed_urls"],
+        )
 
     def test_company_agents_merge_brands_and_keep_distinct_four_database_subjects(self) -> None:
         self.assertEqual(workflow._company_fact_entities("HKT"), {"HKT", "csl", "1O1O"})
@@ -3218,6 +3222,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(result["status"], "verified_latest")
         self.assertTrue(result["metric_coverage_complete"])
         self.assertFalse(metric["evidence_value_conflict"])
+        self.assertNotIn("不同", metric["rationale"])
         self.assertIn("mobile network resilience", metric["value"])
 
     def test_source_open_audit_keeps_403_separate_from_search(self) -> None:

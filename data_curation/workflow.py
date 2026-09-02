@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 13
+COMPANY_AGENT_PROGRESS_VERSION = 14
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -3823,7 +3823,11 @@ def _run_company_research_agent(
             )
         ):
             status = "verified_latest"
-            reason = supplied.get("rationale") or "已通过当期搜索摘要或打开来源核实唯一直接指标证据。"
+            reason = (
+                supplied.get("rationale")
+                if claimed_status == "verified_latest"
+                else "已通过当期搜索摘要或打开来源核实唯一直接指标证据。"
+            )
         elif claimed_status == "verified_latest" and (
             metric_evidence > 0
             or (metric_search_evidence and not metric_value_conflict)

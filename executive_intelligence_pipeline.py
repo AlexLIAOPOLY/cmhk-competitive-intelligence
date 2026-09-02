@@ -131,7 +131,10 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
         "https://data.sec.gov/submissions/CIK0001283699.json",
         "https://data.sec.gov/api/xbrl/companyfacts/CIK0001283699.json",
     )),
-    ("mainland", "e&", ("e&", "Etisalat"), ("https://www.eand.com/en/investors/financial-results.html",)),
+    ("mainland", "e&", ("e&", "Etisalat"), (
+        "https://www.eand.com/en/investors/financial-results.html",
+        "https://www.eand.com/en/investors/financial-highlights.html",
+    )),
     ("mainland", "stc", ("stc Group", "Saudi Telecom"), ("https://www.stc.com/en/investors.html", "https://www.saudiexchange.sa/Resources/fsPdf/23192_480_2026-07-29_11-19-33_en.pdf")),
     ("mainland", "中国移动", ("中国移动", "中國移動", "China Mobile"), ("https://www.chinamobileltd.com/en/ir/reports.php", "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300218.pdf")),
     ("mainland", "中国电信", ("中国电信", "中國電信", "China Telecom"), ("https://www.chinatelecom-h.com/en/ir/reports.php",)),
