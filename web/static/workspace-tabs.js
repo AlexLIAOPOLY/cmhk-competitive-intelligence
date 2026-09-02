@@ -2502,9 +2502,54 @@
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!canvas) return;
     const viewport = panel.querySelector("[data-news-lineage-viewport]");
+    const purposeTooltip = panel.querySelector("#newsLineagePurposeTooltip");
+    let purposeTooltipNode = null;
+    const hidePurposeTooltip = () => {
+      if (!purposeTooltip) return;
+      purposeTooltip.hidden = true;
+      purposeTooltip.classList.remove("is-below");
+      purposeTooltipNode?.removeAttribute("aria-describedby");
+      purposeTooltipNode = null;
+    };
+    const showPurposeTooltip = (node) => {
+      if (!purposeTooltip || !node) return;
+      const label = node.querySelector(":scope > span")?.textContent?.trim() || "当前节点";
+      const purpose = node.dataset.newsLineagePurpose || "当前节点尚未填写具体作用。";
+      purposeTooltip.querySelector("strong").textContent = label;
+      purposeTooltip.querySelector("span").textContent = purpose;
+      purposeTooltip.hidden = false;
+      purposeTooltipNode?.removeAttribute("aria-describedby");
+      purposeTooltipNode = node;
+      node.setAttribute("aria-describedby", purposeTooltip.id);
+      const nodeRect = node.getBoundingClientRect();
+      const tooltipRect = purposeTooltip.getBoundingClientRect();
+      const below = nodeRect.top < tooltipRect.height + 24;
+      const halfWidth = tooltipRect.width / 2;
+      const center = nodeRect.left + nodeRect.width / 2;
+      purposeTooltip.classList.toggle("is-below", below);
+      purposeTooltip.style.left = `${Math.max(halfWidth + 12, Math.min(window.innerWidth - halfWidth - 12, center))}px`;
+      purposeTooltip.style.top = `${below ? nodeRect.bottom + 12 : nodeRect.top - 12}px`;
+    };
+    canvas.addEventListener("pointerover", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node && node !== purposeTooltipNode) showPurposeTooltip(node);
+    });
+    canvas.addEventListener("pointerout", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node && !node.contains(event.relatedTarget)) hidePurposeTooltip();
+    });
+    canvas.addEventListener("focusin", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node) showPurposeTooltip(node);
+    });
+    canvas.addEventListener("focusout", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node && !node.contains(event.relatedTarget)) hidePurposeTooltip();
+    });
     canvas.addEventListener("click", (event) => {
       const node = event.target.closest("[data-news-lineage-node]");
       if (!node) return;
+      hidePurposeTooltip();
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
       openActualNewsLineageDetail(node.dataset.newsLineageNode);
     });
@@ -2595,12 +2640,13 @@
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><p>作用：${esc(node.purpose || "未说明")}</p><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><p>作用：${esc(node.purpose || "未说明")}</p><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
             </div>
           </div>
         </section>
         ${renderNewsItems(runs)}
+        <div class="news-lineage-purpose-tooltip" id="newsLineagePurposeTooltip" role="tooltip" hidden><small>节点具体作用</small><strong></strong><span></span><em>点击节点可查看当天真实处理记录</em></div>
         <dialog class="news-stage-dialog news-lineage-dialog" id="newsLineageDialog"><div id="newsLineageDialogBody"></div></dialog>`}
       </section>
     </div>`;
@@ -2668,6 +2714,7 @@
       const element = currentNodes[index];
       element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
       element.dataset.health = node.health?.key || "unknown";
+      element.dataset.newsLineagePurpose = node.purpose || "未说明";
       element.setAttribute("aria-label", `${node.label}，作用：${node.purpose || "未说明"}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
       const health = element.querySelector(".news-lineage-health");
       const label = element.querySelector(":scope > span");
