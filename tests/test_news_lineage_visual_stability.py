@@ -87,7 +87,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertIn('/static/workspace-tabs.css?v=157', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=181', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=182', INDEX)
 
 
 if __name__ == "__main__":
