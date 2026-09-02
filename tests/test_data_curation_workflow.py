@@ -12,6 +12,7 @@ from unittest.mock import Mock, patch
 import data_curation.workflow as workflow
 from data_curation.schemas import CandidateFact, EvidenceTask
 from data_curation.workflow import (
+    _votes_from_web_search,
     _votes_from_source_pages,
     _run_company_research_agent,
     audit_quality,
@@ -894,7 +895,7 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertTrue(result["metric_coverage_complete"])
         self.assertEqual(
             {item["metric"]: item["status"] for item in result["metric_results"]},
-            {"网络覆盖": "verified_latest", "收入": "search_exhausted"},
+            {"网络覆盖": "search_exhausted", "收入": "search_exhausted"},
         )
 
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
@@ -2629,6 +2630,141 @@ class DataCurationWorkflowTests(unittest.TestCase):
         )
         with patch("httpx.get", return_value=FakeResponse()):
             self.assertEqual(_votes_from_source_pages(fact), [])
+
+    def test_qualitative_search_snippets_are_discovery_leads_not_conflicting_values(self) -> None:
+        fact = CandidateFact(
+            id="telstra-capex-direction",
+            company="Telstra",
+            metric="Capex方向",
+            row_ref="row_19",
+            decision="review",
+        )
+        results = [
+            {
+                "title": "Telstra shareholder meetings 2026",
+                "url": "https://www.telstra.com.au/aboutus/investors/shareholdermeetings",
+                "snippet": "Telstra AGM material includes 2026 voting and meeting dates.",
+            },
+            {
+                "title": "Recharge your Telstra service",
+                "url": "https://recharge.telstra.com.au/",
+                "snippet": "Recharge 30 dollars and choose from several plans.",
+            },
+        ]
+        self.assertEqual(_votes_from_web_search(fact, results), [])
+
+    def test_qualitative_source_requires_company_metric_and_direct_context(self) -> None:
+        fact = CandidateFact(
+            id="telstra-capex-direction",
+            company="Telstra",
+            metric="Capex方向",
+            row_ref="row_19",
+            decision="review",
+        )
+        noisy_page = {
+            "url": "https://www.gettyimages.com/photos/telstra-store",
+            "final_url": "https://www.gettyimages.com/photos/telstra-store",
+            "http_status": 200,
+            "opened": True,
+            "blocked_reason": "",
+            "text": "Telstra store images. Browse 1,900 editorial pictures and AI generated images.",
+            "cache_hit": False,
+        }
+        direct_page = {
+            "url": "https://www.telstra.com.au/aboutus/investors/results",
+            "final_url": "https://www.telstra.com.au/aboutus/investors/results",
+            "http_status": 200,
+            "opened": True,
+            "blocked_reason": "",
+            "text": (
+                "Telstra FY26 results. Our capex investment plan prioritises mobile network "
+                "resilience, intercity fibre and digital infrastructure."
+            ),
+            "cache_hit": False,
+        }
+        with patch("data_curation.workflow._read_source_page", return_value=noisy_page):
+            self.assertEqual(
+                _votes_from_source_pages(
+                    fact,
+                    extra_urls=["https://www.gettyimages.com/photos/telstra-store"],
+                ),
+                [],
+            )
+        with (
+            patch("data_curation.workflow._read_source_page", return_value=direct_page),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Telstra"],
+                "official_hosts": ["telstra.com.au"],
+                "seed_urls": [],
+            }),
+        ):
+            votes = _votes_from_source_pages(
+                fact,
+                extra_urls=["https://www.telstra.com.au/aboutus/investors/results"],
+            )
+        self.assertEqual(len(votes), 1)
+        self.assertIn("capex investment plan", votes[0]["value"].lower())
+
+    def test_company_agent_does_not_treat_different_qualitative_prose_as_value_conflict(self) -> None:
+        source_url = "https://www.telstra.com.au/aboutus/investors/results"
+
+        class QualitativeAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "Capex方向"}}],
+                    2: [{"id": "open", "name": "open_official_pages", "args": {
+                        "metric": "Capex方向", "urls": [source_url],
+                    }}],
+                    3: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "conflict",
+                        "rationale": "不同页面措辞不同",
+                        "metric_statuses": [{
+                            "metric": "Capex方向",
+                            "status": "conflict",
+                            "rationale": "年报和演示文稿的定性措辞不同",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_qualitative(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return [{
+                "url": source_url,
+                "canonical": "Telstra capex investment plan prioritises mobile network resilience",
+                "normalized_value": "Telstra capex investment plan prioritises mobile network resilience",
+                "value": "Telstra capex investment plan prioritises mobile network resilience",
+            }]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["Capex方向"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Telstra"], "official_hosts": ["telstra.com.au"], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=QualitativeAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([{
+                "title": "Telstra FY26 results",
+                "url": source_url,
+                "snippet": "Telstra FY26 capex and network investment plan.",
+                "provider": "news_search",
+            }], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_qualitative),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-qualitative"}, "Telstra", 19, "Telstra", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertFalse(metric["evidence_value_conflict"])
+        self.assertIn("mobile network resilience", metric["value"])
 
     def test_source_open_audit_keeps_403_separate_from_search(self) -> None:
         class ForbiddenResponse:

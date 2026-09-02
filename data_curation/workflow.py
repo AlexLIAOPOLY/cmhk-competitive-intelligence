@@ -73,7 +73,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 3
+COMPANY_AGENT_PROGRESS_VERSION = 4
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -1438,9 +1438,26 @@ def _metric_evidence_terms(metric: str) -> list[str]:
     return list(dict.fromkeys(term.casefold() for term in terms if term))
 
 
-def _metric_focused_window(metric: str, text: str, *, radius: int = 900) -> str:
+def _metric_term_position(text: str, term: str) -> int:
+    """Find a metric term without treating short tokens as word fragments."""
     lowered = text.casefold()
-    positions = [lowered.find(term) for term in _metric_evidence_terms(metric) if term and lowered.find(term) >= 0]
+    needle = term.casefold()
+    if re.fullmatch(r"[a-z0-9]{1,3}", needle):
+        match = re.search(
+            rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])",
+            lowered,
+            re.IGNORECASE,
+        )
+        return match.start() if match else -1
+    return lowered.find(needle)
+
+
+def _metric_focused_window(metric: str, text: str, *, radius: int = 900) -> str:
+    positions = [
+        position
+        for term in _metric_evidence_terms(metric)
+        if term and (position := _metric_term_position(text, term)) >= 0
+    ]
     if not positions:
         return clean_text(text, 1600)
     pos = min(positions)
@@ -1448,8 +1465,11 @@ def _metric_focused_window(metric: str, text: str, *, radius: int = 900) -> str:
 
 
 def _evidence_mentions_metric(metric: str, text: str) -> bool:
-    normalized = clean_text(text, 1800).casefold()
-    return any(term in normalized for term in _metric_evidence_terms(metric))
+    normalized = clean_text(text, 1800)
+    return any(
+        _metric_term_position(normalized, term) >= 0
+        for term in _metric_evidence_terms(metric)
+    )
 
 
 def _evidence_window_mentions_metric(metric: str, text: str, recovered: str) -> bool:
@@ -1470,9 +1490,37 @@ def _evidence_window_mentions_metric(metric: str, text: str, recovered: str) -> 
             if pos < 0:
                 continue
             window = lowered[max(0, pos - 140) : pos + 180]
-            if any(term in window for term in terms):
+            if any(_metric_term_position(window, term) >= 0 for term in terms):
                 return True
     return False
+
+
+def _qualitative_source_evidence(fact: CandidateFact, text: str, url: str) -> str:
+    """Return source-bound qualitative evidence, excluding search/media noise."""
+    host = urlparse(url).netloc.lower()
+    if any(term in host for term in ("gettyimages.", "shutterstock.", "alamy.", "pinterest.")):
+        return ""
+    focused = _metric_focused_window(fact.metric, text)
+    if not _evidence_mentions_metric(fact.metric, focused):
+        return ""
+    profile = _company_research_profile(fact.company)
+    company_bound = any(
+        alias and alias.casefold() in text.casefold()
+        for alias in profile.get("aliases", [fact.company])
+    ) or _host_matches_governed_official(url, profile.get("official_hosts", []))
+    if not company_bound:
+        return ""
+    if not re.search(
+        r"strategy|strategic|launch(?:ed)?|deploy(?:ed|ment)?|adoption|partnership|"
+        r"service|platform|network|investment|investing|plans?|ambition|transformation|"
+        r"capex|capital expenditure|cloud|enterprise|5g-a|5g advanced|"
+        r"战略|推出|部署|合作|投资|规划|转型|服务|平台|网络|云|企业",
+        focused,
+        re.IGNORECASE,
+    ):
+        return ""
+    recovered = _direct_value(fact.metric, focused)
+    return recovered if recovered and _passes_metric_gate(fact.metric, recovered) else ""
 
 
 def _quoted_phrases(text: str) -> list[str]:
@@ -1802,6 +1850,11 @@ def _public_web_search(query: str, *, limit: int = 4, timeout: float = 6.0) -> t
 
 
 def _votes_from_web_search(fact: CandidateFact, results: list[dict[str, str]]) -> list[dict[str, Any]]:
+    # Search snippets are sufficient for a single, metric-bound numeric value.
+    # Qualitative snippets are only discovery leads: differing prose is not a
+    # numeric conflict, and the source itself must be opened before acceptance.
+    if QUALITATIVE_METRIC_RE.search(fact.metric):
+        return []
     votes: list[dict[str, Any]] = []
     for index, item in enumerate(results, start=1):
         text = f"{item.get('title', '')}。{item.get('snippet', '')}"
@@ -1812,7 +1865,7 @@ def _votes_from_web_search(fact: CandidateFact, results: list[dict[str, str]]) -
         recovered = _direct_value(fact.metric, _metric_focused_window(fact.metric, text))
         if not recovered or not _passes_metric_gate(fact.metric, recovered):
             continue
-        if not QUALITATIVE_METRIC_RE.search(fact.metric) and not _evidence_window_mentions_metric(
+        if not _evidence_window_mentions_metric(
             fact.metric,
             text,
             recovered,
@@ -1870,6 +1923,17 @@ def _votes_from_source_pages(
                 votes.append(vote)
             continue
         if QUALITATIVE_METRIC_RE.search(fact.metric):
+            recovered = _qualitative_source_evidence(fact, text, url)
+            if recovered:
+                vote = _verification_vote(
+                    value=recovered,
+                    source="公开来源页读取",
+                    kind="source_page",
+                    url=url,
+                    metric=fact.metric,
+                )
+                if vote:
+                    votes.append(vote)
             continue
         recovered = _direct_value(fact.metric, _metric_focused_window(fact.metric, text))
         if (
@@ -2690,7 +2754,9 @@ def _run_company_research_agent(
             "official_hosts": research_profile["official_hosts"],
             "search_evidence": search_evidence,
             "search_evidence_count": len(search_evidence),
-            "search_value_conflict": len(search_values) > 1,
+            "search_value_conflict": (
+                not QUALITATIVE_METRIC_RE.search(metric) and len(search_values) > 1
+            ),
         }
         searches.append(record)
         return record
@@ -2876,8 +2942,8 @@ def _run_company_research_agent(
             )
             selected_votes = open_evidence or search_evidence
             selected_vote = selected_votes[0] if selected_votes else {}
-            unresolved_conflict = len(open_values) > 1 or (
-                not open_values and len(search_values) > 1
+            unresolved_conflict = not QUALITATIVE_METRIC_RE.search(metric) and (
+                len(open_values) > 1 or (not open_values and len(search_values) > 1)
             )
             if unresolved_conflict:
                 recommended_status = "conflict"
@@ -2897,7 +2963,9 @@ def _run_company_research_agent(
                 "recommended_status": recommended_status,
                 "rationale": rationale,
                 "value": selected_vote.get("normalized_value") or selected_vote.get("value") or "",
-                "search_value_conflict": len(search_values) > 1,
+                "search_value_conflict": (
+                    not QUALITATIVE_METRIC_RE.search(metric) and len(search_values) > 1
+                ),
                 "evidence_urls": list(dict.fromkeys(
                     str(vote.get("url") or "")
                     for vote in [*open_evidence, *search_evidence]
@@ -3493,24 +3561,22 @@ def _run_company_research_agent(
             for vote in metric_search_evidence
             if vote.get("canonical")
         }
-        metric_search_conflict = len(metric_search_values) > 1
+        metric_search_conflict = (
+            not QUALITATIVE_METRIC_RE.search(metric) and len(metric_search_values) > 1
+        )
         metric_open_values = {
             str(vote.get("canonical") or "")
             for vote in metric_open_evidence
             if vote.get("canonical")
         }
-        metric_value_conflict = len(metric_open_values) > 1 or (
-            not metric_open_values and metric_search_conflict
+        metric_value_conflict = not QUALITATIVE_METRIC_RE.search(metric) and (
+            len(metric_open_values) > 1 or (not metric_open_values and metric_search_conflict)
         )
         metric_fresh_opens = sum(int(item.get("fresh_official_open_count") or 0) for item in metric_opened)
         metric_live_official_opens = sum(
             int(item.get("live_official_open_count") or 0) for item in metric_opened
         )
-        metric_qualifying_opens = (
-            metric_fresh_opens
-            if _company_agent_metric_requires_direct_value(metric)
-            else metric_live_official_opens
-        )
+        metric_is_qualitative = bool(QUALITATIVE_METRIC_RE.search(metric))
         metric_open_attempts = [
             attempt
             for item in metric_opened
@@ -3531,17 +3597,16 @@ def _run_company_research_agent(
         if final.get("status") == "agent_error":
             status = "agent_error"
             reason = final.get("rationale", "Agent 未形成逐指标终态。")
+        elif metric_is_qualitative and metric_evidence > 0:
+            status = "verified_latest"
+            reason = supplied.get("rationale") or "已打开当期来源并核实公司与指标直接语义证据。"
         elif claimed_status == "verified_latest" and (
             metric_evidence > 0
             or (metric_search_evidence and not metric_value_conflict)
-            or (
-                not _company_agent_metric_requires_direct_value(metric)
-                and metric_qualifying_opens > 0
-            )
         ):
             status = "verified_latest"
             reason = supplied.get("rationale") or "已回读当期官方原文并提取直接指标证据。"
-        elif claimed_status == "not_disclosed" and metric_fresh_opens > 0:
+        elif claimed_status == "not_disclosed" and metric_fresh_opens > 0 and not metric_evidence:
             status = "not_disclosed"
             reason = supplied.get("rationale") or "已回读当期官方原文，发行人未单独披露该指标。"
         elif claimed_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
@@ -3554,9 +3619,15 @@ def _run_company_research_agent(
         ):
             status = "search_exhausted"
             reason = supplied.get("rationale") or "已搜索但未取得可核验当期官方原文。"
-        elif claimed_status == "conflict" and (
-            metric_value_conflict or metric_searches or metric_opened
+        elif (
+            claimed_status in {"verified_latest", "not_disclosed"}
+            and metric_search_exhausted
+            and not metric_evidence
+            and not metric_search_evidence
         ):
+            status = "search_exhausted"
+            reason = "已搜索并尝试回读当期来源，但页面不含该公司指标的直接语义证据。"
+        elif claimed_status == "conflict" and metric_value_conflict:
             status = "conflict"
             reason = supplied.get("rationale") or "当期官方证据存在口径或数值冲突。"
         else:
