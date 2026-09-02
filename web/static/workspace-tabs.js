@@ -2631,8 +2631,11 @@
       }
       const nextSignature = newsLiveRenderSignature();
       if (nextSignature !== state.newsLiveSignature) {
-        state.newsLiveSignature = nextSignature;
-        if (!document.querySelector("#newsLineageDialog")?.open) renderNews({ preserveView: true });
+        const dialogOpen = document.querySelector("#newsLineageDialog")?.open;
+        if (!dialogOpen) {
+          state.newsLiveSignature = nextSignature;
+          renderNews({ preserveView: true });
+        }
       }
     } catch (error) {
       console.warn("News live refresh unavailable", error);

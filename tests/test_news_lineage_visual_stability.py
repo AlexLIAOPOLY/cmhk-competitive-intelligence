@@ -47,6 +47,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("loadNewsRuns(selectedRunIds, { force: true, quiet: true })", SCRIPT)
         self.assertIn("function newsLiveRenderSignature()", SCRIPT)
         self.assertIn("if (nextSignature !== state.newsLiveSignature)", SCRIPT)
+        self.assertIn("if (!dialogOpen)", SCRIPT)
         self.assertIn("renderNews({ preserveView: true })", SCRIPT)
         self.assertIn("function restoreNewsView(panel, snapshot)", SCRIPT)
         self.assertIn("window.scrollTo(snapshot.windowX, snapshot.windowY)", SCRIPT)
