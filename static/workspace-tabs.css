@@ -612,15 +612,18 @@
 .news-lineage-canvas { --lineage-zoom:1; position: absolute; top: 0; left: 0; width: 1260px; height: 480px; transform: scale(var(--lineage-zoom)); transform-origin: left top; }
 .news-lineage-edges { position: absolute; inset: 0; z-index: 1; width: 1260px; height: 480px; overflow: visible; pointer-events: none; }
 .news-lineage-edge > path:first-of-type { fill: none; stroke: rgba(78,157,178,.47); stroke-width: 1.2; marker-end: url(#newsLineageArrow); }
-.news-lineage-edge.is-amber > path:first-of-type,.news-lineage-edge.is-feedback > path:first-of-type,.news-lineage-edge.is-handoff-down > path:first-of-type,.news-lineage-edge.is-feedback-side > path:first-of-type { stroke: rgba(145,139,238,.66); marker-end: url(#newsLineageArrowRoutine); }
+.news-lineage-edge.is-amber > path:first-of-type,.news-lineage-edge.is-handoff-down > path:first-of-type { stroke: rgba(145,139,238,.72); marker-end: url(#newsLineageArrowRoutine); }
+.news-lineage-edge.is-feedback > path:first-of-type,.news-lineage-edge.is-feedback-side > path:first-of-type { stroke: rgba(91,154,244,.76); marker-end: url(#newsLineageArrowFeedback); }
 #newsLineageArrow path { fill: #61cadc; }
 #newsLineageArrowRoutine path { fill: #9b90f2; }
+#newsLineageArrowFeedback path { fill: #6ba6ff; }
 #newsLineageArrowAmber path { fill: #dda148; }
 #newsLineageArrowRed path { fill: #f08078; }
 .news-lineage-edge .news-lineage-pulse { fill: none; stroke: #78d9e8; stroke-width: 3; stroke-linecap: round; stroke-dasharray: 1 20; opacity: .86; filter: drop-shadow(0 0 4px rgba(98,207,225,.7)); animation: news-lineage-flow 2.4s linear infinite; }
-.news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke: #a79bf6; filter: drop-shadow(0 0 4px rgba(155,144,242,.62)); animation-duration: 3.2s; }
-.news-lineage-edge.is-feedback > path:first-of-type,.news-lineage-edge.is-feedback-side > path:first-of-type { stroke-dasharray: 5 6; }
-.news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke: #b8aaff; stroke-width: 3.2; stroke-dasharray: 12 7 2 19; opacity: .9; filter: drop-shadow(0 0 6px rgba(164,147,255,.78)); animation: news-lineage-feedback-flow 3.6s linear infinite,news-lineage-feedback-breathe 1.8s ease-in-out infinite alternate; }
+.news-lineage-edge.is-amber > path:first-of-type,.news-lineage-edge.is-handoff-down > path:first-of-type { stroke-dasharray: 2 7; }
+.news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke: #b0a4ff; stroke-dasharray: 2 14; filter: drop-shadow(0 0 4px rgba(155,144,242,.68)); animation: news-lineage-schedule-flow 2.1s linear infinite; }
+.news-lineage-edge.is-feedback > path:first-of-type,.news-lineage-edge.is-feedback-side > path:first-of-type { stroke-dasharray: 18 8; }
+.news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke: #74adff; stroke-width: 3.2; stroke-dasharray: 22 7 4 15; opacity: .9; filter: drop-shadow(0 0 6px rgba(83,145,244,.78)); animation: news-lineage-feedback-flow 4.2s linear infinite,news-lineage-feedback-breathe 2.1s ease-in-out infinite alternate; }
 .news-lineage-edge.is-line-degraded > path:first-of-type,.news-lineage-edge.is-line-at-risk > path:first-of-type { stroke: rgba(242,189,98,.92); marker-end: url(#newsLineageArrowAmber); }
 .news-lineage-edge.is-line-degraded .news-lineage-pulse,.news-lineage-edge.is-line-at-risk .news-lineage-pulse { stroke: #f2bd62; filter: drop-shadow(0 0 5px rgba(242,189,98,.65)); }
 .news-lineage-edge.is-line-interrupted > path:first-of-type { stroke: #f08078; stroke-width: 2.5; stroke-dasharray: 16 11; marker-end: url(#newsLineageArrowRed); filter: drop-shadow(0 0 5px rgba(240,128,120,.56)); animation: news-lineage-interruption .9s ease-in-out infinite alternate; }
@@ -628,12 +631,15 @@
 .news-lineage-edge.is-line-unknown > path:first-of-type { stroke: rgba(135,155,163,.38); stroke-dasharray: 4 6; }
 .news-lineage.is-global .news-lineage-edge > path:first-of-type { stroke-width: 1.8; }
 .news-lineage.is-global .news-lineage-edge .news-lineage-pulse { stroke-width: 4; stroke-dasharray: 2 24; animation-name: news-lineage-flow-global; }
-.news-lineage.is-global .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-width: 3.6; stroke-dasharray: 14 8 2 22; animation-name: news-lineage-feedback-flow-global,news-lineage-feedback-breathe; animation-duration: 3.8s,1.9s; }
+.news-lineage.is-global .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke-dasharray: 3 18; animation-name: news-lineage-schedule-flow-global; animation-duration: 2.25s; }
+.news-lineage.is-global .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage.is-global .news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-width: 3.6; stroke-dasharray: 26 9 5 18; animation-name: news-lineage-feedback-flow-global,news-lineage-feedback-breathe; animation-duration: 4.4s,2.1s; }
 .news-lineage-canvas.is-paused .news-lineage-pulse { animation-play-state: paused; }
 @keyframes news-lineage-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
 @keyframes news-lineage-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -104; } }
-@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -80; } }
-@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -92; } }
+@keyframes news-lineage-schedule-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -64; } }
+@keyframes news-lineage-schedule-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: -84; } }
+@keyframes news-lineage-feedback-flow { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 108; } }
+@keyframes news-lineage-feedback-flow-global { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 132; } }
 @keyframes news-lineage-feedback-breathe { from { opacity: .48; } to { opacity: .96; } }
 @keyframes news-lineage-interruption { from { opacity: .64; } to { opacity: 1; } }
 .news-lineage-group { position: absolute; z-index: 0; display: grid; align-content: start; gap: 3px; padding: 11px 14px; border: 1px dashed rgba(93,181,196,.44); border-radius: 14px; background: rgba(8,35,45,.28); pointer-events: none; }
@@ -700,7 +706,10 @@
 .news-health-legend .is-unknown { color: #879ba3; }
 .news-line-health-legend i { width: 22px; height: 0; border-top: 2px solid currentColor; }
 .news-line-health-legend .is-line-healthy { color: #65cbe5; }
-.news-line-health-legend .is-line-routine { color: #a79bf6; }
+.news-line-health-legend .is-line-scheduled { color: #b0a4ff; }
+.news-line-health-legend .is-line-scheduled i { border-top-style: dotted; }
+.news-line-health-legend .is-line-feedback { color: #74adff; }
+.news-line-health-legend .is-line-feedback i { border-top-style: dashed; }
 .news-line-health-legend .is-line-degraded { color: #f2bd62; }
 .news-line-health-legend .is-line-interrupted { color: #f08078; }
 .news-line-health-legend .is-line-interrupted i { border-top-style: dashed; }
@@ -1038,7 +1047,8 @@
 /* HTML edge labels avoid clipped Chinese glyphs in SVG textPath rendering. */
 .news-lineage-edge-labels { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: visible; }
 .news-lineage-edge-label { position: absolute; display: block; padding: 2px 7px 3px; border: 1px solid rgba(78,132,148,.34); border-radius: 999px; color: #8eb4be; background: rgba(5,24,33,.96); box-shadow: 0 0 12px rgba(3,18,26,.92); font: 700 11px/1.35 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; white-space: nowrap; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
-.news-lineage-edge-label.is-amber,.news-lineage-edge-label.is-feedback,.news-lineage-edge-label.is-handoff-down,.news-lineage-edge-label.is-feedback-side { border-color: rgba(155,144,242,.42); color: #b7aff8; background: rgba(27,25,53,.96); }
+.news-lineage-edge-label.is-amber,.news-lineage-edge-label.is-handoff-down { border-color: rgba(155,144,242,.42); color: #c0b8ff; background: rgba(27,25,53,.96); }
+.news-lineage-edge-label.is-feedback,.news-lineage-edge-label.is-feedback-side { border-color: rgba(91,154,244,.48); color: #99c2ff; background: rgba(18,35,66,.96); }
 .news-lineage-edge-label.is-line-degraded,.news-lineage-edge-label.is-line-at-risk { border-color: rgba(242,189,98,.58); color: #f2bd62; background: rgba(43,32,17,.97); }
 .news-lineage-edge-label.is-line-interrupted { border-color: rgba(240,128,120,.72); color: #ffc2bc; background: rgba(54,24,27,.98); }
 .news-lineage-edge-label.is-line-unknown { opacity: .64; }
@@ -1708,7 +1718,8 @@ body.dashboard-page:not(.workspace-dashboard-active):not(.workspace-ai-active) #
   .workspace-report-side > .report-preview:not(.is-placeholder) { animation: none !important; }
   .news-flow-link b { animation: none !important; opacity: .75; transform: translateX(10px); }
   .news-lineage-pulse { animation: none !important; stroke-dasharray: 3 17 !important; opacity: .7; }
-  .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-dasharray: 12 7 2 19 !important; opacity: .82; }
+  .news-lineage-edge.is-amber .news-lineage-pulse,.news-lineage-edge.is-handoff-down .news-lineage-pulse { stroke-dasharray: 3 18 !important; opacity: .8; }
+  .news-lineage-edge.is-feedback .news-lineage-pulse,.news-lineage-edge.is-feedback-side .news-lineage-pulse { stroke-dasharray: 26 9 5 18 !important; opacity: .82; }
   .news-lineage-canvas { transition: none !important; }
   .news-flow-stage,.news-stage-retention::after { transition: none !important; }
   .fault-resolve-cell input[aria-busy="true"],

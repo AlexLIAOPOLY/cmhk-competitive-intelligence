@@ -32,6 +32,10 @@
     newsLineageResizeObserver: null,
     newsLineageWindowResizeHandler: null,
     newsLineageTabChangeHandler: null,
+    newsLivePollTimer: 0,
+    newsLiveRefreshInFlight: false,
+    newsLiveReviewTick: 0,
+    newsLiveSignature: "",
     schedulerOverview: null,
     executiveIntelligence: null,
     previewRequest: { weekly: 0, performance: 0 },
@@ -2477,8 +2481,31 @@
       }).join("") : '<div class="news-run-empty">正在读取所选日期的真实新闻归档…</div>'}</div></section>`;
   }
 
-  function renderNews() {
+  function newsViewSnapshot(panel) {
+    const viewport = panel?.querySelector("[data-news-lineage-viewport]");
+    return {
+      windowX: window.scrollX,
+      windowY: window.scrollY,
+      viewportLeft: viewport?.scrollLeft || 0,
+      viewportTop: viewport?.scrollTop || 0,
+    };
+  }
+
+  function restoreNewsView(panel, snapshot) {
+    if (!snapshot) return;
+    requestAnimationFrame(() => {
+      const viewport = panel?.querySelector("[data-news-lineage-viewport]");
+      if (viewport) {
+        viewport.scrollLeft = snapshot.viewportLeft;
+        viewport.scrollTop = snapshot.viewportTop;
+      }
+      window.scrollTo(snapshot.windowX, snapshot.windowY);
+    });
+  }
+
+  function renderNews({ preserveView = false } = {}) {
     const panel = document.querySelector('[data-workspace-panel="news"]');
+    const viewSnapshot = preserveView ? newsViewSnapshot(panel) : null;
     const attemptRuns = selectedNewsRuns();
     const runs = authoritativeStrategicNewsRuns(attemptRuns);
     const run = runs[0] || null;
@@ -2497,14 +2524,14 @@
     const initialLineageHeight = Math.max(1, Math.round(lineageHeight * initialLineageZoom));
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy">${lineageStatusIcon("healthy")}正常</span><span class="is-running">${lineageStatusIcon("running")}运行中</span><span class="is-warning">${lineageStatusIcon("warning")}警告</span><span class="is-critical">${lineageStatusIcon("critical")}异常</span><span class="is-unknown">${lineageStatusIcon("unknown")}无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-routine"><i></i>定时／回流</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
+        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy">${lineageStatusIcon("healthy")}正常</span><span class="is-running">${lineageStatusIcon("running")}运行中</span><span class="is-warning">${lineageStatusIcon("warning")}警告</span><span class="is-critical">${lineageStatusIcon("critical")}异常</span><span class="is-unknown">${lineageStatusIcon("unknown")}无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-scheduled"><i></i>定时</span><span class="is-line-feedback"><i></i>回流</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
             <div class="news-lineage-stage" data-news-lineage-stage style="width:${initialLineageWidth}px;height:${initialLineageHeight}px">
             <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
-              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRoutine" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
+              <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRoutine" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowFeedback" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" title="${esc(line.reason || "")}">${lineageStatusIcon(line.key)}${esc(line.label)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
@@ -2520,13 +2547,14 @@
       </section>
     </div>`;
     bindNewsLineageInteractions(panel);
+    restoreNewsView(panel, viewSnapshot);
   }
 
-  async function loadNewsRuns(runIds) {
+  async function loadNewsRuns(runIds, { force = false, quiet = false } = {}) {
     if (!runIds.length) return;
     const requestId = ++state.newsRunRequest;
-    markWorkspaceModulesDirty("news");
-    const missing = runIds.filter((id) => !state.newsRunDetails[id]);
+    if (!quiet) markWorkspaceModulesDirty("news");
+    const missing = force ? runIds : runIds.filter((id) => !state.newsRunDetails[id]);
     const results = await Promise.all(missing.map(async (runId) => {
       try {
         const response = await fetch(`/api/crawl-run-log?id=${encodeURIComponent(runId)}`, { cache: "no-store" });
@@ -2540,7 +2568,89 @@
     }));
     if (requestId !== state.newsRunRequest) return;
     results.forEach(([runId, payload]) => { state.newsRunDetails[runId] = payload; });
-    markWorkspaceModulesDirty("news");
+    if (!quiet) markWorkspaceModulesDirty("news");
+  }
+
+  function newsLiveRenderSignature() {
+    const attemptRuns = selectedNewsRuns();
+    const runs = authoritativeStrategicNewsRuns(attemptRuns);
+    const stages = runs.length ? aggregateNewsStages(runs) : [];
+    const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
+    return JSON.stringify({
+      date: state.newsSelectedDate,
+      nodes: lineage.nodes.map((node) => [node.key, node.value, node.unit, node.note, node.health?.key, node.evidence]),
+      edges: lineage.edges.map(([from, to, label, kind, line]) => [from, to, label, kind, line?.key, line?.reason]),
+      runs: attemptRuns.map((run) => [run.crawl_run_id, run.run_status || run.status, run.heartbeat_at_hkt, run.completed_at_hkt, run.progress_detail, run.status_detail]),
+      details: runs.map((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return [run.crawl_run_id, String(detail.content || "").slice(-1200), (detail.newsItems || []).length];
+      }),
+    });
+  }
+
+  async function refreshNewsLiveData() {
+    if (state.newsLiveRefreshInFlight || document.visibilityState !== "visible" || activeWorkspaceModule() !== "news") return;
+    state.newsLiveRefreshInFlight = true;
+    try {
+      const requests = [
+        ["status", "/api/status"],
+        ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
+        ["crawlRuns", "/api/crawl-runs?limit=500"],
+        ["scheduler", "/api/scheduler-overview"],
+      ];
+      if (state.newsLiveReviewTick % 3 === 0) requests.push(
+        ["tasks", "/api/project-incidents?limit=500"],
+        ["intelligence", "/api/executive-intelligence"],
+      );
+      const settled = await Promise.allSettled(requests.map(async ([key, url]) => {
+        const response = await fetch(url, { cache: "no-store" });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(`${key} ${response.status}`);
+        return [key, payload];
+      }));
+      settled.forEach((result) => {
+        if (result.status !== "fulfilled") return;
+        const [key, payload] = result.value;
+        if (key === "status") { state.status = payload.status || {}; updateRunningIndicator(); }
+        else if (key === "tasks") {
+          const nextTasks = payload.incidents || [];
+          observeFaultSignals(nextTasks);
+          state.tasks = nextTasks;
+          state.faultTotal = Number(payload.total || nextTasks.length);
+        } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
+        else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
+        else if (key === "scheduler") state.schedulerOverview = payload;
+        else if (key === "intelligence") state.executiveIntelligence = payload;
+      });
+      const selectedRuns = selectedNewsRuns();
+      const selectedRunIds = selectedRuns.map((run) => run.crawl_run_id);
+      await loadNewsRuns(selectedRunIds, { force: true, quiet: true });
+      state.newsLiveReviewTick += 1;
+      if (state.newsLiveReviewTick % 4 === 0) {
+        try { state.newsReviewSheet = await fetchNewsReviewSheetSnapshot(); } catch (_error) { /* keep the last complete snapshot */ }
+      }
+      const nextSignature = newsLiveRenderSignature();
+      if (nextSignature !== state.newsLiveSignature) {
+        state.newsLiveSignature = nextSignature;
+        if (!document.querySelector("#newsLineageDialog")?.open) renderNews({ preserveView: true });
+      }
+    } catch (error) {
+      console.warn("News live refresh unavailable", error);
+    } finally {
+      state.newsLiveRefreshInFlight = false;
+    }
+  }
+
+  function startNewsLiveRefresh() {
+    if (state.newsLivePollTimer || !can("news")) return;
+    state.newsLiveSignature = newsLiveRenderSignature();
+    state.newsLivePollTimer = window.setInterval(refreshNewsLiveData, 4000);
+    window.addEventListener("workspace-tab-change", (event) => {
+      if (event.detail?.tab === "news") refreshNewsLiveData();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && activeWorkspaceModule() === "news") refreshNewsLiveData();
+    });
   }
 
   function renderReports(kind) {
@@ -3289,6 +3399,7 @@
       }, 30000);
     }
     await Promise.allSettled(requests);
+    startNewsLiveRefresh();
   }
 
   async function initializeWorkspace() {
