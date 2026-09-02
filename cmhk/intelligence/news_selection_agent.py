@@ -1098,15 +1098,39 @@ def _invoke_langchain_batches(
     *,
     progress_callback: Any = None,
 ) -> tuple[dict[str, Any], str]:
+    def balanced_retry_examples() -> list[dict[str, Any]]:
+        """Keep recent examples from every observed APP/weekly outcome pair."""
+        grouped_indexes: dict[tuple[str, str], list[int]] = {}
+        for index, example in enumerate(examples):
+            key = (
+                _text(example.get("app_status"), 20),
+                _text(example.get("weekly_status"), 20),
+            )
+            grouped_indexes.setdefault(key, []).append(index)
+        selected_indexes = {
+            index
+            for indexes in grouped_indexes.values()
+            for index in indexes[-4:]
+        }
+        return [
+            example
+            for index, example in enumerate(examples)
+            if index in selected_indexes
+        ]
+
     def invoke_singleton_with_fresh_nonce(
         target: dict[str, Any],
         *,
         attempts: int = 3,
     ) -> tuple[dict[str, Any], str]:
-        last_error: RuntimeError | None = None
-        for _attempt in range(max(1, attempts)):
+        last_error: Exception | None = None
+        compact_examples = balanced_retry_examples()
+        for attempt_index in range(max(1, attempts)):
             try:
-                return _invoke_langchain(examples, [target])
+                retry_examples = examples if attempt_index == 0 else compact_examples
+                payload, model_name = _invoke_langchain(retry_examples, [target])
+                _normalized_decisions(payload, [target])
+                return payload, model_name
             except RuntimeError as exc:
                 last_error = exc
                 if not any(
@@ -1118,6 +1142,10 @@ def _invoke_langchain_batches(
                     )
                 ):
                     raise
+            except ValueError as exc:
+                # Re-request invalid statuses, confidences, or empty reasons;
+                # never coerce a business field locally.
+                last_error = exc
         assert last_error is not None
         raise last_error
 
@@ -1257,9 +1285,44 @@ def _invoke_langchain_batches(
             raise RuntimeError(
                 f"LangChain 多轮补判后仍遗漏 {len(missing_targets)} 条候选：{missing_ids}"
             )
+        invalid_field_retry_count = 0
+        decisions_by_id = {
+            _text(item.get("news_id"), 80): item
+            for item in (payload.get("decisions") or [])
+            if isinstance(item, dict) and _text(item.get("news_id"), 80)
+        }
+        for target in batch:
+            news_id = _text(target.get("news_id"), 80)
+            raw_decision = decisions_by_id.get(news_id)
+            try:
+                _normalized_decisions(
+                    {"decisions": [raw_decision] if raw_decision else []},
+                    [target],
+                )
+            except ValueError:
+                singleton_payload, singleton_model = (
+                    invoke_singleton_with_fresh_nonce(target)
+                )
+                singleton_decisions = [
+                    item
+                    for item in (singleton_payload.get("decisions") or [])
+                    if isinstance(item, dict)
+                    and _text(item.get("news_id"), 80) == news_id
+                ]
+                decisions_by_id[news_id] = singleton_decisions[0]
+                invalid_field_retry_count += 1
+                model_name = ", ".join(
+                    dict.fromkeys([model_name, singleton_model])
+                )
+        if invalid_field_retry_count:
+            payload["decisions"] = [
+                decisions_by_id[_text(target.get("news_id"), 80)]
+                for target in batch
+            ]
         payload["_supplemented_count"] = supplemented_count
         payload["_stale_supplement_count"] = stale_supplement_count
         payload["_split_after_empty_output"] = split_after_empty_output
+        payload["_invalid_field_retry_count"] = invalid_field_retry_count
         payload["_fallback_count"] = 0
         payloads.append(payload)
         model_names.append(model_name)
@@ -1277,6 +1340,10 @@ def _invoke_langchain_batches(
         ),
         "_split_after_empty_output": sum(
             int(payload.get("_split_after_empty_output") or 0)
+            for payload in payloads
+        ),
+        "_invalid_field_retry_count": sum(
+            int(payload.get("_invalid_field_retry_count") or 0)
             for payload in payloads
         ),
         "_fallback_count": sum(
@@ -1626,6 +1693,9 @@ def _run_news_selection_agent_locked(
         skill_text = ""
         model_invoked = False
         recovered_decision_count = 0
+        resumed_already_applied_field_count = 0
+        superseded_field_count = 0
+        original_planned_field_count = 0
         if resumed_plan:
             if _text(pending_plan.get("sheet_id"), 120) != _text(sheet_id, 120):
                 raise RuntimeError("待恢复选材计划对应的飞书工作表已变化，停止自动续写")
@@ -1636,6 +1706,11 @@ def _run_news_selection_agent_locked(
             ]
             if not decisions:
                 raise RuntimeError("待恢复选材计划缺少逐条决策，停止自动续写")
+            original_planned_field_count = sum(
+                decision.get(f"{field}_before") == "待审核"
+                for decision in decisions
+                for field in ("app", "weekly")
+            )
             new_item_ids = {
                 _text(item.get("news_id"), 80)
                 for item in new_items
@@ -1658,6 +1733,23 @@ def _run_news_selection_agent_locked(
                         f"待恢复候选 {_text(decision.get('news_id'), 80)} 已不在飞书表中"
                     )
                 decision["row_number"] = live_row["row_number"]
+                for field, live_key in (
+                    ("app", "app_before"),
+                    ("weekly", "weekly_before"),
+                ):
+                    if decision.get(f"{field}_before") != "待审核":
+                        continue
+                    live_status = _text(live_row.get(live_key), 20)
+                    if live_status not in VALID_STATUSES:
+                        continue
+                    if live_status == decision.get(f"{field}_status"):
+                        resumed_already_applied_field_count += 1
+                    else:
+                        superseded_field_count += 1
+                        decision[f"{field}_superseded_status"] = live_status
+                    # The live sheet is no longer pending. Preserve it and
+                    # exclude this field from writes and machine-decision audit.
+                    decision[f"{field}_before"] = live_status
             model_name = _text(pending_plan.get("model"), 200)
             skill_text = str(pending_plan.get("skill_text") or "")
             recovered_decision_count = sum(
@@ -1673,6 +1765,17 @@ def _run_news_selection_agent_locked(
                     "不重复调用模型，只回读并续写尚未落格的字段。"
                 ),
             )
+            if resumed_already_applied_field_count or superseded_field_count:
+                _progress(
+                    crawl_run_id,
+                    stream_log_path,
+                    "断点并发结果保留",
+                    (
+                        f"实时回读确认已有 {resumed_already_applied_field_count} 格与计划一致；"
+                        f"另有 {superseded_field_count} 格已被后续人工或自动任务改为其他有效值，"
+                        "本轮保留现值且不覆盖。"
+                    ),
+                )
         else:
             recovered_decisions = recovered_decisions_for_run
             recovered_decision_count = len(recovered_decisions)
@@ -1735,6 +1838,17 @@ def _run_news_selection_agent_locked(
                             "模型小批请求只有思考内容或没有最终输出；"
                             "已在不使用思考内容、不改写业务结论的前提下逐条重新请求 "
                             f"{int(model_payload['_split_after_empty_output'])} 条。"
+                        ),
+                    )
+                if int(model_payload.get("_invalid_field_retry_count") or 0):
+                    _progress(
+                        crawl_run_id,
+                        stream_log_path,
+                        "模型无效字段逐条恢复",
+                        (
+                            "模型返回了不合法的状态、置信度或空理由；"
+                            "已拒绝本地猜测并逐条重新请求 "
+                            f"{int(model_payload['_invalid_field_retry_count'])} 条。"
                         ),
                     )
                 model_decisions = _normalized_decisions(model_payload, targets)
@@ -1871,14 +1985,21 @@ def _run_news_selection_agent_locked(
                                 "value": decision["weekly_status"],
                             }
                         )
-                write_result = news_review_sheet.update_review_sheet_cells(
-                    changes,
-                    sheet_id=sheet_id,
-                    writer_identity="bot",
-                    writer_profile=FEISHU_BOT_PROFILE,
-                    screener={"name": "新闻自动初筛机器人"},
-                    relocate_by_record_id=True,
-                )
+                if changes:
+                    write_result = news_review_sheet.update_review_sheet_cells(
+                        changes,
+                        sheet_id=sheet_id,
+                        writer_identity="bot",
+                        writer_profile=FEISHU_BOT_PROFILE,
+                        screener={"name": "新闻自动初筛机器人"},
+                        relocate_by_record_id=True,
+                    )
+                else:
+                    write_result = {
+                        "changedCount": 0,
+                        "verifiedCount": 0,
+                        "readbackVerified": True,
+                    }
                 if write_result.get("readbackVerified") is not True:
                     raise RuntimeError("自动勾选后未取得逐格回读证据")
                 if int(write_result.get("verifiedCount") or 0) != len(changes):
@@ -1894,8 +2015,14 @@ def _run_news_selection_agent_locked(
                     for item in decision_batch
                 )
                 recorded_at = _now_iso()
+                audited_decision_batch = [
+                    decision
+                    for decision in decision_batch
+                    if decision.get("app_before") == "待审核"
+                    or decision.get("weekly_before") == "待审核"
+                ]
                 decision_audit_count += _record_verified_decision_audits(
-                    decision_batch,
+                    audited_decision_batch,
                     agent_run_id=crawl_run_id,
                     parent_crawl_run_id=parent_crawl_run_id,
                     idempotency_key=idempotency_key,
@@ -1903,7 +2030,7 @@ def _run_news_selection_agent_locked(
                     recorded_at=recorded_at,
                 )
                 operation_audit_count += _record_verified_operation_footprints(
-                    decision_batch,
+                    audited_decision_batch,
                     sheet_id=sheet_id,
                     agent_run_id=crawl_run_id,
                     idempotency_key=idempotency_key,
@@ -1964,6 +2091,9 @@ def _run_news_selection_agent_locked(
                 decision.get("weekly_before") == "待审核"
                 for decision in decisions
             )
+            if not original_planned_field_count:
+                original_planned_field_count = planned_field_count
+            verified_total = original_planned_field_count - superseded_field_count
             decision_source_counts: dict[str, int] = {}
             for item in decisions:
                 source = _text(item.get("model"), 120) or model_name or "unknown"
@@ -1973,10 +2103,12 @@ def _run_news_selection_agent_locked(
             result = {
                 "status": "completed",
                 "candidate_count": len(decisions),
-                "changed_count": planned_field_count,
+                "changed_count": original_planned_field_count,
                 "newly_written_count": newly_written_count,
-                "already_applied_count": planned_field_count - newly_written_count,
-                "verified_field_count": planned_field_count,
+                "already_applied_count": max(
+                    0, verified_total - newly_written_count
+                ),
+                "verified_field_count": verified_total,
                 "app_accepted_count": sum(
                     item["app_before"] == "待审核"
                     and item["app_status"] == "接受"
@@ -1987,7 +2119,8 @@ def _run_news_selection_agent_locked(
                     and item["weekly_status"] == "接受"
                     for item in decisions
                 ),
-                "deferred_field_count": 0,
+                "deferred_field_count": superseded_field_count,
+                "superseded_field_count": superseded_field_count,
                 "training_provenance_version": TRAINING_PROVENANCE_VERSION,
                 "training_stats": training_stats,
                 "human_example_count": len(examples),

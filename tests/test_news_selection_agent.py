@@ -805,6 +805,106 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(payload["decisions"], recovered["decisions"])
         self.assertEqual(model, "model")
 
+    def test_singleton_empty_output_retry_compacts_examples_by_outcome(self):
+        target = {"news_id": "NEWS-1"}
+        examples = [
+            {
+                "news_id": f"HISTORY-{index}",
+                "app_status": app_status,
+                "weekly_status": weekly_status,
+            }
+            for index, (app_status, weekly_status) in enumerate(
+                [("不接受", "不接受")] * 10
+                + [("接受", "接受")] * 6
+                + [("接受", "待审核")] * 3
+            )
+        ]
+        recovered = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "压缩历史后返回完整结果",
+                }
+            ]
+        }
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=[
+                RuntimeError("模型只有思考内容，没有最终输出"),
+                RuntimeError("模型只有思考内容，没有最终输出"),
+                (recovered, "model"),
+            ],
+        ) as invoke:
+            payload, _model = agent._invoke_langchain_batches(
+                examples,
+                [target],
+            )
+
+        self.assertEqual(invoke.call_count, 3)
+        self.assertEqual(invoke.call_args_list[0].args[0], examples)
+        self.assertEqual(invoke.call_args_list[1].args[0], examples)
+        compact_examples = invoke.call_args_list[2].args[0]
+        self.assertEqual(len(compact_examples), 11)
+        self.assertEqual(
+            {
+                (item["app_status"], item["weekly_status"])
+                for item in compact_examples
+            },
+            {
+                ("不接受", "不接受"),
+                ("接受", "接受"),
+                ("接受", "待审核"),
+            },
+        )
+
+    def test_batches_retry_one_candidate_with_invalid_confidence(self):
+        targets = [
+            {
+                "news_id": "NEWS-1",
+                "app_before": "待审核",
+                "weekly_before": "待审核",
+            }
+        ]
+        invalid = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": "高",
+                    "reason": "首次格式无效",
+                }
+            ]
+        }
+        recovered = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "重新请求后字段完整",
+                }
+            ]
+        }
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=[(invalid, "model"), (recovered, "model")],
+        ) as invoke:
+            payload, _model = agent._invoke_langchain_batches([], targets)
+
+        self.assertEqual(invoke.call_count, 2)
+        self.assertEqual(payload["_invalid_field_retry_count"], 1)
+        self.assertEqual(payload["decisions"], recovered["decisions"])
+
     def test_batches_discard_stale_supplement_before_singleton_retry(self):
         targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
         first = {
