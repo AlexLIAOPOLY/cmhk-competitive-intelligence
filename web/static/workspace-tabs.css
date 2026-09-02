@@ -697,6 +697,12 @@
 .news-lineage.is-global .news-lineage-node.is-app { --node-accent:#68d3a7; border-color: rgba(91,199,157,.9); background: linear-gradient(155deg,rgba(22,75,61,.98),rgba(6,35,35,.99)); }
 .news-lineage.is-global .news-lineage-node.is-report { --node-accent:#e3ad58; border-color: rgba(218,157,69,.9); background: linear-gradient(155deg,rgba(81,59,27,.97),rgba(38,32,24,.99)); }
 .news-lineage.is-global .news-lineage-node.is-audit { --node-accent:#6aaee6; border-color: rgba(92,158,214,.86); background: linear-gradient(155deg,rgba(22,57,90,.97),rgba(7,31,48,.99)); }
+.news-lineage.is-global .news-lineage-node.is-primary { width: 190px; height: 178px; padding: 31px 15px 12px; border-width: 2px; border-color: rgba(129,175,255,.96); background: radial-gradient(circle at 50% 0,rgba(123,116,244,.25),transparent 46%),linear-gradient(155deg,rgba(37,61,111,.98),rgba(9,31,52,.99)); box-shadow: 0 18px 42px rgba(0,8,18,.42),0 0 0 1px rgba(123,179,255,.18),0 0 30px rgba(83,139,234,.2); }
+.news-lineage.is-global .news-lineage-node.is-primary::before { top: 15px; bottom: 15px; width: 4px; }
+.news-lineage.is-global .news-lineage-node.is-primary > span { color: #f0f6ff; font-size: 13px; }
+.news-lineage.is-global .news-lineage-node.is-primary > strong { font-size: 29px; }
+.news-lineage-primary-badge { position: absolute; top: 8px; left: 14px; padding: 3px 7px; border: 1px solid rgba(158,180,255,.42); border-radius: 999px; color: #cdd8ff; background: rgba(91,87,181,.26); font-size: 9px; font-style: normal; font-weight: 800; letter-spacing: .08em; }
+.news-lineage.is-global .news-lineage-node.is-primary .news-lineage-health { top: 8px; }
 .news-lineage.is-global .news-lineage-node.is-database-hub { --node-accent:#78aec0; background: linear-gradient(155deg,rgba(27,61,72,.96),rgba(8,34,43,.99)); }
 .news-lineage.is-global .news-lineage-node.is-database-local { --node-accent:#4fcab1; border-color: rgba(70,188,157,.86); background: linear-gradient(155deg,rgba(19,70,61,.97),rgba(6,34,36,.99)); }
 .news-lineage.is-global .news-lineage-node.is-database-international { --node-accent:#5b9ee8; border-color: rgba(82,143,211,.86); background: linear-gradient(155deg,rgba(22,55,91,.97),rgba(7,30,48,.99)); }
