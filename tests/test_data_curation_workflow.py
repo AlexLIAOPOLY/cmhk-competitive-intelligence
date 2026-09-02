@@ -1018,6 +1018,64 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(by_metric["5G-A"]["status"], "not_disclosed")
         self.assertTrue(by_metric["5G-A"]["rationale"])
 
+    def test_company_agent_downgrades_unsupported_verified_claim_after_current_open(self) -> None:
+        source_url = "https://www.singtel.com/about-us/investor-relations/financial-summary"
+
+        class UnsupportedValueAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "research", "name": "research_all_metrics", "args": {}}],
+                    2: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "模型声称页面含有资本开支方向值",
+                        "metric_statuses": [{
+                            "metric": "Capex方向",
+                            "status": "verified_latest",
+                            "value": "2026财年现金资本开支为24.82亿新元",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_without_direct_evidence(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return []
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["Capex方向"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["Singtel"], "official_hosts": ["singtel.com"], "seed_urls": [],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=UnsupportedValueAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([{
+                "title": "Singtel FY26 financial summary",
+                "url": source_url,
+                "snippet": "Singtel financial summary for FY2026.",
+                "provider": "test",
+            }], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_without_direct_evidence),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-unsupported-verified"}, "Singtel", 15, "Singtel", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "not_disclosed")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(metric["status"], "not_disclosed")
+        self.assertEqual(metric["value"], "")
+
+    def test_five_g_advanced_is_qualitative_source_evidence(self) -> None:
+        self.assertIsNotNone(workflow.COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search("5G-A"))
+        self.assertIsNotNone(workflow.COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search("5G Advanced"))
+        self.assertIsNotNone(workflow.COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search("5.5G"))
+
     def test_supervisor_agent_can_search_and_promote_unplanned_gap(self) -> None:
         class ToolCallingSupervisor:
             def __init__(self) -> None:

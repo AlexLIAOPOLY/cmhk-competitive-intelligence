@@ -54,6 +54,12 @@ from .checkpoint_store import maintain_checkpoint_database
 from .storage import DATA_DIR, RUNS_DIR, atomic_write_json, atomic_write_jsonl
 
 
+COMPANY_RESEARCH_QUALITATIVE_METRIC_RE = re.compile(
+    rf"(?:{QUALITATIVE_METRIC_RE.pattern})|(?:5G-A|5G Advanced|5\.5G)",
+    re.IGNORECASE,
+)
+
+
 warnings.filterwarnings(
     "ignore",
     message=r".*duckduckgo_search.*renamed to.*ddgs.*",
@@ -73,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 7
+COMPANY_AGENT_PROGRESS_VERSION = 8
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -1641,7 +1647,7 @@ def _verification_vote(
     canonical = _canonical_fact_value(metric, raw_value)
     if not raw_value or not canonical:
         return None
-    qualitative = bool(QUALITATIVE_METRIC_RE.search(metric))
+    qualitative = bool(COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric))
     return {
         "value": raw_value,
         # Qualitative evidence is a readable source-bound excerpt.  Numeric
@@ -1905,7 +1911,7 @@ def _votes_from_web_search(fact: CandidateFact, results: list[dict[str, str]]) -
     # Search snippets are sufficient for a single, metric-bound numeric value.
     # Qualitative snippets are only discovery leads: differing prose is not a
     # numeric conflict, and the source itself must be opened before acceptance.
-    if QUALITATIVE_METRIC_RE.search(fact.metric):
+    if COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(fact.metric):
         return []
     votes: list[dict[str, Any]] = []
     for index, item in enumerate(results, start=1):
@@ -1974,7 +1980,7 @@ def _votes_from_source_pages(
             if vote:
                 votes.append(vote)
             continue
-        if QUALITATIVE_METRIC_RE.search(fact.metric):
+        if COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(fact.metric):
             recovered = _qualitative_source_evidence(fact, text, url)
             if recovered:
                 vote = _verification_vote(
@@ -2602,7 +2608,7 @@ def _company_expected_metrics(company: str, facts: list[CandidateFact]) -> list[
 
 def _company_agent_metric_requires_direct_value(metric: str) -> bool:
     """Separate numeric disclosures from official qualitative evidence."""
-    if QUALITATIVE_METRIC_RE.search(metric):
+    if COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric):
         return False
     return bool(re.search(
         r"收入|收益|EBITDA|利润|净利润|溢利|用户|客户|ARPU|资本开支|Capex|"
@@ -2810,7 +2816,7 @@ def _run_company_research_agent(
             "search_evidence": search_evidence,
             "search_evidence_count": len(search_evidence),
             "search_value_conflict": (
-                not QUALITATIVE_METRIC_RE.search(metric) and len(search_values) > 1
+                not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and len(search_values) > 1
             ),
         }
         searches.append(record)
@@ -3003,7 +3009,7 @@ def _run_company_research_agent(
             )
             selected_votes = open_evidence or search_evidence
             selected_vote = selected_votes[0] if selected_votes else {}
-            unresolved_conflict = not QUALITATIVE_METRIC_RE.search(metric) and (
+            unresolved_conflict = not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and (
                 len(open_values) > 1 or (not open_values and len(search_values) > 1)
             )
             if unresolved_conflict:
@@ -3025,7 +3031,7 @@ def _run_company_research_agent(
                 "rationale": rationale,
                 "value": selected_vote.get("normalized_value") or selected_vote.get("value") or "",
                 "search_value_conflict": (
-                    not QUALITATIVE_METRIC_RE.search(metric) and len(search_values) > 1
+                    not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and len(search_values) > 1
                 ),
                 "evidence_urls": list(dict.fromkeys(
                     str(vote.get("url") or "")
@@ -3106,7 +3112,7 @@ def _run_company_research_agent(
                 if vote.get("canonical")
             }
             metric_search_conflict = (
-                not QUALITATIVE_METRIC_RE.search(metric) and len(metric_search_values) > 1
+                not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and len(metric_search_values) > 1
             )
             metric_open_values = {
                 str(vote.get("canonical") or "")
@@ -3116,7 +3122,7 @@ def _run_company_research_agent(
             # Search snippets are sufficient when they agree.  If they differ,
             # opening a source may resolve the discrepancy; conflicting values
             # in the opened source bodies remain an unresolved conflict.
-            metric_value_conflict = not QUALITATIVE_METRIC_RE.search(metric) and (
+            metric_value_conflict = not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and (
                 len(metric_open_values) > 1 or (not metric_open_values and metric_search_conflict)
             )
             metric_fresh_opens = sum(int(record.get("fresh_official_open_count") or 0) for record in metric_opened)
@@ -3151,6 +3157,21 @@ def _run_company_research_agent(
                     "not_applicable": "该指标依据主体口径确认为不适用。",
                     "conflict": "当期来源存在未消除的口径或数值冲突。",
                 }.get(metric_status, "")
+            # A model may quote a value it saw in page prose even when the
+            # governed extractor found no metric-bound direct evidence.  Once
+            # a current source was actually opened, that is a complete audit
+            # outcome: discard the unsupported value claim and record that the
+            # metric was not separately disclosed instead of failing the whole
+            # company after repeated identical repair attempts.
+            if (
+                metric_status == "verified_latest"
+                and metric_evidence <= 0
+                and not metric_search_evidence
+                and metric_fresh_opens > 0
+            ):
+                item["status"] = "not_disclosed"
+                item["rationale"] = "已回读当期来源，但未取得该指标可核验的单独披露值。"
+                metric_status = "not_disclosed"
             if metric_status == "not_applicable" and _company_metric_is_not_applicable(company, metric):
                 continue
             if not metric_searches:
@@ -3624,14 +3645,14 @@ def _run_company_research_agent(
             if vote.get("canonical")
         }
         metric_search_conflict = (
-            not QUALITATIVE_METRIC_RE.search(metric) and len(metric_search_values) > 1
+            not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and len(metric_search_values) > 1
         )
         metric_open_values = {
             str(vote.get("canonical") or "")
             for vote in metric_open_evidence
             if vote.get("canonical")
         }
-        metric_value_conflict = not QUALITATIVE_METRIC_RE.search(metric) and (
+        metric_value_conflict = not COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(metric) and (
             len(metric_open_values) > 1 or (not metric_open_values and metric_search_conflict)
         )
         metric_fresh_opens = sum(int(item.get("fresh_official_open_count") or 0) for item in metric_opened)
