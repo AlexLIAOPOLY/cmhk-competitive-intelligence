@@ -330,6 +330,64 @@ class DataCurationWorkflowTests(unittest.TestCase):
             "agent_error",
         )
 
+    def test_governed_old_seed_vote_is_not_counted_as_current_metric_evidence(self) -> None:
+        seed_url = "https://www.eand.com/results-q1-2025.pdf"
+
+        class OldSeedAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "资本开支"}}],
+                    2: [{"id": "open", "name": "open_official_pages", "args": {
+                        "metric": "资本开支", "urls": [seed_url],
+                    }}],
+                    3: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "打开了备用入口",
+                        "metric_statuses": [{
+                            "metric": "资本开支",
+                            "status": "verified_latest",
+                            "rationale": "2025Q1 capex 17亿",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_old_seed(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return [{
+                "url": seed_url,
+                "canonical": "17亿",
+                "normalized_value": "17亿",
+                "value": "17亿",
+            }]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["资本开支"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["e&"], "official_hosts": ["eand.com"], "seed_urls": [seed_url],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=OldSeedAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_old_seed),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-old-seed"}, "e&", 21, "e&", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "search_exhausted")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(result["evidence_count"], 1)
+        self.assertEqual(metric["evidence_count"], 0)
+        self.assertEqual(metric["fresh_official_open_count"], 0)
+        self.assertEqual(metric["value"], "")
+
     def test_company_agent_forces_agent_completion_when_research_turns_omit_it(self) -> None:
         class ResearchWithoutCompletion:
             def __init__(self) -> None:
