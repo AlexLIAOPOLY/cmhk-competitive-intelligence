@@ -1104,6 +1104,59 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertFalse(workflow._company_research_results_cover_metric("5G-A", results[:3]))
         self.assertTrue(workflow._company_research_results_cover_metric("5G-A", results))
 
+    def test_company_research_rejects_unbound_third_party_results(self) -> None:
+        aliases = ["e&", "Etisalat"]
+        official_hosts = ["eand.com"]
+        self.assertTrue(workflow._company_research_source_relevant(
+            "https://www.eand.com/en/investors/financial-results.html",
+            "Financial results",
+            aliases=aliases,
+            official_hosts=official_hosts,
+        ))
+        self.assertTrue(workflow._company_research_source_relevant(
+            "https://example.com/etisalat-q2",
+            "Etisalat reports Q2 2026 capital expenditure",
+            aliases=aliases,
+            official_hosts=official_hosts,
+        ))
+        self.assertFalse(workflow._company_research_source_relevant(
+            "https://example.com/amazon-q4",
+            "Amazon stock sinks after a massive 2026 capex announcement",
+            aliases=aliases,
+            official_hosts=official_hosts,
+        ))
+
+    def test_numeric_source_vote_requires_company_binding(self) -> None:
+        fact = CandidateFact(
+            id="eand-capex",
+            company="e&",
+            metric="资本开支",
+            row_ref="row_21",
+            decision="review",
+        )
+        irrelevant_page = {
+            "url": "https://example.com/amazon-q4",
+            "final_url": "https://example.com/amazon-q4",
+            "http_status": 200,
+            "opened": True,
+            "blocked_reason": "",
+            "text": "Amazon announced 2026 capital expenditure of US$200 billion.",
+            "cache_hit": False,
+        }
+        profile = {
+            "aliases": ["e&", "Etisalat"],
+            "official_hosts": ["eand.com"],
+            "seed_urls": [],
+        }
+        with (
+            patch("data_curation.workflow._read_source_page", return_value=irrelevant_page),
+            patch("data_curation.workflow._company_research_profile", return_value=profile),
+        ):
+            self.assertEqual(
+                _votes_from_source_pages(fact, extra_urls=[irrelevant_page["url"]]),
+                [],
+            )
+
     def test_company_research_prefers_capex_investment_over_accounting_definition(self) -> None:
         selected = workflow._select_company_research_vote("Capex方向", [
             {

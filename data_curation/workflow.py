@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 12
+COMPANY_AGENT_PROGRESS_VERSION = 13
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -1929,10 +1929,14 @@ def _votes_from_web_search(fact: CandidateFact, results: list[dict[str, str]]) -
     votes: list[dict[str, Any]] = []
     for index, item in enumerate(results, start=1):
         text = f"{item.get('title', '')}。{item.get('snippet', '')}"
-        if fact.company and fact.company.casefold() not in text.casefold():
-            host = urlparse(item.get("url", "")).netloc.lower()
-            if not any(term in host for term in OFFICIAL_HOST_TERMS):
-                continue
+        profile = _company_research_profile(fact.company)
+        if not _company_research_source_relevant(
+            item.get("url", ""),
+            text,
+            aliases=profile.get("aliases", [fact.company]),
+            official_hosts=profile.get("official_hosts", []),
+        ):
+            continue
         recovered = _direct_value(fact.metric, _metric_focused_window(fact.metric, text))
         if not recovered or not _passes_metric_gate(fact.metric, recovered):
             continue
@@ -1982,6 +1986,14 @@ def _votes_from_source_pages(
         if not page["opened"]:
             continue
         text = str(page["text"])
+        profile = _company_research_profile(fact.company)
+        if not _company_research_source_relevant(
+            url,
+            text,
+            aliases=profile.get("aliases", [fact.company]),
+            official_hosts=profile.get("official_hosts", []),
+        ):
+            continue
         if _candidate_supported_by_raw_text(fact, text):
             vote = _verification_vote(
                 value=fact.value,
@@ -2658,6 +2670,34 @@ def _host_matches_governed_official(url: str, official_hosts: list[str]) -> bool
     return any(host == expected or host.endswith(f".{expected}") for expected in official_hosts)
 
 
+def _company_alias_mentions_text(alias: str, text: str) -> bool:
+    """Match a governed company alias without accepting word fragments."""
+    needle = clean_text(alias, 160).casefold().strip()
+    haystack = clean_text(text, 4000).casefold()
+    if not needle or not haystack:
+        return False
+    if re.search(r"[\u4e00-\u9fff]", needle):
+        return needle in haystack
+    return bool(re.search(
+        rf"(?<![a-z0-9]){re.escape(needle)}(?![a-z0-9])",
+        haystack,
+        re.IGNORECASE,
+    ))
+
+
+def _company_research_source_relevant(
+    url: str,
+    text: str,
+    *,
+    aliases: list[str],
+    official_hosts: list[str],
+) -> bool:
+    """Keep official pages or third-party pages explicitly bound to the company."""
+    return _host_matches_governed_official(url, official_hosts) or any(
+        _company_alias_mentions_text(alias, text) for alias in aliases
+    )
+
+
 def _search_result_is_current(result: dict[str, Any], *, current_year: int) -> bool:
     text = clean_text(
         f"{result.get('title', '')} {result.get('snippet', '')} {result.get('url', '')}",
@@ -2879,9 +2919,20 @@ def _run_company_research_agent(
             }
             if seed_url not in {item.get("url") for item in results}:
                 results.append(seed)
-        current_results = [
+        relevant_results = [
             item
             for item in results
+            if item.get("provider") == "governed_seed"
+            or _company_research_source_relevant(
+                str(item.get("url") or ""),
+                f"{item.get('title', '')} {item.get('snippet', '')} {item.get('url', '')}",
+                aliases=research_profile["aliases"],
+                official_hosts=research_profile["official_hosts"],
+            )
+        ]
+        current_results = [
+            item
+            for item in relevant_results
             if item.get("provider") != "governed_seed"
             and _search_result_is_current(item, current_year=current_year)
         ]
@@ -2893,7 +2944,7 @@ def _run_company_research_agent(
             "metric": metric,
             "query": query,
             "provider": provider,
-            "results": results,
+            "results": relevant_results,
             "current_results": current_results,
             "current_official_results": official_results,
             "official_hosts": research_profile["official_hosts"],
