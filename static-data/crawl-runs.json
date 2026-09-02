@@ -2,6 +2,69 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260902_104321_244951",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-02@review-b68f100327f0b666）",
+      "task_kind": "news-selection-agent",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 5 条，验证 10 格，本次新写 10 格，已有 0 格；逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 5 条，验证 10 格，本次新写 10 格，已有 0 格；逐格回读通过。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-02T10:45:10+08:00",
+      "started_at_hkt": "2026-09-02T10:43:21+08:00",
+      "completed_at_hkt": "2026-09-02T10:45:10+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 108896,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "status": "completed",
+        "candidate_count": 5,
+        "changed_count": 10,
+        "newly_written_count": 10,
+        "already_applied_count": 0,
+        "verified_field_count": 10,
+        "app_accepted_count": 0,
+        "weekly_accepted_count": 0,
+        "deferred_field_count": 0,
+        "training_provenance_version": "verified-human-final-actor-v2",
+        "training_stats": {
+          "training_provenance_version": "verified-human-final-actor-v2",
+          "human_example_count": 35,
+          "verified_human_row_count_before_limit": 35,
+          "verified_human_field_count": 64,
+          "human_correction_field_count": 56,
+          "machine_history_excluded_field_count": 1093,
+          "unknown_history_excluded_field_count": 522,
+          "stale_history_excluded_field_count": 19
+        },
+        "human_example_count": 35,
+        "human_correction_count": 56,
+        "model": "DeepSeek-V4-Pro",
+        "decision_models": [
+          "DeepSeek-V4-Pro"
+        ],
+        "decision_source_counts": {
+          "DeepSeek-V4-Pro": 5
+        },
+        "mixed_decision_sources": false,
+        "skill_path": "agent_knowledge/news_selection_agent/SKILL.md",
+        "audit_path": "agent_knowledge/news_selection_agent/decisions.jsonl",
+        "readback_verified": true,
+        "operation_audit_count": 10,
+        "decision_audit_count": 5,
+        "resumed_from_plan": false,
+        "recovered_decision_count": 0,
+        "published_count": 79,
+        "published_provenance_refreshed": true,
+        "writer_identity": "bot",
+        "writer_profile": "cli_a9575e70ae799cb2",
+        "skill_migrated": false,
+        "task_run_id": "20260902_104321_244951"
+      }
+    },
+    {
       "crawl_run_id": "20260902_103614_386036",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-09-02@07:30）",
@@ -83,10 +146,10 @@
       "progress_detail": "Agent 正在执行事实抽取、质量审计、搜索验证和发布流程。",
       "status_detail": "",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-09-02T10:42:16+08:00",
+      "heartbeat_at_hkt": "2026-09-02T10:52:18+08:00",
       "started_at_hkt": "2026-09-02T03:00:51+08:00",
       "completed_at_hkt": "",
-      "duration_ms": 26796094,
+      "duration_ms": 27484105,
       "final_audit": {
         "generated_at": "2026-09-02T03:13:47.209634",
         "rows_crawled": "33",
@@ -201438,6 +201501,6 @@
       }
     }
   ],
-  "total": 348,
+  "total": 349,
   "truncated": false
 }
