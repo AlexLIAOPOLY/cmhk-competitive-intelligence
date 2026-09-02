@@ -2522,8 +2522,8 @@
 
   function newsLineageMotionStyle() {
     const wallClock = Date.now();
-    const delay = (duration, alternate = false) => `-${wallClock % (duration * (alternate ? 2 : 1))}ms`;
-    return `--news-flow-delay:${delay(2400)};--news-degraded-delay:${delay(4800)};--news-schedule-delay:${delay(2100)};--news-schedule-global-delay:${delay(2250)};--news-schedule-degraded-delay:${delay(4500)};--news-feedback-delay:${delay(4200)};--news-feedback-global-delay:${delay(4400)};--news-feedback-degraded-delay:${delay(8800)};--news-breathe-delay:${delay(2100, true)};`;
+    const delay = duration => `-${wallClock % duration}ms`;
+    return `--news-flow-delay:${delay(2400)};--news-degraded-delay:${delay(4800)};--news-schedule-delay:${delay(2100)};--news-schedule-global-delay:${delay(2250)};--news-schedule-degraded-delay:${delay(4500)};--news-feedback-delay:${delay(4200)};--news-feedback-global-delay:${delay(4400)};--news-feedback-degraded-delay:${delay(8800)};`;
   }
 
   function renderNews({ preserveView = false } = {}) {

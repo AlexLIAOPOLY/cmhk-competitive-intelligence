@@ -57,14 +57,15 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_news_lineage_motion_keeps_wall_clock_phase_across_refresh_rebuilds(self):
         self.assertIn("function newsLineageMotionStyle()", SCRIPT)
-        self.assertIn("wallClock % (duration * (alternate ? 2 : 1))", SCRIPT)
+        self.assertIn("wallClock % duration", SCRIPT)
         self.assertIn("${newsLineageMotionStyle()}width:${lineageWidth}px", SCRIPT)
         self.assertIn("animation-delay: var(--news-flow-delay,0ms)", STYLE)
         self.assertIn("animation-delay: var(--news-schedule-global-delay,0ms)", STYLE)
-        self.assertIn("animation-delay: var(--news-feedback-global-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
+        self.assertIn("animation-delay: var(--news-feedback-global-delay,0ms)", STYLE)
         self.assertIn("--news-degraded-delay:${delay(4800)}", SCRIPT)
         self.assertIn("--news-schedule-degraded-delay:${delay(4500)}", SCRIPT)
         self.assertIn("--news-feedback-degraded-delay:${delay(8800)}", SCRIPT)
+        self.assertNotIn("--news-breathe-delay", SCRIPT)
 
     def test_feedback_motion_loops_on_complete_dash_periods(self):
         self.assertIn("stroke-dasharray: 22 7 4 15", STYLE)
@@ -81,12 +82,12 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
     def test_degraded_lines_use_half_particle_density_and_speed(self):
         self.assertIn("stroke-dasharray: 2 50; animation-duration: 4.8s", STYLE)
         self.assertIn("stroke-dasharray: 3 39; animation-duration: 4.5s", STYLE)
-        self.assertIn("stroke-dasharray: 26 38 5 47; animation-duration: 8.8s,2.1s", STYLE)
-        self.assertIn("animation-delay: var(--news-feedback-degraded-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
+        self.assertIn("stroke-dasharray: 26 38 5 47; animation-duration: 8.8s", STYLE)
+        self.assertIn("animation-delay: var(--news-feedback-degraded-delay,0ms)", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=153', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=174', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=154', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=175', INDEX)
 
 
 if __name__ == "__main__":
