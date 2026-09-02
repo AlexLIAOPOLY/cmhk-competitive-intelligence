@@ -2468,8 +2468,6 @@
     window.addEventListener("resize", state.newsLineageWindowResizeHandler, { passive: true });
     window.addEventListener("workspace-tab-change", state.newsLineageTabChangeHandler);
     scheduleFit();
-    synchronizeNewsLineageMotion(canvas);
-    requestAnimationFrame(() => synchronizeNewsLineageMotion(canvas));
     document.fonts?.ready.then(scheduleFit);
   }
 
@@ -2505,18 +2503,10 @@
     });
   }
 
-  function synchronizeNewsLineageMotion(canvas) {
-    if (!canvas || motionPreference.matches || typeof canvas.getAnimations !== "function") return;
+  function newsLineageMotionStyle() {
     const wallClock = Date.now();
-    canvas.getAnimations({ subtree: true }).forEach((animation) => {
-      const timing = animation.effect?.getTiming?.();
-      const duration = Number(timing?.duration);
-      if (timing?.iterations !== Infinity || !Number.isFinite(duration) || duration <= 0) return;
-      const cycleDuration = duration * (String(timing.direction || "normal").startsWith("alternate") ? 2 : 1);
-      try {
-        animation.currentTime = wallClock % cycleDuration;
-      } catch (_error) { /* unsupported animation effects keep their native timeline */ }
-    });
+    const delay = (duration, alternate = false) => `-${wallClock % (duration * (alternate ? 2 : 1))}ms`;
+    return `--news-flow-delay:${delay(2400)};--news-schedule-delay:${delay(2100)};--news-schedule-global-delay:${delay(2250)};--news-feedback-delay:${delay(4200)};--news-feedback-global-delay:${delay(4400)};--news-breathe-delay:${delay(2100, true)};--news-interruption-delay:${delay(900, true)};`;
   }
 
   function renderNews({ preserveView = false } = {}) {
@@ -2546,7 +2536,7 @@
         ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
             <div class="news-lineage-stage" data-news-lineage-stage style="width:${initialLineageWidth}px;height:${initialLineageHeight}px">
-            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};width:${lineageWidth}px;height:${lineageHeight}px">
+            <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};${newsLineageMotionStyle()}width:${lineageWidth}px;height:${lineageHeight}px">
               <svg class="news-lineage-edges" viewBox="0 0 ${lineageWidth} ${lineageHeight}" style="width:${lineageWidth}px;height:${lineageHeight}px" aria-hidden="true"><defs><marker id="newsLineageArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRoutine" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowFeedback" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker><marker id="newsLineageArrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${lineage.edges.map(([from, to, , kind, line], index) => `<g class="news-lineage-edge is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-route-id="${esc(line?.routeId || newsLineageRouteId(from, to))}" data-line-state="${esc(line?.key || "unknown")}"><path id="newsLineageEdge${index}" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path><path class="news-lineage-pulse" data-news-lineage-edge data-from="${esc(from)}" data-to="${esc(to)}" data-kind="${esc(kind)}"></path></g>`).join("")}</svg>
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" title="${esc(line.reason || "")}">${lineageStatusIcon(line.key)}${esc(line.label)}</span>` : "").join("")}</div>
@@ -2664,7 +2654,6 @@
       const nextItems = holder.firstElementChild;
       if (nextItems && currentItems.innerHTML !== nextItems.innerHTML) currentItems.replaceWith(nextItems);
     }
-    synchronizeNewsLineageMotion(canvas);
     return true;
   }
 

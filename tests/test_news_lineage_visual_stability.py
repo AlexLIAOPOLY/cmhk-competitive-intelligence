@@ -56,16 +56,16 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("window.scrollTo(snapshot.windowX, snapshot.windowY)", SCRIPT)
 
     def test_news_lineage_motion_keeps_wall_clock_phase_across_refresh_rebuilds(self):
-        self.assertIn("function synchronizeNewsLineageMotion(canvas)", SCRIPT)
-        self.assertIn("canvas.getAnimations({ subtree: true })", SCRIPT)
-        self.assertIn("timing?.iterations !== Infinity", SCRIPT)
-        self.assertIn('.startsWith("alternate") ? 2 : 1', SCRIPT)
-        self.assertIn("animation.currentTime = wallClock % cycleDuration", SCRIPT)
-        self.assertIn("requestAnimationFrame(() => synchronizeNewsLineageMotion(canvas))", SCRIPT)
-        self.assertIn("synchronizeNewsLineageMotion(canvas);\n    return true;", SCRIPT)
+        self.assertIn("function newsLineageMotionStyle()", SCRIPT)
+        self.assertIn("wallClock % (duration * (alternate ? 2 : 1))", SCRIPT)
+        self.assertIn("${newsLineageMotionStyle()}width:${lineageWidth}px", SCRIPT)
+        self.assertIn("animation-delay: var(--news-flow-delay,0ms)", STYLE)
+        self.assertIn("animation-delay: var(--news-schedule-global-delay,0ms)", STYLE)
+        self.assertIn("animation-delay: var(--news-feedback-global-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
+        self.assertIn("animation-delay: var(--news-interruption-delay,0ms)", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=149', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=150', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=171', INDEX)
 
 
