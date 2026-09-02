@@ -32,6 +32,10 @@
     newsLineageResizeObserver: null,
     newsLineageWindowResizeHandler: null,
     newsLineageTabChangeHandler: null,
+    newsLivePollTimer: 0,
+    newsLiveRefreshInFlight: false,
+    newsLiveReviewTick: 0,
+    newsLiveSignature: "",
     schedulerOverview: null,
     executiveIntelligence: null,
     previewRequest: { weekly: 0, performance: 0 },
@@ -2477,8 +2481,31 @@
       }).join("") : '<div class="news-run-empty">正在读取所选日期的真实新闻归档…</div>'}</div></section>`;
   }
 
-  function renderNews() {
+  function newsViewSnapshot(panel) {
+    const viewport = panel?.querySelector("[data-news-lineage-viewport]");
+    return {
+      windowX: window.scrollX,
+      windowY: window.scrollY,
+      viewportLeft: viewport?.scrollLeft || 0,
+      viewportTop: viewport?.scrollTop || 0,
+    };
+  }
+
+  function restoreNewsView(panel, snapshot) {
+    if (!snapshot) return;
+    requestAnimationFrame(() => {
+      const viewport = panel?.querySelector("[data-news-lineage-viewport]");
+      if (viewport) {
+        viewport.scrollLeft = snapshot.viewportLeft;
+        viewport.scrollTop = snapshot.viewportTop;
+      }
+      window.scrollTo(snapshot.windowX, snapshot.windowY);
+    });
+  }
+
+  function renderNews({ preserveView = false } = {}) {
     const panel = document.querySelector('[data-workspace-panel="news"]');
+    const viewSnapshot = preserveView ? newsViewSnapshot(panel) : null;
     const attemptRuns = selectedNewsRuns();
     const runs = authoritativeStrategicNewsRuns(attemptRuns);
     const run = runs[0] || null;
@@ -2520,13 +2547,14 @@
       </section>
     </div>`;
     bindNewsLineageInteractions(panel);
+    restoreNewsView(panel, viewSnapshot);
   }
 
-  async function loadNewsRuns(runIds) {
+  async function loadNewsRuns(runIds, { force = false, quiet = false } = {}) {
     if (!runIds.length) return;
     const requestId = ++state.newsRunRequest;
-    markWorkspaceModulesDirty("news");
-    const missing = runIds.filter((id) => !state.newsRunDetails[id]);
+    if (!quiet) markWorkspaceModulesDirty("news");
+    const missing = force ? runIds : runIds.filter((id) => !state.newsRunDetails[id]);
     const results = await Promise.all(missing.map(async (runId) => {
       try {
         const response = await fetch(`/api/crawl-run-log?id=${encodeURIComponent(runId)}`, { cache: "no-store" });
@@ -2540,7 +2568,89 @@
     }));
     if (requestId !== state.newsRunRequest) return;
     results.forEach(([runId, payload]) => { state.newsRunDetails[runId] = payload; });
-    markWorkspaceModulesDirty("news");
+    if (!quiet) markWorkspaceModulesDirty("news");
+  }
+
+  function newsLiveRenderSignature() {
+    const attemptRuns = selectedNewsRuns();
+    const runs = authoritativeStrategicNewsRuns(attemptRuns);
+    const stages = runs.length ? aggregateNewsStages(runs) : [];
+    const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
+    return JSON.stringify({
+      date: state.newsSelectedDate,
+      nodes: lineage.nodes.map((node) => [node.key, node.value, node.unit, node.note, node.health?.key, node.evidence]),
+      edges: lineage.edges.map(([from, to, label, kind, line]) => [from, to, label, kind, line?.key, line?.reason]),
+      runs: attemptRuns.map((run) => [run.crawl_run_id, run.run_status || run.status, run.heartbeat_at_hkt, run.completed_at_hkt, run.progress_detail, run.status_detail]),
+      details: runs.map((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return [run.crawl_run_id, String(detail.content || "").slice(-1200), (detail.newsItems || []).length];
+      }),
+    });
+  }
+
+  async function refreshNewsLiveData() {
+    if (state.newsLiveRefreshInFlight || document.visibilityState !== "visible" || activeWorkspaceModule() !== "news") return;
+    state.newsLiveRefreshInFlight = true;
+    try {
+      const requests = [
+        ["status", "/api/status"],
+        ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
+        ["crawlRuns", "/api/crawl-runs?limit=500"],
+        ["scheduler", "/api/scheduler-overview"],
+      ];
+      if (state.newsLiveReviewTick % 3 === 0) requests.push(
+        ["tasks", "/api/project-incidents?limit=500"],
+        ["intelligence", "/api/executive-intelligence"],
+      );
+      const settled = await Promise.allSettled(requests.map(async ([key, url]) => {
+        const response = await fetch(url, { cache: "no-store" });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(`${key} ${response.status}`);
+        return [key, payload];
+      }));
+      settled.forEach((result) => {
+        if (result.status !== "fulfilled") return;
+        const [key, payload] = result.value;
+        if (key === "status") { state.status = payload.status || {}; updateRunningIndicator(); }
+        else if (key === "tasks") {
+          const nextTasks = payload.incidents || [];
+          observeFaultSignals(nextTasks);
+          state.tasks = nextTasks;
+          state.faultTotal = Number(payload.total || nextTasks.length);
+        } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
+        else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
+        else if (key === "scheduler") state.schedulerOverview = payload;
+        else if (key === "intelligence") state.executiveIntelligence = payload;
+      });
+      const selectedRuns = selectedNewsRuns();
+      const selectedRunIds = selectedRuns.map((run) => run.crawl_run_id);
+      await loadNewsRuns(selectedRunIds, { force: true, quiet: true });
+      state.newsLiveReviewTick += 1;
+      if (state.newsLiveReviewTick % 4 === 0) {
+        try { state.newsReviewSheet = await fetchNewsReviewSheetSnapshot(); } catch (_error) { /* keep the last complete snapshot */ }
+      }
+      const nextSignature = newsLiveRenderSignature();
+      if (nextSignature !== state.newsLiveSignature) {
+        state.newsLiveSignature = nextSignature;
+        if (!document.querySelector("#newsLineageDialog")?.open) renderNews({ preserveView: true });
+      }
+    } catch (error) {
+      console.warn("News live refresh unavailable", error);
+    } finally {
+      state.newsLiveRefreshInFlight = false;
+    }
+  }
+
+  function startNewsLiveRefresh() {
+    if (state.newsLivePollTimer || !can("news")) return;
+    state.newsLiveSignature = newsLiveRenderSignature();
+    state.newsLivePollTimer = window.setInterval(refreshNewsLiveData, 4000);
+    window.addEventListener("workspace-tab-change", (event) => {
+      if (event.detail?.tab === "news") refreshNewsLiveData();
+    });
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible" && activeWorkspaceModule() === "news") refreshNewsLiveData();
+    });
   }
 
   function renderReports(kind) {
@@ -3289,6 +3399,7 @@
       }, 30000);
     }
     await Promise.allSettled(requests);
+    startNewsLiveRefresh();
   }
 
   async function initializeWorkspace() {

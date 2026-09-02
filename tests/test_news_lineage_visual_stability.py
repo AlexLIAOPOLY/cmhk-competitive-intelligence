@@ -40,9 +40,20 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertNotIn("transition: width .18s ease,height .18s ease", STYLE)
         self.assertNotIn("transition: transform .18s ease", STYLE)
 
+    def test_news_lineage_live_refresh_is_fast_quiet_and_preserves_view(self):
+        self.assertIn("function refreshNewsLiveData()", SCRIPT)
+        self.assertIn("window.setInterval(refreshNewsLiveData, 4000)", SCRIPT)
+        self.assertIn('activeWorkspaceModule() !== "news"', SCRIPT)
+        self.assertIn("loadNewsRuns(selectedRunIds, { force: true, quiet: true })", SCRIPT)
+        self.assertIn("function newsLiveRenderSignature()", SCRIPT)
+        self.assertIn("if (nextSignature !== state.newsLiveSignature)", SCRIPT)
+        self.assertIn("renderNews({ preserveView: true })", SCRIPT)
+        self.assertIn("function restoreNewsView(panel, snapshot)", SCRIPT)
+        self.assertIn("window.scrollTo(snapshot.windowX, snapshot.windowY)", SCRIPT)
+
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertIn('/static/workspace-tabs.css?v=147', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=168', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=169', INDEX)
 
 
 if __name__ == "__main__":
