@@ -62,11 +62,23 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("animation-delay: var(--news-flow-delay,0ms)", STYLE)
         self.assertIn("animation-delay: var(--news-schedule-global-delay,0ms)", STYLE)
         self.assertIn("animation-delay: var(--news-feedback-global-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
-        self.assertIn("animation-delay: var(--news-interruption-delay,0ms)", STYLE)
+        self.assertIn("--news-degraded-delay:${delay(4800)}", SCRIPT)
+        self.assertIn("--news-schedule-degraded-delay:${delay(4500)}", SCRIPT)
+        self.assertIn("--news-feedback-degraded-delay:${delay(8800)}", SCRIPT)
+
+    def test_interrupted_and_unknown_lines_do_not_animate(self):
+        self.assertIn(".news-lineage-edge.is-line-interrupted .news-lineage-pulse,.news-lineage-edge.is-line-unknown .news-lineage-pulse { display: none; }", STYLE)
+        self.assertIn("filter: drop-shadow(0 0 5px rgba(240,128,120,.56)); animation: none;", STYLE)
+
+    def test_degraded_lines_use_half_particle_density_and_speed(self):
+        self.assertIn("stroke-dasharray: 2 50; animation-duration: 4.8s", STYLE)
+        self.assertIn("stroke-dasharray: 3 39; animation-duration: 4.5s", STYLE)
+        self.assertIn("stroke-dasharray: 26 38 5 47; animation-duration: 8.8s,2.1s", STYLE)
+        self.assertIn("animation-delay: var(--news-feedback-degraded-delay,0ms),var(--news-breathe-delay,0ms)", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=150', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=171', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=151', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=172', INDEX)
 
 
 if __name__ == "__main__":
