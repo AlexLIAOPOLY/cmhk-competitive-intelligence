@@ -52,7 +52,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("window.scrollTo(snapshot.windowX, snapshot.windowY)", SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=147', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=148', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=169', INDEX)
 
 
