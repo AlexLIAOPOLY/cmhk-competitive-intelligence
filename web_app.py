@@ -7079,6 +7079,9 @@ class AppHandler(BaseHTTPRequestHandler):
             result = load_unified_task_log(task_id)
             json_response(self, result, 200 if result.get("ok") else 404)
             return
+        if path == "/api/fixed-source-summary":
+            json_response(self, fixed_source_summary())
+            return
         if path == "/api/crawl-runs":
             query = parse_qs(parsed.query)
             try:

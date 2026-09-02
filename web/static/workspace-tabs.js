@@ -22,6 +22,7 @@
     newsSelectedDate: "",
     newsSelectedRunIds: [],
     newsRunDetails: {},
+    fixedSourceSummary: {},
     newsItemFallback: {},
     newsReviewSheet: null,
     newsRunRequest: 0,
@@ -1725,7 +1726,8 @@
     const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
     const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
-    const fixedSourceSummary = mainRunDetail.fixedSourceSummary
+    const fixedSourceSummary = state.fixedSourceSummary
+      || mainRunDetail.fixedSourceSummary
       || state.newsRunDetails[newsRun.crawl_run_id]?.fixedSourceSummary
       || {};
     const scheduledMainRows = new Set(
@@ -3432,6 +3434,7 @@
       const initialCrawlRuns = selectedNewsRuns();
       if (initialCrawlRuns.length) loadNewsRuns(initialCrawlRuns.map((run) => run.crawl_run_id));
     }
+    else if (key === "fixedSourceSummary") { state.fixedSourceSummary = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "scheduler") { state.schedulerOverview = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "intelligence") { state.executiveIntelligence = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "reviewSheet") { state.newsReviewSheet = payload; markWorkspaceModulesDirty("news"); }
@@ -3511,6 +3514,7 @@
       ["tasks", "fault", () => fetch("/api/project-incidents?limit=500").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`)))],
       ["newsRuns", "news", () => fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`)))],
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
+      ["fixedSourceSummary", "news", () => fetch("/api/fixed-source-summary", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`fixed source summary ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
       ["reviewSheet", "review", fetchNewsReviewSheetSnapshot],
