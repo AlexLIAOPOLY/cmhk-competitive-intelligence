@@ -48,13 +48,16 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("function newsLiveRenderSignature()", SCRIPT)
         self.assertIn("if (nextSignature !== state.newsLiveSignature)", SCRIPT)
         self.assertIn("if (!dialogOpen)", SCRIPT)
-        self.assertIn("renderNews({ preserveView: true })", SCRIPT)
+        self.assertIn("function patchNewsLiveView()", SCRIPT)
+        self.assertIn("if (!patchNewsLiveView()) renderNews({ preserveView: true })", SCRIPT)
+        self.assertIn("currentItems.replaceWith(nextItems)", SCRIPT)
+        self.assertNotIn('is-active")) renderNews();', SCRIPT)
         self.assertIn("function restoreNewsView(panel, snapshot)", SCRIPT)
         self.assertIn("window.scrollTo(snapshot.windowX, snapshot.windowY)", SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertIn('/static/workspace-tabs.css?v=149', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=169', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=170', INDEX)
 
 
 if __name__ == "__main__":

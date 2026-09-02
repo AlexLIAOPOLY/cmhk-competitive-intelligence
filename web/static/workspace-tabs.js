@@ -2588,6 +2588,69 @@
     });
   }
 
+  function patchNewsLiveView() {
+    const panel = document.querySelector('[data-workspace-panel="news"]');
+    const canvas = panel?.querySelector("[data-news-lineage-canvas]");
+    if (!panel || !canvas) return false;
+    const attemptRuns = selectedNewsRuns();
+    const runs = authoritativeStrategicNewsRuns(attemptRuns);
+    const stages = runs.length ? aggregateNewsStages(runs) : [];
+    const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
+    const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
+    const currentNodes = [...canvas.querySelectorAll("[data-news-lineage-node]")];
+    const currentEdges = [...canvas.querySelectorAll(".news-lineage-edge")];
+    const nodeKeys = currentNodes.map((node) => node.dataset.newsLineageNode);
+    const routeIds = currentEdges.map((edge) => edge.dataset.routeId);
+    const nextNodeKeys = lineage.nodes.map((node) => node.key);
+    const nextRouteIds = lineage.edges.map(([from, to]) => newsLineageRouteId(from, to));
+    if (JSON.stringify(nodeKeys) !== JSON.stringify(nextNodeKeys)
+      || JSON.stringify(routeIds) !== JSON.stringify(nextRouteIds)) return false;
+
+    lineage.nodes.forEach((node, index) => {
+      const element = currentNodes[index];
+      element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
+      element.dataset.health = node.health?.key || "unknown";
+      element.setAttribute("aria-label", `${node.label}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
+      const health = element.querySelector(".news-lineage-health");
+      const label = element.querySelector(":scope > span");
+      const value = element.querySelector(":scope > strong");
+      const note = element.querySelector(":scope > em");
+      if (health && health.textContent !== (node.health?.label || "无记录")) {
+        health.innerHTML = `${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}`;
+      }
+      if (label) label.textContent = node.label;
+      if (value) {
+        value.textContent = node.value;
+        if (node.unit) {
+          const unit = document.createElement("small");
+          unit.textContent = node.unit;
+          value.appendChild(unit);
+        }
+      }
+      if (note) note.textContent = node.note || "";
+    });
+
+    lineage.edges.forEach(([, , label, kind, line], index) => {
+      const edge = currentEdges[index];
+      edge.setAttribute("class", `news-lineage-edge is-${kind} is-line-${line?.key || "unknown"}`);
+      edge.dataset.lineState = line?.key || "unknown";
+      const edgeLabel = canvas.querySelector(`[data-news-lineage-label][data-edge-index="${index}"]`);
+      if (edgeLabel && label) {
+        edgeLabel.className = `news-lineage-edge-label is-${kind} is-line-${line?.key || "unknown"}`;
+        edgeLabel.textContent = label;
+      }
+    });
+
+    const currentItems = panel.querySelector(".news-real-items");
+    if (currentItems) {
+      const holder = document.createElement("div");
+      holder.innerHTML = renderNewsItems(runs);
+      const nextItems = holder.firstElementChild;
+      if (nextItems && currentItems.innerHTML !== nextItems.innerHTML) currentItems.replaceWith(nextItems);
+    }
+    return true;
+  }
+
   async function refreshNewsLiveData() {
     if (state.newsLiveRefreshInFlight || document.visibilityState !== "visible" || activeWorkspaceModule() !== "news") return;
     state.newsLiveRefreshInFlight = true;
@@ -2634,7 +2697,7 @@
         const dialogOpen = document.querySelector("#newsLineageDialog")?.open;
         if (!dialogOpen) {
           state.newsLiveSignature = nextSignature;
-          renderNews({ preserveView: true });
+          if (!patchNewsLiveView()) renderNews({ preserveView: true });
         }
       }
     } catch (error) {
@@ -2981,7 +3044,13 @@
       observeFaultSignals(nextTasks);
       state.tasks = nextTasks;
       state.faultTotal = Number(data.total || state.tasks.length);
-      if (newsLineageChanged && document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) renderNews();
+      if (newsLineageChanged && document.querySelector('[data-workspace-tab="news"]')?.classList.contains("is-active")) {
+        const dialogOpen = document.querySelector("#newsLineageDialog")?.open;
+        if (!dialogOpen) {
+          state.newsLiveSignature = newsLiveRenderSignature();
+          if (!patchNewsLiveView()) renderNews({ preserveView: true });
+        }
+      }
       if (!quiet || document.querySelector('[data-workspace-tab="fault"]')?.classList.contains("is-active")) {
         renderFaultMonitor();
         const nextStatus = document.querySelector("#faultMonitorStatus");
