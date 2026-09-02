@@ -3391,7 +3391,12 @@
       markWorkspaceModulesDirty("news");
       const initialNewsRuns = selectedNewsRuns();
       if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
-    } else if (key === "crawlRuns") { state.crawlRuns = payload.runs || []; markWorkspaceModulesDirty("news"); }
+    } else if (key === "crawlRuns") {
+      state.crawlRuns = payload.runs || [];
+      markWorkspaceModulesDirty("news");
+      const initialCrawlRuns = selectedNewsRuns();
+      if (initialCrawlRuns.length) loadNewsRuns(initialCrawlRuns.map((run) => run.crawl_run_id));
+    }
     else if (key === "scheduler") { state.schedulerOverview = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "intelligence") { state.executiveIntelligence = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "reviewSheet") { state.newsReviewSheet = payload; markWorkspaceModulesDirty("news"); }
