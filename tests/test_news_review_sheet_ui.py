@@ -1173,6 +1173,54 @@ class NewsReviewActorTests(unittest.TestCase):
             self.assertEqual(events[0]["details"]["feishu_event_id"], "human-event")
             self.assertEqual(service._read(state_path, {})["last_feishu_event_ms"], 2000)
 
+    def test_recent_editor_event_waits_for_sheet_snapshot_to_settle(self) -> None:
+        def snapshot(status: str) -> dict:
+            return {
+                "sheetId": "sheet-1",
+                "headers": news_review_sheet.HEADERS,
+                "rows": [{
+                    "rowNumber": 2,
+                    "recordId": "NEWS-HUMAN-1",
+                    "values": sheet_row(status, "待审核", "未同步", "", "", "", "测试新闻"),
+                }],
+            }
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            service = AuthService(Path(temp_dir))
+            state_path = service.state_dir / "news-review-sheet-audit-state.json"
+            editor_event = {
+                "event_id": "human-event",
+                "create_time_ms": 1_000_000,
+                "operators": [{"open_id": "ou_alice"}],
+            }
+            with (
+                mock.patch.object(web_app, "AUTH", service),
+                mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(
+                    web_app,
+                    "sheet_edit_events",
+                    side_effect=[[], [editor_event], [editor_event]],
+                ),
+                mock.patch.object(web_app.time, "time", return_value=1001.0),
+                mock.patch.object(service, "feishu_profile_by_open_id", return_value={
+                    "id": "fs-alice",
+                    "name": "Alice Chen",
+                    "avatar_url": "",
+                    "open_id": "ou_alice",
+                }),
+            ):
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
+                self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
+                self.assertEqual(
+                    service._read(state_path, {})["last_feishu_event_ms"],
+                    0,
+                )
+                events = web_app.sync_news_review_sheet_audit(snapshot("接受"))
+
+            self.assertEqual(len(events), 1)
+            self.assertEqual(events[0]["actor_name"], "Alice Chen")
+            self.assertEqual(service._read(state_path, {})["last_feishu_event_ms"], 1_000_000)
+
     def test_direct_feishu_decision_refuses_ambiguous_human_event_window(self) -> None:
         def snapshot(status: str) -> dict:
             return {

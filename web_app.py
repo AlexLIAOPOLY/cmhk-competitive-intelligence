@@ -103,6 +103,10 @@ NEWS_REVIEW_DECISION_COLUMNS = (
     NEWS_REVIEW_APP_STATUS_COLUMN,
     NEWS_REVIEW_WEEKLY_STATUS_COLUMN,
 )
+NEWS_REVIEW_EVENT_SETTLE_SECONDS = max(
+    0,
+    int(os.environ.get("CMHK_NEWS_REVIEW_EVENT_SETTLE_SECONDS", "90")),
+)
 NEWS_REVIEW_AUDIT_LOCK = threading.RLock()
 NEWS_REVIEW_MENTION_IDENTITY_LOCK = threading.RLock()
 NEWS_REVIEW_ACTOR_BACKFILL_LOCK = threading.Lock()
@@ -2828,6 +2832,32 @@ def main_crawl_items_for_crawl_run(run: object) -> list[dict]:
             }
         )
     return items
+
+
+def fixed_source_summary() -> dict:
+    """Describe the current Feishu-backed fixed-source input without conflating it with crawl output."""
+    source_path = ROOT / "sources.json"
+    try:
+        rows = json.loads(source_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(rows, list):
+        return {}
+    configured_urls: list[str] = []
+    configured_rows = 0
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        configured_rows += 1
+        configured_urls.extend(crawl.urls_from_sources(str(row.get("sources") or "")))
+    unique_urls = list(dict.fromkeys(configured_urls))
+    return {
+        "configuredRows": configured_rows,
+        "configuredUrlOccurrences": len(configured_urls),
+        "uniqueUrls": len(unique_urls),
+        "source": "飞书爬虫配置表当前快照",
+        "updatedAt": datetime.fromtimestamp(source_path.stat().st_mtime).astimezone().isoformat(),
+    }
 
 
 def build_today_news_rounds(today_key: str = "") -> list[dict]:
@@ -5735,6 +5765,7 @@ def sync_news_review_sheet_audit(
             and details.get("automation_event_key")
         }
         audit_at = datetime.now().astimezone().isoformat()
+        observed_decision_change = False
         unresolved_editor_change = False
         if same_sheet and isinstance(previous_rows, dict):
             for row_key, current in current_rows.items():
@@ -5753,6 +5784,7 @@ def sync_news_review_sheet_audit(
                     after = str(after_decisions[decision_offset] or "")
                     if before == after or (row_number, column_index, before, after) in ignored:
                         continue
+                    observed_decision_change = True
                     field_label = str(headers[column_index] if len(headers) > column_index else f"审批列{column_index + 1}")
                     title = str(current.get("title") or f"飞书审核表第 {row_number} 行")
                     agent_match = _news_auto_screening_match(
@@ -5815,12 +5847,26 @@ def sync_news_review_sheet_audit(
                         ))
                         if agent_match:
                             recorded_agent_keys.add(automation_event_key)
+        try:
+            cursor_event_ms = int(cursor_event.get("create_time_ms") or 0)
+        except (AttributeError, TypeError, ValueError):
+            cursor_event_ms = 0
+        event_window_settled = bool(
+            cursor_event_ms
+            and cursor_event_ms
+            <= int(time.time() * 1000) - (NEWS_REVIEW_EVENT_SETTLE_SECONDS * 1000)
+        )
+        consume_event_cursor = bool(
+            cursor_event_ms
+            and not unresolved_editor_change
+            and (observed_decision_change or event_window_settled)
+        )
         next_state = {
             "sheet_id": sheet_id,
             "rows": current_rows,
             "last_feishu_event_ms": int(
-                (cursor_event.get("create_time_ms") or previous_event_ms)
-                if cursor_event and not unresolved_editor_change
+                cursor_event_ms
+                if consume_event_cursor
                 else previous_event_ms
             ),
         }
@@ -7060,6 +7106,7 @@ class AppHandler(BaseHTTPRequestHandler):
                 result["newsItems"] = strategic_news_items_for_crawl_run(result.get("run"))
                 result.update(strategic_news_process_items_for_crawl_run(result.get("run")))
                 result["crawlItems"] = main_crawl_items_for_crawl_run(result.get("run"))
+                result["fixedSourceSummary"] = fixed_source_summary()
                 run = result.get("run") if isinstance(result.get("run"), dict) else {}
                 curation = run.get("curation") if isinstance(run.get("curation"), dict) else {}
                 agent_run_id = str(curation.get("agent_run_id") or "")
