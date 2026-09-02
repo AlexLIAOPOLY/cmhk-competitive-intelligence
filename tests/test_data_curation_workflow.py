@@ -392,6 +392,72 @@ class DataCurationWorkflowTests(unittest.TestCase):
         self.assertEqual(metric["fresh_official_open_count"], 0)
         self.assertEqual(metric["value"], "")
 
+    def test_governed_seed_with_explicit_current_period_is_current_evidence(self) -> None:
+        seed_url = "https://www.eand.com/en/investors/financial-highlights.html"
+
+        class CurrentSeedAgent:
+            def __init__(self) -> None:
+                self.turn = 0
+
+            def bind_tools(self, _tools, **_kwargs):
+                return self
+
+            def invoke(self, _messages):
+                self.turn += 1
+                calls = {
+                    1: [{"id": "search", "name": "search_latest_official", "args": {"metric": "资本开支"}}],
+                    2: [{"id": "open", "name": "open_official_pages", "args": {
+                        "metric": "资本开支", "urls": [seed_url],
+                    }}],
+                    3: [{"id": "complete", "name": "complete_company_research", "args": {
+                        "status": "verified_latest",
+                        "rationale": "官方 Financial Highlights 明确标注 Q2 2026",
+                        "metric_statuses": [{
+                            "metric": "资本开支",
+                            "status": "verified_latest",
+                            "rationale": "Q2 2026 CAPEX reached AED 3.6 billion",
+                        }],
+                    }}],
+                }
+                return SimpleNamespace(content="", tool_calls=calls[self.turn])
+
+        def open_current_seed(_fact, *, extra_urls=None, open_audit=None, **_kwargs):
+            open_audit.append({"url": extra_urls[0], "http_status": 200, "opened": True})
+            return [{
+                "url": seed_url,
+                "canonical": "36亿",
+                "normalized_value": "36亿",
+                "value": "CAPEX reached AED 3.6 billion",
+                "source_current_period": True,
+            }]
+
+        with (
+            patch("data_curation.workflow._company_configured_metrics", return_value=["资本开支"]),
+            patch("data_curation.workflow._company_research_profile", return_value={
+                "aliases": ["e&", "Etisalat"], "official_hosts": ["eand.com"], "seed_urls": [seed_url],
+            }),
+            patch("data_curation.workflow._build_supervisor_model", return_value=CurrentSeedAgent()),
+            patch("data_curation.workflow._public_web_search", return_value=([], "test")),
+            patch("data_curation.workflow._votes_from_source_pages", side_effect=open_current_seed),
+        ):
+            result, _trace = _run_company_research_agent(
+                {"run_id": "company-agent-current-seed"}, "e&", 21, "e&", []
+            )
+        metric = result["metric_results"][0]
+        self.assertEqual(result["status"], "verified_latest")
+        self.assertTrue(result["metric_coverage_complete"])
+        self.assertEqual(metric["status"], "verified_latest")
+        self.assertEqual(metric["value"], "36亿")
+        self.assertGreater(metric["fresh_official_open_count"], 0)
+
+    def test_source_page_current_period_requires_explicit_year(self) -> None:
+        self.assertTrue(workflow._source_page_mentions_current_period(
+            "Financial Highlights for Q2 2026", current_year=2026,
+        ))
+        self.assertFalse(workflow._source_page_mentions_current_period(
+            "Financial Highlights for Q1 2024", current_year=2026,
+        ))
+
     def test_company_agent_forces_agent_completion_when_research_turns_omit_it(self) -> None:
         class ResearchWithoutCompletion:
             def __init__(self) -> None:

@@ -79,7 +79,7 @@ GLOBAL_CRAWL_ARTIFACTS = [
 
 _SOURCE_PAGE_CACHE: dict[str, dict[str, Any]] = {}
 _SOURCE_PAGE_CACHE_LOCK = threading.Lock()
-COMPANY_AGENT_PROGRESS_VERSION = 14
+COMPANY_AGENT_PROGRESS_VERSION = 15
 
 
 def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
@@ -1994,6 +1994,10 @@ def _votes_from_source_pages(
             official_hosts=profile.get("official_hosts", []),
         ):
             continue
+        source_current_period = _source_page_mentions_current_period(
+            text,
+            current_year=datetime.now().year,
+        )
         if _candidate_supported_by_raw_text(fact, text):
             vote = _verification_vote(
                 value=fact.value,
@@ -2003,6 +2007,7 @@ def _votes_from_source_pages(
                 metric=fact.metric,
             )
             if vote:
+                vote["source_current_period"] = source_current_period
                 votes.append(vote)
             continue
         if COMPANY_RESEARCH_QUALITATIVE_METRIC_RE.search(fact.metric):
@@ -2016,6 +2021,7 @@ def _votes_from_source_pages(
                     metric=fact.metric,
                 )
                 if vote:
+                    vote["source_current_period"] = source_current_period
                     votes.append(vote)
             continue
         recovered = _direct_value(fact.metric, _metric_focused_window(fact.metric, text))
@@ -2042,6 +2048,7 @@ def _votes_from_source_pages(
             metric=fact.metric,
         )
         if vote:
+            vote["source_current_period"] = source_current_period
             votes.append(vote)
     return votes
 
@@ -2725,6 +2732,19 @@ def _search_result_is_current(result: dict[str, Any], *, current_year: int) -> b
     )
 
 
+def _source_page_mentions_current_period(text: str, *, current_year: int) -> bool:
+    """Require an explicit current-year marker before promoting an evergreen source page."""
+    normalized = clean_text(text, 12000)
+    if str(current_year) in normalized:
+        return True
+    short_year = str(current_year)[-2:]
+    return bool(re.search(
+        rf"\b(?:FY|CY|Q[1-4]|[12]H|H[12])\s*{re.escape(short_year)}\b",
+        normalized,
+        re.IGNORECASE,
+    ))
+
+
 def _company_agent_url_key(url: str) -> str:
     """Canonicalize a discovered URL without weakening the official-host gate."""
     try:
@@ -3037,7 +3057,20 @@ def _run_company_research_agent(
             timeout=15.0,
             open_audit=open_attempts,
         )
-        current_discovered_keys = set(current_discovered_by_key)
+        governed_seed_keys = {
+            _company_agent_url_key(str(item.get("url") or ""))
+            for search in searches
+            for item in search.get("results", [])
+            if item.get("provider") == "governed_seed"
+            and _company_agent_url_key(str(item.get("url") or ""))
+        }
+        fresh_governed_seed_keys = {
+            _company_agent_url_key(str(vote.get("url") or ""))
+            for vote in votes
+            if vote.get("source_current_period")
+            and _company_agent_url_key(str(vote.get("url") or "")) in governed_seed_keys
+        }
+        current_discovered_keys = set(current_discovered_by_key) | fresh_governed_seed_keys
         current_source_votes = [
             vote
             for vote in votes
@@ -3059,6 +3092,7 @@ def _run_company_research_agent(
             "open_attempts": open_attempts,
             "live_official_open_count": sum(bool(item.get("opened")) for item in open_attempts),
             "fresh_official_open_count": sum(bool(item.get("opened")) for item in current_open_attempts),
+            "fresh_governed_seed_count": len(fresh_governed_seed_keys),
             "note": "HTTP 403/466 等只属于该原文入口打开失败，不代表搜索失败。",
         }
         opened.append(result)
