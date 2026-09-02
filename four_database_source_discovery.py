@@ -81,17 +81,24 @@ def _build_search_plans() -> list[dict[str, Any]]:
     return plans
 
 
-def _previous_day_news_references(reference: datetime) -> tuple[list[str], list[dict[str, Any]]]:
+def _previous_day_news_references(reference: datetime) -> tuple[list[str], list[dict[str, Any]], int]:
     target_date = (reference - timedelta(days=1)).date().isoformat()
-    run_names: list[str] = []
+    completed_runs: list[tuple[Path, dict[str, Any]]] = []
     items: list[dict[str, Any]] = []
     runs_dir = ROOT / "strategy_briefing" / "runs"
     for path in sorted(runs_dir.glob("*.json")) if runs_dir.exists() else []:
         payload = json.loads(path.read_text(encoding="utf-8"))
         scanned_at = str(payload.get("scanned_at") or payload.get("completed_at") or "")
-        if not scanned_at.startswith(target_date):
+        if not scanned_at.startswith(target_date) or str(payload.get("status") or "") != "completed":
             continue
-        run_names.append(path.name)
+        completed_runs.append((path, payload))
+    # The 01:00 job consumes only the two completed scheduled batches from the
+    # previous business day. Older retries/extra runs must not inflate B1.
+    authoritative_runs = sorted(
+        completed_runs,
+        key=lambda pair: str(pair[1].get("scanned_at") or pair[1].get("completed_at") or pair[0].name),
+    )[-2:]
+    for path, payload in authoritative_runs:
         for item in [*((payload.get("news_discovery") or {}).get("items") or []), *(payload.get("candidates") or [])]:
             if isinstance(item, dict):
                 items.append({**item, "reference_origin": "previous_day_strategic_news", "reference_run": path.name})
@@ -100,7 +107,8 @@ def _previous_day_news_references(reference: datetime) -> tuple[list[str], list[
         key = str(item.get("url") or item.get("source_url") or item.get("title") or "").strip()
         if key:
             deduped[key] = item
-    return run_names[-2:], list(deduped.values())[:300]
+    unique_references = list(deduped.values())
+    return [path.name for path, _payload in authoritative_runs], unique_references[:300], len(unique_references)
 
 
 def _write_json(path: Path, payload: Any) -> None:
@@ -299,7 +307,7 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             start_at=reference - timedelta(days=DISCOVERY_LOOKBACK_DAYS),
             end_at=reference,
         )
-        previous_runs, previous_references = _previous_day_news_references(reference)
+        previous_runs, previous_references, previous_reference_unique_total = _previous_day_news_references(reference)
         signals = _build_signals(plans, items, previous_references)
         payload = {
             "schema_version": 2,
@@ -311,6 +319,9 @@ def run_discovery(now: datetime | None = None) -> dict[str, Any]:
             "search_result_count": len(items),
             "previous_day_news_runs": previous_runs,
             "previous_day_reference_count": len(previous_references),
+            "previous_day_reference_unique_total": previous_reference_unique_total,
+            "previous_day_reference_limit": 300,
+            "previous_day_reference_truncated": previous_reference_unique_total > len(previous_references),
             "previous_day_references": previous_references,
             "signal_count": len(signals),
             "domains": {domain: sum(signal["domain"] == domain for signal in signals) for domain in ("local", "international", "mainland", "cloud")},

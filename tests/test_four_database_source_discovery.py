@@ -4,11 +4,43 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 import four_database_source_discovery as discovery
 
 
 class FourDatabaseSourceDiscoveryTests(unittest.TestCase):
+    def test_previous_day_references_use_only_two_completed_batches_dedupe_and_report_cap(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            runs_dir = root / "strategy_briefing" / "runs"
+            runs_dir.mkdir(parents=True)
+
+            def write_run(name: str, scanned_at: str, urls: list[str], status: str = "completed") -> None:
+                (runs_dir / name).write_text(json.dumps({
+                    "scanned_at": scanned_at,
+                    "status": status,
+                    "news_discovery": {"items": [{"title": url, "url": url} for url in urls]},
+                    "candidates": [],
+                }), encoding="utf-8")
+
+            write_run("2026-09-01@06-00.json", "2026-09-01T06:00:00+08:00", ["https://old.example/should-not-count"])
+            first_urls = [f"https://example.com/a-{index}" for index in range(160)]
+            second_urls = ["https://example.com/a-0", *[f"https://example.com/b-{index}" for index in range(159)]]
+            write_run("2026-09-01@07-30.json", "2026-09-01T07:30:00+08:00", first_urls)
+            write_run("2026-09-01@14-00.json", "2026-09-01T14:00:00+08:00", second_urls)
+            write_run("2026-09-01@15-00-failed.json", "2026-09-01T15:00:00+08:00", ["https://failed.example/"], status="failed")
+
+            with patch.object(discovery, "ROOT", root):
+                run_names, references, unique_total = discovery._previous_day_news_references(
+                    discovery.datetime(2026, 9, 2, 1, 0, tzinfo=discovery.HKT)
+                )
+
+        self.assertEqual(run_names, ["2026-09-01@07-30.json", "2026-09-01@14-00.json"])
+        self.assertEqual(unique_total, 319)
+        self.assertEqual(len(references), 300)
+        self.assertNotIn("https://old.example/should-not-count", {item["url"] for item in references})
+
     def test_actual_search_queries_cover_all_metric_families_and_aliases(self) -> None:
         plans = discovery._build_search_plans()
 

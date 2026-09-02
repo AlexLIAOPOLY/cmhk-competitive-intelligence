@@ -55,7 +55,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.js?v=36', INDEX)
         self.assertIn('/static/organization-admin.css?v=29', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=182', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=183', INDEX)
         self.assertIn('/static/app.js?v=322', INDEX)
         self.assertIn('await window.CMHKAuth?.ready', SCRIPT)
         self.assertIn('window.CMHKAuth?.hasModule(permissionModule(module))', SCRIPT)
@@ -572,12 +572,12 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_news_module_exposes_clickable_live_lineage_with_detailed_dialog(self):
         for label in (
-            "07:30 / 14:00 战略新闻扫描",
-            "公开网页新闻链接搜索",
+            "07:30 / 14:00 定时启动器",
+            "按关键词搜索公开网页",
             "AI 新闻相关性审核",
             "历史新闻重复检查",
-            "新增战略新闻归档",
-            "滚动栏与周报自动初筛",
+            "新增战略新闻保存与归档",
+            "AI 滚动栏与周报初筛",
             "纳入滚动栏",
             "纳入周报",
         ):
@@ -594,6 +594,13 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("错误定位与完整明细", SCRIPT)
         self.assertIn("newsRunErrors", SCRIPT)
         self.assertIn("查看完整错误原文", SCRIPT)
+        self.assertIn("本节点实际输入、动作与输出", SCRIPT)
+        self.assertIn("实际对象预览", SCRIPT)
+        self.assertIn("newsLineageFirstScreenModel", SCRIPT)
+        self.assertIn("renderNewsLineageFirstScreen", SCRIPT)
+        self.assertIn("页面不会编造链接、关键词或数据", SCRIPT)
+        self.assertIn(".news-lineage-io-flow", STYLE)
+        self.assertIn(".news-lineage-first-preview", STYLE)
 
     def test_news_selection_summary_distinguishes_verified_and_new_writes(self):
         self.assertIn("function selectionRunBatchKey(run)", SCRIPT)
@@ -652,14 +659,14 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
         self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
         for label in (
-            "07:30 / 14:00 战略新闻扫描",
-            "公开网页新闻链接搜索",
+            "07:30 / 14:00 定时启动器",
+            "按关键词搜索公开网页",
             "AI 新闻相关性审核",
             "历史新闻重复检查",
-            "新增战略新闻归档",
+            "新增战略新闻保存与归档",
             "01:00 四库缺口链接搜索",
-            "03:00 固定链接与官方原文抓取",
-            "Agent 数据证据审核",
+            "03:00 两类链接抓取与字段提取",
+            "Agent 数据证据逐条审核",
             "本地运营商",
             "国际运营商",
             "内地运营商",
@@ -672,13 +679,16 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}", SCRIPT)
         self.assertIn('fetch("/api/crawl-runs?limit=500"', SCRIPT)
         self.assertIn("function mainRunForDate(date)", SCRIPT)
+        self.assertIn("function authoritativeSourceDiscoveryRunForDate(date)", SCRIPT)
+        self.assertIn('String(run.started_at_hkt || "").slice(11, 13) === "01"', SCRIPT)
+        self.assertIn("run.operational_summary?.feishu_detail_log?.readback_verified === true", SCRIPT)
         self.assertIn("runCompletedDate(run) === date", SCRIPT)
         self.assertIn("function linkedParentRunId(run)", SCRIPT)
         self.assertIn('linkedParentRunId(run) === mainRun.crawl_run_id', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=157', INDEX)
-        self.assertIn('workspace-tabs.js?v=182', INDEX)
+        self.assertIn('workspace-tabs.css?v=158', INDEX)
+        self.assertIn('workspace-tabs.js?v=183', INDEX)
         self.assertIn('selectedTab.scrollIntoView({ block: "nearest", inline: "center"', SCRIPT)
-        self.assertIn('workspace-tabs.css?v=157', INDEX)
+        self.assertIn('workspace-tabs.css?v=158', INDEX)
         self.assertIn('synchronizeWorkspaceLayoutScale(wasDashboard !== targetIsDashboard)', SCRIPT)
         self.assertIn('is-workspace-layout-switching', SCRIPT)
         self.assertIn('.dashboard-page.is-workspace-layout-switching .workspace-tabs', STYLE)
@@ -693,10 +703,10 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertNotIn("data-news-lineage-mode", SCRIPT)
         self.assertNotIn("本轮线索", SCRIPT)
         self.assertIn("canvasSize: [1850, 680]", SCRIPT)
-        self.assertIn('key: "news-selection-agent", label: "滚动栏与周报自动初筛"', SCRIPT)
+        self.assertIn('key: "news-selection-agent", label: "AI 滚动栏与周报初筛"', SCRIPT)
         self.assertIn("const nodePurposes = {", SCRIPT)
-        self.assertIn('main: "读取飞书人工维护的固定链接和01:00补缺线索，抓取网页及官方原文后提交审核"', SCRIPT)
-        self.assertIn('agent: "逐条审核03:00抓取结果，核对主体、指标、期间、单位、官方来源和证据完整性"', SCRIPT)
+        self.assertIn('main: "抓取飞书固定链接和01:00待追证链接，继续打开官方原文并提取主体、指标、期间、数值、单位和来源"', SCRIPT)
+        self.assertIn('agent: "逐条审核C1形成的候选数据事实；C1已合并两类链接结果，不把01:00和03:00数量相加"', SCRIPT)
         self.assertIn('${node.primary ? " is-primary" : ""}', SCRIPT)
         self.assertIn('证据审核核心', SCRIPT)
         self.assertIn('<p>作用：${esc(node.purpose || "未说明")}</p>', SCRIPT)
@@ -716,7 +726,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('weeklyHumanRows', SCRIPT)
         self.assertIn("机器只按已验证的新闻自动初筛操作者统计", SCRIPT)
         self.assertIn('.news-lineage-node.is-dual-metric > strong', STYLE)
-        self.assertIn('["news-output", "news-selection-agent", "新增新闻提交发布初筛", "cyan"]', SCRIPT)
+        self.assertIn('["news-output", "news-selection-agent", "新增新闻交给AI发布初筛", "cyan"]', SCRIPT)
         self.assertIn("机器人身份纠正|当天范围门禁|机器人分批写入", SCRIPT)
         self.assertIn("detail.newsSelectionItems", SCRIPT)
         self.assertIn("当天新闻自动初筛明细", SCRIPT)
@@ -783,7 +793,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(".company-agent-graph { grid-template-columns: 1fr", STYLE)
         self.assertIn("原始数据指标证据 ${number(mainRun.curation.tasks)} 条", SCRIPT)
         self.assertIn("形成并归档候选数据事实", SCRIPT)
-        self.assertIn("当天固定源逐行抓取明细", SCRIPT)
+        self.assertIn("当天两类链接逐行抓取明细", SCRIPT)
         self.assertNotIn("当天33行固定源逐行抓取明细", SCRIPT)
         self.assertIn("当天Agent逐条证据审核明细", SCRIPT)
         self.assertIn("逐条审核 ${records.length} 条 · 通过 ${included} · 拒绝 ${excluded}", SCRIPT)
@@ -791,9 +801,9 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("该节点有汇总结果，但当前运行未读取到逐条归档", SCRIPT)
         self.assertIn("飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因", SCRIPT)
         self.assertIn('"合并前一天07:30/14:00两次战略新闻任务内容作参考"', SCRIPT)
-        self.assertIn('key: "previous-news", label: "前一日新闻线索参考"', SCRIPT)
-        self.assertIn('["previous-news", "news-db-signal", "前一日新闻提供补缺方向", "amber"]', SCRIPT)
-        self.assertIn('["news-db-signal", "main", "补缺链接交给03:00追官方原文", "handoff-down"]', SCRIPT)
+        self.assertIn('key: "previous-news", label: "前一日两轮新闻合并参考"', SCRIPT)
+        self.assertIn('["previous-news", "news-db-signal", "前一日两批合并去重后提供补缺方向", "amber"]', SCRIPT)
+        self.assertIn('["news-db-signal", "main", "01:00待追证链接并入03:00抓取", "handoff-down"]', SCRIPT)
         self.assertNotIn('["news-db-signal", "database-hub", "03:00追官方原文", "amber"]', SCRIPT)
         self.assertIn('["agent", "database-hub", "审核通过事实写入四库", "cyan"]', SCRIPT)
         self.assertNotIn('["agent", "database-hub", "四库分流", "cyan"]', SCRIPT)
@@ -875,8 +885,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('strategicNewsRunRank(run)', SCRIPT)
         self.assertIn('run?.operational_summary?.readback_verified === true', SCRIPT)
         self.assertIn('const runs = authoritativeStrategicNewsRuns(attemptRuns);', SCRIPT)
-        self.assertIn('unit: newsRun.run_status === "running" ? "" : "轮新闻扫描任务"', SCRIPT)
-        self.assertIn('`${attemptRuns.length} 次扫描尝试', SCRIPT)
+        self.assertIn('unit: newsRun.run_status === "running" ? "" : "次权威新闻任务"', SCRIPT)
+        self.assertIn('`只负责触发 · ${attemptRuns.length} 次任务尝试`', SCRIPT)
         self.assertIn('data-health="${esc(node.health?.key || "unknown")}"', SCRIPT)
         self.assertIn('健康状态${esc(node.health?.label || "无记录")}', SCRIPT)
         for label in ("正常", "运行中", "警告", "异常", "无记录"):
@@ -933,7 +943,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('write: "news-output"', SCRIPT)
         self.assertIn('const currentStrategicStage = strategicHealth.key === "running" ? activeNewsStage(stages) : null;', SCRIPT)
         self.assertIn('`当前阶段：${currentStrategicStage.label}`', SCRIPT)
-        self.assertIn('`当前节点：${activeNewsStageNodeLabel(currentStrategicStage.key)}', SCRIPT)
+        self.assertIn('`已触发 · 当前执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}', SCRIPT)
         self.assertIn('当前执行已定位在“${runningNode.label}”节点；未发现线路异常证据。', SCRIPT)
         self.assertNotIn('label: "传输中"', SCRIPT)
         self.assertNotIn('["interrupted", "degraded", "at-risk", "running"].includes(line?.key)', SCRIPT)
