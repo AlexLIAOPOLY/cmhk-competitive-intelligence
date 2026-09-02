@@ -5690,29 +5690,40 @@ def sync_news_review_sheet_audit(
             path=NEWS_REVIEW_SHEET_EDIT_EVENT_PATH,
             after_ms=previous_event_ms,
         )
-        editor_event = editor_events[-1] if editor_events else {}
-        operator_profiles: list[dict[str, str]] = []
-        for operator in editor_event.get("operators") or []:
-            if not isinstance(operator, dict):
-                continue
-            profile = AUTH.feishu_profile_by_open_id(
-                str(operator.get("open_id") or ""),
-                str(operator.get("union_id") or ""),
-            )
-            if profile.get("name"):
-                operator_profiles.append(profile)
+        cursor_event = editor_events[-1] if editor_events else {}
+        # drive.file.edit_v1 is emitted for the whole workbook.  A screener
+        # write can therefore be followed by our own A-column mention write,
+        # or by activity in another sheet, before the next polling cycle.  Do
+        # not equate the final workbook event with the person who changed the
+        # review decision.  Scan the complete unread event window and accept
+        # it only when it resolves to one unique human identity.
+        resolved_editors: dict[str, tuple[dict[str, str], dict]] = {}
+        for candidate_event in editor_events:
+            for operator in candidate_event.get("operators") or []:
+                if not isinstance(operator, dict):
+                    continue
+                profile = AUTH.feishu_profile_by_open_id(
+                    str(operator.get("open_id") or ""),
+                    str(operator.get("union_id") or ""),
+                )
+                profile_name = str(profile.get("name") or "").strip()
+                if not profile_name:
+                    # Feishu application/bot operators are not directory
+                    # users and normally do not resolve here.  Ignoring them
+                    # prevents a later system write from hiding the human.
+                    continue
+                profile_key = str(profile.get("id") or profile.get("open_id") or profile_name)
+                resolved_editors[profile_key] = (profile, candidate_event)
         actor = None
-        if operator_profiles:
+        editor_event: dict = {}
+        if len(resolved_editors) == 1:
+            operator_profile, editor_event = next(iter(resolved_editors.values()))
             actor = {
-                "id": ",".join(profile["id"] for profile in operator_profiles),
-                "name": "、".join(profile["name"] for profile in operator_profiles),
-                "avatarUrl": operator_profiles[0].get("avatar_url", "") if len(operator_profiles) == 1 else "",
+                "id": str(operator_profile.get("id") or ""),
+                "name": str(operator_profile.get("name") or ""),
+                "avatarUrl": str(operator_profile.get("avatar_url") or ""),
                 "role": "EXTERNAL",
-                "feishuOpenId": (
-                    operator_profiles[0].get("open_id", "")
-                    if len(operator_profiles) == 1
-                    else ""
-                ),
+                "feishuOpenId": str(operator_profile.get("open_id") or ""),
             }
         agent_decisions = _news_auto_screening_decisions()
         recorded_agent_keys = {
@@ -5724,7 +5735,7 @@ def sync_news_review_sheet_audit(
             and details.get("automation_event_key")
         }
         audit_at = datetime.now().astimezone().isoformat()
-        used_editor_event = False
+        unresolved_editor_change = False
         if same_sheet and isinstance(previous_rows, dict):
             for row_key, current in current_rows.items():
                 before_row = previous_rows.get(row_key)
@@ -5758,9 +5769,9 @@ def sync_news_review_sheet_audit(
                         # Keep the previous value as the comparison baseline until
                         # either a verified Agent write or a Feishu editor resolves it.
                         current["decisions"][decision_offset] = before
+                        if not agent_match:
+                            unresolved_editor_change = True
                         continue
-                    if not agent_match:
-                        used_editor_event = True
                     details = {
                         "source_label": "新闻自动初筛" if agent_match else "飞书表格",
                         "target_label": title,
@@ -5808,8 +5819,8 @@ def sync_news_review_sheet_audit(
             "sheet_id": sheet_id,
             "rows": current_rows,
             "last_feishu_event_ms": int(
-                (editor_event.get("create_time_ms") or previous_event_ms)
-                if used_editor_event
+                (cursor_event.get("create_time_ms") or previous_event_ms)
+                if cursor_event and not unresolved_editor_change
                 else previous_event_ms
             ),
         }
