@@ -384,6 +384,40 @@ class AuthServiceTest(unittest.TestCase):
         self.service.handle(denied, "GET", urlparse("/api/auth/admin/audit"))
         self.assertEqual(denied.status, 403)
 
+    def test_two_intranet_users_have_distinct_login_footprints_and_shared_updates(self):
+        users = self.service._users()
+        admin_user = next(item for item in users if item["id"] == "local-admin")
+        content_user = next(item for item in users if item["id"] == "local-content")
+        admin_login = FakeHandler(origin="", client="172.19.2.71", host="172.19.2.61:8765")
+        content_login = FakeHandler(origin="", client="172.19.2.72", host="172.19.2.61:8765")
+
+        self.service.record_auth_event(handler=admin_login, user=admin_user, action="auth.login")
+        self.service.record_auth_event(handler=content_login, user=content_user, action="auth.login")
+        events = self.service.operation_audit(limit=2)
+        self.assertEqual(
+            [(event["actor_id"], event["details"]["client_ip"]) for event in events],
+            [("local-content", "172.19.2.72"), ("local-admin", "172.19.2.71")],
+        )
+
+        admin_cookie = self.service._create_session(admin_login, admin_user).split(";", 1)[0]
+        content_cookie = self.service._create_session(content_login, content_user).split(";", 1)[0]
+        update = FakeHandler(
+            body={"role": "ANALYST", "status": "active"},
+            cookie=admin_cookie,
+            origin="http://172.19.2.61:8765",
+            client="172.19.2.71",
+            host="172.19.2.61:8765",
+        )
+        self.service.handle(update, "POST", urlparse("/api/auth/admin/users/local-content"))
+        self.assertEqual(update.status, 200)
+        reread = FakeHandler(
+            cookie=content_cookie,
+            origin="",
+            client="172.19.2.72",
+            host="172.19.2.61:8765",
+        )
+        self.assertEqual(self.service.current_user(reread)["role"], "ANALYST")
+
     def test_operation_origin_distinguishes_local_ngrok_and_server(self):
         local = FakeHandler(origin="", host="127.0.0.1:8765")
         self.assertEqual(self.service.operation_origin(local), "local")
@@ -440,6 +474,7 @@ class AuthServiceTest(unittest.TestCase):
     def test_operation_audit_all_returns_more_than_the_default_200_events(self):
         _, admin_session = self.dev_login()
         actor = self.service.current_actor(FakeHandler(cookie=admin_session, origin=""))
+        baseline = len(self.service.operation_audit(limit=None))
         for index in range(205):
             self.service.record_operation(
                 actor=actor,
@@ -450,7 +485,7 @@ class AuthServiceTest(unittest.TestCase):
         admin = FakeHandler(cookie=admin_session, origin="")
         self.service.handle(admin, "GET", urlparse("/api/auth/admin/audit?limit=all"))
         self.assertEqual(admin.status, 200)
-        self.assertEqual(len(admin.payload()["events"]), 205)
+        self.assertEqual(len(admin.payload()["events"]), baseline + 205)
 
     def test_directory_search_keeps_real_avatar_and_job_title(self):
         directory_users = [{

@@ -41,6 +41,7 @@ from ai_key_rotation import open_llm_request
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from cmhk.data.company_metrics import build_company_metrics_payload
 from cmhk.data_releases import default_release_root, resolve_release_request
+from cmhk.intranet import intranet_access_urls
 from executive_company_benchmarks import build_company_benchmarks
 from cmhk.crawl.extractors import row_fields
 from cmhk.agent.rag import ask_llm_with_rag, estimate_tokens, list_knowledge_datasets, stream_llm_with_rag
@@ -8498,7 +8499,12 @@ def main() -> None:
     port = int(os.environ.get("PORT", "8765"))
     host = os.environ.get("HOST", "0.0.0.0")
     server = ThreadingHTTPServer((host, port), AppHandler)
-    print(f"Weekly report UI: http://{host}:{port}")
+    print(f"Weekly report UI: http://{host}:{port}", flush=True)
+    access_urls = intranet_access_urls(port, host=host)
+    if access_urls:
+        print("公司内网访问地址（可发给同事）：", flush=True)
+        for access_url in access_urls:
+            print(f"  {access_url}", flush=True)
     server.serve_forever()
 
 

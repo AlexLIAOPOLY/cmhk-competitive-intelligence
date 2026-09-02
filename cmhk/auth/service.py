@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import hashlib
 import hmac
+import ipaddress
 import json
 import logging
 import os
@@ -412,6 +413,56 @@ class AuthService:
             "feishuOpenId": str(user.get("feishu_open_id") or ""),
             "feishuUnionId": str(user.get("feishu_union_id") or ""),
         }
+
+    def _stored_user_actor(self, user: dict[str, Any]) -> dict[str, Any]:
+        return {
+            **(self._public_user(user) or {}),
+            "feishuOpenId": str(user.get("feishu_open_id") or ""),
+            "feishuUnionId": str(user.get("feishu_union_id") or ""),
+        }
+
+    def _request_audit_details(self, handler) -> dict[str, str]:
+        try:
+            direct_client = str(handler.client_address[0] or "").strip()
+        except (AttributeError, IndexError, TypeError):
+            direct_client = ""
+        forwarded_client = str(handler.headers.get("X-Forwarded-For") or "").split(",", 1)[0].strip()
+        client_ip = direct_client
+        if forwarded_client and (
+            self.trust_proxy_headers or self.operation_origin(handler) == "ngrok"
+        ):
+            try:
+                ipaddress.ip_address(forwarded_client)
+                client_ip = forwarded_client
+            except ValueError:
+                pass
+        try:
+            ipaddress.ip_address(client_ip)
+        except ValueError:
+            client_ip = ""
+        request_host = str(handler.headers.get("Host") or "").split(",", 1)[0].strip()
+        if any(character in request_host for character in "\r\n/\\"):
+            request_host = ""
+        return {
+            "client_ip": client_ip,
+            "request_host": request_host[:240],
+            "user_agent": str(handler.headers.get("User-Agent") or "")[:180],
+        }
+
+    def record_auth_event(self, *, handler, user: dict[str, Any], action: str) -> dict[str, Any]:
+        """Record an attributable login/logout event without storing credentials or tokens."""
+        return self.record_operation(
+            actor=self._stored_user_actor(user),
+            action=action,
+            target=str(user.get("id") or ""),
+            origin=self.operation_origin(handler),
+            details={
+                **self._request_audit_details(handler),
+                "auth_provider": (
+                    "feishu" if user.get("credential_source") == "feishu_sso" else "local"
+                ),
+            },
+        )
 
     def public_user_by_feishu_open_id(self, open_id: str) -> dict[str, Any] | None:
         open_id = str(open_id or "").strip()
@@ -1146,6 +1197,11 @@ class AuthService:
                 "devMode": bool(dev_accounts),
                 "feishu": {"configured": self.feishu_configured, "callbackUri": self._callback_uri(handler)},
                 "devAccounts": dev_accounts,
+                "collaboration": {
+                    "perUserIdentity": self.require_login and self.feishu_configured,
+                    "loginAudit": True,
+                    "sharedServerState": True,
+                },
             })
             return True
         if path == "/api/auth/me" and method == "GET":
@@ -1199,6 +1255,7 @@ class AuthService:
                     return True
                 identity = self._enrich_feishu_identity(identity, access_token)
                 user = self._upsert_feishu_user(identity)
+                self.record_auth_event(handler=handler, user=user, action="auth.login")
                 self._redirect(handler, self._safe_next(str(verified.get("next") or "/")), [
                     self._create_session(handler, user),
                     self._cookie(handler, self.oauth_cookie_name, "", 0, "/api/auth/feishu"),
@@ -1220,9 +1277,19 @@ class AuthService:
             if not user:
                 self._send_json(handler, 401, {"ok": False, "message": "本地测试账号不存在"})
                 return True
+            self.record_auth_event(handler=handler, user=user, action="auth.dev_login")
             self._send_json(handler, 200, {"ok": True, "user": self._public_user(user)}, {"Set-Cookie": self._create_session(handler, user)})
             return True
         if path == "/api/auth/logout" and method == "POST":
+            actor = self.current_actor(handler)
+            if actor:
+                with self.lock:
+                    stored_user = next(
+                        (item for item in self._users() if str(item.get("id")) == str(actor.get("id"))),
+                        None,
+                    )
+                if stored_user:
+                    self.record_auth_event(handler=handler, user=stored_user, action="auth.logout")
             self._delete_session(handler)
             self._send_json(handler, 200, {"ok": True}, {"Set-Cookie": self._cookie(handler, self.cookie_name, "", 0)})
             return True
