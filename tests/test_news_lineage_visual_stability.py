@@ -21,6 +21,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_crawler_diagram_uses_fine_subtle_grid_glass(self):
         self.assertIn(".news-lineage-viewport::before", STYLE)
+        self.assertIn("rgba(26, 160, 214, .055)", STYLE)
+        self.assertIn("rgba(126, 82, 226, .04)", STYLE)
+        self.assertIn("linear-gradient(135deg, rgba(8, 34, 47, .62), rgba(6, 29, 42, .6))", STYLE)
         self.assertIn("background-size: 14px 14px, 14px 14px, 70px 70px, 70px 70px", STYLE)
         self.assertIn("backdrop-filter: blur(14px) saturate(128%)", STYLE)
         self.assertIn("rgba(126, 224, 244, .024)", STYLE)
@@ -38,7 +41,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertNotIn("transition: transform .18s ease", STYLE)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=145', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=146', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=168', INDEX)
 
 
