@@ -16358,21 +16358,136 @@ body.report-library-open::before {
 }
 .intelligence-viz-rows li > i b::after { position: absolute; inset: 0 0 0 auto; width: 2px; background: color-mix(in srgb, var(--domain-accent) 35%, #ecfbff); box-shadow: -2px 0 5px color-mix(in srgb, var(--domain-accent) 32%, transparent); content: ""; }
 
-/* Comparison rows use plain horizontal bars: no pill ends or lollipop marker. */
+/* Give every comparison bar the same dimensional material language as the
+   cloud columns, then reveal values in reading order when a view is rendered. */
+.intelligence-viz-rows li,
+.intelligence-viz-columns > div,
+.intelligence-domain-bars li,
+.intelligence-financial-chart-bar {
+  --chart-sequence: 0;
+}
+.intelligence-viz-rows li:nth-child(2),
+.intelligence-viz-columns > div:nth-child(2),
+.intelligence-domain-bars li:nth-child(2),
+.intelligence-financial-chart-bar:nth-child(2) { --chart-sequence: 1; }
+.intelligence-viz-rows li:nth-child(3),
+.intelligence-viz-columns > div:nth-child(3),
+.intelligence-domain-bars li:nth-child(3),
+.intelligence-financial-chart-bar:nth-child(3) { --chart-sequence: 2; }
+.intelligence-viz-rows li:nth-child(4),
+.intelligence-viz-columns > div:nth-child(4),
+.intelligence-domain-bars li:nth-child(4),
+.intelligence-financial-chart-bar:nth-child(4) { --chart-sequence: 3; }
+.intelligence-viz-rows li:nth-child(5),
+.intelligence-viz-columns > div:nth-child(5),
+.intelligence-domain-bars li:nth-child(5),
+.intelligence-financial-chart-bar:nth-child(5) { --chart-sequence: 4; }
+.intelligence-viz-rows li:nth-child(6),
+.intelligence-viz-columns > div:nth-child(6),
+.intelligence-domain-bars li:nth-child(6),
+.intelligence-financial-chart-bar:nth-child(6) { --chart-sequence: 5; }
+.intelligence-viz-rows li:nth-child(7),
+.intelligence-viz-columns > div:nth-child(7),
+.intelligence-domain-bars li:nth-child(7),
+.intelligence-financial-chart-bar:nth-child(7) { --chart-sequence: 6; }
+.intelligence-viz-rows li:nth-child(n + 8),
+.intelligence-viz-columns > div:nth-child(n + 8),
+.intelligence-domain-bars li:nth-child(n + 8),
+.intelligence-financial-chart-bar:nth-child(n + 8) { --chart-sequence: 7; }
+
+.intelligence-domain-bars i {
+  height: 7px;
+  overflow: hidden;
+  border: 1px solid rgba(119, 172, 190, .11);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(158, 210, 226, .08), transparent 44%), rgba(28, 67, 82, .25);
+  box-shadow: inset 0 1px 2px rgba(0, 7, 12, .46);
+}
+.intelligence-domain-bars i b {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 44%, transparent);
+  border-radius: 1px;
+  background: linear-gradient(180deg, rgba(231, 253, 255, .44), rgba(231, 253, 255, .08) 30%, transparent 31%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 52%, #173c50), var(--domain-accent) 72%, color-mix(in srgb, var(--domain-accent) 66%, #d8f7fb));
+  box-shadow: inset 0 -1px 1px rgba(0, 18, 27, .22), 0 1px 4px color-mix(in srgb, var(--domain-accent) 18%, transparent);
+  animation-delay: calc(140ms + var(--chart-sequence) * 65ms);
+}
+
 .intelligence-viz-rows li > i {
-  height: 8px;
-  border: 0;
-  border-radius: 0;
-  background: rgba(28, 67, 82, .28);
-  box-shadow: none;
+  height: 10px;
+  overflow: hidden;
+  border: 1px solid rgba(119, 172, 190, .11);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(158, 210, 226, .08), transparent 44%), rgba(28, 67, 82, .25);
+  box-shadow: inset 0 1px 2px rgba(0, 7, 12, .46), 0 1px rgba(198, 232, 241, .025);
 }
 .intelligence-viz-rows li > i b {
-  border: 0;
-  border-radius: 0;
-  background: var(--domain-accent);
-  box-shadow: none;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 44%, transparent);
+  border-radius: 1px;
+  background: linear-gradient(180deg, rgba(231, 253, 255, .48), rgba(231, 253, 255, .08) 29%, transparent 30%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 50%, #173c50), var(--domain-accent) 72%, color-mix(in srgb, var(--domain-accent) 66%, #d8f7fb));
+  box-shadow: inset 0 -1px 1px rgba(0, 18, 27, .22), 0 1px 4px color-mix(in srgb, var(--domain-accent) 17%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: intelligence-bar-grow .72s calc(120ms + var(--chart-sequence) * 65ms) cubic-bezier(.2, .8, .2, 1) forwards;
 }
-.intelligence-viz-rows li > i b::after { display: none; }
+.intelligence-viz-rows li > i b::after {
+  display: block;
+  width: 2px;
+  background: color-mix(in srgb, var(--domain-accent) 34%, #ecfbff);
+  box-shadow: -2px 0 5px color-mix(in srgb, var(--domain-accent) 28%, transparent);
+}
+
+.intelligence-viz-columns b {
+  animation-delay: calc(120ms + var(--chart-sequence) * 65ms);
+}
+
+.intelligence-financial-chart-bar > i {
+  overflow: hidden;
+  border: 1px solid rgba(119, 172, 190, .1);
+  border-radius: 2px;
+  background: linear-gradient(180deg, rgba(158, 210, 226, .07), transparent 45%), rgba(28, 67, 82, .2);
+  box-shadow: inset 0 1px 2px rgba(0, 7, 12, .42);
+}
+.intelligence-financial-chart-bar > i > b {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 42%, transparent);
+  border-radius: 1px;
+  background: linear-gradient(180deg, rgba(231, 253, 255, .46), rgba(231, 253, 255, .07) 30%, transparent 31%), linear-gradient(90deg, color-mix(in srgb, var(--domain-accent) 50%, #173c50), var(--domain-accent) 72%, color-mix(in srgb, var(--domain-accent) 64%, #d8f7fb));
+  box-shadow: inset 0 -1px 1px rgba(0, 18, 27, .22), 0 1px 4px color-mix(in srgb, var(--domain-accent) 16%, transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation: intelligence-bar-grow .72s calc(120ms + var(--chart-sequence) * 65ms) cubic-bezier(.2, .8, .2, 1) forwards;
+}
+.intelligence-financial-chart.is-columns .intelligence-financial-chart-bar > i > b {
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation-name: intelligence-column-grow;
+}
+.intelligence-financial-chart.is-lollipop .intelligence-financial-chart-bar > i,
+.intelligence-financial-chart.is-dots .intelligence-financial-chart-bar > i {
+  overflow: visible;
+}
+.intelligence-financial-chart.is-lollipop .intelligence-financial-chart-bar > i > b,
+.intelligence-financial-chart.is-dots .intelligence-financial-chart-bar > i > b {
+  transform: none;
+  animation: intelligence-marker-in .52s calc(120ms + var(--chart-sequence) * 65ms) cubic-bezier(.2, .8, .2, 1) both;
+}
+
+/* replaceDomainCard toggles this class after a forced layout. A second set of
+   equivalent keyframes makes the reveal replay on metric/focus switches. */
+.intelligence-domain.is-content-switching .intelligence-viz-rows li > i b,
+.intelligence-domain.is-content-switching .intelligence-domain-bars i b,
+.intelligence-domain.is-content-switching .intelligence-financial-chart-bar > i > b {
+  animation-name: intelligence-bar-regrow;
+}
+.intelligence-domain.is-content-switching .intelligence-viz-columns b,
+.intelligence-domain.is-content-switching .intelligence-financial-chart.is-columns .intelligence-financial-chart-bar > i > b {
+  animation-name: intelligence-column-regrow;
+}
+.intelligence-domain.is-content-switching .intelligence-financial-chart:is(.is-lollipop, .is-dots) .intelligence-financial-chart-bar > i > b {
+  animation-name: intelligence-marker-reenter;
+}
 
 .intelligence-domain-cloud .intelligence-viz-columns .is-negative b {
   border-color: #9f5360;
@@ -16441,10 +16556,29 @@ body.report-library-open::before {
 
   .intelligence-viz-columns b,
   .intelligence-viz-diverging b,
-  .intelligence-viz-rows li > i b { animation: none; transform: none; }
+  .intelligence-viz-rows li > i b,
+  .intelligence-domain-bars i b,
+  .intelligence-financial-chart-bar > i > b { animation: none !important; transform: none !important; }
 
   .intelligence-scroll-label-track { display: none !important; }
   .intelligence-scroll-label-static { opacity: 1 !important; transition: none !important; }
+}
+
+@keyframes intelligence-marker-in {
+  from { opacity: 0; filter: brightness(1.35); }
+  to { opacity: 1; filter: none; }
+}
+@keyframes intelligence-marker-reenter {
+  from { opacity: 0; filter: brightness(1.35); }
+  to { opacity: 1; filter: none; }
+}
+@keyframes intelligence-bar-regrow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+@keyframes intelligence-column-regrow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
 }
 
 .dashboard-page .floating-chat {

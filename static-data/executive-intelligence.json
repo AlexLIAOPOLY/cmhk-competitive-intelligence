@@ -1234,13 +1234,9 @@
           "ai_summary": {
             "id": "revenue",
             "headline": "HKT资源底盘最厚",
-            "analysis": "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
-              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-            ],
+            "analysis": "就当前披露边界而言，HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "CMHK",
@@ -2528,10 +2524,14 @@
           ],
           "ai_summary": {
             "id": "net_profit",
-            "headline": "HKT再投资弹药更足",
-            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "HKT稳健三港承压",
+            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -3479,13 +3479,9 @@
           {
             "id": "revenue",
             "headline": "HKT资源底盘最厚",
-            "analysis": "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
-              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-            ],
+            "analysis": "就当前披露边界而言，HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "CMHK",
@@ -3601,10 +3597,14 @@
           },
           {
             "id": "net_profit",
-            "headline": "HKT再投资弹药更足",
-            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "HKT稳健三港承压",
+            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -42965,8 +42965,8 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-01T17:26:01+08:00",
-      "model": "DeepSeek-V4-Pro",
+      "generated_at_hkt": "2026-09-02T16:24:24+08:00",
+      "model": "Qwen3-30B-A3B-Instruct-2507",
       "summaries": [
         {
           "domain": "local",
@@ -42982,13 +42982,9 @@
             {
               "id": "revenue",
               "headline": "HKT资源底盘最厚",
-              "analysis": "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
-              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-              "source_urls": [
-                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
-                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-              ],
+              "analysis": "就当前披露边界而言，HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
+              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+              "source_urls": [],
               "entities": [
                 {
                   "name": "CMHK",
@@ -43104,10 +43100,14 @@
             },
             {
               "id": "net_profit",
-              "headline": "HKT再投资弹药更足",
-              "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值，这表明HKT盈利状态最稳、自我融资与再投资空间最厚，为四家最高正值，为唯一负值，CMHK 2026首7月累计净利润583.2百万港元。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "HKT稳健三港承压",
+              "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
               "entities": [
                 {
                   "name": "CMHK",
@@ -44083,7 +44083,8 @@
         "local.revenue": [
           "HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。",
           "HKT FY2025营收36553.0百万港元，3HK为5448.0百万港元，为最低，但营收绝对值并非效率证明，SmarTone 6253.4百万港元与CMHK 4544.6百万港元（2026首7月累计）口径期间不同，不纳入该分层比较。",
-          "HKT FY2025营收36553.0百万港元，而SmarTone为6253.4百万港元、3HK为5448.0百万港元，收入基础呈明显断层，HKT的持续投入与价格竞争容错主要来自更厚的资源承载，CMHK为2026首7月累计口径。"
+          "HKT FY2025营收36553.0百万港元，而SmarTone为6253.4百万港元、3HK为5448.0百万港元，收入基础呈明显断层，HKT的持续投入与价格竞争容错主要来自更厚的资源承载，CMHK为2026首7月累计口径。",
+          "就当前披露边界而言，HKT FY2025营收36553百万港元，3HK5448百万港元；这表明HKT的经营资源底盘最厚、资源承载力更强，更能承担网络与获客投入；3HK的资源容错较窄、经营容错更低，但规模不等同效率。"
         ],
         "local.net_profit": [
           "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
@@ -44091,7 +44092,7 @@
         ]
       },
       "manual_focus_regeneration_counts": {
-        "local.revenue": 2,
+        "local.revenue": 3,
         "local.net_profit": 1
       },
       "manual_focus_regeneration_title_history": {
@@ -44107,8 +44108,8 @@
       },
       "manual_focus_regeneration": {
         "domain": "local",
-        "focus": "net_profit",
-        "generated_at_hkt": "2026-09-01T14:43:02+08:00"
+        "focus": "revenue",
+        "generated_at_hkt": "2026-09-02T16:24:24+08:00"
       },
       "manual_discovery_regeneration_counts": {
         "international.cloud": 4,

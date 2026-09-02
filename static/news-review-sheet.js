@@ -171,7 +171,11 @@
     if (columnIndex === columns.screener) {
       cell.classList.add("news-review-screener-cell");
       const reviewer = row.reviewer;
-      if (reviewer?.name) {
+      // Column A is the value read back from Feishu and is also what the
+      // filter menu uses.  Only decorate it with an audit avatar when both
+      // identities agree; a stale or ambiguous audit must never replace the
+      // visible Feishu screener.
+      if (value && reviewer?.name && String(reviewer.name).trim() === value.trim()) {
         cell.innerHTML = `<span class="news-review-screener">${reviewerAvatar(reviewer, "筛选人")}<span class="news-review-screener-name">${escapeHtml(reviewer.name)}</span></span>`;
       } else {
         const text = document.createElement("span");

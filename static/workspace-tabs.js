@@ -22,6 +22,7 @@
     newsSelectedDate: "",
     newsSelectedRunIds: [],
     newsRunDetails: {},
+    fixedSourceSummary: {},
     newsItemFallback: {},
     newsReviewSheet: null,
     newsRunRequest: 0,
@@ -1504,7 +1505,7 @@
   }
 
   function activeNewsStageNodeLabel(stageKey) {
-    return ({ search: "线索补缺", gate: "线索补缺", ai: "AI审核", dedupe: "历史去重", write: "新增新闻", push: "新增新闻" })[stageKey] || "未定位";
+    return ({ search: "公开网页新闻链接搜索", gate: "公开网页新闻链接搜索", ai: "AI 新闻相关性审核", dedupe: "历史新闻重复检查", write: "新增战略新闻归档", push: "新增战略新闻归档" })[stageKey] || "未定位";
   }
 
   function newsStageHealth(stage, aggregateHealth) {
@@ -1666,16 +1667,16 @@
       const numericChangeText = numericBaselineAvailable ? `${number(numericChangeCount)} 项` : "未留存";
       return {
         key: `database-${key}`,
-        label: domain.title || fallbackLabel,
+        label: `${domain.title || fallbackLabel}数据发布`,
         value: intelligenceRun.crawl_run_id ? number(uiItemCount) : "—",
-        unit: intelligenceRun.crawl_run_id ? "项发布到UI" : "",
-        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 项 · 数值变化 ${numericChangeText}` : "当天未留下四库刷新归档",
+        unit: "个主体发布到 UI",
+        note: intelligenceRun.crawl_run_id ? `重新发布 ${number(uiItemCount)} 个主体 · 数据指标变化 ${numericChangeText}` : "当天未留下四库刷新归档",
         health: intelligenceHealth,
         variant,
         compact: true,
         position,
         details: intelligenceRun.crawl_run_id ? [
-          `当天重新发布到UI ${number(uiItemCount)} 项；结构化数值变化 ${numericChangeText}`,
+          `当天重新发布到 UI ${number(uiItemCount)} 个公司或厂商主体；结构化数据指标变化 ${numericChangeText}`,
           `数据库事实快照 ${number(factCount)} 条；本库文件内容${databaseChanged ? "有变动" : "未变动"}，不据此计算数值变化`,
           `官方来源检查 ${number(Number(sourceStats.official_urls || 0))} 条：成功 ${number(retrieved)} 条、失败 ${number(failed)} 条`,
           `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(firstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`,
@@ -1724,9 +1725,21 @@
       && discoveryInsightCount === expectedDiscoveryInsightCount;
     const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
+    const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
+    const fixedSourceSummary = state.fixedSourceSummary
+      || mainRunDetail.fixedSourceSummary
+      || state.newsRunDetails[newsRun.crawl_run_id]?.fixedSourceSummary
+      || {};
+    const scheduledMainRows = new Set(
+      [...String(mainRun.scope || "").matchAll(/第\s*(\d+)\s*行/g)].map((match) => match[1])
+    ).size;
+    const fixedSourceUrlCount = Number(fixedSourceSummary.uniqueUrls || 0);
+    const configuredSourceRows = Number(fixedSourceSummary.configuredRows || scheduledMainRows || 0);
+    const configuredSourceOccurrences = Number(fixedSourceSummary.configuredUrlOccurrences || 0);
+    const crawlUrlAttemptCount = Number(mainRun.run_log?.rows || 0);
     const mainRowsProcessed = Number(mainRun.final_audit?.rows_crawled || 0);
-    const mainValue = mainRun.crawl_run_id ? number(mainRowsProcessed) : "—";
-    const mainUnit = mainRun.crawl_run_id ? "行实际处理" : "";
+    const mainValue = mainRun.crawl_run_id && fixedSourceUrlCount ? number(fixedSourceUrlCount) : "—";
+    const mainUnit = "条当前固定链接";
     const mainCrossedDate = mainRun.crawl_run_id && newsRunDate(mainRun) !== selectedDate;
     const mainDetails = mainRun.crawl_run_id ? [
       `运行 ${mainRun.crawl_run_id}`,
@@ -1734,9 +1747,10 @@
       ...(mainCrossedDate ? [`跨日任务：${newsRunDate(mainRun)} 启动，${selectedDate} 完成`] : []),
       `开始 ${String(mainRun.started_at_hkt || "未记录").replace("T", " ")}`,
       `完成 ${String(mainRun.completed_at_hkt || "未记录").replace("T", " ")}`,
-      ...(mainRowsProcessed ? [`实际处理 ${number(mainRowsProcessed)} 行`, `URL成功 ${number(mainRun.run_log?.success_urls)} 个·失败 ${number(mainRun.run_log?.failed_urls)} 个`] : []),
+      ...(fixedSourceUrlCount ? [`当前飞书配置快照含 ${number(fixedSourceUrlCount)} 条去重后的固定链接`, `${number(configuredSourceRows)} 行配置共出现 ${number(configuredSourceOccurrences)} 处链接`] : ["本轮归档未保存可核对的固定链接总数，不再用行数代替链接数"]),
+      ...(crawlUrlAttemptCount ? [`本轮共执行 ${number(crawlUrlAttemptCount)} 次网址抓取：成功 ${number(mainRun.run_log?.success_urls)} 次、失败 ${number(mainRun.run_log?.failed_urls)} 次`] : []),
+      ...(mainRowsProcessed ? [`旧审计记录为 ${number(mainRowsProcessed)} 行结果；它不是固定链接数量`] : []),
     ] : ["所选日期没有主爬虫运行记录"];
-    const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
     const archivedAgentCandidateCount = Number(mainRunDetail.agentReviewSummary?.total || 0);
     const companyAgentProgress = mainRunDetail.companyAgentProgress || {};
     const hasCompanyAgentProgress = Number(companyAgentProgress.recordedCompanies || 0) > 0;
@@ -1758,28 +1772,49 @@
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
     const sourceDiscoverySummary = sourceDiscoveryRun.operational_summary || intelligenceRun.operational_summary?.news_database_signals || {};
     const nodes = [
-      { key: "strategic", label: "07:30 / 14:00 战略新闻扫描", value: newsRun.run_status === "running" ? "运行中" : `当天${runs.length}轮`, note: currentStrategicStage ? `当前节点：${activeNewsStageNodeLabel(currentStrategicStage.key)} · ${currentStrategicStage.label}` : runs.length ? `${attemptRuns.length} 次尝试 · 最近完成 ${runCompletionText(newsRun)}` : "当天没有运行归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: ["同一时段重试只由最终权威批次参与统计；所有尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
-      { key: "news-search", label: "线索补缺", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条发现", note: preciseStrategicNote("news-search", `当天 ${runs.length} 轮权威结果`), health: preciseStrategicHealth("news-search", strategicSearchHealth), variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下线索发现日志" },
-      { key: "news-ai", label: "AI审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条纳入", note: preciseStrategicNote("news-ai", `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`), health: preciseStrategicHealth("news-ai", strategicAiHealth), variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下AI审核日志" },
-      { key: "news-dedupe", label: "历史去重", value: number(strategicDedupe.lost), unit: "条重复", note: preciseStrategicNote("news-dedupe", `实际留下 ${number(strategicDedupe.value)} 条`), health: preciseStrategicHealth("news-dedupe", strategicDedupeHealth), variant: "gate", position: [849, 52], details: [`当天确认重复 ${number(strategicDedupe.lost)} 条`, `当天去重后保留 ${number(strategicDedupe.value)} 条`], evidence: strategicDedupe.evidence || "当天未留下历史去重日志" },
-      { key: "news-output", label: "新增新闻", value: number(strategicDedupe.value), unit: "条", note: preciseStrategicNote("news-output", `当天 ${runs.length} 轮权威归档`), health: preciseStrategicHealth("news-output", strategicOutputHealth), variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条`, `当天历史重复 ${number(strategicDedupe.lost)} 条`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下写入与通知日志" },
-      { key: "news-selection-agent", label: "新闻自动初筛", value: selectionRuns.length ? `纳入周报 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `纳入滚动栏 ${number(selectionSummary.appAccepted)} 条` : "当天未留下独立任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`权威批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `机器纳入周报 ${number(selectionSummary.weeklyAccepted)} 条；机器纳入滚动栏 ${number(selectionSummary.appAccepted)} 条`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
-      { key: "app-result", label: "纳入滚动栏", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.appMachineRows.length)} 条 · 人工 ${number(reviewResults.appHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: [reviewResults.cached ? "实时读取短暂失败，按最近完整审核快照统计当天结果" : "按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条；人工纳入 ${number(reviewResults.appHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
-      { key: "weekly-result", label: "纳入周报", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条` : "审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "实时读取短暂失败，按最近完整审核快照统计当天结果" : "按审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
-      { key: "previous-news", label: "前一日战略新闻", value: number(sourceDiscoverySummary.previous_day_reference_count || 0), unit: "条参考", note: `${number((sourceDiscoverySummary.previous_day_news_runs || []).length)} 轮新闻归档`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: ["读取前一日战略新闻任务归档", "只筛选与四库主体及指标相关的内容", "新闻摘要只作追证线索，不直接成为数据库事实"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日新闻归档" },
-      { key: "news-db-signal", label: "01:00 四库资料补缺", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条线索", note: "只交接线索 · 不直接写库", health: sourceDiscoveryHealth, variant: "source", position: [300, 250], details: ["独立搜索 Agent 按四库主体与指标字段检索最近24小时资料", "合并前一天07:30/14:00两次新闻任务内容作参考", "搜索结果与新闻结果都只作线索，不直接成为数据库事实", "线索包交给03:00链路追公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00资料补缺审计" },
-      { key: "main", label: "03:00 固定源抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `处理量 · 非变化量 · ${mainCrossedDate ? "跨日完成 " : ""}${runCompletionText(mainRun)}` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [300, 455], details: ["按调度表抓取固定网页与四类官方来源", "实际处理量是调度执行行数，不代表同等数量的数据发生变化", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "agent", label: "Agent 证据审核", value: mainRun.curation?.accepted !== undefined ? number(mainRun.curation.accepted) : hasCompanyAgentProgress ? `${number(companyAgentProgress.recordedCompanies)}/${number(companyAgentProgress.expectedCompanies || 41)}` : "—", unit: mainRun.curation?.accepted !== undefined ? "条审核通过" : hasCompanyAgentProgress ? "家公司已记录" : "", note: mainRun.curation?.accepted !== undefined ? "审核通过量 · 非入库变化量" : hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 检查点 · ${number(companyAgentProgress.recordedMetrics)} 项指标` : "当天未留下 Agent 轨迹", health: mainRun.curation?.accepted !== undefined ? mainHealth : hasCompanyAgentProgress ? { key: "warning", label: "待续跑" } : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", position: [530, 455], details: mainRun.curation?.accepted !== undefined ? [`原始指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选事实 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选事实` : ""}` : "候选事实逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条·复核 ${number(mainRun.curation.review)} 条`, `轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : hasCompanyAgentProgress ? [`V${number(companyAgentVersion)} 最后更新 ${String(companyAgentProgress.updatedAt || "未记录").replace("T", " ")}`, `已记录 ${number(companyAgentProgress.recordedCompanies)} / ${number(companyAgentProgress.expectedCompanies || 41)} 家公司`, `指标记录 ${number(companyAgentProgress.recordedMetrics)} 项；合规终态 ${number(companyAgentProgress.terminalMetrics)} 项`, `未解决公司 ${number(companyAgentProgress.unresolvedCompanies)} 家；冲突指标 ${number(companyAgentProgress.conflictMetrics)} 项；Agent 未完成指标 ${number(companyAgentProgress.agentErrorMetrics)} 项`, "当前展示持久检查点；正常调度续跑后自动更新，最终结果文件生成后自动优先显示正式结果"] : ["所选日期没有 Agent 审核记录"], evidence: mainRun.curation?.summary || (hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 公司 Agent 检查点：${number(companyAgentProgress.recordedCompanies)} 家、${number(companyAgentProgress.recordedMetrics)} 项指标，更新时间 ${companyAgentProgress.updatedAt || "未记录"}` : mainRun.status_detail || "当天未留下 Agent 审核证据") },
-      { key: "database-hub", label: "新增数据入库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: intelligenceRun.crawl_run_id ? "条数据库事实" : "", note: intelligenceRun.crawl_run_id ? `入库 ${number(refreshFactCount)} 条 · 数值变化 ${numericChangeText}` : "当天未留下入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [760, 469], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数值变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数值变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed || 0)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数值变化`, numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测变化数量", "点开下方数据库事实明细可查看公司、指标、依据、官方链接和证据哈希"] : ["所选日期没有入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
+      { key: "strategic", label: "07:30 / 14:00 战略新闻扫描", value: newsRun.run_status === "running" ? "运行中" : number(runs.length), unit: newsRun.run_status === "running" ? "" : "轮新闻扫描任务", note: currentStrategicStage ? `当前节点：${activeNewsStageNodeLabel(currentStrategicStage.key)} · ${currentStrategicStage.label}` : runs.length ? `${attemptRuns.length} 次扫描尝试 · 最近完成 ${runCompletionText(newsRun)}` : "当天没有新闻扫描归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: ["同一时段重试只由最终权威批次参与统计；所有新闻扫描尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻扫描"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻运行归档" },
+      { key: "news-search", label: "公开网页新闻链接搜索", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条候选新闻链接", note: preciseStrategicNote("news-search", `当天 ${runs.length} 轮新闻扫描权威结果`), health: preciseStrategicHealth("news-search", strategicSearchHealth), variant: "source", position: [295, 52], details: [`实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条新闻线索`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下新闻线索发现日志" },
+      { key: "news-ai", label: "AI 新闻相关性审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条相关新闻通过审核", note: preciseStrategicNote("news-ai", `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`), health: preciseStrategicHealth("news-ai", strategicAiHealth), variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条新闻`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条新闻`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下新闻 AI 审核日志" },
+      { key: "news-dedupe", label: "历史新闻重复检查", value: number(strategicDedupe.lost), unit: "条历史重复新闻", note: preciseStrategicNote("news-dedupe", `去重后留下 ${number(strategicDedupe.value)} 条新闻`), health: preciseStrategicHealth("news-dedupe", strategicDedupeHealth), variant: "gate", position: [849, 52], details: [`当天确认 ${number(strategicDedupe.lost)} 条重复新闻`, `当天去重后保留 ${number(strategicDedupe.value)} 条新闻`], evidence: strategicDedupe.evidence || "当天未留下新闻历史去重日志" },
+      { key: "news-output", label: "新增战略新闻归档", value: number(strategicDedupe.value), unit: "条新增战略新闻", note: preciseStrategicNote("news-output", `当天 ${runs.length} 轮新闻扫描权威归档`), health: preciseStrategicHealth("news-output", strategicOutputHealth), variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条战略新闻`, `当天识别 ${number(strategicDedupe.lost)} 条历史重复新闻`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下新闻写入与通知日志" },
+      { key: "news-selection-agent", label: "滚动栏与周报自动初筛", value: selectionRuns.length ? `周报新闻 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `滚动栏新闻 ${number(selectionSummary.appAccepted)} 条` : "当天未留下新闻初筛任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`权威新闻批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `机器纳入周报 ${number(selectionSummary.weeklyAccepted)} 条新闻；机器纳入滚动栏 ${number(selectionSummary.appAccepted)} 条新闻`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`, "点击查看每条新闻的接受/不接受结果、模型理由、置信度、机器人身份、具体报错和处理日志"] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
+      { key: "app-result", label: "滚动栏新闻最终接受结果", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.appMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.appHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: [reviewResults.cached ? "实时读取短暂失败，按最近完整新闻审核快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.appHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条新闻同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
+      { key: "weekly-result", label: "周报新闻最终接受结果", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "实时读取短暂失败，按最近完整新闻审核快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验新闻发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
+      { key: "previous-news", label: "前一日新闻线索参考", value: number(sourceDiscoverySummary.previous_day_reference_count || 0), unit: "条历史新闻参考", note: `${number((sourceDiscoverySummary.previous_day_news_runs || []).length)} 轮战略新闻归档`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: ["读取前一日战略新闻任务归档", "只筛选与四库主体及数据指标相关的新闻", "新闻摘要只作数据追证线索，不直接成为数据库事实"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日战略新闻归档" },
+      { key: "news-db-signal", label: "01:00 四库缺口链接搜索", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条待追证数据线索", note: "自动发现补缺链接 · 交给03:00追官方原文", health: sourceDiscoveryHealth, variant: "source", position: [300, 270], details: ["独立搜索 Agent 按四库主体与数据指标字段检索最近24小时资料", "合并前一天07:30/14:00两次战略新闻任务内容作参考", "搜索结果与新闻结果都只作数据线索，不直接成为数据库事实", "数据线索包交给03:00链路继续追查公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00四库数据资料补缺审计" },
+      { key: "main", label: "03:00 固定链接与官方原文抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${mainCrossedDate ? "跨日完成 · " : ""}${number(configuredSourceRows)} 行飞书配置 · 本轮 ${number(crawlUrlAttemptCount)} 次网址抓取` : "当天未找到主爬虫归档", health: mainHealth, variant: "crawler", position: [300, 520], details: ["从飞书配置表读取人工维护的固定网址，并接收01:00补缺线索，再抓取网页及后续发现的官方原文", "固定链接数、配置行数和实际网址抓取次数分别统计，互不替代", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "agent", label: "Agent 数据证据审核", value: mainRun.curation?.accepted !== undefined ? number(mainRun.curation.accepted) : hasCompanyAgentProgress ? `${number(companyAgentProgress.recordedCompanies)}/${number(companyAgentProgress.expectedCompanies || 41)}` : "—", unit: mainRun.curation?.accepted !== undefined ? "条数据事实审核通过" : hasCompanyAgentProgress ? "家公司数据证据已记录" : "条数据事实审核通过", note: mainRun.curation?.accepted !== undefined ? "数据事实审核通过量 · 非入库变化量" : hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 检查点 · ${number(companyAgentProgress.recordedMetrics)} 项数据指标` : "当天未留下数据证据审核轨迹", health: mainRun.curation?.accepted !== undefined ? mainHealth : hasCompanyAgentProgress ? { key: "warning", label: "待续跑" } : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", primary: true, position: [545, 392], details: mainRun.curation?.accepted !== undefined ? [`原始数据指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选数据事实 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选数据事实` : ""}` : "候选数据事实逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条数据事实；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条数据事实 · 待复核 ${number(mainRun.curation.review)} 条数据事实`, `数据审核轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : hasCompanyAgentProgress ? [`V${number(companyAgentVersion)} 最后更新 ${String(companyAgentProgress.updatedAt || "未记录").replace("T", " ")}`, `已记录 ${number(companyAgentProgress.recordedCompanies)} / ${number(companyAgentProgress.expectedCompanies || 41)} 家公司`, `数据指标记录 ${number(companyAgentProgress.recordedMetrics)} 项；合规终态 ${number(companyAgentProgress.terminalMetrics)} 项`, `未解决公司 ${number(companyAgentProgress.unresolvedCompanies)} 家；冲突数据指标 ${number(companyAgentProgress.conflictMetrics)} 项；Agent 未完成数据指标 ${number(companyAgentProgress.agentErrorMetrics)} 项`, "当前展示持久检查点；正常调度续跑后自动更新，最终结果文件生成后自动优先显示正式结果"] : ["所选日期没有 Agent 数据证据审核记录"], evidence: mainRun.curation?.summary || (hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 公司 Agent 检查点：${number(companyAgentProgress.recordedCompanies)} 家、${number(companyAgentProgress.recordedMetrics)} 项数据指标，更新时间 ${companyAgentProgress.updatedAt || "未记录"}` : mainRun.status_detail || "当天未留下 Agent 数据证据审核记录") },
+      { key: "database-hub", label: "审核通过事实写入四库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: "条数据事实写入四库", note: intelligenceRun.crawl_run_id ? `写入 ${number(refreshFactCount)} 条数据事实 · 数据指标变化 ${numericChangeText}` : "当天未留下数据入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [790, 415], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库事实快照 ${number(refreshFactCount)} 条；结构化数据指标变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数据指标变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数据指标变化`, numericBaselineAvailable ? "数据指标变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测数据指标变化数量", "点开下方数据库事实明细可查看公司、数据指标、依据、官方链接和证据哈希"] : ["所选日期没有数据入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [990, 410], "database-local"),
       domainNode("international", "国际运营商", [1155, 410], "database-international"),
       domainNode("cloud", "全球云厂商", [990, 535], "database-cloud"),
       domainNode("mainland", "内地运营商", [1155, 535], "database-mainland"),
-      { key: "insights", label: "AI战略洞察UI更新", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: intelligenceRun.crawl_run_id ? "项AI洞察" : "", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && (!intelligenceRun.operational_summary?.pages_publish?.ok || !insightCoverageComplete)) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1385, 455], details: intelligenceRun.crawl_run_id ? [`AI洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；分域洞察 ${number(focusInsightCount)} / ${number(expectedFocusInsightCount)}，顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}；本轮${insightGenerationLabel}`, "洞察生成数与数据库事实数、UI发布对象数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI洞察与业务发布证据" },
+      { key: "insights", label: "AI 战略洞察生成与 UI 发布", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: "项数据洞察发布到 UI", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项数据洞察 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && (!intelligenceRun.operational_summary?.pages_publish?.ok || !insightCoverageComplete)) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1385, 455], details: intelligenceRun.crawl_run_id ? [`AI数据洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；分域洞察 ${number(focusInsightCount)} / ${number(expectedFocusInsightCount)}，顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}；本轮${insightGenerationLabel}`, "数据洞察生成数与数据库事实数、UI发布主体数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有数据洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI数据洞察与业务发布证据" },
     ];
+    const nodePurposes = {
+      strategic: "按两个固定时段启动当天战略新闻采集",
+      "news-search": "搜索公开网页，补齐当天候选新闻链接",
+      "news-ai": "逐条判断新闻是否与公司业务和战略相关",
+      "news-dedupe": "与历史新闻对比，识别并剔除重复事件",
+      "news-output": "保存去重后确认新增的战略新闻",
+      "news-selection-agent": "判断每条新闻是否适合滚动栏或战略周报",
+      "app-result": "统计新闻审核表中滚动栏字段的最终接受结果，并区分机器与人工操作及同步状态",
+      "weekly-result": "统计新闻审核表中周报字段的最终接受结果，并区分机器与人工操作",
+      "previous-news": "提供前一日新闻，作为四库数据追证线索",
+      "news-db-signal": "自动搜索四库数据缺口相关链接，形成待追证线索并交给03:00抓取链路",
+      main: "读取飞书人工维护的固定链接和01:00补缺线索，抓取网页及官方原文后提交审核",
+      agent: "逐条审核03:00抓取结果，核对主体、指标、期间、单位、官方来源和证据完整性",
+      "database-hub": "只把证据门禁通过的数据事实写入四库",
+      "database-local": "把本地运营商主体数据发布到界面",
+      "database-international": "把国际运营商主体数据发布到界面",
+      "database-cloud": "把全球云厂商主体数据发布到界面",
+      "database-mainland": "把内地运营商主体数据发布到界面",
+      insights: "根据四库已发布数据生成并发布战略洞察",
+    };
+    nodes.forEach((node) => { node.purpose = nodePurposes[node.key] || "显示该环节当天的处理作用与结果"; });
     const edges = [
-      ["strategic", "news-search", "到点启动", "cyan"], ["news-search", "news-ai", "进入审核", "cyan"], ["news-ai", "news-dedupe", "相关事件", "cyan"], ["news-dedupe", "news-output", "新增线索", "cyan"], ["news-output", "news-selection-agent", "学习人工习惯", "cyan"], ["news-selection-agent", "app-result", "机器人勾选", "cyan"], ["news-selection-agent", "weekly-result", "机器人勾选", "cyan"], ["news-output", "strategic", "", "feedback"],
-      ["previous-news", "news-db-signal", "01:00读取", "amber"], ["news-db-signal", "main", "03:00追官方原文", "handoff-down"], ["main", "agent", "提交证据审核", "cyan"], ["main", "news-search", "页面变化供下轮", "feedback-side"], ["agent", "database-hub", "审核事实写库", "cyan"],
+      ["strategic", "news-search", "按时启动公开网页检索", "cyan"], ["news-search", "news-ai", "候选新闻提交相关性审核", "cyan"], ["news-ai", "news-dedupe", "相关新闻进入历史重复检查", "cyan"], ["news-dedupe", "news-output", "非重复新闻写入新增归档", "cyan"], ["news-output", "news-selection-agent", "新增新闻提交发布初筛", "cyan"], ["news-selection-agent", "app-result", "机器初筛写入滚动栏字段", "cyan"], ["news-selection-agent", "weekly-result", "机器初筛写入周报字段", "cyan"], ["news-output", "strategic", "新增归档成为下轮去重基线", "feedback"],
+      ["previous-news", "news-db-signal", "前一日新闻提供补缺方向", "amber"], ["news-db-signal", "main", "补缺链接交给03:00追官方原文", "handoff-down"], ["main", "agent", "抓取结果提交证据审核", "cyan"], ["main", "news-search", "固定源网页变化回流为新闻线索", "feedback-side"], ["agent", "database-hub", "审核通过事实写入四库", "cyan"],
       ["database-hub", "database-local", "", "branch"], ["database-hub", "database-international", "", "branch"], ["database-hub", "database-cloud", "", "branch"], ["database-hub", "database-mainland", "", "branch"],
       ["database-local", "insights", "", "merge"], ["database-international", "insights", "", "merge"], ["database-cloud", "insights", "", "merge"], ["database-mainland", "insights", "", "merge"],
     ];
@@ -1796,13 +1831,13 @@
       nodes,
       edges: edgesWithStatus,
       canvasSize: [1850, 680],
-      feedbackLabel: "历史记录用于下一轮去重",
+      feedbackLabel: "新增新闻归档用于下一轮历史去重",
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
-        { label: "B｜四库资料补缺线", position: [18, 230] },
-        { label: "C｜固定官方源复核、入库与UI发布线", position: [18, 420] },
+        { label: "B｜四库数据资料补缺线", position: [18, 230] },
+        { label: "C｜证据审核主链：两类链接 → 审核 → 入库 → UI", position: [18, 430] },
       ],
-      groups: [{ key: "databases", label: "四库UI发布", position: [950, 370], size: [389, 301] }],
+      groups: [{ key: "databases", label: "审核事实按主体类型写入四库并发布到 UI", note: "四库已发布数据汇总生成右侧 AI 战略洞察", position: [950, 370], size: [389, 301] }],
     };
   }
 
@@ -2321,7 +2356,7 @@
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : selectionAgentNode ? "当天新闻自动初筛明细" : mainCrawlNode ? "当天33行固定源逐行抓取明细" : agentAuditNode ? "当天Agent逐条证据审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = sourceDiscoveryNode ? "当天具体线索与官方追证入口" : selectionAgentNode ? "当天新闻自动初筛明细" : mainCrawlNode ? "当天固定源逐行抓取明细" : agentAuditNode ? "当天Agent逐条证据审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     const numericChangeNote = databaseHubNode || databaseUiNode
       ? numericBaselineAvailable
         ? numericChangeCount > 0
@@ -2467,9 +2502,54 @@
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!canvas) return;
     const viewport = panel.querySelector("[data-news-lineage-viewport]");
+    const purposeTooltip = panel.querySelector("#newsLineagePurposeTooltip");
+    let purposeTooltipNode = null;
+    const hidePurposeTooltip = () => {
+      if (!purposeTooltip) return;
+      purposeTooltip.hidden = true;
+      purposeTooltip.classList.remove("is-below");
+      purposeTooltipNode?.removeAttribute("aria-describedby");
+      purposeTooltipNode = null;
+    };
+    const showPurposeTooltip = (node) => {
+      if (!purposeTooltip || !node) return;
+      const label = node.querySelector(":scope > span")?.textContent?.trim() || "当前节点";
+      const purpose = node.dataset.newsLineagePurpose || "当前节点尚未填写具体作用。";
+      purposeTooltip.querySelector("strong").textContent = label;
+      purposeTooltip.querySelector("span").textContent = purpose;
+      purposeTooltip.hidden = false;
+      purposeTooltipNode?.removeAttribute("aria-describedby");
+      purposeTooltipNode = node;
+      node.setAttribute("aria-describedby", purposeTooltip.id);
+      const nodeRect = node.getBoundingClientRect();
+      const tooltipRect = purposeTooltip.getBoundingClientRect();
+      const below = nodeRect.top < tooltipRect.height + 24;
+      const halfWidth = tooltipRect.width / 2;
+      const center = nodeRect.left + nodeRect.width / 2;
+      purposeTooltip.classList.toggle("is-below", below);
+      purposeTooltip.style.left = `${Math.max(halfWidth + 12, Math.min(window.innerWidth - halfWidth - 12, center))}px`;
+      purposeTooltip.style.top = `${below ? nodeRect.bottom + 12 : nodeRect.top - 12}px`;
+    };
+    canvas.addEventListener("pointerover", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node && node !== purposeTooltipNode) showPurposeTooltip(node);
+    });
+    canvas.addEventListener("pointerout", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node && !node.contains(event.relatedTarget)) hidePurposeTooltip();
+    });
+    canvas.addEventListener("focusin", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node) showPurposeTooltip(node);
+    });
+    canvas.addEventListener("focusout", (event) => {
+      const node = event.target.closest("[data-news-lineage-node]");
+      if (node && !node.contains(event.relatedTarget)) hidePurposeTooltip();
+    });
     canvas.addEventListener("click", (event) => {
       const node = event.target.closest("[data-news-lineage-node]");
       if (!node) return;
+      hidePurposeTooltip();
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
       openActualNewsLineageDetail(node.dataset.newsLineageNode);
     });
@@ -2522,8 +2602,8 @@
 
   function newsLineageMotionStyle() {
     const wallClock = Date.now();
-    const delay = (duration, alternate = false) => `-${wallClock % (duration * (alternate ? 2 : 1))}ms`;
-    return `--news-flow-delay:${delay(2400)};--news-degraded-delay:${delay(4800)};--news-schedule-delay:${delay(2100)};--news-schedule-global-delay:${delay(2250)};--news-schedule-degraded-delay:${delay(4500)};--news-feedback-delay:${delay(4200)};--news-feedback-global-delay:${delay(4400)};--news-feedback-degraded-delay:${delay(8800)};--news-breathe-delay:${delay(2100, true)};`;
+    const delay = duration => `-${wallClock % duration}ms`;
+    return `--news-flow-delay:${delay(2400)};--news-degraded-delay:${delay(4800)};--news-schedule-delay:${delay(2100)};--news-schedule-global-delay:${delay(2250)};--news-schedule-degraded-delay:${delay(4500)};--news-feedback-delay:${delay(4200)};--news-feedback-global-delay:${delay(4400)};--news-feedback-degraded-delay:${delay(8800)};`;
   }
 
   function renderNews({ preserveView = false } = {}) {
@@ -2560,12 +2640,13 @@
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i>${node.primary ? '<i class="news-lineage-primary-badge" aria-hidden="true">证据审核核心</i>' : ""}<b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><p>作用：${esc(node.purpose || "未说明")}</p><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
             </div>
           </div>
         </section>
         ${renderNewsItems(runs)}
+        <div class="news-lineage-purpose-tooltip" id="newsLineagePurposeTooltip" role="tooltip" hidden><small>节点具体作用</small><strong></strong><span></span><em>点击节点可查看当天真实处理记录</em></div>
         <dialog class="news-stage-dialog news-lineage-dialog" id="newsLineageDialog"><div id="newsLineageDialogBody"></div></dialog>`}
       </section>
     </div>`;
@@ -2601,7 +2682,7 @@
     const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
     return JSON.stringify({
       date: state.newsSelectedDate,
-      nodes: lineage.nodes.map((node) => [node.key, node.value, node.unit, node.note, node.health?.key, node.evidence]),
+      nodes: lineage.nodes.map((node) => [node.key, node.purpose, node.value, node.unit, node.note, node.health?.key, node.evidence]),
       edges: lineage.edges.map(([from, to, label, kind, line]) => [from, to, label, kind, line?.key, line?.reason]),
       runs: attemptRuns.map((run) => [run.crawl_run_id, run.run_status || run.status, run.heartbeat_at_hkt, run.completed_at_hkt, run.progress_detail, run.status_detail]),
       details: runs.map((run) => {
@@ -2633,15 +2714,18 @@
       const element = currentNodes[index];
       element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
       element.dataset.health = node.health?.key || "unknown";
-      element.setAttribute("aria-label", `${node.label}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
+      element.dataset.newsLineagePurpose = node.purpose || "未说明";
+      element.setAttribute("aria-label", `${node.label}，作用：${node.purpose || "未说明"}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
       const health = element.querySelector(".news-lineage-health");
       const label = element.querySelector(":scope > span");
+      const purpose = element.querySelector(":scope > p");
       const value = element.querySelector(":scope > strong");
       const note = element.querySelector(":scope > em");
       if (health && health.textContent !== (node.health?.label || "无记录")) {
         health.innerHTML = `${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}`;
       }
       if (label) label.textContent = node.label;
+      if (purpose) purpose.textContent = `作用：${node.purpose || "未说明"}`;
       if (value) {
         value.textContent = node.value;
         if (node.unit) {
@@ -3391,7 +3475,13 @@
       markWorkspaceModulesDirty("news");
       const initialNewsRuns = selectedNewsRuns();
       if (initialNewsRuns.length) loadNewsRuns(initialNewsRuns.map((run) => run.crawl_run_id));
-    } else if (key === "crawlRuns") { state.crawlRuns = payload.runs || []; markWorkspaceModulesDirty("news"); }
+    } else if (key === "crawlRuns") {
+      state.crawlRuns = payload.runs || [];
+      markWorkspaceModulesDirty("news");
+      const initialCrawlRuns = selectedNewsRuns();
+      if (initialCrawlRuns.length) loadNewsRuns(initialCrawlRuns.map((run) => run.crawl_run_id));
+    }
+    else if (key === "fixedSourceSummary") { state.fixedSourceSummary = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "scheduler") { state.schedulerOverview = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "intelligence") { state.executiveIntelligence = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "reviewSheet") { state.newsReviewSheet = payload; markWorkspaceModulesDirty("news"); }
@@ -3471,6 +3561,7 @@
       ["tasks", "fault", () => fetch("/api/project-incidents?limit=500").then((response) => response.ok ? response.json() : Promise.reject(new Error(`incidents ${response.status}`)))],
       ["newsRuns", "news", () => fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`)))],
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
+      ["fixedSourceSummary", "news", () => fetch("/api/fixed-source-summary", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`fixed source summary ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
       ["reviewSheet", "review", fetchNewsReviewSheetSnapshot],
