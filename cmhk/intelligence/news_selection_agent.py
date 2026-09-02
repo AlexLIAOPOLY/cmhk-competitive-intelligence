@@ -42,7 +42,7 @@ MAX_HISTORY_EXAMPLES = max(
     40, min(300, int(os.environ.get("CMHK_NEWS_SELECTION_HISTORY_LIMIT", "160")))
 )
 MODEL_BATCH_SIZE = max(
-    5, min(30, int(os.environ.get("CMHK_NEWS_SELECTION_MODEL_BATCH_SIZE", "20")))
+    5, min(30, int(os.environ.get("CMHK_NEWS_SELECTION_MODEL_BATCH_SIZE", "5")))
 )
 SUPPLEMENT_BATCH_SIZE = max(
     1, min(8, int(os.environ.get("CMHK_NEWS_SELECTION_SUPPLEMENT_BATCH_SIZE", "5")))
@@ -379,6 +379,34 @@ def _json_object(value: Any) -> dict[str, Any]:
     if not isinstance(parsed, dict):
         raise ValueError("模型结果必须是 JSON 对象")
     return parsed
+
+
+def _langchain_response_text(response: Any) -> str:
+    """Extract only a model's final answer from LangChain message variants."""
+    content = getattr(response, "content", "")
+    if isinstance(content, str):
+        text = content.strip()
+    elif isinstance(content, dict):
+        text = _text(content.get("text") or content.get("content"), 100_000)
+    elif isinstance(content, list):
+        parts: list[str] = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                parts.append(str(block.get("text") or block.get("content") or ""))
+        text = "\n".join(part for part in parts if part).strip()
+    else:
+        text = str(content or "").strip()
+    if text:
+        return text
+    additional = getattr(response, "additional_kwargs", {})
+    reasoning = getattr(response, "reasoning_content", "")
+    if not reasoning and isinstance(additional, dict):
+        reasoning = additional.get("reasoning_content")
+    if _text(reasoning, 1000):
+        raise ValueError("模型只有思考内容，没有最终输出")
+    raise ValueError("模型没有返回最终输出")
 
 
 def _repair_missing_json_commas(value: Any, *, max_repairs: int = 8) -> dict[str, Any]:
@@ -958,7 +986,7 @@ def _invoke_langchain(
             response = model.invoke(
                 [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
             )
-            response_content = getattr(response, "content", "")
+            response_content = _langchain_response_text(response)
             try:
                 return _json_object(response_content), model_name
             except Exception as parse_exc:
@@ -987,7 +1015,7 @@ def _invoke_langchain(
                         ),
                     ]
                 )
-                repair_content = getattr(repair_response, "content", "")
+                repair_content = _langchain_response_text(repair_response)
                 try:
                     repaired = _json_object(repair_content)
                 except Exception:
@@ -1070,6 +1098,29 @@ def _invoke_langchain_batches(
     *,
     progress_callback: Any = None,
 ) -> tuple[dict[str, Any], str]:
+    def invoke_singleton_with_fresh_nonce(
+        target: dict[str, Any],
+        *,
+        attempts: int = 3,
+    ) -> tuple[dict[str, Any], str]:
+        last_error: RuntimeError | None = None
+        for _attempt in range(max(1, attempts)):
+            try:
+                return _invoke_langchain(examples, [target])
+            except RuntimeError as exc:
+                last_error = exc
+                if not any(
+                    marker in str(exc)
+                    for marker in (
+                        "没有最终输出",
+                        "没有返回最终输出",
+                        "未返回最终输出",
+                    )
+                ):
+                    raise
+        assert last_error is not None
+        raise last_error
+
     payloads: list[dict[str, Any]] = []
     model_names: list[str] = []
     total = (len(targets) + MODEL_BATCH_SIZE - 1) // MODEL_BATCH_SIZE
@@ -1077,7 +1128,77 @@ def _invoke_langchain_batches(
         batch = targets[start : start + MODEL_BATCH_SIZE]
         if progress_callback:
             progress_callback(batch_index, total, len(batch))
-        payload, model_name = _invoke_langchain(examples, batch)
+        split_after_empty_output = 0
+        try:
+            payload, model_name = _invoke_langchain(examples, batch)
+        except RuntimeError as exc:
+            empty_output_markers = (
+                "没有最终输出",
+                "没有返回最终输出",
+                "未返回最终输出",
+            )
+            if not any(
+                marker in str(exc) for marker in empty_output_markers
+            ):
+                raise
+            if len(batch) == 1:
+                payload, model_name = invoke_singleton_with_fresh_nonce(batch[0])
+                split_after_empty_output = 1
+                singleton_payloads = []
+                singleton_models = []
+            else:
+                singleton_payloads = []
+                singleton_models = []
+                for target in batch:
+                    singleton_payload, singleton_model = (
+                        invoke_singleton_with_fresh_nonce(target)
+                    )
+                    singleton_payloads.append(singleton_payload)
+                    singleton_models.append(singleton_model)
+            if not singleton_payloads:
+                original_ids = {
+                    _text(item.get("news_id"), 80)
+                    for item in (payload.get("decisions") or [])
+                    if isinstance(item, dict)
+                }
+            else:
+                first_singleton = singleton_payloads[0]
+                payload = {
+                    "learned_rules": list(
+                        dict.fromkeys(
+                            _simplified(value, 300)
+                            for item in singleton_payloads
+                            for value in (item.get("learned_rules") or [])
+                            if _text(value, 300)
+                        )
+                    )[:12],
+                    "avoid_patterns": list(
+                        dict.fromkeys(
+                            _simplified(value, 300)
+                            for item in singleton_payloads
+                            for value in (item.get("avoid_patterns") or [])
+                            if _text(value, 300)
+                        )
+                    )[:12],
+                    "app_preference_summary": first_singleton.get(
+                        "app_preference_summary", ""
+                    ),
+                    "weekly_preference_summary": first_singleton.get(
+                        "weekly_preference_summary", ""
+                    ),
+                    "decisions": [
+                        decision
+                        for item in singleton_payloads
+                        for decision in (item.get("decisions") or [])
+                        if isinstance(decision, dict)
+                    ],
+                    "_format_repaired": any(
+                        item.get("_format_repaired") is True
+                        for item in singleton_payloads
+                    ),
+                }
+                model_name = ", ".join(dict.fromkeys(singleton_models))
+                split_after_empty_output = len(batch)
         original_ids = {
             _text(item.get("news_id"), 80)
             for item in (payload.get("decisions") or [])
@@ -1138,6 +1259,7 @@ def _invoke_langchain_batches(
             )
         payload["_supplemented_count"] = supplemented_count
         payload["_stale_supplement_count"] = stale_supplement_count
+        payload["_split_after_empty_output"] = split_after_empty_output
         payload["_fallback_count"] = 0
         payloads.append(payload)
         model_names.append(model_name)
@@ -1151,6 +1273,10 @@ def _invoke_langchain_batches(
         ),
         "_stale_supplement_count": sum(
             int(payload.get("_stale_supplement_count") or 0)
+            for payload in payloads
+        ),
+        "_split_after_empty_output": sum(
+            int(payload.get("_split_after_empty_output") or 0)
             for payload in payloads
         ),
         "_fallback_count": sum(
@@ -1598,6 +1724,17 @@ def _run_news_selection_agent_locked(
                             "补判返回了其他轮次或其他候选的结果；已丢弃 "
                             f"{int(model_payload['_stale_supplement_count'])} 条错配结果，"
                             "并使用候选优先的新请求重新补判。"
+                        ),
+                    )
+                if int(model_payload.get("_split_after_empty_output") or 0):
+                    _progress(
+                        crawl_run_id,
+                        stream_log_path,
+                        "模型空输出逐条恢复",
+                        (
+                            "模型小批请求只有思考内容或没有最终输出；"
+                            "已在不使用思考内容、不改写业务结论的前提下逐条重新请求 "
+                            f"{int(model_payload['_split_after_empty_output'])} 条。"
                         ),
                     )
                 model_decisions = _normalized_decisions(model_payload, targets)

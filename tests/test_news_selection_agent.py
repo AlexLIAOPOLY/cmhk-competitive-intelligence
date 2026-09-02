@@ -579,10 +579,40 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 ),
             )
 
-        self.assertEqual(call.call_count, 3)
+        self.assertEqual(call.call_count, 9)
         self.assertEqual(len(payload["decisions"]), 45)
         self.assertEqual(model, "DeepSeek-V4-Pro")
-        self.assertEqual(progress, [(1, 3, 20), (2, 3, 20), (3, 3, 5)])
+        self.assertEqual(
+            progress,
+            [
+                (1, 9, 5),
+                (2, 9, 5),
+                (3, 9, 5),
+                (4, 9, 5),
+                (5, 9, 5),
+                (6, 9, 5),
+                (7, 9, 5),
+                (8, 9, 5),
+                (9, 9, 5),
+            ],
+        )
+
+    def test_langchain_empty_final_output_fails_without_json_repair_call(self):
+        fake_model = mock.Mock()
+        fake_model.invoke.return_value = SimpleNamespace(
+            content="",
+            additional_kwargs={"reasoning_content": "internal-only"},
+        )
+
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
+        ):
+            with self.assertRaisesRegex(RuntimeError, "只有思考内容，没有最终输出"):
+                agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
+
+        fake_model.invoke.assert_called_once()
 
     def test_langchain_repairs_malformed_json_without_rewriting_decisions(self):
         repaired_payload = {
@@ -700,6 +730,80 @@ class NewsSelectionAgentTests(unittest.TestCase):
             {item["news_id"] for item in payload["decisions"]},
             {"NEWS-1", "NEWS-2"},
         )
+
+    def test_batches_split_empty_final_output_into_verified_singletons(self):
+        targets = [{"news_id": f"NEWS-{index}"} for index in range(5)]
+
+        def singleton_payload(_examples, batch):
+            if len(batch) > 1:
+                raise RuntimeError("模型只有思考内容，没有最终输出")
+            target = batch[0]
+            return {
+                "learned_rules": ["香港相关优先"],
+                "avoid_patterns": [],
+                "decisions": [
+                    {
+                        "news_id": target["news_id"],
+                        "app_status": "接受",
+                        "weekly_status": "不接受",
+                        "app_confidence": 0.9,
+                        "weekly_confidence": 0.8,
+                        "reason": "逐条返回完整结果",
+                    }
+                ],
+            }, "model"
+
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=singleton_payload,
+        ) as invoke:
+            payload, model = agent._invoke_langchain_batches([], targets)
+
+        self.assertEqual(invoke.call_count, 6)
+        self.assertEqual(payload["_split_after_empty_output"], 5)
+        self.assertEqual(len(payload["decisions"]), 5)
+        self.assertEqual(model, "model")
+
+    def test_singleton_empty_final_output_still_fails_closed(self):
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=RuntimeError("模型没有返回最终输出"),
+        ) as invoke:
+            with self.assertRaisesRegex(RuntimeError, "没有返回最终输出"):
+                agent._invoke_langchain_batches([], [{"news_id": "NEWS-1"}])
+
+        self.assertEqual(invoke.call_count, 4)
+
+    def test_singleton_empty_output_retry_uses_a_fresh_model_request(self):
+        target = {"news_id": "NEWS-1"}
+        recovered = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "新请求返回了完整结果",
+                }
+            ]
+        }
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=[
+                RuntimeError("模型只有思考内容，没有最终输出"),
+                (recovered, "model"),
+            ],
+        ) as invoke:
+            payload, model = agent._invoke_langchain_batches([], [target])
+
+        self.assertEqual(invoke.call_count, 2)
+        self.assertEqual(payload["_split_after_empty_output"], 1)
+        self.assertEqual(payload["decisions"], recovered["decisions"])
+        self.assertEqual(model, "model")
 
     def test_batches_discard_stale_supplement_before_singleton_retry(self):
         targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
