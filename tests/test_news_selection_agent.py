@@ -1547,5 +1547,145 @@ class NewsSelectionAgentTests(unittest.TestCase):
             )
 
 
+class ModelBatchCheckpointTests(unittest.TestCase):
+    @staticmethod
+    def invoke(_examples, targets):
+        return {"decisions": [
+            {"news_id": target["news_id"], "app_status": "接受",
+             "weekly_status": "不接受", "app_confidence": 0.9,
+             "weekly_confidence": 0.8, "reason": "检查点测试"}
+            for target in targets
+        ]}, "test-model"
+
+    def targets(self):
+        return [{"news_id": f"NEWS-{index}", "row_number": index + 2,
+                 "app_before": "待审核", "weekly_before": "待审核"}
+                for index in range(6)]
+
+    def test_failed_second_batch_resumes_from_disk_without_repeating_first(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "checkpoint.json"
+            checkpoint = {}
+            with mock.patch.object(agent, "_invoke_langchain", side_effect=[
+                self.invoke([], self.targets()[:5]), RuntimeError("timeout")
+            ]):
+                with self.assertRaisesRegex(RuntimeError, "timeout"):
+                    agent._invoke_langchain_batches(
+                        [], self.targets(), checkpoint=checkpoint,
+                        checkpoint_callback=lambda *args: agent._atomic_write_json(path, checkpoint),
+                    )
+            restored = json.loads(path.read_text())
+            self.assertEqual(len(restored), 1)
+            resumed = []
+            progress = []
+            with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+                payload, _ = agent._invoke_langchain_batches(
+                    [], self.targets(), checkpoint=restored,
+                    reuse_callback=lambda *args: resumed.append(args),
+                    progress_callback=lambda *args: progress.append(args),
+                )
+            self.assertEqual(invoke.call_count, 1)
+            self.assertEqual(invoke.call_args.args[1], self.targets()[5:])
+            self.assertEqual(resumed, [(1, 2, 5)])
+            self.assertEqual(progress, [(2, 2, 1)])
+            self.assertEqual(len(payload["decisions"]), 6)
+
+    def test_changed_inputs_invalidate_but_row_positions_do_not(self):
+        for changed in ("row_number", "title", "app_before", "examples"):
+            with self.subTest(changed=changed):
+                checkpoint = {}
+                targets = self.targets()[:5]
+                with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+                    agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+                    if changed != "examples":
+                        targets[0][changed] = 99 if changed == "row_number" else "接受"
+                    agent._invoke_langchain_batches(
+                        [{"title": "新人工样本"}] if changed == "examples" else [],
+                        targets, checkpoint=checkpoint,
+                    )
+                self.assertEqual(invoke.call_count, 1 if changed == "row_number" else 2)
+
+    def test_invalid_checkpoint_is_not_reused(self):
+        checkpoint = {}
+        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+            agent._invoke_langchain_batches([], self.targets()[:5], checkpoint=checkpoint)
+            next(iter(checkpoint.values()))["payload"]["decisions"][0]["app_status"] = "猜测"
+            agent._invoke_langchain_batches([], self.targets()[:5], checkpoint=checkpoint)
+        self.assertEqual(invoke.call_count, 2)
+
+    def test_checkpoint_write_failure_stops_before_next_model_batch(self):
+        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+            with self.assertRaisesRegex(OSError, "disk full"):
+                agent._invoke_langchain_batches(
+                    [], self.targets(), checkpoint={},
+                    checkpoint_callback=mock.Mock(side_effect=OSError("disk full")),
+                )
+        self.assertEqual(invoke.call_count, 1)
+
+    def test_runner_persists_batches_before_plan_and_reuses_across_new_run_ids(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            values = [_row(title=f"候选{i}", url=f"https://example.com/{i}") for i in range(6)]
+            snapshot = {"rows": [{"rowNumber": i + 2, "values": value}
+                                  for i, value in enumerate(values)]}
+            new_items = [{"news_id": news_review_sheet._row_dict(value, i + 2)["news_id"]}
+                         for i, value in enumerate(values)]
+            kwargs = dict(new_items=new_items, sheet_id="sheet-1",
+                          parent_crawl_run_id="parent-1", idempotency_key="2026-08-28@07:30")
+            calls = []
+
+            def failing_invoke(examples, targets):
+                calls.append([target["news_id"] for target in targets])
+                if len(targets) == 1:
+                    raise RuntimeError("second batch timeout")
+                return self.invoke(examples, targets)
+
+            with (
+                mock.patch.object(agent, "AGENT_DIR", root),
+                mock.patch.object(agent, "STATE_PATH", root / "state.json"),
+                mock.patch.object(agent, "_load_audit", return_value=[]),
+                mock.patch.object(agent, "_load_operation_audit", return_value=[]),
+                mock.patch.object(agent, "MIN_HUMAN_EXAMPLES", 0),
+                mock.patch.object(agent, "_skill_has_current_training_provenance", return_value=True),
+                mock.patch.object(agent, "start_crawl_run", side_effect=[
+                    {"crawl_run_id": f"attempt-{i}"} for i in range(4)]),
+                mock.patch.object(agent, "_progress") as progress,
+                mock.patch.object(agent, "append_crawl_run_event"),
+                mock.patch.object(agent, "finalize_operational_crawl_run"),
+                mock.patch.object(news_review_sheet, "review_sheet_snapshot", return_value=snapshot),
+                mock.patch.object(agent, "_invoke_langchain", side_effect=failing_invoke),
+            ):
+                for attempt in range(2):
+                    with self.assertRaisesRegex(RuntimeError, "second batch timeout"):
+                        agent.run_news_selection_agent(**{**kwargs, "parent_crawl_run_id": f"parent-{attempt}"})
+                    state = json.loads((root / "state.json").read_text())
+                    self.assertNotIn(kwargs["idempotency_key"], state.get("pending_plans", {}))
+                    self.assertEqual(len(state["model_checkpoints"][kwargs["idempotency_key"]]["batches"]), 1)
+                self.assertEqual([len(batch) for batch in calls], [5, 1, 1])
+                self.assertTrue(any(call.args[2] == "模型分批检查点恢复" for call in progress.call_args_list))
+                # The same idempotency key on another sheet must not reuse it.
+                with self.assertRaisesRegex(RuntimeError, "second batch timeout"):
+                    agent.run_news_selection_agent(**{**kwargs, "sheet_id": "sheet-2"})
+                self.assertEqual([len(batch) for batch in calls], [5, 1, 1, 5, 1])
+                with (
+                    mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke,
+                    mock.patch.object(agent, "_write_skill"),
+                    mock.patch.object(agent, "_record_verified_decision_audits", return_value=6),
+                    mock.patch.object(agent, "_record_verified_operation_footprints", return_value=12),
+                    mock.patch.object(news_review_sheet, "update_review_sheet_cells", return_value={
+                        "changedCount": 12, "verifiedCount": 12, "readbackVerified": True}),
+                    mock.patch.object(news_review_sheet, "apply_reviews", return_value={
+                        "published_count": 6, "sync_status_readback_verified": True}),
+                ):
+                    result = agent.run_news_selection_agent(**{**kwargs, "sheet_id": "sheet-2"})
+                self.assertEqual(invoke.call_count, 1)
+                self.assertEqual(result["candidate_count"], 6)
+                self.assertEqual(result["verified_field_count"], 12)
+                state = json.loads((root / "state.json").read_text())
+                self.assertNotIn(kwargs["idempotency_key"], state["model_checkpoints"])
+                self.assertNotIn(kwargs["idempotency_key"], state["pending_plans"])
+                self.assertIn(kwargs["idempotency_key"], state["completed_keys"])
+
+
 if __name__ == "__main__":
     unittest.main()

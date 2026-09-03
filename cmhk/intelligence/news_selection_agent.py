@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import math
 import os
@@ -1097,6 +1098,9 @@ def _invoke_langchain_batches(
     targets: list[dict[str, Any]],
     *,
     progress_callback: Any = None,
+    checkpoint: dict[str, Any] | None = None,
+    checkpoint_callback: Any = None,
+    reuse_callback: Any = None,
 ) -> tuple[dict[str, Any], str]:
     def balanced_retry_examples() -> list[dict[str, Any]]:
         """Keep recent examples from every observed APP/weekly outcome pair."""
@@ -1154,6 +1158,37 @@ def _invoke_langchain_batches(
     total = (len(targets) + MODEL_BATCH_SIZE - 1) // MODEL_BATCH_SIZE
     for batch_index, start in enumerate(range(0, len(targets), MODEL_BATCH_SIZE), start=1):
         batch = targets[start : start + MODEL_BATCH_SIZE]
+        # Row positions may move, but changed candidate content, live statuses,
+        # human training evidence or provenance must never reuse stale decisions.
+        checkpoint_key = hashlib.sha256(json.dumps(
+            {
+                "version": 1,
+                "training_provenance_version": TRAINING_PROVENANCE_VERSION,
+                "examples": [
+                    {key: value for key, value in item.items() if key != "row_number"}
+                    for item in examples
+                ],
+                "targets": [
+                    {key: value for key, value in item.items() if key != "row_number"}
+                    for item in batch
+                ],
+            },
+            ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+        ).encode("utf-8")).hexdigest()
+        cached = checkpoint.get(checkpoint_key) if checkpoint is not None else None
+        if isinstance(cached, dict) and isinstance(cached.get("payload"), dict):
+            try:
+                _normalized_decisions(cached["payload"], batch)
+                if not _text(cached.get("model"), 200):
+                    raise ValueError("检查点缺少模型来源")
+            except (TypeError, ValueError):
+                pass  # Invalid checkpoint data is never a business decision.
+            else:
+                payloads.append(cached["payload"])
+                model_names.append(cached["model"])
+                if reuse_callback:
+                    reuse_callback(batch_index, total, len(batch))
+                continue
         if progress_callback:
             progress_callback(batch_index, total, len(batch))
         split_after_empty_output = 0
@@ -1324,6 +1359,13 @@ def _invoke_langchain_batches(
         payload["_split_after_empty_output"] = split_after_empty_output
         payload["_invalid_field_retry_count"] = invalid_field_retry_count
         payload["_fallback_count"] = 0
+        _normalized_decisions(payload, batch)
+        if checkpoint is not None:
+            checkpoint[checkpoint_key] = {"payload": payload, "model": model_name}
+            if checkpoint_callback:
+                # Persist before starting the next request, including when the
+                # subsequent batch fails or the process is interrupted.
+                checkpoint_callback(batch_index, total, len(batch))
         payloads.append(payload)
         model_names.append(model_name)
     first = payloads[0] if payloads else {}
@@ -1786,6 +1828,35 @@ def _run_news_selection_agent_locked(
                 "weekly_preference_summary": "",
             }
             if targets:
+                model_checkpoints = state.get("model_checkpoints")
+                if not isinstance(model_checkpoints, dict):
+                    model_checkpoints = {}
+                    state["model_checkpoints"] = model_checkpoints
+                model_checkpoint = model_checkpoints.get(idempotency_key, {})
+                if (
+                    not isinstance(model_checkpoint, dict)
+                    or model_checkpoint.get("sheet_id") != sheet_id
+                    or model_checkpoint.get("training_provenance_version")
+                    != TRAINING_PROVENANCE_VERSION
+                ):
+                    model_checkpoint = {
+                        "sheet_id": sheet_id,
+                        "training_provenance_version": TRAINING_PROVENANCE_VERSION,
+                        "batches": {},
+                    }
+                if not isinstance(model_checkpoint.get("batches"), dict):
+                    model_checkpoint["batches"] = {}
+
+                def save_model_checkpoint(batch: int, total: int, count: int) -> None:
+                    model_checkpoint["updated_at"] = _now_iso()
+                    model_checkpoints[idempotency_key] = model_checkpoint
+                    state["updated_at"] = _now_iso()
+                    _atomic_write_json(STATE_PATH, state)
+                    _progress(
+                        crawl_run_id, stream_log_path, "模型分批检查点保存",
+                        f"第 {batch}/{total} 批 {count} 条决策已校验并落盘；失败重试可直接复用。",
+                    )
+
                 _progress(
                     crawl_run_id,
                     stream_log_path,
@@ -1795,6 +1866,12 @@ def _run_news_selection_agent_locked(
                 model_payload, model_name = _invoke_langchain_batches(
                     examples,
                     targets,
+                    checkpoint=model_checkpoint["batches"] if idempotency_key else None,
+                    checkpoint_callback=save_model_checkpoint,
+                    reuse_callback=lambda batch, total, count: _progress(
+                        crawl_run_id, stream_log_path, "模型分批检查点恢复",
+                        f"已复用第 {batch}/{total} 批 {count} 条已校验决策；跳过模型调用。",
+                    ),
                     progress_callback=lambda batch, total, count: _progress(
                         crawl_run_id,
                         stream_log_path,
@@ -2171,6 +2248,9 @@ def _run_news_selection_agent_locked(
             )
             pending_plans.pop(idempotency_key, None)
             state["pending_plans"] = pending_plans
+            model_checkpoints = state.get("model_checkpoints")
+            if isinstance(model_checkpoints, dict):
+                model_checkpoints.pop(idempotency_key, None)
             state["last_run"] = result
             state["updated_at"] = _now_iso()
             _atomic_write_json(STATE_PATH, state)
