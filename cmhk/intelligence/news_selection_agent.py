@@ -1242,6 +1242,12 @@ def _invoke_langchain_batches_impl(
                 retry_examples = examples if attempt_index == 0 else compact_examples
                 payload, model_name = _invoke_langchain(retry_examples, [target])
                 _normalized_decisions(payload, [target])
+                if checkpoint is not None:
+                    checkpoint[_model_checkpoint_key(examples, [target])] = {
+                        "payload": payload, "model": model_name,
+                    }
+                    if checkpoint_callback:
+                        checkpoint_callback(batch_index, total, 1)
                 return payload, model_name
             except RuntimeError as exc:
                 last_error = exc

@@ -1719,6 +1719,18 @@ class ModelBatchCheckpointTests(unittest.TestCase):
             self.assertEqual(progress, [(1, 1, 1)])
             self.assertEqual(len(payload["decisions"]), 6)
 
+    def test_successful_singleton_is_saved_before_later_round_limit(self):
+        checkpoint = {}
+        targets = self.targets()[:3]
+        with mock.patch.object(agent, "_invoke_langchain", side_effect=[
+            RuntimeError("模型没有最终输出"), self.invoke([], targets[:1]),
+            agent._ModelRoundLimit("10轮请求上限"),
+        ]):
+            with self.assertRaises(agent._ModelRoundLimit):
+                agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+        saved = checkpoint[agent._model_checkpoint_key([], targets[:1])]
+        self.assertEqual(saved["payload"]["decisions"][0]["news_id"], targets[0]["news_id"])
+
     def test_changed_inputs_invalidate_but_row_positions_do_not(self):
         for changed in ("row_number", "title", "app_before", "examples"):
             with self.subTest(changed=changed):
