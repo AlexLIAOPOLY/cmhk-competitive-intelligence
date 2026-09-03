@@ -1823,9 +1823,10 @@
       { key: "insights", label: "AI 战略洞察生成与 UI 发布", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: "项数据洞察发布到 UI", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项数据洞察 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && (!intelligenceRun.operational_summary?.pages_publish?.ok || !insightCoverageComplete)) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1525, 455], details: intelligenceRun.crawl_run_id ? [`AI数据洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；分域洞察 ${number(focusInsightCount)} / ${number(expectedFocusInsightCount)}，顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}；本轮${insightGenerationLabel}`, "数据洞察生成数与数据库数据条数、UI发布主体数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有数据洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI数据洞察与业务发布证据" },
     ];
     const cLanePositions = {
-      agent: [570, 500], "database-hub": [820, 530], "database-local": [1020, 470],
-      "database-international": [1185, 470], "database-cloud": [1020, 605],
-      "database-mainland": [1185, 605], insights: [1415, 535],
+      main: [360, 460], "fact-extract": [360, 600], agent: [660, 500],
+      "database-hub": [950, 530], "database-local": [1160, 470],
+      "database-international": [1325, 470], "database-cloud": [1160, 605],
+      "database-mainland": [1325, 605], insights: [1580, 535],
     };
     nodes.forEach((node) => {
       if (cLanePositions[node.key]) node.position = cLanePositions[node.key];
@@ -1918,7 +1919,7 @@
         { label: "B｜四库数据资料补缺线", position: [18, 230] },
         { label: "C｜数据审核主链：抓取与提取 → 数据字段审核 → 入库 → UI", position: [18, 425] },
       ],
-      groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", note: "四库已发布数据汇总生成右侧 AI 战略洞察", position: [980, 430], size: [389, 315] }],
+      groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", note: "四库已发布数据汇总生成右侧 AI 战略洞察", position: [1120, 430], size: [389, 315] }],
     };
   }
 
