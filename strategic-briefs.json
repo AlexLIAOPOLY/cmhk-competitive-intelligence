@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-03T15:57:24+08:00",
+  "generated_at": "2026-09-03T16:28:10+08:00",
   "items": [
     {
       "id": "NEWS-1C9298FAC2B4E3",
@@ -35,14 +35,6 @@
       "published_at": "2026-09-03T00:16:15+08:00"
     },
     {
-      "id": "NEWS-927FBF8CC4346F",
-      "title": "SoftBank旗下SB Energy提交IPO申请，对OpenAI重度依赖成主要风险",
-      "summary": "SoftBank旗下SB Energy向SEC提交S-1注册声明申请IPO，披露其对OpenAI存在重大依赖，OpenAI既是主要租户也是股权投资者。",
-      "category": "竞对动态",
-      "source_url": "https://www.ibtimes.com/softbanks-sb-energy-files-ipo-openai-dependence-emerges-major-risk-3807039",
-      "published_at": "2026-09-02T23:08:00+08:00"
-    },
-    {
       "id": "NEWS-147CD2D8E0747B",
       "title": "廉署推出全新《电脑系统诚信安全标准》强化数码管治",
       "summary": "香港廉政公署推出全新《电脑系统诚信安全标准》，决策局及部门携手响应，以数码科技强化诚信管治。",
@@ -51,20 +43,28 @@
       "published_at": "2026-09-02T21:48:37+08:00"
     },
     {
-      "id": "NEWS-F474C780E196FA",
-      "title": "AST SpaceMobile获Berenberg买入评级股价涨13%",
-      "summary": "Berenberg首次覆盖AST SpaceMobile并给予买入评级及92美元目标价，推动其股价一度上涨13%。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://www.fool.com/investing/2026/09/02/why-is-ast-spacemobile-stock-up-today/",
-      "published_at": "2026-09-02T21:24:00+08:00"
+      "id": "NEWS-3DC052E02A20C9",
+      "title": "国家级零碳工厂建设全面启动，首批申报截止",
+      "summary": "工信部部署“十五五”培育500家零碳工厂，福建、河北等地已出台办法或公布省级名单。",
+      "category": "政策监管",
+      "source_url": "https://wap.cj.sina.cn/pc/7x24/5074096",
+      "published_at": "2026-09-02T18:20:00+08:00"
     },
     {
-      "id": "NEWS-312FA715C1C1D9",
-      "title": "高通预告新一代骁龙运算平台采用全新Adreno GPU与Neural Fusion加速设计",
-      "summary": "高通预告新一代骁龙运算平台将采用全新Adreno GPU，并导入Neural Fusion加速设计。",
+      "id": "NEWS-45E0624E960317",
+      "title": "投推署组韩国创科企业高管团来港 考察创科旗舰与战略基础设施",
+      "summary": "香港投资推广署组织韩国创科企业高管团来港，考察创科旗舰项目与战略基础设施。",
       "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi9wFBVV95cUxQY0w1RzFHaldLRjRzc3pLRXJ0REhCLWUxcFJLbFdGMFpIc2RNa0w3RXc0UXA1V0VpMllUcXlwbGxHczFNelNwVjcxdU1tOTlwUHhzZU03aVlUaV9iOGs3Ymx2eGUyT0lKRlFUSEFBSEh5UjMwTmVUZV9CMVN4RkhrMlRnb2FYcXNSb3Rra0JMV2g5dER2cGQzMERXZk5ocmYwMEdqVFcybU93c1huR1FjcVU0cnF3UXF6SExTRms4V2N2VFNTOWdtTWkyZmdZRjAxRkYxRGFveE84VkZSSEhZaW94U1dOWjFac3B1NDU1N01vZWhBcTY4?oc=5",
-      "published_at": "2026-09-02T21:00:27+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMie0FVX3lxTFB5UnJkMTdaX3ZOcDR6NTZrdW5qMmExYWlZeW5XcmN2c2pZRk9pNTdUN0VrQXduRjgzSXkxSW53VVZaQmlCWmhyWUhpZEFwWVJtMUV4algyU2hzLUgtVXc1dExXMl9SbWVZekJaV2FVSk1BY2o5YTlQQTYzUQ?oc=5",
+      "published_at": "2026-09-02T17:01:00+08:00"
+    },
+    {
+      "id": "NEWS-3B4298A270384A",
+      "title": "AI供电瓶颈推升能源ETF热度 单周受益人数增近900人",
+      "summary": "黄仁勋与马斯克指电网设备供不应求，SpaceX拟投入燃气轮机叶片制造，AI供电瓶颈带动海外能源ETF申购升温。",
+      "category": "行业动态",
+      "source_url": "https://www.mirrormedia.mg/external/setn_1900017",
+      "published_at": "2026-09-02T15:21:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "0725b12a67e86506d9e8a684f0b5d21e7530724494996e8f46be2f754d2b7555"
+  "site_version": "3d6b00d5425de7bf37cb7789860137aa03e1c0f0b0dcf5035cc7c9d1af34dcdf"
 }

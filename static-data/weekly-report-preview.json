@@ -3,10 +3,10 @@
   "preview": {
     "windowStart": "2026-08-21",
     "windowEnd": "2026-09-03",
-    "newsCount": 33,
-    "acceptedRows": 72,
+    "newsCount": 27,
+    "acceptedRows": 66,
     "excludedRows": 39,
-    "refreshedAt": "2026-09-03T15:57:34+08:00",
+    "refreshedAt": "2026-09-03T16:28:29+08:00",
     "selectionSource": "feishu_review_sheet"
   }
 }
