@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-03T16:28:10+08:00",
+  "generated_at": "2026-09-03T16:33:27+08:00",
   "items": [
     {
       "id": "NEWS-1C9298FAC2B4E3",
@@ -43,14 +43,6 @@
       "published_at": "2026-09-02T21:48:37+08:00"
     },
     {
-      "id": "NEWS-3DC052E02A20C9",
-      "title": "国家级零碳工厂建设全面启动，首批申报截止",
-      "summary": "工信部部署“十五五”培育500家零碳工厂，福建、河北等地已出台办法或公布省级名单。",
-      "category": "政策监管",
-      "source_url": "https://wap.cj.sina.cn/pc/7x24/5074096",
-      "published_at": "2026-09-02T18:20:00+08:00"
-    },
-    {
       "id": "NEWS-45E0624E960317",
       "title": "投推署组韩国创科企业高管团来港 考察创科旗舰与战略基础设施",
       "summary": "香港投资推广署组织韩国创科企业高管团来港，考察创科旗舰项目与战略基础设施。",
@@ -59,12 +51,20 @@
       "published_at": "2026-09-02T17:01:00+08:00"
     },
     {
-      "id": "NEWS-3B4298A270384A",
-      "title": "AI供电瓶颈推升能源ETF热度 单周受益人数增近900人",
-      "summary": "黄仁勋与马斯克指电网设备供不应求，SpaceX拟投入燃气轮机叶片制造，AI供电瓶颈带动海外能源ETF申购升温。",
+      "id": "NEWS-12962013BBF38F",
+      "title": "科大提出新一代通讯框架为7G奠基",
+      "summary": "香港科技大学研究团队提出新型通讯框架，为未来7G移动通信技术奠定理论基础。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMi6wFBVV95cUxPaFltYVpRTmxlTS1JYlVLdEctekRZUmFlN2EzY1RLZDFkdGZtanJtU3c4b1QxWnRmQ1QxS3ktcFREMTd0dW84QVY0bjM1SXhGT1QxeHZfTGxpNEFFcGxOOHJ6d0xPT3hRQmQyNklTTXJ4THdtN0M0aW9PeGd2dkV5TkhnUGNWb2RCd3I3dURUMlpLRVVRLXFlWi1nRlNia0ZOeDVLN1dGZjVoSWt2U29XU3pFVUlnMmhPM0JuTzEtZ2VSS2JIOUtGODFXdkR1RUdaQmZMendQYmVXa3RYWTNhZ0M3YnhabEdLYmQ4?oc=5",
+      "published_at": "2026-09-02T05:13:16+08:00"
+    },
+    {
+      "id": "NEWS-0A1BB86B4EC3FD",
+      "title": "蔡若莲参观小学：善用资助在新学年全面开展AI课程",
+      "summary": "香港教育局局长蔡若莲开学日参观小学，表示「智启学教」计划助学校数码转型，小学善用资助在新学年全面开展AI课程。",
       "category": "行业动态",
-      "source_url": "https://www.mirrormedia.mg/external/setn_1900017",
-      "published_at": "2026-09-02T15:21:00+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1GdVh1MTNOUW8tMmNkRHYxQUtVa1NOeDM1VDVKZlZoWWlxMzZpTTJMZGtIVl9mczlJajNYa0JhM2ZPVWNSNlVheHBiRy1fOWNuUmdPRFFZNGM2NGI0WnBNSlcwclV6Ykw5bk14bks1NTQ4R1J2?oc=5",
+      "published_at": "2026-09-02T04:23:47+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "3d6b00d5425de7bf37cb7789860137aa03e1c0f0b0dcf5035cc7c9d1af34dcdf"
+  "site_version": "4cb874d2ee884ea20df2befacf70944065b5bd5408130a4c9cf1ce7776af383a"
 }

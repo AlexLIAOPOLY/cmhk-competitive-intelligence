@@ -25,7 +25,7 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-09-03T16:28:17+08:00",
+  "updatedAt": "2026-09-03T16:33:34+08:00",
   "rows": [
     {
       "rowNumber": 2,
@@ -4094,7 +4094,7 @@
       "originalRowNumber": 117,
       "recordId": "NEWS-312FA715C1C1D9",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
         "已移除",
@@ -4388,7 +4388,7 @@
       "originalRowNumber": 123,
       "recordId": "NEWS-927FBF8CC4346F",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
         "已移除",
@@ -4437,7 +4437,7 @@
       "originalRowNumber": 124,
       "recordId": "NEWS-6FE696A68B383E",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
         "已移除",
@@ -4878,7 +4878,7 @@
       "originalRowNumber": 133,
       "recordId": "NEWS-F474C780E196FA",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
         "已移除",
@@ -5172,7 +5172,7 @@
       "originalRowNumber": 139,
       "recordId": "NEWS-384B17EC8EFC5A",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
         "已移除",
@@ -5417,7 +5417,7 @@
       "originalRowNumber": 144,
       "recordId": "NEWS-22D5CB7C896141",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "不接受",
         "不接受",
         "已移除",
@@ -6593,10 +6593,10 @@
       "originalRowNumber": 168,
       "recordId": "NEWS-3DC052E02A20C9",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
-        "接受",
-        "已纳入",
+        "廖望 Alex LIAO Wang",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-09-03",
         "国际/行业",
         "政策监管",
@@ -6614,26 +6614,26 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-09-03T15:17:47+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-09-03T08:28:36+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-09-03T15:17:47+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-09-03T08:28:36+00:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-09-03T15:17:47+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-09-03T08:28:36+00:00"
         }
       }
     },
@@ -6740,10 +6740,10 @@
       "originalRowNumber": 171,
       "recordId": "NEWS-3B4298A270384A",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
+        "廖望 Alex LIAO Wang",
         "不接受",
-        "已纳入",
+        "不接受",
+        "已移除",
         "2026-09-03",
         "国际/行业",
         "行业动态",
@@ -6761,19 +6761,19 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-09-03T15:17:47+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-09-03T08:29:07+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-09-03T15:17:47+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-09-03T08:29:07+00:00"
         },
         "纳入周报": {
           "id": "news-auto-screening-bot",
@@ -6936,9 +6936,9 @@
       "originalRowNumber": 175,
       "recordId": "NEWS-147CD2D8E0747B",
       "values": [
-        "新闻自动初筛机器人",
+        "廖望 Alex LIAO Wang",
         "接受",
-        "不接受",
+        "接受",
         "已纳入",
         "2026-09-03",
         "香港本地",
@@ -6957,11 +6957,11 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-09-03T15:17:47+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-09-03T08:29:50+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
@@ -6972,11 +6972,11 @@
           "reviewedAt": "2026-09-03T15:17:47+08:00"
         },
         "纳入周报": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-09-03T15:17:47+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-09-03T08:29:50+00:00"
         }
       }
     },
@@ -6985,10 +6985,10 @@
       "originalRowNumber": 176,
       "recordId": "NEWS-1AD2A59027C027",
       "values": [
-        "新闻自动初筛机器人",
-        "接受",
+        "廖望 Alex LIAO Wang",
         "不接受",
-        "已纳入",
+        "不接受",
+        "已移除",
         "2026-09-03",
         "国际/行业",
         "行业动态",
@@ -7006,19 +7006,19 @@
       "readOnly": false,
       "feishuVisible": true,
       "reviewer": {
-        "id": "news-auto-screening-bot",
-        "name": "新闻自动初筛机器人",
-        "avatarUrl": "",
-        "role": "SYSTEM",
-        "reviewedAt": "2026-09-03T15:17:47+08:00"
+        "id": "fs-76b4f5e7ee939e57",
+        "name": "廖望 Alex LIAO Wang",
+        "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+        "role": "EXTERNAL",
+        "reviewedAt": "2026-09-03T08:30:17+00:00"
       },
       "reviewers": {
         "纳入滚动栏": {
-          "id": "news-auto-screening-bot",
-          "name": "新闻自动初筛机器人",
-          "avatarUrl": "",
-          "role": "SYSTEM",
-          "reviewedAt": "2026-09-03T15:17:47+08:00"
+          "id": "fs-76b4f5e7ee939e57",
+          "name": "廖望 Alex LIAO Wang",
+          "avatarUrl": "https://s3-imfile.feishucdn.com/static-resource/v1/v3_00pv_a25511f0-8780-477c-8460-79763688663g~?image_size=72x72&cut_type=&quality=&format=image&sticker_format=.webp",
+          "role": "EXTERNAL",
+          "reviewedAt": "2026-09-03T08:30:17+00:00"
         },
         "纳入周报": {
           "id": "news-auto-screening-bot",
