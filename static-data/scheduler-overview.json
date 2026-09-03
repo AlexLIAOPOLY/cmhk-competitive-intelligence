@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-03T00:01:09+08:00",
+  "checked_at_hkt": "2026-09-03T09:28:00+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -38,24 +38,23 @@
   ],
   "latest": {
     "main_crawl": {
-      "crawl_run_id": "20260902_030051_422316",
+      "crawl_run_id": "20260903_030057_565842",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "run_status": "cutoff",
-      "backend_pid": 5928,
+      "run_status": "running",
+      "backend_pid": 94084,
       "worker_pid": 0,
-      "phase": "已截止",
-      "progress_detail": "用户于 2026-09-02T16:25:14+08:00 人工终止本次 Agent 审核；网页抓取与飞书同步已经完成，已有 276/281 条 URL 抓取日志及全部既有审核输出均已保留在本任务日志中。本批次已截止且不再自动续跑；下一调度时点仍按飞书更新频率自动开始。",
-      "failure_stage": "agent_review",
-      "heartbeat_at_hkt": "2026-09-02T16:25:14+08:00",
-      "started_at_hkt": "2026-09-02T03:00:51+08:00",
-      "completed_at_hkt": "2026-09-02T16:25:14+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 48263795,
+      "phase": "审核归档",
+      "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-03T09:25:19+08:00",
+      "started_at_hkt": "2026-09-03T03:00:57+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 22553987,
       "feishu": {
         "main_sheet_id": "9c638d",
-        "log_sheet_id": "dfbca1",
-        "log_sheet_title": "爬虫日志_20260902_031343",
+        "log_sheet_id": "955962",
+        "log_sheet_title": "爬虫日志_20260903_031241",
         "url": "",
         "sync_ok": true,
         "compliance_gaps": [
@@ -73,11 +72,10 @@
           "row 4 entity 1O1O status quality_rejected",
           "row 5 entity 3HK status quality_rejected",
           "row 5 entity Hutchison status quality_rejected",
-          "row 6 entity 3HK status quality_rejected",
-          "row 6 entity Hutchison status quality_rejected",
           "row 7 entity 3HK status quality_rejected",
           "row 7 entity Hutchison status quality_rejected",
           "row 8 entity SmarTone status quality_rejected",
+          "row 9 entity SmarTone status quality_rejected",
           "row 10 entity SmarTone status quality_rejected",
           "row 11 entity HKBN status quality_rejected",
           "row 12 entity HKBN status quality_rejected",
@@ -159,7 +157,7 @@
         ]
       },
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260902_030051_422316.jsonl",
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260903_030057_565842.jsonl",
         "final_audit": "final_audit.md",
         "coverage_report": "coverage_report.tsv",
         "run_log_tsv": "run_log.tsv",
@@ -168,93 +166,61 @@
         "curation_latest": "curation_data/latest.json"
       },
       "final_audit": {
-        "generated_at": "2026-09-02T03:13:47.209634",
-        "rows_crawled": "33",
+        "generated_at": "2026-09-03T03:12:40.729271",
+        "rows_crawled": "38",
         "ok_rows": "2",
         "partial_rows": "1",
-        "quality_gated_rows": "30",
-        "failed_rows": "0",
-        "fulfilled": "3/33 (9.1%)",
-        "live_url_success": "276/281 (98.2%)",
-        "live_url_failures": "5",
+        "quality_gated_rows": "34",
+        "failed_rows": "1",
+        "fulfilled": "3/38 (7.9%)",
+        "live_url_success": "326/333 (97.9%)",
+        "live_url_failures": "7",
         "restored_from_previous_evidence": "0"
       },
       "run_log": {
-        "rows": 281,
-        "success_urls": 276,
-        "failed_urls": 5,
+        "rows": 333,
+        "success_urls": 326,
+        "failed_urls": 7,
         "fallback_urls": 0
       },
       "curation": {
-        "agent_run_id": "scheduled_20260902_030051_422316"
+        "agent_run_id": "scheduled_20260903_030057_565842"
       },
       "metrics_refresh": {},
       "stream_log": {
-        "bytes": 16608569,
-        "lines": 14777
+        "bytes": 4973642,
+        "lines": 7734
       },
-      "status_detail": "用户于 2026-09-02T16:25:14+08:00 人工终止本次 Agent 审核；网页抓取与飞书同步已经完成，已有 276/281 条 URL 抓取日志及全部既有审核输出均已保留在本任务日志中。本批次已截止且不再自动续跑；下一调度时点仍按飞书更新频率自动开始。",
-      "operational_summary": {
-        "stopped_by_user": true,
-        "existing_logs_preserved": true,
-        "crawl_and_feishu_sync_completed": true,
-        "url_success": 276,
-        "url_total": 281,
-        "agent_audit_attempt_count": 9,
-        "next_schedule_preserved": true
-      }
+      "status_detail": "",
+      "interrupted": false,
+      "resumed_at_hkt": "2026-09-03T09:25:17+08:00"
     },
     "strategic_news": {
-      "crawl_run_id": "20260902_140022_550070",
+      "crawl_run_id": "20260903_092445_634563",
       "trigger": "战略新闻定时爬虫",
-      "scope": "午后扫描（2026-09-02@14:00）",
+      "scope": "晨间扫描（2026-09-03@07:30）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
-      "run_status": "completed",
-      "backend_pid": 52260,
+      "run_status": "running",
+      "backend_pid": 81999,
       "worker_pid": 0,
-      "phase": "已完成",
-      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
-      "heartbeat_at_hkt": "2026-09-02T14:15:09+08:00",
-      "started_at_hkt": "2026-09-02T14:00:22+08:00",
-      "completed_at_hkt": "2026-09-02T14:15:09+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 886858,
+      "phase": "飞书写入与逐格回读",
+      "progress_detail": "写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+      "heartbeat_at_hkt": "2026-09-03T09:26:50+08:00",
+      "started_at_hkt": "2026-09-03T09:24:45+08:00",
+      "completed_at_hkt": "",
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260902_140022_550070.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260903_092445_634563.jsonl"
       },
       "stream_log": {
-        "bytes": 14140,
-        "lines": 80
+        "bytes": 3542,
+        "lines": 17
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {},
-      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
-      "failure_stage": "",
-      "operational_summary": {
-        "slot": "2026-09-02@14:00",
-        "discovered": 20,
-        "ai_retained": 9,
-        "history_duplicates": 4,
-        "new_count": 5,
-        "readback_verified": true,
-        "notification_status": "sent",
-        "message_id": "om_x100b664fa47820b8b48909e0b1ad6b1",
-        "message_ids": [
-          "om_x100b664fa47820b8b48909e0b1ad6b1",
-          "om_x100b664fa00100a0b2601a79bd22444"
-        ],
-        "notification_destination_count": 2,
-        "selection_agent_status": "completed",
-        "selection_agent_changed": 10,
-        "selection_agent_recovered": true,
-        "selection_agent_recovery_task_run_id": "20260902_143853_729101",
-        "selection_agent_recovered_at": "2026-09-02T14:43:52+08:00"
-      },
-      "amended_at_hkt": "2026-09-02T14:43:52+08:00"
+      "metrics_refresh": {}
     },
     "four_database_refresh": {
       "crawl_run_id": "20260901_040702_619062",

@@ -385,8 +385,8 @@
       model.statusOptions = payload.statusOptions.map(String);
     }
     nodes.syncText.textContent = payload.updatedAt
-      ? `飞书实时 + 本地完整历史 · ${new Date(payload.updatedAt).toLocaleString("zh-HK", { hour12: false })}`
-      : "飞书实时 + 本地完整历史";
+      ? `飞书数据 + 本地完整历史 · ${new Date(payload.updatedAt).toLocaleString("zh-HK", { hour12: false })}`
+      : "飞书数据 + 本地完整历史";
     if (payload.sheetUrl) {
       nodes.feishu.href = payload.sheetUrl;
       nodes.feishu.hidden = false;
@@ -430,7 +430,7 @@
       setSaveStatus("飞书当前行可编辑并回读 · 本地历史永久保留且只读");
     } catch (error) {
       const errorMessage = error?.name === "AbortError"
-        ? "实时刷新超过 30 秒，已停止等待"
+        ? "数据刷新超过 30 秒，已停止等待"
         : (error.message || String(error));
       const backgroundBusy = errorMessage.includes("后台战略新闻任务正在更新");
       if (!hasRows) {
@@ -443,7 +443,7 @@
           ? "后台正在更新飞书审核表；系统每 15 秒自动重试，当前显示上次成功读取的数据"
           : `${errorMessage}；系统将自动重试，当前显示上次成功读取的数据`, "error");
       }
-      nodes.syncText.textContent = hasRows ? "显示缓存 · 实时刷新暂不可用" : "飞书连接失败";
+      nodes.syncText.textContent = hasRows ? "显示缓存 · 数据刷新暂不可用" : "飞书连接失败";
     } finally {
       window.clearTimeout(timeoutId);
       model.loading = false;

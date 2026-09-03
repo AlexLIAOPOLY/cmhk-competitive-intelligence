@@ -2,108 +2,108 @@
   "ok": true,
   "status": {
     "results": {
-      "count": 33,
-      "ok": 2,
-      "partial": 1
+      "count": 38,
+      "ok": 3,
+      "partial": 4
     },
     "visuals": {
       "crawl": {
-        "success": 276,
-        "failed": 5,
+        "success": 326,
+        "failed": 7,
         "fallback": 0,
-        "total": 281,
+        "total": 333,
         "successRate": 98,
-        "completedAt": "2026-09-02 03:13:47"
+        "completedAt": "2026-09-03 03:12:40"
       },
       "quality": {
-        "ok": 2,
-        "partial": 1,
-        "failed": 0,
-        "operationalFailed": 0,
+        "ok": 3,
+        "partial": 4,
+        "failed": 1,
+        "operationalFailed": 1,
         "qualityRejected": 30,
-        "nonPromoted": 30,
-        "fieldTotal": 205,
-        "missingFields": 2,
-        "rawSources": 281
+        "nonPromoted": 31,
+        "fieldTotal": 249,
+        "missingFields": 15,
+        "rawSources": 337
       },
       "blocks": [
         {
+          "label": "经营指标",
+          "value": 16
+        },
+        {
           "label": "运营动态",
-          "value": 20
+          "value": 14
         },
         {
           "label": "产品资费",
           "value": 8
-        },
-        {
-          "label": "经营指标",
-          "value": 5
         }
       ],
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 152
+          "value": 170
         },
         {
           "label": "government_public_info",
-          "value": 55
+          "value": 51
+        },
+        {
+          "label": "company_official_investor_relations",
+          "value": 41
         },
         {
           "label": "regulator_public_info",
           "value": 14
         },
         {
-          "label": "commercial_data",
+          "label": "exchange_public_disclosure",
           "value": 12
         },
         {
-          "label": "government_statistics",
+          "label": "commercial_data",
           "value": 9
-        },
-        {
-          "label": "international_org",
-          "value": 8
         }
       ],
       "jurisdictions": [
         {
           "label": "HK",
-          "value": 127
+          "value": 125
         },
         {
           "label": "US",
-          "value": 28
+          "value": 66
+        },
+        {
+          "label": "JP",
+          "value": 21
         },
         {
           "label": "EU",
           "value": 18
         },
         {
-          "label": "JP",
-          "value": 16
+          "label": "CN",
+          "value": 17
         },
         {
           "label": "international",
-          "value": 15
-        },
-        {
-          "label": "CN",
           "value": 12
         }
       ],
       "methods": [
         {
           "label": "httpx",
-          "value": 205
+          "value": 241
         },
         {
           "label": "cache:httpx",
-          "value": 42
+          "value": 58
         },
         {
           "label": "curl_chrome_ua",
-          "value": 20
+          "value": 22
         },
         {
           "label": "curl_direct_chrome_ua",
@@ -115,36 +115,40 @@
         },
         {
           "label": "skipped",
-          "value": 2
+          "value": 3
         }
       ],
       "rejection": {
-        "accepted": 176,
-        "rejected": 4,
-        "qualityRejected": 4,
-        "evidenceGaps": 87,
-        "reportedRejected": 91,
-        "review": 34,
+        "accepted": 146,
+        "rejected": 8,
+        "qualityRejected": 8,
+        "evidenceGaps": 98,
+        "reportedRejected": 106,
+        "review": 49,
         "total": 301,
-        "qualityTotal": 214,
-        "rejectRate": 2,
-        "passRate": 82,
+        "qualityTotal": 203,
+        "rejectRate": 4,
+        "passRate": 72,
         "reasons": [
           {
             "label": "置信度低于80%",
+            "value": 4
+          },
+          {
+            "label": "云指标缺少云业务专属口径",
             "value": 3
           },
           {
-            "label": "定性指标为截断网页片段",
-            "value": 1
+            "label": "用户数仅有比例变化而无客户规模",
+            "value": 2
           },
           {
-            "label": "用户数仅有比例变化而无客户规模",
+            "label": "公司研究存在冲突或证据未核实：本轮隔离，保留待复核，不写入新值",
             "value": 1
           }
         ],
-        "runId": "scheduled_20260901_030101_001044",
-        "completedAt": "2026-09-01T04:06:02+08:00"
+        "runId": "scheduled_20260903_030057_565842",
+        "completedAt": "2026-09-03T09:25:19+08:00"
       },
       "newsFunnel": {
         "scope": "晨间扫描（2026-09-02@07:30）",
@@ -255,12 +259,20 @@
       "todayNewsRounds": [],
       "entities": [
         {
-          "label": "HKBN",
+          "label": "HKT",
           "value": 4
         },
         {
-          "label": "HKT",
-          "value": 3
+          "label": "3HK",
+          "value": 4
+        },
+        {
+          "label": "SmarTone",
+          "value": 4
+        },
+        {
+          "label": "HKBN",
+          "value": 4
         },
         {
           "label": "csl",
@@ -271,15 +283,7 @@
           "value": 3
         },
         {
-          "label": "3HK",
-          "value": 3
-        },
-        {
           "label": "Hutchison",
-          "value": 3
-        },
-        {
-          "label": "SmarTone",
           "value": 3
         },
         {
@@ -348,7 +352,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-09-02 03:10:09",
+    "latestOutputText": "2026-09-03 06:38:01",
     "outputs": [
       {
         "name": "8月30日周报 (3)（编辑稿）.docx",

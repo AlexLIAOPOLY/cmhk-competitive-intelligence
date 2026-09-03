@@ -1,6 +1,53 @@
 {
   "ok": true,
   "details": {
+    "20260903_092445_634563": {
+      "ok": true,
+      "run": {
+        "crawl_run_id": "20260903_092445_634563",
+        "trigger": "战略新闻定时爬虫",
+        "scope": "晨间扫描（2026-09-03@07:30）",
+        "task_kind": "strategic-news",
+        "run_status": "running",
+        "phase": "飞书写入与逐格回读",
+        "progress_detail": "写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+        "heartbeat_at_hkt": "2026-09-03T09:26:50+08:00",
+        "started_at_hkt": "2026-09-03T09:24:45+08:00",
+        "completed_at_hkt": "",
+        "final_audit": {},
+        "curation": {}
+      },
+      "lines": 18,
+      "newsItems": [],
+      "discoveryItems": [],
+      "aiReviewItems": [],
+      "dedupeItems": []
+    },
+    "20260903_073045_893516": {
+      "ok": true,
+      "run": {
+        "crawl_run_id": "20260903_073045_893516",
+        "trigger": "战略新闻定时爬虫",
+        "scope": "晨间扫描（2026-09-03@07:30）",
+        "task_kind": "strategic-news",
+        "run_status": "failed",
+        "phase": "已中断",
+        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:12:40+08:00；最后进度：[2026-09-03 09:12:40] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:12:40+08:00；最后进度：[2026-09-03 09:12:40] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+        "heartbeat_at_hkt": "2026-09-03T09:12:40+08:00",
+        "started_at_hkt": "2026-09-03T07:30:45+08:00",
+        "completed_at_hkt": "2026-09-03T09:12:40+08:00",
+        "crawl_return_code": -1,
+        "duration_ms": 6115078,
+        "final_audit": {},
+        "curation": {}
+      },
+      "lines": 478,
+      "newsItems": [],
+      "discoveryItems": [],
+      "aiReviewItems": [],
+      "dedupeItems": []
+    },
     "20260902_140022_550070": {
       "ok": true,
       "run": {
@@ -314246,78 +314293,6 @@
           "businessImpact": "资本配置"
         }
       ],
-      "discoveryItems": [],
-      "aiReviewItems": [],
-      "dedupeItems": []
-    },
-    "20260815_160144_760883": {
-      "ok": true,
-      "run": {
-        "crawl_run_id": "20260815_160144_760883",
-        "trigger": "战略新闻定时爬虫",
-        "scope": "今日完整补跑（V4 Pro，同日去重）（2026-08-15@manual-v4-recovery-160144）",
-        "task_kind": "strategic-news",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 71 条，AI保留 33 条，历史重复 3 条，新增 30 条。",
-        "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 71 条，AI保留 33 条，历史重复 3 条，新增 30 条。",
-        "failure_stage": "",
-        "heartbeat_at_hkt": "2026-08-15T16:07:31+08:00",
-        "started_at_hkt": "2026-08-15T16:01:44+08:00",
-        "completed_at_hkt": "2026-08-15T16:07:31+08:00",
-        "crawl_return_code": 0,
-        "duration_ms": 346771,
-        "final_audit": {},
-        "curation": {},
-        "operational_summary": {
-          "slot": "2026-08-15@manual-v4-recovery-160144",
-          "discovered": 71,
-          "ai_retained": 33,
-          "history_duplicates": 3,
-          "new_count": 30,
-          "readback_verified": true,
-          "notification_status": "queued_while_paused",
-          "message_id": ""
-        }
-      },
-      "lines": 150,
-      "newsItems": [],
-      "discoveryItems": [],
-      "aiReviewItems": [],
-      "dedupeItems": []
-    },
-    "20260815_150018_860156": {
-      "ok": true,
-      "run": {
-        "crawl_run_id": "20260815_150018_860156",
-        "trigger": "战略新闻定时爬虫",
-        "scope": "午后扫描（2026-08-15@15:00）",
-        "task_kind": "strategic-news",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 6 条，AI保留 0 条，历史重复 0 条，新增 0 条。",
-        "status_detail": "扫描、AI审核、历史去重、飞书逐格回读和群通知均已完成；发现 6 条，AI保留 0 条，历史重复 0 条，新增 0 条。",
-        "failure_stage": "",
-        "heartbeat_at_hkt": "2026-08-15T15:04:23+08:00",
-        "started_at_hkt": "2026-08-15T15:00:18+08:00",
-        "completed_at_hkt": "2026-08-15T15:04:23+08:00",
-        "crawl_return_code": 0,
-        "duration_ms": 244484,
-        "final_audit": {},
-        "curation": {},
-        "operational_summary": {
-          "slot": "2026-08-15@15:00",
-          "discovered": 6,
-          "ai_retained": 0,
-          "history_duplicates": 0,
-          "new_count": 0,
-          "readback_verified": true,
-          "notification_status": "queued_while_paused",
-          "message_id": ""
-        }
-      },
-      "lines": 67,
-      "newsItems": [],
       "discoveryItems": [],
       "aiReviewItems": [],
       "dedupeItems": []
