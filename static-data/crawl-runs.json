@@ -2,16 +2,147 @@
   "ok": true,
   "runs": [
     {
-      "crawl_run_id": "20260903_092650_670673",
+      "crawl_run_id": "20260903_093901_490428",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-09-03@07:30）",
       "task_kind": "news-selection-agent",
       "run_status": "running",
       "phase": "LangChain 分批判断",
-      "progress_detail": "正在处理第 3/30 批，本批 5 条当天候选。",
-      "heartbeat_at_hkt": "2026-09-03T09:27:09+08:00",
-      "started_at_hkt": "2026-09-03T09:26:50+08:00",
+      "progress_detail": "正在处理第 9/30 批，本批 5 条当天候选。",
+      "heartbeat_at_hkt": "2026-09-03T09:57:15+08:00",
+      "started_at_hkt": "2026-09-03T09:39:01+08:00",
       "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
+      "crawl_run_id": "20260903_093634_839263",
+      "trigger": "战略新闻定时爬虫",
+      "scope": "晨间扫描（2026-09-03@07:30）",
+      "task_kind": "strategic-news",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻爬虫已完成：新增 148 条已写入飞书并逐格回读确认。后续自动初筛和通知继续独立处理；已成功的采集、审核与写入不会重跑。",
+      "status_detail": "新闻爬虫已完成：新增 148 条已写入飞书并逐格回读确认。后续自动初筛和通知继续独立处理；已成功的采集、审核与写入不会重跑。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-03T09:57:51+08:00",
+      "started_at_hkt": "2026-09-03T09:36:34+08:00",
+      "completed_at_hkt": "2026-09-03T09:57:51+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 1277501,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "slot": "2026-09-03@07:30",
+        "crawl_stage_status": "completed",
+        "new_count": 148,
+        "readback_verified": true,
+        "selection_agent_status": "pending",
+        "notification_status": "pending",
+        "success_boundary": "feishu_readback"
+      }
+    },
+    {
+      "crawl_run_id": "20260903_093155_974249",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-03@07:30）",
+      "task_kind": "news-selection-agent",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:36:18+08:00；最后进度：[2026-09-03 09:36:18] LangChain 分批判断：正在处理第 7/30 批，本批 5 条当天候选。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:36:18+08:00；最后进度：[2026-09-03 09:36:18] LangChain 分批判断：正在处理第 7/30 批，本批 5 条当天候选。",
+      "heartbeat_at_hkt": "2026-09-03T09:36:18+08:00",
+      "started_at_hkt": "2026-09-03T09:31:55+08:00",
+      "completed_at_hkt": "2026-09-03T09:36:18+08:00",
+      "crawl_return_code": -1,
+      "duration_ms": 263973,
+      "final_audit": {},
+      "curation": {}
+    },
+    {
+      "crawl_run_id": "20260903_093024_664292",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_95476f6016926e79c16e2a28 完成，共 3079 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_95476f6016926e79c16e2a28 完成，共 3079 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-03T09:34:38+08:00",
+      "started_at_hkt": "2026-09-03T09:30:24+08:00",
+      "completed_at_hkt": "2026-09-03T09:34:38+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 253732,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_95476f6016926e79c16e2a28",
+        "content_sha256": "95476f6016926e79c16e2a28aeb61216718bae99f8b37e342ed4711ba7005e12",
+        "release_manifest_sha256": "bc983ab3410651b8206953b907abe05fab1243d011f459c489547e07a2624514",
+        "row_count": 3079,
+        "data_as_of": "2026-06-30",
+        "created": true,
+        "parent_crawl_run_id": "20260903_092920_669797",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 7804,
+        "feishu_written": 7804,
+        "feishu_readback_verified": true,
+        "feishu_readback_scope": "all_rows_all_core_fields",
+        "feishu_readback_sha256": "e8606aa7ff8558b0bedaf6962308354a9f54cf370aa4d28d0f49fa4a5ab57d56",
+        "feishu_coverage_ratio": 1.0,
+        "feishu_active_row_count": 7804,
+        "feishu_tombstone_row_count": 0,
+        "feishu_pre_publish_written": 15,
+        "feishu_migrated_sync_key_count": 0,
+        "feishu_compacted_tombstone_count": 0
+      }
+    },
+    {
+      "crawl_run_id": "20260903_092920_669797",
+      "trigger": "四库与观察结论自动更新",
+      "scope": "Agent审核 scheduled_20260903_030057_565842 · 父任务 20260903_030057_565842",
+      "task_kind": "executive-intelligence-refresh",
+      "run_status": "running",
+      "phase": "更新主页UI",
+      "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+      "heartbeat_at_hkt": "2026-09-03T09:58:41+08:00",
+      "started_at_hkt": "2026-09-03T09:29:20+08:00",
+      "completed_at_hkt": "",
+      "final_audit": {},
+      "curation": {}
+    },
+    {
+      "crawl_run_id": "20260903_092910_795169",
+      "trigger": "战略新闻定时爬虫",
+      "scope": "晨间扫描（2026-09-03@07:30）",
+      "task_kind": "strategic-news",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:31:55+08:00；最后进度：[2026-09-03 09:31:55] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:31:55+08:00；最后进度：[2026-09-03 09:31:55] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+      "heartbeat_at_hkt": "2026-09-03T09:31:55+08:00",
+      "started_at_hkt": "2026-09-03T09:29:10+08:00",
+      "completed_at_hkt": "2026-09-03T09:31:55+08:00",
+      "crawl_return_code": -1,
+      "duration_ms": 165968,
+      "final_audit": {},
+      "curation": {}
+    },
+    {
+      "crawl_run_id": "20260903_092650_670673",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-03@07:30）",
+      "task_kind": "news-selection-agent",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:28:13+08:00；最后进度：[2026-09-03 09:28:13] LangChain 分批判断：正在处理第 5/30 批，本批 5 条当天候选。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:28:13+08:00；最后进度：[2026-09-03 09:28:13] LangChain 分批判断：正在处理第 5/30 批，本批 5 条当天候选。",
+      "heartbeat_at_hkt": "2026-09-03T09:28:13+08:00",
+      "started_at_hkt": "2026-09-03T09:26:50+08:00",
+      "completed_at_hkt": "2026-09-03T09:28:13+08:00",
+      "crawl_return_code": -1,
+      "duration_ms": 83820,
       "final_audit": {},
       "curation": {}
     },
@@ -20,12 +151,15 @@
       "trigger": "战略新闻定时爬虫",
       "scope": "晨间扫描（2026-09-03@07:30）",
       "task_kind": "strategic-news",
-      "run_status": "running",
-      "phase": "飞书写入与逐格回读",
-      "progress_detail": "写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+      "run_status": "failed",
+      "phase": "已中断",
+      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:26:50+08:00；最后进度：[2026-09-03 09:26:50] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
+      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:26:50+08:00；最后进度：[2026-09-03 09:26:50] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
       "heartbeat_at_hkt": "2026-09-03T09:26:50+08:00",
       "started_at_hkt": "2026-09-03T09:24:45+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-03T09:26:50+08:00",
+      "crawl_return_code": -1,
+      "duration_ms": 125648,
       "final_audit": {},
       "curation": {}
     },
@@ -67,15 +201,15 @@
       "crawl_run_id": "20260903_030057_565842",
       "trigger": "定时爬虫",
       "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-      "run_status": "running",
-      "phase": "审核归档",
-      "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
-      "status_detail": "",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
       "failure_stage": "",
-      "heartbeat_at_hkt": "2026-09-03T09:25:19+08:00",
+      "heartbeat_at_hkt": "2026-09-03T09:29:20+08:00",
       "started_at_hkt": "2026-09-03T03:00:57+08:00",
-      "completed_at_hkt": "",
-      "duration_ms": 22553987,
+      "completed_at_hkt": "2026-09-03T09:29:20+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 23303927,
       "final_audit": {
         "generated_at": "2026-09-03T03:12:40.729271",
         "rows_crawled": "38",
@@ -89,7 +223,2781 @@
         "restored_from_previous_evidence": "0"
       },
       "curation": {
-        "agent_run_id": "scheduled_20260903_030057_565842"
+        "agent_run_id": "scheduled_20260903_030057_565842",
+        "started_at": "2026-09-03T03:13:47+08:00",
+        "completed_at": "2026-09-03T09:25:19+08:00",
+        "tasks": 301,
+        "accepted": 146,
+        "rejected": 106,
+        "review": 49,
+        "gaps": 130,
+        "recrawl_rows": [
+          47,
+          48,
+          49,
+          53
+        ],
+        "search_verification": {
+          "checked": 301,
+          "corrected": 6,
+          "review": 24,
+          "conflicts": 108,
+          "workers": 4,
+          "online_search": true,
+          "online_checked": 301,
+          "online_votes": 319,
+          "online_required": 301,
+          "online_limit": "all",
+          "online_coverage_complete": true,
+          "online_unsearched": 0
+        },
+        "company_agent_summary": {
+          "required": true,
+          "expected": 41,
+          "completed": 37,
+          "coverage_complete": false,
+          "publish_ready": false,
+          "agent_errors": [
+            "AT&T",
+            "Deutsche Telekom",
+            "中国电信",
+            "中国联通"
+          ],
+          "unresolved_companies": [
+            "AT&T",
+            "Deutsche Telekom",
+            "中国电信",
+            "中国联通",
+            "中国铁塔"
+          ],
+          "expected_metrics": 387,
+          "completed_metrics": 340,
+          "metric_status_counts": {
+            "verified_latest": 84,
+            "not_disclosed": 182,
+            "not_applicable": 3,
+            "search_exhausted": 71,
+            "conflict": 1,
+            "unsearched": 0,
+            "agent_error": 46
+          },
+          "latest_value_coverage_complete": false,
+          "metric_coverage_complete": false,
+          "unresolved_metric_count": 47,
+          "unresolved_metrics": [
+            {
+              "company": "AT&T",
+              "metric": "网络API",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "Open RAN",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "边缘计算",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "FWA",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "AI网络",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "EBITDA或经营利润",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "净利润",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "用户数",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "ARPU",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "资本开支",
+              "status": "agent_error"
+            },
+            {
+              "company": "AT&T",
+              "metric": "自由现金流",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "网络API",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "Open RAN",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "边缘计算",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "FWA",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "AI网络",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "EBITDA或经营利润",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "净利润",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "用户数",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "ARPU",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "资本开支",
+              "status": "agent_error"
+            },
+            {
+              "company": "Deutsche Telekom",
+              "metric": "自由现金流",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "通信服务收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "EBITDA",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "净利润",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "移动及5G用户",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "有线宽带用户",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "ARPU",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "资本开支",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "云收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "5G-A",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国电信",
+              "metric": "AI",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "通信服务收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "EBITDA",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "净利润",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "移动及5G用户",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "有线宽带用户",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "ARPU",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "资本开支",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "云收入",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "DICT",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国联通",
+              "metric": "5G-A",
+              "status": "agent_error"
+            },
+            {
+              "company": "中国铁塔",
+              "metric": "净利润",
+              "status": "conflict"
+            }
+          ],
+          "workers": 4,
+          "searches": 395,
+          "opened_pages": 1304,
+          "evidence": 230
+        },
+        "overall_status": "completed_with_review",
+        "publication_review": {
+          "policy": "quarantine_unresolved_companies_v1",
+          "companies": [
+            "AT&T",
+            "Deutsche Telekom",
+            "中国电信",
+            "中国联通",
+            "中国铁塔"
+          ],
+          "entities": [
+            "at&t",
+            "china tower",
+            "china tower corporation limited",
+            "deutsche telekom",
+            "中国电信",
+            "中国联通",
+            "中国铁塔"
+          ],
+          "candidate_ids": [
+            "ea77883416b81b37",
+            "73527ff5fc755b12",
+            "a8906d35dab65005",
+            "0538060d1f18fa4a",
+            "e31e328c5921184e",
+            "e102594209c9d64f",
+            "286693820a5378e8",
+            "7a553d857500e440",
+            "39444fa29a357733",
+            "811b581b7e2e0583",
+            "6d1e6e5314ca1bd6",
+            "073445a8a6d1fbd9",
+            "81a5874c34fb4c02",
+            "5c7c6907c363b1b3",
+            "6b09717ff29c9b21",
+            "5547885cca18b44a",
+            "425ad2d160cea473",
+            "6e3ce475d721923f",
+            "81c5be5e44be4816",
+            "667296bd6a78470a",
+            "ac70d4b2137d4637",
+            "e098927742754e7a",
+            "ab4ab48a13cf17ab",
+            "b8aef56574356814",
+            "b12b1a72032333cb",
+            "f3e5357267b661d5",
+            "e43f9eecfe9805b9",
+            "b406a2721255fb0d",
+            "12c17c908eaa7e48",
+            "a51fb18004bf2eda",
+            "1c3c96ee3f89219b",
+            "2685febeed6343dc",
+            "230b3682363f2403",
+            "9734d1ada998d441",
+            "807061376752cdef"
+          ],
+          "reports": [
+            {
+              "agent_id": "company-fb2f741e0eff",
+              "parent_agent_id": "lead-scheduled_20260903_030057_565842",
+              "company": "AT&T",
+              "group": "international",
+              "row_number": 48,
+              "row_entity": "AT&T",
+              "status": "agent_error",
+              "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+              "reason_code": "invalid_terminal_payload",
+              "completion_forced": true,
+              "search_count": 12,
+              "opened_page_count": 49,
+              "open_success_count": 44,
+              "open_blocked_count": 5,
+              "open_attempts": [
+                {
+                  "url": "https://investors.att.com/news-and-events/news-releases/2026",
+                  "final_url": "https://investors.att.com/news-and-events/news-releases/2026",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://investors.att.com/financial-reports/quarterly-earnings/2026",
+                  "final_url": "https://investors.att.com/financial-reports/quarterly-earnings/2026",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_Earnings_Release.pdf",
+                  "final_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_Earnings_Release.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.barrons.com/articles/att-earnings-stock-51643198052",
+                  "final_url": "https://www.barrons.com/articles/att-earnings-stock-51643198052",
+                  "http_status": 401,
+                  "opened": false,
+                  "blocked_reason": "HTTP 401",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "final_url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/",
+                  "final_url": "https://investors.att.com/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/news-and-events/news-releases/2026",
+                  "final_url": "https://investors.att.com/news-and-events/news-releases/2026",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/financial-reports/quarterly-earnings/2026",
+                  "final_url": "https://investors.att.com/financial-reports/quarterly-earnings/2026",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_Earnings_Release.pdf",
+                  "final_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_Earnings_Release.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.barrons.com/articles/att-earnings-stock-51643198052",
+                  "final_url": "https://www.barrons.com/articles/att-earnings-stock-51643198052",
+                  "http_status": 401,
+                  "opened": false,
+                  "blocked_reason": "HTTP 401",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "final_url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://infinansa.com/google-parent-alphabet-releases-quarterly-results/",
+                  "final_url": "https://infinansa.com/google-parent-alphabet-releases-quarterly-results/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/financial-reports/quarterly-earnings/2026",
+                  "final_url": "https://investors.att.com/financial-reports/quarterly-earnings/2026",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/news-and-events/news-releases/2026",
+                  "final_url": "https://investors.att.com/news-and-events/news-releases/2026",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/1q26-att-investor-news-items.pdf",
+                  "final_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/1q26-att-investor-news-items.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "final_url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://infinansa.com/google-parent-alphabet-releases-quarterly-results/",
+                  "final_url": "https://infinansa.com/google-parent-alphabet-releases-quarterly-results/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/1Q26_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf",
+                  "final_url": "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/1Q26_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "final_url": "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.rcrwireless.com/20121024/analyst-angle/analyst-angle-sprint-nextel-thoughts-ahead-earnings-release",
+                  "final_url": "https://rcrwireless.com/20121024/analyst-angle/analyst-angle-sprint-nextel-thoughts-ahead-earnings-release",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                }
+              ],
+              "evidence_count": 12,
+              "fresh_official_open_count": 44,
+              "metric_results": [
+                {
+                  "metric": "网络API",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "Open RAN",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "边缘计算",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "FWA",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "100万",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 4,
+                  "live_official_open_count": 4,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"
+                  ]
+                },
+                {
+                  "metric": "AI网络",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "2026;316亿美元;2.3%",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 2,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf",
+                    "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/"
+                  ]
+                },
+                {
+                  "metric": "EBITDA或经营利润",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "123亿",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 2,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf",
+                    "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/"
+                  ]
+                },
+                {
+                  "metric": "净利润",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 2,
+                  "search_value_conflict": true,
+                  "evidence_value_conflict": true,
+                  "fresh_official_open_count": 10,
+                  "live_official_open_count": 10,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                    "https://infinansa.com/google-parent-alphabet-releases-quarterly-results/"
+                  ]
+                },
+                {
+                  "metric": "用户数",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "100万;432000;646000",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 4,
+                  "live_official_open_count": 4,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"
+                  ]
+                },
+                {
+                  "metric": "ARPU",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "arpuleaderatover$65；arpuneighborat$56",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www.rcrwireless.com/20121107/analyst-angle/analyst-angle-thoughts-ahead-t-mobile-usas-q3-earnings-release"
+                  ]
+                },
+                {
+                  "metric": "资本开支",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": true,
+                  "fresh_official_open_count": 4,
+                  "live_official_open_count": 4,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_Earnings_Release.pdf",
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"
+                  ]
+                },
+                {
+                  "metric": "自由现金流",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['净利润:resolve_conflicting_search_values']; expected_status=verified_latest",
+                  "value": "47亿;44亿",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 4,
+                  "live_official_open_count": 4,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf"
+                  ]
+                }
+              ],
+              "metric_coverage_complete": false,
+              "unresolved_metrics": [
+                "网络API",
+                "Open RAN",
+                "边缘计算",
+                "FWA",
+                "AI网络",
+                "收入",
+                "EBITDA或经营利润",
+                "净利润",
+                "用户数",
+                "ARPU",
+                "资本开支",
+                "自由现金流"
+              ],
+              "official_hosts": [
+                "investors.att.com"
+              ],
+              "evidence_urls": [
+                "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/1Q-2026/ATT_1Q26_Earnings_Release.pdf",
+                "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2026/2Q-2026/2Q26_ATT_Earnings_Release.pdf",
+                "https://thearabianpost.com/atts-quarterly-results-match-street-expectations/",
+                "https://infinansa.com/google-parent-alphabet-releases-quarterly-results/",
+                "https://www.rcrwireless.com/20121107/analyst-angle/analyst-angle-thoughts-ahead-t-mobile-usas-q3-earnings-release"
+              ],
+              "queries": [
+                "\"AT&T\" 网络API 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" Open RAN 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" 边缘计算 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" FWA 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" AI网络 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" 收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" EBITDA或经营利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"AT&T\" 净利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新"
+              ],
+              "metrics": [
+                "网络API",
+                "Open RAN",
+                "边缘计算",
+                "FWA",
+                "AI网络",
+                "收入",
+                "EBITDA或经营利润",
+                "净利润",
+                "用户数",
+                "ARPU",
+                "资本开支",
+                "自由现金流"
+              ]
+            },
+            {
+              "agent_id": "company-75a86025cc43",
+              "parent_agent_id": "lead-scheduled_20260903_030057_565842",
+              "company": "Deutsche Telekom",
+              "group": "international",
+              "row_number": 48,
+              "row_entity": "Deutsche Telekom",
+              "status": "agent_error",
+              "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+              "reason_code": "invalid_terminal_payload",
+              "completion_forced": true,
+              "search_count": 12,
+              "opened_page_count": 43,
+              "open_success_count": 43,
+              "open_blocked_count": 0,
+              "open_attempts": [
+                {
+                  "url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "final_url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.marketscreener.com/quote/stock/DEUTSCHE-TELEKOM-AG-444661/news/Deutsche-Telekom-takes-to-the-air-with-MagentaEINS-Unlimited-35484008/",
+                  "final_url": "https://www.marketscreener.com/quote/stock/DEUTSCHE-TELEKOM-AG-444661/news/Deutsche-Telekom-takes-to-the-air-with-MagentaEINS-Unlimited-35484008/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors/",
+                  "final_url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.lightreading.com/open-ran/deutsche-telekom-s-open-ran-plan-slips-after-huawei-reprieve",
+                  "final_url": "https://www.lightreading.com/open-ran/deutsche-telekom-s-open-ran-plan-slips-after-huawei-reprieve",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "final_url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "final_url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "final_url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors/",
+                  "final_url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "final_url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors/",
+                  "final_url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "final_url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.telekom.com/en/investor-relations/publications/financial-results/financial-results-2010",
+                  "final_url": "https://www.telekom.com/en/investor-relations/publications/financial-results/financial-results-2010",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "final_url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://biggo.com.tw/news/202503050532_Deutsche_Telekom_AI_Phone_Launch",
+                  "final_url": "https://biggo.com.tw/news",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "final_url": "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.telekom.com/de/investor-relations/details/deutsche-telekom-fuehrt-magenta-smart-home-ein--412422",
+                  "final_url": "https://www.telekom.com/de/investor-relations/details/deutsche-telekom-fuehrt-magenta-smart-home-ein--412422",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors/",
+                  "final_url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://thenewboston.com/news/deutsche-telekom-raises-earnings-forecast-after-strong-quarterly-results/",
+                  "final_url": "https://thenewboston.com/news/deutsche-telekom-raises-earnings-forecast-after-strong-quarterly-results/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors/",
+                  "final_url": "https://teleanswertoday.pk/telecom/deutsche-telekom-stock-dips-below-key-average-but-28-upside-still-has-investors",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "final_url": "https://www.telekom.com/en/investor-relations/publications/financial-results",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                }
+              ],
+              "evidence_count": 7,
+              "fresh_official_open_count": 34,
+              "metric_results": [
+                {
+                  "metric": "网络API",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "Open RAN",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "Until this week, Deutsche Telekom's stated goal was to have 3,000 open RAN (radio access network) sites in operation by the end of 2026.",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 3,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www.lightreading.com/open-ran/deutsche-telekom-s-open-ran-plan-slips-after-huawei-reprieve"
+                  ]
+                },
+                {
+                  "metric": "边缘计算",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "FWA",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "AI网络",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "299亿;3.3",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 4,
+                  "live_official_open_count": 5,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292"
+                  ]
+                },
+                {
+                  "metric": "EBITDA或经营利润",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "7.3;118亿",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 5,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292"
+                  ]
+                },
+                {
+                  "metric": "净利润",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 6,
+                  "live_official_open_count": 7,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "用户数",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "100万;218000;161000",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292",
+                    "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599"
+                  ]
+                },
+                {
+                  "metric": "ARPU",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "arpuingermany2026；arpuingermanyquarterly2009",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 0,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www.statista.com/statistics/482902/deutsche-telekom-mobile-communications-arpu-germany/"
+                  ]
+                },
+                {
+                  "metric": "资本开支",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "capex(3930；capex(beforespectruminvestment)d(3807",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 4,
+                  "live_official_open_count": 4,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www.telekom.com/resource/blob/1104454/5d044eeb95f1f0e791780d37b3b7eff8/dt-26q1-interim-report-data.pdf"
+                  ]
+                },
+                {
+                  "metric": "自由现金流",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['ARPU:search_value_available']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 5,
+                  "live_official_open_count": 7,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                }
+              ],
+              "metric_coverage_complete": false,
+              "unresolved_metrics": [
+                "网络API",
+                "Open RAN",
+                "边缘计算",
+                "FWA",
+                "AI网络",
+                "收入",
+                "EBITDA或经营利润",
+                "净利润",
+                "用户数",
+                "ARPU",
+                "资本开支",
+                "自由现金流"
+              ],
+              "official_hosts": [
+                "telekom.com"
+              ],
+              "evidence_urls": [
+                "https://www.lightreading.com/open-ran/deutsche-telekom-s-open-ran-plan-slips-after-huawei-reprieve",
+                "https://www.telekom.com/resource/blob/1104454/5d044eeb95f1f0e791780d37b3b7eff8/dt-26q1-interim-report-data.pdf",
+                "https://www.telekom.com/en/media/media-information/archive/second-quarter-report-2026-1106292",
+                "https://telecom.economictimes.indiatimes.com/news/deutsche-telekoms-quarterly-results-beat-estimates-on-t-mobile-push/93494599",
+                "https://www.statista.com/statistics/482902/deutsche-telekom-mobile-communications-arpu-germany/"
+              ],
+              "queries": [
+                "\"Deutsche Telekom\" 网络API 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" Open RAN 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" 边缘计算 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" FWA 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" AI网络 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" 收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" EBITDA或经营利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"Deutsche Telekom\" 净利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新"
+              ],
+              "metrics": [
+                "网络API",
+                "Open RAN",
+                "边缘计算",
+                "FWA",
+                "AI网络",
+                "收入",
+                "EBITDA或经营利润",
+                "净利润",
+                "用户数",
+                "ARPU",
+                "资本开支",
+                "自由现金流"
+              ]
+            },
+            {
+              "agent_id": "company-4c5d4b51f97b",
+              "parent_agent_id": "lead-scheduled_20260903_030057_565842",
+              "company": "中国电信",
+              "group": "mainland",
+              "row_number": 49,
+              "row_entity": "中国电信",
+              "status": "agent_error",
+              "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+              "reason_code": "invalid_terminal_payload",
+              "completion_forced": true,
+              "search_count": 11,
+              "opened_page_count": 30,
+              "open_success_count": 25,
+              "open_blocked_count": 5,
+              "open_attempts": [
+                {
+                  "url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "final_url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "http_status": 404,
+                  "opened": false,
+                  "blocked_reason": "HTTP 404",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://news.66wz.com/system/2026/07/22/105808994.shtml",
+                  "final_url": "",
+                  "http_status": 0,
+                  "opened": false,
+                  "blocked_reason": "timed out",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "final_url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "http_status": 404,
+                  "opened": false,
+                  "blocked_reason": "HTTP 404",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://m.gd.189.cn/notice/2026/06/24/172899.htm",
+                  "final_url": "https://m.gd.189.cn/notice/2026/06/24/172899.htm",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.aiqicha.com/company_detail_63757304543637",
+                  "final_url": "https://aiqicha.baidu.com/acount/accessrestriction",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.fxbaogao.com/q/2607266164061136",
+                  "final_url": "https://www.fxbaogao.com/q/2607266164061136",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "final_url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "http_status": 404,
+                  "opened": false,
+                  "blocked_reason": "HTTP 404",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "final_url": "https://www.toolifies.com/news-item/mianbi-china-telecom-funding/",
+                  "http_status": 404,
+                  "opened": false,
+                  "blocked_reason": "HTTP 404",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://t.cj.sina.com.cn/articles/view/1914880192/7222c0c002001muba",
+                  "final_url": "https://t.cj.sina.com.cn/articles/view/1914880192/7222c0c002001muba",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "final_url": "https://www.chinatelecom-h.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf",
+                  "final_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                }
+              ],
+              "evidence_count": 8,
+              "fresh_official_open_count": 4,
+              "metric_results": [
+                {
+                  "metric": "收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "通信服务收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "EBITDA",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "净利润",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "17.08;17.08%;4",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 1,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://m.nbd.com.cn/articles/2026-04-23/4356433.html"
+                  ]
+                },
+                {
+                  "metric": "移动及5G用户",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "有线宽带用户",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "ARPU",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "资本开支",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 4,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "云收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "5G-A",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "AI",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['收入:search_or_open_evidence_required', 'EBITDA:search_or_open_evidence_required', '云收入:search_or_open_evidence_required']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                }
+              ],
+              "metric_coverage_complete": false,
+              "unresolved_metrics": [
+                "收入",
+                "通信服务收入",
+                "EBITDA",
+                "净利润",
+                "移动及5G用户",
+                "有线宽带用户",
+                "ARPU",
+                "资本开支",
+                "云收入",
+                "5G-A",
+                "AI"
+              ],
+              "official_hosts": [
+                "chinatelecom-h.com"
+              ],
+              "evidence_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2026/int.pdf",
+                "https://www.chinatelecom-h.com/en/ir/report/annual2025.pdf",
+                "https://m.nbd.com.cn/articles/2026-04-23/4356433.html"
+              ],
+              "queries": [
+                "\"中国电信\" 收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" 通信服务收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" EBITDA 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" 净利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" 移动及5G用户 subscribers customers ARPU 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" 有线宽带用户 subscribers customers ARPU 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" ARPU subscribers customers ARPU 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国电信\" 资本开支 capital expenditure capex 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新"
+              ],
+              "metrics": [
+                "收入",
+                "通信服务收入",
+                "EBITDA",
+                "净利润",
+                "移动及5G用户",
+                "有线宽带用户",
+                "ARPU",
+                "资本开支",
+                "云收入",
+                "5G-A",
+                "AI"
+              ]
+            },
+            {
+              "agent_id": "company-8ce5d8f81032",
+              "parent_agent_id": "lead-scheduled_20260903_030057_565842",
+              "company": "中国联通",
+              "group": "mainland",
+              "row_number": 49,
+              "row_entity": "中国联通",
+              "status": "agent_error",
+              "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+              "reason_code": "invalid_terminal_payload",
+              "completion_forced": true,
+              "search_count": 13,
+              "opened_page_count": 40,
+              "open_success_count": 21,
+              "open_blocked_count": 19,
+              "open_attempts": [
+                {
+                  "url": "http://www.elgou.net/peizichaoguwanggupiao/2487.html",
+                  "final_url": "",
+                  "http_status": 0,
+                  "opened": false,
+                  "blocked_reason": "Server disconnected without sending a response.",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "http://www.elgou.net/peizichaoguwanggupiao/2487.html",
+                  "final_url": "",
+                  "http_status": 0,
+                  "opened": false,
+                  "blocked_reason": "Server disconnected without sending a response.",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://offical-web.datadowell.com/categories/info/0-1775107468968",
+                  "final_url": "",
+                  "http_status": 0,
+                  "opened": false,
+                  "blocked_reason": "[SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed: certificate has expired (_ssl.c:1028)",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/chart.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/chart.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "final_url": "https://www.chinaunicom.com.hk/en/ir/reports.php",
+                  "http_status": 403,
+                  "opened": false,
+                  "blocked_reason": "HTTP 403",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "final_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "http://www.elgou.net/peizichaoguwanggupiao/2487.html",
+                  "final_url": "",
+                  "http_status": 0,
+                  "opened": false,
+                  "blocked_reason": "Server disconnected without sending a response.",
+                  "cache_hit": false
+                }
+              ],
+              "evidence_count": 14,
+              "fresh_official_open_count": 12,
+              "metric_results": [
+                {
+                  "metric": "收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "rmb201.36亿;0.6%",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                },
+                {
+                  "metric": "通信服务收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "rmb177.96亿;0.2%",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                },
+                {
+                  "metric": "EBITDA",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "rmb47.42亿;26.6%",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                },
+                {
+                  "metric": "净利润",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "rmb9.47亿;34.6%",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                },
+                {
+                  "metric": "移动及5G用户",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "200亿元;5.1%;529亿元",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 5,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "http://margin.rrk365.com/news/85d1299902.html"
+                  ]
+                },
+                {
+                  "metric": "有线宽带用户",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "ARPU",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "rmb100",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 2,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                },
+                {
+                  "metric": "资本开支",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "rmb24.1亿",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 2,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                    "https://xueqiu.com/5133207869/405507941"
+                  ]
+                },
+                {
+                  "metric": "云收入",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "UNAUDITED CONDENSED CONSOLIDATED STATEMENT OF INCOME for the six months ended 30 June 2026 (All amounts in Renminbi (“RMB”) millions, except per share data) Six months ended 30 June Notes 2026 2025 Revenue 5 201,364 200,202 Interconnection charges (5,317) (5,467) Depreciation and amortisation (40,013) (40,320) Network, operation and support expenses (32,903)",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 2,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                },
+                {
+                  "metric": "DICT",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 0,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "5G-A",
+                  "status": "agent_error",
+                  "rationale": "missing=[]; duplicates=[]; empty_rationale=[]; research_incomplete=['移动及5G用户:search_value_available', 'DICT:open_current_official_results']; expected_status=search_exhausted",
+                  "value": "Our 5G-A base stations covered over 330 cities, and commercial pilots of 10-gigabit optical networks have been launched in over 100 cities.",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 1,
+                  "evidence_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf"
+                  ]
+                }
+              ],
+              "metric_coverage_complete": false,
+              "unresolved_metrics": [
+                "收入",
+                "通信服务收入",
+                "EBITDA",
+                "净利润",
+                "移动及5G用户",
+                "有线宽带用户",
+                "ARPU",
+                "资本开支",
+                "云收入",
+                "DICT",
+                "5G-A"
+              ],
+              "official_hosts": [
+                "chinaunicom.com.hk",
+                "www1.hkexnews.hk"
+              ],
+              "evidence_urls": [
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf",
+                "http://margin.rrk365.com/news/85d1299902.html",
+                "https://xueqiu.com/5133207869/405507941"
+              ],
+              "queries": [
+                "\"中国联通\" 收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" 通信服务收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" EBITDA 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" 净利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" 移动及5G用户 subscribers customers ARPU 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" 有线宽带用户 subscribers customers ARPU 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" ARPU subscribers customers ARPU 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国联通\" 资本开支 capital expenditure capex 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新"
+              ],
+              "metrics": [
+                "收入",
+                "通信服务收入",
+                "EBITDA",
+                "净利润",
+                "移动及5G用户",
+                "有线宽带用户",
+                "ARPU",
+                "资本开支",
+                "云收入",
+                "DICT",
+                "5G-A"
+              ]
+            },
+            {
+              "agent_id": "company-bfdf573d29e8",
+              "parent_agent_id": "lead-scheduled_20260903_030057_565842",
+              "company": "中国铁塔",
+              "group": "mainland",
+              "row_number": 49,
+              "row_entity": "中国铁塔",
+              "status": "conflict",
+              "rationale": "仍有 1 个预期指标没有合规终态：净利润。",
+              "reason_code": "",
+              "completion_forced": false,
+              "search_count": 8,
+              "opened_page_count": 24,
+              "open_success_count": 23,
+              "open_blocked_count": 1,
+              "open_attempts": [
+                {
+                  "url": "https://fj.bidcenter.com.cn/zhaobiao/zbkeyw-19388.html",
+                  "final_url": "https://shuju.bidcenter.com.cn/HumanMachineVerification.shtml?url=https://fj.bidcenter.com.cn/zhaobiao/zbkeyw-19388.html",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/",
+                  "final_url": "https://ir.china-tower.com/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/reports.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/financial.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/financial.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "final_url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/announcements.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/announcements.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://m.mp.oeeee.com/a/BAAFRD0000202608111642068.html",
+                  "final_url": "https://m.mp.oeeee.com/a/BAAFRD0000202608111642068.html",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://news.qq.com/rain/a/20260812A049SN00",
+                  "final_url": "https://news.qq.com/rain/a/20260812A049SN00",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://fenbi.com/page/fenxiaozhaokaodetail/7/0/465200583037952",
+                  "final_url": "https://fenbi.com/page/fenxiaozhaokaodetail/7/0/465200583037952",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "final_url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/announcements.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/announcements.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/global/home.php",
+                  "final_url": "https://ir.china-tower.com/en/global/home.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "final_url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/announcements.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/announcements.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://ir.china-tower.com/tc/ir/announcements.php",
+                  "final_url": "https://ir.china-tower.com/tc/ir/announcements.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/",
+                  "final_url": "https://ir.china-tower.com/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/reports.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/reports.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                },
+                {
+                  "url": "https://ir.china-tower.com/en/ir/presentation.php",
+                  "final_url": "https://ir.china-tower.com/en/ir/presentation.php",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://www.ynyjy.com/news/28721.html",
+                  "final_url": "https://www.ynyjy.com/news/28721.html",
+                  "http_status": 404,
+                  "opened": false,
+                  "blocked_reason": "HTTP 404",
+                  "cache_hit": false
+                },
+                {
+                  "url": "https://ir.china-tower.com/",
+                  "final_url": "https://ir.china-tower.com/",
+                  "http_status": 200,
+                  "opened": true,
+                  "blocked_reason": "",
+                  "cache_hit": true
+                }
+              ],
+              "evidence_count": 6,
+              "fresh_official_open_count": 20,
+              "metric_results": [
+                {
+                  "metric": "收入",
+                  "status": "search_exhausted",
+                  "rationale": "已执行当期网络检索并尝试回读相关来源，未取得可核验直接值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "EBITDA",
+                  "status": "not_disclosed",
+                  "rationale": "已回读当期官方页面，未取得该指标的单独披露值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "净利润",
+                  "status": "conflict",
+                  "rationale": "当期来源数值不一致（74.89亿元 vs 26.9亿元/股东应占溢利24.33亿元），打开原文后仍无法消除冲突，不写入数值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": true,
+                  "fresh_official_open_count": 5,
+                  "live_official_open_count": 5,
+                  "evidence_count": 4,
+                  "evidence_urls": [
+                    "https://m.mp.oeeee.com/a/BAAFRD0000202608111642068.html",
+                    "https://news.qq.com/rain/a/20260812A049SN00"
+                  ]
+                },
+                {
+                  "metric": "站址数",
+                  "status": "not_disclosed",
+                  "rationale": "已回读当期官方页面，未取得该指标的单独披露值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "塔类租户数",
+                  "status": "search_exhausted",
+                  "rationale": "已执行当期网络检索并尝试回读相关来源，未取得可核验直接值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 3,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "塔均租户数",
+                  "status": "not_disclosed",
+                  "rationale": "已回读当期官方页面，未取得该指标的单独披露值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 2,
+                  "live_official_open_count": 3,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                },
+                {
+                  "metric": "资本开支",
+                  "status": "verified_latest",
+                  "rationale": "已从当期来源核实直接指标值：资本开支为116.50亿元。",
+                  "value": "116.5亿元",
+                  "search_count": 1,
+                  "search_evidence_count": 1,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 1,
+                  "evidence_count": 2,
+                  "evidence_urls": [
+                    "https://m.mp.oeeee.com/a/BAAFRD0000202608111642068.html"
+                  ]
+                },
+                {
+                  "metric": "派息",
+                  "status": "not_disclosed",
+                  "rationale": "已回读当期官方页面，未取得该指标的单独披露值。",
+                  "value": "",
+                  "search_count": 1,
+                  "search_evidence_count": 0,
+                  "search_value_conflict": false,
+                  "evidence_value_conflict": false,
+                  "fresh_official_open_count": 1,
+                  "live_official_open_count": 2,
+                  "evidence_count": 0,
+                  "evidence_urls": []
+                }
+              ],
+              "metric_coverage_complete": false,
+              "unresolved_metrics": [
+                "净利润"
+              ],
+              "official_hosts": [
+                "ir.china-tower.com"
+              ],
+              "evidence_urls": [
+                "https://m.mp.oeeee.com/a/BAAFRD0000202608111642068.html",
+                "https://news.qq.com/rain/a/20260812A049SN00"
+              ],
+              "queries": [
+                "\"中国铁塔\" 收入 revenue segment revenue 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" EBITDA 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" 净利润 net income net loss loss attributable 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" 站址数 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" 塔类租户数 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" 塔均租户数 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" 资本开支 capital expenditure capex 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新",
+                "\"中国铁塔\" 派息 2026 latest official quarterly results interim results earnings release annual report 财报 中期业绩 季度业绩 公告 最新"
+              ],
+              "metrics": [
+                "收入",
+                "EBITDA",
+                "净利润",
+                "站址数",
+                "塔类租户数",
+                "塔均租户数",
+                "资本开支",
+                "派息"
+              ]
+            }
+          ]
+        },
+        "local_financial_results": {
+          "schema_version": 1,
+          "generated_at_hkt": "2026-09-03T09:27:49+08:00",
+          "schedule_policy": "official financial results are checked daily at 03:00 HKT and must be structured before publication",
+          "reports": [
+            {
+              "row": 2,
+              "company": "HKT",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-07-29",
+              "due_at_hkt": "2026-07-30T03:00:00+08:00",
+              "source_url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf",
+              "source_title": "2026 Interim Results Announcement",
+              "content_hash": "239862bac00ac84c87fea99aa0958073c0f5864fb80549d8751360e5eaccf662",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$18,685 million",
+                  "evidence": "Total revenue increased by 8% to HK$18,685 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$6,586 million",
+                  "evidence": "Total EBITDA grew by 3% to HK$6,586 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$2,153 million",
+                  "evidence": "Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$1,042 million",
+                  "evidence": "CAPITAL EXPENDITURE2 Capital expenditure including capitalised interest for the six months ended 30 June 2026 was HK$1,042 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "34.80 HK cents",
+                  "evidence": "dividend of 34.80 HK cents"
+                },
+                {
+                  "metric_key": "5g_customers",
+                  "metric": "5G用户数",
+                  "value": "2.2 million",
+                  "evidence": "5G customer base expanded by 16% to 2.2 million"
+                }
+              ],
+              "core_metric_count": 5,
+              "fetched_at_hkt": "2026-09-03T03:02:02.737034+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 5,
+              "company": "3HK / Hutchison",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-08-10",
+              "due_at_hkt": "2026-08-11T03:00:00+08:00",
+              "source_url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf",
+              "source_title": "2026 Interim Results Presentation",
+              "content_hash": "d5df8055bfdd2080737c88c957365aed0e87a00d3f4eeb09915ceac2bcffa3ee",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$2,846 million",
+                  "evidence": "Results Highlights for Hong Kong Operations Results Highlights for Hong Kong Operations (1) Revenue Net customer Operating service revenue expenses $2,846 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$763 million",
+                  "evidence": "Interim dividend 2.28 HK cents EBITDA (2) EBIT (3) Capex (4) Stable $763 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$11 million",
+                  "evidence": "profit attributable to shareholders for the period ended 30 June 2026 was $11m"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "2.28 HK cents",
+                  "evidence": "Interim dividend 2.28 HK cents"
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-09-03T03:02:01.976683+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 8,
+              "company": "SmarTone",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-02-24",
+              "due_at_hkt": "2026-02-25T03:00:00+08:00",
+              "source_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$3,561 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$278 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561 +2.0% Underlying Revenue 3,441* 3,561 +3.5% Underlying EBIT 369* 392 +6.2% Underlying EBIT Margin 11% 11% Stable Reported Profit after tax 257 278"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "14.5 HK cents",
+                  "evidence": "Interim Dividend (cents per share) 14.5 14.5"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-09-03T03:02:03.772531+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 11,
+              "company": "HKBN",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-04-24",
+              "due_at_hkt": "2026-04-25T03:00:00+08:00",
+              "source_url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf",
+              "source_title": "FY26 Interim Results Announcement",
+              "content_hash": "fe24e7146d64cadc5c69220975706983f18b0baabf809400d6f14bb4e4aee833",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$6,029 million",
+                  "evidence": "Total revenue showed a strong performance, increasing by 5% to $6,029 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$1,257 million",
+                  "evidence": "EBITDA increased by 4% to $1,257 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$108 million",
+                  "evidence": "Net profit amounted to $108 million"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-09-03T03:03:01.599816+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 17,
+              "company": "i-CABLE",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-08-27",
+              "due_at_hkt": "2026-08-28T03:00:00+08:00",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "c36ac5a426dffc75a1db11fe56459846d2708e386d0be9735db8b92baa2c5eb4",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$244.42 million",
+                  "evidence": "HK$’000 HK$’000 Revenue 244,420"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "-HK$276.514 million",
+                  "evidence": "HK$’000 HK$’000 Revenue 244,420 277,511 Loss from operations (191,410) (156,894) Loss for the period (276,514)"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$10 million",
+                  "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$10 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "HK$Nil",
+                  "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-09-03T03:05:00.977534+08:00",
+              "verification_status": "official_document_extracted"
+            }
+          ],
+          "last_check": [
+            {
+              "row": 2,
+              "company": "HKT",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-07-29",
+              "due_at_hkt": "2026-07-30T03:00:00+08:00",
+              "source_url": "https://www.hkt.com/api-service/assets/e-2026.07.29_(2026_Interim_Results_Announcement).pdf",
+              "source_title": "2026 Interim Results Announcement",
+              "content_hash": "239862bac00ac84c87fea99aa0958073c0f5864fb80549d8751360e5eaccf662",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$18,685 million",
+                  "evidence": "Total revenue increased by 8% to HK$18,685 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$6,586 million",
+                  "evidence": "Total EBITDA grew by 3% to HK$6,586 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$2,153 million",
+                  "evidence": "Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$1,042 million",
+                  "evidence": "CAPITAL EXPENDITURE2 Capital expenditure including capitalised interest for the six months ended 30 June 2026 was HK$1,042 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "34.80 HK cents",
+                  "evidence": "dividend of 34.80 HK cents"
+                },
+                {
+                  "metric_key": "5g_customers",
+                  "metric": "5G用户数",
+                  "value": "2.2 million",
+                  "evidence": "5G customer base expanded by 16% to 2.2 million"
+                }
+              ],
+              "core_metric_count": 5,
+              "fetched_at_hkt": "2026-09-03T03:02:02.737034+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 5,
+              "company": "3HK / Hutchison",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-08-10",
+              "due_at_hkt": "2026-08-11T03:00:00+08:00",
+              "source_url": "https://doc.irasia.com/listco/hk/hthkh/cpresent/pre260810.pdf",
+              "source_title": "2026 Interim Results Presentation",
+              "content_hash": "d5df8055bfdd2080737c88c957365aed0e87a00d3f4eeb09915ceac2bcffa3ee",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$2,846 million",
+                  "evidence": "Results Highlights for Hong Kong Operations Results Highlights for Hong Kong Operations (1) Revenue Net customer Operating service revenue expenses $2,846 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$763 million",
+                  "evidence": "Interim dividend 2.28 HK cents EBITDA (2) EBIT (3) Capex (4) Stable $763 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$11 million",
+                  "evidence": "profit attributable to shareholders for the period ended 30 June 2026 was $11m"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "2.28 HK cents",
+                  "evidence": "Interim dividend 2.28 HK cents"
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-09-03T03:02:01.976683+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 8,
+              "company": "SmarTone",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-02-24",
+              "due_at_hkt": "2026-02-25T03:00:00+08:00",
+              "source_url": "https://www.smartoneholdings.com/about/investor/results/english/2026_interim_present.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "02c14d9dfb8bfbbbf9c9d49fb3cef053db4877b1b09cc5b82d9f9c3b63973380",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$3,561 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$278 million",
+                  "evidence": "Financial Highlights HK$ million 1H’ 25 1H’26 % Change Revenue 3,492 3,561 +2.0% Underlying Revenue 3,441* 3,561 +3.5% Underlying EBIT 369* 392 +6.2% Underlying EBIT Margin 11% 11% Stable Reported Profit after tax 257 278"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "14.5 HK cents",
+                  "evidence": "Interim Dividend (cents per share) 14.5 14.5"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-09-03T03:02:03.772531+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 11,
+              "company": "HKBN",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-04-24",
+              "due_at_hkt": "2026-04-25T03:00:00+08:00",
+              "source_url": "https://reg.hkbn.net/WwwCMS/upload/pdf/en/e_FY26_InterimResultsAnnouncement.pdf",
+              "source_title": "FY26 Interim Results Announcement",
+              "content_hash": "fe24e7146d64cadc5c69220975706983f18b0baabf809400d6f14bb4e4aee833",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$6,029 million",
+                  "evidence": "Total revenue showed a strong performance, increasing by 5% to $6,029 million"
+                },
+                {
+                  "metric_key": "ebitda",
+                  "metric": "EBITDA",
+                  "value": "HK$1,257 million",
+                  "evidence": "EBITDA increased by 4% to $1,257 million"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "HK$108 million",
+                  "evidence": "Net profit amounted to $108 million"
+                }
+              ],
+              "core_metric_count": 3,
+              "fetched_at_hkt": "2026-09-03T03:03:01.599816+08:00",
+              "verification_status": "official_document_extracted"
+            },
+            {
+              "row": 15,
+              "company": "HGC",
+              "status": "not_applicable"
+            },
+            {
+              "row": 17,
+              "company": "i-CABLE",
+              "period": "H1 2026",
+              "report_type": "interim",
+              "publication_date": "2026-08-27",
+              "due_at_hkt": "2026-08-28T03:00:00+08:00",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0827/2026082702131.pdf",
+              "source_title": "PDF extracted by pdftotext",
+              "content_hash": "c36ac5a426dffc75a1db11fe56459846d2708e386d0be9735db8b92baa2c5eb4",
+              "metrics": [
+                {
+                  "metric_key": "revenue",
+                  "metric": "收入/总收益",
+                  "value": "HK$244.42 million",
+                  "evidence": "HK$’000 HK$’000 Revenue 244,420"
+                },
+                {
+                  "metric_key": "net_profit",
+                  "metric": "净利润",
+                  "value": "-HK$276.514 million",
+                  "evidence": "HK$’000 HK$’000 Revenue 244,420 277,511 Loss from operations (191,410) (156,894) Loss for the period (276,514)"
+                },
+                {
+                  "metric_key": "capital_expenditure",
+                  "metric": "资本开支",
+                  "value": "HK$10 million",
+                  "evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$10 million"
+                },
+                {
+                  "metric_key": "dividend",
+                  "metric": "派息/分派",
+                  "value": "HK$Nil",
+                  "evidence": "The Board does not recommend the payment of any dividend for the reporting period."
+                }
+              ],
+              "core_metric_count": 4,
+              "fetched_at_hkt": "2026-09-03T03:05:00.977534+08:00",
+              "verification_status": "official_document_extracted"
+            }
+          ],
+          "quality": {
+            "ok": true,
+            "checked_rows": [
+              2,
+              5,
+              8,
+              11,
+              15,
+              17
+            ],
+            "failures": []
+          },
+          "database_changed": true,
+          "database_updated": true,
+          "database_path": "agent_knowledge/hk_competitor_product_tariffs/cmhk.data.local_financial_results.json"
+        },
+        "financial_frontend_publish": {
+          "ok": true,
+          "returnCode": 0,
+          "status": "published",
+          "site_version": "4f28caa0fdc6640efa85187cf81a99362081f0c7a424569267d6d8df2137fc8d",
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "921378cb90dbee8bf0091bd682a7e192f0ca0388",
+          "error": ""
+        },
+        "news_bridge": {
+          "crawl_run_id": "20260903_030057_565842",
+          "bootstrap": false,
+          "page_count": 252,
+          "signal_count": 38,
+          "event_path": "strategy_briefing/scheduled_crawl_bridge/events/20260903_030057_565842.json"
+        },
+        "executive_intelligence_refresh": {
+          "ok": true,
+          "launched": true,
+          "pid": 97240,
+          "agent_run_id": "scheduled_20260903_030057_565842",
+          "task_run_id": "20260903_092920_669797",
+          "task_id": "crawl:20260903_092920_669797",
+          "domains": [
+            "local",
+            "international",
+            "mainland",
+            "cloud"
+          ],
+          "stages": [
+            "database_refresh",
+            "quality_gate",
+            "official_source_recrawl",
+            "19_insight_analysis_15_focuses_4_discoveries",
+            "homepage_ui_refresh",
+            "public_frontend_publish"
+          ]
+        }
       }
     },
     {
@@ -231594,6 +234502,6 @@
       }
     }
   ],
-  "total": 377,
+  "total": 383,
   "truncated": false
 }
