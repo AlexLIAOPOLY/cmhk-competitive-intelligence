@@ -2888,6 +2888,14 @@ def _run_scan_impl(
 
     _enforce_scan_deadline(deadline_monotonic, deadline_at)
     spec = read_monitoring_spec()
+    keyword_snapshot = {
+        "capturedAt": _now_iso(), "runId": crawl_run_id,
+        "sourceUrl": spec["sheet_url"], "specHash": spec["spec_hash"],
+        "modules": [{"name": module["name"], "keywords": module["keywords"]} for module in spec["modules"]],
+    }
+    _atomic_write_json(DATA_DIR / "monitoring_keywords_latest.json", keyword_snapshot)
+    if re.fullmatch(r"[A-Za-z0-9_-]+", crawl_run_id or ""):
+        _atomic_write_json(DATA_DIR / "monitoring_specs" / f"{crawl_run_id}.json", keyword_snapshot)
     _strategic_task_progress(
         crawl_run_id,
         stream_log_path,

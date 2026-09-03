@@ -2670,6 +2670,33 @@ def _strategic_process_item(raw: object) -> dict:
     }
 
 
+def monitoring_keywords_snapshot(run_id: str = "") -> dict:
+    """Read captured keyword inputs without making a live Feishu call on page load."""
+    if run_id:
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+            return {}
+        path = STRATEGIC_BRIEFING_DIR / "monitoring_specs" / f"{run_id}.json"
+    else:
+        path = STRATEGIC_BRIEFING_DIR / "monitoring_keywords_latest.json"
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return {}
+    if not isinstance(payload, dict) or (run_id and payload.get("runId") != run_id):
+        return {}
+    modules = [
+        {"name": str(module.get("name") or "未命名模块"),
+         "keywords": [str(word) for word in module.get("keywords", []) if isinstance(word, str) and word.strip()]}
+        for module in payload.get("modules", [])
+        if isinstance(module, dict) and isinstance(module.get("keywords"), list)
+    ]
+    return {"capturedAt": str(payload.get("capturedAt") or ""),
+            "runId": str(payload.get("runId") or ""),
+            "sourceUrl": str(payload.get("sourceUrl") or ""),
+            "specHash": str(payload.get("specHash") or ""),
+            "modules": modules, "keywordCount": sum(len(module["keywords"]) for module in modules)}
+
+
 def strategic_news_process_items_for_crawl_run(run: object) -> dict:
     """Expose per-object records for each strategic-news node, not only totals."""
     empty = {"discoveryItems": [], "aiReviewItems": [], "dedupeItems": []}
@@ -7237,6 +7264,9 @@ class AppHandler(BaseHTTPRequestHandler):
             result = load_unified_task_log(task_id)
             json_response(self, result, 200 if result.get("ok") else 404)
             return
+        if path == "/api/news-monitoring-keywords":
+            json_response(self, monitoring_keywords_snapshot())
+            return
         if path == "/api/fixed-source-summary":
             json_response(self, fixed_source_summary())
             return
@@ -7265,6 +7295,7 @@ class AppHandler(BaseHTTPRequestHandler):
             result = load_crawl_run_log(crawl_run_id)
             if result.get("ok"):
                 result["newsItems"] = strategic_news_items_for_crawl_run(result.get("run"))
+                result["monitoringKeywords"] = monitoring_keywords_snapshot(crawl_run_id)
                 result.update(strategic_news_process_items_for_crawl_run(result.get("run")))
                 result["crawlItems"] = main_crawl_items_for_crawl_run(result.get("run"))
                 result["fixedSourceSummary"] = fixed_source_summary()
