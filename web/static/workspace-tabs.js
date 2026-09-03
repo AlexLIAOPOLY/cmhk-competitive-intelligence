@@ -2275,7 +2275,7 @@
     }).join("")}</ol></section>`;
   }
 
-  function executiveNodeRecords(nodeKey) {
+  function executiveNodeRecords(nodeKey, relatedRuns = []) {
     const domainKey = nodeKey.replace(/^database-/, "");
     const domains = state.executiveIntelligence?.domains || [];
     const refreshState = state.executiveIntelligence?.refresh || {};
@@ -2469,7 +2469,7 @@
         return (Array.isArray(detail[detailKey]) ? detail[detailKey] : []).map((item) => ({ ...item, run }));
       });
     }
-    if (["main", "fact-extract", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-")) return executiveNodeRecords(nodeKey);
+    if (["main", "fact-extract", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-")) return executiveNodeRecords(nodeKey, relatedRuns);
     return [];
   }
 
@@ -2801,6 +2801,15 @@
   }
 
 
+  function showNewsLineageDetailError(error) {
+    console.error("News lineage detail failed", error);
+    const dialog = document.querySelector("#newsLineageDialog");
+    const body = document.querySelector("#newsLineageDialogBody");
+    if (!dialog || !body) return;
+    body.innerHTML = `<header><div><h2>节点详情暂时无法打开</h2><p role="alert">加载或整理详情时发生错误，请关闭后重试；若仍失败，请刷新页面后再试。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>`;
+    if (!dialog.open) dialog.showModal();
+  }
+
   function bindNewsLineageInteractions(panel) {
     state.newsLineageResizeObserver?.disconnect();
     if (state.newsLineageWindowResizeHandler) window.removeEventListener("resize", state.newsLineageWindowResizeHandler);
@@ -2865,7 +2874,7 @@
       if (!node) return;
       hidePurposeTooltip();
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
-      openActualNewsLineageDetail(node.dataset.newsLineageNode);
+      openActualNewsLineageDetail(node.dataset.newsLineageNode).catch(showNewsLineageDetailError);
     });
     const scheduleFit = () => { hidePurposeTooltip(); scheduleNewsLineageFit(panel); };
     state.newsLineageScrollHandler = () => {
