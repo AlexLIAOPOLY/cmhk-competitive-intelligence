@@ -49,7 +49,7 @@ PYTHON = sys.executable
 FREQUENCY_HEADERS = ("更新频率", "更新频次", "收集频率", "排期频率", "每隔多长时间收集一轮")
 AGENT_AUDIT_TIMEOUT_SECONDS = max(600, int(os.environ.get("CMHK_AGENT_AUDIT_TIMEOUT_SECONDS", "5400")))
 DEFAULT_AGENT_AUDIT_ONLINE_LIMIT = "0"
-AGENT_AUDIT_CONTROL_VERSION = 20
+AGENT_AUDIT_CONTROL_VERSION = 21
 REQUIRED_AGENT_NODES = {
     "证据接收",
     "来源分类",
@@ -836,6 +836,7 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
         "search_verification": extra.get("search_verification", {}),
         "company_agent_summary": extra.get("company_agent_summary", {}),
         "overall_status": extra.get("overall_status", ""),
+        "publication_review": extra.get("publication_review", {}),
     }
     search_verification = summary["search_verification"]
     if not isinstance(search_verification, dict) or not search_verification.get("online_search"):
@@ -847,15 +848,36 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
             f"{search_verification.get('online_required', latest.get('tasks', 0))}"
         )
     company_agent_summary = summary["company_agent_summary"]
+    review_complete = False
+    if summary["overall_status"] == "completed_with_review":
+        review_manifest = summary["publication_review"]
+        try:
+            facts = [json.loads(line) for line in (
+                ROOT / "curation_data" / "runs" / f"{run_id}_candidate_facts.jsonl"
+            ).read_text(encoding="utf-8").splitlines() if line.strip()]
+            entities = set(review_manifest["entities"])
+            isolated = set(review_manifest["candidate_ids"])
+            affected = {fact["id"] for fact in facts if str(fact.get("company") or "").casefold() in entities}
+            review_complete = bool(
+                review_manifest.get("policy") == "quarantine_unresolved_companies_v1"
+                and review_manifest.get("companies") and entities
+                and isolated == affected
+                and all(fact.get("decision") in {"review", "rejected"} for fact in facts if fact["id"] in affected)
+                and sum(fact.get("decision") == "accepted" for fact in facts) == summary["accepted"]
+            )
+        except (OSError, ValueError, KeyError, TypeError):
+            review_complete = False
+        if not review_complete:
+            problems.append("待复核隔离清单与候选数据不一致")
     if not isinstance(company_agent_summary, dict) or not company_agent_summary.get("required"):
         problems.append("最终合并 Agent 未启用 41 公司 Multi-Agent 研究")
-    elif not company_agent_summary.get("coverage_complete"):
+    elif not review_complete and not company_agent_summary.get("coverage_complete"):
         problems.append(
             "公司 Agent 报告未收齐："
             f"{company_agent_summary.get('completed', 0)}/"
             f"{company_agent_summary.get('expected', 41)}"
         )
-    else:
+    elif not review_complete:
         if not company_agent_summary.get("metric_coverage_complete"):
             problems.append(
                 "公司 Agent 尚有未解决指标："
@@ -868,7 +890,7 @@ def _validated_curation_summary(run_id: str) -> tuple[dict[str, object], list[st
                 "公司 Agent 尚有未解决主体："
                 + "、".join(str(company) for company in unresolved)
             )
-    if summary["overall_status"] != "complete":
+    if summary["overall_status"] != "complete" and not review_complete:
         problems.append(f"Agent 审核总体状态未完成：{summary['overall_status'] or '缺失'}")
     return summary, problems
 

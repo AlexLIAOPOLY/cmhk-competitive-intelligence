@@ -1481,44 +1481,58 @@ class DataCurationWorkflowTests(unittest.TestCase):
                 }
             )
 
-    def test_publish_blocks_unresolved_company_agents(self) -> None:
+    def test_publish_quarantines_disputes_and_publishes_other_companies(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
-            data_dir = Path(temp_dir) / "curation_data"
+            root = Path(temp_dir)
+            data_dir = root / "curation_data"
             runs_dir = data_dir / "runs"
+            cache = root / "cache.json"
             state = {
-                "run_id": "blocked-company-run",
-                "started_at": "2026-09-01T09:00:00+08:00",
+                "run_id": "review-company-run",
+                "started_at": "2026-09-03T09:00:00+08:00",
                 "search_verify_online": True,
                 "search_verification": {"online_coverage_complete": True},
                 "company_agent_summary": {
-                    "required": True,
-                    "expected": 41,
-                    "completed": 41,
-                    "coverage_complete": True,
-                    "publish_ready": False,
-                    "unresolved_companies": ["AWS"],
+                    "required": True, "expected": 3, "completed": 2,
+                    "coverage_complete": False, "publish_ready": False,
+                    "unresolved_companies": ["AWS", "AT&T"],
                 },
-                "company_agent_results": [{"company": "AWS", "status": "conflict"}],
-                "candidates": [],
+                "company_agent_results": [
+                    {"company": "AWS", "status": "conflict", "rationale": "数值冲突"},
+                    {"company": "AT&T", "status": "agent_error", "reason_code": "invalid_terminal_payload"},
+                    {"company": "HKT", "status": "verified_latest", "metric_coverage_complete": True},
+                ],
+                "candidates": [CandidateFact(id=name, company=name, metric="收入", value="10", decision="accepted").model_dump()
+                               for name in ["AWS", "AT&T", "HKT"]],
                 "agent_trace": [],
             }
-            with (
-                patch.object(workflow, "DATA_DIR", data_dir),
-                patch.object(workflow, "RUNS_DIR", runs_dir),
-                self.assertRaisesRegex(RuntimeError, "尚有未解决主体.*AWS"),
-            ):
-                publish_results(state)
+            with (patch.object(workflow, "ROOT", root),
+                  patch.object(workflow, "DATA_DIR", data_dir),
+                  patch.object(workflow, "RUNS_DIR", runs_dir),
+                  patch.object(workflow, "AI_CACHE_PATH", cache)):
+                first = publish_results(state)
+                second = publish_results(state)  # retry must not resurrect quarantined cache values
+            summary = first["summary"]
+            self.assertEqual(summary["extra"]["overall_status"], "completed_with_review")
+            self.assertFalse(summary["extra"]["company_agent_summary"]["coverage_complete"])
+            self.assertEqual((summary["accepted"], summary["review"]), (1, 2))
+            self.assertEqual(second["summary"]["accepted"], 1)
+            verified = [json.loads(line) for line in (data_dir / "verified_facts.jsonl").read_text().splitlines()]
+            self.assertEqual([fact["company"] for fact in verified], ["HKT"])
+            cached = json.loads(cache.read_text())["items"].values()
+            self.assertFalse(any(item.get("decision") == "accepted" and item.get("company") in {"AWS", "AT&T"} for item in cached))
+            self.assertTrue((runs_dir / "review-company-run_company_agent_results.json").exists())
 
-            summary = json.loads((runs_dir / "blocked-company-run.json").read_text(encoding="utf-8"))
-            reports = json.loads(
-                (runs_dir / "blocked-company-run_company_agent_results.json").read_text(encoding="utf-8")
-            )
-            trace = (runs_dir / "blocked-company-run_agent_trace.jsonl").read_text(encoding="utf-8")
-
-        self.assertTrue(summary["extra"]["publication_blocked"])
-        self.assertEqual(summary["extra"]["overall_status"], "partial")
-        self.assertEqual(reports, [{"company": "AWS", "status": "conflict"}])
-        self.assertIn("发布阻断", trace)
+    def test_publish_still_blocks_missing_reports_and_worker_crashes(self) -> None:
+        state = {
+            "company_agent_summary": {"required": True, "expected": 1, "publish_ready": False},
+            "company_agent_results": [],
+        }
+        with self.assertRaisesRegex(RuntimeError, "报告缺失"):
+            publish_results(state)
+        state["company_agent_results"] = [{"company": "AWS", "status": "agent_error", "rationale": "worker crashed"}]
+        with self.assertRaisesRegex(RuntimeError, "执行故障"):
+            publish_results(state)
 
     def test_run_workflow_resumes_same_thread_from_checkpoint(self) -> None:
         graph = unittest.mock.Mock()

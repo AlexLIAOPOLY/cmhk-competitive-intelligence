@@ -256,6 +256,35 @@ class CrawlRunReconciliationTests(unittest.TestCase):
 
 
 class ScheduledAgentAuditTests(unittest.TestCase):
+    def test_validated_summary_accepts_only_verified_review_isolation(self) -> None:
+        run_id = "scheduled-quarantined"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            runs = root / "curation_data" / "runs"
+            runs.mkdir(parents=True)
+            summary = {
+                "run_id": run_id, "completed_at": "2026-09-03T09:00:00+08:00", "accepted": 1,
+                "extra": {
+                    "search_verification": {"online_search": True, "online_coverage_complete": True},
+                    "company_agent_summary": {"required": True, "coverage_complete": False, "publish_ready": False},
+                    "overall_status": "completed_with_review",
+                    "publication_review": {"policy": "quarantine_unresolved_companies_v1", "companies": ["AWS"],
+                                           "entities": ["aws"], "candidate_ids": ["bad"]},
+                },
+            }
+            (runs / f"{run_id}.json").write_text(json.dumps(summary))
+            (runs / f"{run_id}_agent_trace.jsonl").write_text("\n".join(
+                json.dumps({"run_id": run_id, "node": node}) for node in scheduler.REQUIRED_AGENT_NODES))
+            facts = [{"id": "bad", "company": "AWS", "decision": "review"},
+                     {"id": "good", "company": "HKT", "decision": "accepted"}]
+            candidate_path = runs / f"{run_id}_candidate_facts.jsonl"
+            candidate_path.write_text("\n".join(json.dumps(fact) for fact in facts))
+            with mock.patch.object(scheduler, "ROOT", root):
+                self.assertEqual(scheduler._validated_curation_summary(run_id)[1], [])
+                facts[0]["decision"] = "accepted"
+                candidate_path.write_text("\n".join(json.dumps(fact) for fact in facts))
+                self.assertIn("待复核隔离清单与候选数据不一致", scheduler._validated_curation_summary(run_id)[1])
+
     def test_validated_summary_rejects_unresolved_company_agents(self) -> None:
         run_id = "scheduled-unresolved"
         with tempfile.TemporaryDirectory() as temp_dir:

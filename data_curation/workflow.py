@@ -4698,21 +4698,44 @@ def publish_results(state: CurationState) -> dict[str, Any]:
             "最终合并 Agent 未完成全部主体×指标联网补充搜索，禁止发布假绿结果"
         )
     company_agent_summary = state.get("company_agent_summary", {})
-    if company_agent_summary.get("required") and not company_agent_summary.get("coverage_complete"):
-        raise RuntimeError(
-            f"公司研究 Agent 仅完成 {company_agent_summary.get('completed', 0)}/"
-            f"{company_agent_summary.get('expected', 41)}，禁止把不完整结果标成成功"
-        )
+    # Evidence disputes are review work, not a failed execution. Keep whole
+    # affected subjects out of this publication until their research is resolved.
+    # Missing reports and actual worker exceptions still fail closed.
+    quarantine_reports = []
     if company_agent_summary.get("required") and not company_agent_summary.get("publish_ready"):
-        unresolved = company_agent_summary.get("unresolved_companies") or []
-        reason = (
-            "公司研究 Agent 尚有未解决主体，禁止写入发布层："
-            + "、".join(str(company) for company in unresolved)
-        )
-        if not state.get("dry_run"):
-            _persist_blocked_company_agent_audit(state, company_agent_summary, reason)
-        raise RuntimeError(reason)
+        reports = state.get("company_agent_results") or []
+        expected = int(company_agent_summary.get("expected") or 41)
+        reported = {str(item.get("company") or "") for item in reports}
+        if "" in reported or len(reported) != expected or len(reports) != expected:
+            raise RuntimeError("公司研究 Agent 报告缺失，无法确认待复核范围")
+        for report in reports:
+            status = report.get("status")
+            if status == "agent_error" and report.get("reason_code") != "invalid_terminal_payload":
+                raise RuntimeError(f"公司研究 Agent 执行故障：{report.get('company')}")
+            if status in {"conflict", "agent_error"} or not report.get("metric_coverage_complete"):
+                quarantine_reports.append(report)
+        if not quarantine_reports:
+            raise RuntimeError("公司研究 Agent 覆盖不完整且缺少可追溯的待复核报告")
+    quarantine_entities = {
+        entity.casefold()
+        for report in quarantine_reports
+        for entity in _company_fact_entities(str(report["company"])) | {str(report["company"])}
+    }
     candidates = [CandidateFact.model_validate(item) for item in state.get("candidates", [])]
+    quarantined_ids = []
+    for item in candidates:
+        if item.company.casefold() in quarantine_entities:
+            quarantined_ids.append(item.id)
+            if item.decision in {"accepted", "pending"}:
+                item.decision = "review"
+            item.reasons.append("公司研究存在冲突或证据未核实：本轮隔离，保留待复核，不写入新值")
+    publication_review = {
+        "policy": "quarantine_unresolved_companies_v1",
+        "companies": [item["company"] for item in quarantine_reports],
+        "entities": sorted(quarantine_entities),
+        "candidate_ids": quarantined_ids,
+        "reports": quarantine_reports,
+    }
     for item in candidates:
         if item.decision != "accepted":
             continue
@@ -4766,11 +4789,8 @@ def publish_results(state: CurationState) -> dict[str, Any]:
     summary.extra["fallback_batches"] = int((state.get("summary") or {}).get("fallbackBatches") or 0)
     summary.extra["search_verification"] = state.get("search_verification", {})
     summary.extra["company_agent_summary"] = company_agent_summary
-    summary.extra["overall_status"] = (
-        "complete"
-        if not company_agent_summary.get("required") or company_agent_summary.get("publish_ready")
-        else "partial"
-    )
+    summary.extra["publication_review"] = publication_review
+    summary.extra["overall_status"] = "completed_with_review" if quarantine_reports else "complete"
     if not state.get("dry_run"):
         cache_backup_path = None
         previous_cache: dict[str, Any] = {}
@@ -4801,6 +4821,8 @@ def publish_results(state: CurationState) -> dict[str, Any]:
         preserved = 0
         protected_keys: set[str] = set()
         for key, previous_item in previous_accepted.items():
+            if str(previous_item.get("company") or "").casefold() in quarantine_entities:
+                continue
             if key not in current_semantic_keys:
                 continue
             if (

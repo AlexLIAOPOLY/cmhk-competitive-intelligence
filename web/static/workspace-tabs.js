@@ -1625,6 +1625,7 @@
       if (run.interrupted || ["failed", "error", "errored"].includes(status)) return { key: "critical", label: "异常" };
       if (["partial", "warning", "degraded", "cutoff"].includes(status)) return { key: "warning", label: "警告" };
       if (["running", "queued", "pending"].includes(status)) return { key: "running", label: "运行中" };
+      if (run.curation?.overall_status === "completed_with_review" && ["completed", "complete", "success"].includes(status)) return { key: "warning", label: "已完成·待复核" };
       if (["completed", "complete", "success", "succeeded", "done"].includes(status)) return { key: "healthy", label: "正常" };
       return { key: "warning", label: "待确认" };
     };
@@ -1770,8 +1771,8 @@
     ] : ["所选日期没有主爬虫运行记录"];
     const archivedAgentCandidateCount = Number(mainRunDetail.agentReviewSummary?.total || 0);
     const parsedCandidateCount = Number(archivedAgentCandidateCount || mainRun.curation?.tasks || 0);
-    const crawlHealth = mainHealth.key === "running" && mainRun.curation?.checkpointed
-      ? { key: "healthy", label: "正常" }
+    const crawlHealth = mainRun.final_audit?.rows_crawled
+      ? (Number(mainRun.run_log?.failed_urls || 0) > 0 ? { key: "warning", label: "完成·有缺口" } : { key: "healthy", label: "正常" })
       : mainHealth;
     const extractHealth = parsedCandidateCount > 0 ? { key: "healthy", label: "正常" } : mainHealth;
     const companyAgentProgress = mainRunDetail.companyAgentProgress || {};
