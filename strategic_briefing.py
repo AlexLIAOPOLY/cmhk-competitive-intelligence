@@ -903,7 +903,7 @@ def _recover_pending_selection_agents(
         selection = archive.get("selection_agent")
         if not slot_key or not isinstance(selection, dict):
             continue
-        if str(selection.get("status") or "") not in {"failed", "retry_pending"}:
+        if str(selection.get("status") or "") not in {"pending", "failed", "retry_pending"}:
             continue
         completed_at = _crawl_record_time(
             archive,
@@ -2108,6 +2108,36 @@ def _lark_api(
     raise RuntimeError("飞书 API 调用失败；" + "；".join(errors))
 
 
+def _send_scan_card_once(chat_id: str, card: dict[str, Any], idempotency_key: str) -> dict[str, Any]:
+    """Keep per-group delivery receipts beyond Feishu's UUID dedupe window."""
+    import fcntl
+
+    directory = DATA_DIR / "notification_receipts"
+    directory.mkdir(parents=True, exist_ok=True)
+    receipt_path = directory / f"{idempotency_key}.json"
+    with (directory / f"{idempotency_key}.lock").open("a+") as lock:
+        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
+        receipt = _read_json(receipt_path, {})
+        if receipt.get("chat_id") == chat_id and receipt.get("message_id"):
+            return {"data": {"message_id": receipt["message_id"]},
+                    "_identity": receipt.get("identity") or "", "reused_delivery": True}
+        payload = _lark_api(
+            "POST", "/open-apis/im/v1/messages",
+            params={"receive_id_type": "chat_id"},
+            data={"receive_id": chat_id, "msg_type": "interactive",
+                  "content": json.dumps(card, ensure_ascii=False), "uuid": idempotency_key},
+        )
+        message_id = str((payload.get("data") or {}).get("message_id") or "")
+        if not message_id:
+            raise RuntimeError("群通知响应缺少消息 ID，不能记为发送成功")
+        _atomic_write_json(receipt_path, {
+            "chat_id": chat_id, "message_id": message_id,
+            "identity": payload.get("_identity") or "",
+            "idempotency_key": idempotency_key, "sent_at": _now_iso(),
+        })
+        return payload
+
+
 def _send_scan_message(
     *,
     now: datetime,
@@ -2447,17 +2477,7 @@ def _send_scan_message(
         last_error: Exception | None = None
         for attempt in range(3):
             try:
-                payload = _lark_api(
-                    "POST",
-                    "/open-apis/im/v1/messages",
-                    params={"receive_id_type": "chat_id"},
-                    data={
-                        "receive_id": chat_id,
-                        "msg_type": "interactive",
-                        "content": json.dumps(card, ensure_ascii=False),
-                        "uuid": idempotency_key,
-                    },
-                )
+                payload = _send_scan_card_once(chat_id, card, idempotency_key)
                 break
             except Exception as exc:
                 last_error = exc
@@ -3332,77 +3352,12 @@ def _continue_written_scan(
     discovery_result = checkpoint["discovery_result"]
     review_result = checkpoint["review_result"]
 
-    selection_agent_result: dict[str, Any] = {}
-    try:
-        from cmhk.intelligence.news_selection_agent import (
-            run_news_selection_agent,
-        )
-
-        selection_agent_result = run_news_selection_agent(
-            new_items=[
-                item
-                for item in (review_result.get("new_items") or [])
-                if isinstance(item, dict)
-            ],
-            sheet_id=_clean_text(review_result.get("sheet_id"), 120),
-            parent_crawl_run_id=crawl_run_id,
-            idempotency_key=slot_key,
-        )
-        selection_batch_key = _clean_text(
-            review_result.get("selection_batch_key"), 120
-        )
-        if selection_batch_key:
-            try:
-                news_review_sheet.complete_selection_batch(
-                    selection_batch_key,
-                    selection_agent_result,
-                )
-            except Exception:
-                logging.exception("选材完成后未能核销通用待选批次，下轮将幂等复用")
-        state["last_selection_agent_error"] = ""
-        _strategic_task_progress(
-            crawl_run_id,
-            stream_log_path,
-            "选材 Agent 完成",
-            (
-                f"独立任务 {selection_agent_result.get('task_run_id') or '已归档'}；"
-                f"学习人工样本 {int(selection_agent_result.get('human_example_count') or 0)} 条，"
-                f"处理本轮候选 {int(selection_agent_result.get('candidate_count') or 0)} 条，"
-                f"验证 {int(selection_agent_result.get('verified_field_count') or 0)} 格，"
-                f"本次新写 {int(selection_agent_result.get('newly_written_count') or 0)} 格，"
-                "逐格回读已确认。"
-            ),
-        )
-    except Exception as exc:
-        selection_agent_result = {
-            "status": "retry_pending",
-            "error": _clean_text(exc, 600),
-            "readback_verified": False,
-            "recovery": "scheduled_without_resending_scan",
-        }
-        selection_batch_key = _clean_text(
-            review_result.get("selection_batch_key"), 120
-        )
-        if selection_batch_key:
-            try:
-                news_review_sheet.fail_selection_batch(
-                    selection_batch_key,
-                    selection_agent_result["error"],
-                )
-            except Exception:
-                logging.exception("选材失败后未能更新通用待选批次")
-        state["last_selection_agent_error"] = selection_agent_result["error"]
-        logging.exception("新闻自动初筛失败，原新闻爬虫结果仍保留")
-        _strategic_task_progress(
-            crawl_run_id,
-            stream_log_path,
-            "选材 Agent 失败",
-            (
-                "独立选材任务已在任务日志记为失败；未覆盖既有人工决策，"
-                "主爬虫和群通知不会重跑，后台将仅续写选材结果。"
-                f"原因：{selection_agent_result['error']}"
-            ),
-        )
+    # Persist an unfinished child before sending. A restart during screening
+    # must resume only that child and must not replay the delivered group card.
+    selection_agent_result: dict[str, Any] = {
+        "status": "pending", "readback_verified": False,
+        "recovery": "selection_after_group_notification",
+    }
     review_result["selection_agent"] = selection_agent_result
     _save_candidates(_load_candidates() + ranked)
     candidate_count = _reviewed_candidate_count(review_result, len(ranked))
@@ -3422,6 +3377,7 @@ def _continue_written_scan(
     )
     run_payload = {
         "slot": slot_key,
+        "task_run_id": crawl_run_id,
         "slot_label": slot_label,
         "scanned_at": _now_iso(now),
         "spec": {
@@ -3593,6 +3549,99 @@ def _continue_written_scan(
             **{key: value for key, value in run_payload.items() if key != "candidates"},
         }
     )
+    if crawl_run_id:
+        amend_operational_crawl_run(
+            crawl_run_id,
+            progress_detail=(
+                "飞书写入与回读已成功；"
+                + ("群通知已发送。" if notification_status == "sent" else "群通知按配置暂停，已进入待发队列。")
+                + "自动初筛随后处理，不影响本轮群通知。"
+            ),
+            summary_updates={
+                "notification_status": notification_status,
+                "message_id": message_id, "message_ids": message_ids,
+                "notification_destination_count": len(message_ids),
+                "selection_agent_status": "pending",
+            },
+        )
+    _strategic_task_progress(
+        crawl_run_id, stream_log_path, "自动初筛启动",
+        "群通知阶段已处理并归档，开始后置初筛；筛选耗时不再阻塞群通知。",
+    )
+    try:
+        from cmhk.intelligence.news_selection_agent import (
+            run_news_selection_agent,
+        )
+
+        selection_agent_result = run_news_selection_agent(
+            new_items=[
+                item
+                for item in (review_result.get("new_items") or [])
+                if isinstance(item, dict)
+            ],
+            sheet_id=_clean_text(review_result.get("sheet_id"), 120),
+            parent_crawl_run_id=crawl_run_id,
+            idempotency_key=slot_key,
+        )
+        selection_batch_key = _clean_text(
+            review_result.get("selection_batch_key"), 120
+        )
+        if selection_batch_key:
+            try:
+                news_review_sheet.complete_selection_batch(
+                    selection_batch_key,
+                    selection_agent_result,
+                )
+            except Exception:
+                logging.exception("选材完成后未能核销通用待选批次，下轮将幂等复用")
+        state["last_selection_agent_error"] = ""
+        _strategic_task_progress(
+            crawl_run_id,
+            stream_log_path,
+            "选材 Agent 完成",
+            (
+                f"独立任务 {selection_agent_result.get('task_run_id') or '已归档'}；"
+                f"学习人工样本 {int(selection_agent_result.get('human_example_count') or 0)} 条，"
+                f"处理本轮候选 {int(selection_agent_result.get('candidate_count') or 0)} 条，"
+                f"验证 {int(selection_agent_result.get('verified_field_count') or 0)} 格，"
+                f"本次新写 {int(selection_agent_result.get('newly_written_count') or 0)} 格，"
+                "逐格回读已确认。"
+            ),
+        )
+    except Exception as exc:
+        selection_agent_result = {
+            "status": "retry_pending",
+            "error": _clean_text(exc, 600),
+            "readback_verified": False,
+            "recovery": "scheduled_without_resending_scan",
+        }
+        selection_batch_key = _clean_text(
+            review_result.get("selection_batch_key"), 120
+        )
+        if selection_batch_key:
+            try:
+                news_review_sheet.fail_selection_batch(
+                    selection_batch_key,
+                    selection_agent_result["error"],
+                )
+            except Exception:
+                logging.exception("选材失败后未能更新通用待选批次")
+        state["last_selection_agent_error"] = selection_agent_result["error"]
+        logging.exception("新闻自动初筛失败，原新闻爬虫结果仍保留")
+        _strategic_task_progress(
+            crawl_run_id,
+            stream_log_path,
+            "选材 Agent 失败",
+            (
+                "独立选材任务已在任务日志记为失败；未覆盖既有人工决策，"
+                "主爬虫和群通知不会重跑，后台将仅续写选材结果。"
+                f"原因：{selection_agent_result['error']}"
+            ),
+        )
+    review_result["selection_agent"] = selection_agent_result
+    run_payload["selection_agent"] = selection_agent_result
+    run_payload["review_sheet"] = review_result
+    _atomic_write_json(_scan_run_path(slot_key), run_payload)
     return run_payload
 
 

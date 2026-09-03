@@ -12,6 +12,11 @@ import strategic_briefing as briefing
 
 class StrategicBriefingTests(unittest.TestCase):
     def setUp(self):
+        data_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(data_dir.cleanup)
+        data_patch = mock.patch.object(briefing, "DATA_DIR", Path(data_dir.name))
+        data_patch.start()
+        self.addCleanup(data_patch.stop)
         critic = mock.patch.object(
             briefing, "AI_EDITOR_CRITIC_ENABLED", False
         )
@@ -407,6 +412,14 @@ class StrategicBriefingTests(unittest.TestCase):
             )
             return "om_after_completion", "bot", ["om_after_completion"]
 
+        def record_selection(**_kwargs):
+            self.assertIn("notify", order)
+            self.assertEqual(order[-1], "final_persisted")
+            order.append("selection")
+            return {"status": "completed", "task_run_id": "selection_test_run",
+                    "human_example_count": 12, "candidate_count": 0,
+                    "changed_count": 0, "readback_verified": True}
+
         def record_registry_final(_crawl_run_id, **kwargs):
             order.append("registry_finalized")
             self.assertTrue(kwargs["ok"])
@@ -427,6 +440,7 @@ class StrategicBriefingTests(unittest.TestCase):
                 "append_crawl_run_event",
             ) as append_crawl_event,
             mock.patch.object(briefing, "heartbeat_crawl_run"),
+            mock.patch.object(briefing, "amend_operational_crawl_run"),
             mock.patch.object(
                 briefing,
                 "finalize_operational_crawl_run",
@@ -498,14 +512,7 @@ class StrategicBriefingTests(unittest.TestCase):
             ),
             mock.patch(
                 "cmhk.intelligence.news_selection_agent.run_news_selection_agent",
-                return_value={
-                    "status": "completed",
-                    "task_run_id": "selection_test_run",
-                    "human_example_count": 12,
-                    "candidate_count": 0,
-                    "changed_count": 0,
-                    "readback_verified": True,
-                },
+                side_effect=record_selection,
             ) as selection_agent,
             mock.patch.object(briefing, "polish_candidates_before_review", return_value=[]),
             mock.patch.object(briefing, "_load_candidates", return_value=[]),
@@ -547,6 +554,8 @@ class StrategicBriefingTests(unittest.TestCase):
                 "pipeline_persisted",
                 "pipeline_persisted",
                 "notify",
+                "final_persisted",
+                "selection",
                 "final_persisted",
                 "registry_finalized",
             ],
@@ -1625,20 +1634,12 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertEqual(identity, "bot")
         self.assertEqual(message_ids, ["om_notification"])
         self.assertEqual(repeated_message_ids, ["om_notification"])
-        self.assertEqual(lark_api.call_count, 5)
+        self.assertEqual(lark_api.call_count, 3)
         first_uuid = lark_api.call_args_list[0].kwargs["data"]["uuid"]
         second_uuid = lark_api.call_args_list[1].kwargs["data"]["uuid"]
         self.assertEqual(first_uuid, second_uuid)
-        self.assertEqual(
-            first_uuid,
-            lark_api.call_args_list[3].kwargs["data"]["uuid"],
-        )
         requirements_chat_uuid = lark_api.call_args_list[2].kwargs["data"]["uuid"]
         self.assertNotEqual(first_uuid, requirements_chat_uuid)
-        self.assertEqual(
-            requirements_chat_uuid,
-            lark_api.call_args_list[4].kwargs["data"]["uuid"],
-        )
         self.assertEqual(
             [
                 call.kwargs["data"]["receive_id"]

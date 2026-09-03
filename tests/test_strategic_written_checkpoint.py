@@ -78,3 +78,57 @@ class WrittenScanCheckpointTests(unittest.TestCase):
               mock.patch.object(briefing, "_continue_written_scan", side_effect=lambda *a, **k: order.append("selection") or {})):
             briefing._run_scan_impl(self.now, self.slot, "晨间扫描", {})
         self.assertEqual(order, ["verified_write", "crawl_success", "selection"])
+
+    def test_notification_survives_slow_or_interrupted_selection_without_resend(self):
+        for interruption in (KeyboardInterrupt("process stopped"), RuntimeError("model unavailable")):
+            with self.subTest(interruption=type(interruption).__name__), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                checkpoint = {
+                    **self.checkpoint,
+                    "spec": {"spec_hash": "spec", "module_count": 1, "keyword_count": 1, "source_urls": []},
+                    "ranked": [], "bridge_stats": {}, "bridge_batch": {},
+                    "passed_bridge_signal_ids": [], "gated_items": [], "full_items": [],
+                    "gate_reasons": {}, "plans": [], "searched_count": 0,
+                    "discovery_result": {"result_count": 1},
+                }
+
+                def interrupt_selection(**_kwargs):
+                    archived = briefing._completed_scan_archive(self.slot)
+                    self.assertEqual(archived["notification_status"], "sent")
+                    self.assertEqual(archived["message_ids"], ["om_group"])
+                    self.assertEqual(archived["selection_agent"]["status"], "pending")
+                    raise interruption
+
+                with (mock.patch.object(briefing, "RUNS_DIR", root / "runs"),
+                      mock.patch.object(briefing, "_save_state"),
+                      mock.patch.object(briefing, "_load_candidates", return_value=[]),
+                      mock.patch.object(briefing, "_save_candidates"),
+                      mock.patch.object(briefing, "commit_signal_attempts", return_value={}),
+                      mock.patch.object(briefing, "_dispatch_subscription_news_after_scan", return_value={"status": "completed"}),
+                      mock.patch.object(briefing, "_send_scan_message", return_value=("om_group", "bot", ["om_group"])) as send,
+                      mock.patch.object(briefing, "_append_event"),
+                      mock.patch.object(briefing, "_strategic_task_progress"),
+                      mock.patch.object(briefing, "amend_operational_crawl_run"),
+                      mock.patch.object(news_review_sheet, "pending_selection_batches", return_value=[]),
+                      mock.patch("cmhk.intelligence.news_selection_agent.run_news_selection_agent", side_effect=interrupt_selection) as selection):
+                    state = {}
+                    try:
+                        briefing._continue_written_scan(self.now, self.slot, "晨间扫描", state,
+                                                        checkpoint=checkpoint, crawl_run_id="original")
+                    except KeyboardInterrupt:
+                        pass
+                    archived = briefing._completed_scan_archive(self.slot)
+                    self.assertEqual(archived["task_run_id"], "original")
+                    self.assertIn(archived["selection_agent"]["status"], {"pending", "retry_pending"})
+                    reused = briefing._run_scan(self.now, self.slot, "晨间扫描", state)
+                    self.assertTrue(reused["reused_completed_slot"])
+                    send.assert_called_once()
+                    selection.assert_called_once()
+                    selection.side_effect = None
+                    selection.return_value = {"status": "completed", "readback_verified": True,
+                                              "task_run_id": "child", "verified_field_count": 2}
+                    recovered = briefing._recover_pending_selection_agents(self.now, state)
+                    self.assertEqual(len(recovered), 1)
+                    self.assertTrue(recovered[0]["no_notification_replay"])
+                    send.assert_called_once()
+                    self.assertEqual(briefing._completed_scan_archive(self.slot)["selection_agent"]["status"], "completed")
