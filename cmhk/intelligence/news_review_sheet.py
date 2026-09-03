@@ -292,7 +292,7 @@ def _register_pending_selection_batch(
         **existing,
         "status": (
             existing_status
-            if existing_status in {"retry_pending", "exhausted"}
+            if existing_status in {"retry_pending", "exhausted", "paused"}
             else "pending"
         ),
         "idempotency_key": batch_key,
@@ -320,6 +320,10 @@ def pending_selection_batches(*, limit: int | None = 1) -> list[dict[str, Any]]:
     )
     pending = []
     for stored_key, batch in batches.items():
+        # An explicit operator hold preserves the failed receipt/checkpoints
+        # while preventing a service reload from replaying that business batch.
+        if isinstance(batch, dict) and batch.get("auto_retry_paused") is True:
+            continue
         if not isinstance(batch, dict) or batch.get("status") not in {
             "pending",
             "retry_pending",

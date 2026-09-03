@@ -371,6 +371,27 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "--visible",
         )
 
+    def test_paused_selection_batch_survives_reregistration_without_replay(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "state.json"
+            key = "2026-09-03@review-test"
+            path.write_text(json.dumps({"pending_selection_batches": {
+                key: {"status": "paused", "auto_retry_paused": True,
+                      "attempt_count": 5, "last_error": "模型空输出"},
+                "new-batch": {"status": "pending", "new_items": []},
+            }}), encoding="utf-8")
+            with mock.patch.object(review_sheet, "STATE_PATH", path):
+                review_sheet._register_pending_selection_batch(
+                    new_items=[{"news_id": "NEWS-1"}], sheet_id="test-sheet",
+                    preferred_key=key,
+                )
+                pending = review_sheet.pending_selection_batches(limit=None)
+            self.assertEqual([item["idempotency_key"] for item in pending], ["new-batch"])
+            held = json.loads(path.read_text())["pending_selection_batches"][key]
+            self.assertTrue(held["auto_retry_paused"])
+            self.assertEqual(held["attempt_count"], 5)
+            self.assertEqual(held["last_error"], "模型空输出")
+
     def test_insert_rows_formats_separator_band(self):
         with (
             mock.patch.object(review_sheet, "_lark"),
