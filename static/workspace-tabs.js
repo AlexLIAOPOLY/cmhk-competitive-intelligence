@@ -22,7 +22,7 @@
     newsSelectedDate: "",
     newsSelectedRunIds: [],
     newsRunDetails: {},
-    fixedSourceSummary: {},
+    fixedSourceSummary: null,
     monitoringKeywords: {},
     newsItemFallback: {},
     newsReviewSheet: null,
@@ -372,6 +372,8 @@
       const coveredCompanies = new Set(metricRows.map((row) => row.company));
       const units = new Set(metricRows.map((row) => row.unit).filter(Boolean));
       if (coveredCompanies.size !== companyIds.length || units.size !== 1) return false;
+      // All history keeps audited gaps visible; fixed windows still require completeness.
+      if (years === 99) return companyIds.length === 1 || companyIds.every((company) => data.cells.some((cell) => cell.company === company && cell.metric === metric.key && Number.isFinite(cell.value)));
       const windows = years ? [years] : [3, 5, 10, 99];
       return windows.some((windowYears) => {
         const comparison = competitorComparableWindow(data, companyIds, metric.key, windowYears);
@@ -412,10 +414,21 @@
     return `<span class="competitor-source-links">${urls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">${esc(label)} ${index + 1}/${total}</a>`).join(" · ")}</span>`;
   }
 
+  function visibleCompetitorYears(data, selection) {
+    return new Set([3, 5, 10, 99].filter((years) => years === 99
+      || !selection.companies.length || !selection.metric
+      || competitorHasCompleteMetric(data, selection.companies, years, selection.metric)));
+  }
+
+  let competitorOptionsTransitionTimer = null;
+
   function renderCompetitor({ revealedCompanies = [] } = {}) {
+    window.clearTimeout(competitorOptionsTransitionTimer);
     const panel = document.querySelector('[data-workspace-panel="competitor"]');
+    const previousYears = new Set([...panel.querySelectorAll('[data-competitor-year]:not(.is-disappearing)')].map((item) => Number(item.dataset.competitorYear)));
     const data = state.competitorData || { companies: [], metrics: [], cells: [], gaps: [] };
     const selection = state.competitorSelection;
+    if (selection.years && !visibleCompetitorYears(data, selection).has(selection.years)) selection.years = 99;
     const groupKnowledgeLabel = (group) => group === "香港运营商" ? "本地运营商知识库" : "全球重点运营商知识库";
     const groups = data.companies.reduce((map, company) => {
       (map[company.group] ||= []).push(company);
@@ -432,17 +445,20 @@
       : data.metrics;
     if (selection.metric && !comparableMetrics.some((metric) => metric.key === selection.metric)) selection.metric = "";
     const yearOptions = [3, 5, 10, 99];
-    const validYears = new Set(selection.companies.length && selection.metric
-      ? yearOptions.filter((years) => competitorHasCompleteMetric(data, selection.companies, years, selection.metric))
-      : yearOptions);
+    const validYears = visibleCompetitorYears(data, selection);
+    const renderedYears = yearOptions.filter((years) => validYears.has(years) || (!motionPreference.matches && previousYears.has(years)));
     panel.innerHTML = `<div class="workspace-module-inner competitor-workbench"><section class="workspace-panel competitor-builder">
       <header class="competitor-builder-head"><strong>竞对数据工作台 <small>${selection.companies.length ? `已选 ${selection.companies.length} 家` : ""}</small></strong><button class="workspace-button" type="button" data-competitor-clear>清空选择</button></header>
       <div class="competitor-steps">
         <fieldset><legend><i>01</i>选择竞对 <small>至少 1 家，最多 6 家</small></legend>${Object.entries(groups).map(([group, companies]) => [group, companies.filter((company) => visibleCompanies.has(company.id))]).filter(([, companies]) => companies.length).map(([group, companies]) => `<div class="competitor-option-group"><span><b>${esc(group)}</b><small>${esc(groupKnowledgeLabel(group))}</small></span><div>${companies.map((company, optionIndex) => `<label class="${revealedCompanies.includes(company.id) ? "is-appearing" : ""}" style="--option-order:${optionIndex}" data-competitor-option="${esc(company.id)}"><input type="checkbox" value="${esc(company.id)}" data-competitor-company ${selection.companies.includes(company.id) ? "checked" : ""} ${selection.companies.length >= 6 && !selection.companies.includes(company.id) ? "disabled" : ""}><b>${esc(company.label)}</b></label>`).join("")}</div></div>`).join("")}</fieldset>
-        <fieldset><legend><i>02</i>选择指标 <small>仅显示所选竞对在整个年份窗口均有披露值的指标</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选组合暂无完整披露数据"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
-        <fieldset><legend><i>03</i>选择年限 <small>仅可选所选竞对逐年数据完整的窗口</small></legend><div class="competitor-year-options">${[3,5,10].map((years) => `<label><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${!validYears.has(years) ? "disabled" : ""}><span>最近 ${years} 年窗口</span></label>`).join("")}<label><input type="radio" name="competitor-years" value="99" ${selection.years === 99 ? "checked" : ""} ${!validYears.has(99) ? "disabled" : ""}><span>全部</span></label></div></fieldset>
+        <fieldset><legend><i>02</i>选择指标 <small>${selection.years === 99 ? "显示同单位的已披露指标，保留历史缺口" : "仅显示所选竞对在整个年份窗口均有披露值的指标"}</small></legend><label class="competitor-select"><span>比较数据</span><select data-competitor-metric><option value="">${comparableMetrics.length ? "请选择指标" : "所选组合暂无完整披露数据"}</option>${comparableMetrics.map((metric) => `<option value="${esc(metric.key)}" ${selection.metric === metric.key ? "selected" : ""}>${esc(metric.label)} · ${esc(metricUnit(metric))}</option>`).join("")}</select></label></fieldset>
+        <fieldset><legend><i>03</i>选择年限 <small>固定窗口仅显示逐年数据完整的选项；全部始终可选</small></legend><div class="competitor-year-options">${renderedYears.map((years) => `<label data-competitor-year="${years}" class="${!validYears.has(years) ? "is-disappearing" : previousYears.size && !previousYears.has(years) ? "is-appearing" : ""}" ${!validYears.has(years) ? 'inert aria-hidden="true"' : ""}><input type="radio" name="competitor-years" value="${years}" ${selection.years === years ? "checked" : ""} ${!validYears.has(years) ? "disabled" : ""}><span>${years === 99 ? "全部" : `最近 ${years} 年窗口`}</span></label>`).join("")}</div></fieldset>
       </div></section><section class="workspace-panel competitor-result" id="competitorResult"></section></div>`;
+    panel.querySelectorAll('[data-competitor-year].is-disappearing').forEach((item) => {
+      window.setTimeout(() => item.remove(), 340);
+    });
     const transitionCompetitorOptions = (nextVisible, revealed = []) => {
+      window.clearTimeout(competitorOptionsTransitionTimer);
       const previouslyVisible = new Set([...panel.querySelectorAll("[data-competitor-option]")].map((item) => item.dataset.competitorOption));
       const appearing = revealed.length ? revealed : [...nextVisible].filter((company) => !previouslyVisible.has(company));
       const disappearing = [...panel.querySelectorAll("[data-competitor-option]")].filter((item) => !nextVisible.has(item.dataset.competitorOption));
@@ -450,13 +466,17 @@
         renderCompetitor({ revealedCompanies: appearing });
         return;
       }
-      panel.querySelectorAll("input,select,button").forEach((item) => { item.disabled = true; });
-      disappearing.forEach((item) => item.classList.add("is-disappearing"));
+      // Keep retained controls (especially All and Clear) interactive during exit motion.
+      panel.querySelectorAll('[data-competitor-option]').forEach((item) => {
+        const leaving = !nextVisible.has(item.dataset.competitorOption);
+        item.classList.toggle("is-disappearing", leaving);
+        item.toggleAttribute("inert", leaving);
+      });
       panel.querySelectorAll(".competitor-option-group").forEach((group) => {
         const remaining = [...group.querySelectorAll("[data-competitor-option]")].some((item) => nextVisible.has(item.dataset.competitorOption));
-        if (!remaining) group.classList.add("is-disappearing");
+        group.classList.toggle("is-disappearing", !remaining);
       });
-      window.setTimeout(() => renderCompetitor({ revealedCompanies: appearing }), motionPreference.matches ? 0 : 430);
+      competitorOptionsTransitionTimer = window.setTimeout(() => renderCompetitor({ revealedCompanies: appearing }), motionPreference.matches ? 0 : 430);
     };
     panel.querySelectorAll("[data-competitor-company]").forEach((input) => input.addEventListener("change", () => {
       const selected = [...panel.querySelectorAll("[data-competitor-company]:checked")].map((item) => item.value).slice(0, 6);
@@ -1601,6 +1621,19 @@
     return { key: "healthy", label: "正常", routeId, source: "run-evidence", confidence: "high", reason: runningNode ? `当前执行已定位在“${runningNode.label}”节点；未发现线路异常记录。` : "上下游节点均有正常完成记录。" };
   }
 
+  function resolvedFixedSourceSummary() {
+    // Both endpoints describe the current configuration snapshot, not historical inputs.
+    // An empty/failed primary response must not hide a valid run-detail fallback.
+    return [state.fixedSourceSummary, ...Object.values(state.newsRunDetails).map((detail) => detail?.fixedSourceSummary)]
+      .find((summary) => Number.isSafeInteger(summary?.uniqueUrls) && summary.uniqueUrls >= 0) || {};
+  }
+
+  function fixedSourceInputText(summary) {
+    return Number.isSafeInteger(summary?.uniqueUrls) && summary.uniqueUrls >= 0
+      ? `${number(summary.uniqueUrls)} 条飞书固定链接`
+      : "飞书固定链接数量暂不可用";
+  }
+
   function globalSchedulerLineageModel(runs, stages, attemptRuns = runs) {
     const overview = state.schedulerOverview || {};
     const latest = overview.latest || {};
@@ -1745,14 +1778,11 @@
     const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
     const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
-    const fixedSourceSummary = state.fixedSourceSummary
-      || mainRunDetail.fixedSourceSummary
-      || state.newsRunDetails[newsRun.crawl_run_id]?.fixedSourceSummary
-      || {};
+    const fixedSourceSummary = resolvedFixedSourceSummary();
     const scheduledMainRows = new Set(
       [...String(mainRun.scope || "").matchAll(/第\s*(\d+)\s*行/g)].map((match) => match[1])
     ).size;
-    const fixedSourceUrlCount = Number(fixedSourceSummary.uniqueUrls || 0);
+    const fixedSourceUrlCount = fixedSourceSummary.uniqueUrls;
     const configuredSourceRows = Number(fixedSourceSummary.configuredRows || scheduledMainRows || 0);
     const configuredSourceOccurrences = Number(fixedSourceSummary.configuredUrlOccurrences || 0);
     const crawlUrlAttemptCount = Number(mainRun.run_log?.rows || 0);
@@ -1766,7 +1796,7 @@
       ...(mainCrossedDate ? [`跨日任务：${newsRunDate(mainRun)} 启动，${selectedDate} 完成`] : []),
       `开始 ${String(mainRun.started_at_hkt || "未记录").replace("T", " ")}`,
       `完成 ${String(mainRun.completed_at_hkt || "未记录").replace("T", " ")}`,
-      ...(fixedSourceUrlCount ? [`当前飞书配置快照含 ${number(fixedSourceUrlCount)} 条去重后的固定链接`, `${number(configuredSourceRows)} 行配置共出现 ${number(configuredSourceOccurrences)} 处链接`] : ["本轮归档未保存可核对的固定链接总数，不再用行数代替链接数"]),
+      ...(fixedSourceUrlCount !== undefined ? [`当前飞书配置快照含 ${number(fixedSourceUrlCount)} 条去重后的固定链接`, `${number(configuredSourceRows)} 行配置共出现 ${number(configuredSourceOccurrences)} 处链接`] : ["固定链接数量暂不可用：尚未取得有效配置快照，不代表没有链接；系统会自动重试"]),
       ...(crawlUrlAttemptCount ? [`本轮共执行 ${number(crawlUrlAttemptCount)} 次网址抓取：成功 ${number(mainRun.run_log?.success_urls)} 次、失败 ${number(mainRun.run_log?.failed_urls)} 次`] : []),
       ...(mainRowsProcessed ? [`旧审计记录为 ${number(mainRowsProcessed)} 行结果；它不是固定链接数量`] : []),
     ] : ["所选日期没有主爬虫运行记录"];
@@ -1815,9 +1845,9 @@
       { key: "weekly-result", label: "周报新闻最终接受结果", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "新闻审核表读取短暂失败，按最近完整快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验新闻发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日两轮新闻合并参考", value: number(previousReferenceCount), unit: "条去重新闻参考", note: previousReferenceTruncated ? `07:30/14:00合并去重 · 输入上限 ${number(previousReferenceLimit)} 条` : `${number(previousReferenceRunCount)} 个权威批次合并后按URL/标题去重`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: [`只读取前一日最后两个已完成的权威新闻批次（通常为07:30、14:00）`, `把两批“公开网页发现＋候选新闻”合并，再按URL；没有URL时按标题去重`, previousReferenceLegacyCapped ? `该历史归档触及 ${number(previousReferenceLimit)} 条输入上限；当时没有保存去重后的完整总数，因此300不是长期累计，也不能解释为刚好只有300条` : previousReferenceTruncated ? `去重后实际共有 ${number(previousReferenceUniqueTotal)} 条；为控制01:00任务输入量，只带入前 ${number(previousReferenceLimit)} 条，所以卡片显示 ${number(previousReferenceCount)} 条` : `两批合并去重后共有 ${number(previousReferenceCount)} 条，没有把同一链接重复累计`, "这些新闻只给01:00补缺搜索提供方向，不直接成为数据库数据"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日战略新闻归档" },
       { key: "news-db-signal", label: "01:00 四库缺口链接搜索", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条待追证链接", note: "自动发现补缺链接 · 交给03:00追官方原文", health: sourceDiscoveryHealth, variant: "source", position: [300, 270], details: ["独立搜索 Agent 按四库主体与数据指标字段检索最近24小时资料", "合并前一天07:30/14:00两次战略新闻任务内容作参考", "搜索结果与新闻结果只作为待追证链接，不是数据库数据", "待追证链接交给03:00链路继续追查公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00四库数据资料补缺审计" },
-      { key: "main", label: "03:00 两类链接网页抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${number(fixedSourceUrlCount)} 条飞书固定链接＋${number(sourceDiscoverySummary.signal_count || 0)} 条01:00待追证链接` : "当天未找到主爬虫归档", health: crawlHealth, variant: "crawler", compact: true, position: [300, 460], details: ["输入一：飞书配置表中人工维护的固定链接；输入二：B2在01:00交来的待追证链接", "只负责抓取网页，并沿线索继续打开公司IR、财报或监管披露官方原文", "抓取到的网页正文同时交给C1b提取字段，并作为C2核对候选数据的官方原文依据", "固定链接数、配置行数和实际网址抓取次数分别统计，互不替代", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
-      { key: "fact-extract", label: "03:00 字段提取与候选数据生成", value: parsedCandidateCount ? number(parsedCandidateCount) : "—", unit: "条候选数据", note: mainRun.crawl_run_id ? "读取已抓网页正文 · 提取六个数据字段" : "当天未找到字段提取归档", health: extractHealth, variant: "source", compact: true, position: [300, 600], details: ["读取C1a已经抓取的网页正文，不重新搜索或抓取网页", "从公司IR、财报、监管披露原文中提取主体、指标、期间、数值、单位和来源", `形成 ${number(parsedCandidateCount)} 条候选数据并交给C2 Agent逐条审核`, "候选数据尚未通过证据门禁，不能直接写入四库"], evidence: mainRun.curation?.summary || mainRun.progress_detail || mainRun.status_detail || "当天未留下字段提取与候选数据生成记录" },
-      { key: "agent", label: "Agent 数据证据逐条审核", value: mainRun.curation?.accepted !== undefined ? number(mainRun.curation.accepted) : hasCompanyAgentProgress ? `${number(companyAgentProgress.recordedCompanies)}/${number(companyAgentProgress.expectedCompanies || 41)}` : "—", unit: mainRun.curation?.accepted !== undefined ? "条候选数据审核通过" : hasCompanyAgentProgress ? "家公司数据证据已记录" : "条候选数据审核通过", note: mainRun.curation?.accepted !== undefined ? "审核C1b提交的候选数据" : hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 检查点 · ${number(companyAgentProgress.recordedMetrics)} 项数据指标` : "当天未留下数据证据审核轨迹", health: mainRun.curation?.accepted !== undefined ? mainHealth : hasCompanyAgentProgress ? { key: "warning", label: "待续跑" } : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", primary: true, position: [700, 392], details: mainRun.curation?.accepted !== undefined ? ["C2只审核C1b从已抓网页正文中形成的候选数据，不把01:00和03:00的数量相加", `原始数据指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选数据 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选数据` : ""}` : "候选数据逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条候选数据；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条候选数据 · 待复核 ${number(mainRun.curation.review)} 条候选数据`, `数据审核轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : hasCompanyAgentProgress ? ["C2审核的是C1b从已抓网页正文中形成的候选数据，不做两个时点数量相加", `V${number(companyAgentVersion)} 最后更新 ${String(companyAgentProgress.updatedAt || "未记录").replace("T", " ")}`, `已记录 ${number(companyAgentProgress.recordedCompanies)} / ${number(companyAgentProgress.expectedCompanies || 41)} 家公司`, `数据指标记录 ${number(companyAgentProgress.recordedMetrics)} 项；合规终态 ${number(companyAgentProgress.terminalMetrics)} 项`, `未解决公司 ${number(companyAgentProgress.unresolvedCompanies)} 家；冲突数据指标 ${number(companyAgentProgress.conflictMetrics)} 项；Agent 未完成数据指标 ${number(companyAgentProgress.agentErrorMetrics)} 项`] : ["所选日期没有 Agent 数据证据审核记录"], evidence: mainRun.curation?.summary || (hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 公司 Agent 检查点：${number(companyAgentProgress.recordedCompanies)} 家、${number(companyAgentProgress.recordedMetrics)} 项数据指标，更新时间 ${companyAgentProgress.updatedAt || "未记录"}` : mainRun.status_detail || "当天未留下 Agent 数据证据审核记录") },
+      { key: "main", label: "03:00 两类链接网页抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${fixedSourceInputText(fixedSourceSummary)}＋${number(sourceDiscoverySummary.signal_count || 0)} 条01:00待追证链接` : "当天未找到主爬虫归档", health: crawlHealth, variant: "crawler", compact: true, position: [300, 460], details: ["输入一：飞书配置表中人工维护的固定链接；输入二：「四库缺口链接搜索」在01:00交来的待追证链接", "只负责抓取网页，并沿线索继续打开公司IR、财报或监管披露官方原文", "抓取到的网页正文同时交给「字段提取与候选数据生成」提取字段，并作为「Agent 数据字段逐条审核」核对候选数据的官方原文依据", "固定链接数、配置行数和实际网址抓取次数分别统计，互不替代", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "fact-extract", label: "03:00 字段提取与候选数据生成", value: parsedCandidateCount ? number(parsedCandidateCount) : "—", unit: "条候选数据", note: mainRun.crawl_run_id ? "读取已抓网页正文 · 提取六个数据字段" : "当天未找到字段提取归档", health: extractHealth, variant: "source", compact: true, position: [300, 600], details: ["读取「两类链接网页抓取」已经抓取的网页正文，不重新搜索或抓取网页", "从公司IR、财报、监管披露原文中提取主体、指标、期间、数值、单位和来源", `形成 ${number(parsedCandidateCount)} 条候选数据并交给「Agent 数据字段逐条审核」逐条审核`, "候选数据尚未通过证据门禁，不能直接写入四库"], evidence: mainRun.curation?.summary || mainRun.progress_detail || mainRun.status_detail || "当天未留下字段提取与候选数据生成记录" },
+      { key: "agent", label: "Agent 数据证据逐条审核", value: mainRun.curation?.accepted !== undefined ? number(mainRun.curation.accepted) : hasCompanyAgentProgress ? `${number(companyAgentProgress.recordedCompanies)}/${number(companyAgentProgress.expectedCompanies || 41)}` : "—", unit: mainRun.curation?.accepted !== undefined ? "条候选数据审核通过" : hasCompanyAgentProgress ? "家公司数据证据已记录" : "条候选数据审核通过", note: mainRun.curation?.accepted !== undefined ? "审核「字段提取与候选数据生成」提交的候选数据" : hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 检查点 · ${number(companyAgentProgress.recordedMetrics)} 项数据指标` : "当天未留下数据证据审核轨迹", health: mainRun.curation?.accepted !== undefined ? mainHealth : hasCompanyAgentProgress ? { key: "warning", label: "待续跑" } : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", primary: true, position: [700, 392], details: mainRun.curation?.accepted !== undefined ? ["「Agent 数据字段逐条审核」只审核「字段提取与候选数据生成」从已抓网页正文中形成的候选数据，不把01:00和03:00的数量相加", `原始数据指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选数据 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选数据` : ""}` : "候选数据逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条候选数据；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条候选数据 · 待复核 ${number(mainRun.curation.review)} 条候选数据`, `数据审核轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : hasCompanyAgentProgress ? ["「Agent 数据字段逐条审核」审核的是「字段提取与候选数据生成」从已抓网页正文中形成的候选数据，不做两个时点数量相加", `V${number(companyAgentVersion)} 最后更新 ${String(companyAgentProgress.updatedAt || "未记录").replace("T", " ")}`, `已记录 ${number(companyAgentProgress.recordedCompanies)} / ${number(companyAgentProgress.expectedCompanies || 41)} 家公司`, `数据指标记录 ${number(companyAgentProgress.recordedMetrics)} 项；合规终态 ${number(companyAgentProgress.terminalMetrics)} 项`, `未解决公司 ${number(companyAgentProgress.unresolvedCompanies)} 家；冲突数据指标 ${number(companyAgentProgress.conflictMetrics)} 项；Agent 未完成数据指标 ${number(companyAgentProgress.agentErrorMetrics)} 项`] : ["所选日期没有 Agent 数据证据审核记录"], evidence: mainRun.curation?.summary || (hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 公司 Agent 检查点：${number(companyAgentProgress.recordedCompanies)} 家、${number(companyAgentProgress.recordedMetrics)} 项数据指标，更新时间 ${companyAgentProgress.updatedAt || "未记录"}` : mainRun.status_detail || "当天未留下 Agent 数据证据审核记录") },
       { key: "database-hub", label: "审核通过数据写入四库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: "条审核通过数据写入四库", note: intelligenceRun.crawl_run_id ? `写入 ${number(refreshFactCount)} 条审核通过数据 · 数据指标变化 ${numericChangeText}` : "当天未留下数据入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [920, 415], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库数据快照 ${number(refreshFactCount)} 条；结构化数据指标变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数据指标变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数据指标变化`, numericBaselineAvailable ? "数据指标变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测数据指标变化数量", "点开下方数据库数据明细可查看公司、数据指标、依据、官方链接和证据哈希"] : ["所选日期没有数据入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
       domainNode("local", "本地运营商", [1130, 410], "database-local"),
       domainNode("international", "国际运营商", [1295, 410], "database-international"),
@@ -1840,7 +1870,7 @@
         ? "对照官方原文审核候选数据"
         : agentAuditNode.note;
       if (agentAuditNode.details?.length) {
-        agentAuditNode.details[0] = "C2同时接收C1a抓取的官方原文和C1b形成的候选数据，逐条比对审核";
+        agentAuditNode.details[0] = "数据证据审核同时接收「两类链接网页抓取」提供的官方原文和「字段提取与候选数据生成」提供的候选数据，逐条比对审核";
       }
     }
     const nodePurposes = {
@@ -1854,9 +1884,9 @@
       "weekly-result": "统计新闻审核表中周报字段的最终接受结果，并区分机器与人工操作",
       "previous-news": "合并前一日07:30和14:00两个权威新闻批次，按URL或标题去重后给01:00补缺搜索作参考",
       "news-db-signal": "自动搜索四库数据缺口相关网页，筛出需要继续追查官方原文的待追证链接并交给03:00抓取；本节点不产出数据库数据",
-      main: "合并飞书固定链接和B2的01:00待追证链接；抓取网页并继续打开公司IR、财报和监管披露原文，本节点只负责抓取",
-      "fact-extract": "读取C1a已抓取的网页正文，提取主体、指标、期间、数值、单位和来源，形成候选数据并交给C2审核",
-      agent: "同时接收C1a抓取的官方原文和C1b形成的候选数据，逐条比对主体、指标、期间、数值、单位和来源",
+      main: "合并飞书固定链接和「四库缺口链接搜索」的01:00待追证链接；抓取网页并继续打开公司IR、财报和监管披露原文，本节点只负责抓取",
+      "fact-extract": "读取「两类链接网页抓取」已抓取的网页正文，提取主体、指标、期间、数值、单位和来源，形成候选数据并交给「Agent 数据字段逐条审核」审核",
+      agent: "同时接收「两类链接网页抓取」提供的官方原文和「字段提取与候选数据生成」提供的候选数据，逐条比对主体、指标、期间、数值、单位和来源",
       "database-hub": "只把数据字段审核通过的数据写入四库",
       "database-local": "把本地运营商主体数据发布到界面",
       "database-international": "把国际运营商主体数据发布到界面",
@@ -1919,7 +1949,7 @@
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
         { label: "B｜四库数据资料补缺线", position: [18, 230] },
-        { label: "C｜数据审核主链：抓取与提取 → 数据字段审核 → 入库 → UI", position: [18, 425] },
+        { label: "C｜数据审核主链", position: [18, 425] },
       ],
       groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", position: [1120, 430], size: [389, 315] }],
     };
@@ -1985,7 +2015,7 @@
   }
 
   function syncNewsLineageEdges() {
-    const occupied = [...document.querySelectorAll("[data-news-lineage-node]")].map((node) => ({
+    const occupied = [...document.querySelectorAll("[data-news-lineage-node], [data-news-lineage-lane]")].map((node) => ({
       x: Number(node.dataset.x), y: Number(node.dataset.y), w: node.offsetWidth, h: node.offsetHeight,
     }));
     const placeLabel = (label, x, y) => {
@@ -2048,13 +2078,49 @@
     requestAnimationFrame(() => requestAnimationFrame(syncNewsLineageEdges));
   }
 
+  function layoutNewsLineageCards(canvas) {
+    const width = Number(canvas.dataset.lineageWidth);
+    const boxes = [...canvas.querySelectorAll("[data-news-lineage-node], [data-news-lineage-lane]")].map((element) => {
+      // Original coordinates prevent polling and ResizeObserver from accumulating offsets.
+      element.dataset.baseY ??= element.dataset.y;
+      return { element, baseY: Number(element.dataset.baseY), x: Number(element.dataset.x), w: element.offsetWidth, h: element.offsetHeight };
+    }).sort((a, b) => a.baseY - b.baseY);
+    const placed = [];
+    for (const box of boxes) {
+      box.y = box.baseY;
+      for (const prior of placed) {
+        if (prior.baseY < box.baseY && box.x < prior.x + prior.w && box.x + box.w > prior.x) {
+          box.y = Math.max(box.y, prior.y + prior.h + 16);
+        }
+      }
+      box.element.dataset.y = String(box.y);
+      box.element.style.transform = `translate(${box.element.dataset.x}px,${box.y}px)`;
+      placed.push(box);
+    }
+    const databases = boxes.filter((box) => /^database-(local|international|cloud|mainland)$/.test(box.element.dataset.newsLineageNode || ""));
+    const group = canvas.querySelector(".news-lineage-group");
+    if (group && databases.length) {
+      const top = Math.min(...databases.map((box) => box.y)) - 40;
+      group.style.transform = `translate(1120px,${top}px)`;
+      group.style.height = `${Math.max(...databases.map((box) => box.y + box.h)) - top + 12}px`;
+    }
+    const height = Math.max(Number(canvas.dataset.lineageHeight), ...boxes.map((box) => box.y + box.h + 24));
+    canvas.style.height = `${height}px`;
+    const svg = canvas.querySelector(".news-lineage-edges");
+    if (svg) {
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.style.height = `${height}px`;
+    }
+    return height;
+  }
+
   function fitNewsLineageToViewport(panel) {
     const viewport = panel.querySelector("[data-news-lineage-viewport]");
     const stage = panel.querySelector("[data-news-lineage-stage]");
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!viewport || !stage || !canvas || viewport.clientWidth <= 0) return;
     const canvasWidth = Number(canvas.dataset.lineageWidth || canvas.offsetWidth || 0);
-    const canvasHeight = Number(canvas.dataset.lineageHeight || canvas.offsetHeight || 0);
+    const canvasHeight = layoutNewsLineageCards(canvas);
     if (!canvasWidth || !canvasHeight) return;
     const viewportTop = Math.max(0, viewport.getBoundingClientRect().top);
     const availableHeight = Math.max(1, window.innerHeight - viewportTop - 12);
@@ -2275,7 +2341,7 @@
     }).join("")}</ol></section>`;
   }
 
-  function executiveNodeRecords(nodeKey) {
+  function executiveNodeRecords(nodeKey, relatedRuns = []) {
     const domainKey = nodeKey.replace(/^database-/, "");
     const domains = state.executiveIntelligence?.domains || [];
     const refreshState = state.executiveIntelligence?.refresh || {};
@@ -2469,7 +2535,7 @@
         return (Array.isArray(detail[detailKey]) ? detail[detailKey] : []).map((item) => ({ ...item, run }));
       });
     }
-    if (["main", "fact-extract", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-")) return executiveNodeRecords(nodeKey);
+    if (["main", "fact-extract", "agent", "database-hub", "insights"].includes(nodeKey) || nodeKey.startsWith("database-")) return executiveNodeRecords(nodeKey, relatedRuns);
     return [];
   }
 
@@ -2535,8 +2601,7 @@
     const previousLegacyCapped = discoverySummary.previous_day_reference_unique_total === undefined
       && previousCount >= previousLimit;
     const mainRun = mainRunForDate(state.newsSelectedDate);
-    const fixedSummary = state.fixedSourceSummary || state.newsRunDetails[mainRun.crawl_run_id]?.fixedSourceSummary || {};
-    const fixedUrlCount = Number(fixedSummary.uniqueUrls || 0);
+    const fixedSummary = resolvedFixedSourceSummary();
     const actualCrawlCount = Number(mainRun.run_log?.rows || 0);
     const candidateFactCount = Number(mainRun.curation?.tasks || 0);
     const acceptedFactCount = Number(mainRun.curation?.accepted || 0);
@@ -2571,7 +2636,7 @@
         output: `${node.value}${node.unit || ""}；归档后再交给AI滚动栏与周报初筛`,
       },
       "news-selection-agent": {
-        input: "A5已写入并归档的每条新增战略新闻",
+        input: "「新增战略新闻保存与归档」已写入并归档的每条新增战略新闻",
         action: "AI分别判断“纳入滚动栏”和“纳入周报”两个字段，并把结果回写飞书审核表",
         output: `${node.value}${node.unit || ""}；${node.note || "当天未留下初筛结果"}`,
       },
@@ -2596,22 +2661,22 @@
         output: `${node.value}${node.unit || ""}；只作为线索交给03:00，不直接写数据库`,
       },
       main: {
-        input: `${number(fixedUrlCount)} 条飞书固定链接＋${number(discoverySummary.signal_count || 0)} 条01:00待追证链接`,
+        input: `${fixedSourceInputText(fixedSummary)}＋${number(discoverySummary.signal_count || 0)} 条01:00待追证链接`,
         action: "逐个抓取网页，并沿网页线索继续打开公司IR、财报和监管披露原文；本节点只负责取得网页正文",
-        output: `${number(actualCrawlCount)} 次网址抓取；已抓网页正文交给C1b解析，不在本节点生成候选数据`,
+        output: `${number(actualCrawlCount)} 次网址抓取；已抓网页正文交给「字段提取与候选数据生成」解析，不在本节点生成候选数据`,
       },
       "fact-extract": {
-        input: "C1a抓取并保存的网页正文，包括飞书固定链接和01:00待追证链接对应页面",
+        input: "「两类链接网页抓取」抓取并保存的网页正文，包括飞书固定链接和01:00待追证链接对应页面",
         action: "读取正文，提取主体、指标、期间、数值、单位和来源六类字段；本节点不再搜索或抓取网页",
-        output: `形成 ${number(candidateFactCount)} 条候选数据并交给C2；通过数据字段审核前不写入四库`,
+        output: `形成 ${number(candidateFactCount)} 条候选数据并交给「Agent 数据字段逐条审核」；通过数据字段审核前不写入四库`,
       },
       agent: {
-        input: `C1b从已抓网页正文中形成的 ${number(candidateFactCount)} 条候选数据；不是把01:00与03:00数量相加`,
+        input: `「字段提取与候选数据生成」从已抓网页正文中形成的 ${number(candidateFactCount)} 条候选数据；不是把01:00与03:00数量相加`,
         action: "Agent逐条核对主体、指标、期间、数值、单位、官方来源、来源内容哈希和字段完整性",
         output: `审核通过 ${number(acceptedFactCount)} 条、拒绝 ${number(rejectedFactCount)} 条、待复核 ${number(reviewCount)} 条`,
       },
       "database-hub": {
-        input: "C2数据字段审核通过的数据",
+        input: "「Agent 数据字段逐条审核」通过的数据",
         action: "按主体类型写入本地运营商、国际运营商、全球云厂商、内地运营商四库",
         output: `${node.value}${node.unit || ""}；未通过或待复核的数据不写入`,
       },
@@ -2653,9 +2718,13 @@
       meta: event.time || "未记录时间",
       detail: event.content || "未保存事件正文",
     }));
-    const previews = [...searchQueries, ...recordPreviews, ...runPreviews, ...eventPreviews].filter((item, index, items) => (
-      items.findIndex((candidate) => `${candidate.title}|${candidate.url || ""}|${candidate.meta || ""}` === `${item.title}|${item.url || ""}|${item.meta || ""}`) === index
-    ));
+    const seenPreviews = new Set();
+    const previews = [...searchQueries, ...recordPreviews, ...runPreviews, ...eventPreviews].filter((item) => {
+      const key = JSON.stringify([item.title, item.url || "", item.meta || ""]);
+      if (seenPreviews.has(key)) return false;
+      seenPreviews.add(key);
+      return true;
+    });
     return { ...descriptions, previews };
   }
 
@@ -2676,9 +2745,9 @@
 
   function renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, records, events, incoming, outgoing) {
     const model = newsLineageFirstScreenModel(nodeKey, node, relatedRuns, records, events, incoming, outgoing);
-    const previewRows = model.previews.slice(0, 6);
+    const previewRows = model.previews;
     const previewBody = previewRows.length ? previewRows.map((item) => `<article><span>${esc(item.tag || "实际对象")}</span><div><strong>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</strong>${item.meta ? `<small>${esc(item.meta)}</small>` : ""}</div><p>${esc(item.detail || "未保存对象说明")}</p></article>`).join("") : `<div class="news-lineage-first-empty"><strong>当前归档没有可展示的逐条对象</strong><p>上方仍按真实汇总说明本节点输入与输出；页面不会编造链接、关键词或数据。</p></div>`;
-    return `<section class="news-lineage-dialog-section is-first-screen"><header><h3>本节点实际输入、动作与输出</h3><span>打开即看真实对象</span></header><div class="news-lineage-io-flow"><article><span>01 · 实际输入</span><p>${esc(model.input)}</p></article><article><span>02 · 本节点动作</span><p>${esc(model.action)}</p></article><article><span>03 · 实际输出</span><p>${esc(model.output)}</p></article></div>${nodeKey === "news-search" ? renderNewsMonitoringKeywords(relatedRuns) : ""}<div class="news-lineage-first-preview"><header><strong>实际对象预览</strong><span>${number(model.previews.length)} 条可展示 · 首屏显示前 ${number(previewRows.length)} 条</span></header><div>${previewBody}</div></div></section>`;
+    return `<section class="news-lineage-dialog-section is-first-screen"><header><h3>本节点实际输入、动作与输出</h3><span>打开即看真实对象</span></header><div class="news-lineage-io-flow"><article><span>01 · 实际输入</span><p>${esc(model.input)}</p></article><article><span>02 · 本节点动作</span><p>${esc(model.action)}</p></article><article><span>03 · 实际输出</span><p>${esc(model.output)}</p></article></div>${nodeKey === "news-search" ? renderNewsMonitoringKeywords(relatedRuns) : ""}<div class="news-lineage-first-preview"><header><strong>实际对象预览</strong><span>${number(previewRows.length)} 条可展示 · 上下滚动查看全部</span></header><div class="news-lineage-preview-scroll" role="region" aria-label="实际对象预览列表" tabindex="0">${previewBody}</div></div></section>`;
   }
 
   function companyAgentExecutionModel(relatedRuns) {
@@ -2801,6 +2870,15 @@
   }
 
 
+  function showNewsLineageDetailError(error) {
+    console.error("News lineage detail failed", error);
+    const dialog = document.querySelector("#newsLineageDialog");
+    const body = document.querySelector("#newsLineageDialogBody");
+    if (!dialog || !body) return;
+    body.innerHTML = `<header><div><h2>节点详情暂时无法打开</h2><p role="alert">加载或整理详情时发生错误，请关闭后重试；若仍失败，请刷新页面后再试。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>`;
+    if (!dialog.open) dialog.showModal();
+  }
+
   function bindNewsLineageInteractions(panel) {
     state.newsLineageResizeObserver?.disconnect();
     if (state.newsLineageWindowResizeHandler) window.removeEventListener("resize", state.newsLineageWindowResizeHandler);
@@ -2865,7 +2943,7 @@
       if (!node) return;
       hidePurposeTooltip();
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
-      openActualNewsLineageDetail(node.dataset.newsLineageNode);
+      openActualNewsLineageDetail(node.dataset.newsLineageNode).catch(showNewsLineageDetailError);
     });
     const scheduleFit = () => { hidePurposeTooltip(); scheduleNewsLineageFit(panel); };
     state.newsLineageScrollHandler = () => {
@@ -2958,7 +3036,7 @@
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" tabindex="0" aria-label="${esc(line.label)}：${esc(line.reason || "")}" title="${esc(line.label)}：${esc(line.reason || "")}">${lineageStatusIcon(line.key)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
-              ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
+              ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" data-news-lineage-lane data-x="${lane.position[0]}" data-y="${lane.position[1]}" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
               <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
@@ -3032,7 +3110,7 @@
 
     lineage.nodes.forEach((node, index) => {
       const element = currentNodes[index];
-      element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
+      element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
       element.dataset.health = node.health?.key || "unknown";
       element.dataset.newsLineagePurpose = node.purpose || "未说明";
       element.setAttribute("aria-label", `${node.label}，作用：${node.purpose || "未说明"}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
@@ -3084,6 +3162,7 @@
         ["status", "/api/status"],
         ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
         ["crawlRuns", "/api/crawl-runs?limit=500"],
+        ["fixedSourceSummary", "/api/fixed-source-summary"],
         ["scheduler", "/api/scheduler-overview"],
       ];
       if (state.newsLiveReviewTick % 3 === 0) requests.push(
@@ -3107,6 +3186,7 @@
           state.faultTotal = Number(payload.total || nextTasks.length);
         } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
         else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
+        else if (key === "fixedSourceSummary") state.fixedSourceSummary = payload;
         else if (key === "scheduler") state.schedulerOverview = payload;
         else if (key === "intelligence") state.executiveIntelligence = payload;
       });

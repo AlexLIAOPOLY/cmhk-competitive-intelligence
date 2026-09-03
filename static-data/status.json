@@ -153,50 +153,104 @@
       "newsFunnel": {
         "scope": "晨间扫描（2026-09-03@07:30）",
         "label": "9月3日 07:30",
-        "completedAt": "2026-09-03T09:57:51+08:00",
-        "historyDuplicates": 0,
+        "completedAt": "2026-09-03T10:49:01+08:00",
+        "historyDuplicates": 53,
         "summary": {
-          "discovered": 0,
-          "confirmed": 0,
+          "discovered": 565,
+          "confirmed": 201,
           "newCount": 148,
-          "sourceCount": 0
+          "sourceCount": 107
         },
-        "categories": [],
-        "impacts": [],
+        "categories": [
+          {
+            "label": "行业动态",
+            "value": 60
+          },
+          {
+            "label": "网络与技术",
+            "value": 41
+          },
+          {
+            "label": "竞对动态",
+            "value": 27
+          },
+          {
+            "label": "其他",
+            "value": 20
+          }
+        ],
+        "impacts": [
+          {
+            "label": "网络与运营",
+            "value": 24
+          },
+          {
+            "label": "资本配置",
+            "value": 19
+          },
+          {
+            "label": "成本与效率",
+            "value": 18
+          },
+          {
+            "label": "产品与定价",
+            "value": 16
+          },
+          {
+            "label": "供应韧性",
+            "value": 16
+          },
+          {
+            "label": "竞争格局",
+            "value": 16
+          },
+          {
+            "label": "收入与需求",
+            "value": 14
+          },
+          {
+            "label": "客户与渠道",
+            "value": 13
+          },
+          {
+            "label": "合规与牌照",
+            "value": 12
+          }
+        ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 0,
+            "value": 565,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 0 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 565 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 0,
-            "removed": 0,
-            "rate": 0,
-            "note": "等待审核",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 0 条，未确认 0 条。"
+            "value": 201,
+            "removed": 364,
+            "rate": 36,
+            "note": "保留 36%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 201 条，未确认 364 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 0,
-            "removed": 0,
-            "rate": 0,
-            "note": "排除 0 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 0 条重复事件，剩余 0 条。"
+            "value": 148,
+            "removed": 53,
+            "rate": 74,
+            "note": "排除 53 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 53 条重复事件，剩余 148 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
             "value": 148,
             "removed": 0,
-            "rate": 0,
+            "rate": 100,
             "note": "已写入飞书",
             "detail": "最终 148 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
@@ -239,6 +293,18 @@
       ],
       "outputs": [
         {
+          "name": "9月3日运营商业绩摘要 (1).docx",
+          "mtime": 1788402424.5366635,
+          "mtimeText": "2026-09-03 10:27:04",
+          "audio": true
+        },
+        {
+          "name": "9月3日运营商业绩摘要.docx",
+          "mtime": 1788402033.8565881,
+          "mtimeText": "2026-09-03 10:20:33",
+          "audio": false
+        },
+        {
           "name": "8月30日周报 (3)（编辑稿）.docx",
           "mtime": 1788146011.2302718,
           "mtimeText": "2026-08-31 11:13:31",
@@ -273,18 +339,6 @@
           "mtime": 1787123652.9412923,
           "mtimeText": "2026-08-19 15:14:12",
           "audio": true
-        },
-        {
-          "name": "8月14日周报.docx",
-          "mtime": 1786669137.0592186,
-          "mtimeText": "2026-08-14 08:58:57",
-          "audio": true
-        },
-        {
-          "name": "8月13日周报 (4).docx",
-          "mtime": 1786616541.3669343,
-          "mtimeText": "2026-08-13 18:22:21",
-          "audio": false
         }
       ]
     },
@@ -300,6 +354,28 @@
     },
     "latestOutputText": "2026-09-03 06:38:01",
     "outputs": [
+      {
+        "name": "9月3日运营商业绩摘要 (1).docx",
+        "path_str": "9月3日运营商业绩摘要 (1).docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25732,
+        "mtime": 1788402424.5366635,
+        "mtimeText": "2026-09-03 10:27:04",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "9月3日运营商业绩摘要.docx",
+        "path_str": "9月3日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 25908,
+        "mtime": 1788402033.8565881,
+        "mtimeText": "2026-09-03 10:20:33",
+        "url": "",
+        "audio": null
+      },
       {
         "name": "8月30日周报 (3)（编辑稿）.docx",
         "path_str": "8月30日周报 (3)（编辑稿）.docx",
