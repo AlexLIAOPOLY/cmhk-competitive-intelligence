@@ -1590,13 +1590,13 @@
       return { key: "interrupted", label: "中断", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(from)?.label || "上游节点"}有真实异常记录，下游交接未确认完成。` };
     }
     if (targetHealth.key === "critical" || targetHealth.key === "warning" || (sourceHealth.key === "warning" && targetHealth.key !== "healthy")) {
-      return { key: "degraded", label: "降级", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(["critical", "warning"].includes(targetHealth.key) ? to : from)?.label || "相邻节点"}处于异常或警告状态；现有证据不足以把该输入线路判为中断。` };
+      return { key: "degraded", label: "降级", routeId, source: "run-evidence", confidence: "high", reason: `${nodesByKey.get(["critical", "warning"].includes(targetHealth.key) ? to : from)?.label || "相邻节点"}处于异常或警告状态；现有运行记录不足以把该输入线路判为中断。` };
     }
     if (targetHealth.key === "unknown" || sourceHealth.key === "unknown") {
       return { key: "unknown", label: "待确认", routeId, source: "run-evidence", confidence: "", reason: "缺少相邻节点的运行记录，不推测线路中断。" };
     }
     const runningNode = sourceHealth.key === "running" ? nodesByKey.get(from) : targetHealth.key === "running" ? nodesByKey.get(to) : null;
-    return { key: "healthy", label: "正常", routeId, source: "run-evidence", confidence: "high", reason: runningNode ? `当前执行已定位在“${runningNode.label}”节点；未发现线路异常证据。` : "上下游节点均有正常完成记录。" };
+    return { key: "healthy", label: "正常", routeId, source: "run-evidence", confidence: "high", reason: runningNode ? `当前执行已定位在“${runningNode.label}”节点；未发现线路异常记录。` : "上下游节点均有正常完成记录。" };
   }
 
   function globalSchedulerLineageModel(runs, stages, attemptRuns = runs) {
@@ -1699,7 +1699,7 @@
           numericBaselineAvailable ? "数值变化只按同一UI字段旧值→新值比较；点开可查看重新发布对象及明确的前后值" : "本轮未留存更新前数值基线，页面不推测变化数量",
           `运行 ${intelligenceRun.crawl_run_id} · 完成 ${runCompletionText(intelligenceRun)}`,
         ] : ["所选日期没有该数据库的刷新记录"],
-        evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行证据。",
+        evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下该数据库的运行记录。",
       };
     };
     const databaseFactCount = [...domains.values()].reduce(
@@ -1823,9 +1823,9 @@
       { key: "insights", label: "AI 战略洞察生成与 UI 发布", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: "项数据洞察发布到 UI", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项数据洞察 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && (!intelligenceRun.operational_summary?.pages_publish?.ok || !insightCoverageComplete)) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1525, 455], details: intelligenceRun.crawl_run_id ? [`AI数据洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；分域洞察 ${number(focusInsightCount)} / ${number(expectedFocusInsightCount)}，顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}；本轮${insightGenerationLabel}`, "数据洞察生成数与数据库数据条数、UI发布主体数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有数据洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI数据洞察与业务发布证据" },
     ];
     const cLanePositions = {
-      agent: [700, 500], "database-hub": [930, 530], "database-local": [1130, 470],
-      "database-international": [1295, 470], "database-cloud": [1130, 605],
-      "database-mainland": [1295, 605], insights: [1525, 535],
+      agent: [570, 500], "database-hub": [820, 530], "database-local": [1020, 470],
+      "database-international": [1185, 470], "database-cloud": [1020, 605],
+      "database-mainland": [1185, 605], insights: [1415, 535],
     };
     nodes.forEach((node) => {
       if (cLanePositions[node.key]) node.position = cLanePositions[node.key];
@@ -1853,7 +1853,7 @@
       main: "合并飞书固定链接和B2的01:00待追证链接；抓取网页并继续打开公司IR、财报和监管披露原文，本节点只负责抓取",
       "fact-extract": "读取C1a已抓取的网页正文，提取主体、指标、期间、数值、单位和来源，形成候选数据并交给C2审核",
       agent: "同时接收C1a抓取的官方原文和C1b形成的候选数据，逐条比对主体、指标、期间、数值、单位和来源",
-      "database-hub": "只把证据门禁通过的数据写入四库",
+      "database-hub": "只把数据字段审核通过的数据写入四库",
       "database-local": "把本地运营商主体数据发布到界面",
       "database-international": "把国际运营商主体数据发布到界面",
       "database-cloud": "把全球云厂商主体数据发布到界面",
@@ -1865,13 +1865,33 @@
       "news-dedupe": ["去重", "green"], "news-output": ["归档", "green"], "news-selection-agent": ["AI初筛", "violet"],
       "app-result": ["滚动栏", "green"], "weekly-result": ["周报", "amber"], "previous-news": ["参考", "blue"],
       "news-db-signal": ["找链接", "amber"], main: ["抓原文", "cyan"], "fact-extract": ["提字段", "blue"],
-      agent: ["证据审核", "violet"], "database-hub": ["入库", "slate"], "database-local": ["发布", "green"],
-      "database-international": ["发布", "blue"], "database-cloud": ["发布", "violet"], "database-mainland": ["发布", "amber"],
+      agent: ["数据审核", "violet"], "database-hub": ["入库", "slate"], "database-local": ["发布", "green"],
+      "database-international": ["发布", "green"], "database-cloud": ["发布", "green"], "database-mainland": ["发布", "green"],
       insights: ["AI洞察", "violet"],
     };
     nodes.forEach((node) => {
       node.purpose = nodePurposes[node.key] || "显示该环节当天的处理作用与结果";
       [node.cornerBadge, node.cornerTone] = nodeCornerBadges[node.key] || ["处理", "slate"];
+    });
+    const userFacingLineageText = (value) => String(value ?? "")
+      .replaceAll("数据指标证据", "待核对数据字段")
+      .replaceAll("数据证据", "数据字段")
+      .replaceAll("证据门禁", "字段审核")
+      .replaceAll("证据哈希", "来源内容哈希")
+      .replaceAll("证据指纹", "来源数据指纹")
+      .replaceAll("官方证据", "官方原文")
+      .replaceAll("指标证据", "指标来源")
+      .replaceAll("证据来源", "原文来源")
+      .replaceAll("证据层级", "来源级别")
+      .replaceAll("证据审核", "数据字段审核")
+      .replaceAll("证据", "来源记录");
+    nodes.forEach((node) => {
+      node.label = userFacingLineageText(node.label);
+      node.unit = userFacingLineageText(node.unit);
+      node.note = userFacingLineageText(node.note);
+      node.purpose = userFacingLineageText(node.purpose);
+      node.details = (node.details || []).map(userFacingLineageText);
+      node.evidence = userFacingLineageText(node.evidence);
     });
     const edges = [
       ["strategic", "news-search", "触发关键词检索", "cyan"], ["news-search", "news-ai", "候选链接送AI审核", "cyan"], ["news-ai", "news-dedupe", "相关新闻查重", "cyan"], ["news-dedupe", "news-output", "非重复新闻归档", "cyan"], ["news-output", "news-selection-agent", "新增新闻初筛", "cyan"], ["news-selection-agent", "app-result", "滚动栏初筛结果", "cyan"], ["news-selection-agent", "weekly-result", "周报初筛结果", "cyan"], ["news-output", "strategic", "进入下轮去重", "feedback"],
@@ -1896,9 +1916,9 @@
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
         { label: "B｜四库数据资料补缺线", position: [18, 230] },
-        { label: "C｜证据审核主链：两类链接 → 抓取与提取 → 原文＋候选数据审核 → 入库 → UI", position: [18, 410] },
+        { label: "C｜数据审核主链：抓取与提取 → 数据字段审核 → 入库 → UI", position: [18, 425] },
       ],
-      groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", note: "四库已发布数据汇总生成右侧 AI 战略洞察", position: [1090, 430], size: [389, 315] }],
+      groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", note: "四库已发布数据汇总生成右侧 AI 战略洞察", position: [980, 430], size: [389, 315] }],
     };
   }
 
@@ -2161,7 +2181,7 @@
     const rowMatch = text.match(/第\s*(\d+)\s*行失败/);
     if (rowMatch) return { label: `03:00 主爬虫 / 第 ${rowMatch[1]} 行网页抓取`, nodeKey: "main" };
     if (/\[数据整理\]\[(证据接收|来源分类|事实抽取)\]/.test(text)) return { label: "字段提取与候选数据生成", nodeKey: "fact-extract" };
-    if (/AGENT_TRACE|数据整理|Agent/.test(text)) return { label: "Agent 证据审核", nodeKey: "agent" };
+    if (/AGENT_TRACE|数据整理|Agent/.test(text)) return { label: "Agent 数据字段审核", nodeKey: "agent" };
     const stage = String(event?.stage || run?.failure_stage || "").trim();
     return { label: newsErrorStageLabels[stage] || stage || "运行登记 / 未细分阶段", nodeKey: nodeKey === "strategic" ? "strategic" : "" };
   }
@@ -2213,7 +2233,7 @@
     return `<section class="news-lineage-dialog-section is-error-details"><header><h3>错误定位与完整明细</h3><span>${number(diagnostics.length)} 条 · ${esc(relation)}</span></header><ol class="news-lineage-error-list">${diagnostics.map((item, index) => {
       const facts = item.message.split(/；|\n+/).map((part) => part.trim()).filter(Boolean);
       const relationLabel = item.location.nodeKey === nodeKey || nodeKey === "strategic" ? "本节点直接错误" : `异常位置：${item.location.label}`;
-      return `<li><article><header><span>${String(index + 1).padStart(2, "0")}</span><div><strong>${esc(item.location.label)}</strong><em>${esc(relationLabel)}</em></div></header><dl><div><dt>所属运行</dt><dd>${esc(item.run.crawl_run_id || "未记录运行ID")} · ${esc(newsRunTime(item.run))}</dd></div><div><dt>失败阶段</dt><dd>${esc(item.run.failure_stage || item.location.label)}</dd></div><div><dt>记录时间</dt><dd>${esc(item.time)}</dd></div><div><dt>证据来源</dt><dd>${esc(item.source)}</dd></div></dl><div class="news-lineage-error-facts"><strong>具体错误</strong><ol>${facts.map((fact) => `<li>${esc(fact)}</li>`).join("")}</ol></div><details><summary>查看完整错误原文</summary><pre>${esc(item.message)}</pre></details></article></li>`;
+      return `<li><article><header><span>${String(index + 1).padStart(2, "0")}</span><div><strong>${esc(item.location.label)}</strong><em>${esc(relationLabel)}</em></div></header><dl><div><dt>所属运行</dt><dd>${esc(item.run.crawl_run_id || "未记录运行ID")} · ${esc(newsRunTime(item.run))}</dd></div><div><dt>失败阶段</dt><dd>${esc(item.run.failure_stage || item.location.label)}</dd></div><div><dt>记录时间</dt><dd>${esc(item.time)}</dd></div><div><dt>记录来源</dt><dd>${esc(item.source)}</dd></div></dl><div class="news-lineage-error-facts"><strong>具体错误</strong><ol>${facts.map((fact) => `<li>${esc(fact)}</li>`).join("")}</ol></div><details><summary>查看完整错误原文</summary><pre>${esc(item.message)}</pre></details></article></li>`;
     }).join("")}</ol></section>`;
   }
 
@@ -2234,11 +2254,11 @@
       reason: item.basis || item.analysis || "本轮归档没有保存处理依据。",
       extra: [
         `所属库：${domain.title || domain.id || "未记录"}`,
-        `证据层级：${item.source_tier || "未记录"}`,
+        `来源级别：${item.source_tier || "未记录"}`,
         `质量分：${item.quality_score ?? "—"}`,
         `置信度：${item.confidence ?? "—"}`,
         `行引用：${item.row_ref || "未记录"}`,
-        `证据哈希：${item.evidence_hash || "未记录"}`,
+        `来源内容哈希：${item.evidence_hash || "未记录"}`,
       ].join("\n"),
       publishedAt: domain.ai_updated_at || "",
     });
@@ -2340,10 +2360,10 @@
             resultLabel: nodeKey === "fact-extract" ? "候选数据" : decision === "accepted" ? "审核通过" : decision === "rejected" ? "审核拒绝" : "待人工复核",
             reason: [item.basis, ...(item.reasons || [])].filter(Boolean).join("；") || item.note || "本轮未保存审核依据。",
             evidenceUrls: sources,
-            evidenceLinkLabel: "证据来源",
+            evidenceLinkLabel: "原文来源",
             extra: [
               `调度行：${item.row_ref || "未记录"}`,
-              `证据层级：${item.source_tier || "未记录"}`,
+              `来源级别：${item.source_tier || "未记录"}`,
               `质量分：${item.quality_score ?? "—"} · 置信度：${item.confidence ?? "—"}`,
               `主体支持：${item.entity_supported ? "是" : "否"} · 指标支持：${item.metric_supported ? "是" : "否"} · 数值支持：${item.value_supported ? "是" : "否"}`,
               `在线核验：${verification.status || "未记录"} · ${number(verification.vote_count || 0)} 票 · 冲突 ${number(verification.conflict_count || 0)} 项`,
@@ -2448,7 +2468,7 @@
     const archivedRuns = new Set(records.map((record) => record.run?.crawl_run_id).filter(Boolean));
     const showCoverage = ["news-search", "news-ai", "news-dedupe"].includes(nodeKey) && relatedRuns.length > archivedRuns.size;
     const coverageNote = showCoverage ? `<p class="news-lineage-detail-coverage">逐条归档覆盖 ${number(archivedRuns.size)}/${number(relatedRuns.length)} 次当天运行；其余历史运行只保留了批次汇总，页面不会虚构逐条结果。</p>` : "";
-    const detailTitle = previousNewsNode ? "前一日两批新闻合并去重明细" : sourceDiscoveryNode ? "当天具体线索与官方追证入口" : selectionAgentNode ? "当天新闻自动初筛明细" : mainCrawlNode ? "当天两类链接逐行抓取明细" : factExtractNode ? "当天字段提取与候选数据明细" : agentAuditNode ? "当天Agent逐条证据审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
+    const detailTitle = previousNewsNode ? "前一日两批新闻合并去重明细" : sourceDiscoveryNode ? "当天具体线索与官方原文入口" : selectionAgentNode ? "当天新闻自动初筛明细" : mainCrawlNode ? "当天两类链接逐行抓取明细" : factExtractNode ? "当天字段提取与候选数据明细" : agentAuditNode ? "当天Agent逐条数据字段审核明细" : databaseHubNode ? "当天数据库入库与数值变化" : databaseUiNode ? "当天UI重新发布与数值变化" : nodeKey === "insights" ? "当天AI洞察明细" : "当天处理对象明细";
     const numericChangeNote = databaseHubNode || databaseUiNode
       ? numericBaselineAvailable
         ? numericChangeCount > 0
@@ -2545,15 +2565,15 @@
       "fact-extract": {
         input: "C1a抓取并保存的网页正文，包括飞书固定链接和01:00待追证链接对应页面",
         action: "读取正文，提取主体、指标、期间、数值、单位和来源六类字段；本节点不再搜索或抓取网页",
-        output: `形成 ${number(candidateFactCount)} 条候选数据并交给C2；通过证据审核前不写入四库`,
+        output: `形成 ${number(candidateFactCount)} 条候选数据并交给C2；通过数据字段审核前不写入四库`,
       },
       agent: {
         input: `C1b从已抓网页正文中形成的 ${number(candidateFactCount)} 条候选数据；不是把01:00与03:00数量相加`,
-        action: "Agent逐条核对主体、指标、期间、数值、单位、官方来源、证据哈希和完整性",
+        action: "Agent逐条核对主体、指标、期间、数值、单位、官方来源、来源内容哈希和字段完整性",
         output: `审核通过 ${number(acceptedFactCount)} 条、拒绝 ${number(rejectedFactCount)} 条、待复核 ${number(reviewCount)} 条`,
       },
       "database-hub": {
-        input: "C2证据门禁审核通过的数据",
+        input: "C2数据字段审核通过的数据",
         action: "按主体类型写入本地运营商、国际运营商、全球云厂商、内地运营商四库",
         output: `${node.value}${node.unit || ""}；未通过或待复核的数据不写入`,
       },
@@ -2562,7 +2582,7 @@
       "database-cloud": { input: "四库中属于全球云厂商的审核通过数据", action: "组装全球云厂商主体和指标数据并重新发布到界面", output: `${node.value}${node.unit || ""}；${node.note || "无发布记录"}` },
       "database-mainland": { input: "四库中属于内地运营商的审核通过数据", action: "组装内地运营商主体和指标数据并重新发布到界面", output: `${node.value}${node.unit || ""}；${node.note || "无发布记录"}` },
       insights: {
-        input: "四库已经发布到界面的主体、指标和证据数据",
+        input: "四库已经发布到界面的主体、指标和来源数据",
         action: "AI按分域和跨库视角生成战略洞察，并执行主页与公开页发布校验",
         output: `${node.value}${node.unit || ""}；${node.note || "无发布记录"}`,
       },
@@ -2652,7 +2672,7 @@
     if (!model.reports.length) {
       return `<section class="news-lineage-dialog-section company-agent-graph-section"><header><h3>公司 Agent 执行图</h3><span>未留存多 Agent 轨迹</span></header><div class="company-agent-graph-empty"><strong>该历史运行尚未使用 41 公司 Multi-Agent 子图</strong><p>页面不会用逐条审核记录伪造 Agent 身份；新版运行完成后将显示真实的搜索、打开原文和终态。</p></div></section>`;
     }
-    const statusLabels = { verified_latest: "已核验最新值", not_disclosed: "当期未披露", not_applicable: "不适用", search_exhausted: "搜索未取得证据", conflict: "证据冲突", unsearched: "尚未搜索", agent_error: "Agent 未完成" };
+    const statusLabels = { verified_latest: "已核验最新值", not_disclosed: "当期未披露", not_applicable: "不适用", search_exhausted: "搜索未找到官方原文", conflict: "来源数据冲突", unsearched: "尚未搜索", agent_error: "Agent 未完成" };
     const groups = model.groups.map((group) => `<section class="company-agent-group is-${esc(group.key)}"><header><strong>${esc(group.label)}</strong><span>${number(group.reports.length)} 家</span></header><ol role="list">${group.reports.map((report, index) => {
       const panelId = `companyAgentDetail-${esc(group.key)}-${index}`;
       const status = report.status || "agent_error";
@@ -2663,9 +2683,9 @@
       const completedMetrics = metricResults.filter((metric) => ["verified_latest", "not_disclosed", "not_applicable", "search_exhausted"].includes(metric.status)).length;
       const metricDetails = metricResults.length ? `<div><dt>逐指标终态</dt><dd class="company-agent-metric-results">${metricResults.map((metric) => {
         const metricEvidenceUrls = Array.isArray(metric.evidence_urls) ? metric.evidence_urls : [];
-        return `<span class="is-${esc(metric.status || "conflict")}"><strong>${esc(metric.metric || "未命名指标")}</strong><em>${esc(statusLabels[metric.status] || metric.status || "未记录")}</em><small class="company-agent-metric-value">记录值：${esc(String(metric.value || "未写入"))}</small><small>搜索 ${number(metric.search_count || 0)} · 当期原文 ${number(metric.fresh_official_open_count || 0)} · 证据 ${number(metric.evidence_count || 0)}</small><p>${esc(metric.rationale || "未留存逐指标理由")}</p>${metricEvidenceUrls.length ? `<p class="company-agent-metric-links">${metricEvidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">指标证据 ${number(urlIndex + 1)}</a>`).join(" · ")}</p>` : ""}</span>`;
+        return `<span class="is-${esc(metric.status || "conflict")}"><strong>${esc(metric.metric || "未命名指标")}</strong><em>${esc(statusLabels[metric.status] || metric.status || "未记录")}</em><small class="company-agent-metric-value">记录值：${esc(String(metric.value || "未写入"))}</small><small>搜索 ${number(metric.search_count || 0)} · 当期原文 ${number(metric.fresh_official_open_count || 0)} · 来源 ${number(metric.evidence_count || 0)}</small><p>${esc(metric.rationale || "未留存逐指标理由")}</p>${metricEvidenceUrls.length ? `<p class="company-agent-metric-links">${metricEvidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">指标来源 ${number(urlIndex + 1)}</a>`).join(" · ")}</p>` : ""}</span>`;
       }).join("")}</dd></div>` : "";
-      return `<li><button type="button" class="company-agent-node is-${esc(status)}" data-company-agent-node="${esc(report.company)}" aria-expanded="false" aria-controls="${panelId}"><span>${esc(report.company || "未记录公司")}</span><strong>${esc(statusLabels[status] || status)}</strong><em>指标 ${number(completedMetrics)}/${number(metricResults.length)} · 搜索 ${number(report.search_count || 0)} · 原文成功 ${number(report.open_success_count || 0)} · 被拒 ${number(report.open_blocked_count || 0)} · 证据 ${number(report.evidence_count || 0)}</em></button><div class="company-agent-detail" id="${panelId}" hidden><dl><div><dt>最终判断</dt><dd>${esc(report.rationale || "未留存判断理由")}</dd></div><div><dt>研究路径</dt><dd>规划查询 → 搜索引擎 → 打开官方原文 → 逐指标证据门禁 → 提交</dd></div>${metricDetails}${queries.length ? `<div><dt>搜索查询</dt><dd>${queries.map((query) => esc(query)).join("<br>")}</dd></div>` : ""}${openAttempts.length ? `<div><dt>原文打开</dt><dd>${openAttempts.map((attempt) => `${esc(attempt.opened ? "成功" : attempt.blocked_reason || "失败")} · ${esc(attempt.url || "未记录 URL")}`).join("<br>")}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>官方证据</dt><dd>${evidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">证据 ${number(urlIndex + 1)}</a>`).join(" · ")}</dd></div>` : ""}</dl></div></li>`;
+      return `<li><button type="button" class="company-agent-node is-${esc(status)}" data-company-agent-node="${esc(report.company)}" aria-expanded="false" aria-controls="${panelId}"><span>${esc(report.company || "未记录公司")}</span><strong>${esc(statusLabels[status] || status)}</strong><em>指标 ${number(completedMetrics)}/${number(metricResults.length)} · 搜索 ${number(report.search_count || 0)} · 原文成功 ${number(report.open_success_count || 0)} · 被拒 ${number(report.open_blocked_count || 0)} · 来源 ${number(report.evidence_count || 0)}</em></button><div class="company-agent-detail" id="${panelId}" hidden><dl><div><dt>最终判断</dt><dd>${esc(report.rationale || "未留存判断理由")}</dd></div><div><dt>研究路径</dt><dd>规划查询 → 搜索引擎 → 打开官方原文 → 逐指标字段审核 → 提交</dd></div>${metricDetails}${queries.length ? `<div><dt>搜索查询</dt><dd>${queries.map((query) => esc(query)).join("<br>")}</dd></div>` : ""}${openAttempts.length ? `<div><dt>原文打开</dt><dd>${openAttempts.map((attempt) => `${esc(attempt.opened ? "成功" : attempt.blocked_reason || "失败")} · ${esc(attempt.url || "未记录 URL")}`).join("<br>")}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>官方原文</dt><dd>${evidenceUrls.map((url, urlIndex) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">原文 ${number(urlIndex + 1)}</a>`).join(" · ")}</dd></div>` : ""}</dl></div></li>`;
     }).join("")}</ol></section>`).join("");
     return `<section class="news-lineage-dialog-section company-agent-graph-section"><header><h3>公司 Agent 执行图</h3><span>${model.version ? `V${number(model.version)} · ` : ""}${number(model.recorded)}/${number(model.expected)} 家已记录 · ${number(model.completedMetrics)}/${number(model.recordedMetrics)} 项合规终态${model.updatedAt ? ` · ${esc(String(model.updatedAt).replace("T", " "))}` : ""}</span></header><div class="company-agent-graph" aria-label="Lead Research Agent 到 ${number(model.expected)} 个公司 Agent 再到公司和指标完整性门禁的执行图"><article class="company-agent-lead"><span>LEAD</span><strong>Lead Research Agent</strong><em>确定性派发 ${number(model.expected)} 家</em></article><i class="company-agent-connector" aria-hidden="true"></i><div class="company-agent-groups">${groups}</div><i class="company-agent-connector" aria-hidden="true"></i><article class="company-agent-gate"><span>GATE</span><strong>公司＋指标完整性门禁</strong><em>${number(model.recorded)}/${number(model.expected)} 家已记录 · ${number(model.completedMetrics)}/${number(model.recordedMetrics)} 项终态 · ${number(model.unresolvedCompanies)} 家待复核 · 冲突 ${number(model.conflictMetrics)} 项 · Agent 未完成 ${number(model.agentErrorMetrics)} 项</em></article></div></section>`;
   }
@@ -2721,7 +2741,7 @@
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>当天结果摘要</h3><span>来自当天归档</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("") || "<li>当天未留下结果摘要。</li>"}</ul></section>
       ${itemDetails}
       ${reviewItemDetails}
-      <section class="news-lineage-dialog-section is-node-evidence"><header><h3>当天归档摘要</h3><span>运行状态与交付证据</span></header><pre class="news-lineage-node-evidence">${esc(node.evidence || "当天归档未保存可展示的摘要。")}</pre></section>
+      <section class="news-lineage-dialog-section is-node-evidence"><header><h3>当天归档摘要</h3><span>运行状态与交付记录</span></header><pre class="news-lineage-node-evidence">${esc(node.evidence || "当天归档未保存可展示的摘要。")}</pre></section>
     </div>`;
     bindCompanyAgentGraphInteractions(dialog);
     dialog.showModal();
@@ -2871,7 +2891,7 @@
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i>${node.primary ? '<i class="news-lineage-primary-badge" aria-hidden="true">证据审核核心</i>' : ""}<b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
             </div>
           </div>
@@ -3233,8 +3253,8 @@
   function faultResolutionReason(task) {
     if (task.resolution_reason) return task.resolution_reason;
     if (task.recovery_cause) return task.recovery_cause;
-    if (task.incident_status === "open") return "尚未结案，等待处理或恢复证据。";
-    if (task.incident_status === "recovery_pending" || task.resolution_status === "awaiting_evidence") return "告警条件当前未再出现，但正向恢复证据不足，暂不判定已恢复。";
+    if (task.incident_status === "open") return "尚未结案，等待处理或恢复记录。";
+    if (task.incident_status === "recovery_pending" || task.resolution_status === "awaiting_evidence") return "告警条件当前未再出现，但正向恢复记录不足，暂不判定已恢复。";
     if (task.handler_name) return task.handler_source === "feishu_robot"
       ? "已由项目监控机器人标记处理；飞书主表与 App 状态已同步。"
       : "已由人工标记修复；本次记录没有填写结构化解决原因。";
@@ -3284,8 +3304,8 @@
     if (status.key === "running") return ["继续观察任务心跳和当前阶段。", "只有心跳停止或超过任务正常时长后，才按异常任务处理。"];
     if (status.key === "completed") return ["当前无需处理。", "如业务结果仍未出现，请核对输出归档、发布时间和后续页面刷新状态。"];
     if (task.interrupted || /重启|进程已不存在|中断/.test(cause)) return ["确认中断时的最后阶段和最后心跳，判断是否已有部分结果归档。", "检查后续同类型调度是否已经成功接续，避免重复处理已完成部分。", "确需补跑时，通过原任务入口或安全调度机制执行，并在完成后核对归档状态。"];
-    if (task.kind === "strategic-news") return ["先查看运行证据中的首个错误和最后成功阶段。", "修复对应的数据源、模型审核或飞书回读问题后，通过原战略新闻调度入口重试。", "重试完成后核对审核、去重、飞书回读和归档是否全部通过。"];
-    return ["查看运行证据中的首个错误，确认失败发生的阶段。", "修复对应配置、数据源或依赖后，通过原任务入口重试。", "重试后确认任务状态、输出归档和下游页面均已恢复。"];
+    if (task.kind === "strategic-news") return ["先查看运行记录中的首个错误和最后成功阶段。", "修复对应的数据源、模型审核或飞书回读问题后，通过原战略新闻调度入口重试。", "重试完成后核对审核、去重、飞书回读和归档是否全部通过。"];
+    return ["查看运行记录中的首个错误，确认失败发生的阶段。", "修复对应配置、数据源或依赖后，通过原任务入口重试。", "重试后确认任务状态、输出归档和下游页面均已恢复。"];
   }
 
   function renderFaultRows() {
@@ -3314,7 +3334,7 @@
       const checked = Boolean(task.handler_name);
       const closedByMonitor = task.incident_status === "resolved" && !checked;
       const resolving = state.faultFeedback?.incidentId === task.incident_id && state.faultFeedback?.tone === "progress";
-      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : task.handler_name ? `已由${faultHandler(task)}处理并同步飞书` : task.incident_status === "resolved" ? `监控已按证据结案：${task.phase || "已验证"}` : canResolve ? "记录人工修复并同步原飞书消息" : "请使用飞书账号登录后记录人工修复";
+      const resolveTitle = resolving ? "正在匹配登录身份并同步飞书" : task.handler_name ? `已由${faultHandler(task)}处理并同步飞书` : task.incident_status === "resolved" ? `监控已验证结案：${task.phase || "已验证"}` : canResolve ? "记录人工修复并同步原飞书消息" : "请使用飞书账号登录后记录人工修复";
       const handlerTimeLabel = task.handler_source === "feishu_robot" ? "机器人" : "人工";
       const repairTimes = `<small>结案 · ${esc(task.resolved_at_hkt || task.completed_at_hkt || "—")}</small><small>${handlerTimeLabel} · ${esc(task.manual_repaired_at_hkt || "—")}</small>`;
       return `<tr ${resolving ? 'class="fault-row is-resolving"' : 'class="fault-row"'} tabindex="0" role="button" aria-label="查看${esc(task.title || taskLabel(task.kind))}详情" data-fault-detail="${index}"><td class="fault-resolve-cell"><input type="checkbox" data-fault-resolve="${esc(task.incident_id || "")}" aria-label="${esc(resolveTitle)}" title="${esc(resolveTitle)}" ${checked || resolving ? "checked" : ""} ${checked || resolving || closedByMonitor || !canResolve ? "disabled" : ""}${resolving ? ' aria-busy="true"' : ""}></td><td><span class="fault-status ${resolving ? "is-running" : status.tone}"><i></i>${resolving ? "处理中" : status.label}</span></td><td>${severity.code ? `<span class="fault-severity is-${severity.code.toLowerCase()}">${esc(severity.code)} · ${esc(severity.label)}</span>` : "—"}</td><td><strong>${esc(task.title || taskLabel(task.kind))}</strong><small>${esc(task.scope || taskLabel(task.kind))}</small></td><td><span class="fault-cause">${esc(faultCause(task))}</span><small>${esc(task.alarm_type || "未分类告警")}</small></td><td><span class="fault-resolution-cause">${esc(faultResolutionReason(task))}</span><small>${esc(task.resolution_type_label || task.phase || "尚未结案")}</small></td><td class="fault-handler">${faultHandlerAvatar(task)}</td><td>${esc(taskTime(task))}</td><td class="fault-repair-times">${repairTimes}</td><td><span class="fault-open-label">查看</span></td></tr>`;
@@ -3328,7 +3348,7 @@
     if (!task || !dialog || !body) return;
     const status = faultStatus(task);
     const severity = faultSeverity(task);
-    const details = [["报警类型", task.alarm_type || "未分类告警"], ["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["解决类型", task.resolution_type_label || "尚未结案"], ["发生时间", taskTime(task)], ["证据结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], [task.handler_source === "feishu_robot" ? "机器人处理时间" : "人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.impact || task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
+    const details = [["报警类型", task.alarm_type || "未分类告警"], ["紧急程度", severity.code ? `${severity.code} · ${severity.label}` : "—"], ["处理或验证主体", faultHandler(task)], ["任务类型", taskLabel(task.kind)], ["当前阶段", task.phase || "未记录"], ["解决类型", task.resolution_type_label || "尚未结案"], ["发生时间", taskTime(task)], ["验证结案时间", task.resolved_at_hkt || task.completed_at_hkt || "—"], [task.handler_source === "feishu_robot" ? "机器人处理时间" : "人工修复时间", task.manual_repaired_at_hkt || "—"], ["影响范围", task.impact || task.scope || "未记录"], ["告警LLM", task.diagnosis_model || "—"], ["结案LLM", task.resolution_model || "—"]];
     const confirmedFacts = Array.isArray(task.confirmed_facts) ? task.confirmed_facts.filter(Boolean) : [];
     const inferences = Array.isArray(task.inferences) ? task.inferences.filter(Boolean) : [];
     const affectedRoutes = Array.isArray(task.affected_routes) ? task.affected_routes.filter((route) => route && typeof route === "object") : [];
@@ -3342,13 +3362,13 @@
       ${confirmedFacts.length ? `<section class="fault-detail-section"><h3>已确认信息</h3><ul>${confirmedFacts.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
       ${inferences.length ? `<section class="fault-detail-section is-inference"><h3>分析推断</h3><ul>${inferences.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
       ${task.diagnosis_summary ? `<section class="fault-detail-section"><h3>LLM 告警总结</h3><p>${esc(task.diagnosis_summary)}</p><small>模型：${esc(task.diagnosis_model || "—")} · 来源：${esc(task.diagnosis_source || "未记录")}</small></section>` : ""}
-      <section class="fault-detail-section fault-route-impact"><h3>受影响线路 · LLM 受限复核</h3>${affectedRoutes.length ? `<div>${affectedRoutes.map((route) => `<article class="is-${esc(route.impact || "at_risk")}"><header><strong>${esc(route.label || route.route_id || "未命名线路")}</strong><span>${esc(routeImpactLabels[route.impact] || "待核对")} · ${esc(routeConfidenceLabels[route.confidence] || "置信度未记录")}</span></header><p>${esc(route.reason || "未记录判断依据。")}</p></article>`).join("")}</div>` : `<p>本次告警未识别到与三线监控图直接相关的受影响线路；系统不会把无证据的相邻线路标记为中断。</p>`}<small>模型只能从系统候选线路中选择；仅高置信度中断可触发红色断线。</small></section>
+      <section class="fault-detail-section fault-route-impact"><h3>受影响线路 · LLM 受限复核</h3>${affectedRoutes.length ? `<div>${affectedRoutes.map((route) => `<article class="is-${esc(route.impact || "at_risk")}"><header><strong>${esc(route.label || route.route_id || "未命名线路")}</strong><span>${esc(routeImpactLabels[route.impact] || "待核对")} · ${esc(routeConfidenceLabels[route.confidence] || "置信度未记录")}</span></header><p>${esc(route.reason || "未记录判断依据。")}</p></article>`).join("")}</div>` : `<p>本次告警未识别到与三线监控图直接相关的受影响线路；系统不会把没有运行记录的相邻线路标记为中断。</p>`}<small>模型只能从系统候选线路中选择；仅高置信度中断可触发红色断线。</small></section>
       <section class="fault-detail-section fault-resolution"><h3>解决原因 · ${esc(task.resolution_type_label || "尚未结案")}</h3><p>${esc(faultResolutionReason(task))}</p><small>${esc(actionSummary)}</small></section>
       ${task.resolution_summary ? `<section class="fault-detail-section"><h3>LLM 结案总结</h3><p>${esc(task.resolution_summary)}</p><p><strong>验证结论：</strong>${esc(task.verification_summary || "—")}</p><p><strong>剩余风险：</strong>${esc(task.remaining_risk || "—")}</p><small>模型：${esc(task.resolution_model || "—")}</small></section>` : ""}
-      ${resolutionEvidence.length ? `<section class="fault-detail-section"><h3>结案验证证据</h3><ul>${resolutionEvidence.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
+      ${resolutionEvidence.length ? `<section class="fault-detail-section"><h3>结案验证记录</h3><ul>${resolutionEvidence.map((item) => `<li>${esc(item)}</li>`).join("")}</ul></section>` : ""}
       <section class="fault-detail-section"><h3>${task.incident_status === "open" ? "建议处理方法" : "当时的处理建议"}</h3><ol>${faultSolutions(task).map((item) => `<li>${esc(item)}</li>`).join("")}</ol></section>
       <dl>${details.map(([label, value]) => `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>
-      <details class="fault-evidence"><summary>查看运行证据</summary><pre id="faultEvidenceLog">${esc([...(task.evidence || []), ...(task.resolution_evidence || [])].join("\n") || task.error || "该报警没有更多证据记录。")}</pre></details>`;
+      <details class="fault-evidence"><summary>查看运行记录</summary><pre id="faultEvidenceLog">${esc([...(task.evidence || []), ...(task.resolution_evidence || [])].join("\n") || task.error || "该报警没有更多运行记录。")}</pre></details>`;
     dialog.showModal();
     if (task.source === "project-monitor") return;
     try {
