@@ -3070,7 +3070,7 @@
 
     lineage.nodes.forEach((node, index) => {
       const element = currentNodes[index];
-      element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
+      element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
       element.dataset.health = node.health?.key || "unknown";
       element.dataset.newsLineagePurpose = node.purpose || "未说明";
       element.setAttribute("aria-label", `${node.label}，作用：${node.purpose || "未说明"}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
