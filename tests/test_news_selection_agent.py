@@ -668,7 +668,8 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 self.assertEqual(requests[0]["response_format"], {"type": "json_object"})
                 self.assertNotIn("response_format", requests[1])
                 self.assertEqual(requests[1]["thinking"], {"type": "disabled"})
-                self.assertEqual(requests[1]["max_tokens"], 14000 if finish_reason == "length" else 7000)
+                self.assertEqual(requests[0]["max_tokens"], 1500)
+                self.assertEqual(requests[1]["max_tokens"], 1500)
                 original = json.loads(requests[0]["messages"][1]["content"])
                 recovered = json.loads(requests[1]["messages"][1]["content"])
                 self.assertNotEqual(original.pop("request_id"), recovered.pop("request_id"))
@@ -1611,6 +1612,71 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
 
 class ModelBatchCheckpointTests(unittest.TestCase):
+    def test_148_candidates_need_ten_batches_and_old_checkpoints_need_only_five(self):
+        targets = [{"news_id": f"NEWS-{i}", "app_before": "待审核", "weekly_before": "待审核"}
+                   for i in range(148)]
+        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+            payload, _ = agent._invoke_langchain_batches([], targets)
+            self.assertEqual(invoke.call_count, 10)
+            self.assertEqual(len(payload["decisions"]), 148)
+        checkpoint = {}
+        for start in range(0, 80, 5):
+            batch = targets[start:start + 5]
+            payload, model = self.invoke([], batch)
+            checkpoint[agent._model_checkpoint_key([], batch)] = {"payload": payload, "model": model}
+        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+            payload, _ = agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 5)
+            self.assertEqual(len(payload["decisions"]), 148)
+            requested = [row["news_id"] for call in invoke.call_args_list for row in call.args[1]]
+            self.assertEqual(requested, [row["news_id"] for row in targets[80:]])
+
+    def test_real_sdk_retries_and_key_rotation_cannot_exceed_ten_http_requests(self):
+        import httpx
+        model_class = agent.ChatDeepSeek
+        requests = []
+
+        def respond(request):
+            requests.append(json.loads(request.content))
+            return httpx.Response(429, json={"error": {"message": "rate limit", "type": "rate_limit_error"}})
+
+        with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+            with (
+                mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+                mock.patch.object(agent, "_model_routes", return_value=[("test-model", f"key-{i}") for i in range(20)]),
+                mock.patch.object(agent, "ChatDeepSeek", side_effect=lambda **kw: model_class(**kw, http_client=client)),
+                mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            ):
+                with self.assertRaisesRegex(agent._ModelRoundLimit, "10轮"):
+                    agent._invoke_langchain_batches([], self.targets())
+        self.assertEqual(len(requests), 10)
+        self.assertIsNone(agent._MODEL_SESSION.get())
+
+    def test_preferences_only_output_once_and_retry_counts_toward_cap(self):
+        messages = []
+
+        def respond(prompt):
+            messages.append(prompt)
+            if len(messages) == 1:
+                return SimpleNamespace(content="", additional_kwargs={"reasoning_content": "private"})
+            targets = json.loads(prompt[1].content)["current_candidates"]
+            payload, _ = self.invoke([], targets)
+            payload["learned_rules"] = ["已核验人工偏好"]
+            return SimpleNamespace(content=json.dumps(payload))
+
+        model = mock.Mock()
+        model.invoke.side_effect = respond
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "key")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=model),
+        ):
+            payload, _ = agent._invoke_langchain_batches([], self.targets())
+        self.assertEqual(payload["_model_request_count"], 3)
+        self.assertIn("本次另输出learned_rules", messages[0][0].content)
+        self.assertIn("本次仅输出decisions", messages[2][0].content)
+        self.assertNotIn("private", str(messages))
+
     @staticmethod
     def invoke(_examples, targets):
         return {"decisions": [
@@ -1649,8 +1715,8 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                 )
             self.assertEqual(invoke.call_count, 1)
             self.assertEqual(invoke.call_args.args[1], self.targets()[5:])
-            self.assertEqual(resumed, [(1, 2, 5)])
-            self.assertEqual(progress, [(2, 2, 1)])
+            self.assertEqual(resumed, [(0, 1, 5)])
+            self.assertEqual(progress, [(1, 1, 1)])
             self.assertEqual(len(payload["decisions"]), 6)
 
     def test_changed_inputs_invalidate_but_row_positions_do_not(self):
