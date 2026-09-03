@@ -2710,13 +2710,22 @@ def _run_scan(
     crawl_run_id = ""
     stream_log_path: str | Path = ""
     try:
-        started_record = start_crawl_run(
-            trigger="战略新闻定时爬虫",
-            scope=f"{slot_label}（{slot_key}）",
-            task_kind="strategic-news",
-            phase="搜索准备",
-            progress_detail="已建立任务记录，正在加载固定监控、关键词和定时页面线索。",
+        written = _load_written_scan(slot_key)
+        parent_id = written.get("crawl_run_id") or ""
+        started_record = next(
+            (r for r in load_crawl_run_index() if parent_id and r.get("crawl_run_id") == parent_id),
+            {},
         )
+        if started_record:
+            started_record = {**started_record, "stream_log_path": str(ROOT / started_record["local_files"]["stream_log"])}
+        else:
+            started_record = start_crawl_run(
+                trigger="战略新闻定时爬虫",
+                scope=f"{slot_label}（{slot_key}）",
+                task_kind="strategic-news",
+                phase="搜索准备",
+                progress_detail="已建立任务记录，正在加载固定监控、关键词和定时页面线索。",
+            )
         crawl_run_id = str(started_record.get("crawl_run_id") or "")
         stream_log_path = str(started_record.get("stream_log_path") or "")
         append_crawl_run_event(
@@ -2771,6 +2780,11 @@ def _run_scan(
             started_at=now,
         )
         _atomic_write_json(_scan_run_path(slot_key), run_payload)
+        if crawl_run_id and _load_written_scan(slot_key):
+            _complete_written_crawl(_load_written_scan(slot_key), crawl_run_id)
+            amend_operational_crawl_run(crawl_run_id, progress_detail="飞书写入与回读已成功；后续流程到达截止时间。",
+                                       summary_updates={"downstream_status": "cutoff"})
+            return run_payload
         if crawl_run_id:
             _strategic_task_progress(crawl_run_id, stream_log_path, "已截止", detail)
             append_crawl_run_event(
@@ -2790,6 +2804,16 @@ def _run_scan(
         _append_event({"type": "scan_cutoff", **run_payload})
         return run_payload
     except Exception as exc:
+        written = _load_written_scan(slot_key)
+        if written:
+            if crawl_run_id:
+                _complete_written_crawl(written, crawl_run_id)
+                amend_operational_crawl_run(
+                    crawl_run_id,
+                    progress_detail="飞书写入与回读已成功；后续流程待续：" + _clean_text(exc, 500),
+                    summary_updates={"downstream_status": "pending", "downstream_error": _clean_text(exc, 500)},
+                )
+            raise
         detail = f"战略新闻扫描失败：{_clean_text(exc, 500)}"
         if crawl_run_id:
             _strategic_task_progress(
@@ -2866,7 +2890,7 @@ def _run_scan(
     return result
 
 
-def _run_scan_impl(
+def _prepare_scan(
     now: datetime,
     slot_key: str,
     slot_label: str,
@@ -3165,6 +3189,149 @@ def _run_scan_impl(
             f"写入后逐格回读已确认。"
         ),
     )
+    checkpoint = {
+        "slot": slot_key,
+        "crawl_run_id": crawl_run_id,
+        "written_at": _now_iso(),
+        "spec": spec,
+        "ranked": ranked,
+        "bridge_stats": bridge_stats,
+        "bridge_batch": bridge_batch,
+        "passed_bridge_signal_ids": passed_bridge_signal_ids,
+        "gated_items": gated_items,
+        "full_items": full_items,
+        "gate_reasons": gate_reasons,
+        "plans": plans,
+        "searched_count": searched_count,
+        "discovery_result": discovery_result,
+        "review_result": review_result,
+    }
+    _atomic_write_json(_written_scan_path(slot_key), checkpoint)
+    return checkpoint
+
+
+def _written_scan_path(slot_key: str) -> Path:
+    return RUNS_DIR / "written" / f"{slot_key.replace(':', '-')}.json"
+
+
+def _load_written_scan(slot_key: str) -> dict[str, Any]:
+    """A verified sheet receipt is a durable success fence for the crawl stage."""
+    checkpoint = _read_json(_written_scan_path(slot_key), {})
+    if (
+        isinstance(checkpoint, dict)
+        and checkpoint.get("slot") == slot_key
+        and isinstance(checkpoint.get("review_result"), dict)
+        and checkpoint["review_result"].get("readback_verified") is True
+    ):
+        return checkpoint
+    # Upgrade pre-checkpoint runs using the exact slot's persisted verified
+    # result. Never call run_cycle or discovery to recover a successful write.
+    from cmhk.intelligence import news_review_sheet
+
+    sheet_state = _read_json(news_review_sheet.STATE_PATH, {})
+    cycles = sheet_state.get("successful_cycle_results") if isinstance(sheet_state, dict) else {}
+    review = cycles.get(slot_key) if isinstance(cycles, dict) else None
+    if not isinstance(review, dict) or review.get("status") != "ok" or review.get("readback_verified") is not True:
+        return {}
+    parent = _selection_recovery_parent_run_id(slot_key)
+    snapshot = _read_json(DATA_DIR / "monitoring_specs" / f"{parent}.json", {})
+    # Only provenance from this run is reused; unavailable legacy search
+    # statistics remain absent in the checkpoint rather than borrowed later.
+    checkpoint = {
+        "slot": slot_key,
+        "crawl_run_id": parent,
+        "written_at": review.get("verified_at") or "",
+        "review_result": review,
+        "spec": {
+            "spec_hash": snapshot.get("specHash") or "",
+            "module_count": len(snapshot.get("modules") or []),
+            "keyword_count": sum(len(m.get("keywords") or []) for m in snapshot.get("modules") or []),
+            "source_urls": [],
+        },
+        "ranked": [], "bridge_stats": {}, "bridge_batch": {},
+        "passed_bridge_signal_ids": [], "gated_items": [], "full_items": [],
+        "gate_reasons": {}, "plans": [], "searched_count": 0,
+        "discovery_result": {}, "legacy_verified_receipt": True,
+    }
+    full = _read_json(DATA_DIR / "news_discovery_full.json", {})
+    discovery = _read_json(DATA_DIR / "news_discovery_latest.json", {})
+    if (full.get("slot") == slot_key and full.get("generated_at")
+            and full.get("generated_at") == discovery.get("generated_at")):
+        checkpoint["discovery_result"] = discovery
+        checkpoint["full_items"] = full.get("items") or []
+        checkpoint["searched_count"] = full.get("search_result_count") or 0
+    _atomic_write_json(_written_scan_path(slot_key), checkpoint)
+    return checkpoint
+
+
+def _complete_written_crawl(checkpoint: dict[str, Any], crawl_run_id: str) -> None:
+    if not crawl_run_id:
+        return
+    review = checkpoint["review_result"]
+    record = next((r for r in load_crawl_run_index() if r.get("crawl_run_id") == crawl_run_id), {})
+    if record.get("run_status") == "completed":
+        return
+    started = _crawl_record_time(record, "started_at_hkt")
+    duration_ms = max(0, round((datetime.now(HKT) - started).total_seconds() * 1000)) if started else 0
+    finalize_operational_crawl_run(
+        crawl_run_id, ok=True, duration_ms=duration_ms,
+        progress_detail=(
+            f"新闻爬虫已完成：新增 {int(review.get('new_count') or 0)} 条已写入飞书并逐格回读确认。"
+            "后续自动初筛和通知继续独立处理；已成功的采集、审核与写入不会重跑。"
+        ),
+        summary={
+            "slot": checkpoint["slot"], "crawl_stage_status": "completed",
+            "new_count": int(review.get("new_count") or 0),
+            "readback_verified": True, "selection_agent_status": "pending",
+            "notification_status": "pending", "success_boundary": "feishu_readback",
+        },
+    )
+
+
+def _run_scan_impl(
+    now: datetime, slot_key: str, slot_label: str, state: dict[str, Any], *,
+    crawl_run_id: str = "", stream_log_path: str | Path = "",
+    deadline_at: datetime | None = None, deadline_monotonic: float | None = None,
+) -> dict[str, Any]:
+    checkpoint = _load_written_scan(slot_key)
+    if checkpoint:
+        _strategic_task_progress(crawl_run_id, stream_log_path, "复用飞书成功结果",
+                                 "同一时段已写入并回读确认，直接继续后续流程，不重新搜索、审核或写表。")
+    else:
+        checkpoint = _prepare_scan(
+            now, slot_key, slot_label, state, crawl_run_id=crawl_run_id,
+            stream_log_path=stream_log_path, deadline_at=deadline_at,
+            deadline_monotonic=deadline_monotonic,
+        )
+    _complete_written_crawl(checkpoint, crawl_run_id)
+    return _continue_written_scan(
+        now, slot_key, slot_label, state, checkpoint=checkpoint,
+        crawl_run_id=crawl_run_id, stream_log_path=stream_log_path,
+        deadline_at=deadline_at, deadline_monotonic=deadline_monotonic,
+    )
+
+
+def _continue_written_scan(
+    now: datetime, slot_key: str, slot_label: str, state: dict[str, Any], *,
+    checkpoint: dict[str, Any], crawl_run_id: str = "",
+    stream_log_path: str | Path = "", deadline_at: datetime | None = None,
+    deadline_monotonic: float | None = None,
+) -> dict[str, Any]:
+    from cmhk.intelligence import news_review_sheet
+
+    spec = checkpoint["spec"]
+    ranked = checkpoint["ranked"]
+    bridge_stats = checkpoint["bridge_stats"]
+    bridge_batch = checkpoint["bridge_batch"]
+    passed_bridge_signal_ids = checkpoint["passed_bridge_signal_ids"]
+    gated_items = checkpoint["gated_items"]
+    full_items = checkpoint["full_items"]
+    gate_reasons = checkpoint["gate_reasons"]
+    plans = checkpoint["plans"]
+    searched_count = checkpoint["searched_count"]
+    discovery_result = checkpoint["discovery_result"]
+    review_result = checkpoint["review_result"]
+
     selection_agent_result: dict[str, Any] = {}
     try:
         from cmhk.intelligence.news_selection_agent import (
@@ -3300,6 +3467,16 @@ def _run_scan_impl(
         "selection_agent": selection_agent_result,
         "candidates": ranked,
     }
+    if checkpoint.get("legacy_verified_receipt"):
+        run_payload["reused_verified_receipt"] = True
+        # The legacy receipt proves the sheet result, not every search metric.
+        for key in ("query_count", "gate_candidate_count", "gate_filtered_count",
+                    "gate_filtered_reasons", "direct_candidate_count", "scheduled_crawl_bridge"):
+            run_payload.pop(key, None)
+        run_payload["spec"].pop("source_urls", None)
+        if not discovery_result:
+            run_payload["news_discovery"] = {"status": "legacy_metrics_unavailable"}
+            run_payload.pop("search_result_count", None)
     _atomic_write_json(_scan_run_path(slot_key), run_payload)
     _append_event(
         {
@@ -7314,7 +7491,7 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
             age_minutes = (current_now - slot_at).total_seconds() / 60
             interrupted_attempts = _interrupted_strategic_attempts(slot_key)
             recover_interruption = (
-                bool(interrupted_attempts)
+                (bool(interrupted_attempts) or bool(_load_written_scan(slot_key)))
                 and age_minutes <= INTERRUPTED_SCAN_RECOVERY_MINUTES
             )
             deferred_by_prior_slot = _prior_strategic_slot_delayed(

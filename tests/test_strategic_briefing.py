@@ -437,6 +437,8 @@ class StrategicBriefingTests(unittest.TestCase):
                 "read_monitoring_spec",
                 return_value={
                     "spec_hash": "spec",
+                    "sheet_url": "https://example.com/monitoring",
+                    "modules": [],
                     "module_count": 6,
                     "keyword_count": 135,
                     "source_urls": [],
@@ -541,6 +543,7 @@ class StrategicBriefingTests(unittest.TestCase):
             order,
             [
                 "review",
+                "registry_finalized",
                 "pipeline_persisted",
                 "pipeline_persisted",
                 "notify",
