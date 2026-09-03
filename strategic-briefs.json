@@ -1,31 +1,7 @@
 {
   "ok": true,
-  "generated_at": "2026-09-03T16:33:27+08:00",
+  "generated_at": "2026-09-03T16:38:35+08:00",
   "items": [
-    {
-      "id": "NEWS-1C9298FAC2B4E3",
-      "title": "博通预计明年AI业务收入再次翻番",
-      "summary": "博通CEO陈福阳预计，明年AI业务收入将再次翻番。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi8wJBVV95cUxQbEFoMks4ZVNFd1VPaDNuX1BxMndYR3dkLVc0bnVOQm12QzZDSzRIcDNKQ1NVdkY2a1d1dHp6aFltdVFMWmpNVUg1ZU1aeXkxUjFwTkZmZlAtTEF3M3ZSX2dyLWZDSWtCVVY2c19wTkRMdlIybnNmN3hSdlpKdG5Ud0p5MUlmcHpBZUNEdkt1Mm9mbGxOQVRTaUw5SVlmOVhwdl9wUjlhcFlLU3MzZU5TLS1sdUs5NkpweC1nTlNMUmhubWN4bGJmclZPWlNqd1dqWlhnZ0NCb3F1UnlBZ1hMOUd6NS1TUmFMeXJWOHFCbGVueXpDMFNkWlJhcDFTR3RsZ25oOEYzeUxXYTJybG10TWFVdGhjY1V1Q3FXOW51dFNaNHAtWmx2OU1UWkJ1SkJ4aVVPQUtxaTEzWnVCVWl2NzlaUEJQQjlVYS1GTGxSRVZNbzYwdlpSZGhwRUJUYUwwVlBTaUNlRGthZXhxVzZFWkhpSQ?oc=5",
-      "published_at": "2026-09-03T07:08:13+08:00"
-    },
-    {
-      "id": "NEWS-B4BB1C96494257",
-      "title": "维权基金Elliott入股德国电信 反对与T-Mobile合并案",
-      "summary": "维权基金Elliott入股德国电信，并反对其与T-Mobile的合并案。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTFBkSEZ4MldpNkZSMjJLbXl1V0F4MWpoUmNwU1NZcHFtZF9IV05IYTJWUDZ6S095R040ZHppdE5RQml6RXZkSzdtMVFyUC1VaGE0aVh6QkYySG81S3ZBY3prZU1MZDNydw?oc=5",
-      "published_at": "2026-09-03T04:31:59+08:00"
-    },
-    {
-      "id": "NEWS-707B4E13E46D0D",
-      "title": "陆企AI算力淘金赛 上游最赚",
-      "summary": "报道指出中国内地AI算力产业链中，上游芯片与基础设施环节利润最为丰厚。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTFBFbndsaDZhb0Z2eTA4Smg4OHZ6S1pSWFJDM3lXY2g1T3BNWlhZTktQSnJoR2RqanFhTHJmeS0zTFg0eXRJRDRmbE5rbmxTWWFQaHB6RE5KZXNxd21FWWg5bkE5ZE0tNm1qSUhyV2ZweF80Q2400gFWQVVfeXFMTW5vbjZmWV9vNHJJeGl3OHZWMUFDUTVWamgwR1NCLWlJVU9KZV9mc1FwZUVDZ01SeXd4aEpVNFYwYnpQQTMtd29SV1FxWXNHdlFDTzJ2a3c?oc=5",
-      "published_at": "2026-09-03T03:33:07+08:00"
-    },
     {
       "id": "NEWS-F1C0C39790EE99",
       "title": "无辉达GPU助阵 中国超算登顶全球最速 AI算力架构现新局",
@@ -65,6 +41,30 @@
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE1GdVh1MTNOUW8tMmNkRHYxQUtVa1NOeDM1VDVKZlZoWWlxMzZpTTJMZGtIVl9mczlJajNYa0JhM2ZPVWNSNlVheHBiRy1fOWNuUmdPRFFZNGM2NGI0WnBNSlcwclV6Ykw5bk14bks1NTQ4R1J2?oc=5",
       "published_at": "2026-09-02T04:23:47+08:00"
+    },
+    {
+      "id": "NEWS-F2C8CEBF647512",
+      "title": "国家数据领域国际合作广州试点在南沙启动，打造「国际数港」赋能数据出海",
+      "summary": "国家数据领域国际合作广州试点在南沙启动，以「国际数港」定位推动数据出海相关合作。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE14cnZTVTFLNFZnSHFtS2VQRllxRkJUamFrQmkxWDViUFgzUFlkTjFJMTVaZDJ0cFdIVFM5c0JiWDk0TFZMeTdqOWVPRWpkU0hoeHZnN3ZDNkNfeEo4YVE?oc=5",
+      "published_at": "2026-09-02T00:11:37+08:00"
+    },
+    {
+      "id": "NEWS-785A18F3266D28",
+      "title": "中国联通新设“创新成果转化和交付事业群\"并任命朱常波为总经理，是从联通数科总经理平调。",
+      "summary": "中国联通新设部门并任命朱常波为总经理，其曾任河南联通总会计师、副总经理及中讯设计院副院长。",
+      "category": "竞对动态",
+      "source_url": "https://finance.sina.com.cn/tech/roll/2026-09-01/doc-iniqipiu1598806.shtml",
+      "published_at": "2026-09-01T20:06:00+08:00"
+    },
+    {
+      "id": "NEWS-4EC5C48912A45B",
+      "title": "AI客服\"转人工\"须畅通 新国标正式实施",
+      "summary": "中国AI客服\"转人工\"须畅通的新国家标准正式实施，对相关企业提出合规要求。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE90cjFsTVpVZW1mZE0wTEgyYXIzVjF3OG8xeU04MWRCdmdkT0UyNjN4N2JPV1RBbHhEUXFlOXU1eEhwb29oNVhjaGpyQW5CakhYejZ5MVRiNlNMVG9mMkJJaGVHdlZ6VUE0bXdTb0xySHhtZFhsNTBJ?oc=5",
+      "published_at": "2026-09-01T19:50:33+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "4cb874d2ee884ea20df2befacf70944065b5bd5408130a4c9cf1ce7776af383a"
+  "site_version": "70b637c8f563668e71f87da64295b0290fe36fab3a8cfbd99d44f575081d7836"
 }
