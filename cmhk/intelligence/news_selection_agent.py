@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 import math
 import os
 import re
@@ -382,6 +383,22 @@ def _json_object(value: Any) -> dict[str, Any]:
     return parsed
 
 
+class _EmptyFinalOutput(ValueError):
+    """A retryable response with diagnostics, never the private reasoning text."""
+
+    def __init__(self, response: Any, *, has_reasoning: bool):
+        metadata = getattr(response, "response_metadata", {}) or {}
+        usage = getattr(response, "usage_metadata", {}) or {}
+        self.finish_reason = _text(metadata.get("finish_reason"), 40) or "unknown"
+        output_tokens = usage.get("output_tokens")
+        if output_tokens is None:
+            output_tokens = (metadata.get("token_usage") or {}).get("completion_tokens")
+        message = "模型只有思考内容，没有最终输出" if has_reasoning else "模型没有返回最终输出"
+        super().__init__(
+            f"{message}（finish_reason={self.finish_reason}, output_tokens={output_tokens}）"
+        )
+
+
 def _langchain_response_text(response: Any) -> str:
     """Extract only a model's final answer from LangChain message variants."""
     content = getattr(response, "content", "")
@@ -405,9 +422,7 @@ def _langchain_response_text(response: Any) -> str:
     reasoning = getattr(response, "reasoning_content", "")
     if not reasoning and isinstance(additional, dict):
         reasoning = additional.get("reasoning_content")
-    if _text(reasoning, 1000):
-        raise ValueError("模型只有思考内容，没有最终输出")
-    raise ValueError("模型没有返回最终输出")
+    raise _EmptyFinalOutput(response, has_reasoning=bool(_text(reasoning, 1000)))
 
 
 def _repair_missing_json_commas(value: Any, *, max_repairs: int = 8) -> dict[str, Any]:
@@ -955,6 +970,10 @@ def _invoke_langchain(
         "状态只能是接受或不接受，confidence 为 0 至 1。"
         "decisions 必须与 required_candidate_ids 一一对应，并逐字复制 news_id；"
         "不得返回清单以外或上一次请求的候选。"
+        '格式示例（仅说明结构，不是候选或判断依据）：{"learned_rules":[],"avoid_patterns":[],'
+        '"app_preference_summary":"简述APP偏好","weekly_preference_summary":"简述周报偏好",'
+        '"decisions":[{"news_id":"从required_candidate_ids逐字复制","app_status":"接受",'
+        '"weekly_status":"不接受","app_confidence":0.8,"weekly_confidence":0.7,"reason":"实际判断依据"}]}。'
     )
     user_prompt = json.dumps(
         {
@@ -971,7 +990,7 @@ def _invoke_langchain(
     )
     errors: list[str] = []
     for model_name, api_key in _model_routes():
-        model = ChatDeepSeek(
+        model_options = dict(
             model=model_name,
             api_key=api_key,
             api_base=_text(config.get("base_url"), 500),
@@ -984,10 +1003,28 @@ def _invoke_langchain(
             max_tokens=7000,
         )
         try:
+            model = ChatDeepSeek(**model_options)
             response = model.invoke(
                 [SystemMessage(content=system_prompt), HumanMessage(content=user_prompt)]
             )
-            response_content = _langchain_response_text(response)
+            try:
+                response_content = _langchain_response_text(response)
+            except _EmptyFinalOutput as empty_exc:
+                # DeepSeek documents occasional empty content in JSON mode.
+                # Change the request mode before rotating keys or splitting the
+                # same batch. Keep the schema prompt and all downstream checks.
+                logging.warning("新闻初筛 %s JSON模式空输出，切换普通模式：%s", model_name, empty_exc)
+                model_options["extra_body"] = deepseek_nonthinking_parameters()
+                if empty_exc.finish_reason in {"length", "max_tokens"}:
+                    model_options["max_tokens"] = 14000
+                model = ChatDeepSeek(**model_options)
+                retry_payload = json.loads(user_prompt)
+                retry_payload["request_id"] = f"news-selection-{uuid.uuid4().hex}"
+                response = model.invoke([
+                    SystemMessage(content=system_prompt + "请直接给出完整JSON对象，不输出分析过程或Markdown。"),
+                    HumanMessage(content=json.dumps(retry_payload, ensure_ascii=False)),
+                ])
+                response_content = _langchain_response_text(response)
             try:
                 return _json_object(response_content), model_name
             except Exception as parse_exc:

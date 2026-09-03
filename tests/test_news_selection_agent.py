@@ -612,7 +612,70 @@ class NewsSelectionAgentTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "只有思考内容，没有最终输出"):
                 agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
 
-        fake_model.invoke.assert_called_once()
+        self.assertEqual(fake_model.invoke.call_count, 2)
+        for call in fake_model.invoke.call_args_list:
+            self.assertNotIn("JSON 格式修复器", call.args[0][0].content)
+            self.assertNotIn("internal-only", str(call.args))
+
+    def test_empty_json_mode_recovers_through_real_sdk_serialization(self):
+        import httpx
+        from ai_rate_limit import RateLimitedChatDeepSeek
+
+        target = {"news_id": "NEWS-1"}
+        answer = {"decisions": [{
+            "news_id": "NEWS-1", "app_status": "接受", "weekly_status": "不接受",
+            "app_confidence": 0.9, "weekly_confidence": 0.8, "reason": "测试依据",
+        }]}
+        for finish_reason in ("stop", "length"):
+            with self.subTest(finish_reason=finish_reason):
+                requests = []
+
+                def respond(request):
+                    requests.append(json.loads(request.content))
+                    first = len(requests) == 1
+                    return httpx.Response(200, json={
+                        "id": "test", "object": "chat.completion", "created": 1,
+                        "model": "test-model",
+                        "choices": [{"index": 0,
+                            "finish_reason": finish_reason if first else "stop",
+                            "message": {"role": "assistant",
+                                "content": "" if first else json.dumps(answer),
+                                "reasoning_content": "private-reasoning" if first else "",
+                            },
+                        }],
+                        "usage": {"prompt_tokens": 10, "completion_tokens": 7000 if first else 80,
+                                  "total_tokens": 7010 if first else 90},
+                    })
+
+                with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+                    def make_model(**kwargs):
+                        return RateLimitedChatDeepSeek(**kwargs, http_client=client)
+
+                    with (
+                        mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+                        mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+                        mock.patch.object(agent, "ChatDeepSeek", side_effect=make_model),
+                        mock.patch.object(RateLimitedChatDeepSeek, "_keys", return_value=["secret"]),
+                        mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+                        self.assertLogs(agent.logging.getLogger(), level="WARNING") as logs,
+                    ):
+                        payload, model = agent._invoke_langchain([], [target])
+
+                self.assertEqual(payload, answer)
+                self.assertEqual(model, "test-model")
+                self.assertEqual(len(agent._normalized_decisions(payload, [target])), 1)
+                self.assertEqual(len(requests), 2)
+                self.assertEqual(requests[0]["response_format"], {"type": "json_object"})
+                self.assertNotIn("response_format", requests[1])
+                self.assertEqual(requests[1]["thinking"], {"type": "disabled"})
+                self.assertEqual(requests[1]["max_tokens"], 14000 if finish_reason == "length" else 7000)
+                original = json.loads(requests[0]["messages"][1]["content"])
+                recovered = json.loads(requests[1]["messages"][1]["content"])
+                self.assertNotEqual(original.pop("request_id"), recovered.pop("request_id"))
+                self.assertEqual(original, recovered)
+                self.assertIn(f"finish_reason={finish_reason}", str(logs.output))
+                self.assertIn("output_tokens=7000", str(logs.output))
+                self.assertNotIn("private-reasoning", str(logs.output) + str(requests))
 
     def test_langchain_repairs_malformed_json_without_rewriting_decisions(self):
         repaired_payload = {
