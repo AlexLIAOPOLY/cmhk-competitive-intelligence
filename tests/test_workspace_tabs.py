@@ -51,6 +51,11 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('<span class="workspace-tab-label">战略总览</span>', dashboard_tab)
         self.assertNotIn("驾驶舱", dashboard_tab)
 
+    def test_agent_purpose_uses_upstream_names_instead_of_node_codes(self):
+        self.assertIn('agent: "同时接收「两类链接网页抓取」提供的官方原文和「字段提取与候选数据生成」提供的候选数据', SCRIPT)
+        self.assertIn('agentAuditNode.details[0] = "数据证据审核同时接收「两类链接网页抓取」', SCRIPT)
+        self.assertNotIn('同时接收C1a抓取的官方原文和C1b形成的候选数据', SCRIPT)
+
     def test_auth_permissions_gate_tabs_requests_and_organization_admin(self):
         self.assertIn('/static/auth-client.js?v=5', INDEX)
         self.assertIn('/static/organization-admin.js?v=36', INDEX)
@@ -708,7 +713,8 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("const nodePurposes = {", SCRIPT)
         self.assertIn('main: "合并飞书固定链接和B2的01:00待追证链接；抓取网页并继续打开公司IR、财报和监管披露原文，本节点只负责抓取"', SCRIPT)
         self.assertIn('"fact-extract": "读取C1a已抓取的网页正文，提取主体、指标、期间、数值、单位和来源，形成候选数据并交给C2审核"', SCRIPT)
-        self.assertIn('agent: "同时接收C1a抓取的官方原文和C1b形成的候选数据', SCRIPT)
+        self.assertIn('agent: "同时接收「两类链接网页抓取」提供的官方原文和「字段提取与候选数据生成」提供的候选数据', SCRIPT)
+        self.assertNotIn('同时接收C1a抓取的官方原文和C1b形成的候选数据', SCRIPT)
         self.assertIn('${node.primary ? " is-primary" : ""}', SCRIPT)
         self.assertNotIn('news-lineage-primary-badge', SCRIPT)
         self.assertNotIn('<p>作用：${esc(node.purpose || "未说明")}</p>', SCRIPT)
