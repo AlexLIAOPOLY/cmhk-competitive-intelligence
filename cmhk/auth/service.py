@@ -71,6 +71,7 @@ _API_MODULE_PREFIXES = (
     ("/api/curation-quality", "competitor"),
     ("/api/news-review", "review"),
     ("/api/news", "news"),
+    ("/api/fixed-source-summary", "news"),
     ("/api/strategic-news", "news"),
     ("/api/weekly-report", "weekly"),
     ("/api/generate-carrier", "performance"),

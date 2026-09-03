@@ -144,6 +144,27 @@ class AuthServiceTest(unittest.TestCase):
         self.assertEqual(self.service.module_for_api("/api/alert-report.pdf"), "fault")
         self.assertEqual(self.service.module_for_api("/api/log-report.pdf"), "log")
 
+    def test_fixed_source_summary_requires_news_permission_and_login(self):
+        endpoint = "/api/fixed-source-summary"
+        self.assertEqual(self.service.module_for_api(endpoint), "news")
+        anonymous = FakeHandler(origin="")
+        self.assertFalse(self.service.authorize_api(anonymous, endpoint))
+        self.assertEqual(anonymous.status, 401)
+        for account, allowed in (("local-admin", True), ("local-leader", False)):
+            with self.subTest(account=account):
+                _, session = self.dev_login(account)
+                handler = FakeHandler(cookie=session, origin="")
+                self.assertEqual(self.service.authorize_api(handler, endpoint), allowed)
+                if not allowed:
+                    self.assertEqual(handler.status, 403)
+        # Module permission, not administrator status, governs this read-only count.
+        for enabled in (True, False):
+            with patch.object(self.service, "current_user", return_value={
+                "role": "ANALYST", "permissions": {"modules": {"news": enabled}},
+            }):
+                handler = FakeHandler(origin="")
+                self.assertEqual(self.service.authorize_api(handler, endpoint), enabled)
+
     def test_unauthenticated_api_and_page_are_blocked(self):
         api = FakeHandler(origin="")
         self.assertFalse(self.service.authorize_api(api, "/api/status"))

@@ -22,7 +22,7 @@
     newsSelectedDate: "",
     newsSelectedRunIds: [],
     newsRunDetails: {},
-    fixedSourceSummary: {},
+    fixedSourceSummary: null,
     monitoringKeywords: {},
     newsItemFallback: {},
     newsReviewSheet: null,
@@ -1621,6 +1621,19 @@
     return { key: "healthy", label: "正常", routeId, source: "run-evidence", confidence: "high", reason: runningNode ? `当前执行已定位在“${runningNode.label}”节点；未发现线路异常记录。` : "上下游节点均有正常完成记录。" };
   }
 
+  function resolvedFixedSourceSummary() {
+    // Both endpoints describe the current configuration snapshot, not historical inputs.
+    // An empty/failed primary response must not hide a valid run-detail fallback.
+    return [state.fixedSourceSummary, ...Object.values(state.newsRunDetails).map((detail) => detail?.fixedSourceSummary)]
+      .find((summary) => Number.isSafeInteger(summary?.uniqueUrls) && summary.uniqueUrls >= 0) || {};
+  }
+
+  function fixedSourceInputText(summary) {
+    return Number.isSafeInteger(summary?.uniqueUrls) && summary.uniqueUrls >= 0
+      ? `${number(summary.uniqueUrls)} 条飞书固定链接`
+      : "飞书固定链接数量暂不可用";
+  }
+
   function globalSchedulerLineageModel(runs, stages, attemptRuns = runs) {
     const overview = state.schedulerOverview || {};
     const latest = overview.latest || {};
@@ -1765,14 +1778,11 @@
     const insightGenerationLabel = modelAnalysis.reused ? "复用" : "重新生成";
     const strategicDedupe = stages.find((stage) => stage.key === "dedupe") || { value: 0, lost: 0 };
     const mainRunDetail = state.newsRunDetails[mainRun.crawl_run_id] || {};
-    const fixedSourceSummary = state.fixedSourceSummary
-      || mainRunDetail.fixedSourceSummary
-      || state.newsRunDetails[newsRun.crawl_run_id]?.fixedSourceSummary
-      || {};
+    const fixedSourceSummary = resolvedFixedSourceSummary();
     const scheduledMainRows = new Set(
       [...String(mainRun.scope || "").matchAll(/第\s*(\d+)\s*行/g)].map((match) => match[1])
     ).size;
-    const fixedSourceUrlCount = Number(fixedSourceSummary.uniqueUrls || 0);
+    const fixedSourceUrlCount = fixedSourceSummary.uniqueUrls;
     const configuredSourceRows = Number(fixedSourceSummary.configuredRows || scheduledMainRows || 0);
     const configuredSourceOccurrences = Number(fixedSourceSummary.configuredUrlOccurrences || 0);
     const crawlUrlAttemptCount = Number(mainRun.run_log?.rows || 0);
@@ -1786,7 +1796,7 @@
       ...(mainCrossedDate ? [`跨日任务：${newsRunDate(mainRun)} 启动，${selectedDate} 完成`] : []),
       `开始 ${String(mainRun.started_at_hkt || "未记录").replace("T", " ")}`,
       `完成 ${String(mainRun.completed_at_hkt || "未记录").replace("T", " ")}`,
-      ...(fixedSourceUrlCount ? [`当前飞书配置快照含 ${number(fixedSourceUrlCount)} 条去重后的固定链接`, `${number(configuredSourceRows)} 行配置共出现 ${number(configuredSourceOccurrences)} 处链接`] : ["本轮归档未保存可核对的固定链接总数，不再用行数代替链接数"]),
+      ...(fixedSourceUrlCount !== undefined ? [`当前飞书配置快照含 ${number(fixedSourceUrlCount)} 条去重后的固定链接`, `${number(configuredSourceRows)} 行配置共出现 ${number(configuredSourceOccurrences)} 处链接`] : ["固定链接数量暂不可用：尚未取得有效配置快照，不代表没有链接；系统会自动重试"]),
       ...(crawlUrlAttemptCount ? [`本轮共执行 ${number(crawlUrlAttemptCount)} 次网址抓取：成功 ${number(mainRun.run_log?.success_urls)} 次、失败 ${number(mainRun.run_log?.failed_urls)} 次`] : []),
       ...(mainRowsProcessed ? [`旧审计记录为 ${number(mainRowsProcessed)} 行结果；它不是固定链接数量`] : []),
     ] : ["所选日期没有主爬虫运行记录"];
@@ -1835,7 +1845,7 @@
       { key: "weekly-result", label: "周报新闻最终接受结果", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "新闻审核表读取短暂失败，按最近完整快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验新闻发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日两轮新闻合并参考", value: number(previousReferenceCount), unit: "条去重新闻参考", note: previousReferenceTruncated ? `07:30/14:00合并去重 · 输入上限 ${number(previousReferenceLimit)} 条` : `${number(previousReferenceRunCount)} 个权威批次合并后按URL/标题去重`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: [`只读取前一日最后两个已完成的权威新闻批次（通常为07:30、14:00）`, `把两批“公开网页发现＋候选新闻”合并，再按URL；没有URL时按标题去重`, previousReferenceLegacyCapped ? `该历史归档触及 ${number(previousReferenceLimit)} 条输入上限；当时没有保存去重后的完整总数，因此300不是长期累计，也不能解释为刚好只有300条` : previousReferenceTruncated ? `去重后实际共有 ${number(previousReferenceUniqueTotal)} 条；为控制01:00任务输入量，只带入前 ${number(previousReferenceLimit)} 条，所以卡片显示 ${number(previousReferenceCount)} 条` : `两批合并去重后共有 ${number(previousReferenceCount)} 条，没有把同一链接重复累计`, "这些新闻只给01:00补缺搜索提供方向，不直接成为数据库数据"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日战略新闻归档" },
       { key: "news-db-signal", label: "01:00 四库缺口链接搜索", value: number(sourceDiscoverySummary.signal_count || 0), unit: "条待追证链接", note: "自动发现补缺链接 · 交给03:00追官方原文", health: sourceDiscoveryHealth, variant: "source", position: [300, 270], details: ["独立搜索 Agent 按四库主体与数据指标字段检索最近24小时资料", "合并前一天07:30/14:00两次战略新闻任务内容作参考", "搜索结果与新闻结果只作为待追证链接，不是数据库数据", "待追证链接交给03:00链路继续追查公司 IR、财报或监管披露原文", "飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因"], evidence: sourceDiscoverySummary.audit_path || sourceDiscoveryRun.progress_detail || "当天未留下01:00四库数据资料补缺审计" },
-      { key: "main", label: "03:00 两类链接网页抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${number(fixedSourceUrlCount)} 条飞书固定链接＋${number(sourceDiscoverySummary.signal_count || 0)} 条01:00待追证链接` : "当天未找到主爬虫归档", health: crawlHealth, variant: "crawler", compact: true, position: [300, 460], details: ["输入一：飞书配置表中人工维护的固定链接；输入二：「四库缺口链接搜索」在01:00交来的待追证链接", "只负责抓取网页，并沿线索继续打开公司IR、财报或监管披露官方原文", "抓取到的网页正文同时交给「字段提取与候选数据生成」提取字段，并作为「Agent 数据字段逐条审核」核对候选数据的官方原文依据", "固定链接数、配置行数和实际网址抓取次数分别统计，互不替代", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
+      { key: "main", label: "03:00 两类链接网页抓取", value: mainValue, unit: mainUnit, note: mainRun.crawl_run_id ? `${fixedSourceInputText(fixedSourceSummary)}＋${number(sourceDiscoverySummary.signal_count || 0)} 条01:00待追证链接` : "当天未找到主爬虫归档", health: crawlHealth, variant: "crawler", compact: true, position: [300, 460], details: ["输入一：飞书配置表中人工维护的固定链接；输入二：「四库缺口链接搜索」在01:00交来的待追证链接", "只负责抓取网页，并沿线索继续打开公司IR、财报或监管披露官方原文", "抓取到的网页正文同时交给「字段提取与候选数据生成」提取字段，并作为「Agent 数据字段逐条审核」核对候选数据的官方原文依据", "固定链接数、配置行数和实际网址抓取次数分别统计，互不替代", ...mainDetails], evidence: mainRun.status_detail || mainRun.progress_detail || "当天未留下主爬虫运行证据" },
       { key: "fact-extract", label: "03:00 字段提取与候选数据生成", value: parsedCandidateCount ? number(parsedCandidateCount) : "—", unit: "条候选数据", note: mainRun.crawl_run_id ? "读取已抓网页正文 · 提取六个数据字段" : "当天未找到字段提取归档", health: extractHealth, variant: "source", compact: true, position: [300, 600], details: ["读取「两类链接网页抓取」已经抓取的网页正文，不重新搜索或抓取网页", "从公司IR、财报、监管披露原文中提取主体、指标、期间、数值、单位和来源", `形成 ${number(parsedCandidateCount)} 条候选数据并交给「Agent 数据字段逐条审核」逐条审核`, "候选数据尚未通过证据门禁，不能直接写入四库"], evidence: mainRun.curation?.summary || mainRun.progress_detail || mainRun.status_detail || "当天未留下字段提取与候选数据生成记录" },
       { key: "agent", label: "Agent 数据证据逐条审核", value: mainRun.curation?.accepted !== undefined ? number(mainRun.curation.accepted) : hasCompanyAgentProgress ? `${number(companyAgentProgress.recordedCompanies)}/${number(companyAgentProgress.expectedCompanies || 41)}` : "—", unit: mainRun.curation?.accepted !== undefined ? "条候选数据审核通过" : hasCompanyAgentProgress ? "家公司数据证据已记录" : "条候选数据审核通过", note: mainRun.curation?.accepted !== undefined ? "审核「字段提取与候选数据生成」提交的候选数据" : hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 检查点 · ${number(companyAgentProgress.recordedMetrics)} 项数据指标` : "当天未留下数据证据审核轨迹", health: mainRun.curation?.accepted !== undefined ? mainHealth : hasCompanyAgentProgress ? { key: "warning", label: "待续跑" } : (mainHealth.key === "healthy" ? { key: "warning", label: "警告" } : mainHealth), variant: "audit", primary: true, position: [700, 392], details: mainRun.curation?.accepted !== undefined ? ["「Agent 数据字段逐条审核」只审核「字段提取与候选数据生成」从已抓网页正文中形成的候选数据，不把01:00和03:00的数量相加", `原始数据指标证据 ${number(mainRun.curation.tasks)} 条`, archivedAgentCandidateCount ? `形成并归档候选数据 ${number(archivedAgentCandidateCount)} 条${archivedAgentCandidateCount !== Number(mainRun.curation.tasks || 0) ? `；另 ${number(Number(mainRun.curation.tasks || 0) - archivedAgentCandidateCount)} 条未形成候选数据` : ""}` : "候选数据逐条归档尚未读取", `审核通过 ${number(mainRun.curation.accepted)} 条候选数据；这是证据门禁通过量，不是数据库变化量`, `拒绝 ${number(mainRun.curation.rejected)} 条候选数据 · 待复核 ${number(mainRun.curation.review)} 条候选数据`, `数据审核轨迹事件 ${number(mainRun.curation.trace_events)} 条 · Agent run ${mainRun.curation.agent_run_id || "未记录"}`] : hasCompanyAgentProgress ? ["「Agent 数据字段逐条审核」审核的是「字段提取与候选数据生成」从已抓网页正文中形成的候选数据，不做两个时点数量相加", `V${number(companyAgentVersion)} 最后更新 ${String(companyAgentProgress.updatedAt || "未记录").replace("T", " ")}`, `已记录 ${number(companyAgentProgress.recordedCompanies)} / ${number(companyAgentProgress.expectedCompanies || 41)} 家公司`, `数据指标记录 ${number(companyAgentProgress.recordedMetrics)} 项；合规终态 ${number(companyAgentProgress.terminalMetrics)} 项`, `未解决公司 ${number(companyAgentProgress.unresolvedCompanies)} 家；冲突数据指标 ${number(companyAgentProgress.conflictMetrics)} 项；Agent 未完成数据指标 ${number(companyAgentProgress.agentErrorMetrics)} 项`] : ["所选日期没有 Agent 数据证据审核记录"], evidence: mainRun.curation?.summary || (hasCompanyAgentProgress ? `V${number(companyAgentVersion)} 公司 Agent 检查点：${number(companyAgentProgress.recordedCompanies)} 家、${number(companyAgentProgress.recordedMetrics)} 项数据指标，更新时间 ${companyAgentProgress.updatedAt || "未记录"}` : mainRun.status_detail || "当天未留下 Agent 数据证据审核记录") },
       { key: "database-hub", label: "审核通过数据写入四库", value: intelligenceRun.crawl_run_id ? number(refreshFactCount) : "—", unit: "条审核通过数据写入四库", note: intelligenceRun.crawl_run_id ? `写入 ${number(refreshFactCount)} 条审核通过数据 · 数据指标变化 ${numericChangeText}` : "当天未留下数据入库归档", health: intelligenceHealth, variant: "database-hub", compact: true, position: [920, 415], details: intelligenceRun.crawl_run_id ? [`当天写入四库数据库数据快照 ${number(refreshFactCount)} 条；结构化数据指标变化 ${numericChangeText}`, `四个可见库中 ${number(changedDatabaseCount)} 个库文件内容有变动；文件或文本变动不计作数据指标变化`, `官方来源检查 ${number(sourceAudit.official_urls || 0)} 条：成功 ${number(sourceRetrieved)} 条、失败 ${number(sourceAudit.failed)} 条`, `成功来源中：页面内容指纹变化 ${number(sourceChanged)} 条、首次采样 ${number(sourceFirstObserved)} 条、内容未变 ${number(sourceUnchanged)} 条；这些均不计作数据指标变化`, numericBaselineAvailable ? "数据指标变化只按同一UI字段旧值→新值比较" : "本轮未留存更新前数值基线，页面不推测数据指标变化数量", "点开下方数据库数据明细可查看公司、数据指标、依据、官方链接和证据哈希"] : ["所选日期没有数据入库记录"], evidence: intelligenceRun.progress_detail || intelligenceRun.status_detail || "当天未留下数据入库记录" },
@@ -2555,8 +2565,7 @@
     const previousLegacyCapped = discoverySummary.previous_day_reference_unique_total === undefined
       && previousCount >= previousLimit;
     const mainRun = mainRunForDate(state.newsSelectedDate);
-    const fixedSummary = state.fixedSourceSummary || state.newsRunDetails[mainRun.crawl_run_id]?.fixedSourceSummary || {};
-    const fixedUrlCount = Number(fixedSummary.uniqueUrls || 0);
+    const fixedSummary = resolvedFixedSourceSummary();
     const actualCrawlCount = Number(mainRun.run_log?.rows || 0);
     const candidateFactCount = Number(mainRun.curation?.tasks || 0);
     const acceptedFactCount = Number(mainRun.curation?.accepted || 0);
@@ -2616,7 +2625,7 @@
         output: `${node.value}${node.unit || ""}；只作为线索交给03:00，不直接写数据库`,
       },
       main: {
-        input: `${number(fixedUrlCount)} 条飞书固定链接＋${number(discoverySummary.signal_count || 0)} 条01:00待追证链接`,
+        input: `${fixedSourceInputText(fixedSummary)}＋${number(discoverySummary.signal_count || 0)} 条01:00待追证链接`,
         action: "逐个抓取网页，并沿网页线索继续打开公司IR、财报和监管披露原文；本节点只负责取得网页正文",
         output: `${number(actualCrawlCount)} 次网址抓取；已抓网页正文交给「字段提取与候选数据生成」解析，不在本节点生成候选数据`,
       },
@@ -3113,6 +3122,7 @@
         ["status", "/api/status"],
         ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
         ["crawlRuns", "/api/crawl-runs?limit=500"],
+        ["fixedSourceSummary", "/api/fixed-source-summary"],
         ["scheduler", "/api/scheduler-overview"],
       ];
       if (state.newsLiveReviewTick % 3 === 0) requests.push(
@@ -3136,6 +3146,7 @@
           state.faultTotal = Number(payload.total || nextTasks.length);
         } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
         else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
+        else if (key === "fixedSourceSummary") state.fixedSourceSummary = payload;
         else if (key === "scheduler") state.schedulerOverview = payload;
         else if (key === "intelligence") state.executiveIntelligence = payload;
       });
