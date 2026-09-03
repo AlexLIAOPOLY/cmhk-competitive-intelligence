@@ -667,7 +667,8 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 self.assertEqual(len(requests), 2)
                 self.assertEqual(requests[0]["response_format"], {"type": "json_object"})
                 self.assertNotIn("response_format", requests[1])
-                self.assertEqual(requests[1]["thinking"], {"type": "disabled"})
+                self.assertNotIn("thinking", requests[1])
+                self.assertEqual(requests[1]["cache"], {"no-cache": True, "no-store": True})
                 self.assertEqual(requests[0]["max_tokens"], 1500)
                 self.assertEqual(requests[1]["max_tokens"], 1500)
                 original = json.loads(requests[0]["messages"][1]["content"])
@@ -1685,6 +1686,34 @@ class ModelBatchCheckpointTests(unittest.TestCase):
              "weekly_confidence": 0.8, "reason": "检查点测试"}
             for target in targets
         ]}, "test-model"
+
+    def test_exact_history_checkpoint_profile_replaces_repeated_full_training(self):
+        examples = [{"news_id": f"H-{i}", "title": f"人工样本{i}",
+                     "app_status": "接受", "weekly_status": "待审核",
+                     "verified_human_fields": ["app"]} for i in range(20)]
+        targets = self.targets()
+        cached, model_name = self.invoke(examples, targets[:5])
+        cached['learned_rules'] = ['仅来自已核验APP字段']
+        checkpoint = {agent._model_checkpoint_key(examples, targets[:5]): {
+            'payload': cached, 'model': model_name,
+        }}
+        model = mock.Mock()
+        answer, _ = self.invoke(examples, targets[5:])
+        model.invoke.return_value = SimpleNamespace(content=json.dumps(answer))
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("Qwen3-30B-A3B-Instruct-2507", "key")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=model) as factory,
+        ):
+            payload, _ = agent._invoke_langchain_batches(examples, targets, checkpoint=checkpoint)
+        sent = json.loads(model.invoke.call_args.args[0][1].content)
+        self.assertEqual(len(sent['human_examples']), 2)
+        self.assertEqual(sent['human_examples'][0]['weekly_status'], '待审核')
+        self.assertEqual(sent['learned_preferences']['learned_rules'], cached['learned_rules'])
+        self.assertEqual(payload['_model_request_count'], 1)
+        body = factory.call_args.kwargs['extra_body']
+        self.assertEqual(body['cache'], {'no-cache': True, 'no-store': True})
+        self.assertNotIn('thinking', body)
 
     def targets(self):
         return [{"news_id": f"NEWS-{index}", "row_number": index + 2,

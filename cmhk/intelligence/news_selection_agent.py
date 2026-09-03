@@ -72,12 +72,19 @@ def _selection_model_invoke(model: Any, messages: list[Any]) -> Any:
         session["calls"] += 1
         logging.info("新闻初筛模型请求 %s/%s", session["calls"], MODEL_MAX_ROUNDS)
     started = time.monotonic()
+    logging.info(
+        "新闻初筛请求协议：model=%s，max_tokens=%s，input_chars=%s，cache=no-cache/no-store",
+        getattr(model, "model_name", "unknown"), getattr(model, "max_tokens", None),
+        sum(len(str(message.content)) for message in messages),
+    )
     response = model.invoke(messages)
     usage = getattr(response, "usage_metadata", {}) or {}
     metadata = getattr(response, "response_metadata", {}) or {}
     logging.info(
-        "新闻初筛模型响应：%.1fs，output_tokens=%s，finish_reason=%s",
+        "新闻初筛模型响应：%.1fs，output_tokens=%s，finish_reason=%s，final_chars=%s，cache_hit=%s",
         time.monotonic() - started, usage.get("output_tokens"), metadata.get("finish_reason"),
+        len(str(getattr(response, "content", "") or "")),
+        (metadata.get("headers") or {}).get("x-litellm-cache-hit", "unknown"),
     )
     return response
 
@@ -951,7 +958,7 @@ def _model_routes() -> list[tuple[str, str]]:
     config = load_ai_config(include_key=True)
     primary_model = (
         os.environ.get("CMHK_NEWS_SELECTION_MODEL", "").strip()
-        or _text(config.get("model"), 120)
+        or "Qwen3-30B-A3B-Instruct-2507"
     )
     if config.get("api_keys"):
         primary_keys = api_key_candidates(config, model=primary_model)
@@ -965,6 +972,9 @@ def _model_routes() -> list[tuple[str, str]]:
         if primary_key := _text(config.get("api_key"), 500):
             primary_keys.append(primary_key)
     routes = [(primary_model, key) for key in dict.fromkeys(primary_keys) if primary_model]
+    configured_model = _text(config.get("model"), 120)
+    if configured_model and configured_model != primary_model:
+        routes.extend((configured_model, key) for key in primary_keys)
     for model, values in (config.get("model_api_keys") or {}).items():
         keys = [values] if isinstance(values, str) else values
         if not isinstance(keys, list):
@@ -994,6 +1004,22 @@ def _invoke_langchain(
     request_id = f"news-selection-{uuid.uuid4().hex}"
     session = _MODEL_SESSION.get()
     include_preferences = session is None or not session.get("preferences")
+    learned_preferences = session.get("profile") if session else None
+    # Full provenance stays in the checkpoint hash. Once learned from that exact
+    # history, send the profile plus balanced recent examples, not all history
+    # on every classification. Pending fields remain masked as before.
+    prompt_examples = examples
+    if learned_preferences:
+        groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for example in examples:
+            pair = (_text(example.get("app_status"), 20), _text(example.get("weekly_status"), 20))
+            groups.setdefault(pair, []).append(example)
+        prompt_examples = [
+            {key: value for key, value in item.items() if key in {
+                "news_id", "title", "summary", "app_status", "weekly_status", "verified_human_fields",
+            }}
+            for group in groups.values() for item in group[-2:]
+        ]
     system_prompt = (
         "你是 CMHK 每日新闻选材偏好学习 Agent。你只从已提供的历史人工决策中归纳习惯，"
         "并对本轮候选分别判断 APP 滚动新闻与双周报。两个字段互相独立。"
@@ -1017,31 +1043,38 @@ def _invoke_langchain(
             "app_preference_summary、weekly_preference_summary各40字以内。"
         )
     else:
-        system_prompt += "本次仅输出decisions；已有偏好摘要不必重复输出，仍以人工样本为依据。"
+        system_prompt += (
+            "本次仅输出decisions；learned_preferences来自本轮同一批已核验人工样本的学习结果，"
+            "请按其偏好分类，human_examples为各状态组合的最近人工例证；不必重复学习或输出偏好。"
+        )
     user_prompt = json.dumps(
         {
             "request_id": request_id,
             "required_candidate_ids": required_candidate_ids,
             "current_candidates": targets,
             "instruction": (
-                "先逐字核对 required_candidate_ids，再归纳可复用偏好并逐条判断；"
+                "按已学偏好与人工例证逐条判断，逐字复制required_candidate_ids；"
                 "不可遗漏、替换或复用其他轮次的候选。"
             ),
-            "human_examples": examples,
+            "human_examples": prompt_examples,
+            "learned_preferences": learned_preferences,
         },
         ensure_ascii=False,
     )
     errors: list[str] = []
     for model_name, api_key in _model_routes():
+        cache_options = {"cache": {"no-cache": True, "no-store": True}}
+        structured_options = {**cache_options, "response_format": {"type": "json_object"}}
+        if "deepseek" in model_name.lower():
+            structured_options = deepseek_nonthinking_parameters(structured_options)
         model_options = dict(
             model=model_name,
             api_key=api_key,
             api_base=_text(config.get("base_url"), 500),
-            extra_body=deepseek_nonthinking_parameters(
-                {"response_format": {"type": "json_object"}}
-            ),
+            extra_body=structured_options,
             temperature=0.1,
             disable_streaming=True,
+            include_response_headers=True,
             max_retries=0,
             timeout=120,
             max_tokens=max(1500, 300 + 180 * len(targets)),
@@ -1058,7 +1091,10 @@ def _invoke_langchain(
                 # Change the request mode before rotating keys or splitting the
                 # same batch. Keep the schema prompt and all downstream checks.
                 logging.warning("新闻初筛 %s JSON模式空输出，切换普通模式：%s", model_name, empty_exc)
-                model_options["extra_body"] = deepseek_nonthinking_parameters()
+                model_options["extra_body"] = (
+                    deepseek_nonthinking_parameters(cache_options)
+                    if "deepseek" in model_name.lower() else cache_options
+                )
                 model = ChatDeepSeek(**model_options)
                 retry_payload = json.loads(user_prompt)
                 retry_payload["request_id"] = f"news-selection-{uuid.uuid4().hex}"
@@ -1297,6 +1333,11 @@ def _invoke_langchain_batches_impl(
     session = _MODEL_SESSION.get()
     if session is not None:
         session["preferences"] = any("learned_rules" in item for item in payloads)
+        profile = next((item for item in payloads if item.get("learned_rules")), None)
+        if profile:
+            session["profile"] = {key: profile.get(key) for key in (
+                "learned_rules", "avoid_patterns", "app_preference_summary", "weekly_preference_summary",
+            )}
     for batch_index, start in enumerate(range(0, len(remaining), batch_size), start=1):
         batch = remaining[start : start + batch_size]
         checkpoint_key = _model_checkpoint_key(examples, batch)
@@ -1473,6 +1514,10 @@ def _invoke_langchain_batches_impl(
         _normalized_decisions(payload, batch)
         if session is not None and "learned_rules" in payload:
             session["preferences"] = True
+            if payload.get("learned_rules") and not session.get("profile"):
+                session["profile"] = {key: payload.get(key) for key in (
+                    "learned_rules", "avoid_patterns", "app_preference_summary", "weekly_preference_summary",
+                )}
         if checkpoint is not None:
             checkpoint[checkpoint_key] = {"payload": payload, "model": model_name}
             if checkpoint_callback:
