@@ -1915,7 +1915,6 @@
       nodes,
       edges: edgesWithStatus,
       canvasSize: [1850, 755],
-      feedbackLabel: "新增新闻归档用于下一轮历史去重",
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
         { label: "B｜四库数据资料补缺线", position: [18, 230] },

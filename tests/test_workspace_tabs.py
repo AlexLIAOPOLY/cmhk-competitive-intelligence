@@ -867,7 +867,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(".news-lineage-edge.is-feedback-side .news-lineage-pulse", STYLE)
         for variant in ("is-ai", "is-app", "is-report", "is-database-local", "is-database-international", "is-database-cloud", "is-database-mainland", "is-insight", "is-delivery"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.{variant}", STYLE)
-        self.assertIn('feedbackLabel: "新增新闻归档用于下一轮历史去重"', SCRIPT)
+        self.assertNotIn('feedbackLabel: "新增新闻归档用于下一轮历史去重"', SCRIPT)
         self.assertNotIn("历史记忆影响下一轮", SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-out"', SCRIPT)
         self.assertNotIn('data-news-lineage-action="zoom-in"', SCRIPT)
