@@ -2078,13 +2078,49 @@
     requestAnimationFrame(() => requestAnimationFrame(syncNewsLineageEdges));
   }
 
+  function layoutNewsLineageCards(canvas) {
+    const width = Number(canvas.dataset.lineageWidth);
+    const boxes = [...canvas.querySelectorAll("[data-news-lineage-node], [data-news-lineage-lane]")].map((element) => {
+      // Original coordinates prevent polling and ResizeObserver from accumulating offsets.
+      element.dataset.baseY ??= element.dataset.y;
+      return { element, baseY: Number(element.dataset.baseY), x: Number(element.dataset.x), w: element.offsetWidth, h: element.offsetHeight };
+    }).sort((a, b) => a.baseY - b.baseY);
+    const placed = [];
+    for (const box of boxes) {
+      box.y = box.baseY;
+      for (const prior of placed) {
+        if (prior.baseY < box.baseY && box.x < prior.x + prior.w && box.x + box.w > prior.x) {
+          box.y = Math.max(box.y, prior.y + prior.h + 16);
+        }
+      }
+      box.element.dataset.y = String(box.y);
+      box.element.style.transform = `translate(${box.element.dataset.x}px,${box.y}px)`;
+      placed.push(box);
+    }
+    const databases = boxes.filter((box) => /^database-(local|international|cloud|mainland)$/.test(box.element.dataset.newsLineageNode || ""));
+    const group = canvas.querySelector(".news-lineage-group");
+    if (group && databases.length) {
+      const top = Math.min(...databases.map((box) => box.y)) - 40;
+      group.style.transform = `translate(1120px,${top}px)`;
+      group.style.height = `${Math.max(...databases.map((box) => box.y + box.h)) - top + 12}px`;
+    }
+    const height = Math.max(Number(canvas.dataset.lineageHeight), ...boxes.map((box) => box.y + box.h + 24));
+    canvas.style.height = `${height}px`;
+    const svg = canvas.querySelector(".news-lineage-edges");
+    if (svg) {
+      svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+      svg.style.height = `${height}px`;
+    }
+    return height;
+  }
+
   function fitNewsLineageToViewport(panel) {
     const viewport = panel.querySelector("[data-news-lineage-viewport]");
     const stage = panel.querySelector("[data-news-lineage-stage]");
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!viewport || !stage || !canvas || viewport.clientWidth <= 0) return;
     const canvasWidth = Number(canvas.dataset.lineageWidth || canvas.offsetWidth || 0);
-    const canvasHeight = Number(canvas.dataset.lineageHeight || canvas.offsetHeight || 0);
+    const canvasHeight = layoutNewsLineageCards(canvas);
     if (!canvasWidth || !canvasHeight) return;
     const viewportTop = Math.max(0, viewport.getBoundingClientRect().top);
     const availableHeight = Math.max(1, window.innerHeight - viewportTop - 12);
@@ -2682,9 +2718,13 @@
       meta: event.time || "未记录时间",
       detail: event.content || "未保存事件正文",
     }));
-    const previews = [...searchQueries, ...recordPreviews, ...runPreviews, ...eventPreviews].filter((item, index, items) => (
-      items.findIndex((candidate) => `${candidate.title}|${candidate.url || ""}|${candidate.meta || ""}` === `${item.title}|${item.url || ""}|${item.meta || ""}`) === index
-    ));
+    const seenPreviews = new Set();
+    const previews = [...searchQueries, ...recordPreviews, ...runPreviews, ...eventPreviews].filter((item) => {
+      const key = JSON.stringify([item.title, item.url || "", item.meta || ""]);
+      if (seenPreviews.has(key)) return false;
+      seenPreviews.add(key);
+      return true;
+    });
     return { ...descriptions, previews };
   }
 
@@ -2705,9 +2745,9 @@
 
   function renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, records, events, incoming, outgoing) {
     const model = newsLineageFirstScreenModel(nodeKey, node, relatedRuns, records, events, incoming, outgoing);
-    const previewRows = model.previews.slice(0, 6);
+    const previewRows = model.previews;
     const previewBody = previewRows.length ? previewRows.map((item) => `<article><span>${esc(item.tag || "实际对象")}</span><div><strong>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</strong>${item.meta ? `<small>${esc(item.meta)}</small>` : ""}</div><p>${esc(item.detail || "未保存对象说明")}</p></article>`).join("") : `<div class="news-lineage-first-empty"><strong>当前归档没有可展示的逐条对象</strong><p>上方仍按真实汇总说明本节点输入与输出；页面不会编造链接、关键词或数据。</p></div>`;
-    return `<section class="news-lineage-dialog-section is-first-screen"><header><h3>本节点实际输入、动作与输出</h3><span>打开即看真实对象</span></header><div class="news-lineage-io-flow"><article><span>01 · 实际输入</span><p>${esc(model.input)}</p></article><article><span>02 · 本节点动作</span><p>${esc(model.action)}</p></article><article><span>03 · 实际输出</span><p>${esc(model.output)}</p></article></div>${nodeKey === "news-search" ? renderNewsMonitoringKeywords(relatedRuns) : ""}<div class="news-lineage-first-preview"><header><strong>实际对象预览</strong><span>${number(model.previews.length)} 条可展示 · 首屏显示前 ${number(previewRows.length)} 条</span></header><div>${previewBody}</div></div></section>`;
+    return `<section class="news-lineage-dialog-section is-first-screen"><header><h3>本节点实际输入、动作与输出</h3><span>打开即看真实对象</span></header><div class="news-lineage-io-flow"><article><span>01 · 实际输入</span><p>${esc(model.input)}</p></article><article><span>02 · 本节点动作</span><p>${esc(model.action)}</p></article><article><span>03 · 实际输出</span><p>${esc(model.output)}</p></article></div>${nodeKey === "news-search" ? renderNewsMonitoringKeywords(relatedRuns) : ""}<div class="news-lineage-first-preview"><header><strong>实际对象预览</strong><span>${number(previewRows.length)} 条可展示 · 上下滚动查看全部</span></header><div class="news-lineage-preview-scroll" role="region" aria-label="实际对象预览列表" tabindex="0">${previewBody}</div></div></section>`;
   }
 
   function companyAgentExecutionModel(relatedRuns) {
