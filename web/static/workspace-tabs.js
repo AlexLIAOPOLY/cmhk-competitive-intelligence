@@ -33,6 +33,7 @@
     newsLineageResizeObserver: null,
     newsLineageWindowResizeHandler: null,
     newsLineageTabChangeHandler: null,
+    newsLineageScrollHandler: null,
     newsLivePollTimer: 0,
     newsLiveRefreshInFlight: false,
     newsLiveReviewTick: 0,
@@ -1919,7 +1920,7 @@
         { label: "B｜四库数据资料补缺线", position: [18, 230] },
         { label: "C｜数据审核主链：抓取与提取 → 数据字段审核 → 入库 → UI", position: [18, 425] },
       ],
-      groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", note: "四库已发布数据汇总生成右侧 AI 战略洞察", position: [1120, 430], size: [389, 315] }],
+      groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", position: [1120, 430], size: [389, 315] }],
     };
   }
 
@@ -1983,6 +1984,29 @@
   }
 
   function syncNewsLineageEdges() {
+    const occupied = [...document.querySelectorAll("[data-news-lineage-node]")].map((node) => ({
+      x: Number(node.dataset.x), y: Number(node.dataset.y), w: node.offsetWidth, h: node.offsetHeight,
+    }));
+    const placeLabel = (label, x, y) => {
+      const canvas = label.closest("[data-news-lineage-canvas]");
+      const w = label.offsetWidth;
+      const h = label.offsetHeight;
+      const left = Math.max(8, Math.min(canvas.offsetWidth - w - 8, x - w / 2));
+      const top = Math.max(8, Math.min(canvas.offsetHeight - h - 8, y - h / 2));
+      // Use canvas coordinates throughout, including at fractional display scales.
+      const offsets = [0];
+      for (let step = 16; step <= 192; step += 16) offsets.push(-step, step);
+      const candidates = offsets.flatMap((dy) => offsets.map((dx) => ({
+        x: Math.max(8, Math.min(canvas.offsetWidth - w - 8, left + dx)),
+        y: Math.max(8, Math.min(canvas.offsetHeight - h - 8, top + dy)),
+        w, h, distance: Math.hypot(dx * 1.25, dy),
+      }))).sort((a, b) => a.distance - b.distance);
+      const position = candidates.find((candidate) => !occupied.some((box) =>
+        candidate.x < box.x + box.w + 4 && candidate.x + w + 4 > box.x
+        && candidate.y < box.y + box.h + 4 && candidate.y + h + 4 > box.y)) || candidates[0];
+      label.style.transform = `translate(${position.x}px,${position.y}px)`;
+      occupied.push(position);
+    };
     document.querySelectorAll("[data-news-lineage-edge]").forEach((path) => {
       path.setAttribute("d", newsLineageEdgePath(path.dataset.from, path.dataset.to, path.dataset.kind));
     });
@@ -1996,14 +2020,14 @@
         : routeKey === "main→agent" ? -24
         : routeKey === "fact-extract→agent" ? 16
         : -13;
-      label.style.transform = `translate(${point.x}px,${point.y + labelOffsetY}px) translate(-50%,-50%)`;
+      placeLabel(label, point.x, point.y + labelOffsetY);
     });
     document.querySelectorAll("[data-news-lineage-state]").forEach((label) => {
       const path = document.querySelector(`#newsLineageEdge${label.dataset.edgeIndex}`);
       if (!path) return;
       const length = path.getTotalLength();
       const point = path.getPointAtLength(path.dataset.kind === "feedback-side" ? length * .1 : length / 2);
-      label.style.transform = `translate(${point.x}px,${point.y + 13}px) translate(-50%,-50%)`;
+      placeLabel(label, point.x, point.y + 13);
     });
   }
 
@@ -2753,10 +2777,14 @@
     state.newsLineageResizeObserver?.disconnect();
     if (state.newsLineageWindowResizeHandler) window.removeEventListener("resize", state.newsLineageWindowResizeHandler);
     if (state.newsLineageTabChangeHandler) window.removeEventListener("workspace-tab-change", state.newsLineageTabChangeHandler);
+    if (state.newsLineageScrollHandler) window.removeEventListener("scroll", state.newsLineageScrollHandler, true);
+    document.body.querySelector(":scope > #newsLineagePurposeTooltip")?.remove();
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!canvas) return;
     const viewport = panel.querySelector("[data-news-lineage-viewport]");
     const purposeTooltip = panel.querySelector("#newsLineagePurposeTooltip");
+    // Filtered/animated ancestors change the containing block of fixed elements.
+    if (purposeTooltip) document.body.appendChild(purposeTooltip);
     let purposeTooltipNode = null;
     const hidePurposeTooltip = () => {
       if (!purposeTooltip) return;
@@ -2765,7 +2793,7 @@
       purposeTooltipNode?.removeAttribute("aria-describedby");
       purposeTooltipNode = null;
     };
-    const showPurposeTooltip = (node) => {
+    const showPurposeTooltip = (node, pointer = null) => {
       if (!purposeTooltip || !node) return;
       const purpose = node.dataset.newsLineagePurpose || "当前节点尚未填写具体作用。";
       purposeTooltip.querySelector("span").textContent = purpose;
@@ -2775,16 +2803,22 @@
       node.setAttribute("aria-describedby", purposeTooltip.id);
       const nodeRect = node.getBoundingClientRect();
       const tooltipRect = purposeTooltip.getBoundingClientRect();
-      const below = nodeRect.top < tooltipRect.height + 24;
+      const anchorY = pointer ? pointer.clientY : nodeRect.top;
+      const below = anchorY < tooltipRect.height + 24;
       const halfWidth = tooltipRect.width / 2;
-      const center = nodeRect.left + nodeRect.width / 2;
+      const center = pointer ? pointer.clientX : nodeRect.left + nodeRect.width / 2;
+      const tooltipCenter = Math.max(halfWidth + 12, Math.min(window.innerWidth - halfWidth - 12, center));
       purposeTooltip.classList.toggle("is-below", below);
-      purposeTooltip.style.left = `${Math.max(halfWidth + 12, Math.min(window.innerWidth - halfWidth - 12, center))}px`;
-      purposeTooltip.style.top = `${below ? nodeRect.bottom + 12 : nodeRect.top - 12}px`;
+      purposeTooltip.style.left = `${tooltipCenter}px`;
+      purposeTooltip.style.top = `${below ? (pointer ? anchorY : nodeRect.bottom) + 12 : anchorY - 12}px`;
+      purposeTooltip.style.setProperty("--tooltip-arrow-x", `${Math.max(12, Math.min(tooltipRect.width - 12, halfWidth + center - tooltipCenter))}px`);
     };
     canvas.addEventListener("pointerover", (event) => {
       const node = event.target.closest("[data-news-lineage-node]");
-      if (node && node !== purposeTooltipNode) showPurposeTooltip(node);
+      if (node && node !== purposeTooltipNode && event.pointerType !== "touch") showPurposeTooltip(node, event);
+    });
+    canvas.addEventListener("pointermove", (event) => {
+      if (purposeTooltipNode && event.pointerType !== "touch") showPurposeTooltip(purposeTooltipNode, event);
     });
     canvas.addEventListener("pointerout", (event) => {
       const node = event.target.closest("[data-news-lineage-node]");
@@ -2805,7 +2839,13 @@
       panel.querySelectorAll("[data-news-lineage-node]").forEach((item) => item.classList.toggle("is-selected", item === node));
       openActualNewsLineageDetail(node.dataset.newsLineageNode);
     });
-    const scheduleFit = () => scheduleNewsLineageFit(panel);
+    const scheduleFit = () => { hidePurposeTooltip(); scheduleNewsLineageFit(panel); };
+    state.newsLineageScrollHandler = () => {
+      const focusedNode = canvas.querySelector("[data-news-lineage-node]:focus-visible");
+      if (focusedNode) showPurposeTooltip(focusedNode);
+      else hidePurposeTooltip();
+    };
+    window.addEventListener("scroll", state.newsLineageScrollHandler, true);
     if (window.ResizeObserver) {
       state.newsLineageResizeObserver = new ResizeObserver(scheduleFit);
       if (viewport) state.newsLineageResizeObserver.observe(viewport);
