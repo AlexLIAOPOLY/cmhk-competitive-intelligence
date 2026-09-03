@@ -388,6 +388,15 @@
 .competitor-select select { width: 100%; height: 34px; padding: 0 9px; border: 1px solid #3b6172; border-radius: 4px; outline: 0; color: #e6f2f4; background: #071d28; font-size: 11px; }
 .competitor-year-options { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
 .competitor-year-options span { width: 100%; padding: 0 5px; }
+.competitor-year-options label { min-width: 0; transform-origin: center; }
+.competitor-year-options label.is-disappearing { pointer-events: none; animation: competitor-year-exit .32s ease both; }
+.competitor-year-options label.is-appearing { animation: competitor-year-enter .34s cubic-bezier(.16,1,.3,1) both; }
+@keyframes competitor-year-enter { from { opacity: 0; transform: translateY(4px) scale(.9); filter: blur(1.5px); } to { opacity: 1; transform: none; filter: none; } }
+@keyframes competitor-year-exit { to { opacity: 0; transform: translateY(-3px) scale(.92); filter: blur(1.2px); } }
+@media (prefers-reduced-motion: reduce) {
+  .competitor-year-options label.is-appearing { animation: none; }
+  .competitor-year-options label.is-disappearing { display: none; animation: none; }
+}
 .competitor-result { min-height: 0; overflow: auto; }
 .competitor-result-header { min-height: 72px; padding-block: 12px; }
 .competitor-result-header > div:first-child { display: grid; gap: 5px; }

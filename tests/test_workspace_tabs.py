@@ -508,7 +508,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("整个年份窗口均有披露值", SCRIPT)
         self.assertIn("visibleCompetitorIds", SCRIPT)
         self.assertIn("competitorHasCompleteMetric", SCRIPT)
-        self.assertIn('classList.add("is-disappearing")', SCRIPT)
+        self.assertIn('classList.toggle("is-disappearing", leaving)', SCRIPT)
         self.assertNotIn("animateCompetitorOptionParticles", SCRIPT)
         self.assertNotIn("competitor-particle-layer", STYLE)
         self.assertIn("--option-order", SCRIPT)

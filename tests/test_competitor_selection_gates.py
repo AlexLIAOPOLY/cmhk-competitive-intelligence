@@ -49,7 +49,7 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
         self.assertIn("整个年份窗口均有披露值", SCRIPT)
         self.assertIn("逐年数据完整", SCRIPT)
-        self.assertIn('classList.add("is-disappearing")', SCRIPT)
+        self.assertIn('classList.toggle("is-disappearing", leaving)', SCRIPT)
         self.assertIn("transitionCompetitorOptions", SCRIPT)
         self.assertIn("visibleCompetitorIds(data, selection.companies, selection.years, selection.metric)", SCRIPT)
         self.assertIn("data.metrics.filter((metric) => competitorHasCompleteMetric", SCRIPT)
