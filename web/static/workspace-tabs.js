@@ -1492,6 +1492,7 @@
     return {
       available: true,
       cached: ["cached", "local_history"].includes(sheet.snapshotMode),
+      updatedAt: sheet.updatedAt,
       rows,
       appRows,
       appSyncedRows: appRows.filter((row) => row.syncStatus === "已纳入"),
@@ -1500,6 +1501,29 @@
       appHumanRows: appRows.filter((row) => !isMachineReviewer(row.appReviewer)),
       weeklyMachineRows: weeklyRows.filter((row) => isMachineReviewer(row.weeklyReviewer)),
       weeklyHumanRows: weeklyRows.filter((row) => !isMachineReviewer(row.weeklyReviewer)),
+    };
+  }
+
+  function newsSelectionReviewHealth(review, runs, fallback) {
+    // A historical attempt is not an outstanding review. Only a fresh, complete
+    // sheet read may supersede it; cached, empty or missing data cannot turn green.
+    const snapshotAt = Date.parse(review.updatedAt || "");
+    const latestRunAt = Math.max(0, ...runs.map((run) =>
+      Date.parse(run.completed_at_hkt || run.started_at_hkt || "") || 0));
+    if (!review.available || review.cached || !review.rows?.length
+      || !Number.isFinite(snapshotAt) || snapshotAt < latestRunAt) return fallback;
+    const finalStatuses = new Set(["接受", "不接受"]);
+    const pending = review.rows.filter((row) =>
+      !finalStatuses.has(row.rollingStatus) || !finalStatuses.has(row.weeklyStatus)).length;
+    if (pending) return {
+      key: fallback.key === "running" ? "running" : "warning",
+      label: fallback.key === "running" ? "运行中" : "待审核",
+      pendingCount: pending,
+      reviewDetail: `当天 ${review.rows.length} 条新闻中仍有 ${pending} 条未完成两个审核字段`,
+    };
+    return {
+      key: "healthy", label: "正常",
+      reviewDetail: `当天 ${review.rows.length} 条新闻的滚动栏、周报字段均已审核完成；历史失败尝试保留在日志，不再判为当前异常`,
     };
   }
 
@@ -1674,7 +1698,7 @@
     const strategicHealth = combinedRunHealth(runs);
     const mainHealth = runHealth(mainRun);
     const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
-    const selectionHealth = combinedRunHealth(selectionRuns);
+    const selectionRunHealth = combinedRunHealth(selectionRuns);
     const intelligenceHealth = runHealth(intelligenceRun);
     const strategicSearchHealth = newsStageHealth(stages.find((stage) => stage.key === "search"), strategicHealth);
     const strategicAiHealth = newsStageHealth(stages.find((stage) => stage.key === "ai"), strategicHealth);
@@ -1810,6 +1834,7 @@
     const hasCompanyAgentProgress = Number(companyAgentProgress.recordedCompanies || 0) > 0;
     const companyAgentVersion = Number(companyAgentProgress.version || 0);
     const reviewResults = dailyNewsReviewResults(selectedDate);
+    const selectionHealth = newsSelectionReviewHealth(reviewResults, selectionAttemptRuns, selectionRunHealth);
     const selectionSummary = selectionRuns.reduce((summary, run) => {
       const item = run.operational_summary || {};
       summary.candidates += Number(item.candidate_count || 0);
@@ -1855,6 +1880,13 @@
       domainNode("mainland", "内地运营商", [1295, 535], "database-mainland"),
       { key: "insights", label: "AI 战略洞察生成与 UI 发布", value: intelligenceRun.crawl_run_id ? number(insightCount) : "—", unit: "项数据洞察发布到 UI", note: intelligenceRun.crawl_run_id ? `${insightGenerationLabel} ${number(insightCount)} 项数据洞察 · ${intelligenceRun.operational_summary?.pages_publish?.ok ? "页面发布已验证" : "发布待核对"}` : "当天未运行", health: modelAnalysis.fallback_used || (intelligenceRun.crawl_run_id && intelligenceHealth.key === "healthy" && (!intelligenceRun.operational_summary?.pages_publish?.ok || !insightCoverageComplete)) ? { key: "warning", label: "警告" } : intelligenceHealth, variant: "insight", position: [1525, 455], details: intelligenceRun.crawl_run_id ? [`AI数据洞察通过 ${number(insightCount)} / ${expectedInsightCount} 项；分域洞察 ${number(focusInsightCount)} / ${number(expectedFocusInsightCount)}，顶部跨库研判 ${number(discoveryInsightCount)} / ${number(expectedDiscoveryInsightCount)}；本轮${insightGenerationLabel}`, "数据洞察生成数与数据库数据条数、UI发布主体数分别统计，不可互相替代", `模型 ${modelAnalysis.model || "未记录"}`, `证据指纹 ${modelAnalysis.evidence_hash || "未记录"}`, intelligenceRun.operational_summary?.pages_publish?.ok ? `业务发布 主页与公开页已验证 · 版本 ${intelligenceRun.operational_summary.pages_publish.site_version || "未记录"}` : "业务发布 未留下可核对记录"] : ["所选日期没有数据洞察与业务发布归档"], evidence: [intelligenceRun.progress_detail || intelligenceRun.status_detail, intelligenceRun.operational_summary?.pages_publish?.public_url].filter(Boolean).join("\n") || "当天未留下AI数据洞察与业务发布证据" },
     ];
+    const selectionNode = nodes.find((node) => node.key === "news-selection-agent");
+    if (selectionHealth.reviewDetail) {
+      selectionNode.details.unshift(selectionHealth.reviewDetail);
+      if (selectionHealth.pendingCount) {
+        selectionNode.note += ` · 待审核 ${number(selectionHealth.pendingCount)} 条`;
+      }
+    }
     const cLanePositions = {
       main: [360, 460], "fact-extract": [360, 600], agent: [660, 500],
       "database-hub": [950, 530], "database-local": [1160, 470],
