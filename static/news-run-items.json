@@ -1,4 +1,102 @@
 {
+  "20260903_140055_207587": [
+    {
+      "newsId": "NEWS-9F1AC188D56B4E",
+      "title": "1—7月规上电子信息制造业营收超11万亿元，同比增长19.4%",
+      "summary": "工信部发布2026年1—7月电子信息制造业运行情况，规上企业营收超11万亿元，同比增长19.4%。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "中国新闻网",
+      "publishedAt": "2026-09-03T07:01:00+08:00",
+      "url": "https://www.chinanews.com.cn/cj/2026/09-03/10689370.shtml",
+      "inclusionReason": "工信部发布电子信息制造业营收数据，反映行业整体需求与增长趋势，可间接影响电信设备供应链和下游需求判断。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-FC729463DFC00D",
+      "title": "印度卫星通信发展面临监管不确定性",
+      "summary": "印度卫星通信市场面临多重安全要求，推高运营商成本与复杂性，监管前景不明。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "The Print on MSN",
+      "publishedAt": "2026-09-03T06:38:09+08:00",
+      "url": "https://www.msn.com/en-in/money/general/india-s-satellite-communication-ambitions-are-facing-regulatory-uncertainty/ar-AA2bsl15",
+      "inclusionReason": "印度卫星通信监管不确定性影响全球卫星通信行业格局，涉及市场准入与运营成本，可作为国际对标参考。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-8DFC839B433A71",
+      "title": "Marvell FY2027 Q2数据中心营收占比近八成，定制芯片下半年爬坡",
+      "summary": "Marvell第二财季营收27.39亿美元同比增37%，数据中心营收21.72亿美元占比近80%，定制芯片业务下半年开始爬坡。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "OFweek电子工程网",
+      "publishedAt": "2026-09-03T07:01:00+08:00",
+      "url": "https://ee.ofweek.com/2026-09/ART-8420-2816-30701438.html",
+      "inclusionReason": "Marvell数据中心业务高速增长、定制芯片爬坡，反映数据中心芯片需求旺盛，与数据中心监控关键词实质相关。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-05BBBB7BED9CEE",
+      "title": "宾州坎伯兰县PAX-1数据中心园区获批",
+      "summary": "Middlesex Township监督委员会批准PAX-1数据中心园区首个园区的最终土地开发计划，反对者转向法院。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "PennLive on MSN",
+      "publishedAt": "2026-09-03T06:54:10+08:00",
+      "url": "https://www.msn.com/en-us/news/other/pax-1-data-center-in-cumberland-county-wins-key-approval-opponents-turn-to-court/ar-AA2bsOTb",
+      "inclusionReason": "数据中心园区获批是具体基础设施部署事件，可反映海外算力与数据中心供给变化。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-35EFB093F5E03F",
+      "title": "软银减持Meesho股份",
+      "summary": "软银减持印度电商Meesho股份，为当日关注个股之一。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "hdfcsky",
+      "publishedAt": "2026-09-03T07:01:00+08:00",
+      "url": "https://hdfcsky.com/news/stocks-to-watch-today-thursday-september-3-2026-power-grid-india-cements-meesho-inox-wind-pine-labs",
+      "inclusionReason": "软银作为被监测竞对，减持Meesho股份属资本市场动作，可用于对标其资本配置。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-9062EEBE86E89D",
+      "title": "陈茂波：粤港澳大湾区是促进亚太区合作重要平台",
+      "summary": "财政司司长陈茂波表示，粤港澳大湾区拥有国际金融中心及创新集群优势，是促进亚太区合作的重要平台。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "香港本地",
+      "source": "Now 財經",
+      "publishedAt": "2026-09-03T06:56:00+08:00",
+      "url": "https://finance.now.com/news/post.php?id=984884&type=news",
+      "inclusionReason": "陈茂波阐述大湾区在亚太区合作中的平台作用，反映香港区域经济合作定位与潜在需求。",
+      "businessImpact": "收入与需求"
+    },
+    {
+      "newsId": "NEWS-41848EDE183709",
+      "title": "希格诺携手GMI Cloud部署72台NVIDIA HGX B300系统 加速台湾AI算力基础建",
+      "summary": "希格诺科技与GMI Cloud签订策略合作，将于台湾部署72台NVIDIA HGX B300系统，打造Blackwell Ultra AI算力丛集，预计2026年11月上线。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "蕃新聞",
+      "publishedAt": "2026-09-03T07:01:00+08:00",
+      "url": "https://n.yam.com/Article/20260903518398",
+      "inclusionReason": "台湾部署72台NVIDIA HGX B300 AI算力丛集，属AI算力基础设施具体扩建，可影响算力供给与成本。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-A6487A8B93680D",
+      "title": "量子计算商业化加速，加密行业面临安全挑战",
+      "summary": "量子计算商业化进程加快，商业级量子计算机已进入云数据中心，100个逻辑纠错比特的实用化门槛最快明年突破，加密行业面临被破解风险。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "手机凤凰网",
+      "publishedAt": "2026-09-03T07:01:00+08:00",
+      "url": "https://i.ifeng.com/c/8w7B3YZuY01",
+      "inclusionReason": "量子计算商业化取得具体进展——商业级量子计算机已部署于云数据中心、100逻辑纠错比特门槛即将突破，可能影响加密安全、金融建模等领域，属于关键技术演进信号。",
+      "businessImpact": "网络与运营"
+    }
+  ],
   "20260903_093634_839263": [
     {
       "newsId": "NEWS-2ECAFF34A0C5F4",
