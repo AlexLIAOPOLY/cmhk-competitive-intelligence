@@ -85,6 +85,12 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("stroke-dasharray: 26 38 5 47; animation-duration: 8.8s", STYLE)
         self.assertIn("animation-delay: var(--news-feedback-degraded-delay,0ms)", STYLE)
 
+    def test_route_labels_and_status_icons_reserve_lane_title_space(self):
+        self.assertIn('document.querySelectorAll("[data-news-lineage-node], [data-news-lineage-lane]")', SCRIPT)
+        self.assertIn('data-news-lineage-lane data-x="${lane.position[0]}" data-y="${lane.position[1]}"', SCRIPT)
+        self.assertIn('{ label: "C｜数据审核主链", position: [18, 425] }', SCRIPT)
+        self.assertNotIn('C｜数据审核主链：抓取与提取', SCRIPT)
+
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertIn('/static/workspace-tabs.css?v=159', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=185', INDEX)

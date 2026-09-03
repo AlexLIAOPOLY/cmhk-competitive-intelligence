@@ -1919,7 +1919,7 @@
       laneLabels: [
         { label: "A｜战略新闻智能检索线", position: [18, 22] },
         { label: "B｜四库数据资料补缺线", position: [18, 230] },
-        { label: "C｜数据审核主链：抓取与提取 → 数据字段审核 → 入库 → UI", position: [18, 425] },
+        { label: "C｜数据审核主链", position: [18, 425] },
       ],
       groups: [{ key: "databases", label: "审核通过数据按主体类型写入四库并发布到 UI", position: [1120, 430], size: [389, 315] }],
     };
@@ -1985,7 +1985,7 @@
   }
 
   function syncNewsLineageEdges() {
-    const occupied = [...document.querySelectorAll("[data-news-lineage-node]")].map((node) => ({
+    const occupied = [...document.querySelectorAll("[data-news-lineage-node], [data-news-lineage-lane]")].map((node) => ({
       x: Number(node.dataset.x), y: Number(node.dataset.y), w: node.offsetWidth, h: node.offsetHeight,
     }));
     const placeLabel = (label, x, y) => {
@@ -2958,7 +2958,7 @@
               <div class="news-lineage-edge-labels" aria-hidden="true">${lineage.edges.map(([, , label, kind, line], index) => label ? `<span class="news-lineage-edge-label is-${esc(kind)} is-line-${esc(line?.key || "unknown")}" data-news-lineage-label data-edge-index="${index}">${esc(label)}</span>` : "").join("")}</div>
               <div class="news-lineage-edge-states" role="list" aria-label="异常线路状态">${lineage.edges.map(([, , , kind, line], index) => ["interrupted", "degraded", "at-risk"].includes(line?.key) ? `<span class="news-lineage-edge-state is-${esc(line.key)}" role="listitem" data-news-lineage-state data-edge-index="${index}" tabindex="0" aria-label="${esc(line.label)}：${esc(line.reason || "")}" title="${esc(line.label)}：${esc(line.reason || "")}">${lineageStatusIcon(line.key)}</span>` : "").join("")}</div>
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
-              ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
+              ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" data-news-lineage-lane data-x="${lane.position[0]}" data-y="${lane.position[1]}" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
               <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
             </div>
