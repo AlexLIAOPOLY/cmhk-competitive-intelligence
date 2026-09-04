@@ -1408,6 +1408,11 @@
   }
 
   function selectionRunBatchKey(run) {
+    const parentRunId = linkedParentRunId(run);
+    const candidateCount = Number(run?.operational_summary?.candidate_count || 0);
+    if (parentRunId && candidateCount > 0) {
+      return `parent:${parentRunId}|candidates:${candidateCount}`;
+    }
     const explicit = String(
       run?.idempotency_key
       || run?.operational_summary?.idempotency_key
@@ -1450,7 +1455,14 @@
         && current?.operational_summary?.reused === true
         && run?.operational_summary?.reused !== true
       );
-      if (!current || (runVerified && !currentVerified) || preferOriginalVerifiedRun) {
+      const preferNewerVerifiedRun = (
+        runVerified
+        && currentVerified
+        && run?.operational_summary?.reused !== true
+        && Date.parse(run?.completed_at_hkt || run?.heartbeat_at_hkt || run?.started_at_hkt || 0)
+          > Date.parse(current?.completed_at_hkt || current?.heartbeat_at_hkt || current?.started_at_hkt || 0)
+      );
+      if (!current || (runVerified && !currentVerified) || preferOriginalVerifiedRun || preferNewerVerifiedRun) {
         batches.set(batchKey, run);
       }
     });

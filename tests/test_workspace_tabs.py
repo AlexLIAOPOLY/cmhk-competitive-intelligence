@@ -610,6 +610,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_news_selection_summary_distinguishes_verified_and_new_writes(self):
         self.assertIn("function selectionRunBatchKey(run)", SCRIPT)
+        self.assertIn("`parent:${parentRunId}|candidates:${candidateCount}`", SCRIPT)
         self.assertIn("function selectionRunBusinessDate(run)", SCRIPT)
         self.assertIn("function verifiedSelectionRun(run)", SCRIPT)
         self.assertIn("function selectionAttemptRunsForDate(date)", SCRIPT)
@@ -617,6 +618,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("selectionRunBusinessDate(run) === date", SCRIPT)
         self.assertIn("runVerified && !currentVerified", SCRIPT)
         self.assertIn("current?.operational_summary?.reused === true", SCRIPT)
+        self.assertIn("preferNewerVerifiedRun", SCRIPT)
         self.assertIn("const selectionAttemptRuns = selectionAttemptRunsForDate(selectedDate)", SCRIPT)
         self.assertIn("const selectionRuns = authoritativeSelectionRunsForDate(selectedDate)", SCRIPT)
         self.assertIn("成功回读覆盖同批失败尝试", SCRIPT)

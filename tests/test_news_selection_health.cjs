@@ -6,6 +6,18 @@ const source = fs.readFileSync(require('node:path').join(__dirname, '../web/stat
 const context = vm.createContext({});
 vm.runInContext(source.slice(source.indexOf('  function newsSelectionReviewHealth('), source.indexOf('  function executiveDomainFactsForDate(')), context);
 const health = context.newsSelectionReviewHealth;
+const selectionContext = vm.createContext({
+  state: { crawlRuns: [] },
+  linkedParentRunId: (run) => String(run.parent_crawl_run_id || ''),
+  newsRunDate: (run) => String(run.started_at_hkt || '').slice(0, 10),
+});
+vm.runInContext(
+  source.slice(
+    source.indexOf('  function selectionRunBatchKey('),
+    source.indexOf('  function dailyNewsReviewResults('),
+  ),
+  selectionContext,
+);
 const failed = { key: 'critical', label: '异常' };
 const runs = [{completed_at_hkt:'2026-09-03T15:17:49+08:00'}];
 const snapshot = () => ({available:true,cached:false,updatedAt:'2026-09-03T15:30:00+08:00',rows:[{rollingStatus:'接受',weeklyStatus:'不接受'},{rollingStatus:'不接受',weeklyStatus:'接受'}]});
@@ -41,4 +53,31 @@ test('integration uses the selected date review and keeps historical attempt evi
   assert.match(source, /newsSelectionReviewHealth\(reviewResults, selectionAttemptRuns, selectionRunHealth\)/);
   assert.match(source, /const reviewResults = dailyNewsReviewResults\(selectedDate\)/);
   assert.match(source, /evidence: selectionAttemptRuns\.map/);
+});
+
+test('latest verified rerun supersedes an older result for the same parent and population', () => {
+  selectionContext.state.crawlRuns = [
+    {
+      crawl_run_id: 'old',
+      task_kind: 'news-selection-agent',
+      parent_crawl_run_id: 'parent-1',
+      started_at_hkt: '2026-09-04T14:59:00+08:00',
+      completed_at_hkt: '2026-09-04T15:00:00+08:00',
+      run_status: 'completed',
+      operational_summary: { candidate_count: 178, app_accepted_count: 91, readback_verified: true },
+    },
+    {
+      crawl_run_id: 'new',
+      task_kind: 'news-selection-agent',
+      parent_crawl_run_id: 'parent-1',
+      started_at_hkt: '2026-09-04T15:39:00+08:00',
+      completed_at_hkt: '2026-09-04T15:48:00+08:00',
+      run_status: 'completed',
+      operational_summary: { candidate_count: 178, app_accepted_count: 31, readback_verified: true },
+    },
+  ];
+  const selected = selectionContext.authoritativeSelectionRunsForDate('2026-09-04');
+  assert.equal(selected.length, 1);
+  assert.equal(selected[0].crawl_run_id, 'new');
+  assert.equal(selected[0].operational_summary.app_accepted_count, 31);
 });
