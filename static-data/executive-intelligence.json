@@ -14502,11 +14502,11 @@
   "refresh": {
     "ok": false,
     "status": "running",
-    "started_at_hkt": "2026-09-04T10:44:09+08:00",
+    "started_at_hkt": "2026-09-04T11:01:15+08:00",
     "agent_run_id": "scheduled_20260904_030037_690688",
     "dry_run": false,
     "task_run_id": "20260904_104408_799027",
-    "attempt": 1,
+    "attempt": 2,
     "domains": {},
     "ui_contract": {
       "domain_ids": [
@@ -14537,7 +14537,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-04T10:44:09+08:00"
+    "last_checked_at_hkt": "2026-09-04T11:01:15+08:00"
   },
   "ai": {
     "agent_run_id": "scheduled_20260904_030037_690688",
@@ -14550,7 +14550,7 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-04T10:55:00+08:00",
+      "generated_at_hkt": "2026-09-04T11:18:31+08:00",
       "model": "deterministic-evidence-fallback",
       "summaries": [
         {
@@ -15665,7 +15665,7 @@
         }
       ],
       "discovery_model": "DeepSeek-V4-Pro",
-      "discovery_generated_at_hkt": "2026-09-04T10:55:01+08:00",
+      "discovery_generated_at_hkt": "2026-09-04T11:19:00+08:00",
       "discovery_evidence_repair_count": 3,
       "evidence_hash": "4e201c79ea51ce0ffef5450ca3a8d7b908fe36eb28dccef25496e8ad41951e19",
       "insight_format": "strategic_operating_judgement_v9",
