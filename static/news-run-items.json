@@ -1,4 +1,90 @@
 {
+  "20260904_140023_536278": [
+    {
+      "newsId": "NEWS-9C3A7120702F15",
+      "title": "日本股市反弹，软银集团上涨提振大盘",
+      "summary": "日本日经指数周五反弹，软银集团股价上涨带动市场情绪。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "The Economic Times on MSN",
+      "publishedAt": "2026-09-04T06:48:38+08:00",
+      "url": "https://www.msn.com/en-in/money/top-stocks/global-market-japan-stocks-rebound-on-wall-street-boost-softbank-rally/ar-AA2bxc3z",
+      "inclusionReason": "软银集团股价上涨带动日经反弹，可作为国际对标运营商资本市场动态。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-198CC29AB97DC8",
+      "title": "THEi高科院联同环电嘉研发移动充电机器人 完善电动车充电网络",
+      "summary": "THEi高科院研究团队联同环电嘉研发移动充电机器人，与政府合作完善电动车充电网络。",
+      "category": "竞对动态",
+      "region": "香港本地",
+      "source": "香港經濟日報HKET",
+      "publishedAt": "2026-09-04T11:00:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMi_gNBVV95cUxPZk83Rk1aZ19lQ3hLblBaTHBnbGlKRkJ4dXpidlYzclY2NHRkNWtCZzduVWZJQy11eGtFd2VKMzNHNmxkYTFBWHZrbHMtR3Bzam9BQmN4U2dqWko2OTRvRF9FY01jR01QQkI3TXZNenBmdjRfclZ6TEdtNU5rUnR5aXhJaDM1dFF0RWJxMFlqRnpUSlNyUWVFRE1fRVNzN2JTT3ZPZHBlbVBvY3hZTUE1NHdqeDcxY2hqS3V0Wkg0NXA2d0hxTnBjcmx5Q1AxMXFEQ3YwWnJYWlhBckdiZUNOSFRXelJBWW9HN294ZXhBTWxpazh6ZWkxNE8zTnd0VVg3T0c2emNkREdZNU1ERFdjZGRZdE5EZThEUmlTTjRFVzRyLWU3c2ZZOUJUTFBVUTlXa3lHTjFjczEzQ1RCR3gwbk80UzV4WVlQQ2lZcUZTSnNWNVBUSC1BdW5PM3JFOEJvNVJWbzJac0kxNzhzQm1FRTFLdTNodzlOWVFvNTV6U1gxdzlCenpSZlBvWlBHZjJzTDNmVXRIZTlDazB0a0ttSDlVUGhYRC16aTc3MzNwR3ZOZzBQVF9DdjdjYkFlOUhSZ2w3VXBhTjF6emY1N3dyS0h4WVg3UFJUVS1xNzJqS0ExMzhZTFF1dEZ1UVdTTm1mZ2hfUnVCS0x1cWNCWXc?oc=5",
+      "inclusionReason": "环电嘉（HGC关联企业）参与研发移动充电机器人，涉及竞对在电动车充电基础设施领域的具体合作项目。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-3C3D0562DF9FA8",
+      "title": "理想汽车新款MEGA售价下调5万元 计划年底前在港推出右舵版",
+      "summary": "理想汽车推出新款MEGA，售价50.98万元较上代下调5万元，右舵版本计划年底前在香港、澳门、新加坡及泰国推出。",
+      "category": "市场/产品类",
+      "region": "香港本地",
+      "source": "手机凤凰网",
+      "publishedAt": "2026-09-04T07:00:00+08:00",
+      "url": "https://i.ifeng.com/c/8w8hVhQBwt7",
+      "inclusionReason": "理想汽车新款MEGA右舵版计划年底前在香港推出，涉及香港市场新能源汽车产品布局变化，可能影响本地车联网、自动驾驶相关基础设施需求。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-B6699D0457CCF8",
+      "title": "安全筑基 智行深圳|2026深圳智能网联汽车安全主题交流暨媒体开放日举办",
+      "summary": "安全筑基 智行深圳|2026深圳智能网联汽车安全主题交流暨媒体开放日举办 香港商报",
+      "category": "基础设施/网络/技术类",
+      "region": "香港本地",
+      "source": "香港商报",
+      "publishedAt": "2026-09-04T11:23:31+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiXkFVX3lxTE1TMmV4RlNpQkZ0NTFCdTJ3N0xFMEpZZGhVb182OWRfNUN3UnZQLVlVY3lOUkRpaDdyNUl1LTlyUVRXSVVlVmlURE1SUE1jcDVsTzdVWS1ZN25BV3NKaFE?oc=5",
+      "inclusionReason": "安全筑基 智行深圳|2026深圳智能网联汽车安全主题交流暨媒体开放日举办属于可验证的关键技术事件，影响产品与定价。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-1BBEEF01019088",
+      "title": "工业和信息化部：“五管齐下”推动动力电池高质量发展",
+      "summary": "Copyright @ 经济观察网 2001- 2024 广播电视节目制作经营许可证 (京)字第12950号 ...",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "经济观察网",
+      "publishedAt": "2026-09-04T07:01:00+08:00",
+      "url": "https://www.eeo.com.cn/2026/0904/1022948.shtml",
+      "inclusionReason": "工业和信息化部：“五管齐下”推动动力电池高质量发展属于可验证的监管政策事件，影响合规与牌照。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-FDA5583F96E0FB",
+      "title": "中国电信集团层面发布词元套餐 成首家推出词元资费的运营商",
+      "summary": "中国电信在第58个世界电信和信息社会日之际，从集团层面正式发布系列试商用词元套餐，针对个人家庭、开发者及中小企业、词元生态伙伴分别推出不同资费方案。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "手机凤凰网",
+      "publishedAt": "2026-09-04T07:02:00+08:00",
+      "url": "https://i.ifeng.com/c/8w8vFW5b7m0",
+      "inclusionReason": "中国电信作为被监测运营商竞对，从集团层面推出词元套餐资费方案，属于竞对产品与资费动作，可用于对标分析。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-39B442F10803A5",
+      "title": "黄仁勋称「AI消灭所有工作」是无稽之谈",
+      "summary": "黄仁勋在G20会议上表示，即使实现AGI也不代表所有企业难题迎刃而解，「AI消灭所有工作」的说法毫无根据。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "澎湃新闻",
+      "publishedAt": "2026-09-04T07:00:00+08:00",
+      "url": "https://www.thepaper.cn/newsDetail_forward_34003232",
+      "inclusionReason": "英伟达CEO黄仁勋就AI对就业影响发表明确观点，涉及AI技术发展与社会影响的行业讨论，与AI监控关键词实质相关。",
+      "businessImpact": "竞争格局"
+    }
+  ],
   "20260904_073014_807736": [
     {
       "newsId": "NEWS-393E23F44357C0",
@@ -21089,80 +21175,6 @@
       "url": "https://news.google.com/rss/articles/CBMiY0FVX3lxTE1CZEJxZ3ZRRkY4VUFObmY2X2hZM0w5MTRPZ3gzQWlka0J1ckZHUDJKRGZyekdfQ296RUwwU1hGb2JpeV92QTZZU204UXpzVFN0c2UxZDBIUlBCQVRXYWJMTHh2RQ?oc=5",
       "inclusionReason": "百度作为大型科技公司，其营收下滑反映了宏观环境下企业广告和云服务需求的潜在变化，可作为市场需求侧信号参考。",
       "businessImpact": "收入与需求"
-    }
-  ],
-  "20260817_150152_955912": [
-    {
-      "newsId": "NEWS-800745D313FF12",
-      "title": "美国巨头购入3200辆中国自动驾驶汽车",
-      "summary": "尽管面临127.5%的高额关税，一家美国巨头仍购买了3200辆中国汽车，事件涉及自动驾驶技术。",
-      "category": "行业动态",
-      "region": "国际/行业",
-      "source": "hkcna.hk",
-      "publishedAt": "2026-08-17T08:48:00+08:00",
-      "url": "https://news.google.com/rss/articles/CBMiZkFVX3lxTE1nakpiQ3ZMX1ZtcDU5eFFISE5uUGdKYVZ2WDNLMjVkTVpHNjNWdkhROXJ5Wm4ydTdtRFU5VDZFc0FGTXJ6Y3BtdVV1UUdlVi1tMGhGbndEUHVpZUF4MzNiMy10VTZ4Zw?oc=5",
-      "inclusionReason": "美国企业大规模采购中国自动驾驶汽车，反映了自动驾驶技术的市场需求和商业化进展，可能影响行业竞争格局。",
-      "businessImpact": "竞争格局"
-    },
-    {
-      "newsId": "NEWS-59514BEB0A65BB",
-      "title": "中国推AI数据中心绿色标准，韩国加速建设",
-      "summary": "中国引入严格的绿色数据中心标准以应对AI高能耗，韩国则通过快速立法加速AI数据中心建设，但专家警告其能源与环境挑战。",
-      "category": "行业动态",
-      "region": "国际/行业",
-      "source": "商傳媒",
-      "publishedAt": "2026-08-17T08:02:00+08:00",
-      "url": "https://sunmedia.tw/news/technology/1786920673-AI%20數據中心耗能巨%20中國推綠色標準%20韓國拚建設速度",
-      "inclusionReason": "中韩两国在AI数据中心领域的政策与建设动态，涉及能效标准（PUE）和基础设施发展，可能影响全球数据中心技术路线和供应链。",
-      "businessImpact": "成本与效率"
-    },
-    {
-      "newsId": "NEWS-E2FC843AAA04E2",
-      "title": "光证国际：AI基建需求殷切，板块反弹未完",
-      "summary": "光证国际分析师认为AI基建需求依然强劲，预计相关板块本轮反弹尚未结束。",
-      "category": "行业动态",
-      "region": "国际/行业",
-      "source": "香港經濟日報HKET",
-      "publishedAt": "2026-08-17T15:00:00+08:00",
-      "url": "https://news.google.com/rss/articles/CBMi-ANBVV95cUxQek10dThwQjFSR2xlbk5ibzdOTTdqOWpib3BoMmw0dzhDU0hoVDM2QVFDVksyWkhibFJLVVdOOEFpTU01a01YQUlfOGtiNFJyVXF3eU15UEh3MjMzVVVhNjluMEhmcC00cDUzck1nbHBsN0w4VlNmaGFkSEFMZ3VPWVBMSXhrbzZwTXBRWms2M1o1VXE0NDdZUXhRU2xtLUhvQlFLYV9KVkZaYUE5cElRaGdNV1dSZnFTeFF2ekR3UDQ5T25SQmZKSWVhazVIcmN0WGxfS2o2M0hZMS11c2ZrZFVRSS1CMk9Pa3pFdDlpWlZWMnlob0hleElGeE5MeUJLcEVRNzZkdVlqanRBelR3OGpZYUpHZ1NtcllGTzZ1QTJIUC1Pc3ZaX0dVOE1jREE1UWpENURjU2t5dHI2WGVLaXNJMFdmMGhfMXNHVnpkSWhsam83dUt6RmpkcHIybFlkWXpSZXluUHNVaW9zbThyWWk1N0czQk9PRTRiTDlELWx1N3BpYlI3S3BvODFOUFh5YUR0alpvUHFCN1JqV0R0WTFYZXZ4TlpEZ0NYdURTejFrb2s4bnBiSWVncUlENFhYVS15YXpXYjZJOXFFOHdzRjRXSjEwd0RxaUVXc3NiX2NKVkNRUy1qa0VPZ0ZhdUdmcm9kVF91VGw?oc=5",
-      "inclusionReason": "分析师对AI基建需求的判断，反映了市场对AI基础设施投资的持续预期，可能影响数据中心、算力等电信相关基础设施的长期需求。",
-      "businessImpact": "收入与需求"
-    },
-    {
-      "newsId": "NEWS-FC1463501BFDAC",
-      "title": "乌军约600架无人机袭击莫斯科，致3伤及多建筑受损",
-      "summary": "乌克兰动用约600架无人机袭击莫斯科，俄方称拦截822架，攻击波及16个地区。",
-      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
-      "region": "国际/行业",
-      "source": "am730",
-      "publishedAt": "2026-08-17T08:02:00+08:00",
-      "url": "https://www.am730.com.hk/article/1047815",
-      "inclusionReason": "俄乌冲突中大规模无人机攻击事件，展示了无人机在现代战争中的应用，可能影响相关技术发展和地缘政治格局。",
-      "businessImpact": "供应韧性"
-    },
-    {
-      "newsId": "NEWS-DFC23B4EB3F0A6",
-      "title": "商汤科技预计上半年扭亏为盈，上市以来首次实现合并盈利",
-      "summary": "商汤科技预计上半年净利润5亿至7亿元人民币，为公司上市以来首次实现合并盈利。",
-      "category": "行业动态",
-      "region": "香港本地",
-      "source": "阿斯達克財經網",
-      "publishedAt": "2026-08-17T08:02:00+08:00",
-      "url": "https://www.aastocks.com/tc/mobile/default.aspx/default.aspx",
-      "inclusionReason": "商汤科技作为AI公司实现盈利，其业绩改善反映了AI行业的商业化进展和市场需求，对相关产业有积极信号意义。",
-      "businessImpact": "收入与需求"
-    },
-    {
-      "newsId": "NEWS-06CC3187C48641",
-      "title": "太空首次完成轨道AI模型训练，验证NVIDIA H100芯片能力",
-      "summary": "美国公司Starcloud在低轨卫星上利用NVIDIA H100 GPU成功训练出首个太空大语言模型，证明AI软硬件可在极端太空环境运行。",
-      "category": "基础设施/网络/技术类",
-      "region": "国际/行业",
-      "source": "商傳媒",
-      "publishedAt": "2026-08-17T08:02:00+08:00",
-      "url": "https://sunmedia.tw/news/technology/1786920572-太空首例軌道AI模型訓練成功%20輝達H100晶片驗證新里程碑",
-      "inclusionReason": "首次在太空轨道成功训练AI大模型，验证了算力硬件在极端环境下的部署能力，为未来卫星边缘计算和太空数据中心提供技术验证。",
-      "businessImpact": "网络与运营"
     }
   ]
 }

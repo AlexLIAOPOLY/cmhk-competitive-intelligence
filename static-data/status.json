@@ -155,108 +155,92 @@
         "completedAt": "2026-09-04T10:41:39+08:00"
       },
       "newsFunnel": {
-        "scope": "晨间扫描（2026-09-04@07:30）",
-        "label": "9月4日 07:30",
-        "completedAt": "2026-09-04T11:49:36+08:00",
-        "historyDuplicates": 69,
+        "scope": "午后扫描（2026-09-04@14:00）",
+        "label": "9月4日 14:00",
+        "completedAt": "2026-09-04T14:27:33+08:00",
+        "historyDuplicates": 5,
         "summary": {
-          "discovered": 666,
-          "confirmed": 240,
-          "newCount": 171,
-          "sourceCount": 120
+          "discovered": 40,
+          "confirmed": 12,
+          "newCount": 7,
+          "sourceCount": 6
         },
         "categories": [
           {
-            "label": "行业动态",
-            "value": 66
+            "label": "竞对动态",
+            "value": 3
+          },
+          {
+            "label": "政策监管",
+            "value": 1
           },
           {
             "label": "网络与技术",
-            "value": 47
-          },
-          {
-            "label": "竞对动态",
-            "value": 18
+            "value": 1
           },
           {
             "label": "其他",
-            "value": 40
+            "value": 2
           }
         ],
         "impacts": [
           {
-            "label": "竞争格局",
-            "value": 30
-          },
-          {
-            "label": "收入与需求",
-            "value": 26
-          },
-          {
-            "label": "成本与效率",
-            "value": 22
-          },
-          {
             "label": "产品与定价",
-            "value": 21
+            "value": 2
           },
           {
-            "label": "资本配置",
-            "value": 18
-          },
-          {
-            "label": "网络与运营",
-            "value": 17
-          },
-          {
-            "label": "供应韧性",
-            "value": 15
-          },
-          {
-            "label": "客户与渠道",
-            "value": 14
+            "label": "竞争格局",
+            "value": 2
           },
           {
             "label": "合规与牌照",
-            "value": 8
+            "value": 1
+          },
+          {
+            "label": "网络与运营",
+            "value": 1
+          },
+          {
+            "label": "资本配置",
+            "value": 1
           }
         ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 666,
+            "value": 40,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 666 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 40 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 240,
-            "removed": 426,
-            "rate": 36,
-            "note": "保留 36%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 240 条，未确认 426 条。"
+            "value": 12,
+            "removed": 28,
+            "rate": 30,
+            "note": "保留 30%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 12 条，未确认 28 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 171,
-            "removed": 69,
-            "rate": 71,
-            "note": "排除 69 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 69 条重复事件，剩余 171 条。"
+            "value": 7,
+            "removed": 5,
+            "rate": 58,
+            "note": "排除 5 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 5 条重复事件，剩余 7 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 171,
+            "value": 7,
             "removed": 0,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 171 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 7 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
