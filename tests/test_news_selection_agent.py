@@ -1199,7 +1199,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
             mock.patch.object(
                 agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret")]
             ),
-            mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
+            mock.patch.object(
+                agent, "ChatDeepSeek", return_value=fake_model
+            ) as model_factory,
         ):
             payload, model = agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
 
@@ -1207,6 +1209,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertTrue(payload["_format_repaired"])
         self.assertEqual(payload["decisions"][0]["weekly_status"], "不接受")
         fake_model.invoke.assert_called_once()
+        options = model_factory.call_args.kwargs
+        self.assertEqual(options["max_tokens"], agent.DEEPSEEK_V4_MIN_OUTPUT_TOKENS)
+        self.assertEqual(options["timeout"], 240)
 
     def test_missing_comma_repair_rejects_unescaped_string_content(self):
         with self.assertRaises(json.JSONDecodeError):

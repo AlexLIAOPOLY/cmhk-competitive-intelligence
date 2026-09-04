@@ -117,6 +117,13 @@ ALL_REJECT_GATE_MIN_FIELDS = max(
         int(os.environ.get("CMHK_NEWS_SELECTION_ALL_REJECT_GATE_MIN_FIELDS", "20")),
     ),
 )
+DEEPSEEK_V4_MIN_OUTPUT_TOKENS = max(
+    4000,
+    min(
+        32000,
+        int(os.environ.get("CMHK_NEWS_SELECTION_V4_MIN_OUTPUT_TOKENS", "12000")),
+    ),
+)
 REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
     5.0,
     min(
@@ -1214,12 +1221,14 @@ def _invoke_langchain(
     )
     errors: list[str] = []
     for model_name, api_key in _model_routes():
+        is_deepseek = "deepseek" in model_name.lower()
+        is_v4 = is_deepseek and "v4" in model_name.lower()
         cache_options = {"cache": {"no-cache": True, "no-store": True}}
         structured_options = {
             **cache_options,
             "response_format": {"type": "json_object"},
         }
-        if "deepseek" in model_name.lower():
+        if is_deepseek:
             structured_options = deepseek_nonthinking_parameters(structured_options)
         model_options = dict(
             model=model_name,
@@ -1230,8 +1239,14 @@ def _invoke_langchain(
             disable_streaming=True,
             include_response_headers=True,
             max_retries=0,
-            timeout=120,
-            max_tokens=max(1500, 300 + 180 * len(targets)),
+            timeout=240 if is_v4 else 120,
+            # Some V4-compatible routes currently ignore the documented
+            # non-thinking switch. Reserve enough output budget for that hidden
+            # reasoning so the final JSON is not truncated away.
+            max_tokens=max(
+                DEEPSEEK_V4_MIN_OUTPUT_TOKENS if is_v4 else 1500,
+                300 + 180 * len(targets),
+            ),
         )
         try:
             model = ChatDeepSeek(**model_options)
@@ -1255,7 +1270,7 @@ def _invoke_langchain(
                 )
                 model_options["extra_body"] = (
                     deepseek_nonthinking_parameters(cache_options)
-                    if "deepseek" in model_name.lower()
+                    if is_deepseek
                     else cache_options
                 )
                 model = ChatDeepSeek(**model_options)
