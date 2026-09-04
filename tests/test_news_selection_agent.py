@@ -72,23 +72,100 @@ class NewsSelectionAgentTests(unittest.TestCase):
     def test_simplified_normalizes_model_explanations(self):
         self.assertEqual(agent._simplified("國際網絡與歷史取捨"), "国际网络与历史取舍")
 
+    def test_default_news_selection_model_is_v4_pro(self):
+        with (
+            mock.patch.dict("os.environ", {}, clear=True),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"strategy_api_keys": ["secret"]},
+            ),
+        ):
+            self.assertEqual(agent._model_routes()[0][0], "DeepSeek-V4-Pro")
+
+    def test_human_examples_are_balanced_per_field_and_label(self):
+        examples = []
+        for field in ("app", "weekly"):
+            other = "weekly" if field == "app" else "app"
+            for index, status in enumerate(
+                ["接受", "接受", "不接受", "不接受", "不接受"]
+            ):
+                examples.append(
+                    {
+                        "news_id": f"{field}-{index}",
+                        "title": f"{field}-{status}-{index}",
+                        f"{field}_status": status,
+                        f"{other}_status": "待审核",
+                        "verified_human_fields": [field],
+                        "human_correction_fields": [field] if index == 1 else [],
+                    }
+                )
+
+        balanced, stats = agent._balanced_human_examples(examples, per_class_limit=10)
+
+        self.assertEqual(len(balanced), 8)
+        self.assertEqual(stats["app_accept_count"], 2)
+        self.assertEqual(stats["app_reject_count"], 2)
+        self.assertEqual(stats["weekly_accept_count"], 2)
+        self.assertEqual(stats["weekly_reject_count"], 2)
+        self.assertTrue(
+            all(
+                item["weekly_status"] == "待审核"
+                for item in balanced
+                if item["verified_human_fields"] == ["app"]
+            )
+        )
+
+    def test_large_all_reject_batch_is_blocked_before_write(self):
+        decisions = [
+            {
+                "news_id": f"NEWS-{index}",
+                "app_before": "待审核",
+                "weekly_before": "待审核",
+                "app_status": "不接受",
+                "weekly_status": "不接受",
+            }
+            for index in range(20)
+        ]
+        with self.assertRaisesRegex(RuntimeError, "整批全部不接受"):
+            agent._validate_model_decision_distribution(decisions)
+
+        decisions[0]["app_status"] = "接受"
+        decisions[0]["weekly_status"] = "接受"
+        agent._validate_model_decision_distribution(decisions)
+
     def test_human_examples_exclude_unchanged_agent_choices_but_learn_corrections(self):
         rows = [
             {
                 **news_review_sheet._row_dict(
-                    _row(title="自动结果", url="https://example.com/auto", app="接受", weekly="不接受"),
+                    _row(
+                        title="自动结果",
+                        url="https://example.com/auto",
+                        app="接受",
+                        weekly="不接受",
+                    ),
                     2,
                 )
             },
             {
                 **news_review_sheet._row_dict(
-                    _row(title="人工纠正", url="https://example.com/corrected", app="不接受", weekly="接受"),
+                    _row(
+                        title="人工纠正",
+                        url="https://example.com/corrected",
+                        app="不接受",
+                        weekly="接受",
+                    ),
                     3,
                 )
             },
             {
                 **news_review_sheet._row_dict(
-                    _row(title="纯人工", url="https://example.com/human", app="接受", weekly="接受"),
+                    _row(
+                        title="纯人工",
+                        url="https://example.com/human",
+                        app="接受",
+                        weekly="接受",
+                    ),
                     4,
                 )
             },
@@ -185,7 +262,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual({item["title"] for item in examples}, {"人工纠正", "纯人工"})
         corrected_item = next(item for item in examples if item["title"] == "人工纠正")
         self.assertTrue(corrected_item["human_correction_of_agent"])
-        self.assertEqual(set(corrected_item["human_correction_fields"]), {"app", "weekly"})
+        self.assertEqual(
+            set(corrected_item["human_correction_fields"]), {"app", "weekly"}
+        )
 
     def test_agent_uses_only_accept_or_reject_even_at_low_confidence(self):
         target = {
@@ -255,16 +334,18 @@ class NewsSelectionAgentTests(unittest.TestCase):
         row = news_review_sheet._row_dict(values, 2)
         examples, stats = agent._human_examples(
             [row],
-            [_review_event(
-                event_id="machine-only",
-                title="只有机器人决定",
-                field="纳入滚动栏",
-                after="接受",
-                at="2026-08-28T08:00:00+08:00",
-                actor_id="news-auto-screening-bot",
-                actor_name="新闻自动初筛机器人",
-                actor_role="SYSTEM",
-            )],
+            [
+                _review_event(
+                    event_id="machine-only",
+                    title="只有机器人决定",
+                    field="纳入滚动栏",
+                    after="接受",
+                    at="2026-08-28T08:00:00+08:00",
+                    actor_id="news-auto-screening-bot",
+                    actor_name="新闻自动初筛机器人",
+                    actor_role="SYSTEM",
+                )
+            ],
         )
 
         self.assertEqual(examples, [])
@@ -496,15 +577,17 @@ class NewsSelectionAgentTests(unittest.TestCase):
             "action": "news_review.update",
             "result": "success",
             "details": {
-                "cells": [{
-                    "row": 2,
-                    "column": 0,
-                    "record_id": row["news_id"],
-                    "news_id": row["news_id"],
-                    "title": "APP 人工编辑",
-                    "before": "待审核",
-                    "after": "接受",
-                }]
+                "cells": [
+                    {
+                        "row": 2,
+                        "column": 0,
+                        "record_id": row["news_id"],
+                        "news_id": row["news_id"],
+                        "title": "APP 人工编辑",
+                        "before": "待审核",
+                        "after": "接受",
+                    }
+                ]
             },
         }
 
@@ -605,8 +688,14 @@ class NewsSelectionAgentTests(unittest.TestCase):
         )
 
         with (
-            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
-            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"base_url": "https://example.com"},
+            ),
+            mock.patch.object(
+                agent, "_model_routes", return_value=[("test-model", "secret")]
+            ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
         ):
             with self.assertRaisesRegex(RuntimeError, "只有思考内容，没有最终输出"):
@@ -622,10 +711,18 @@ class NewsSelectionAgentTests(unittest.TestCase):
         from ai_rate_limit import RateLimitedChatDeepSeek
 
         target = {"news_id": "NEWS-1"}
-        answer = {"decisions": [{
-            "news_id": "NEWS-1", "app_status": "接受", "weekly_status": "不接受",
-            "app_confidence": 0.9, "weekly_confidence": 0.8, "reason": "测试依据",
-        }]}
+        answer = {
+            "decisions": [
+                {
+                    "news_id": "NEWS-1",
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "测试依据",
+                }
+            ]
+        }
         for finish_reason in ("stop", "length"):
             with self.subTest(finish_reason=finish_reason):
                 requests = []
@@ -633,31 +730,60 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 def respond(request):
                     requests.append(json.loads(request.content))
                     first = len(requests) == 1
-                    return httpx.Response(200, json={
-                        "id": "test", "object": "chat.completion", "created": 1,
-                        "model": "test-model",
-                        "choices": [{"index": 0,
-                            "finish_reason": finish_reason if first else "stop",
-                            "message": {"role": "assistant",
-                                "content": "" if first else json.dumps(answer),
-                                "reasoning_content": "private-reasoning" if first else "",
+                    return httpx.Response(
+                        200,
+                        json={
+                            "id": "test",
+                            "object": "chat.completion",
+                            "created": 1,
+                            "model": "test-model",
+                            "choices": [
+                                {
+                                    "index": 0,
+                                    "finish_reason": finish_reason if first else "stop",
+                                    "message": {
+                                        "role": "assistant",
+                                        "content": "" if first else json.dumps(answer),
+                                        "reasoning_content": "private-reasoning"
+                                        if first
+                                        else "",
+                                    },
+                                }
+                            ],
+                            "usage": {
+                                "prompt_tokens": 10,
+                                "completion_tokens": 7000 if first else 80,
+                                "total_tokens": 7010 if first else 90,
                             },
-                        }],
-                        "usage": {"prompt_tokens": 10, "completion_tokens": 7000 if first else 80,
-                                  "total_tokens": 7010 if first else 90},
-                    })
+                        },
+                    )
 
                 with httpx.Client(transport=httpx.MockTransport(respond)) as client:
+
                     def make_model(**kwargs):
                         return RateLimitedChatDeepSeek(**kwargs, http_client=client)
 
                     with (
-                        mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
-                        mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
-                        mock.patch.object(agent, "ChatDeepSeek", side_effect=make_model),
-                        mock.patch.object(RateLimitedChatDeepSeek, "_keys", return_value=["secret"]),
+                        mock.patch.object(
+                            agent,
+                            "load_ai_config",
+                            return_value={"base_url": "https://example.com/v1"},
+                        ),
+                        mock.patch.object(
+                            agent,
+                            "_model_routes",
+                            return_value=[("test-model", "secret")],
+                        ),
+                        mock.patch.object(
+                            agent, "ChatDeepSeek", side_effect=make_model
+                        ),
+                        mock.patch.object(
+                            RateLimitedChatDeepSeek, "_keys", return_value=["secret"]
+                        ),
                         mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
-                        self.assertLogs(agent.logging.getLogger(), level="WARNING") as logs,
+                        self.assertLogs(
+                            agent.logging.getLogger(), level="WARNING"
+                        ) as logs,
                     ):
                         payload, model = agent._invoke_langchain([], [target])
 
@@ -665,15 +791,21 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 self.assertEqual(model, "test-model")
                 self.assertEqual(len(agent._normalized_decisions(payload, [target])), 1)
                 self.assertEqual(len(requests), 2)
-                self.assertEqual(requests[0]["response_format"], {"type": "json_object"})
+                self.assertEqual(
+                    requests[0]["response_format"], {"type": "json_object"}
+                )
                 self.assertNotIn("response_format", requests[1])
                 self.assertNotIn("thinking", requests[1])
-                self.assertEqual(requests[1]["cache"], {"no-cache": True, "no-store": True})
+                self.assertEqual(
+                    requests[1]["cache"], {"no-cache": True, "no-store": True}
+                )
                 self.assertEqual(requests[0]["max_tokens"], 1500)
                 self.assertEqual(requests[1]["max_tokens"], 1500)
                 original = json.loads(requests[0]["messages"][1]["content"])
                 recovered = json.loads(requests[1]["messages"][1]["content"])
-                self.assertNotEqual(original.pop("request_id"), recovered.pop("request_id"))
+                self.assertNotEqual(
+                    original.pop("request_id"), recovered.pop("request_id")
+                )
                 self.assertEqual(original, recovered)
                 self.assertIn(f"finish_reason={finish_reason}", str(logs.output))
                 self.assertIn("output_tokens=7000", str(logs.output))
@@ -703,8 +835,14 @@ class NewsSelectionAgentTests(unittest.TestCase):
         ]
 
         with (
-            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
-            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"base_url": "https://example.com"},
+            ),
+            mock.patch.object(
+                agent, "_model_routes", return_value=[("test-model", "secret")]
+            ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
         ):
             payload, model = agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
@@ -734,8 +872,14 @@ class NewsSelectionAgentTests(unittest.TestCase):
         examples = [{"news_id": "NEWS-HISTORY", "summary": "历史" * 500}]
 
         with (
-            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
-            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "secret")]),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"base_url": "https://example.com"},
+            ),
+            mock.patch.object(
+                agent, "_model_routes", return_value=[("test-model", "secret")]
+            ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
         ):
             agent._invoke_langchain(examples, [{"news_id": "NEWS-TARGET"}])
@@ -751,6 +895,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
             first_prompt.index('"human_examples"'),
         )
         self.assertNotEqual(first_payload["request_id"], second_payload["request_id"])
+        system_prompt = fake_model.invoke.call_args.args[0][0].content
+        self.assertIn("样本频次不是目标接受率", system_prompt)
+        self.assertIn("香港本地的竞对不得判成海外竞对", system_prompt)
 
     def test_batches_supplement_model_omissions(self):
         targets = [{"news_id": "NEWS-1"}, {"news_id": "NEWS-2"}]
@@ -916,10 +1063,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
         compact_examples = invoke.call_args_list[2].args[0]
         self.assertEqual(len(compact_examples), 11)
         self.assertEqual(
-            {
-                (item["app_status"], item["weekly_status"])
-                for item in compact_examples
-            },
+            {(item["app_status"], item["weekly_status"]) for item in compact_examples},
             {
                 ("不接受", "不接受"),
                 ("接受", "接受"),
@@ -1047,8 +1191,14 @@ class NewsSelectionAgentTests(unittest.TestCase):
         fake_model.invoke.return_value = SimpleNamespace(content=malformed)
 
         with (
-            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com"}),
-            mock.patch.object(agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret")]),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"base_url": "https://example.com"},
+            ),
+            mock.patch.object(
+                agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret")]
+            ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
         ):
             payload, model = agent._invoke_langchain([], [{"news_id": "NEWS-1"}])
@@ -1254,13 +1404,19 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 mock.patch.object(agent, "heartbeat_crawl_run"),
                 mock.patch.object(agent, "append_crawl_run_event"),
                 mock.patch.object(agent, "finalize_operational_crawl_run") as finalize,
-                mock.patch.object(agent, "_invoke_langchain", return_value=(model_payload, "DeepSeek-V4-Pro")),
+                mock.patch.object(
+                    agent,
+                    "_invoke_langchain",
+                    return_value=(model_payload, "DeepSeek-V4-Pro"),
+                ),
                 mock.patch.object(
                     news_review_sheet,
                     "review_sheet_snapshot",
                     return_value=snapshot,
                 ) as review_snapshot,
-                mock.patch.object(news_review_sheet, "update_review_sheet_cells", side_effect=update),
+                mock.patch.object(
+                    news_review_sheet, "update_review_sheet_cells", side_effect=update
+                ),
                 mock.patch.object(
                     news_review_sheet,
                     "apply_reviews",
@@ -1277,8 +1433,12 @@ class NewsSelectionAgentTests(unittest.TestCase):
                     idempotency_key="2026-08-28@07:30-test",
                 )
 
-            self.assertEqual(start.call_args.kwargs["task_kind"], "news-selection-agent")
-            self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "parent-run")
+            self.assertEqual(
+                start.call_args.kwargs["task_kind"], "news-selection-agent"
+            )
+            self.assertEqual(
+                start.call_args.kwargs["parent_crawl_run_id"], "parent-run"
+            )
             review_snapshot.assert_called_once_with(
                 sheet_id="sheet-1",
                 identity="bot",
@@ -1309,7 +1469,10 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 {"纳入滚动栏", "纳入周报"},
             )
             self.assertTrue(
-                all(event["actor_id"] == "news-auto-screening-bot" for event in operation_events)
+                all(
+                    event["actor_id"] == "news-auto-screening-bot"
+                    for event in operation_events
+                )
             )
             self.assertEqual(result["operation_audit_count"], 2)
             self.assertTrue(finalize.call_args.kwargs["ok"])
@@ -1602,7 +1765,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
             self.assertEqual((first_decisions, replayed_decisions), (1, 1))
             self.assertEqual((first_operations, replayed_operations), (2, 2))
             self.assertEqual(
-                len((root / "decisions.jsonl").read_text(encoding="utf-8").splitlines()),
+                len(
+                    (root / "decisions.jsonl").read_text(encoding="utf-8").splitlines()
+                ),
                 1,
             )
             operation_path = root / "var" / "auth" / "operation-audit.jsonl"
@@ -1614,38 +1779,67 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
 class ModelBatchCheckpointTests(unittest.TestCase):
     def test_148_candidates_need_ten_batches_and_old_checkpoints_need_only_five(self):
-        targets = [{"news_id": f"NEWS-{i}", "app_before": "待审核", "weekly_before": "待审核"}
-                   for i in range(148)]
-        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+        targets = [
+            {"news_id": f"NEWS-{i}", "app_before": "待审核", "weekly_before": "待审核"}
+            for i in range(148)
+        ]
+        with mock.patch.object(
+            agent, "_invoke_langchain", side_effect=self.invoke
+        ) as invoke:
             payload, _ = agent._invoke_langchain_batches([], targets)
             self.assertEqual(invoke.call_count, 10)
             self.assertEqual(len(payload["decisions"]), 148)
         checkpoint = {}
         for start in range(0, 80, 5):
-            batch = targets[start:start + 5]
+            batch = targets[start : start + 5]
             payload, model = self.invoke([], batch)
-            checkpoint[agent._model_checkpoint_key([], batch)] = {"payload": payload, "model": model}
-        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
-            payload, _ = agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+            checkpoint[agent._model_checkpoint_key([], batch)] = {
+                "payload": payload,
+                "model": model,
+            }
+        with mock.patch.object(
+            agent, "_invoke_langchain", side_effect=self.invoke
+        ) as invoke:
+            payload, _ = agent._invoke_langchain_batches(
+                [], targets, checkpoint=checkpoint
+            )
             self.assertEqual(invoke.call_count, 5)
             self.assertEqual(len(payload["decisions"]), 148)
-            requested = [row["news_id"] for call in invoke.call_args_list for row in call.args[1]]
+            requested = [
+                row["news_id"] for call in invoke.call_args_list for row in call.args[1]
+            ]
             self.assertEqual(requested, [row["news_id"] for row in targets[80:]])
 
     def test_real_sdk_retries_and_key_rotation_cannot_exceed_ten_http_requests(self):
         import httpx
+
         model_class = agent.ChatDeepSeek
         requests = []
 
         def respond(request):
             requests.append(json.loads(request.content))
-            return httpx.Response(429, json={"error": {"message": "rate limit", "type": "rate_limit_error"}})
+            return httpx.Response(
+                429,
+                json={"error": {"message": "rate limit", "type": "rate_limit_error"}},
+            )
 
         with httpx.Client(transport=httpx.MockTransport(respond)) as client:
             with (
-                mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
-                mock.patch.object(agent, "_model_routes", return_value=[("test-model", f"key-{i}") for i in range(20)]),
-                mock.patch.object(agent, "ChatDeepSeek", side_effect=lambda **kw: model_class(**kw, http_client=client)),
+                mock.patch.object(
+                    agent,
+                    "load_ai_config",
+                    return_value={"base_url": "https://example.com/v1"},
+                ),
+                mock.patch.object(
+                    agent,
+                    "_model_routes",
+                    return_value=[("test-model", f"key-{i}") for i in range(20)],
+                ),
+                mock.patch.object(
+                    agent,
+                    "ChatDeepSeek",
+                    side_effect=lambda **kw: model_class(**kw, http_client=client),
+                ),
                 mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
             ):
                 with self.assertRaisesRegex(agent._ModelRoundLimit, "10轮"):
@@ -1659,7 +1853,9 @@ class ModelBatchCheckpointTests(unittest.TestCase):
         def respond(prompt):
             messages.append(prompt)
             if len(messages) == 1:
-                return SimpleNamespace(content="", additional_kwargs={"reasoning_content": "private"})
+                return SimpleNamespace(
+                    content="", additional_kwargs={"reasoning_content": "private"}
+                )
             targets = json.loads(prompt[1].content)["current_candidates"]
             payload, _ = self.invoke([], targets)
             payload["learned_rules"] = ["已核验人工偏好"]
@@ -1668,8 +1864,14 @@ class ModelBatchCheckpointTests(unittest.TestCase):
         model = mock.Mock()
         model.invoke.side_effect = respond
         with (
-            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
-            mock.patch.object(agent, "_model_routes", return_value=[("test-model", "key")]),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"base_url": "https://example.com/v1"},
+            ),
+            mock.patch.object(
+                agent, "_model_routes", return_value=[("test-model", "key")]
+            ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=model),
         ):
             payload, _ = agent._invoke_langchain_batches([], self.targets())
@@ -1680,65 +1882,113 @@ class ModelBatchCheckpointTests(unittest.TestCase):
 
     @staticmethod
     def invoke(_examples, targets):
-        return {"decisions": [
-            {"news_id": target["news_id"], "app_status": "接受",
-             "weekly_status": "不接受", "app_confidence": 0.9,
-             "weekly_confidence": 0.8, "reason": "检查点测试"}
-            for target in targets
-        ]}, "test-model"
+        return {
+            "decisions": [
+                {
+                    "news_id": target["news_id"],
+                    "app_status": "接受",
+                    "weekly_status": "不接受",
+                    "app_confidence": 0.9,
+                    "weekly_confidence": 0.8,
+                    "reason": "检查点测试",
+                }
+                for target in targets
+            ]
+        }, "test-model"
 
     def test_exact_history_checkpoint_profile_replaces_repeated_full_training(self):
-        examples = [{"news_id": f"H-{i}", "title": f"人工样本{i}",
-                     "app_status": "接受", "weekly_status": "待审核",
-                     "verified_human_fields": ["app"]} for i in range(20)]
+        examples = [
+            {
+                "news_id": f"H-{i}",
+                "title": f"人工样本{i}",
+                "app_status": "接受",
+                "weekly_status": "待审核",
+                "verified_human_fields": ["app"],
+            }
+            for i in range(20)
+        ]
         targets = self.targets()
         cached, model_name = self.invoke(examples, targets[:5])
-        cached['learned_rules'] = ['仅来自已核验APP字段']
-        checkpoint = {agent._model_checkpoint_key(examples, targets[:5]): {
-            'payload': cached, 'model': model_name,
-        }}
+        cached["learned_rules"] = ["仅来自已核验APP字段"]
+        checkpoint = {
+            agent._model_checkpoint_key(examples, targets[:5]): {
+                "payload": cached,
+                "model": model_name,
+            }
+        }
         model = mock.Mock()
         answer, _ = self.invoke(examples, targets[5:])
         model.invoke.return_value = SimpleNamespace(content=json.dumps(answer))
         with (
-            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
-            mock.patch.object(agent, "_model_routes", return_value=[("Qwen3-30B-A3B-Instruct-2507", "key")]),
+            mock.patch.object(
+                agent,
+                "load_ai_config",
+                return_value={"base_url": "https://example.com/v1"},
+            ),
+            mock.patch.object(
+                agent,
+                "_model_routes",
+                return_value=[("Qwen3-30B-A3B-Instruct-2507", "key")],
+            ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=model) as factory,
         ):
-            payload, _ = agent._invoke_langchain_batches(examples, targets, checkpoint=checkpoint)
+            payload, _ = agent._invoke_langchain_batches(
+                examples, targets, checkpoint=checkpoint
+            )
         sent = json.loads(model.invoke.call_args.args[0][1].content)
-        self.assertEqual(len(sent['human_examples']), 2)
-        self.assertEqual(sent['human_examples'][0]['weekly_status'], '待审核')
-        self.assertEqual(sent['learned_preferences']['learned_rules'], cached['learned_rules'])
-        self.assertEqual(payload['_model_request_count'], 1)
-        body = factory.call_args.kwargs['extra_body']
-        self.assertEqual(body['cache'], {'no-cache': True, 'no-store': True})
-        self.assertNotIn('thinking', body)
+        self.assertEqual(len(sent["human_examples"]), 2)
+        self.assertEqual(sent["human_examples"][0]["weekly_status"], "待审核")
+        self.assertEqual(
+            sent["learned_preferences"]["learned_rules"], cached["learned_rules"]
+        )
+        self.assertEqual(payload["_model_request_count"], 1)
+        body = factory.call_args.kwargs["extra_body"]
+        self.assertEqual(body["cache"], {"no-cache": True, "no-store": True})
+        self.assertNotIn("thinking", body)
 
     def targets(self):
-        return [{"news_id": f"NEWS-{index}", "row_number": index + 2,
-                 "app_before": "待审核", "weekly_before": "待审核"}
-                for index in range(6)]
+        return [
+            {
+                "news_id": f"NEWS-{index}",
+                "row_number": index + 2,
+                "app_before": "待审核",
+                "weekly_before": "待审核",
+            }
+            for index in range(6)
+        ]
 
     def test_failed_second_batch_resumes_from_disk_without_repeating_first(self):
         with tempfile.TemporaryDirectory() as temporary:
             path = Path(temporary) / "checkpoint.json"
             checkpoint = {}
-            with mock.patch.object(agent, "_invoke_langchain", side_effect=[
-                self.invoke([], self.targets()[:5]), RuntimeError("timeout")
-            ]):
+            with mock.patch.object(
+                agent,
+                "_invoke_langchain",
+                side_effect=[
+                    self.invoke([], self.targets()[:5]),
+                    RuntimeError("timeout"),
+                ],
+            ):
                 with self.assertRaisesRegex(RuntimeError, "timeout"):
                     agent._invoke_langchain_batches(
-                        [], self.targets(), checkpoint=checkpoint,
-                        checkpoint_callback=lambda *args: agent._atomic_write_json(path, checkpoint),
+                        [],
+                        self.targets(),
+                        checkpoint=checkpoint,
+                        checkpoint_callback=lambda *args: agent._atomic_write_json(
+                            path, checkpoint
+                        ),
                     )
             restored = json.loads(path.read_text())
             self.assertEqual(len(restored), 1)
             resumed = []
             progress = []
-            with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+            with mock.patch.object(
+                agent, "_invoke_langchain", side_effect=self.invoke
+            ) as invoke:
                 payload, _ = agent._invoke_langchain_batches(
-                    [], self.targets(), checkpoint=restored,
+                    [],
+                    self.targets(),
+                    checkpoint=restored,
                     reuse_callback=lambda *args: resumed.append(args),
                     progress_callback=lambda *args: progress.append(args),
                 )
@@ -1751,43 +2001,65 @@ class ModelBatchCheckpointTests(unittest.TestCase):
     def test_successful_singleton_is_saved_before_later_round_limit(self):
         checkpoint = {}
         targets = self.targets()[:3]
-        with mock.patch.object(agent, "_invoke_langchain", side_effect=[
-            RuntimeError("模型没有最终输出"), self.invoke([], targets[:1]),
-            agent._ModelRoundLimit("10轮请求上限"),
-        ]):
+        with mock.patch.object(
+            agent,
+            "_invoke_langchain",
+            side_effect=[
+                RuntimeError("模型没有最终输出"),
+                self.invoke([], targets[:1]),
+                agent._ModelRoundLimit("10轮请求上限"),
+            ],
+        ):
             with self.assertRaises(agent._ModelRoundLimit):
                 agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
         saved = checkpoint[agent._model_checkpoint_key([], targets[:1])]
-        self.assertEqual(saved["payload"]["decisions"][0]["news_id"], targets[0]["news_id"])
+        self.assertEqual(
+            saved["payload"]["decisions"][0]["news_id"], targets[0]["news_id"]
+        )
 
     def test_changed_inputs_invalidate_but_row_positions_do_not(self):
         for changed in ("row_number", "title", "app_before", "examples"):
             with self.subTest(changed=changed):
                 checkpoint = {}
                 targets = self.targets()[:5]
-                with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+                with mock.patch.object(
+                    agent, "_invoke_langchain", side_effect=self.invoke
+                ) as invoke:
                     agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
                     if changed != "examples":
                         targets[0][changed] = 99 if changed == "row_number" else "接受"
                     agent._invoke_langchain_batches(
                         [{"title": "新人工样本"}] if changed == "examples" else [],
-                        targets, checkpoint=checkpoint,
+                        targets,
+                        checkpoint=checkpoint,
                     )
                 self.assertEqual(invoke.call_count, 1 if changed == "row_number" else 2)
 
     def test_invalid_checkpoint_is_not_reused(self):
         checkpoint = {}
-        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
-            agent._invoke_langchain_batches([], self.targets()[:5], checkpoint=checkpoint)
-            next(iter(checkpoint.values()))["payload"]["decisions"][0]["app_status"] = "猜测"
-            agent._invoke_langchain_batches([], self.targets()[:5], checkpoint=checkpoint)
+        with mock.patch.object(
+            agent, "_invoke_langchain", side_effect=self.invoke
+        ) as invoke:
+            agent._invoke_langchain_batches(
+                [], self.targets()[:5], checkpoint=checkpoint
+            )
+            next(iter(checkpoint.values()))["payload"]["decisions"][0]["app_status"] = (
+                "猜测"
+            )
+            agent._invoke_langchain_batches(
+                [], self.targets()[:5], checkpoint=checkpoint
+            )
         self.assertEqual(invoke.call_count, 2)
 
     def test_checkpoint_write_failure_stops_before_next_model_batch(self):
-        with mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke:
+        with mock.patch.object(
+            agent, "_invoke_langchain", side_effect=self.invoke
+        ) as invoke:
             with self.assertRaisesRegex(OSError, "disk full"):
                 agent._invoke_langchain_batches(
-                    [], self.targets(), checkpoint={},
+                    [],
+                    self.targets(),
+                    checkpoint={},
                     checkpoint_callback=mock.Mock(side_effect=OSError("disk full")),
                 )
         self.assertEqual(invoke.call_count, 1)
@@ -1795,13 +2067,25 @@ class ModelBatchCheckpointTests(unittest.TestCase):
     def test_runner_persists_batches_before_plan_and_reuses_across_new_run_ids(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            values = [_row(title=f"候选{i}", url=f"https://example.com/{i}") for i in range(6)]
-            snapshot = {"rows": [{"rowNumber": i + 2, "values": value}
-                                  for i, value in enumerate(values)]}
-            new_items = [{"news_id": news_review_sheet._row_dict(value, i + 2)["news_id"]}
-                         for i, value in enumerate(values)]
-            kwargs = dict(new_items=new_items, sheet_id="sheet-1",
-                          parent_crawl_run_id="parent-1", idempotency_key="2026-08-28@07:30")
+            values = [
+                _row(title=f"候选{i}", url=f"https://example.com/{i}") for i in range(6)
+            ]
+            snapshot = {
+                "rows": [
+                    {"rowNumber": i + 2, "values": value}
+                    for i, value in enumerate(values)
+                ]
+            }
+            new_items = [
+                {"news_id": news_review_sheet._row_dict(value, i + 2)["news_id"]}
+                for i, value in enumerate(values)
+            ]
+            kwargs = dict(
+                new_items=new_items,
+                sheet_id="sheet-1",
+                parent_crawl_run_id="parent-1",
+                idempotency_key="2026-08-28@07:30",
+            )
             calls = []
 
             def failing_invoke(examples, targets):
@@ -1816,38 +2100,84 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                 mock.patch.object(agent, "_load_audit", return_value=[]),
                 mock.patch.object(agent, "_load_operation_audit", return_value=[]),
                 mock.patch.object(agent, "MIN_HUMAN_EXAMPLES", 0),
-                mock.patch.object(agent, "_skill_has_current_training_provenance", return_value=True),
-                mock.patch.object(agent, "start_crawl_run", side_effect=[
-                    {"crawl_run_id": f"attempt-{i}"} for i in range(4)]),
+                mock.patch.object(
+                    agent, "_skill_has_current_training_provenance", return_value=True
+                ),
+                mock.patch.object(
+                    agent,
+                    "start_crawl_run",
+                    side_effect=[{"crawl_run_id": f"attempt-{i}"} for i in range(4)],
+                ),
                 mock.patch.object(agent, "_progress") as progress,
                 mock.patch.object(agent, "append_crawl_run_event"),
                 mock.patch.object(agent, "finalize_operational_crawl_run"),
-                mock.patch.object(news_review_sheet, "review_sheet_snapshot", return_value=snapshot),
-                mock.patch.object(agent, "_invoke_langchain", side_effect=failing_invoke),
+                mock.patch.object(
+                    news_review_sheet, "review_sheet_snapshot", return_value=snapshot
+                ),
+                mock.patch.object(
+                    agent, "_invoke_langchain", side_effect=failing_invoke
+                ),
             ):
                 for attempt in range(2):
                     with self.assertRaisesRegex(RuntimeError, "second batch timeout"):
-                        agent.run_news_selection_agent(**{**kwargs, "parent_crawl_run_id": f"parent-{attempt}"})
+                        agent.run_news_selection_agent(
+                            **{**kwargs, "parent_crawl_run_id": f"parent-{attempt}"}
+                        )
                     state = json.loads((root / "state.json").read_text())
-                    self.assertNotIn(kwargs["idempotency_key"], state.get("pending_plans", {}))
-                    self.assertEqual(len(state["model_checkpoints"][kwargs["idempotency_key"]]["batches"]), 1)
+                    self.assertNotIn(
+                        kwargs["idempotency_key"], state.get("pending_plans", {})
+                    )
+                    self.assertEqual(
+                        len(
+                            state["model_checkpoints"][kwargs["idempotency_key"]][
+                                "batches"
+                            ]
+                        ),
+                        1,
+                    )
                 self.assertEqual([len(batch) for batch in calls], [5, 1, 1])
-                self.assertTrue(any(call.args[2] == "模型分批检查点恢复" for call in progress.call_args_list))
+                self.assertTrue(
+                    any(
+                        call.args[2] == "模型分批检查点恢复"
+                        for call in progress.call_args_list
+                    )
+                )
                 # The same idempotency key on another sheet must not reuse it.
                 with self.assertRaisesRegex(RuntimeError, "second batch timeout"):
                     agent.run_news_selection_agent(**{**kwargs, "sheet_id": "sheet-2"})
                 self.assertEqual([len(batch) for batch in calls], [5, 1, 1, 5, 1])
                 with (
-                    mock.patch.object(agent, "_invoke_langchain", side_effect=self.invoke) as invoke,
+                    mock.patch.object(
+                        agent, "_invoke_langchain", side_effect=self.invoke
+                    ) as invoke,
                     mock.patch.object(agent, "_write_skill"),
-                    mock.patch.object(agent, "_record_verified_decision_audits", return_value=6),
-                    mock.patch.object(agent, "_record_verified_operation_footprints", return_value=12),
-                    mock.patch.object(news_review_sheet, "update_review_sheet_cells", return_value={
-                        "changedCount": 12, "verifiedCount": 12, "readbackVerified": True}),
-                    mock.patch.object(news_review_sheet, "apply_reviews", return_value={
-                        "published_count": 6, "sync_status_readback_verified": True}),
+                    mock.patch.object(
+                        agent, "_record_verified_decision_audits", return_value=6
+                    ),
+                    mock.patch.object(
+                        agent, "_record_verified_operation_footprints", return_value=12
+                    ),
+                    mock.patch.object(
+                        news_review_sheet,
+                        "update_review_sheet_cells",
+                        return_value={
+                            "changedCount": 12,
+                            "verifiedCount": 12,
+                            "readbackVerified": True,
+                        },
+                    ),
+                    mock.patch.object(
+                        news_review_sheet,
+                        "apply_reviews",
+                        return_value={
+                            "published_count": 6,
+                            "sync_status_readback_verified": True,
+                        },
+                    ),
                 ):
-                    result = agent.run_news_selection_agent(**{**kwargs, "sheet_id": "sheet-2"})
+                    result = agent.run_news_selection_agent(
+                        **{**kwargs, "sheet_id": "sheet-2"}
+                    )
                 self.assertEqual(invoke.call_count, 1)
                 self.assertEqual(result["candidate_count"], 6)
                 self.assertEqual(result["verified_field_count"], 12)
