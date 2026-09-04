@@ -3,7 +3,7 @@
   "events": [
     {
       "id": "event-001",
-      "at": "2026-09-03T16:00:20+00:00",
+      "at": "2026-09-04T02:42:43+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -17,6 +17,20 @@
     },
     {
       "id": "event-002",
+      "at": "2026-09-03T16:00:20+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-003",
       "at": "2026-09-03T08:43:51+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -30,7 +44,7 @@
       "details": {}
     },
     {
-      "id": "event-003",
+      "id": "event-004",
       "at": "2026-09-03T08:43:32+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -44,7 +58,7 @@
       "details": {}
     },
     {
-      "id": "event-004",
+      "id": "event-005",
       "at": "2026-09-03T08:38:39+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -58,22 +72,8 @@
       "details": {}
     },
     {
-      "id": "event-005",
-      "at": "2026-09-03T08:37:49+00:00",
-      "actor_id": "member-006",
-      "actor_name": "廖望 Alex LIAO Wang",
-      "actor_role": "EXTERNAL",
-      "action": "news_review.update",
-      "target": "BYK3u",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
       "id": "event-006",
-      "at": "2026-09-03T08:37:20+00:00",
+      "at": "2026-09-03T08:37:49+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "EXTERNAL",
@@ -101,7 +101,7 @@
     },
     {
       "id": "event-008",
-      "at": "2026-09-03T08:36:09+00:00",
+      "at": "2026-09-03T08:37:20+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "EXTERNAL",
@@ -115,6 +115,20 @@
     },
     {
       "id": "event-009",
+      "at": "2026-09-03T08:36:09+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "EXTERNAL",
+      "action": "news_review.update",
+      "target": "BYK3u",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-010",
       "at": "2026-09-03T08:33:30+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -128,7 +142,7 @@
       "details": {}
     },
     {
-      "id": "event-010",
+      "id": "event-011",
       "at": "2026-09-03T08:30:17+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -142,7 +156,7 @@
       "details": {}
     },
     {
-      "id": "event-011",
+      "id": "event-012",
       "at": "2026-09-03T08:29:50+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -156,22 +170,8 @@
       "details": {}
     },
     {
-      "id": "event-012",
-      "at": "2026-09-03T08:29:07+00:00",
-      "actor_id": "member-006",
-      "actor_name": "廖望 Alex LIAO Wang",
-      "actor_role": "EXTERNAL",
-      "action": "news_review.update",
-      "target": "BYK3u",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
       "id": "event-013",
-      "at": "2026-09-03T08:28:36+00:00",
+      "at": "2026-09-03T08:29:07+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "EXTERNAL",
@@ -199,12 +199,12 @@
     },
     {
       "id": "event-015",
-      "at": "2026-09-03T08:28:32+00:00",
+      "at": "2026-09-03T08:28:36+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
-      "actor_role": "ADMIN",
-      "action": "auth.login",
-      "target": "fs-76b4f5e7ee939e57",
+      "actor_role": "EXTERNAL",
+      "action": "news_review.update",
+      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -213,12 +213,12 @@
     },
     {
       "id": "event-016",
-      "at": "2026-09-03T08:28:22+00:00",
+      "at": "2026-09-03T08:28:32+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
-      "actor_role": "EXTERNAL",
-      "action": "news_review.update",
-      "target": "BYK3u",
+      "actor_role": "ADMIN",
+      "action": "auth.login",
+      "target": "fs-76b4f5e7ee939e57",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -381,6 +381,20 @@
     },
     {
       "id": "event-028",
+      "at": "2026-09-03T08:28:22+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "EXTERNAL",
+      "action": "news_review.update",
+      "target": "BYK3u",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-029",
       "at": "2026-09-03T08:28:13+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -394,7 +408,7 @@
       "details": {}
     },
     {
-      "id": "event-029",
+      "id": "event-030",
       "at": "2026-09-03T07:59:18+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -408,7 +422,7 @@
       "details": {}
     },
     {
-      "id": "event-030",
+      "id": "event-031",
       "at": "2026-09-03T07:57:40+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -422,27 +436,13 @@
       "details": {}
     },
     {
-      "id": "event-031",
+      "id": "event-032",
       "at": "2026-09-03T07:57:37+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "ADMIN",
       "action": "auth.logout",
       "target": "fs-76b4f5e7ee939e57",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
-      "id": "event-032",
-      "at": "2026-09-03T07:57:31+00:00",
-      "actor_id": "member-006",
-      "actor_name": "廖望 Alex LIAO Wang",
-      "actor_role": "EXTERNAL",
-      "action": "news_review.update",
-      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -465,6 +465,20 @@
     },
     {
       "id": "event-034",
+      "at": "2026-09-03T07:57:31+00:00",
+      "actor_id": "member-006",
+      "actor_name": "廖望 Alex LIAO Wang",
+      "actor_role": "EXTERNAL",
+      "action": "news_review.update",
+      "target": "BYK3u",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-035",
       "at": "2026-09-03T07:57:28+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -478,7 +492,7 @@
       "details": {}
     },
     {
-      "id": "event-035",
+      "id": "event-036",
       "at": "2026-09-03T07:52:39+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -492,7 +506,7 @@
       "details": {}
     },
     {
-      "id": "event-036",
+      "id": "event-037",
       "at": "2026-09-03T07:45:21+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -506,7 +520,7 @@
       "details": {}
     },
     {
-      "id": "event-037",
+      "id": "event-038",
       "at": "2026-09-03T07:21:58+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -520,27 +534,13 @@
       "details": {}
     },
     {
-      "id": "event-038",
+      "id": "event-039",
       "at": "2026-09-03T07:21:52+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "ADMIN",
       "action": "auth.logout",
       "target": "fs-76b4f5e7ee939e57",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
-      "id": "event-039",
-      "at": "2026-09-03T07:17:47+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -2439,7 +2439,7 @@
     },
     {
       "id": "event-175",
-      "at": "2026-09-03T07:17:31+00:00",
+      "at": "2026-09-03T07:17:47+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",

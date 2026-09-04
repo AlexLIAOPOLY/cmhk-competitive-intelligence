@@ -3,28 +3,28 @@
   "status": {
     "results": {
       "count": 38,
-      "ok": 3,
-      "partial": 4
+      "ok": 2,
+      "partial": 5
     },
     "visuals": {
       "crawl": {
-        "success": 326,
-        "failed": 7,
+        "success": 325,
+        "failed": 9,
         "fallback": 0,
-        "total": 333,
-        "successRate": 98,
-        "completedAt": "2026-09-03 03:12:40"
+        "total": 334,
+        "successRate": 97,
+        "completedAt": "2026-09-04 03:13:45"
       },
       "quality": {
-        "ok": 3,
-        "partial": 4,
+        "ok": 2,
+        "partial": 5,
         "failed": 1,
         "operationalFailed": 1,
         "qualityRejected": 30,
         "nonPromoted": 31,
         "fieldTotal": 249,
         "missingFields": 15,
-        "rawSources": 337
+        "rawSources": 343
       },
       "blocks": [
         {
@@ -43,7 +43,7 @@
       "sourceTypes": [
         {
           "label": "company_official",
-          "value": 170
+          "value": 171
         },
         {
           "label": "government_public_info",
@@ -51,19 +51,19 @@
         },
         {
           "label": "company_official_investor_relations",
-          "value": 41
+          "value": 42
         },
         {
           "label": "regulator_public_info",
           "value": 14
         },
         {
-          "label": "exchange_public_disclosure",
+          "label": "commercial_data",
           "value": 12
         },
         {
-          "label": "commercial_data",
-          "value": 9
+          "label": "exchange_public_disclosure",
+          "value": 12
         }
       ],
       "jurisdictions": [
@@ -73,7 +73,7 @@
         },
         {
           "label": "US",
-          "value": 66
+          "value": 68
         },
         {
           "label": "JP",
@@ -95,60 +95,64 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 241
+          "value": 246
         },
         {
           "label": "cache:httpx",
-          "value": 58
+          "value": 56
         },
         {
           "label": "curl_chrome_ua",
-          "value": 22
+          "value": 21
         },
         {
           "label": "curl_direct_chrome_ua",
-          "value": 8
+          "value": 9
         },
         {
           "label": "curl_crawler_ua",
-          "value": 4
+          "value": 6
         },
         {
           "label": "skipped",
-          "value": 3
+          "value": 4
         }
       ],
       "rejection": {
-        "accepted": 146,
-        "rejected": 8,
-        "qualityRejected": 8,
-        "evidenceGaps": 98,
-        "reportedRejected": 106,
-        "review": 49,
+        "accepted": 148,
+        "rejected": 11,
+        "qualityRejected": 11,
+        "evidenceGaps": 106,
+        "reportedRejected": 117,
+        "review": 36,
         "total": 301,
-        "qualityTotal": 203,
-        "rejectRate": 4,
-        "passRate": 72,
+        "qualityTotal": 195,
+        "rejectRate": 6,
+        "passRate": 76,
         "reasons": [
           {
-            "label": "置信度低于80%",
-            "value": 4
+            "label": "云指标缺少云业务专属口径",
+            "value": 5
           },
           {
-            "label": "云指标缺少云业务专属口径",
+            "label": "置信度低于80%",
             "value": 3
           },
           {
             "label": "用户数仅有比例变化而无客户规模",
-            "value": 2
+            "value": 1
           },
           {
-            "label": "公司研究存在冲突或证据未核实：本轮隔离，保留待复核，不写入新值",
+            "label": "未通过指标格式与单位门禁",
+            "value": 1
+          },
+          {
+            "label": "在线模型不可用，离线结果不直接发布",
             "value": 1
           }
         ],
-        "runId": "scheduled_20260903_030057_565842",
-        "completedAt": "2026-09-03T09:25:19+08:00"
+        "runId": "scheduled_20260904_030037_690688",
+        "completedAt": "2026-09-04T10:41:39+08:00"
       },
       "newsFunnel": {
         "scope": "晨间扫描（2026-09-03@07:30）",
@@ -352,7 +356,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-09-03 06:38:01",
+    "latestOutputText": "2026-09-04 08:23:18",
     "outputs": [
       {
         "name": "9月3日运营商业绩摘要 (1).docx",
