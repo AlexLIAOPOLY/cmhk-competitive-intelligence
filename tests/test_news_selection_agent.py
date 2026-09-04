@@ -103,11 +103,14 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
         balanced, stats = agent._balanced_human_examples(examples, per_class_limit=10)
 
-        self.assertEqual(len(balanced), 8)
+        self.assertEqual(len(balanced), 10)
         self.assertEqual(stats["app_accept_count"], 2)
-        self.assertEqual(stats["app_reject_count"], 2)
+        self.assertEqual(stats["app_reject_count"], 3)
         self.assertEqual(stats["weekly_accept_count"], 2)
-        self.assertEqual(stats["weekly_reject_count"], 2)
+        self.assertEqual(stats["weekly_reject_count"], 3)
+        self.assertEqual(stats["source_app_accept_count"], 2)
+        self.assertEqual(stats["source_app_reject_count"], 3)
+        self.assertEqual(stats["source_app_accept_rate"], 0.4)
         self.assertTrue(
             all(
                 item["weekly_status"] == "待审核"
@@ -133,6 +136,37 @@ class NewsSelectionAgentTests(unittest.TestCase):
         decisions[0]["app_status"] = "接受"
         decisions[0]["weekly_status"] = "接受"
         agent._validate_model_decision_distribution(decisions)
+
+    def test_implausibly_high_acceptance_is_blocked_before_write(self):
+        decisions = [
+            {
+                "news_id": f"NEWS-{index}",
+                "app_before": "待审核",
+                "weekly_before": "待审核",
+                "app_status": "接受" if index < 10 else "不接受",
+                "weekly_status": "接受" if index < 9 else "不接受",
+            }
+            for index in range(20)
+        ]
+        training_stats = {
+            "source_app_accept_count": 9,
+            "source_app_reject_count": 46,
+            "source_weekly_accept_count": 7,
+            "source_weekly_reject_count": 44,
+        }
+        with self.assertRaisesRegex(RuntimeError, "接受率显著高于"):
+            agent._validate_model_decision_distribution(
+                decisions,
+                training_stats=training_stats,
+            )
+
+        for index, decision in enumerate(decisions):
+            decision["app_status"] = "接受" if index < 7 else "不接受"
+            decision["weekly_status"] = "接受" if index < 6 else "不接受"
+        agent._validate_model_decision_distribution(
+            decisions,
+            training_stats=training_stats,
+        )
 
     def test_human_examples_exclude_unchanged_agent_choices_but_learn_corrections(self):
         rows = [
