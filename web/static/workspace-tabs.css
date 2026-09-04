@@ -782,7 +782,7 @@
 .news-lineage.is-global .news-lineage-details h4 { font-size: 19px; }
 .news-lineage.is-global .news-lineage-details div > strong,.news-lineage.is-global .news-lineage-details li { font-size: 12px; }
 .news-lineage.is-global .news-lineage-details blockquote { font-size: 10px; }
-.news-lineage-feedback-label { position: absolute; bottom: 48px; left: 50%; z-index: 2; padding: 4px 8px; border: 0; border-radius: 0; color: #b7aff8; background: rgba(5,24,33,.88); box-shadow: none; font-size: 13px; font-weight: 750; transform: translateX(-50%); pointer-events: none; }
+.news-lineage-feedback-label { position: absolute; bottom: 48px; left: 50%; z-index: 2; padding: 4px 8px; border: 0; border-radius: 0; color: #b7aff8; background: transparent; box-shadow: none; font-size: 13px; font-weight: 750; text-shadow: 0 1px 2px #051821; transform: translateX(-50%); pointer-events: none; }
 .news-lineage.is-global .news-lineage-feedback-label { top: 10px; bottom: auto; padding: 5px 13px; font-size: 11px; }
 .news-lineage-details { border-top: 1px solid rgba(55,92,107,.58); background: rgba(7,28,38,.82); }
 .news-lineage-details > section { display: grid; min-height: 112px; grid-template-columns: minmax(180px,.55fr) minmax(260px,1fr) minmax(320px,1.45fr) auto; align-items: center; gap: 18px; padding: 13px 16px; }
@@ -1123,7 +1123,7 @@
 
 /* HTML edge labels avoid clipped Chinese glyphs in SVG textPath rendering. */
 .news-lineage-edge-labels { position: absolute; inset: 0; z-index: 3; pointer-events: none; overflow: visible; }
-.news-lineage-edge-label { position: absolute; display: block; padding: 2px 4px 3px; border: 0; border-radius: 0; color: #a9c6cf; background: rgba(5,24,33,.88); box-shadow: none; font: 600 11px/1.35 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; white-space: nowrap; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
+.news-lineage-edge-label { position: absolute; display: block; padding: 2px 4px 3px; border: 0; border-radius: 0; color: #a9c6cf; background: transparent; box-shadow: none; font: 600 11px/1.35 system-ui,-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; text-shadow: 0 1px 2px #051821; white-space: nowrap; text-rendering: geometricPrecision; -webkit-font-smoothing: antialiased; }
 .news-lineage-edge-label.is-amber,.news-lineage-edge-label.is-handoff-down { color: #c0b8ff; }
 .news-lineage-edge-label.is-feedback,.news-lineage-edge-label.is-feedback-side { color: #99c2ff; }
 .news-lineage-edge-label.is-line-degraded,.news-lineage-edge-label.is-line-at-risk { color: #c5b79e; }

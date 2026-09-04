@@ -9,6 +9,12 @@ STYLE = (ROOT / "web" / "static" / "workspace-tabs.css").read_text(encoding="utf
 
 
 class NewsLineageVisualStabilityTests(unittest.TestCase):
+    def test_edge_copy_has_no_dark_label_box(self):
+        self.assertIn(".news-lineage-feedback-label", STYLE)
+        self.assertIn(".news-lineage-edge-label", STYLE)
+        self.assertEqual(STYLE.count("background: rgba(5,24,33,.88)"), 0)
+        self.assertGreaterEqual(STYLE.count("background: transparent"), 2)
+
     def test_line_state_icons_are_semantic_stroke_svgs_without_circle_badges(self):
         self.assertIn(".news-lineage-status-icon {", STYLE)
         self.assertIn("fill: none; stroke: currentColor", STYLE)
@@ -98,7 +104,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=168', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=169', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=202', INDEX)
 
 
