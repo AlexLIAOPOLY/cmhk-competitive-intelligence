@@ -16,8 +16,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertNotIn(".news-lineage-edge-state i {", STYLE)
         self.assertNotIn(".news-lineage-edge-state.is-running", STYLE)
 
-    def test_node_title_reserves_space_for_health_and_open_icon(self):
-        self.assertIn("padding-right: 64px", STYLE)
+    def test_global_node_title_uses_dedicated_header_row(self):
+        self.assertIn("padding: 29px 12px 9px", STYLE)
+        self.assertIn(".news-lineage.is-global .news-lineage-node > span { min-height: 30px; padding-right: 0", STYLE)
 
     def test_crawler_diagram_uses_fine_subtle_grid_glass(self):
         self.assertIn(".news-lineage-viewport::before", STYLE)
@@ -91,9 +92,14 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('{ label: "C｜数据审核主链", position: [18, 425] }', SCRIPT)
         self.assertNotIn('C｜数据审核主链：抓取与提取', SCRIPT)
 
+    def test_four_database_outbound_trunk_matches_inbound_centerline(self):
+        self.assertIn('const databaseHub = box("database-hub")', SCRIPT)
+        self.assertIn('const centerY = databaseHub ? databaseHub.y + databaseHub.h / 2 : ty', SCRIPT)
+        self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
+
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=159', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=185', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=168', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=202', INDEX)
 
 
 if __name__ == "__main__":

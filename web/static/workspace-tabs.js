@@ -2034,6 +2034,12 @@
       const tx = target.x;
       const ty = target.y + target.h / 2;
       const railX = source.x + source.w + 8;
+      if (/^database-(local|international|cloud|mainland)$/.test(from) && to === "insights") {
+        const databaseHub = box("database-hub");
+        const centerY = databaseHub ? databaseHub.y + databaseHub.h / 2 : ty;
+        const targetRailX = target.x - 8;
+        return `M ${sx} ${sy} H ${railX} V ${centerY} H ${targetRailX} V ${ty} H ${tx}`;
+      }
       return `M ${sx} ${sy} H ${railX} V ${ty} H ${tx}`;
     }
     const forward = target.x >= source.x;
