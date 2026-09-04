@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "07669cf6c47c0450ce45461f",
+      "task_id": "incident:07669cf6c47c0450ce45461f",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-09-04T11:43:50+08:00",
+      "started_at_hkt": "2026-09-04T11:50:35+08:00",
+      "heartbeat_at_hkt": "2026-09-04T11:57:39+08:00",
+      "completed_at_hkt": "2026-09-04T11:58:09+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "0d1663b30a47b08d580061c8",
       "task_id": "incident:0d1663b30a47b08d580061c8",
       "title": "主项目后台任务",
@@ -679,6 +703,32 @@
       "started_at_hkt": "2026-09-04T07:43:06+08:00",
       "heartbeat_at_hkt": "2026-09-04T07:43:06+08:00",
       "completed_at_hkt": "2026-09-04T07:44:14+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "f19609d69a7470081d0c0740",
+      "task_id": "incident:f19609d69a7470081d0c0740",
+      "title": "战略新闻常驻监视器",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻常驻监视器",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "战略新闻监视器超过5分钟没有心跳",
+      "impact": "已确认：下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。推断：可能导致战略新闻处理延迟或遗漏，影响业务连续性。",
+      "suggestions": [
+        "检查com.liaowang.cmhk-web-app进程是否运行，并查看web_app stderr日志中的错误信息。",
+        "",
+        "若进程未运行，按LaunchAgent流程重启战略新闻监视器，并验证心跳恢复。",
+        "重启后监控心跳更新，确认下一次扫描、群回读和待发状态恢复功能正常执行。"
+      ],
+      "occurred_at_hkt": "2026-09-04T07:35:14+08:00",
+      "started_at_hkt": "2026-09-04T11:44:11+08:00",
+      "heartbeat_at_hkt": "2026-09-04T11:58:09+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -1754,21 +1804,49 @@
       "kind": "strategic-news",
       "kind_label": "战略新闻常驻监视器",
       "scope": "strategic-news",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "战略新闻监视器超过5分钟没有心跳",
-      "impact": "下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。",
+      "impact": "已确认：下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。推断：可能导致战略新闻处理延迟或遗漏，影响业务连续性。",
       "suggestions": [
-        "检查 com.liaowang.cmhk-web-app 运行状态和 web_app stderr。",
-        "确认战略任务进程锁与当前任务状态后，再按 LaunchAgent 流程恢复。"
+        "检查com.liaowang.cmhk-web-app进程是否运行，并查看web_app stderr日志中的错误信息。",
+        "",
+        "若进程未运行，按LaunchAgent流程重启战略新闻监视器，并验证心跳恢复。",
+        "重启后监控心跳更新，确认下一次扫描、群回读和待发状态恢复功能正常执行。"
       ],
       "occurred_at_hkt": "2026-09-04T07:34:13+08:00",
       "started_at_hkt": "2026-09-04T11:38:05+08:00",
       "heartbeat_at_hkt": "2026-09-04T11:38:05+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-04T11:39:19+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "511b7a4ac2111f4d544987ec",
+      "task_id": "incident:511b7a4ac2111f4d544987ec",
+      "title": "战略新闻常驻监视器",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻常驻监视器",
+      "scope": "strategic-news",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "战略新闻监视器超过5分钟没有心跳",
+      "impact": "已确认：下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。推断：可能导致战略新闻处理延迟或遗漏，影响业务连续性。",
+      "suggestions": [
+        "检查com.liaowang.cmhk-web-app进程是否运行，并查看web_app stderr日志中的错误信息。",
+        "",
+        "若进程未运行，按LaunchAgent流程重启战略新闻监视器，并验证心跳恢复。",
+        "重启后监控心跳更新，确认下一次扫描、群回读和待发状态恢复功能正常执行。"
+      ],
+      "occurred_at_hkt": "2026-09-04T07:34:13+08:00",
+      "started_at_hkt": "2026-09-04T11:40:04+08:00",
+      "heartbeat_at_hkt": "2026-09-04T11:42:34+08:00",
+      "completed_at_hkt": "2026-09-04T11:43:10+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -1923,7 +2001,7 @@
       ],
       "occurred_at_hkt": "2026-09-04 03:13:45",
       "started_at_hkt": "2026-09-04T03:14:18+08:00",
-      "heartbeat_at_hkt": "2026-09-04T11:38:05+08:00",
+      "heartbeat_at_hkt": "2026-09-04T11:58:09+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2001,7 +2079,7 @@
       ],
       "occurred_at_hkt": "2026-09-04 03:13:45",
       "started_at_hkt": "2026-09-04T08:21:19+08:00",
-      "heartbeat_at_hkt": "2026-09-04T11:38:05+08:00",
+      "heartbeat_at_hkt": "2026-09-04T11:58:09+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12490,78 +12568,6 @@
       "started_at_hkt": "2026-09-01T17:06:11+08:00",
       "heartbeat_at_hkt": "2026-09-01T17:06:11+08:00",
       "completed_at_hkt": "2026-09-01T17:06:41+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "17d9bbd1fadf5114c9695aec",
-      "task_id": "incident:17d9bbd1fadf5114c9695aec",
-      "title": "飞书频率调度周期",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度周期",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "调度器日志出现未处理异常",
-      "impact": "本轮或后续到期任务可能没有被正常检查或启动。",
-      "suggestions": [
-        "读取异常前后的完整 scheduler stderr 与任务状态。",
-        "先确认本轮是否已经启动/完成，再修复异常，避免重复触发。"
-      ],
-      "occurred_at_hkt": "2026-09-01T17:05:11+08:00",
-      "started_at_hkt": "2026-09-01T17:05:11+08:00",
-      "heartbeat_at_hkt": "2026-09-01T17:05:11+08:00",
-      "completed_at_hkt": "2026-09-01T17:05:41+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "503fca24491d0732829954eb",
-      "task_id": "incident:503fca24491d0732829954eb",
-      "title": "飞书频率调度周期",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度周期",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "调度器日志出现未处理异常",
-      "impact": "本轮或后续到期任务可能没有被正常检查或启动。",
-      "suggestions": [
-        "读取异常前后的完整 scheduler stderr 与任务状态。",
-        "先确认本轮是否已经启动/完成，再修复异常，避免重复触发。"
-      ],
-      "occurred_at_hkt": "2026-09-01T17:04:11+08:00",
-      "started_at_hkt": "2026-09-01T17:04:11+08:00",
-      "heartbeat_at_hkt": "2026-09-01T17:04:11+08:00",
-      "completed_at_hkt": "2026-09-01T17:04:41+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "0e8608298be1638ba7ca18c8",
-      "task_id": "incident:0e8608298be1638ba7ca18c8",
-      "title": "飞书频率调度周期",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度周期",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "调度器日志出现未处理异常",
-      "impact": "本轮或后续到期任务可能没有被正常检查或启动。",
-      "suggestions": [
-        "读取异常前后的完整 scheduler stderr 与任务状态。",
-        "先确认本轮是否已经启动/完成，再修复异常，避免重复触发。"
-      ],
-      "occurred_at_hkt": "2026-09-01T17:03:11+08:00",
-      "started_at_hkt": "2026-09-01T17:03:11+08:00",
-      "heartbeat_at_hkt": "2026-09-01T17:03:11+08:00",
-      "completed_at_hkt": "2026-09-01T17:03:41+08:00",
       "handled_at_hkt": ""
     }
   ],

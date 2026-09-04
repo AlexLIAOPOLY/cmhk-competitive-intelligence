@@ -1,6 +1,27 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260904_114405_949152": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260904_114405_949152",
+        "task_run_id": "20260904_114405_949152",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-09-04@07:30）",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "新闻自动初筛完成；处理 171 条，验证 342 格，本次新写 342 格，已有 0 格；逐格回读通过。",
+        "status_detail": "新闻自动初筛完成；处理 171 条，验证 342 格，本次新写 342 格，已有 0 格；逐格回读通过。",
+        "started_at_hkt": "2026-09-04T11:44:05+08:00",
+        "heartbeat_at_hkt": "2026-09-04T11:49:36+08:00",
+        "completed_at_hkt": "2026-09-04T11:49:36+08:00",
+        "duration_ms": 330400,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260904_112742_242403": {
       "ok": true,
       "run": {
@@ -73,14 +94,14 @@
         "kind": "executive-intelligence-refresh",
         "kind_label": "四库刷新",
         "scope": "Agent审核 scheduled_20260904_030037_690688 · 父任务 20260904_030037_690688",
-        "run_status": "running",
-        "phase": "更新主页UI",
-        "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
-        "status_detail": "",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "四库、19项AI洞察（含4条顶部跨库研判）、前端数据源及GitHub.io公开验证已完成，共执行 3 次。",
+        "status_detail": "四库、19项AI洞察（含4条顶部跨库研判）、前端数据源及GitHub.io公开验证已完成，共执行 3 次。",
         "started_at_hkt": "2026-09-04T10:44:08+08:00",
-        "heartbeat_at_hkt": "2026-09-04T11:38:00+08:00",
-        "completed_at_hkt": "",
-        "duration_ms": 0,
+        "heartbeat_at_hkt": "2026-09-04T11:41:06+08:00",
+        "completed_at_hkt": "2026-09-04T11:41:06+08:00",
+        "duration_ms": 3417337,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
@@ -94,14 +115,14 @@
         "kind": "strategic-news",
         "kind_label": "新闻爬虫",
         "scope": "晨间扫描（2026-09-04@07:30）",
-        "run_status": "running",
-        "phase": "语义去重限额批次",
-        "progress_detail": "开始第 10/12 轮（硬上限 14 轮）；核对 20 条候选，召回 64 条历史和 36 条更早候选。",
-        "status_detail": "",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 666 条，AI保留 240 条，历史重复 69 条，新增 171 条。",
+        "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 666 条，AI保留 240 条，历史重复 69 条，新增 171 条。",
         "started_at_hkt": "2026-09-04T07:30:14+08:00",
-        "heartbeat_at_hkt": "2026-09-04T11:35:46+08:00",
-        "completed_at_hkt": "",
-        "duration_ms": 0,
+        "heartbeat_at_hkt": "2026-09-04T11:49:36+08:00",
+        "completed_at_hkt": "2026-09-04T11:49:36+08:00",
+        "duration_ms": 15561899,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
@@ -1030,27 +1051,6 @@
         "heartbeat_at_hkt": "2026-09-02T14:57:30+08:00",
         "completed_at_hkt": "2026-09-02T14:57:30+08:00",
         "duration_ms": 799543,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260902_140022_550070": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260902_140022_550070",
-        "task_run_id": "20260902_140022_550070",
-        "title": "战略新闻定时爬虫",
-        "kind": "strategic-news",
-        "kind_label": "新闻爬虫",
-        "scope": "午后扫描（2026-09-02@14:00）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
-        "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 10 格，未重跑爬虫或重复发送群消息。",
-        "started_at_hkt": "2026-09-02T14:00:22+08:00",
-        "heartbeat_at_hkt": "2026-09-02T14:15:09+08:00",
-        "completed_at_hkt": "2026-09-02T14:15:09+08:00",
-        "duration_ms": 886858,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
