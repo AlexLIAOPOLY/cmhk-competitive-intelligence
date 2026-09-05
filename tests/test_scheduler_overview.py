@@ -73,3 +73,30 @@ class SchedulerOverviewTests(TestCase):
         self.assertEqual(monitor["active_task_id"], "news-running")
         self.assertEqual(monitor["active_phase"], "AI批量审核")
         self.assertEqual(monitor["active_heartbeat_at"], "2026-09-05T11:10:17+08:00")
+
+    def test_overview_exposes_scheduler_handoff_before_task_registry_entry(self):
+        snapshot = {
+            "monitor": {
+                "enabled": True,
+                "status": "active",
+                "latest_scan_slot": {
+                    "slot": "2026-09-05@14:00",
+                    "status": "starting",
+                    "scheduled_for": "2026-09-05T14:00:00+08:00",
+                    "at": "2026-09-05T14:00:03+08:00",
+                },
+            }
+        }
+        with (
+            mock.patch.object(scheduler, "load_state", return_value={}),
+            mock.patch.object(scheduler, "due_rows", return_value=([], [])),
+            mock.patch.object(web_app, "load_crawl_run_history", return_value=[]),
+            mock.patch("strategic_briefing.public_snapshot", return_value=snapshot),
+        ):
+            payload = web_app.build_scheduler_overview(force=True)
+
+        monitor = payload["strategic_monitor"]
+        self.assertEqual(monitor["status"], "starting")
+        self.assertTrue(monitor["task_visible"])
+        self.assertEqual(monitor["active_task_id"], "slot:2026-09-05@14:00")
+        self.assertEqual(monitor["active_phase"], "调度已交接")

@@ -47,6 +47,25 @@ test('explicit historical date remains pinned during live refresh', () => {
   assert.equal(context.state.newsSelectedDate, '2026-09-04');
 });
 
+test('scheduler handoff remains visible before the task registry entry exists', () => {
+  const context = selectedRunsContext('#workspace=news');
+  context.state.schedulerOverview = {
+    strategic_monitor: {
+      task_visible: true,
+      status: 'starting',
+      active_task_id: 'slot:2026-09-05@14:00',
+      active_phase: '调度已交接',
+      active_progress: '调度器已开始启动战略爬虫，等待任务登记。',
+      active_heartbeat_at: '2026-09-05T14:00:03+08:00',
+      active_started_at: '2026-09-05T14:00:00+08:00',
+    },
+  };
+  const [run] = context.selectedNewsRuns();
+  assert.equal(run.crawl_run_id, 'slot:2026-09-05@14:00');
+  assert.equal(run.run_status, 'queued');
+  assert.equal(context.state.newsSelectedDate, '2026-09-05');
+});
+
 test('running AI batch progress maps to the AI stage instead of an earlier stage', () => {
   const context = vm.createContext({
     number: (value) => String(value),

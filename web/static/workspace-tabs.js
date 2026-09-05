@@ -1341,20 +1341,34 @@
   }
 
   function selectedNewsRuns() {
-    const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))].sort().reverse();
+    const monitor = state.schedulerOverview?.strategic_monitor || {};
+    const monitorRunId = String(monitor.active_task_id || "");
+    const visibleRuns = [...state.newsRuns];
+    if (monitor.task_visible === true && monitorRunId && !visibleRuns.some((run) => run.crawl_run_id === monitorRunId)) {
+      visibleRuns.unshift({
+        crawl_run_id: monitorRunId,
+        task_kind: "strategic-news",
+        run_status: monitor.status === "starting" ? "queued" : "running",
+        phase: monitor.active_phase || "启动中",
+        progress_detail: monitor.active_progress || "调度器已交接战略爬虫任务。",
+        heartbeat_at_hkt: monitor.active_heartbeat_at || "",
+        started_at_hkt: monitor.active_started_at || monitor.active_heartbeat_at || "",
+      });
+    }
+    const dates = [...new Set(visibleRuns.map(newsRunDate).filter(Boolean))].sort().reverse();
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     const pinnedDate = params.get("newsDate") || "";
     let selectedDate = state.newsSelectedDate || params.get("newsDate") || "";
     if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
       const legacyRunId = String(params.get("newsRuns") || params.get("newsRun") || "").split(",").find(Boolean);
-      selectedDate = newsRunDate(state.newsRuns.find((run) => run.crawl_run_id === legacyRunId));
+      selectedDate = newsRunDate(visibleRuns.find((run) => run.crawl_run_id === legacyRunId));
     }
     // Follow newly arriving task dates unless the URL explicitly pins a
     // historical day. This keeps an overnight-open monitor on the live run.
     if (!/^\d{4}-\d{2}-\d{2}$/.test(pinnedDate) && dates[0]) selectedDate = dates[0];
     if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = dates[0] || "";
     state.newsSelectedDate = selectedDate;
-    const selected = state.newsRuns.filter((run) => newsRunDate(run) === selectedDate);
+    const selected = visibleRuns.filter((run) => newsRunDate(run) === selectedDate);
     state.newsSelectedRunIds = selected.map((run) => run.crawl_run_id);
     return selected;
   }

@@ -7840,6 +7840,13 @@ def latest_reviewed_news(*, limit: int | None = None) -> list[dict[str, Any]]:
 def public_snapshot() -> dict[str, Any]:
     now = datetime.now(HKT)
     state = _load_state()
+    scan_slots = state.get("scan_slots") if isinstance(state.get("scan_slots"), dict) else {}
+    latest_scan_slot_key = max(scan_slots, default="")
+    latest_scan_slot = (
+        {"slot": latest_scan_slot_key, **dict(scan_slots[latest_scan_slot_key])}
+        if latest_scan_slot_key and isinstance(scan_slots.get(latest_scan_slot_key), dict)
+        else {}
+    )
     published = _load_published()
     items = [
         {
@@ -7874,6 +7881,8 @@ def public_snapshot() -> dict[str, Any]:
             "last_scan_at": state.get("last_scan_at"),
             "last_group_check_at": state.get("last_group_check_at"),
             "last_publish_at": state.get("last_publish_at"),
+            "last_cycle_at": state.get("last_cycle_at"),
+            "latest_scan_slot": latest_scan_slot,
             "last_candidate_count": int(
                 state.get("last_scan_candidate_count") or 0
             ),

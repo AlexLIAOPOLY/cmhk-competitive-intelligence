@@ -2578,6 +2578,20 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
                     "active_phase": str(latest_news.get("phase") or "执行中"),
                     "active_progress": str(latest_news.get("progress_detail") or "任务正在执行。"),
                     "active_heartbeat_at": str(latest_news.get("heartbeat_at_hkt") or ""),
+                    "active_started_at": str(latest_news.get("started_at_hkt") or ""),
+                    "task_visible": True,
+                }
+            )
+        elif str((strategic_monitor.get("latest_scan_slot") or {}).get("status") or "") == "starting":
+            starting_slot = dict(strategic_monitor.get("latest_scan_slot") or {})
+            strategic_monitor.update(
+                {
+                    "status": "starting",
+                    "active_task_id": f"slot:{starting_slot.get('slot') or ''}",
+                    "active_phase": "调度已交接",
+                    "active_progress": "调度器已开始启动战略爬虫，等待任务登记。",
+                    "active_heartbeat_at": str(starting_slot.get("at") or ""),
+                    "active_started_at": str(starting_slot.get("scheduled_for") or starting_slot.get("at") or ""),
                     "task_visible": True,
                 }
             )
@@ -2588,6 +2602,7 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
                     "active_phase": "",
                     "active_progress": "",
                     "active_heartbeat_at": "",
+                    "active_started_at": "",
                     "task_visible": False,
                 }
             )
