@@ -2,8 +2,8 @@
   "ok": true,
   "incidents": [
     {
-      "incident_id": "2b00a72f455647bb997c49e8",
-      "task_id": "incident:2b00a72f455647bb997c49e8",
+      "incident_id": "227ceedb97e76cb9834beecb",
+      "task_id": "incident:227ceedb97e76cb9834beecb",
       "title": "战略新闻常驻监视器",
       "kind": "strategic-news",
       "kind_label": "战略新闻常驻监视器",
@@ -21,10 +21,36 @@
         "若进程未运行，按LaunchAgent流程重启战略新闻监视器，并验证心跳恢复。",
         "重启后监控心跳更新，确认下一次扫描、群回读和待发状态恢复功能正常执行。"
       ],
+      "occurred_at_hkt": "2026-09-05T13:07:23+08:00",
+      "started_at_hkt": "2026-09-05T13:07:35+08:00",
+      "heartbeat_at_hkt": "2026-09-05T13:16:36+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "2b00a72f455647bb997c49e8",
+      "task_id": "incident:2b00a72f455647bb997c49e8",
+      "title": "战略新闻常驻监视器",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻常驻监视器",
+      "scope": "strategic-news",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "战略新闻监视器超过5分钟没有心跳",
+      "impact": "已确认：下一次战略新闻扫描、群回读或待发状态恢复可能不会执行。推断：可能导致战略新闻处理延迟或遗漏，影响业务连续性。",
+      "suggestions": [
+        "检查com.liaowang.cmhk-web-app进程是否运行，并查看web_app stderr日志中的错误信息。",
+        "",
+        "若进程未运行，按LaunchAgent流程重启战略新闻监视器，并验证心跳恢复。",
+        "重启后监控心跳更新，确认下一次扫描、群回读和待发状态恢复功能正常执行。"
+      ],
       "occurred_at_hkt": "2026-09-05T12:57:18+08:00",
       "started_at_hkt": "2026-09-05T12:57:36+08:00",
-      "heartbeat_at_hkt": "2026-09-05T13:01:34+08:00",
-      "completed_at_hkt": "",
+      "heartbeat_at_hkt": "2026-09-05T13:04:06+08:00",
+      "completed_at_hkt": "2026-09-05T13:04:36+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -88,7 +114,7 @@
       "scope": "strategic-news",
       "incident_status": "resolved",
       "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
+      "phase": "恢复证据已确认",
       "severity": "P2",
       "severity_label": "高",
       "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
@@ -103,6 +129,32 @@
       "started_at_hkt": "2026-09-05T12:54:18+08:00",
       "heartbeat_at_hkt": "2026-09-05T13:01:04+08:00",
       "completed_at_hkt": "2026-09-05T13:01:34+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "deb4cf89fc6658b6a0bbec78",
+      "task_id": "incident:deb4cf89fc6658b6a0bbec78",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "新闻群通报的时效性显著下降，受影响新闻需等待后续轮次才能补进审核表，无法及时发布。",
+      "suggestions": [
+        "检查内部AI模型的额度使用情况与限流配置，确认是否存在因配额耗尽或限流导致的请求拒绝。",
+        "分析candidate_ai_editor_audit.json文件中的deferred原因分布，定位具体的失败模式（如超时、限流、模型错误等）。",
+        "若确认为限流或配额问题，联系相关服务负责人调整配额或优化限流策略，并监控队列积压情况是否缓解。",
+        "修复后验证：确认待补审条目数开始下降，且新条目能正常进入审核表，群通报时效性恢复正常。"
+      ],
+      "occurred_at_hkt": "2026-09-05T12:37:17+08:00",
+      "started_at_hkt": "2026-09-05T13:04:36+08:00",
+      "heartbeat_at_hkt": "2026-09-05T13:16:36+08:00",
+      "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
     {
@@ -2059,7 +2111,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-05T03:12:46+08:00",
-      "heartbeat_at_hkt": "2026-09-05T13:01:34+08:00",
+      "heartbeat_at_hkt": "2026-09-05T13:16:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2161,7 +2213,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-05T08:16:16+08:00",
-      "heartbeat_at_hkt": "2026-09-05T13:01:34+08:00",
+      "heartbeat_at_hkt": "2026-09-05T13:16:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12597,56 +12649,6 @@
       "started_at_hkt": "2026-09-02T08:10:09+08:00",
       "heartbeat_at_hkt": "2026-09-02T08:13:10+08:00",
       "completed_at_hkt": "2026-09-02T08:13:40+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "ed72b87c5b8f102846dfd8f6",
-      "task_id": "incident:ed72b87c5b8f102846dfd8f6",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-09-02T08:04:04+08:00",
-      "started_at_hkt": "2026-09-02T08:04:04+08:00",
-      "heartbeat_at_hkt": "2026-09-02T08:04:04+08:00",
-      "completed_at_hkt": "2026-09-02T08:05:04+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "78320b0e64207dbe099c74a3",
-      "task_id": "incident:78320b0e64207dbe099c74a3",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "已确认：本批4条数据AI批量编辑失败，进入紧凑补审流程，处理时效和自动化程度降低。推断：若补审队列积压或后续批次同样失败，可能影响整体任务完成时间和数据质量。",
-      "suggestions": [
-        "检查AI服务端日志和监控，确认该时间段是否存在超时、资源瓶颈或异常重启，定位JSON截断根因。",
-        "验证本批4条数据在紧凑补审队列中的状态，确认是否已成功入队并保留原有处理结果。",
-        "若AI服务存在稳定性问题，考虑增加重试机制或调整超时阈值，并对截断响应进行容错处理。",
-        "修复后选取同类任务进行小批量验证，确保AI返回JSON完整且后续流程正常。"
-      ],
-      "occurred_at_hkt": "2026-09-02T08:01:05+08:00",
-      "started_at_hkt": "2026-09-02T08:01:05+08:00",
-      "heartbeat_at_hkt": "2026-09-02T08:01:05+08:00",
-      "completed_at_hkt": "2026-09-02T08:02:15+08:00",
       "handled_at_hkt": ""
     }
   ],
