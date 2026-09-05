@@ -2,6 +2,57 @@
   "ok": true,
   "tasks": [
     {
+      "task_id": "crawl:20260905_073044_443452",
+      "task_run_id": "20260905_073044_443452",
+      "title": "战略新闻定时爬虫",
+      "kind": "strategic-news",
+      "kind_label": "新闻爬虫",
+      "scope": "晨间扫描（2026-09-05@07:30）",
+      "run_status": "running",
+      "phase": "AI批量审核",
+      "progress_detail": "开始剩余未命中缓存队列第 166/167 批，剩余候选 661-664/667，本轮已复用 0 条，本批 4 条。",
+      "status_detail": "",
+      "started_at_hkt": "2026-09-05T07:30:44+08:00",
+      "heartbeat_at_hkt": "2026-09-05T11:55:13+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 0,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260905_030024_486976",
+      "task_run_id": "20260905_030024_486976",
+      "title": "定时爬虫",
+      "kind": "crawl",
+      "kind_label": "爬虫",
+      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
+      "run_status": "running",
+      "phase": "审核归档",
+      "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
+      "status_detail": "",
+      "started_at_hkt": "2026-09-05T03:00:24+08:00",
+      "heartbeat_at_hkt": "2026-09-05T11:54:09+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 27833719,
+      "retry_index": 0
+    },
+    {
+      "task_id": "crawl:20260905_010050_557668",
+      "task_run_id": "20260905_010050_557668",
+      "title": "每日01:00四库资料搜索",
+      "kind": "four-database-source-discovery",
+      "kind_label": "01:00四库资料搜索",
+      "scope": "四库更新资料 2026-09-05",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "01:00资料搜索完成：123个查询、1356条搜索结果、前一日两次任务参考300条、38条四库线索；已交接03:00官方来源复核。",
+      "status_detail": "01:00资料搜索完成：123个查询、1356条搜索结果、前一日两次任务参考300条、38条四库线索；已交接03:00官方来源复核。",
+      "started_at_hkt": "2026-09-05T01:00:50+08:00",
+      "heartbeat_at_hkt": "2026-09-05T01:02:46+08:00",
+      "completed_at_hkt": "2026-09-05T01:02:46+08:00",
+      "duration_ms": 115686,
+      "retry_index": 0
+    },
+    {
       "task_id": "crawl:20260904_153941_601451",
       "task_run_id": "20260904_153941_601451",
       "title": "新闻自动初筛",
@@ -288,7 +339,7 @@
       "heartbeat_at_hkt": "2026-09-03T15:17:49+08:00",
       "completed_at_hkt": "2026-09-03T15:17:49+08:00",
       "duration_ms": 165371,
-      "retry_index": 18
+      "retry_index": 17
     },
     {
       "task_id": "crawl:20260903_150043_281537",
@@ -305,7 +356,7 @@
       "heartbeat_at_hkt": "2026-09-03T15:03:07+08:00",
       "completed_at_hkt": "2026-09-03T15:03:07+08:00",
       "duration_ms": 143805,
-      "retry_index": 17
+      "retry_index": 16
     },
     {
       "task_id": "crawl:20260903_145416_305830",
@@ -322,7 +373,7 @@
       "heartbeat_at_hkt": "2026-09-03T14:56:05+08:00",
       "completed_at_hkt": "2026-09-03T14:56:05+08:00",
       "duration_ms": 109047,
-      "retry_index": 16
+      "retry_index": 15
     },
     {
       "task_id": "crawl:20260903_144414_647811",
@@ -339,7 +390,7 @@
       "heartbeat_at_hkt": "2026-09-03T14:46:03+08:00",
       "completed_at_hkt": "2026-09-03T14:46:03+08:00",
       "duration_ms": 109074,
-      "retry_index": 15
+      "retry_index": 14
     },
     {
       "task_id": "crawl:20260903_143414_813429",
@@ -356,7 +407,7 @@
       "heartbeat_at_hkt": "2026-09-03T14:35:03+08:00",
       "completed_at_hkt": "2026-09-03T14:35:03+08:00",
       "duration_ms": 49142,
-      "retry_index": 14
+      "retry_index": 13
     },
     {
       "task_id": "crawl:20260903_142407_471171",
@@ -373,7 +424,7 @@
       "heartbeat_at_hkt": "2026-09-03T14:25:03+08:00",
       "completed_at_hkt": "2026-09-03T14:25:03+08:00",
       "duration_ms": 56219,
-      "retry_index": 13
+      "retry_index": 12
     },
     {
       "task_id": "crawl:20260903_141333_387506",
@@ -441,7 +492,7 @@
       "heartbeat_at_hkt": "2026-09-03T13:51:07+08:00",
       "completed_at_hkt": "2026-09-03T13:51:07+08:00",
       "duration_ms": 52875,
-      "retry_index": 12
+      "retry_index": 11
     },
     {
       "task_id": "crawl:20260903_134007_573420",
@@ -475,7 +526,7 @@
       "heartbeat_at_hkt": "2026-09-03T13:40:07+08:00",
       "completed_at_hkt": "2026-09-03T13:40:07+08:00",
       "duration_ms": 46248,
-      "retry_index": 11
+      "retry_index": 10
     },
     {
       "task_id": "crawl:20260903_133001_048130",
@@ -509,7 +560,7 @@
       "heartbeat_at_hkt": "2026-09-03T13:30:00+08:00",
       "completed_at_hkt": "2026-09-03T13:30:00+08:00",
       "duration_ms": 78044,
-      "retry_index": 10
+      "retry_index": 9
     },
     {
       "task_id": "crawl:20260903_132112_714343",
@@ -560,7 +611,7 @@
       "heartbeat_at_hkt": "2026-09-03T13:19:08+08:00",
       "completed_at_hkt": "2026-09-03T13:19:08+08:00",
       "duration_ms": 58559,
-      "retry_index": 9
+      "retry_index": 8
     },
     {
       "task_id": "crawl:20260903_124904_900892",
@@ -594,7 +645,7 @@
       "heartbeat_at_hkt": "2026-09-03T12:49:04+08:00",
       "completed_at_hkt": "2026-09-03T12:49:04+08:00",
       "duration_ms": 606568,
-      "retry_index": 8
+      "retry_index": 7
     },
     {
       "task_id": "crawl:20260903_111714_325339",
@@ -611,7 +662,7 @@
       "heartbeat_at_hkt": "2026-09-03T11:21:04+08:00",
       "completed_at_hkt": "2026-09-03T11:21:04+08:00",
       "duration_ms": 230937,
-      "retry_index": 7
+      "retry_index": 6
     },
     {
       "task_id": "crawl:20260903_110320_427308",
@@ -628,7 +679,7 @@
       "heartbeat_at_hkt": "2026-09-03T11:17:04+08:00",
       "completed_at_hkt": "2026-09-03T11:17:04+08:00",
       "duration_ms": 824026,
-      "retry_index": 6
+      "retry_index": 5
     },
     {
       "task_id": "crawl:20260903_104902_060882",
@@ -645,7 +696,7 @@
       "heartbeat_at_hkt": "2026-09-03T11:03:05+08:00",
       "completed_at_hkt": "2026-09-03T11:03:05+08:00",
       "duration_ms": 843006,
-      "retry_index": 5
+      "retry_index": 4
     },
     {
       "task_id": "crawl:20260903_102427_290131",
@@ -662,7 +713,7 @@
       "heartbeat_at_hkt": "2026-09-03T10:49:01+08:00",
       "completed_at_hkt": "2026-09-03T10:49:01+08:00",
       "duration_ms": 1474219,
-      "retry_index": 4
+      "retry_index": 3
     },
     {
       "task_id": "task:20260903_102419_a5ef6c50",
@@ -717,7 +768,7 @@
       "heartbeat_at_hkt": "2026-09-03T10:16:21+08:00",
       "completed_at_hkt": "2026-09-03T10:16:21+08:00",
       "duration_ms": 2240974,
-      "retry_index": 3
+      "retry_index": 2
     },
     {
       "task_id": "crawl:20260903_093634_839263",
@@ -734,7 +785,7 @@
       "heartbeat_at_hkt": "2026-09-03T10:49:01+08:00",
       "completed_at_hkt": "2026-09-03T10:49:01+08:00",
       "duration_ms": 1486435,
-      "retry_index": 3
+      "retry_index": 1
     },
     {
       "task_id": "crawl:20260903_093155_974249",
@@ -751,7 +802,7 @@
       "heartbeat_at_hkt": "2026-09-03T09:36:18+08:00",
       "completed_at_hkt": "2026-09-03T09:36:18+08:00",
       "duration_ms": 263973,
-      "retry_index": 2
+      "retry_index": 1
     },
     {
       "task_id": "crawl:20260903_093024_664292",
@@ -802,7 +853,7 @@
       "heartbeat_at_hkt": "2026-09-03T09:31:55+08:00",
       "completed_at_hkt": "2026-09-03T09:31:55+08:00",
       "duration_ms": 165968,
-      "retry_index": 2
+      "retry_index": 0
     },
     {
       "task_id": "crawl:20260903_092650_670673",
@@ -819,57 +870,6 @@
       "heartbeat_at_hkt": "2026-09-03T09:28:13+08:00",
       "completed_at_hkt": "2026-09-03T09:28:13+08:00",
       "duration_ms": 83820,
-      "retry_index": 1
-    },
-    {
-      "task_id": "crawl:20260903_092445_634563",
-      "task_run_id": "20260903_092445_634563",
-      "title": "战略新闻定时爬虫",
-      "kind": "strategic-news",
-      "kind_label": "新闻爬虫",
-      "scope": "晨间扫描（2026-09-03@07:30）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:26:50+08:00；最后进度：[2026-09-03 09:26:50] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:26:50+08:00；最后进度：[2026-09-03 09:26:50] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
-      "started_at_hkt": "2026-09-03T09:24:45+08:00",
-      "heartbeat_at_hkt": "2026-09-03T09:26:50+08:00",
-      "completed_at_hkt": "2026-09-03T09:26:50+08:00",
-      "duration_ms": 125648,
-      "retry_index": 1
-    },
-    {
-      "task_id": "crawl:20260903_091240_080543",
-      "task_run_id": "20260903_091240_080543",
-      "title": "新闻自动初筛",
-      "kind": "news-selection-agent",
-      "kind_label": "新闻自动初筛",
-      "scope": "爬虫后选材（2026-09-03@07:30）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:18:57+08:00；最后进度：[2026-09-03 09:18:57] LangChain 分批判断：正在处理第 5/30 批，本批 5 条当天候选。",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:18:57+08:00；最后进度：[2026-09-03 09:18:57] LangChain 分批判断：正在处理第 5/30 批，本批 5 条当天候选。",
-      "started_at_hkt": "2026-09-03T09:12:40+08:00",
-      "heartbeat_at_hkt": "2026-09-03T09:18:57+08:00",
-      "completed_at_hkt": "2026-09-03T09:18:57+08:00",
-      "duration_ms": 377617,
-      "retry_index": 0
-    },
-    {
-      "task_id": "crawl:20260903_073045_893516",
-      "task_run_id": "20260903_073045_893516",
-      "title": "战略新闻定时爬虫",
-      "kind": "strategic-news",
-      "kind_label": "新闻爬虫",
-      "scope": "晨间扫描（2026-09-03@07:30）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:12:40+08:00；最后进度：[2026-09-03 09:12:40] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:12:40+08:00；最后进度：[2026-09-03 09:12:40] 飞书写入与逐格回读：写入新增 148 条，涉及 107 个来源；飞书现有记录 1524 条，写入后逐格回读已确认。",
-      "started_at_hkt": "2026-09-03T07:30:45+08:00",
-      "heartbeat_at_hkt": "2026-09-03T09:12:40+08:00",
-      "completed_at_hkt": "2026-09-03T09:12:40+08:00",
-      "duration_ms": 6115078,
       "retry_index": 0
     },
     {

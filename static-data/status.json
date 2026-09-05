@@ -3,8 +3,8 @@
   "status": {
     "results": {
       "count": 38,
-      "ok": 2,
-      "partial": 5
+      "ok": 4,
+      "partial": 6
     },
     "visuals": {
       "crawl": {
@@ -13,18 +13,18 @@
         "fallback": 0,
         "total": 334,
         "successRate": 97,
-        "completedAt": "2026-09-04 03:13:45"
+        "completedAt": "2026-09-05 03:12:43"
       },
       "quality": {
-        "ok": 2,
-        "partial": 5,
+        "ok": 4,
+        "partial": 6,
         "failed": 1,
         "operationalFailed": 1,
-        "qualityRejected": 30,
-        "nonPromoted": 31,
+        "qualityRejected": 27,
+        "nonPromoted": 28,
         "fieldTotal": 249,
         "missingFields": 15,
-        "rawSources": 343
+        "rawSources": 345
       },
       "blocks": [
         {
@@ -51,19 +51,19 @@
         },
         {
           "label": "company_official_investor_relations",
-          "value": 42
+          "value": 46
         },
         {
           "label": "regulator_public_info",
           "value": 14
         },
         {
-          "label": "commercial_data",
+          "label": "exchange_public_disclosure",
           "value": 12
         },
         {
-          "label": "exchange_public_disclosure",
-          "value": 12
+          "label": "commercial_data",
+          "value": 10
         }
       ],
       "jurisdictions": [
@@ -73,7 +73,7 @@
         },
         {
           "label": "US",
-          "value": 68
+          "value": 69
         },
         {
           "label": "JP",
@@ -95,15 +95,15 @@
       "methods": [
         {
           "label": "httpx",
-          "value": 246
+          "value": 241
         },
         {
           "label": "cache:httpx",
-          "value": 56
+          "value": 64
         },
         {
           "label": "curl_chrome_ua",
-          "value": 21
+          "value": 20
         },
         {
           "label": "curl_direct_chrome_ua",
@@ -111,7 +111,7 @@
         },
         {
           "label": "curl_crawler_ua",
-          "value": 6
+          "value": 5
         },
         {
           "label": "skipped",
@@ -119,40 +119,40 @@
         }
       ],
       "rejection": {
-        "accepted": 148,
-        "rejected": 11,
-        "qualityRejected": 11,
-        "evidenceGaps": 106,
-        "reportedRejected": 117,
-        "review": 36,
-        "total": 301,
-        "qualityTotal": 195,
-        "rejectRate": 6,
-        "passRate": 76,
+        "accepted": 132,
+        "rejected": 9,
+        "qualityRejected": 9,
+        "evidenceGaps": 110,
+        "reportedRejected": 119,
+        "review": 55,
+        "total": 306,
+        "qualityTotal": 196,
+        "rejectRate": 5,
+        "passRate": 67,
         "reasons": [
           {
-            "label": "云指标缺少云业务专属口径",
-            "value": 5
+            "label": "置信度低于80%",
+            "value": 4
           },
           {
-            "label": "置信度低于80%",
+            "label": "未通过指标格式与单位门禁",
             "value": 3
           },
           {
             "label": "用户数仅有比例变化而无客户规模",
+            "value": 2
+          },
+          {
+            "label": "公司研究存在冲突或证据未核实：本轮隔离，保留待复核，不写入新值",
             "value": 1
           },
           {
-            "label": "未通过指标格式与单位门禁",
-            "value": 1
-          },
-          {
-            "label": "在线模型不可用，离线结果不直接发布",
+            "label": "云指标缺少云业务专属口径",
             "value": 1
           }
         ],
-        "runId": "scheduled_20260904_030037_690688",
-        "completedAt": "2026-09-04T10:41:39+08:00"
+        "runId": "scheduled_20260905_030024_486976",
+        "completedAt": "2026-09-05T11:54:08+08:00"
       },
       "newsFunnel": {
         "scope": "午后扫描（2026-09-04@14:00）",
@@ -340,7 +340,7 @@
       "runningCount": 0,
       "hasRunning": false
     },
-    "latestOutputText": "2026-09-04 08:23:18",
+    "latestOutputText": "2026-09-05 08:17:01",
     "outputs": [
       {
         "name": "9月3日运营商业绩摘要 (1).docx",
