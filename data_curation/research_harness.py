@@ -138,14 +138,14 @@ class ResearchHarness:
         def complete_output(request, handler):
             allowance = min(16384, 4096 * (2 ** self.current.get("truncation_retries", 0)))
             request = request.override(model_settings={**request.model_settings, "max_tokens": allowance})
+            if request.state.get("run_model_call_count", 0) >= 4:
+                request = request.override(tools=[submit_metric], messages=[*request.messages, HumanMessage(
+                    content="本指标的查阅预算已结束。现在只调用submit_metric提交已有证据；不能确认的值提交missing并说明本轮未找到，不得编造。")])
             if self.current.get("truncation_retries"):
                 request = request.override(messages=[*request.messages, HumanMessage(content=(
                     f"输出恢复请求，第{self.current['truncation_retries']}次：上次响应未完整生成，未执行任何提交。"
                     "停止扩大分析，只用当前已有证据提交这一项。优先提交原文片段编号，不抄写长引文；"
                     "证据不足就提交missing并说明缺口，不要重新查找或输出长篇总结。"))])
-            if request.state.get("run_model_call_count", 0) >= 4:
-                request = request.override(tools=[submit_metric], messages=[*request.messages, HumanMessage(
-                    content="本指标的查阅预算已结束。现在只调用submit_metric提交已有证据；不能确认的值提交missing并说明本轮未找到，不得编造。")])
             response = handler(request)
             for message in response.result:
                 metadata = getattr(message, "response_metadata", {}) or {}

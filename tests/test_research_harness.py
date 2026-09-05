@@ -15,9 +15,11 @@ from data_curation.six_agent_research import run_assignment, run_research, valid
 class ToolModel(FakeMessagesListChatModel):
     bound_tools: list[str] = []
     requested_budgets: list[int] = []
+    request_tails: list[str] = []
 
     def _generate(self, *args, **kwargs):
         self.requested_budgets.append(kwargs.get("max_tokens"))
+        self.request_tails.append(str(args[0][-1].content))
         return super()._generate(*args, **kwargs)
 
     def _get_ls_params(self, *args, **kwargs):
@@ -150,6 +152,21 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertIn("预算", result["reason"])
         self.assertEqual(len(saved), 1)
         self.assertEqual(len([e for e in events if e[0] == "model_response"]), 6)
+
+    def test_truncated_final_budget_turn_keeps_recovery_instruction_last(self):
+        lookup = AIMessage(content="", tool_calls=[{"name": "find_evidence", "args": {
+            "terms": ["revenue"]}, "id": "lookup", "type": "tool_call"}],
+            response_metadata={"finish_reason": "tool_calls"})
+        bad = submission()
+        bad.response_metadata["finish_reason"] = "length"
+        model = ToolModel(responses=[lookup, lookup, lookup, lookup, bad, submission()])
+        saved = []
+        harness = ResearchHarness(TASK, model, lambda *a: None, validate_fact)
+        harness.extract("HKT", "收入", {}, saved.append)
+        self.assertIn("查阅预算已结束", model.request_tails[-2])
+        self.assertIn("输出恢复请求，第1次", model.request_tails[-1])
+        self.assertEqual(model.requested_budgets[-2:], [4096, 8192])
+        self.assertEqual(len(saved), 1)
 
 
 if __name__ == "__main__":
