@@ -1,6 +1,48 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260905_115704_977112": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260905_115704_977112",
+        "task_run_id": "20260905_115704_977112",
+        "title": "季度竞对数据发布",
+        "kind": "quarterly-data-release",
+        "kind_label": "季度数据发布",
+        "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "发布 qcm_cf9ffeb153cdda8eda2b7d77 完成，共 3079 行；数据截至 2026-06-30；已经同步到飞书。",
+        "status_detail": "发布 qcm_cf9ffeb153cdda8eda2b7d77 完成，共 3079 行；数据截至 2026-06-30；已经同步到飞书。",
+        "started_at_hkt": "2026-09-05T11:57:04+08:00",
+        "heartbeat_at_hkt": "2026-09-05T12:01:37+08:00",
+        "completed_at_hkt": "2026-09-05T12:01:37+08:00",
+        "duration_ms": 272274,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
+    "crawl:20260905_115635_092313": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260905_115635_092313",
+        "task_run_id": "20260905_115635_092313",
+        "title": "四库与观察结论自动更新",
+        "kind": "executive-intelligence-refresh",
+        "kind_label": "四库刷新",
+        "scope": "Agent审核 scheduled_20260905_030024_486976 · 父任务 20260905_030024_486976",
+        "run_status": "running",
+        "phase": "更新主页UI",
+        "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+        "status_detail": "",
+        "started_at_hkt": "2026-09-05T11:56:35+08:00",
+        "heartbeat_at_hkt": "2026-09-05T12:25:01+08:00",
+        "completed_at_hkt": "",
+        "duration_ms": 0,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260905_073044_443452": {
       "ok": true,
       "run": {
@@ -11,11 +53,11 @@
         "kind_label": "新闻爬虫",
         "scope": "晨间扫描（2026-09-05@07:30）",
         "run_status": "running",
-        "phase": "AI批量审核",
-        "progress_detail": "开始剩余未命中缓存队列第 166/167 批，剩余候选 661-664/667，本轮已复用 0 条，本批 4 条。",
+        "phase": "语义去重限额批次",
+        "progress_detail": "开始第 10/12 轮（硬上限 14 轮）；核对 16 条候选，召回 52 条历史和 43 条更早候选。",
         "status_detail": "",
         "started_at_hkt": "2026-09-05T07:30:44+08:00",
-        "heartbeat_at_hkt": "2026-09-05T11:55:13+08:00",
+        "heartbeat_at_hkt": "2026-09-05T12:22:40+08:00",
         "completed_at_hkt": "",
         "duration_ms": 0,
         "retry_index": 0
@@ -31,14 +73,14 @@
         "kind": "crawl",
         "kind_label": "爬虫",
         "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-        "run_status": "running",
-        "phase": "审核归档",
-        "progress_detail": "Agent 审核节点已全部完成，正在把本轮 trace 写入飞书日志。",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
         "status_detail": "",
         "started_at_hkt": "2026-09-05T03:00:24+08:00",
-        "heartbeat_at_hkt": "2026-09-05T11:54:09+08:00",
-        "completed_at_hkt": "",
-        "duration_ms": 27833719,
+        "heartbeat_at_hkt": "2026-09-05T11:56:35+08:00",
+        "completed_at_hkt": "2026-09-05T11:56:35+08:00",
+        "duration_ms": 32171216,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
@@ -417,7 +459,7 @@
         "heartbeat_at_hkt": "2026-09-03T15:17:49+08:00",
         "completed_at_hkt": "2026-09-03T15:17:49+08:00",
         "duration_ms": 165371,
-        "retry_index": 17
+        "retry_index": 16
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -438,7 +480,7 @@
         "heartbeat_at_hkt": "2026-09-03T15:03:07+08:00",
         "completed_at_hkt": "2026-09-03T15:03:07+08:00",
         "duration_ms": 143805,
-        "retry_index": 16
+        "retry_index": 15
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -459,7 +501,7 @@
         "heartbeat_at_hkt": "2026-09-03T14:56:05+08:00",
         "completed_at_hkt": "2026-09-03T14:56:05+08:00",
         "duration_ms": 109047,
-        "retry_index": 15
+        "retry_index": 14
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -480,7 +522,7 @@
         "heartbeat_at_hkt": "2026-09-03T14:46:03+08:00",
         "completed_at_hkt": "2026-09-03T14:46:03+08:00",
         "duration_ms": 109074,
-        "retry_index": 14
+        "retry_index": 13
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -501,7 +543,7 @@
         "heartbeat_at_hkt": "2026-09-03T14:35:03+08:00",
         "completed_at_hkt": "2026-09-03T14:35:03+08:00",
         "duration_ms": 49142,
-        "retry_index": 13
+        "retry_index": 12
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -522,7 +564,7 @@
         "heartbeat_at_hkt": "2026-09-03T14:25:03+08:00",
         "completed_at_hkt": "2026-09-03T14:25:03+08:00",
         "duration_ms": 56219,
-        "retry_index": 12
+        "retry_index": 11
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -606,7 +648,7 @@
         "heartbeat_at_hkt": "2026-09-03T13:51:07+08:00",
         "completed_at_hkt": "2026-09-03T13:51:07+08:00",
         "duration_ms": 52875,
-        "retry_index": 11
+        "retry_index": 10
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -648,7 +690,7 @@
         "heartbeat_at_hkt": "2026-09-03T13:40:07+08:00",
         "completed_at_hkt": "2026-09-03T13:40:07+08:00",
         "duration_ms": 46248,
-        "retry_index": 10
+        "retry_index": 9
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -690,7 +732,7 @@
         "heartbeat_at_hkt": "2026-09-03T13:30:00+08:00",
         "completed_at_hkt": "2026-09-03T13:30:00+08:00",
         "duration_ms": 78044,
-        "retry_index": 9
+        "retry_index": 8
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -753,7 +795,7 @@
         "heartbeat_at_hkt": "2026-09-03T13:19:08+08:00",
         "completed_at_hkt": "2026-09-03T13:19:08+08:00",
         "duration_ms": 58559,
-        "retry_index": 8
+        "retry_index": 7
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -795,7 +837,7 @@
         "heartbeat_at_hkt": "2026-09-03T12:49:04+08:00",
         "completed_at_hkt": "2026-09-03T12:49:04+08:00",
         "duration_ms": 606568,
-        "retry_index": 7
+        "retry_index": 6
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -816,7 +858,7 @@
         "heartbeat_at_hkt": "2026-09-03T11:21:04+08:00",
         "completed_at_hkt": "2026-09-03T11:21:04+08:00",
         "duration_ms": 230937,
-        "retry_index": 6
+        "retry_index": 5
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -837,7 +879,7 @@
         "heartbeat_at_hkt": "2026-09-03T11:17:04+08:00",
         "completed_at_hkt": "2026-09-03T11:17:04+08:00",
         "duration_ms": 824026,
-        "retry_index": 5
+        "retry_index": 4
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -858,7 +900,7 @@
         "heartbeat_at_hkt": "2026-09-03T11:03:05+08:00",
         "completed_at_hkt": "2026-09-03T11:03:05+08:00",
         "duration_ms": 843006,
-        "retry_index": 4
+        "retry_index": 3
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -879,7 +921,7 @@
         "heartbeat_at_hkt": "2026-09-03T10:49:01+08:00",
         "completed_at_hkt": "2026-09-03T10:49:01+08:00",
         "duration_ms": 1474219,
-        "retry_index": 3
+        "retry_index": 2
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -946,7 +988,7 @@
         "heartbeat_at_hkt": "2026-09-03T10:16:21+08:00",
         "completed_at_hkt": "2026-09-03T10:16:21+08:00",
         "duration_ms": 2240974,
-        "retry_index": 2
+        "retry_index": 1
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -988,7 +1030,7 @@
         "heartbeat_at_hkt": "2026-09-03T09:36:18+08:00",
         "completed_at_hkt": "2026-09-03T09:36:18+08:00",
         "duration_ms": 263973,
-        "retry_index": 1
+        "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
     },
@@ -1051,48 +1093,6 @@
         "heartbeat_at_hkt": "2026-09-03T09:31:55+08:00",
         "completed_at_hkt": "2026-09-03T09:31:55+08:00",
         "duration_ms": 165968,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260903_092650_670673": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260903_092650_670673",
-        "task_run_id": "20260903_092650_670673",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-09-03@07:30）",
-        "run_status": "failed",
-        "phase": "已中断",
-        "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:28:13+08:00；最后进度：[2026-09-03 09:28:13] LangChain 分批判断：正在处理第 5/30 批，本批 5 条当天候选。",
-        "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-09-03T09:28:13+08:00；最后进度：[2026-09-03 09:28:13] LangChain 分批判断：正在处理第 5/30 批，本批 5 条当天候选。",
-        "started_at_hkt": "2026-09-03T09:26:50+08:00",
-        "heartbeat_at_hkt": "2026-09-03T09:28:13+08:00",
-        "completed_at_hkt": "2026-09-03T09:28:13+08:00",
-        "duration_ms": 83820,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260903_030057_565842": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260903_030057_565842",
-        "task_run_id": "20260903_030057_565842",
-        "title": "定时爬虫",
-        "kind": "crawl",
-        "kind_label": "爬虫",
-        "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第22行、第24行、第26行、第27行、第28行、第29行、第31行、第32行、第33行、第47行、第48行、第49行、第50行、第52行、第53行、第54行、第55行、第56行、第57行、第58行）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "服务重启后已复用抓取结果，Agent 审核、飞书归档和新闻线索桥接均已完成。",
-        "status_detail": "",
-        "started_at_hkt": "2026-09-03T03:00:57+08:00",
-        "heartbeat_at_hkt": "2026-09-03T09:29:20+08:00",
-        "completed_at_hkt": "2026-09-03T09:29:20+08:00",
-        "duration_ms": 23303927,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
