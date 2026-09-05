@@ -8,6 +8,8 @@
   })[value] || { key: "unknown", label: "无记录" };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const terms = { verified: "已核验", missing: "本轮未找到", conflict: "待复核", not_applicable: "不适用", error: "执行失败" };
+  // Presentation only: keep persisted assignments unchanged for same-run resume.
+  const childTitle = (title) => String(title || "").replace(/研究 Agent$/, "研究子 Agent");
   const link = (url) => /^https?:\/\//i.test(String(url || "")) ? `<a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(url)}</a>` : esc(url);
   function build(legacy, snapshot, date) {
     const data = snapshot?.date === date ? snapshot : { plan: snapshot?.plan || [] };
@@ -37,7 +39,7 @@
       const actual = agents.find((agent) => agent.key === task.key);
       const reports = actual?.reports || [];
       const done = reports.filter((report) => report.status === "completed").length;
-      add(`research-${task.key}`, task.title, [20 + index * 300, 560], run ? `${done}/${task.companies.length}` : "—", "家公司完成研究", task.purpose, [
+      add(`research-${task.key}`, childTitle(task.title), [20 + index * 300, 560], run ? `${done}/${task.companies.length}` : "—", "家公司完成研究", task.purpose, [
         `负责 ${task.companies.length} 家公司：${task.companies.join("、")}`,
         "逐公司读取指标任务，联网搜索相关披露，去重后读取官方网页或财报",
         "提交主体、指标、期间、数值、单位、原文地址、引用摘录和处理结果",

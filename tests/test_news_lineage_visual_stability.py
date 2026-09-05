@@ -10,6 +10,10 @@ RESEARCH = (ROOT / "web" / "static" / "research-diagram.js").read_text(encoding=
 
 
 class NewsLineageVisualStabilityTests(unittest.TestCase):
+    def test_child_agent_titles_are_presentation_only(self):
+        self.assertIn('replace(/研究 Agent$/, "研究子 Agent")', RESEARCH)
+        self.assertIn('childTitle(task.title)', RESEARCH)
+
     def test_supervisor_phases_are_named_and_dispatch_tracks_worker_midpoint(self):
         self.assertIn("03:00 Supervisor · Agent 任务分配", RESEARCH)
         self.assertIn("Supervisor · Agent 结果汇总", RESEARCH)

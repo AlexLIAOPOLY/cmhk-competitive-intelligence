@@ -2033,6 +2033,8 @@ def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     return {
         "checked_at_hkt": now.isoformat(timespec="seconds"),
         "timezone": "Asia/Hong_Kong", "research": research,
+        "main_sheet_link_crawl": {"enabled": False, "status": "disabled",
+                                  "reason": "六Agent研究替代主表链接定时爬取；旧代码保留供手动使用"},
         "subscription_dispatch": dispatch_subscription_queue(dry_run=dry_run),
         "weekly_report_dispatch": dispatch_scheduled_weekly_report(dry_run=dry_run or reports_busy, now=now),
         "performance_report_dispatch": dispatch_scheduled_performance_report(dry_run=dry_run or reports_busy, now=now),

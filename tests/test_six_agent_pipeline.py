@@ -18,6 +18,8 @@ class SixAgentPipelineTests(unittest.TestCase):
              patch.object(scheduler, "agent_audit_process_running", return_value=False), \
              patch.object(scheduler, "standalone_research_process_running", return_value=False), \
              patch.object(scheduler, "legacy_run_cycle", side_effect=AssertionError("legacy")), \
+             patch.object(scheduler, "read_live_schedule", side_effect=AssertionError("main sheet schedule")), \
+             patch.object(scheduler, "run_due_rows", side_effect=AssertionError("main sheet crawl")), \
              patch.object(scheduler, "run_due_four_database_source_discovery", side_effect=AssertionError("discovery")), \
              patch.object(scheduler, "dispatch_subscription_queue", return_value={}), \
              patch.object(scheduler, "dispatch_scheduled_weekly_report", return_value={}), \
@@ -25,6 +27,8 @@ class SixAgentPipelineTests(unittest.TestCase):
              patch("data_curation.daily_research.dispatch", return_value={"agent_count": 6}) as launch:
             result = scheduler.run_cycle()
             self.assertEqual(result["research"]["agent_count"], 6)
+            self.assertFalse(result["main_sheet_link_crawl"]["enabled"])
+            self.assertEqual(result["main_sheet_link_crawl"]["status"], "disabled")
             launch.assert_called_once()
 
     def test_daily_dispatch_dry_run_does_not_create_files(self):
