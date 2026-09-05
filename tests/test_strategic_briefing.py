@@ -1305,6 +1305,11 @@ class StrategicBriefingTests(unittest.TestCase):
             }
         ]
         saved = {}
+        saved_snapshots = []
+
+        def save_state(state):
+            saved.update(state)
+            saved_snapshots.append(json.loads(json.dumps(state)))
 
         def completed_archive(key):
             return morning_archive if key == morning_key else {}
@@ -1345,7 +1350,7 @@ class StrategicBriefingTests(unittest.TestCase):
             mock.patch.object(
                 briefing,
                 "_save_state",
-                side_effect=lambda state: saved.update(state),
+                side_effect=save_state,
             ),
         ):
             briefing.run_cycle(now)
@@ -1362,6 +1367,20 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertTrue(
             saved["scan_slots"][afternoon_key]["deferred_by_prior_slot"]
         )
+        self.assertTrue(
+            any(
+                snapshot["scan_slots"].get(afternoon_key, {}).get("status")
+                == "starting"
+                for snapshot in saved_snapshots
+            )
+        )
+        starting = next(
+            snapshot["scan_slots"][afternoon_key]
+            for snapshot in saved_snapshots
+            if snapshot["scan_slots"].get(afternoon_key, {}).get("status")
+            == "starting"
+        )
+        self.assertEqual(starting["scheduled_for"], "2026-08-18T14:00:00+08:00")
 
     def test_new_afternoon_slot_gets_turn_before_unlimited_morning_retry(self):
         now = datetime(2026, 8, 18, 15, 10, tzinfo=briefing.HKT)

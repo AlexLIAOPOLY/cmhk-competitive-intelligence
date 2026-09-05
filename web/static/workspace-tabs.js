@@ -1290,6 +1290,15 @@
     const historical = logNumber(content, /语义去重完成：候选\s*\d+\s*条，历史\s*(\d+)\s*条/, 0);
     const readbackCells = logNumber(content, /飞书逐格回读：[^\n]*所有\s*(\d+)\s*个单元格一致/, 0);
     const notificationStatus = String(summary.notification_status || "").trim();
+    const liveProgress = `${run?.phase || ""} ${run?.progress_detail || ""}`;
+    const liveStageKey = runStatus === "running" ? (
+      /(?:群通知|结果归档|保存与归档)/.test(liveProgress) ? "push"
+        : /(?:飞书|写入|回读)/.test(liveProgress) ? "write"
+          : /(?:去重|历史事件)/.test(liveProgress) ? "dedupe"
+            : /(?:AI.*审核|批量审核|紧凑补审|语义审核)/.test(liveProgress) ? "ai"
+              : /(?:门禁|时间窗|规范化 URL)/.test(liveProgress) ? "gate"
+                : "search"
+    ) : "";
     const notificationCompleted = /群通知完成：通知状态：/.test(content)
       || (runCompleted && Boolean(notificationStatus));
     const lines = {
@@ -1317,9 +1326,12 @@
       push: notificationCompleted,
     };
     let waiting = false;
-    return rawStages.map((stage) => {
+    const liveStageIndex = rawStages.findIndex((stage) => stage.key === liveStageKey);
+    return rawStages.map((stage, stageIndex) => {
       const done = Boolean(stage.evidence) || completedFromSummary[stage.key] === true;
-      const status = done ? "done" : waiting ? "pending" : "current";
+      const status = liveStageIndex >= 0
+        ? (stageIndex < liveStageIndex || done ? "done" : stageIndex === liveStageIndex ? "current" : "pending")
+        : done ? "done" : waiting ? "pending" : "current";
       if (!done) waiting = true;
       const evidence = stage.evidence || (completedFromSummary[stage.key]
         ? `${runCompletionText(run)}｜运行完成摘要已确认该阶段完成`
@@ -1329,13 +1341,17 @@
   }
 
   function selectedNewsRuns() {
-    const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))];
+    const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))].sort().reverse();
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
+    const pinnedDate = params.get("newsDate") || "";
     let selectedDate = state.newsSelectedDate || params.get("newsDate") || "";
     if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) {
       const legacyRunId = String(params.get("newsRuns") || params.get("newsRun") || "").split(",").find(Boolean);
       selectedDate = newsRunDate(state.newsRuns.find((run) => run.crawl_run_id === legacyRunId));
     }
+    // Follow newly arriving task dates unless the URL explicitly pins a
+    // historical day. This keeps an overnight-open monitor on the live run.
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(pinnedDate) && dates[0]) selectedDate = dates[0];
     if (!/^\d{4}-\d{2}-\d{2}$/.test(selectedDate)) selectedDate = dates[0] || "";
     state.newsSelectedDate = selectedDate;
     const selected = state.newsRuns.filter((run) => newsRunDate(run) === selectedDate);

@@ -7579,6 +7579,29 @@ def run_cycle(now: datetime | None = None) -> dict[str, Any]:
                 except ValueError:
                     pass
             try:
+                # Persist the scheduler hand-off before entering the long scan.
+                # The task registry owns detailed progress heartbeats; this
+                # marker proves the monitor observed the slot while run_cycle
+                # is synchronously occupied by the scan.
+                scan_slots[slot_key] = {
+                    "status": "starting",
+                    "label": _slot_label(index),
+                    "scheduled_for": _now_iso(slot_at),
+                    "at": _now_iso(current_now),
+                    "recovering_interruption": recover_interruption,
+                    "deferred_by_prior_slot": deferred_by_prior_slot,
+                }
+                state["last_cycle_at"] = _now_iso(current_now)
+                _save_state(state)
+                _append_event(
+                    {
+                        "type": "scan_starting",
+                        "slot": slot_key,
+                        "scheduled_for": _now_iso(slot_at),
+                        "recovering_interruption": recover_interruption,
+                        "deferred_by_prior_slot": deferred_by_prior_slot,
+                    }
+                )
                 deadline_monotonic = (
                     time.monotonic() + max(0.0, (cutoff_at - current_now).total_seconds())
                     if cutoff_at is not None

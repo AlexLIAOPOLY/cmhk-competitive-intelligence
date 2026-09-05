@@ -31,6 +31,10 @@ class SchedulerOverviewTests(TestCase):
             mock.patch.object(scheduler, "load_state", return_value={}),
             mock.patch.object(scheduler, "due_rows", return_value=([], rows)),
             mock.patch.object(web_app, "load_crawl_run_history", return_value=history),
+            mock.patch(
+                "strategic_briefing.public_snapshot",
+                return_value={"monitor": {"enabled": True, "status": "active"}},
+            ),
         ):
             payload = web_app.build_scheduler_overview(force=True)
 
@@ -41,3 +45,31 @@ class SchedulerOverviewTests(TestCase):
         self.assertEqual(payload["latest"]["strategic_news"]["crawl_run_id"], "news")
         self.assertEqual(payload["latest"]["four_database_refresh"]["crawl_run_id"], "intel")
         self.assertEqual(payload["pipeline"]["four_databases"], ["local", "international", "cloud", "macro"])
+        self.assertFalse(payload["strategic_monitor"]["task_visible"])
+
+    def test_overview_exposes_live_strategic_task_progress(self):
+        running = {
+            "crawl_run_id": "news-running",
+            "task_kind": "strategic-news",
+            "run_status": "running",
+            "phase": "AI批量审核",
+            "progress_detail": "正在处理第 12/20 批。",
+            "heartbeat_at_hkt": "2026-09-05T11:10:17+08:00",
+        }
+        with (
+            mock.patch.object(scheduler, "load_state", return_value={}),
+            mock.patch.object(scheduler, "due_rows", return_value=([], [])),
+            mock.patch.object(web_app, "load_crawl_run_history", return_value=[running]),
+            mock.patch(
+                "strategic_briefing.public_snapshot",
+                return_value={"monitor": {"enabled": True, "status": "active"}},
+            ),
+        ):
+            payload = web_app.build_scheduler_overview(force=True)
+
+        monitor = payload["strategic_monitor"]
+        self.assertEqual(monitor["status"], "running")
+        self.assertTrue(monitor["task_visible"])
+        self.assertEqual(monitor["active_task_id"], "news-running")
+        self.assertEqual(monitor["active_phase"], "AI批量审核")
+        self.assertEqual(monitor["active_heartbeat_at"], "2026-09-05T11:10:17+08:00")

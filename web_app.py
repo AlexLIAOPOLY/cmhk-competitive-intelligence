@@ -2559,6 +2559,38 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
         latest_main = next((item for item in run_history if str(item.get("trigger") or "") == "定时爬虫"), {})
         latest_news = next((item for item in run_history if str(item.get("task_kind") or "") == "strategic-news"), {})
         latest_intelligence = next((item for item in run_history if str(item.get("task_kind") or "") == "executive-intelligence-refresh"), {})
+        try:
+            from strategic_briefing import public_snapshot as strategic_public_snapshot
+
+            strategic_monitor = dict(strategic_public_snapshot().get("monitor") or {})
+        except Exception as exc:
+            logging.warning("strategic monitor snapshot unavailable: %s", exc)
+            strategic_monitor = {
+                "enabled": False,
+                "status": "unavailable",
+                "last_error": str(exc)[:240],
+            }
+        if str(latest_news.get("run_status") or "") == "running":
+            strategic_monitor.update(
+                {
+                    "status": "running",
+                    "active_task_id": str(latest_news.get("crawl_run_id") or ""),
+                    "active_phase": str(latest_news.get("phase") or "执行中"),
+                    "active_progress": str(latest_news.get("progress_detail") or "任务正在执行。"),
+                    "active_heartbeat_at": str(latest_news.get("heartbeat_at_hkt") or ""),
+                    "task_visible": True,
+                }
+            )
+        else:
+            strategic_monitor.update(
+                {
+                    "active_task_id": "",
+                    "active_phase": "",
+                    "active_progress": "",
+                    "active_heartbeat_at": "",
+                    "task_visible": False,
+                }
+            )
         next_runs = sorted(
             {str(item.get("next_run_hkt") or "") for item in active_rows if item.get("next_run_hkt")}
         )
@@ -2570,6 +2602,7 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
             "frequency_counts": frequency_counts,
             "source_groups": source_groups,
             "next_runs": next_runs,
+            "strategic_monitor": strategic_monitor,
             "latest": {
                 "main_crawl": latest_main,
                 "strategic_news": latest_news,
