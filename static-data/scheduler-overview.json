@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-05T12:24:24+08:00",
+  "checked_at_hkt": "2026-09-05T12:42:18+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -36,6 +36,39 @@
     "2026-09-07T03:00:00+08:00",
     "2026-10-01T03:00:00+08:00"
   ],
+  "strategic_monitor": {
+    "enabled": true,
+    "status": "starting",
+    "chat_name": "揭榜-竞争对手与行业情报监测AI应用",
+    "sheet_url": "",
+    "scan_times": [
+      "07:30",
+      "14:00"
+    ],
+    "next_scan_at": "2026-09-05T14:00:00+08:00",
+    "next_group_check_at": "2026-09-05T13:00:00+08:00",
+    "last_scan_at": "2026-09-04T14:26:15+08:00",
+    "last_group_check_at": "2026-09-05T07:00:07+08:00",
+    "last_cycle_at": "2026-09-05T12:37:17+08:00",
+    "latest_scan_slot": {
+      "slot": "2026-09-05@07:30",
+      "status": "starting",
+      "label": "晨间扫描",
+      "scheduled_for": "2026-09-05T07:30:00+08:00",
+      "at": "2026-09-05T12:37:17+08:00",
+      "recovering_interruption": true,
+      "deferred_by_prior_slot": false
+    },
+    "last_candidate_count": 7,
+    "feishu_identity": "bot",
+    "last_error": "2026-09-01@07:30 新闻自动初筛未完成：LangChain 多轮补判后仍遗漏 1 条候选：NEWS-17C9439F5E5826",
+    "active_task_id": "slot:2026-09-05@07:30",
+    "active_phase": "调度已交接",
+    "active_progress": "调度器已开始启动战略爬虫，等待任务登记。",
+    "active_heartbeat_at": "2026-09-05T12:37:17+08:00",
+    "active_started_at": "2026-09-05T07:30:00+08:00",
+    "task_visible": true
+  },
   "latest": {
     "main_crawl": {
       "crawl_run_id": "20260905_030024_486976",
@@ -3170,26 +3203,46 @@
       "scope": "晨间扫描（2026-09-05@07:30）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
-      "run_status": "running",
+      "run_status": "completed",
       "backend_pid": 37317,
       "worker_pid": 0,
-      "phase": "语义去重限额批次",
-      "progress_detail": "开始第 10/12 轮（硬上限 14 轮）；核对 16 条候选，召回 52 条历史和 43 条更早候选。",
-      "heartbeat_at_hkt": "2026-09-05T12:22:40+08:00",
+      "phase": "已完成",
+      "progress_detail": "飞书写入与回读已成功；群通知已发送。自动初筛随后处理，不影响本轮群通知。",
+      "heartbeat_at_hkt": "2026-09-05T12:37:04+08:00",
       "started_at_hkt": "2026-09-05T07:30:44+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-05T12:37:04+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 18380090,
       "feishu": {},
       "local_files": {
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260905_073044_443452.jsonl"
       },
       "stream_log": {
-        "bytes": 101031,
-        "lines": 577
+        "bytes": 105905,
+        "lines": 606
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {}
+      "metrics_refresh": {},
+      "status_detail": "飞书写入与回读已成功；群通知已发送。自动初筛随后处理，不影响本轮群通知。",
+      "failure_stage": "",
+      "operational_summary": {
+        "slot": "2026-09-05@07:30",
+        "crawl_stage_status": "completed",
+        "new_count": 152,
+        "readback_verified": true,
+        "selection_agent_status": "pending",
+        "notification_status": "sent",
+        "success_boundary": "feishu_readback",
+        "message_id": "om_x100b668d892960acb149636ac8dfc02",
+        "message_ids": [
+          "om_x100b668d892960acb149636ac8dfc02",
+          "om_x100b668d893ed8a0b2b2296a4e51c3c"
+        ],
+        "notification_destination_count": 2
+      },
+      "amended_at_hkt": "2026-09-05T12:37:19+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260905_115635_092313",
@@ -3200,9 +3253,9 @@
       "run_status": "running",
       "backend_pid": 54394,
       "worker_pid": 54394,
-      "phase": "生成AI洞察",
-      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点及4条顶部跨库研判逐一执行深层解释、简洁度与事实门禁。",
-      "heartbeat_at_hkt": "2026-09-05T12:03:37+08:00",
+      "phase": "更新主页UI",
+      "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+      "heartbeat_at_hkt": "2026-09-05T12:42:08+08:00",
       "started_at_hkt": "2026-09-05T11:56:35+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -3210,8 +3263,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260905_115635_092313.jsonl"
       },
       "stream_log": {
-        "bytes": 2345,
-        "lines": 14
+        "bytes": 6337,
+        "lines": 36
       },
       "final_audit": {},
       "run_log": {},
