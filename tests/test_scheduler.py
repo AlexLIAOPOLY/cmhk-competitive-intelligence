@@ -1037,7 +1037,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 return_value=True,
             ) as resume,
         ):
-            result = scheduler.run_cycle()
+            result = scheduler.legacy_run_cycle()
 
         self.assertTrue(result["resumed"])
         resume.assert_called_once_with(pending, {})
@@ -1071,7 +1071,7 @@ class ScheduledAgentAuditTests(unittest.TestCase):
                 return_value=True,
             ) as resume,
         ):
-            result = scheduler.run_cycle()
+            result = scheduler.legacy_run_cycle()
 
         self.assertTrue(result["resumed"])
         resume.assert_called_once_with(pending, {})

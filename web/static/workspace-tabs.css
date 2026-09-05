@@ -2078,3 +2078,51 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .news-keyword-module ol { display: grid; grid-template-columns: repeat(auto-fit,minmax(min(220px,100%),1fr)); gap: 0 24px; margin: 0; padding: 0; list-style: none; }
 .news-keyword-module li { display: flex; gap: 9px; align-items: baseline; min-width: 0; padding: 7px 0; color: #bcd5dd; font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .news-keyword-module li > span { min-width: 26px; color: #668e9d; font-variant-numeric: tabular-nums; }
+
+/* Six research workers have identical, generously spaced cards. */
+.news-lineage.is-global .news-lineage-node.is-research-agent,
+.news-lineage.is-global .news-lineage-node.is-research-step {
+  width: 250px; min-height: 160px; height: auto; padding: 30px 16px 16px;
+}
+.news-lineage.is-global .news-lineage-node.is-research-agent > span,
+.news-lineage.is-global .news-lineage-node.is-research-step > span { font-size: 16px; line-height: 1.5; }
+.news-lineage.is-global .news-lineage-node.is-research-agent > em,
+.news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; max-height: none; overflow: visible; }
+.research-node-detail { overflow-wrap: anywhere; }
+.research-node-detail ol { padding-left: 24px; line-height: 1.9; }
+.research-node-detail dl { margin: 10px 0; }
+.research-node-detail dl > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 9px 0; border-bottom: 1px solid #294653; }
+.research-node-detail dt { color: #8fadb7; }
+.research-node-detail dd { margin: 0; white-space: pre-wrap; }
+.research-node-detail a { color: #74d0df; }
+.research-node-detail pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.research-company { border: 1px solid #335763; border-radius: 10px; margin: 12px 0; padding: 14px; }
+.research-company summary { cursor: pointer; font-weight: 600; line-height: 1.7; }
+.research-metric { padding: 14px 0; border-bottom: 1px solid #335763; }
+.research-metric h4 { margin: 0; }
+.research-metric small { margin-left: 12px; color: #9dc3cf; }
+@media (max-width: 600px) {
+  .research-node-detail dl > div { grid-template-columns: 1fr; gap: 5px; }
+  .research-company { padding: 10px; }
+}
+.research-node-detail dd { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .news-lineage.is-global .news-lineage-viewport,
+  .news-lineage.is-global .news-lineage-stage,
+  .news-lineage.is-global .news-lineage-canvas {
+    width: 100% !important; height: auto !important; min-height: 0 !important;
+    max-height: none !important; transform: none !important; overflow: visible !important;
+    position: relative !important; inset: auto !important;
+  }
+  .news-lineage.is-global .news-lineage-edges,
+  .news-lineage.is-global .news-lineage-edge-labels,
+  .news-lineage.is-global .news-lineage-edge-states,
+  .news-lineage.is-global .news-lineage-lane-label { display: none; }
+  .news-lineage.is-global .news-lineage-nodes { position: relative; display: grid; gap: 12px; padding: 12px; }
+  .news-lineage.is-global .news-lineage-node {
+    position: relative !important; inset: auto !important; transform: none !important;
+    width: 100% !important; min-height: 142px; height: auto;
+  }
+  .news-lineage.is-global .news-lineage-node > span { font-size: 16px; }
+  .news-lineage.is-global .news-lineage-node > em { font-size: 12px; white-space: normal; }
+}

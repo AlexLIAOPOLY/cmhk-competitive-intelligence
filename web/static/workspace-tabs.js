@@ -1671,6 +1671,14 @@
   }
 
   function globalSchedulerLineageModel(runs, stages, attemptRuns = runs) {
+    return window.CmhkResearchDiagram.build(
+      legacySchedulerLineageModel(runs, stages, attemptRuns),
+      state.researchArchitecture,
+      state.newsSelectedDate || newsRunDate(runs[0]),
+    );
+  }
+
+  function legacySchedulerLineageModel(runs, stages, attemptRuns = runs) {
     const overview = state.schedulerOverview || {};
     const latest = overview.latest || {};
     const selectedDate = state.newsSelectedDate || newsRunDate(runs[0]);
@@ -2008,6 +2016,13 @@
     const source = box(from);
     const target = box(to);
     if (!source || !target) return "";
+    if (kind === "research-fan" || kind === "research-join") {
+      const sx = source.x + source.w / 2;
+      const sy = source.y + source.h;
+      const tx = target.x + target.w / 2;
+      const rail = kind === "research-fan" ? target.y - 30 : target.y - 35;
+      return `M ${sx} ${sy} V ${rail} H ${tx} V ${target.y}`;
+    }
     if (kind === "feedback") {
       const sx = source.x + source.w / 2;
       const upperLoop = source.y < 150 && target.y < 150 && from !== "business";
@@ -2169,6 +2184,13 @@
     const stage = panel.querySelector("[data-news-lineage-stage]");
     const canvas = panel.querySelector("[data-news-lineage-canvas]");
     if (!viewport || !stage || !canvas || viewport.clientWidth <= 0) return;
+    if (window.innerWidth <= 700) {
+      viewport.dataset.lineageFit = "cards";
+      viewport.style.height = "auto";
+      stage.style.width = "100%";
+      stage.style.height = "auto";
+      return;
+    }
     const canvasWidth = Number(canvas.dataset.lineageWidth || canvas.offsetWidth || 0);
     const canvasHeight = layoutNewsLineageCards(canvas);
     if (!canvasWidth || !canvasHeight) return;
@@ -2875,6 +2897,18 @@
 
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
+    if (nodeKey.startsWith("research-")) {
+      const response = await fetch(`/api/news-research?date=${encodeURIComponent(state.newsSelectedDate)}`, { cache: "no-store" });
+      if (!response.ok) throw new Error(`研究记录读取失败 ${response.status}`);
+      state.researchArchitecture = await response.json();
+      const lineage = globalSchedulerLineageModel([], []);
+      const node = lineage.nodes.find((item) => item.key === nodeKey);
+      const dialog = document.querySelector("#newsLineageDialog");
+      if (!node || !dialog) return;
+      document.querySelector("#newsLineageDialogBody").innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, state.newsSelectedDate);
+      dialog.showModal();
+      return;
+    }
     const relatedRuns = lineageRunsForNode(nodeKey);
     const missing = relatedRuns.filter((run) => !state.newsRunDetails[run.crawl_run_id]);
     if (missing.length) await loadNewsRuns(missing.map((run) => run.crawl_run_id));
@@ -3063,7 +3097,7 @@
     const dates = [...new Set(state.newsRuns.map(newsRunDate).filter(Boolean))];
     const sortedDates = [...dates].sort();
     const earliestDate = sortedDates[0] || "";
-    const latestDate = sortedDates.at(-1) || "";
+    const latestDate = [sortedDates.at(-1) || "", new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Hong_Kong" })].sort().at(-1);
     const stages = runs.length ? aggregateNewsStages(runs) : [];
     const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
     const selectedLineageNode = lineage.nodes.find((node) => node.key === state.newsSelectedStage);
@@ -3075,10 +3109,10 @@
     const initialLineageHeight = Math.max(1, Math.round(lineageHeight * initialLineageZoom));
     panel.innerHTML = `<div class="workspace-module-inner news-process-workbench">
       <section class="workspace-panel news-process-panel">
-        <header class="news-process-toolbar"><h2>三线爬虫与 AI 审核流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy">${lineageStatusIcon("healthy")}正常</span><span class="is-running">${lineageStatusIcon("running")}运行中</span><span class="is-warning">${lineageStatusIcon("warning")}警告</span><span class="is-critical">${lineageStatusIcon("critical")}异常</span><span class="is-unknown">${lineageStatusIcon("unknown")}无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-scheduled"><i></i>定时</span><span class="is-line-feedback"><i></i>回流</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
+        <header class="news-process-toolbar"><h2>情报采集与六 Agent 研究流程</h2><div class="news-monitor-legends"><div class="news-health-legend" aria-label="节点健康状态图例"><span class="is-healthy">${lineageStatusIcon("healthy")}正常</span><span class="is-running">${lineageStatusIcon("running")}运行中</span><span class="is-warning">${lineageStatusIcon("warning")}警告</span><span class="is-critical">${lineageStatusIcon("critical")}异常</span><span class="is-unknown">${lineageStatusIcon("unknown")}无记录</span></div><div class="news-line-health-legend" aria-label="线路状态图例"><span class="is-line-healthy"><i></i>线路正常</span><span class="is-line-scheduled"><i></i>定时</span><span class="is-line-degraded"><i></i>降级</span><span class="is-line-interrupted"><i></i>中断</span></div></div>
           <div class="news-run-controls"><label><span>日期</span><input class="news-date-input" type="date" data-news-date-select aria-label="选择要查看的日期" value="${esc(state.newsSelectedDate)}"${earliestDate ? ` min="${esc(earliestDate)}"` : ""}${latestDate ? ` max="${esc(latestDate)}"` : ""}></label></div>
         </header>
-        ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档。</div>` : `<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
+        ${!run ? `<div class="workspace-empty" role="status">${esc(state.newsSelectedDate)} 当天暂无新闻采集运行归档；研究任务记录独立显示。</div>` : ""}<section class="news-lineage is-global" aria-label="${esc(state.newsSelectedDate)} 情报获取流程，点击卡片查看详情">
           <div class="news-lineage-viewport" data-news-lineage-viewport tabindex="0" aria-label="自动适配当前屏幕的完整情报生成流程图">
             <div class="news-lineage-stage" data-news-lineage-stage style="width:${initialLineageWidth}px;height:${initialLineageHeight}px">
             <div class="news-lineage-canvas${state.newsLineagePaused ? " is-paused" : ""}" data-news-lineage-canvas data-lineage-width="${lineageWidth}" data-lineage-height="${lineageHeight}" style="--lineage-zoom:${initialLineageZoom};${newsLineageMotionStyle()}width:${lineageWidth}px;height:${lineageHeight}px">
@@ -3095,7 +3129,7 @@
         </section>
         ${renderNewsItems(runs)}
         <div class="news-lineage-purpose-tooltip" id="newsLineagePurposeTooltip" role="tooltip" hidden><span></span></div>
-        <dialog class="news-stage-dialog news-lineage-dialog" id="newsLineageDialog"><div id="newsLineageDialogBody"></div></dialog>`}
+        <dialog class="news-stage-dialog news-lineage-dialog" id="newsLineageDialog"><div id="newsLineageDialogBody"></div></dialog>
       </section>
     </div>`;
     bindNewsLineageInteractions(panel);
@@ -3130,6 +3164,7 @@
     const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
     return JSON.stringify({
       date: state.newsSelectedDate,
+      research: [state.researchArchitecture?.run, state.researchArchitecture?.events?.length],
       nodes: lineage.nodes.map((node) => [node.key, node.purpose, node.value, node.unit, node.note, node.health?.key, node.evidence]),
       edges: lineage.edges.map(([from, to, label, kind, line]) => [from, to, label, kind, line?.key, line?.reason]),
       runs: attemptRuns.map((run) => [run.crawl_run_id, run.run_status || run.status, run.heartbeat_at_hkt, run.completed_at_hkt, run.progress_detail, run.status_detail]),
@@ -3209,6 +3244,7 @@
     state.newsLiveRefreshInFlight = true;
     try {
       const requests = [
+        ["research", `/api/news-research?date=${encodeURIComponent(state.newsSelectedDate)}`],
         ["status", "/api/status"],
         ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
         ["crawlRuns", "/api/crawl-runs?limit=500"],
@@ -3237,6 +3273,7 @@
         } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
         else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
         else if (key === "fixedSourceSummary") state.fixedSourceSummary = payload;
+        else if (key === "research") state.researchArchitecture = payload;
         else if (key === "scheduler") state.schedulerOverview = payload;
         else if (key === "intelligence") state.executiveIntelligence = payload;
       });
@@ -3931,6 +3968,7 @@
     }
     else if (key === "monitoringKeywords") { state.monitoringKeywords = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "fixedSourceSummary") { state.fixedSourceSummary = payload || {}; markWorkspaceModulesDirty("news"); }
+    else if (key === "research") { state.researchArchitecture = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "scheduler") { state.schedulerOverview = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "intelligence") { state.executiveIntelligence = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "reviewSheet") { state.newsReviewSheet = payload; markWorkspaceModulesDirty("news"); }
@@ -4011,6 +4049,7 @@
       ["newsRuns", "news", () => fetch("/api/crawl-runs?taskKind=strategic-news&limit=365").then((response) => response.ok ? response.json() : Promise.reject(new Error(`news runs ${response.status}`)))],
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
       ["monitoringKeywords", "news", () => fetch("/api/news-monitoring-keywords", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`monitoring keywords ${response.status}`)))],
+      ["research", "news", () => fetch(`/api/news-research?date=${encodeURIComponent(state.newsSelectedDate || "")}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`research ${response.status}`)))],
       ["fixedSourceSummary", "news", () => fetch("/api/fixed-source-summary", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`fixed source summary ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],

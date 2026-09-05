@@ -2536,7 +2536,7 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
     }
 
 
-def _build_supervisor_model() -> ChatDeepSeek:
+def _build_supervisor_model(*, max_tokens: int | None = None, max_retries: int = 1) -> ChatDeepSeek:
     config = load_ai_config(include_key=True)
     api_key = str(config.get("api_key") or "").strip()
     if not api_key:
@@ -2548,7 +2548,8 @@ def _build_supervisor_model() -> ChatDeepSeek:
         extra_body=deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
         temperature=0,
         timeout=120,
-        max_retries=1,
+        max_retries=max_retries,
+        **({"max_tokens": max_tokens} if max_tokens is not None else {}),
     )
 
 

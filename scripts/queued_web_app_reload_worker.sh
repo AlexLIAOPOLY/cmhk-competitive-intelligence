@@ -111,7 +111,8 @@ PY
 
 running_frequency_pipeline_tasks() {
   if /usr/bin/pgrep -f "$RUNTIME/crawl.py" >/dev/null 2>&1 \
-    || /usr/bin/pgrep -f "$RUNTIME/run_data_curation.py" >/dev/null 2>&1; then
+    || /usr/bin/pgrep -f "$RUNTIME/run_data_curation.py" >/dev/null 2>&1 \
+    || /usr/bin/pgrep -f "data_curation.daily_research --root $RUNTIME" >/dev/null 2>&1; then
     printf '1\n'
   else
     printf '0\n'

@@ -7267,6 +7267,16 @@ class AppHandler(BaseHTTPRequestHandler):
         if path == "/api/news-monitoring-keywords":
             json_response(self, monitoring_keywords_snapshot())
             return
+        if path == "/api/news-research":
+            from data_curation.research_readback import research_snapshot
+
+            query = parse_qs(parsed.query)
+            try:
+                result = research_snapshot(ROOT, str(query.get("date", [""])[0]))
+                json_response(self, result)
+            except ValueError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            return
         if path == "/api/fixed-source-summary":
             json_response(self, fixed_source_summary())
             return

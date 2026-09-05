@@ -482,6 +482,10 @@ def _first_source(fact: dict[str, Any]) -> str:
 
 def _fact_domain(fact: dict[str, Any]) -> str | None:
     company = str(fact.get("company") or "").strip()
+    from data_curation.research_plan import ASSIGNMENTS
+    for assignment in ASSIGNMENTS:
+        if company in assignment.companies:
+            return {"hong-kong": "local", "mainland": "mainland", "cloud": "cloud"}.get(assignment.key, "international")
     if company in LOCAL_COMPANIES:
         return "local"
     if company in CLOUD_COMPANIES:
@@ -555,6 +559,8 @@ def build_ai_analysis(
                 "metric": fact.get("metric") or "",
                 "analysis": fact.get("value") or fact.get("basis") or "",
                 "basis": fact.get("basis") or "",
+                "period": fact.get("period") or "",
+                "unit": fact.get("unit") or "",
                 "source_url": _first_source(fact),
                 "source_tier": fact.get("source_tier") or "",
                 "quality_score": round(float(fact.get("quality_score") or 0), 3),
@@ -564,13 +570,14 @@ def build_ai_analysis(
             }
         )
 
-    for domain, items in domains.items():
-        domains[domain] = items[:8]
     summary = curation_summary or {}
+    for domain, items in domains.items():
+        domains[domain] = items if summary.get("architecture") == "six_research_agents_v1" else items[:8]
     return {
         "schema_version": 1,
         "generated_at_hkt": _now(),
         "agent_run_id": agent_run_id,
+        **({"architecture": summary["architecture"]} if summary.get("architecture") else {}),
         "curation": {
             "accepted": int(summary.get("accepted") or 0),
             "rejected": int(summary.get("rejected") or 0),
@@ -622,11 +629,27 @@ def publish_domain_fact_sidecars(
     paths = output_paths or DOMAIN_FACT_PATHS
     results: dict[str, Any] = {}
     for domain in FACT_DOMAIN_IDS:
+        path = paths[domain]
+        previous = _read_json(path, {}) or {}
+        if analysis.get("architecture") == "six_research_agents_v1" and domain not in UI_DOMAIN_IDS:
+            results[domain] = {"path": str(path), "facts": len(previous.get("facts") or []),
+                               "changed": False, "published": False, "skipped": True}
+            continue
         facts = [
             item for item in ((analysis.get("domains") or {}).get(domain) or [])
             if str(item.get("source_tier") or "").strip().lower() == "official"
             and str(item.get("source_url") or "").startswith(("https://", "http://"))
         ]
+        submitted_count = len(facts)
+        if analysis.get("architecture") == "six_research_agents_v1":
+            def identity(item):
+                return tuple(str(item.get(key) or "") for key in ("company", "metric", "period", "unit"))
+            merged = {identity(item): item for item in previous.get("facts") or []}
+            for item in facts:
+                old = merged.get(identity(item), {})
+                if float(item.get("quality_score") or 0) >= float(old.get("quality_score") or 0):
+                    merged[identity(item)] = item
+            facts = sorted(merged.values(), key=identity)
         payload = {
             "schema_version": 1,
             "domain": domain,
@@ -638,8 +661,6 @@ def publish_domain_fact_sidecars(
                 "旁路事实用于穿透分析，不直接覆盖主表KPI。"
             ),
         }
-        path = paths[domain]
-        previous = _read_json(path, {}) or {}
         comparable = _fact_content(payload)
         old_comparable = _fact_content(previous)
         changed = _content_hash(comparable) != _content_hash(old_comparable)
@@ -648,6 +669,7 @@ def publish_domain_fact_sidecars(
         results[domain] = {
             "path": str(path),
             "facts": len(facts),
+            "submitted_facts": submitted_count,
             "changed": changed,
             "published": bool(changed and not dry_run),
         }
@@ -4917,6 +4939,15 @@ def run_pipeline(
     task_run_id: str = "",
     attempt: int = 1,
 ) -> dict[str, Any]:
+    six_agent_run = (curation_summary or {}).get("architecture") == "six_research_agents_v1"
+    facts_path = VERIFIED_FACTS_PATH
+    if six_agent_run:
+        if not re.fullmatch(r"[A-Za-z0-9_-]+", agent_run_id):
+            raise ValueError("研究运行编号无效")
+        facts_path = ROOT / "curation_data" / "research_runs" / agent_run_id / "verified_facts.jsonl"
+        manifest = _read_json(facts_path.parent / "manifest.json", {})
+        if manifest.get("run_id") != agent_run_id or manifest.get("status") not in {"completed", "partial"} or not facts_path.exists():
+            raise ValueError("六Agent本轮事实文件尚未完整生成")
     STATE_DIR.mkdir(parents=True, exist_ok=True)
     lock_handle = LOCK_PATH.open("w")
     try:
@@ -4953,9 +4984,12 @@ def run_pipeline(
         f"第 {attempt} 次执行开始，正在发布Agent已通过事实并校验本地竞对库。",
     )
     try:
-        source_discovery = load_0100_source_discovery_handoff(dry_run=dry_run)
+        source_discovery = ({"available": False, "required": False, "reason": "research_agents_search_in_current_run"}
+                            if six_agent_run else load_0100_source_discovery_handoff(dry_run=dry_run))
         state["news_database_signals"] = source_discovery
-        if source_discovery.get("available"):
+        if six_agent_run:
+            _task_event(task_run_id, "接收六Agent研究结果", "已接收本轮六Agent统一提交的事实，直接进入四库更新。")
+        elif source_discovery.get("available"):
             _task_event(
                 task_run_id,
                 "01:00四库资料搜索交接",
@@ -4972,7 +5006,7 @@ def run_pipeline(
                 level="critical",
             )
         if dry_run:
-            ai_payload = build_ai_analysis(agent_run_id=agent_run_id, curation_summary=curation_summary)
+            ai_payload = build_ai_analysis(agent_run_id=agent_run_id, curation_summary=curation_summary, verified_facts_path=facts_path)
             ai_result = {
                 "ok": True,
                 "changed": _content_hash(_fact_content(ai_payload))
@@ -4984,6 +5018,7 @@ def run_pipeline(
             ai_result = publish_ai_analysis(
                 agent_run_id=agent_run_id,
                 curation_summary=curation_summary,
+                verified_facts_path=facts_path,
             )
         state["ai_analysis"] = {
             "ok": True,
@@ -5060,7 +5095,7 @@ def run_pipeline(
                 promotion = promote_daily_financial_facts(
                     database_path=INTERNATIONAL_PATH,
                     local_financial_path=LOCAL_FINANCIAL_PATH,
-                    verified_facts_path=VERIFIED_FACTS_PATH,
+                    verified_facts_path=facts_path,
                     dry_run=dry_run,
                 )
                 state["daily_main_database_promotion"] = promotion
@@ -5089,7 +5124,11 @@ def run_pipeline(
                 "skipped": True,
                 "reason": "refresh_builders_disabled",
             }
-        if refresh_builders:
+        if six_agent_run:
+            state["overview_source_recrawl"] = {
+                "ok": True, "skipped": True, "reason": "official_pages_already_read_by_research_agents",
+            }
+        elif refresh_builders:
             _task_event(
                 task_run_id,
                 "战略总览来源复查",
@@ -5238,7 +5277,7 @@ def run_pipeline(
         recrawl_ok = bool(state.get("overview_source_recrawl", {}).get("ok"))
         ui_contract_ok = bool(dry_run or state.get("ui_contract", {}).get("aligned"))
         source_discovery_ok = bool(
-            dry_run
+            dry_run or six_agent_run
             or (
                 state.get("news_database_signals", {}).get("available")
                 and state.get("news_database_signals", {}).get("coverage_complete")

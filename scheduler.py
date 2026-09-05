@@ -2015,7 +2015,31 @@ def run_due_four_database_source_discovery(
     return {"due": True, **result}
 
 
+def standalone_research_process_running() -> bool:
+    """Do not launch a second six-worker batch during a manual validation run."""
+    result = subprocess.run(["pgrep", "-f", "[pP]ython.*-m data_curation.six_agent_research"],
+                            capture_output=True, text=True, check=False)
+    return result.returncode == 0
+
+
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
+    """Dispatch the six-agent daily workflow without the old URL/recrawl chain."""
+    from data_curation.daily_research import dispatch
+    now = datetime.now(HKT)
+    busy = not dry_run and (crawl_process_running() or agent_audit_process_running() or standalone_research_process_running())
+    research = ({"ok": True, "skipped": "existing_crawl_or_audit_running"} if busy
+                else dispatch(ROOT, now, dry_run=dry_run))
+    reports_busy = busy or research.get("status") == "running"
+    return {
+        "checked_at_hkt": now.isoformat(timespec="seconds"),
+        "timezone": "Asia/Hong_Kong", "research": research,
+        "subscription_dispatch": dispatch_subscription_queue(dry_run=dry_run),
+        "weekly_report_dispatch": dispatch_scheduled_weekly_report(dry_run=dry_run or reports_busy, now=now),
+        "performance_report_dispatch": dispatch_scheduled_performance_report(dry_run=dry_run or reports_busy, now=now),
+    }
+
+
+def legacy_run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     now = datetime.now(HKT)
     state = load_state()
     resume_state = dict(state)
