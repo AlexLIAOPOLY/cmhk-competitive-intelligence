@@ -18,18 +18,7 @@ from langchain.agents.middleware import ModelCallLimitMiddleware, ModelRetryMidd
 from langchain.agents.middleware.model_call_limit import ModelCallLimitExceededError
 from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage
-
-
-class TruncatedModelOutput(RuntimeError):
-    """An incomplete response must never reach a submitting tool."""
-
-
-def assert_complete(message) -> None:
-    reason = (message.response_metadata or {}).get("finish_reason", "")
-    if reason in {"length", "max_tokens", "max_output_tokens"}:
-        raise TruncatedModelOutput("模型输出被截断；本次未提交任何记录")
-    if getattr(message, "invalid_tool_calls", None):
-        raise TruncatedModelOutput("模型工具参数不完整；本次未提交任何记录")
+from cmhk.intelligence.agent_harness import TruncatedModelOutput, assert_complete
 
 
 # ChatDeepSeek identifies itself as deepseek even when using an internal gateway.
@@ -50,6 +39,9 @@ class ResearchHarness:
         # Small atomic tool calls, not one unbounded final JSON document.
         if hasattr(model, "max_tokens"):
             model.max_tokens = 4096
+        if hasattr(model, "extra_body"):
+            model.extra_body = {**(model.extra_body or {}),
+                                "cache": {"no-cache": True, "no-store": True}}
 
         @tool
         def read_evidence(source_url: str, offset: int = 0) -> dict:

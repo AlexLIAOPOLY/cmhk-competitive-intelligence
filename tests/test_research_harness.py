@@ -178,6 +178,40 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertEqual(model.requested_budgets[-2:], [4096, 8192])
         self.assertEqual(len(saved), 1)
 
+    def test_real_deepseek_sdk_transmits_recovery_budget_and_messages(self):
+        import httpx
+        from langchain_deepseek import ChatDeepSeek
+        requests = []
+
+        def transport(request):
+            payload = json.loads(request.content)
+            requests.append(payload)
+            number = len(requests)
+            name = "find_evidence" if number <= 4 else "submit_metric"
+            args = {"terms": ["revenue"]} if number <= 4 else {"status": "missing", "reason": "测试未找到"}
+            return httpx.Response(200, json={"id": f"test-{number}", "object": "chat.completion",
+                "created": 0, "model": "DeepSeek-V4-Pro", "choices": [{"index": 0,
+                    "finish_reason": "length" if number == 5 else "tool_calls",
+                    "message": {"role": "assistant", "content": None, "tool_calls": [{
+                        "id": f"call-{number}", "type": "function", "function": {
+                            "name": name, "arguments": json.dumps(args)}}]}}],
+                "usage": {"prompt_tokens": 100, "completion_tokens": 20, "total_tokens": 120}})
+
+        with httpx.Client(transport=httpx.MockTransport(transport)) as client:
+            model = ChatDeepSeek(model="DeepSeek-V4-Pro", api_key="test-only-no-real-key",
+                base_url="https://example.test/v1", http_client=client, max_retries=0,
+                extra_body={"thinking": {"type": "disabled"}})
+            saved = []
+            harness = ResearchHarness(TASK, model, lambda *a: None, validate_fact)
+            harness.extract("HKT", "收入", {}, saved.append)
+        self.assertEqual(len(requests), 6)
+        self.assertEqual([r["max_tokens"] for r in requests[-2:]], [4096, 8192])
+        self.assertIn("查阅预算已结束", requests[-2]["messages"][-1]["content"])
+        self.assertIn("输出恢复请求，第1次", requests[-1]["messages"][-1]["content"])
+        self.assertEqual(requests[-1]["thinking"], {"type": "disabled"})
+        self.assertEqual(requests[-1]["cache"], {"no-cache": True, "no-store": True})
+        self.assertEqual(len(saved), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

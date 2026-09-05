@@ -15,6 +15,7 @@ from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_con
 from ai_key_rotation import open_llm_request
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from ai_response_compat import deepseek_nonthinking_parameters, final_chat_message_text
+from cmhk.intelligence.agent_harness import assert_finish_reason, run_durable_agent
 
 
 PROMPT_VERSION = "market-news-insights-v1"
@@ -178,7 +179,7 @@ def generate_market_news_insights(
     model = str(config.get("model") or "").strip()
     if not base_url or not api_key or not model or not is_internal_ai_base_url(base_url):
         raise RuntimeError("AI配置不完整")
-    nonce = generation_nonce or f"{int(datetime.now().timestamp())}"
+    nonce = generation_nonce or (datetime.now().isoformat() if force else revision)
     body = {
         "model": model,
         "messages": [
@@ -186,37 +187,46 @@ def generate_market_news_insights(
             {"role": "user", "content": _prompt(_context(items), nonce)},
         ],
         "temperature": 0.3,
-        "max_tokens": 1400,
+        "max_tokens": 4096,
         "response_format": {"type": "json_object"},
         "stream": False,
     }
     body.update(config.get("extra_parameters") or {})
     body = deepseek_nonthinking_parameters(body)
-    body["max_tokens"] = 1400
+    body["max_tokens"] = 4096
     body["stream"] = False
-    request = urllib.request.Request(
-        f"{base_url}/chat/completions",
-        data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
-        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-        method="POST",
-    )
-    priority = set_internal_ai_priority("interactive")
-    try:
-        if stream_callback:
-            stream_callback({"type": "status", "message": "内部AI正在分析已审核新闻"})
-        wait_for_internal_ai_slot("market-news-insights")
-        with open_llm_request(
-            request,
-            timeout=90,
-            config=config,
-            requested_key=api_key,
-            model=model,
-        ) as response:
-            upstream = json.loads(response.read().decode("utf-8"))
-    finally:
-        reset_internal_ai_priority(priority)
-    text = final_chat_message_text(upstream, operation="市场新闻AI洞察")
-    insights = _validate_insights(_json_object(text).get("insights"), {str(item["id"]) for item in items})
+    body["cache"] = {"no-cache": True, "no-store": True}
+
+    def execute(attempt: int) -> list[dict]:
+        request_body = {**body, "max_tokens": min(16384, 4096 * (2 ** attempt)),
+                        "messages": [dict(message) for message in body["messages"]]}
+        if attempt:
+            request_body["messages"][0]["content"] += (
+                f" 输出恢复请求{attempt}：仅返回完整的四条洞察JSON，不输出思考过程。"
+            )
+        request = urllib.request.Request(
+            f"{base_url}/chat/completions",
+            data=json.dumps(request_body, ensure_ascii=False).encode("utf-8"),
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
+            method="POST",
+        )
+        priority = set_internal_ai_priority("interactive")
+        try:
+            if stream_callback:
+                stream_callback({"type": "status", "message": "内部AI正在分析已审核新闻"})
+            wait_for_internal_ai_slot("market-news-insights")
+            with open_llm_request(request, timeout=90, config=config,
+                                  requested_key=api_key, model=model) as response:
+                upstream = json.loads(response.read().decode("utf-8"))
+        finally:
+            reset_internal_ai_priority(priority)
+        assert_finish_reason((upstream.get("choices") or [{}])[0].get("finish_reason", ""))
+        text = final_chat_message_text(upstream, operation="市场新闻AI洞察")
+        return _validate_insights(_json_object(text).get("insights"), {str(item["id"]) for item in items})
+
+    insights = run_durable_agent(namespace="market-news-insights", directory=cache_path(root).parent / "harness",
+        identity={"revision": revision, "prompt": PROMPT_VERSION, "nonce": nonce, "model": model, "base_url": base_url},
+        execute=execute)
     generated_at = datetime.now().astimezone().isoformat(timespec="seconds")
     result = {
         "ok": True,

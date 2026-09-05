@@ -26,6 +26,9 @@ from ai_config import api_key_candidates, load_ai_config
 from ai_key_rotation import is_key_unavailable_error
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import load_json_response
+from cmhk.intelligence.agent_harness import (
+    TruncatedModelOutput, assert_finish_reason, run_durable_agent,
+)
 from cmhk.crawl.run_registry import (
     amend_operational_crawl_run,
     append_crawl_run_event,
@@ -3717,6 +3720,44 @@ def _call_internal_ai(
     deadline_monotonic: float | None = None,
     _structured_response_retries: int | None = None,
 ) -> dict[str, Any]:
+    retries = (_structured_response_retries if _structured_response_retries is not None
+               else max(0, int(os.environ.get("CMHK_STRATEGY_AI_RESPONSE_RETRIES", "2"))))
+
+    def execute(attempt: int) -> dict[str, Any]:
+        budget = max_tokens
+        if response_format:
+            budget = max(budget, int(os.environ.get("CMHK_STRATEGY_AI_JSON_MAX_TOKENS", "8000")))
+        instruction = system_prompt
+        if attempt:
+            instruction += (f"\n输出恢复请求 {attempt}：前次响应未被接受。请重新输出完整最终结果，"
+                       "不要输出思考过程，不改变输入事实或审核标准。")
+        return _call_internal_ai_transport(
+            instruction, user_prompt, max_tokens=min(32000, budget * (2 ** attempt)),
+            model_override=model_override, allow_plain_text=allow_plain_text,
+            response_format=response_format, deadline_monotonic=deadline_monotonic,
+        )
+
+    return run_durable_agent(
+        namespace="strategic-news", directory=DATA_DIR / "agent_harness",
+        identity={"system": system_prompt, "user": user_prompt, "model": model_override,
+                  "default_model": os.environ.get("CMHK_STRATEGY_AI_MODEL", "") or DEFAULT_STRATEGY_AI_MODEL,
+                  "format": response_format, "plain": allow_plain_text, "max_tokens": max_tokens},
+        execute=execute, max_attempts=1 + min(2, max(0, retries)),
+        retry_on=(TruncatedModelOutput, AIInvalidStructuredResponse, AIUnstructuredResponse),
+        deadline=deadline_monotonic,
+    )
+
+
+def _call_internal_ai_transport(
+    system_prompt: str,
+    user_prompt: str,
+    *,
+    max_tokens: int = 900,
+    model_override: str = "",
+    allow_plain_text: bool = False,
+    response_format: dict[str, Any] | None = None,
+    deadline_monotonic: float | None = None,
+) -> dict[str, Any]:
     if response_format:
         # Reasoning models may spend most of a small allowance before emitting
         # the final structured answer.  The limit is a ceiling, not guaranteed
@@ -3725,11 +3766,6 @@ def _call_internal_ai(
             max_tokens,
             int(os.environ.get("CMHK_STRATEGY_AI_JSON_MAX_TOKENS", "8000")),
         )
-        if _structured_response_retries is None:
-            _structured_response_retries = max(
-                0,
-                int(os.environ.get("CMHK_STRATEGY_AI_RESPONSE_RETRIES", "2")),
-            )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")
     configured_model = str(config.get("model") or "")
@@ -3794,6 +3830,7 @@ def _call_internal_ai(
             ],
             "temperature": 0.1,
             "max_tokens": max_tokens,
+            "cache": {"no-cache": True, "no-store": True},
         }
         if response_format:
             transport_format, structured_options = _structured_transport_options(
@@ -3948,6 +3985,14 @@ def _call_internal_ai(
     final_content = tool_arguments or str(message.get("content") or "").strip()
     reasoning_content = str(message.get("reasoning_content") or "").strip()
     finish_reason = _clean_text(choice.get("finish_reason"), 80)
+    # Parseability is not completeness: even a valid-looking JSON prefix must
+    # be rejected when the provider says generation did not finish.
+    try:
+        assert_finish_reason(finish_reason)
+    except TruncatedModelOutput as exc:
+        if response_format:
+            raise AIInvalidStructuredResponse("", "结构化输出在JSON完成前被截断") from exc
+        raise
     if response_format:
         usage = payload.get("usage") if isinstance(payload.get("usage"), dict) else {}
         details = (
@@ -3966,33 +4011,10 @@ def _call_internal_ai(
     # A structured request must parse only the provider's final answer.  Using
     # reasoning_content as if it were the answer creates false JSON alarms and
     # can accidentally accept an intermediate object from the chain of thought.
-    content = final_content or ("" if response_format else reasoning_content)
+    content = final_content
 
     def retry_structured_response(error: RuntimeError) -> dict[str, Any]:
-        retries_left = int(_structured_response_retries or 0)
-        if (
-            response_format
-            and retries_left > 0
-            and (
-                deadline_monotonic is None
-                or time.monotonic() < deadline_monotonic
-            )
-        ):
-            logging.warning(
-                "公司内部 AI 结构化响应不完整，重试原协议（剩余 %s 次）：%s",
-                retries_left,
-                _clean_text(error, 240),
-            )
-            return _call_internal_ai(
-                system_prompt,
-                user_prompt,
-                max_tokens=max_tokens,
-                model_override=model_override,
-                allow_plain_text=allow_plain_text,
-                response_format=response_format,
-                deadline_monotonic=deadline_monotonic,
-                _structured_response_retries=retries_left - 1,
-            )
+        # LangGraph RetryPolicy is the sole structured-response retry owner.
         raise error
 
     if response_format and not content:
@@ -4000,7 +4022,7 @@ def _call_internal_ai(
         if finish_reason in {"length", "max_tokens"}:
             detail += "（输出在JSON完成前被截断）"
         return retry_structured_response(
-            AIInvalidStructuredResponse(reasoning_content, detail)
+            AIInvalidStructuredResponse("", detail)
         )
     content = content.replace(chr(96) * 3 + "json", "").replace(chr(96) * 3, "").strip()
     try:
@@ -4030,7 +4052,8 @@ def _call_internal_ai(
             if response_format:
                 return retry_structured_response(AIUnstructuredResponse(content))
             raise AIUnstructuredResponse(content) from exc
-    parsed = parsed if isinstance(parsed, dict) else {}
+    if not isinstance(parsed, dict):
+        raise AIInvalidStructuredResponse("", "最终结果必须是JSON对象")
     if response_format and response_format.get("type") == "json_schema":
         schema = (response_format.get("json_schema") or {}).get("schema")
         if isinstance(schema, dict):

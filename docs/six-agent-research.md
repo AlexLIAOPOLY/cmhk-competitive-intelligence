@@ -21,6 +21,29 @@
 
 官方参考：[自定义 harness](https://docs.langchain.com/oss/python/deepagents/customization)、[上下文管理](https://docs.langchain.com/oss/python/deepagents/context-engineering)、[DeepSeek 响应协议](https://api-docs.deepseek.com/api/create-chat-completion/)。
 
+## 新闻与自动筛选：持久化执行保护
+
+`cmhk/intelligence/agent_harness.py` 使用 Deep Agents 同生态的 LangGraph `StateGraph`、`RetryPolicy` 和 SQLite checkpointer。新闻决策本身是有明确输入输出的阶段，不添加工具或隐式子 Agent，也不增加研究 Agent 数量。
+
+- `strategic_briefing._call_internal_ai`：涵盖新闻搜索规划、编辑审核、独立复审、语义去重及简报生成。格式恢复由 harness 有界重试，原有业务审核规则及传输层限流、路由切换继续保留。
+- `news_selection_agent._invoke_langchain`：完整候选决策校验后保存检查点；所有恢复请求仍经过原有十次模型请求计数。人工作出的决定、分布门禁、待写计划及飞书逐格回读不被绕过。
+- `market_news_insights.generate_market_news_insights`：四条洞察及引用 ID 校验完成后保存；若其后的应用缓存写入中断，恢复时复用完成的模型结果。显式“重新分析”仍使用新批次，不能被旧结果挡住。
+- 三类入口和研究工具提交共用完整性门禁。即使返回文本碰巧是合法 JSON，`finish_reason=length/max_tokens` 仍不得作为完整结果接受；不使用思考内容代替最终输出。截断恢复提高预算并绕过网关缓存，超过上限保留失败，不能承诺上游永不截断。
+- 检查点使用输入、协议和任务作用域指纹；SQLite 同步持久化与逐决策进程锁防止同一任务并发重复执行。只存完成的 JSON 结果，不存密钥或模型客户端。
+- 进程在模型请求途中退出，该未完成请求可能重发；已落盘的决策不重做。已确认的飞书写入和消息发送继续依靠原有回读凭证与稳定幂等键防重，不能把模型检查点等同于外部系统的绝对 exactly-once 保证。
+
+检查点位于各业务状态目录的 `agent_harness/` 或 `harness/` 下，不进入公开源码提交。旧正式任务在安全队列切换前仍使用旧代码，不能把隔离验收等同于正式服务已加载。
+
+参考：[LangGraph 持久化](https://docs.langchain.com/oss/python/langgraph/persistence)、[容错与有界重试](https://docs.langchain.com/oss/python/langgraph/fault-tolerance)。
+
+验证命令（新闻部分兼容现有 Web Python，不要求在运行中的服务里升级 Deep Agents）：
+
+```bash
+python -m unittest tests.test_agent_harness tests.test_news_selection_agent tests.test_strategic_briefing tests.test_competitor_intelligence_map
+```
+
+2026-09-05 隔离验收：新闻入口与自动筛选入口均完成真实内部 DeepSeek 调用；相同输入恢复不再次调用模型。故障注入测试覆盖合法 JSON 但截断、重试耗尽、实际进程退出后恢复、已完成结果跨进程复用、应用缓存写入失败后恢复。验收不写飞书、不发通知，不能代替正式发布回读。
+
 ## 四库更新边界
 
 `executive_intelligence_pipeline.py` 只读取本轮目录内的已审核事实，不能误读全局上一轮文件。四库审核事实层按公司、指标、期间和单位增量合并；本轮缺失不会清除历史事实。宏观支持库不接受此六组任务的空结果覆盖。

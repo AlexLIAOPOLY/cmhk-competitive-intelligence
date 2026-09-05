@@ -69,6 +69,13 @@ def _review_event(
 
 
 class NewsSelectionAgentTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        state = mock.patch.object(agent, "STATE_PATH", Path(directory.name) / "state.json")
+        state.start()
+        self.addCleanup(state.stop)
+
     def test_simplified_normalizes_model_explanations(self):
         self.assertEqual(agent._simplified("國際網絡與歷史取捨"), "国际网络与历史取舍")
 
@@ -819,7 +826,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
                             agent.logging.getLogger(), level="WARNING"
                         ) as logs,
                     ):
-                        payload, model = agent._invoke_langchain([], [target])
+                        payload, model = agent._invoke_langchain_transport([], [target])
 
                 self.assertEqual(payload, answer)
                 self.assertEqual(model, "test-model")
@@ -916,9 +923,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
             ),
             mock.patch.object(agent, "ChatDeepSeek", return_value=fake_model),
         ):
-            agent._invoke_langchain(examples, [{"news_id": "NEWS-TARGET"}])
+            agent._invoke_langchain_transport(examples, [{"news_id": "NEWS-TARGET"}])
             first_prompt = fake_model.invoke.call_args.args[0][1].content
-            agent._invoke_langchain(examples, [{"news_id": "NEWS-TARGET"}])
+            agent._invoke_langchain_transport(examples, [{"news_id": "NEWS-TARGET"}])
             second_prompt = fake_model.invoke.call_args.args[0][1].content
 
         first_payload = json.loads(first_prompt)
@@ -1817,6 +1824,13 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
 
 class ModelBatchCheckpointTests(unittest.TestCase):
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        state = mock.patch.object(agent, "STATE_PATH", Path(directory.name) / "state.json")
+        state.start()
+        self.addCleanup(state.stop)
+
     def test_148_candidates_need_ten_batches_and_old_checkpoints_need_only_five(self):
         targets = [
             {"news_id": f"NEWS-{i}", "app_before": "待审核", "weekly_before": "待审核"}

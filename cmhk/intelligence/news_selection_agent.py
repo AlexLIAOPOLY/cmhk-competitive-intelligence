@@ -26,6 +26,9 @@ except ImportError:  # pragma: no cover - deployment fallback
 from ai_config import api_key_candidates, load_ai_config
 from ai_rate_limit import RateLimitedChatDeepSeek
 from ai_response_compat import deepseek_nonthinking_parameters
+from cmhk.intelligence.agent_harness import (
+    TruncatedModelOutput, assert_complete, run_durable_agent,
+)
 from cmhk.crawl.run_registry import (
     append_crawl_run_event,
     finalize_operational_crawl_run,
@@ -51,6 +54,7 @@ MODEL_MAX_ROUNDS = 10
 _MODEL_SESSION: ContextVar[dict[str, Any] | None] = ContextVar(
     "news_selection_model_session", default=None
 )
+_HARNESS_RECOVERY: ContextVar[int] = ContextVar("selection_harness_recovery", default=0)
 
 
 class ChatDeepSeek(RateLimitedChatDeepSeek):
@@ -499,6 +503,7 @@ def _langchain_response_text(response: Any) -> str:
     else:
         text = str(content or "").strip()
     if text:
+        assert_complete(response)
         return text
     additional = getattr(response, "additional_kwargs", {})
     reasoning = getattr(response, "reasoning_content", "")
@@ -1186,6 +1191,32 @@ def _invoke_langchain(
     examples: list[dict[str, Any]],
     targets: list[dict[str, Any]],
 ) -> tuple[dict[str, Any], str]:
+    def execute(attempt: int) -> list[Any]:
+        token = _HARNESS_RECOVERY.set(attempt)
+        try:
+            payload, model = _invoke_langchain_transport(examples, targets)
+            _normalized_decisions(payload, targets)
+            # The batch layer still applies distribution and write/readback
+            # gates. Incomplete candidate sets must not become durable hits.
+            return [payload, model]
+        finally:
+            _HARNESS_RECOVERY.reset(token)
+
+    public_config = load_ai_config(include_key=False)
+    result = run_durable_agent(
+        namespace="news-selection", directory=STATE_PATH.parent / "harness",
+        identity={"protocol": 1, "examples": examples, "targets": targets,
+                  "preferences": (_MODEL_SESSION.get() or {}).get("preferences", False),
+                  "model": public_config.get("model"), "base_url": public_config.get("base_url")},
+        execute=execute,
+    )
+    return result[0], result[1]
+
+
+def _invoke_langchain_transport(
+    examples: list[dict[str, Any]],
+    targets: list[dict[str, Any]],
+) -> tuple[dict[str, Any], str]:
     config = load_ai_config(include_key=True)
     required_candidate_ids = [
         _text(item.get("news_id"), 80)
@@ -1325,6 +1356,10 @@ def _invoke_langchain(
                 300 + 180 * len(targets),
             ),
         )
+        if _HARNESS_RECOVERY.get():
+            model_options["max_tokens"] = min(
+                32000, model_options["max_tokens"] * (2 ** _HARNESS_RECOVERY.get())
+            )
         try:
             model = ChatDeepSeek(**model_options)
             response = _selection_model_invoke(
@@ -1402,7 +1437,7 @@ def _invoke_langchain(
                     repaired = _repair_missing_json_commas(repair_content)
                 repaired["_format_repaired"] = True
                 return repaired, model_name
-        except _ModelRoundLimit:
+        except (_ModelRoundLimit, TruncatedModelOutput):
             raise
         except Exception as exc:
             errors.append(f"{model_name}: {_text(exc, 180)}")
