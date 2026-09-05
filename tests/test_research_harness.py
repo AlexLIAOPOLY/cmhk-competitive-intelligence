@@ -14,13 +14,18 @@ from data_curation.six_agent_research import run_assignment, run_research, valid
 
 class ToolModel(FakeMessagesListChatModel):
     bound_tools: list[str] = []
+    requested_budgets: list[int] = []
+
+    def _generate(self, *args, **kwargs):
+        self.requested_budgets.append(kwargs.get("max_tokens"))
+        return super()._generate(*args, **kwargs)
 
     def _get_ls_params(self, *args, **kwargs):
         return {"ls_provider": "deepseek", "ls_model_name": "test", "ls_model_type": "chat"}
 
     def bind_tools(self, tools, **kwargs):
         self.bound_tools = [tool.name if hasattr(tool, "name") else tool.get("name") for tool in tools]
-        return self
+        return self.bind(**kwargs)
 
 
 TASK = {"key": "hong-kong", "title": "香港研究 Agent", "purpose": "香港公司研究", "companies": ["HKT"]}
@@ -55,15 +60,18 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertEqual(len(saved), 1)
         self.assertEqual(set(model.bound_tools), {"find_evidence", "read_evidence", "submit_metric"})
         self.assertEqual(len([event for event in events if event[0] == "model_response"]), 2)
+        self.assertEqual(model.requested_budgets, [4096, 8192])
 
     def test_exhausted_truncation_never_submits(self):
         bad = submission()
         bad.response_metadata["finish_reason"] = "length"
         saved = []
-        harness = ResearchHarness(TASK, ToolModel(responses=[bad]), lambda *a: None, validate_fact)
+        model = ToolModel(responses=[bad])
+        harness = ResearchHarness(TASK, model, lambda *a: None, validate_fact)
         with self.assertRaises(TruncatedModelOutput):
             harness.extract("HKT", "收入", {}, saved.append)
         self.assertEqual(saved, [])
+        self.assertEqual(model.requested_budgets, [4096, 8192, 16384])
 
     def test_later_failure_keeps_previous_metric_and_resume_does_not_recrawl(self):
         checkpoints = []

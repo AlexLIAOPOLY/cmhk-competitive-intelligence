@@ -136,6 +136,13 @@ class ResearchHarness:
 
         @wrap_model_call
         def complete_output(request, handler):
+            allowance = min(16384, 4096 * (2 ** self.current.get("truncation_retries", 0)))
+            request = request.override(model_settings={**request.model_settings, "max_tokens": allowance})
+            if self.current.get("truncation_retries"):
+                request = request.override(messages=[*request.messages, HumanMessage(content=(
+                    f"输出恢复请求，第{self.current['truncation_retries']}次：上次响应未完整生成，未执行任何提交。"
+                    "停止扩大分析，只用当前已有证据提交这一项。优先提交原文片段编号，不抄写长引文；"
+                    "证据不足就提交missing并说明缺口，不要重新查找或输出长篇总结。"))])
             if request.state.get("run_model_call_count", 0) >= 4:
                 request = request.override(tools=[submit_metric], messages=[*request.messages, HumanMessage(
                     content="本指标的查阅预算已结束。现在只调用submit_metric提交已有证据；不能确认的值提交missing并说明本轮未找到，不得编造。")])
@@ -144,10 +151,15 @@ class ResearchHarness:
                 metadata = getattr(message, "response_metadata", {}) or {}
                 self.emit("model_response", "模型响应完整性检查", {
                     "company": self.current.get("company"), "metric": self.current.get("metric"),
+                    "requested_max_tokens": allowance,
                     "finish_reason": metadata.get("finish_reason"),
                     "usage": getattr(message, "usage_metadata", None),
                     "invalid_tool_calls": len(getattr(message, "invalid_tool_calls", []) or [])})
-                assert_complete(message)
+                try:
+                    assert_complete(message)
+                except TruncatedModelOutput:
+                    self.current["truncation_retries"] = min(2, self.current.get("truncation_retries", 0) + 1)
+                    raise
                 submissions = [call for call in getattr(message, "tool_calls", []) if call.get("name") == "submit_metric"]
                 if len(submissions) > 1:
                     raise TruncatedModelOutput("一次只能提交当前一个指标；拒绝并行重复提交")
