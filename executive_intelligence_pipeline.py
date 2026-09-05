@@ -5034,7 +5034,8 @@ def run_pipeline(
             "ok": True,
             "changed": False,
             "validation": validate_database("local", LOCAL_PATH),
-            "note": "本地竞对数据库已由本轮 crawl.py 更新；发布桥只复核，不重复抓取。",
+            "note": ("本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。"
+                     if six_agent_run else "本地竞对数据库已由本轮 crawl.py 更新；发布桥只复核，不重复抓取。"),
         }
         local_validation = state["domains"]["local"].get("validation") or {}
         local_rows = int(local_validation.get("rows") or 0)
@@ -5056,7 +5057,8 @@ def run_pipeline(
                 _task_event(
                     task_run_id,
                     label,
-                    f"正在重建{label}数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。",
+                    (f"正在按既有规则重建{label}数据库并执行发布门禁；本轮联网证据见六Agent研究记录。"
+                     if six_agent_run else f"正在重建{label}数据库并执行发布门禁；真实联网情况由随后官方来源复查单独证明。"),
                 )
                 try:
                     state["domains"][domain] = _refresh_builder_domain(

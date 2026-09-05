@@ -129,6 +129,20 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertEqual(result["quote"], body)
         self.assertEqual(len(saved), 1)
 
+    def test_budget_exhaustion_is_explicit_review_not_missing_or_false_success(self):
+        lookup = AIMessage(content="", tool_calls=[{"name": "find_evidence", "args": {
+            "terms": ["revenue"]}, "id": "lookup", "type": "tool_call"}],
+            response_metadata={"finish_reason": "tool_calls"})
+        saved, events = [], []
+        harness = ResearchHarness(TASK, ToolModel(responses=[lookup]),
+                                  lambda *args: events.append(args), validate_fact)
+        result = harness.extract("HKT", "收入", {}, saved.append)
+        self.assertEqual(result["status"], "conflict")
+        self.assertEqual(result["value"], "")
+        self.assertIn("预算", result["reason"])
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(len([e for e in events if e[0] == "model_response"]), 6)
+
 
 if __name__ == "__main__":
     unittest.main()
