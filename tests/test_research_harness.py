@@ -98,11 +98,21 @@ class ResearchHarnessTests(unittest.TestCase):
         text = "HKT reported 2025 results. Revenue was HK$ 35,000 million for 2025."
         pages = {"https://www.hkt.com/report": {"opened": True, "official": True, "text": text}}
         proposed = {"company": "HKT", "metric": "收入", "status": "verified", "value": "35,000",
-                    "period": "2025", "unit": "million", "source_url": "https://www.hkt.com/report",
+                    "period": "2025", "unit": "HK$ million", "source_url": "https://www.hkt.com/report",
                     "quote": "Revenue was HK$ 35,000 million for 2025.", "context_quote": "HKT reported 2025 results."}
         self.assertEqual(validate_fact(proposed, "HKT", ["收入"], pages)["status"], "verified")
         self.assertEqual(validate_fact(proposed, "HKT", ["收入"], {})["status"], "conflict")
         self.assertEqual(validate_fact({**proposed, "context_quote": "HKT reported 2026 results."}, "HKT", ["收入"], pages)["status"], "conflict")
+        self.assertEqual(validate_fact({**proposed, "unit": "million"}, "HKT", ["收入"], pages)["status"], "conflict")
+
+    def test_value_and_unit_cannot_mix_billion_and_million_from_one_page(self):
+        text = "HKT reported revenue of HK$ 3.5 billion in 2025. Table unit: HK$ million."
+        pages = {"https://hkt.com/report": {"opened": True, "official": True, "text": text}}
+        item = {"company": "HKT", "metric": "收入", "status": "verified", "value": "HK$ 3.5 billion",
+                "period": "2025", "unit": "HK$ million", "source_url": "https://hkt.com/report", "quote": text}
+        result = validate_fact(item, "HKT", ["收入"], pages)
+        self.assertEqual(result["status"], "conflict")
+        self.assertIn("数量级", result["reason"])
 
     def test_existing_run_cannot_be_overwritten_or_resumed_with_other_identity(self):
         with tempfile.TemporaryDirectory() as directory:

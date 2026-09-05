@@ -109,6 +109,18 @@ different companies, search snippets and invented URLs becoming database facts.
             not item["unit"] or not all(part in grounded for part in item["unit"].split())
         ):
             errors.append("数值缺少原文单位")
+        scales = {"billion": r"\bbillions?\b|十亿|十億", "million": r"\bmillions?\b|百万|百萬",
+                  "thousand": r"\bthousands?\b|千", "yi": r"(?<!十)亿|(?<!十)億"}
+        value_scales = {name for name, pattern in scales.items() if re.search(pattern, item["value"], re.I)}
+        unit_scales = {name for name, pattern in scales.items() if re.search(pattern, item["unit"], re.I)}
+        if value_scales and unit_scales and value_scales != unit_scales:
+            errors.append("数值与单位的数量级不一致，不能混用billion与million等口径")
+        monetary = bool(re.search(r"收入|收益|EBITDA|净利润|淨利潤|ARPU|资本开支|資本開支|派息|股息", item["metric"], re.I))
+        rendered = item["value"] + " " + item["unit"]
+        rate_metric = bool(re.search(r"率|同比|增速|增幅|margin|growth", item["metric"], re.I))
+        has_currency = bool(re.search(r"[$€£¥￥]|(?<![A-Za-z])(?:HKD|USD|RMB|CNY|AED|SAR|SGD|AUD|JPY|KRW|EUR|GBP|INR|CAD)(?![A-Za-z])|人民币|人民幣|港币|港幣|日元|韩元|韓圓|美元|新加坡元", rendered, re.I))
+        if monetary and not has_currency and not (rate_metric and re.search(r"%|％", rendered)):
+            errors.append("金额缺少明确币种；只写million或billion不足以更新金额指标")
         cloud_sales = item["metric"] == "云收入" and bool(re.search(r"sales|revenue|收入", quote, re.I)) and any(
             w._company_alias_mentions_text(alias, quote) for alias in profile["aliases"])
         if not w._evidence_mentions_metric(item["metric"], quote) and not cloud_sales:
