@@ -3120,6 +3120,9 @@
 
   function renderNews({ preserveView = false } = {}) {
     const panel = document.querySelector('[data-workspace-panel="news"]');
+    // Late initial/background payloads must not replace an open native dialog.
+    // The live refresh applies the latest state after the user closes it.
+    if (panel?.querySelector("#newsLineageDialog")?.open) return;
     const viewSnapshot = preserveView ? newsViewSnapshot(panel) : null;
     const attemptRuns = selectedNewsRuns();
     const runs = authoritativeStrategicNewsRuns(attemptRuns);
@@ -3164,6 +3167,19 @@
     </div>`;
     bindNewsLineageInteractions(panel);
     restoreNewsView(panel, viewSnapshot);
+  }
+
+  async function loadNewsResearch(date) {
+    try {
+      const response = await fetch(`/api/news-research?date=${encodeURIComponent(date)}`, { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) throw new Error(`research ${response.status}`);
+      if (state.newsSelectedDate !== date || payload.date !== date) return;
+      state.researchArchitecture = payload;
+      markWorkspaceModulesDirty("news");
+    } catch (error) {
+      console.warn("Research date load unavailable", error);
+    }
   }
 
   async function loadNewsRuns(runIds, { force = false, quiet = false } = {}) {
@@ -3303,7 +3319,7 @@
         } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
         else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
         else if (key === "fixedSourceSummary") state.fixedSourceSummary = payload;
-        else if (key === "research") state.researchArchitecture = payload;
+        else if (key === "research" && payload.date === state.newsSelectedDate) state.researchArchitecture = payload;
         else if (key === "scheduler") state.schedulerOverview = payload;
         else if (key === "intelligence") state.executiveIntelligence = payload;
       });
@@ -3915,8 +3931,12 @@
     if (newsDate) {
       state.newsSelectedDate = newsDate.value;
       state.newsSelectedStage = "";
-      const selected = selectedNewsRuns();
+      // Pin the user's choice before selectedNewsRuns can follow a newer run.
+      // Research-only days must also render when there are no news run IDs.
       updateNewsDateUrl(state.newsSelectedDate);
+      const selected = selectedNewsRuns();
+      markWorkspaceModulesDirty("news");
+      loadNewsResearch(state.newsSelectedDate);
       loadNewsRuns(selected.map((run) => run.crawl_run_id));
       return;
     }
@@ -3998,7 +4018,10 @@
     }
     else if (key === "monitoringKeywords") { state.monitoringKeywords = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "fixedSourceSummary") { state.fixedSourceSummary = payload || {}; markWorkspaceModulesDirty("news"); }
-    else if (key === "research") { state.researchArchitecture = payload || {}; markWorkspaceModulesDirty("news"); }
+    else if (key === "research") {
+      if (state.newsSelectedDate && payload?.date !== state.newsSelectedDate) return;
+      state.researchArchitecture = payload || {}; markWorkspaceModulesDirty("news");
+    }
     else if (key === "scheduler") { state.schedulerOverview = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "intelligence") { state.executiveIntelligence = payload; markWorkspaceModulesDirty("news"); }
     else if (key === "reviewSheet") { state.newsReviewSheet = payload; markWorkspaceModulesDirty("news"); }

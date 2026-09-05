@@ -9,6 +9,18 @@ STYLE = (ROOT / "web" / "static" / "workspace-tabs.css").read_text(encoding="utf
 
 
 class NewsLineageVisualStabilityTests(unittest.TestCase):
+    def test_user_date_is_pinned_before_run_selection_and_research_loaded_without_news(self):
+        handler = SCRIPT.split('if (newsDate) {', 1)[1].split('return;', 1)[0]
+        self.assertLess(handler.index('updateNewsDateUrl'), handler.index('const selected = selectedNewsRuns'))
+        self.assertIn('loadNewsResearch(state.newsSelectedDate)', handler)
+        self.assertIn('markWorkspaceModulesDirty("news")', handler)
+        self.assertIn('state.newsSelectedDate !== date || payload.date !== date', SCRIPT)
+        self.assertIn('key === "research" && payload.date === state.newsSelectedDate', SCRIPT)
+
+    def test_async_data_refresh_cannot_replace_an_open_node_dialog(self):
+        render = SCRIPT.split('function renderNews({ preserveView = false } = {}) {', 1)[1]
+        self.assertLess(render.index('querySelector("#newsLineageDialog")?.open'), render.index('panel.innerHTML ='))
+
     def test_edge_copy_has_no_dark_label_box(self):
         self.assertIn(".news-lineage-feedback-label", STYLE)
         self.assertIn(".news-lineage-edge-label", STYLE)
@@ -104,8 +116,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=169', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=202', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=170', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=207', INDEX)
 
 
 if __name__ == "__main__":
