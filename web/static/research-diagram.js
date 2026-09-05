@@ -23,13 +23,16 @@
       nodes.push(node);
       return node;
     };
-    add("research-dispatch", "03:00 研究任务分配", [20, 365], plan.length || "—", "个研究 Agent", "按公司与指标目录，把研究任务分配给六个固定的研究 Agent", [
+    // Align the supervisor with the midpoint of the six equal-width worker cards.
+    const dispatchX = 20 + Math.max(0, plan.length - 1) * 300 / 2;
+    add("research-dispatch", "03:00 Supervisor · Agent 任务分配", [dispatchX, 365], plan.length || "—", "个研究 Agent", "规则型 Supervisor 主控：按公司与指标目录分配六个研究 Agent 的任务", [
+      "这是同一个规则型 Supervisor 主控的任务分配阶段；不是额外调用大模型的研究 Agent",
       "香港、内地、亚太、欧洲、美洲与中东、全球云厂商六组并行研究",
       "公司是任务条目，每家公司只归属一个研究 Agent；所有预期指标必须返回处理结果",
       "输入：公司目录、需要更新的指标和当前日期；输出：六份明确的研究任务",
       "每天03:00启动；各 Agent 的网页搜索与原文读取在同一轮内完成",
       "执行基础：Deep Agents 0.7.13 开源 harness；关闭默认嵌套子 Agent，研究 Agent 最多六个",
-    ], status(run?.status === "running" ? "completed" : run?.status));
+    ], status(run?.status === "running" ? "completed" : run?.status), { note: "规则型主控：每日分配六组研究任务" });
     plan.forEach((task, index) => {
       const actual = agents.find((agent) => agent.key === task.key);
       const reports = actual?.reports || [];
@@ -44,7 +47,8 @@
       edges.push(["research-dispatch", `research-${task.key}`, "", "research-fan", {}]);
       edges.push([`research-${task.key}`, "research-merge", "", "research-join", {}]);
     });
-    add("research-merge", "研究结果汇总与校验", [20, 820], run?.tasks ?? "—", "项指标结果", "收齐六个 Agent 的结果，统一校验来源与字段并合并", [
+    add("research-merge", "Supervisor · Agent 结果汇总", [20, 820], run?.tasks ?? "—", "项指标结果", "规则型 Supervisor 主控：收齐六个 Agent 的结果，统一校验来源与字段并合并", [
+      "这是同一个规则型 Supervisor 主控的结果汇总阶段，与03:00任务分配共用一轮运行编号；不是新增一个研究 Agent",
       "检查公司与指标覆盖、重复项、原文摘录、数值、期间和单位",
       "有原文支持的数据进入更新批次；缺失、冲突和执行失败分别记录",
       "输入：六个研究 Agent 的报告；输出：本轮可更新事实及待复核清单",

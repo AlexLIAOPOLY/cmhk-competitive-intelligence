@@ -6,9 +6,18 @@ ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "web" / "static" / "index.html").read_text(encoding="utf-8")
 SCRIPT = (ROOT / "web" / "static" / "workspace-tabs.js").read_text(encoding="utf-8")
 STYLE = (ROOT / "web" / "static" / "workspace-tabs.css").read_text(encoding="utf-8")
+RESEARCH = (ROOT / "web" / "static" / "research-diagram.js").read_text(encoding="utf-8")
 
 
 class NewsLineageVisualStabilityTests(unittest.TestCase):
+    def test_supervisor_phases_are_named_and_dispatch_tracks_worker_midpoint(self):
+        self.assertIn("03:00 Supervisor · Agent 任务分配", RESEARCH)
+        self.assertIn("Supervisor · Agent 结果汇总", RESEARCH)
+        self.assertIn("同一个规则型 Supervisor 主控", RESEARCH)
+        self.assertIn("不是额外调用大模型的研究 Agent", RESEARCH)
+        self.assertIn("20 + Math.max(0, plan.length - 1) * 300 / 2", RESEARCH)
+        self.assertIn("[dispatchX, 365]", RESEARCH)
+
     def test_user_date_is_pinned_before_run_selection_and_research_loaded_without_news(self):
         handler = SCRIPT.split('if (newsDate) {', 1)[1].split('return;', 1)[0]
         self.assertLess(handler.index('updateNewsDateUrl'), handler.index('const selected = selectedNewsRuns'))
