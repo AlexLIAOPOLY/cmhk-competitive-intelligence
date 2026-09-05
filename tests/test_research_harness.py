@@ -82,7 +82,7 @@ class ResearchHarnessTests(unittest.TestCase):
                 checkpoints.append(json.loads(json.dumps(data)))
         def collector(*args):
             return {"https://www.hkt.com": {"opened": True, "official": True, "text": "HKT revenue and EBITDA"}}, []
-        responses = [submission(), AIMessage(content="no tool")]
+        responses = [submission(), AIMessage(content="no tool"), AIMessage(content="no tool"), AIMessage(content="no tool")]
         with patch("data_curation.workflow._company_expected_metrics", return_value=["收入", "EBITDA"]):
             report = run_assignment(TASK, emit, model_factory=lambda: ToolModel(responses=responses), collector=collector)
             self.assertEqual([item["status"] for item in report["reports"][0]["items"]], ["missing", "error"])
@@ -210,7 +210,21 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertIn("输出恢复请求，第1次", requests[-1]["messages"][-1]["content"])
         self.assertEqual(requests[-1]["thinking"], {"type": "disabled"})
         self.assertEqual(requests[-1]["cache"], {"no-cache": True, "no-store": True})
+        self.assertTrue(requests[-1]["messages"][0]["content"].startswith("恢复请求唯一编号："))
+        self.assertNotEqual(requests[-1]["messages"][0]["content"], requests[-2]["messages"][0]["content"])
+        self.assertEqual(requests[-1]["tool_choice"], {"type": "function", "function": {"name": "submit_metric"}})
         self.assertEqual(len(saved), 1)
+
+    def test_free_text_response_recovers_through_required_submission_tool(self):
+        model = ToolModel(responses=[AIMessage(content='{"status":"verified","value":"fake"}',
+            response_metadata={"finish_reason": "stop"}), submission("完整工具响应")])
+        saved = []
+        harness = ResearchHarness(TASK, model, lambda *args: None, validate_fact)
+        result = harness.extract("HKT", "收入", {}, saved.append)
+        self.assertEqual(result["status"], "missing")
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(model.bound_tools, ["submit_metric"])
+        self.assertEqual(model.requested_budgets, [4096, 8192])
 
 
 if __name__ == "__main__":
