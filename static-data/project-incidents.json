@@ -2,6 +2,56 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "bdefb1033e16224e71e3ba7a",
+      "task_id": "incident:bdefb1033e16224e71e3ba7a",
+      "title": "主项目Web后台",
+      "kind": "web-app",
+      "kind_label": "主项目Web后台",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "Web后台日志出现未处理异常",
+      "impact": "已确认：至少一个请求、后台线程或战略监视周期可能中断。推断：若异常持续，可能导致服务降级、任务失败或数据不一致。",
+      "suggestions": [
+        "",
+        "关联 /api/task-runs 接口日志，确认该时间点是否有任务执行失败或状态异常。",
+        "根据堆栈信息修复根因（如代码缺陷或依赖问题），并在测试环境验证修复后，再部署到生产环境。",
+        "修复后监控 web_app.stderr.log 和任务运行状态，确保无新异常出现。"
+      ],
+      "occurred_at_hkt": "2026-09-06T15:02:09+08:00",
+      "started_at_hkt": "2026-09-06T15:02:09+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:02:09+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "a0401814dbc614cbb34a762d",
+      "task_id": "incident:a0401814dbc614cbb34a762d",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-09-06T15:02:09+08:00",
+      "started_at_hkt": "2026-09-06T15:02:09+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:02:09+08:00",
+      "completed_at_hkt": "2026-09-06T15:03:22+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "774e09a66e7173168090e5d6",
       "task_id": "incident:774e09a66e7173168090e5d6",
       "title": "主项目后台任务",
@@ -223,7 +273,7 @@
       ],
       "occurred_at_hkt": "2026-09-06T07:45:00+08:00",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T15:01:09+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:03:22+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2639,7 +2689,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T15:01:09+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:03:22+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2663,7 +2713,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T15:01:09+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:03:22+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12599,56 +12649,6 @@
       "started_at_hkt": "2026-09-02T10:21:38+08:00",
       "heartbeat_at_hkt": "2026-09-02T10:26:39+08:00",
       "completed_at_hkt": "2026-09-02T10:28:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "b64abf854f6d72d2a9226fc6",
-      "task_id": "incident:b64abf854f6d72d2a9226fc6",
-      "title": "飞书频率调度器",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度器",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "主项目常驻服务未运行",
-      "impact": "已确认：服务未运行，无法响应管理请求。推断：依赖该调度器的爬虫、定时任务和 Web 能力可能已停止，后续计划任务存在漏跑风险，影响数据采集和业务处理。",
-      "suggestions": [
-        "检查 LaunchAgent plist 文件是否存在且内容正确：ls ~/Library/LaunchAgents/com.liaowang.cmhk-frequency-scheduler.plist，并验证其权限和格式。",
-        "若 plist 文件缺失或损坏，从备份或配置管理仓库恢复正确版本，然后执行 launchctl load ~/Library/LaunchAgents/com.liaowang.cmhk-frequency-scheduler.plist 加载服务。",
-        "加载后验证服务状态：launchctl print gui/501/com.liaowang.cmhk-frequency-scheduler，确认服务运行且无错误。",
-        "检查服务日志（stderr 输出）和应用状态接口 /api/status，确认任务调度功能恢复正常，并监控后续任务执行情况。"
-      ],
-      "occurred_at_hkt": "2026-09-02T10:07:07+08:00",
-      "started_at_hkt": "2026-09-02T09:44:44+08:00",
-      "heartbeat_at_hkt": "2026-09-02T10:07:08+08:00",
-      "completed_at_hkt": "2026-09-02T10:07:38+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "201ea000df23ff66f0e236a7",
-      "task_id": "incident:201ea000df23ff66f0e236a7",
-      "title": "Feishu媒体指标定时汇总",
-      "kind": "feishu-media-metrics",
-      "kind_label": "Feishu媒体指标定时汇总",
-      "scope": "feishu-media-metrics",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "已确认任务正常",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "Feishu媒体指标任务日志出现执行错误",
-      "impact": "当期媒体指标收集、AI校验、群发送或发送后回读至少一个阶段未完成。",
-      "suggestions": [
-        "按日志时间核对 state.json 的 sent_slots 与目标群实际消息，先判断是否已发送。",
-        "修复来源校验、飞书权限或AI校验问题后，只恢复未完成时段并验证回读。"
-      ],
-      "occurred_at_hkt": "2026-09-02T10:01:35+08:00",
-      "started_at_hkt": "2026-09-02T10:01:35+08:00",
-      "heartbeat_at_hkt": "2026-09-02T10:01:35+08:00",
-      "completed_at_hkt": "2026-09-02T10:03:05+08:00",
       "handled_at_hkt": ""
     }
   ],
