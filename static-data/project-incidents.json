@@ -8,21 +8,23 @@
       "kind": "web-app",
       "kind_label": "主项目后台任务",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "impact": "已确认：至少一个候选条目处理失败，被留待下轮处理。推断：可能导致该候选相关的快讯生成延迟，但不影响其他候选的处理；整体任务完成状态需进一步验证。",
       "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+        "检查候选 e223ee231e6caf50 的原始内容，确认是否包含可生成中文标题的有效信息，并验证AI服务对该输入的响应。",
+        "查看AI服务日志，排查未返回中文快讯标题的原因（如请求超时、模型错误或输入格式问题）。",
+        "若候选内容有效且AI服务正常，手动触发该候选的重新处理，并监控AI编辑步骤的输出。",
+        "处理完成后，验证任务归档状态，确保该候选已成功生成中文快讯标题并进入后续流程。"
       ],
       "occurred_at_hkt": "2026-09-07T03:22:04+08:00",
       "started_at_hkt": "2026-09-07T03:22:04+08:00",
       "heartbeat_at_hkt": "2026-09-07T03:22:04+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-07T03:23:17+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -3361,7 +3363,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-07T03:22:04+08:00",
+      "heartbeat_at_hkt": "2026-09-07T03:27:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3385,7 +3387,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-07T03:22:04+08:00",
+      "heartbeat_at_hkt": "2026-09-07T03:27:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
