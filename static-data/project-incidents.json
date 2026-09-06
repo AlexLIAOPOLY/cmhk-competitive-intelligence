@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "49bac4c46d9d295b8ad1e483",
+      "task_id": "incident:49bac4c46d9d295b8ad1e483",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个候选条目处理失败，被留待下轮处理。推断：可能导致该候选相关的快讯生成延迟，但不影响其他候选的处理；整体任务完成状态需进一步验证。",
+      "suggestions": [
+        "检查候选 e223ee231e6caf50 的原始内容，确认是否包含可生成中文标题的有效信息，并验证AI服务对该输入的响应。",
+        "查看AI服务日志，排查未返回中文快讯标题的原因（如请求超时、模型错误或输入格式问题）。",
+        "若候选内容有效且AI服务正常，手动触发该候选的重新处理，并监控AI编辑步骤的输出。",
+        "处理完成后，验证任务归档状态，确保该候选已成功生成中文快讯标题并进入后续流程。"
+      ],
+      "occurred_at_hkt": "2026-09-06T16:43:38+08:00",
+      "started_at_hkt": "2026-09-06T16:43:38+08:00",
+      "heartbeat_at_hkt": "2026-09-06T16:43:38+08:00",
+      "completed_at_hkt": "2026-09-06T16:44:15+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "8299f35c202b6c91248a2345",
       "task_id": "incident:8299f35c202b6c91248a2345",
       "title": "主项目后台任务",
@@ -351,7 +377,7 @@
       ],
       "occurred_at_hkt": "2026-09-06T07:45:00+08:00",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T16:43:07+08:00",
+      "heartbeat_at_hkt": "2026-09-06T16:48:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2767,7 +2793,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T16:43:07+08:00",
+      "heartbeat_at_hkt": "2026-09-06T16:48:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2791,7 +2817,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T16:43:07+08:00",
+      "heartbeat_at_hkt": "2026-09-06T16:48:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12627,32 +12653,6 @@
       "started_at_hkt": "2026-09-02T10:58:07+08:00",
       "heartbeat_at_hkt": "2026-09-02T11:05:11+08:00",
       "completed_at_hkt": "2026-09-02T11:05:42+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "388a93fd376933cc601f6abd",
-      "task_id": "incident:388a93fd376933cc601f6abd",
-      "title": "新闻自动初筛",
-      "kind": "news-selection-agent",
-      "kind_label": "新闻自动初筛",
-      "scope": "news-selection-agent",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：新闻自动初筛",
-      "impact": "已确认事实：本轮新闻自动初筛任务未达到完整成功条件，受影响阶段为 news_selection_agent。推断：若该任务输出被下游依赖，可能导致下游任务等待或失败；已有成功阶段和旧数据应继续保留，影响范围限于未完成阶段。",
-      "suggestions": [
-        "检查日志文件 agent_knowledge/crawl_run_logs/runs/20260902_103311_051053.jsonl，确认 news_selection_agent 阶段的实际请求和响应内容，定位模型返回的具体数据。",
-        "验证 DeepSeek-V4-Pro 和 deepseek-v4-free 模型 API 的可达性和响应格式，使用简单测试请求确认服务状态。",
-        "若模型服务恢复正常，仅重试 news_selection_agent 阶段，避免重复执行已成功的上游阶段。",
-        "修复后验证任务整体完成状态，并检查 feishu_log 写入和 readback 是否正常，确保日志记录完整。"
-      ],
-      "occurred_at_hkt": "2026-09-02T10:36:03+08:00",
-      "started_at_hkt": "2026-09-02T10:36:07+08:00",
-      "heartbeat_at_hkt": "2026-09-02T10:45:01+08:00",
-      "completed_at_hkt": "2026-09-02T10:45:34+08:00",
       "handled_at_hkt": ""
     }
   ],
