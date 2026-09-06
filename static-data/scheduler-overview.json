@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-06T15:14:34+08:00",
+  "checked_at_hkt": "2026-09-06T15:17:13+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -49,7 +49,7 @@
     "next_group_check_at": "2026-09-06T16:00:00+08:00",
     "last_scan_at": "2026-09-06T14:31:48+08:00",
     "last_group_check_at": "2026-09-06T15:00:31+08:00",
-    "last_cycle_at": "2026-09-06T15:14:10+08:00",
+    "last_cycle_at": "2026-09-06T15:16:22+08:00",
     "latest_scan_slot": {
       "slot": "2026-09-06@14:00",
       "status": "completed",
@@ -3254,9 +3254,9 @@
       "run_status": "running",
       "backend_pid": 77588,
       "worker_pid": 77588,
-      "phase": "生成AI洞察",
-      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点及4条顶部跨库研判逐一执行深层解释、简洁度与事实门禁。",
-      "heartbeat_at_hkt": "2026-09-06T15:13:17+08:00",
+      "phase": "更新主页UI",
+      "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
+      "heartbeat_at_hkt": "2026-09-06T15:17:04+08:00",
       "started_at_hkt": "2026-09-06T15:10:02+08:00",
       "completed_at_hkt": "",
       "feishu": {},
@@ -3264,8 +3264,8 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260906_151002_719434.jsonl"
       },
       "stream_log": {
-        "bytes": 1661,
-        "lines": 11
+        "bytes": 2256,
+        "lines": 14
       },
       "final_audit": {},
       "run_log": {},
