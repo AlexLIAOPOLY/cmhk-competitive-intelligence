@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "5ca60aefd08610e91c1ac3f4",
+      "task_id": "incident:5ca60aefd08610e91c1ac3f4",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败状态。推断整体任务可能未完全完成，部分结果可能丢失或需恢复，但最终影响需结合任务归档判断。",
+      "suggestions": [
+        "",
+        "关联任务归档与候选ID：根据日志时间戳查询对应任务归档记录和候选ID，确认哪些步骤失败、是否已回退成功或进入待恢复队列。",
+        "恢复失败步骤：若条目进入待恢复队列，保留已有处理结果，仅重新执行失败步骤，并监控执行过程确保无新错误。",
+        "验证任务完成状态：在恢复或修复后，检查任务归档的最终状态，确认所有步骤成功完成且无数据丢失。"
+      ],
+      "occurred_at_hkt": "2026-09-06T21:53:09+08:00",
+      "started_at_hkt": "2026-09-06T21:53:09+08:00",
+      "heartbeat_at_hkt": "2026-09-06T21:53:09+08:00",
+      "completed_at_hkt": "2026-09-06T21:54:14+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "7125f0af40336eea8fb5eaab",
       "task_id": "incident:7125f0af40336eea8fb5eaab",
       "title": "主项目后台任务",
@@ -611,7 +637,7 @@
       ],
       "occurred_at_hkt": "2026-09-06T07:45:00+08:00",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T21:52:08+08:00",
+      "heartbeat_at_hkt": "2026-09-06T21:57:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3027,7 +3053,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T21:52:08+08:00",
+      "heartbeat_at_hkt": "2026-09-06T21:57:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3051,7 +3077,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T21:52:08+08:00",
+      "heartbeat_at_hkt": "2026-09-06T21:57:35+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12639,30 +12665,6 @@
       "started_at_hkt": "2026-09-02T10:43:22+08:00",
       "heartbeat_at_hkt": "2026-09-02T10:45:01+08:00",
       "completed_at_hkt": "2026-09-02T10:45:34+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "61fd7121730ec0d3d003cb6a",
-      "task_id": "incident:61fd7121730ec0d3d003cb6a",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "恢复证据已确认",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "本轮任务未达到完整成功条件；已有成功阶段和旧数据应继续保留，受影响阶段等待有界恢复。",
-      "suggestions": [
-        "查看本轮完整流日志，定位失败行和来源，不要先重跑全部来源。",
-        "检查网络、DNS、目标站结构与历史结果回退状态。"
-      ],
-      "occurred_at_hkt": "2026-09-02T10:38:55+08:00",
-      "started_at_hkt": "2026-09-02T10:45:34+08:00",
-      "heartbeat_at_hkt": "2026-09-02T10:45:34+08:00",
-      "completed_at_hkt": "2026-09-02T10:46:01+08:00",
       "handled_at_hkt": ""
     }
   ],
