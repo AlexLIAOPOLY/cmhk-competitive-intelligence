@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-06T17:57:39+08:00",
+  "checked_at_hkt": "2026-09-06T18:02:53+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -46,10 +46,10 @@
       "14:00"
     ],
     "next_scan_at": "2026-09-07T07:30:00+08:00",
-    "next_group_check_at": "2026-09-06T18:00:00+08:00",
+    "next_group_check_at": "2026-09-06T19:00:00+08:00",
     "last_scan_at": "2026-09-06T14:31:48+08:00",
-    "last_group_check_at": "2026-09-06T17:00:06+08:00",
-    "last_cycle_at": "2026-09-06T17:57:23+08:00",
+    "last_group_check_at": "2026-09-06T18:00:34+08:00",
+    "last_cycle_at": "2026-09-06T18:02:37+08:00",
     "latest_scan_slot": {
       "slot": "2026-09-06@14:00",
       "status": "completed",
