@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "70b18f70ae059e5cd5367a57",
+      "task_id": "incident:70b18f70ae059e5cd5367a57",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-09-07T02:18:34+08:00",
+      "started_at_hkt": "2026-09-07T02:18:34+08:00",
+      "heartbeat_at_hkt": "2026-09-07T02:18:34+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "6cc76aa24df7049d0110119e",
       "task_id": "incident:6cc76aa24df7049d0110119e",
       "title": "主项目后台任务",
@@ -3285,7 +3309,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-07T02:13:10+08:00",
+      "heartbeat_at_hkt": "2026-09-07T02:18:34+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3309,7 +3333,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-07T02:13:10+08:00",
+      "heartbeat_at_hkt": "2026-09-07T02:18:34+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12649,32 +12673,6 @@
       "started_at_hkt": "2026-09-02T11:10:23+08:00",
       "heartbeat_at_hkt": "2026-09-02T11:10:23+08:00",
       "completed_at_hkt": "2026-09-02T11:11:24+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "3bf845c40c873de906f3ddac",
-      "task_id": "incident:3bf845c40c873de906f3ddac",
-      "title": "飞书频率调度器",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度器",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "主项目常驻服务未运行",
-      "impact": "已确认：服务未运行，无法响应管理请求。推断：依赖该调度器的爬虫、定时任务和 Web 能力可能已停止，后续计划任务存在漏跑风险，影响数据采集和业务处理。",
-      "suggestions": [
-        "检查 LaunchAgent plist 文件是否存在且内容正确：ls ~/Library/LaunchAgents/com.liaowang.cmhk-frequency-scheduler.plist，并验证其权限和格式。",
-        "若 plist 文件缺失或损坏，从备份或配置管理仓库恢复正确版本，然后执行 launchctl load ~/Library/LaunchAgents/com.liaowang.cmhk-frequency-scheduler.plist 加载服务。",
-        "加载后验证服务状态：launchctl print gui/501/com.liaowang.cmhk-frequency-scheduler，确认服务运行且无错误。",
-        "检查服务日志（stderr 输出）和应用状态接口 /api/status，确认任务调度功能恢复正常，并监控后续任务执行情况。"
-      ],
-      "occurred_at_hkt": "2026-09-02T11:03:18+08:00",
-      "started_at_hkt": "2026-09-02T11:03:19+08:00",
-      "heartbeat_at_hkt": "2026-09-02T11:03:19+08:00",
-      "completed_at_hkt": "2026-09-02T11:04:39+08:00",
       "handled_at_hkt": ""
     }
   ],
