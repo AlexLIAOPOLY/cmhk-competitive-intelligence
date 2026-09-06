@@ -3,7 +3,7 @@
   "events": [
     {
       "id": "event-001",
-      "at": "2026-09-06T10:51:06+00:00",
+      "at": "2026-09-06T10:56:19+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -17,7 +17,7 @@
     },
     {
       "id": "event-002",
-      "at": "2026-09-06T10:45:12+00:00",
+      "at": "2026-09-06T10:51:06+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -31,7 +31,7 @@
     },
     {
       "id": "event-003",
-      "at": "2026-09-06T10:39:59+00:00",
+      "at": "2026-09-06T10:45:12+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -45,7 +45,7 @@
     },
     {
       "id": "event-004",
-      "at": "2026-09-06T10:34:47+00:00",
+      "at": "2026-09-06T10:39:59+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -59,7 +59,7 @@
     },
     {
       "id": "event-005",
-      "at": "2026-09-06T10:29:34+00:00",
+      "at": "2026-09-06T10:34:47+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -73,7 +73,7 @@
     },
     {
       "id": "event-006",
-      "at": "2026-09-06T10:24:22+00:00",
+      "at": "2026-09-06T10:29:34+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -87,7 +87,7 @@
     },
     {
       "id": "event-007",
-      "at": "2026-09-06T10:19:09+00:00",
+      "at": "2026-09-06T10:24:22+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -101,7 +101,7 @@
     },
     {
       "id": "event-008",
-      "at": "2026-09-06T10:13:11+00:00",
+      "at": "2026-09-06T10:19:09+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -115,7 +115,7 @@
     },
     {
       "id": "event-009",
-      "at": "2026-09-06T10:07:58+00:00",
+      "at": "2026-09-06T10:13:11+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -129,7 +129,7 @@
     },
     {
       "id": "event-010",
-      "at": "2026-09-06T10:02:46+00:00",
+      "at": "2026-09-06T10:07:58+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -143,7 +143,7 @@
     },
     {
       "id": "event-011",
-      "at": "2026-09-06T09:57:32+00:00",
+      "at": "2026-09-06T10:02:46+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -157,7 +157,7 @@
     },
     {
       "id": "event-012",
-      "at": "2026-09-06T09:52:19+00:00",
+      "at": "2026-09-06T09:57:32+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -171,7 +171,7 @@
     },
     {
       "id": "event-013",
-      "at": "2026-09-06T09:47:06+00:00",
+      "at": "2026-09-06T09:52:19+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -185,7 +185,7 @@
     },
     {
       "id": "event-014",
-      "at": "2026-09-06T09:41:11+00:00",
+      "at": "2026-09-06T09:47:06+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -199,7 +199,7 @@
     },
     {
       "id": "event-015",
-      "at": "2026-09-06T09:35:58+00:00",
+      "at": "2026-09-06T09:41:11+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -213,7 +213,7 @@
     },
     {
       "id": "event-016",
-      "at": "2026-09-06T09:30:46+00:00",
+      "at": "2026-09-06T09:35:58+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -227,7 +227,7 @@
     },
     {
       "id": "event-017",
-      "at": "2026-09-06T09:25:33+00:00",
+      "at": "2026-09-06T09:30:46+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -241,7 +241,7 @@
     },
     {
       "id": "event-018",
-      "at": "2026-09-06T09:20:21+00:00",
+      "at": "2026-09-06T09:25:33+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -255,7 +255,7 @@
     },
     {
       "id": "event-019",
-      "at": "2026-09-06T09:15:06+00:00",
+      "at": "2026-09-06T09:20:21+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -269,7 +269,7 @@
     },
     {
       "id": "event-020",
-      "at": "2026-09-06T09:09:42+00:00",
+      "at": "2026-09-06T09:15:06+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -283,7 +283,7 @@
     },
     {
       "id": "event-021",
-      "at": "2026-09-06T09:04:25+00:00",
+      "at": "2026-09-06T09:09:42+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -297,7 +297,7 @@
     },
     {
       "id": "event-022",
-      "at": "2026-09-06T08:59:06+00:00",
+      "at": "2026-09-06T09:04:25+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -311,7 +311,7 @@
     },
     {
       "id": "event-023",
-      "at": "2026-09-06T08:53:53+00:00",
+      "at": "2026-09-06T08:59:06+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -325,7 +325,7 @@
     },
     {
       "id": "event-024",
-      "at": "2026-09-06T08:48:40+00:00",
+      "at": "2026-09-06T08:53:53+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -339,7 +339,7 @@
     },
     {
       "id": "event-025",
-      "at": "2026-09-06T08:43:27+00:00",
+      "at": "2026-09-06T08:48:40+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -353,7 +353,7 @@
     },
     {
       "id": "event-026",
-      "at": "2026-09-06T08:38:13+00:00",
+      "at": "2026-09-06T08:43:27+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -367,7 +367,7 @@
     },
     {
       "id": "event-027",
-      "at": "2026-09-06T08:32:58+00:00",
+      "at": "2026-09-06T08:38:13+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -381,7 +381,7 @@
     },
     {
       "id": "event-028",
-      "at": "2026-09-06T08:27:45+00:00",
+      "at": "2026-09-06T08:32:58+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -395,7 +395,7 @@
     },
     {
       "id": "event-029",
-      "at": "2026-09-06T08:22:32+00:00",
+      "at": "2026-09-06T08:27:45+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -409,7 +409,7 @@
     },
     {
       "id": "event-030",
-      "at": "2026-09-06T08:17:19+00:00",
+      "at": "2026-09-06T08:22:32+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -423,7 +423,7 @@
     },
     {
       "id": "event-031",
-      "at": "2026-09-06T08:12:06+00:00",
+      "at": "2026-09-06T08:17:19+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -437,7 +437,7 @@
     },
     {
       "id": "event-032",
-      "at": "2026-09-06T08:06:42+00:00",
+      "at": "2026-09-06T08:12:06+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -451,7 +451,7 @@
     },
     {
       "id": "event-033",
-      "at": "2026-09-06T08:01:29+00:00",
+      "at": "2026-09-06T08:06:42+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -465,7 +465,7 @@
     },
     {
       "id": "event-034",
-      "at": "2026-09-06T07:56:15+00:00",
+      "at": "2026-09-06T08:01:29+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -479,7 +479,7 @@
     },
     {
       "id": "event-035",
-      "at": "2026-09-06T07:51:02+00:00",
+      "at": "2026-09-06T07:56:15+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -493,7 +493,7 @@
     },
     {
       "id": "event-036",
-      "at": "2026-09-06T07:45:43+00:00",
+      "at": "2026-09-06T07:51:02+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -507,7 +507,7 @@
     },
     {
       "id": "event-037",
-      "at": "2026-09-06T07:40:29+00:00",
+      "at": "2026-09-06T07:45:43+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -521,7 +521,7 @@
     },
     {
       "id": "event-038",
-      "at": "2026-09-06T07:35:14+00:00",
+      "at": "2026-09-06T07:40:29+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -535,7 +535,7 @@
     },
     {
       "id": "event-039",
-      "at": "2026-09-06T07:30:02+00:00",
+      "at": "2026-09-06T07:35:14+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -549,7 +549,7 @@
     },
     {
       "id": "event-040",
-      "at": "2026-09-06T07:24:49+00:00",
+      "at": "2026-09-06T07:30:02+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -563,7 +563,7 @@
     },
     {
       "id": "event-041",
-      "at": "2026-09-06T07:19:37+00:00",
+      "at": "2026-09-06T07:24:49+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -577,7 +577,7 @@
     },
     {
       "id": "event-042",
-      "at": "2026-09-06T07:17:04+00:00",
+      "at": "2026-09-06T07:19:37+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -591,7 +591,7 @@
     },
     {
       "id": "event-043",
-      "at": "2026-09-06T07:14:20+00:00",
+      "at": "2026-09-06T07:17:04+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -605,7 +605,7 @@
     },
     {
       "id": "event-044",
-      "at": "2026-09-06T07:09:06+00:00",
+      "at": "2026-09-06T07:14:20+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -619,7 +619,7 @@
     },
     {
       "id": "event-045",
-      "at": "2026-09-06T07:03:19+00:00",
+      "at": "2026-09-06T07:09:06+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -633,7 +633,7 @@
     },
     {
       "id": "event-046",
-      "at": "2026-09-06T07:01:11+00:00",
+      "at": "2026-09-06T07:03:19+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -647,7 +647,7 @@
     },
     {
       "id": "event-047",
-      "at": "2026-09-06T06:56:27+00:00",
+      "at": "2026-09-06T07:01:11+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -661,7 +661,7 @@
     },
     {
       "id": "event-048",
-      "at": "2026-09-06T06:51:13+00:00",
+      "at": "2026-09-06T06:56:27+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -675,7 +675,7 @@
     },
     {
       "id": "event-049",
-      "at": "2026-09-06T06:45:47+00:00",
+      "at": "2026-09-06T06:51:13+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -689,7 +689,7 @@
     },
     {
       "id": "event-050",
-      "at": "2026-09-06T06:40:34+00:00",
+      "at": "2026-09-06T06:45:47+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -703,7 +703,7 @@
     },
     {
       "id": "event-051",
-      "at": "2026-09-06T06:35:06+00:00",
+      "at": "2026-09-06T06:40:34+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -717,12 +717,12 @@
     },
     {
       "id": "event-052",
-      "at": "2026-09-06T06:34:49+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
+      "at": "2026-09-06T06:35:06+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -941,6 +941,20 @@
     },
     {
       "id": "event-068",
+      "at": "2026-09-06T06:34:49+00:00",
+      "actor_id": "",
+      "actor_name": "新闻自动初筛机器人",
+      "actor_role": "SYSTEM",
+      "action": "news_review.update",
+      "target": "BYK3u",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-069",
       "at": "2026-09-06T06:02:14+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -954,7 +968,7 @@
       "details": {}
     },
     {
-      "id": "event-069",
+      "id": "event-070",
       "at": "2026-09-06T05:58:40+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -968,7 +982,7 @@
       "details": {}
     },
     {
-      "id": "event-070",
+      "id": "event-071",
       "at": "2026-09-05T05:50:46+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -982,7 +996,7 @@
       "details": {}
     },
     {
-      "id": "event-071",
+      "id": "event-072",
       "at": "2026-09-05T05:39:43+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -996,7 +1010,7 @@
       "details": {}
     },
     {
-      "id": "event-072",
+      "id": "event-073",
       "at": "2026-09-05T05:34:26+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -1010,7 +1024,7 @@
       "details": {}
     },
     {
-      "id": "event-073",
+      "id": "event-074",
       "at": "2026-09-05T05:30:10+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -1024,7 +1038,7 @@
       "details": {}
     },
     {
-      "id": "event-074",
+      "id": "event-075",
       "at": "2026-09-05T05:23:09+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -1038,7 +1052,7 @@
       "details": {}
     },
     {
-      "id": "event-075",
+      "id": "event-076",
       "at": "2026-09-05T05:17:52+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -1052,27 +1066,13 @@
       "details": {}
     },
     {
-      "id": "event-076",
+      "id": "event-077",
       "at": "2026-09-05T05:16:38+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
       "action": "auth.dev_login",
       "target": "local-admin",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
-      "id": "event-077",
-      "at": "2026-09-05T05:04:19+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -1319,12 +1319,12 @@
     },
     {
       "id": "event-095",
-      "at": "2026-09-05T05:01:23+00:00",
-      "actor_id": "member-001",
-      "actor_name": "本地管理员",
-      "actor_role": "ADMIN",
-      "action": "auth.dev_login",
-      "target": "local-admin",
+      "at": "2026-09-05T05:04:19+00:00",
+      "actor_id": "",
+      "actor_name": "新闻自动初筛机器人",
+      "actor_role": "SYSTEM",
+      "action": "news_review.update",
+      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -1333,12 +1333,12 @@
     },
     {
       "id": "event-096",
-      "at": "2026-09-05T04:52:04+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
+      "at": "2026-09-05T05:01:23+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
