@@ -2,6 +2,32 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "2c01ebfc3839dcdae77979f6",
+      "task_id": "incident:2c01ebfc3839dcdae77979f6",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个候选条目处理失败，被留待下轮处理。推断：可能导致该候选相关的快讯生成延迟，但不影响其他候选的处理；整体任务完成状态需进一步验证。",
+      "suggestions": [
+        "检查候选 e223ee231e6caf50 的原始内容，确认是否包含可生成中文标题的有效信息，并验证AI服务对该输入的响应。",
+        "查看AI服务日志，排查未返回中文快讯标题的原因（如请求超时、模型错误或输入格式问题）。",
+        "若候选内容有效且AI服务正常，手动触发该候选的重新处理，并监控AI编辑步骤的输出。",
+        "处理完成后，验证任务归档状态，确保该候选已成功生成中文快讯标题并进入后续流程。"
+      ],
+      "occurred_at_hkt": "2026-09-07T05:28:39+08:00",
+      "started_at_hkt": "2026-09-07T05:28:39+08:00",
+      "heartbeat_at_hkt": "2026-09-07T05:28:39+08:00",
+      "completed_at_hkt": "2026-09-07T05:29:15+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "c020311f1bfa5961ab9072c3",
       "task_id": "incident:c020311f1bfa5961ab9072c3",
       "title": "主项目后台任务",
@@ -3441,7 +3467,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-07T05:28:09+08:00",
+      "heartbeat_at_hkt": "2026-09-07T05:33:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3465,7 +3491,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-07T05:28:09+08:00",
+      "heartbeat_at_hkt": "2026-09-07T05:33:36+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12655,32 +12681,6 @@
       "started_at_hkt": "2026-09-02T11:19:17+08:00",
       "heartbeat_at_hkt": "2026-09-02T14:43:36+08:00",
       "completed_at_hkt": "2026-09-02T14:44:05+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "66a37e9d10b59182fd03e939",
-      "task_id": "incident:66a37e9d10b59182fd03e939",
-      "title": "飞书频率调度器",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度器",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "主项目常驻服务未运行",
-      "impact": "已确认：服务未运行，无法响应管理请求。推断：依赖该调度器的爬虫、定时任务和 Web 能力可能已停止，后续计划任务存在漏跑风险，影响数据采集和业务处理。",
-      "suggestions": [
-        "检查 LaunchAgent plist 文件是否存在且内容正确：ls ~/Library/LaunchAgents/com.liaowang.cmhk-frequency-scheduler.plist，并验证其权限和格式。",
-        "若 plist 文件缺失或损坏，从备份或配置管理仓库恢复正确版本，然后执行 launchctl load ~/Library/LaunchAgents/com.liaowang.cmhk-frequency-scheduler.plist 加载服务。",
-        "加载后验证服务状态：launchctl print gui/501/com.liaowang.cmhk-frequency-scheduler，确认服务运行且无错误。",
-        "检查服务日志（stderr 输出）和应用状态接口 /api/status，确认任务调度功能恢复正常，并监控后续任务执行情况。"
-      ],
-      "occurred_at_hkt": "2026-09-02T11:17:40+08:00",
-      "started_at_hkt": "2026-09-02T11:17:41+08:00",
-      "heartbeat_at_hkt": "2026-09-02T11:17:41+08:00",
-      "completed_at_hkt": "2026-09-02T11:19:17+08:00",
       "handled_at_hkt": ""
     }
   ],
