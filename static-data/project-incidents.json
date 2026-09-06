@@ -2,6 +2,30 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "fcf0e856f387fe5cb0b70f26",
+      "task_id": "incident:fcf0e856f387fe5cb0b70f26",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-09-06T15:09:06+08:00",
+      "started_at_hkt": "2026-09-06T15:09:06+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:09:06+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "bdefb1033e16224e71e3ba7a",
       "task_id": "incident:bdefb1033e16224e71e3ba7a",
       "title": "主项目Web后台",
@@ -273,7 +297,7 @@
       ],
       "occurred_at_hkt": "2026-09-06T07:45:00+08:00",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T15:03:22+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:09:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2689,7 +2713,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T15:03:22+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:09:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2713,7 +2737,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T15:03:22+08:00",
+      "heartbeat_at_hkt": "2026-09-06T15:09:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12623,30 +12647,6 @@
       ],
       "occurred_at_hkt": "2026-09-02T10:26:38+08:00",
       "started_at_hkt": "2026-09-02T10:18:12+08:00",
-      "heartbeat_at_hkt": "2026-09-02T10:26:39+08:00",
-      "completed_at_hkt": "2026-09-02T10:28:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "63a768766fce129345e83d7e",
-      "task_id": "incident:63a768766fce129345e83d7e",
-      "title": "飞书频率调度器",
-      "kind": "frequency-scheduler",
-      "kind_label": "飞书频率调度器",
-      "scope": "frequency-scheduler",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "频率调度器独立心跳中断",
-      "impact": "到期行可能没有被检查，03:00或其他频率任务可能漏跑。",
-      "suggestions": [
-        "检查 launchd 状态、进程PID和 frequency_scheduler stderr。",
-        "先核对任务归档与到期状态，再决定是否恢复服务，禁止盲目补跑。"
-      ],
-      "occurred_at_hkt": "2026-09-02T10:12:16+08:00",
-      "started_at_hkt": "2026-09-02T10:21:38+08:00",
       "heartbeat_at_hkt": "2026-09-02T10:26:39+08:00",
       "completed_at_hkt": "2026-09-02T10:28:03+08:00",
       "handled_at_hkt": ""

@@ -14480,14 +14480,133 @@
     "verified_public_fact_count": 9
   },
   "refresh": {
-    "ok": false,
-    "status": "running",
+    "ok": true,
+    "status": "completed",
     "started_at_hkt": "2026-09-06T14:39:01+08:00",
     "agent_run_id": "research_20260905",
     "dry_run": false,
     "task_run_id": "20260906_143901_173099",
     "attempt": 1,
-    "domains": {},
+    "domains": {
+      "local": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 161,
+          "path": "",
+          "latest_period": "",
+          "quality": "passed",
+          "verified_rows": 161,
+          "financial_reports": 5,
+          "latest_financial_period": "H1 2026",
+          "latest_financial_publication_date": "2026-08-27"
+        },
+        "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
+        "agent_fact_update": {
+          "facts": 19,
+          "changed": true,
+          "published": true
+        },
+        "database_changed": true
+      },
+      "international": {
+        "ok": true,
+        "changed": true,
+        "promoted": true,
+        "validation": {
+          "rows": 3084,
+          "path": "",
+          "latest_period": "Jun '26 Jun 30, 2026",
+          "quality": "passed",
+          "verified_rows": 2698
+        },
+        "merge": {
+          "strategy": "preserve_existing_verified_rows_and_add_new_builder_rows",
+          "current_rows": 3082,
+          "builder_rows": 2866,
+          "added_rows": 2,
+          "upgraded_rows": 0,
+          "published_rows": 3084
+        },
+        "release": {
+          "ok": true,
+          "created": true,
+          "release_root": "",
+          "release_dir": "",
+          "current_pointer": "",
+          "schema_version": "1.0",
+          "dataset_key": "quarterly_competitor_metrics",
+          "release_id": "qcm_db56cd88c2a05bfcf7dbadfb",
+          "release_manifest": "releases/qcm_db56cd88c2a05bfcf7dbadfb/release.json",
+          "release_manifest_sha256": "22c89102c13c85da74f2a32240930437e4eafa206c085680a650460d43a46aab",
+          "published_at": "2026-09-06T06:39:57+00:00",
+          "data_as_of": "2026-06-30",
+          "row_count": 3084,
+          "content_sha256": "db56cd88c2a05bfcf7dbadfbf414fb21a5175023928d0778c70b61df46e19bf8",
+          "task_id": "crawl:20260906_143929_712589",
+          "task_run_id": "20260906_143929_712589"
+        },
+        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-international-refresh-jyb00n9b/dataset\nRows: 2866\n",
+        "agent_fact_update": {
+          "facts": 15,
+          "changed": true,
+          "published": true
+        },
+        "database_changed": true
+      },
+      "cloud": {
+        "ok": true,
+        "changed": false,
+        "promoted": false,
+        "validation": {
+          "rows": 430,
+          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-11dtnzzp/dataset/cloud_vendor_metrics_2023_2025.json",
+          "latest_period": "2025",
+          "quality": "passed",
+          "verified_rows": 171
+        },
+        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-11dtnzzp/dataset\nRows: 430\n",
+        "agent_fact_update": {
+          "facts": 11,
+          "changed": true,
+          "published": true
+        },
+        "database_changed": true
+      },
+      "macro": {
+        "ok": true,
+        "changed": false,
+        "promoted": false,
+        "validation": {
+          "rows": 7751,
+          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-qg2ye3q6/dataset/macro_policy_metrics.json",
+          "latest_period": "2026-07-31",
+          "quality": "passed",
+          "verified_rows": 7748
+        },
+        "stdout_tail": "wrote 7751 rows to /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-qg2ye3q6/dataset\n"
+      },
+      "mainland": {
+        "ok": true,
+        "changed": false,
+        "daily_main_database_promotion": {
+          "ok": true,
+          "changed": false,
+          "candidates": 15,
+          "added_rows": 0,
+          "upgraded_rows": 0,
+          "preserved_stronger_rows": 15,
+          "published_rows": 3084,
+          "dry_run": false
+        },
+        "agent_fact_update": {
+          "facts": 14,
+          "changed": true,
+          "published": true
+        },
+        "database_changed": true
+      }
+    },
     "ui_contract": {
       "domain_ids": [
         "local",
@@ -14497,7 +14616,184 @@
       ],
       "supporting_database_ids": [
         "macro"
-      ]
+      ],
+      "focuses_expected": 15,
+      "focuses_passed": 15,
+      "discoveries_expected": 4,
+      "discoveries_passed": 4,
+      "insights_expected": 19,
+      "insights_passed": 19,
+      "summary_domain_ids": [
+        "local",
+        "international",
+        "mainland",
+        "cloud"
+      ],
+      "aligned": true
+    },
+    "news_database_signals": {
+      "available": false,
+      "required": false,
+      "reason": "research_agents_search_in_current_run"
+    },
+    "ai_analysis": {
+      "ok": true,
+      "changed": true,
+      "domain_counts": {
+        "local": 11,
+        "international": 7,
+        "mainland": 6,
+        "cloud": 3,
+        "macro": 0
+      },
+      "path": ""
+    },
+    "domain_fact_sidecars": {
+      "local": {
+        "path": "",
+        "facts": 19,
+        "submitted_facts": 11,
+        "changed": true,
+        "published": true
+      },
+      "international": {
+        "path": "",
+        "facts": 15,
+        "submitted_facts": 7,
+        "changed": true,
+        "published": true
+      },
+      "mainland": {
+        "path": "",
+        "facts": 14,
+        "submitted_facts": 6,
+        "changed": true,
+        "published": true
+      },
+      "cloud": {
+        "path": "",
+        "facts": 11,
+        "submitted_facts": 3,
+        "changed": true,
+        "published": true
+      },
+      "macro": {
+        "path": "",
+        "facts": 0,
+        "changed": false,
+        "published": false,
+        "skipped": true
+      }
+    },
+    "daily_main_database_promotion": {
+      "ok": true,
+      "changed": false,
+      "candidates": 15,
+      "added_rows": 0,
+      "upgraded_rows": 0,
+      "preserved_stronger_rows": 15,
+      "published_rows": 3084,
+      "dry_run": false
+    },
+    "overview_source_recrawl": {
+      "ok": true,
+      "skipped": true,
+      "reason": "official_pages_already_read_by_research_agents"
+    },
+    "model_analysis": {
+      "ok": true,
+      "generated_at_hkt": "2026-09-06T15:01:09+08:00",
+      "model": "DeepSeek-V4-Pro",
+      "domains": 4,
+      "focuses_expected": 15,
+      "focuses_passed": 15,
+      "discoveries_expected": 4,
+      "discoveries_passed": 4,
+      "insights_expected": 19,
+      "insights_passed": 19,
+      "reused": false,
+      "fallback_used": false,
+      "fallback_reason": "",
+      "evidence_hash": "f30523d0c06c8ce5ed70359acbdade398328c95789ad60b750b873ae7ab9ad42",
+      "discovery_model": "DeepSeek-V4-Pro",
+      "discovery_evidence_repair_count": 3,
+      "discovery_fallback_used": false,
+      "discovery_fallback_reason": ""
+    },
+    "ui_value_changes": {
+      "baseline_available": true,
+      "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+      "changed": 0,
+      "added": 0,
+      "removed": 0,
+      "domains": {
+        "local": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "international": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "mainland": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "cloud": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        }
+      },
+      "items": []
+    },
+    "pages_publish": {
+      "ok": true,
+      "attempts": 1,
+      "status": "published",
+      "site_version": "52b0866067840c6cc145860ec23b29c0ab7cd1f7b4cde0ee9b15e68139a038f2",
+      "item_count": 8,
+      "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+      "commit": "103ef691240143fc41e0d688d96164641ea301a2",
+      "snapshot_source_url": ""
+    },
+    "failed_domains": [],
+    "completed_at_hkt": "2026-09-06T15:02:06+08:00",
+    "duration_ms": 1385674,
+    "fallback_preserved": false,
+    "change_summary": {
+      "database_changed_domains": [
+        "local",
+        "international",
+        "mainland",
+        "cloud"
+      ],
+      "source_content_changed_domains": [],
+      "ui_numeric_changed_domains": [],
+      "ui_verified": true
+    },
+    "feishu_detail_log": {
+      "ok": true,
+      "written": 631,
+      "skipped": 0,
+      "created": false,
+      "sheet_title": "四库爬虫明细日志",
+      "sheet_url": "",
+      "row_start": 89293,
+      "row_end": 89923,
+      "readback_verified": true,
+      "readback_reason": "live_full_event_id_readback",
+      "readback_scope": "all_live_event_ids",
+      "live_event_count": 89922,
+      "event_index_sha256": "ae6f92cf22d095e09b3b3cab0f19d1c71451f66e9500ca101d82c19e831dc97d",
+      "write_recovered_by_readback": false
     }
   },
   "ui_contract": {
@@ -14517,7 +14813,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-06T14:39:01+08:00"
+    "last_checked_at_hkt": "2026-09-06T15:02:06+08:00"
   },
   "ai": {
     "agent_run_id": "research_20260905",
