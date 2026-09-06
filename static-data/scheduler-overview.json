@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-06T14:02:20+08:00",
+  "checked_at_hkt": "2026-09-06T14:35:22+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -47,16 +47,20 @@
     ],
     "next_scan_at": "2026-09-07T07:30:00+08:00",
     "next_group_check_at": "2026-09-06T15:00:00+08:00",
-    "last_scan_at": "2026-09-05T12:37:17+08:00",
-    "last_group_check_at": "2026-09-06T13:59:40+08:00",
-    "last_cycle_at": "2026-09-06T13:59:40+08:00",
+    "last_scan_at": "2026-09-06T14:03:15+08:00",
+    "last_group_check_at": "2026-09-06T14:03:15+08:00",
+    "last_cycle_at": "2026-09-06T14:03:15+08:00",
     "latest_scan_slot": {
-      "slot": "2026-09-06@07:30",
-      "status": "skipped",
-      "reason": "catchup_window_expired",
-      "at": "2026-09-06T13:59:40+08:00"
+      "slot": "2026-09-06@14:00",
+      "status": "completed",
+      "at": "2026-09-06T14:03:15+08:00",
+      "candidate_count": 8,
+      "message_id": "om_x100b66e4c327d0b0b4a259abedfbb93",
+      "auto_recovered_after_disconnect": false,
+      "deferred_by_prior_slot": false,
+      "interrupted_attempts": 0
     },
-    "last_candidate_count": 152,
+    "last_candidate_count": 8,
     "feishu_identity": "bot",
     "last_error": "2026-09-01@07:30 新闻自动初筛未完成：LangChain 多轮补判后仍遗漏 1 条候选：NEWS-17C9439F5E5826",
     "active_task_id": "",
@@ -3195,53 +3199,53 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260905_073044_443452",
+      "crawl_run_id": "20260906_140315_583298",
       "trigger": "战略新闻定时爬虫",
-      "scope": "晨间扫描（2026-09-05@07:30）",
+      "scope": "午后扫描（2026-09-06@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 37317,
+      "backend_pid": 56270,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 697 条，AI保留 206 条，历史重复 53 条，新增 152 条。",
-      "heartbeat_at_hkt": "2026-09-05T12:52:06+08:00",
-      "started_at_hkt": "2026-09-05T07:30:44+08:00",
-      "completed_at_hkt": "2026-09-05T12:52:06+08:00",
+      "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 33 条，AI保留 8 条，历史重复 0 条，新增 8 条。",
+      "heartbeat_at_hkt": "2026-09-06T14:34:51+08:00",
+      "started_at_hkt": "2026-09-06T14:03:15+08:00",
+      "completed_at_hkt": "2026-09-06T14:34:51+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 889079,
+      "duration_ms": 1895919,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260905_073044_443452.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260906_140315_583298.jsonl"
       },
       "stream_log": {
-        "bytes": 106784,
-        "lines": 609
+        "bytes": 16063,
+        "lines": 92
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 697 条，AI保留 206 条，历史重复 53 条，新增 152 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 33 条，AI保留 8 条，历史重复 0 条，新增 8 条。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-09-05@07:30",
-        "discovered": 697,
-        "ai_retained": 206,
-        "history_duplicates": 53,
-        "new_count": 152,
+        "slot": "2026-09-06@14:00",
+        "discovered": 33,
+        "ai_retained": 8,
+        "history_duplicates": 0,
+        "new_count": 8,
         "readback_verified": true,
         "notification_status": "sent",
-        "message_id": "om_x100b668d892960acb149636ac8dfc02",
+        "message_id": "om_x100b66e4c327d0b0b4a259abedfbb93",
         "message_ids": [
-          "om_x100b668d892960acb149636ac8dfc02",
-          "om_x100b668d893ed8a0b2b2296a4e51c3c"
+          "om_x100b66e4c327d0b0b4a259abedfbb93",
+          "om_x100b66e4c33ad8a8b2c221267e58aa4"
         ],
         "notification_destination_count": 2,
         "selection_agent_status": "completed",
-        "selection_agent_changed": 304
+        "selection_agent_changed": 16
       },
-      "amended_at_hkt": "2026-09-05T12:37:19+08:00"
+      "amended_at_hkt": "2026-09-06T14:31:59+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260905_115635_092313",

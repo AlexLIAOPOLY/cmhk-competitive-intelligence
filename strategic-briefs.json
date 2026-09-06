@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-09-06T14:02:12+08:00",
+  "generated_at": "2026-09-06T14:35:05+08:00",
   "items": [
+    {
+      "id": "NEWS-1F7D14599472F6",
+      "title": "陈美宝到访北京百度ApolloPark试乘萝卜快跑，希望尽快在香港进入载客阶段",
+      "summary": "百度公布，运输及物流局局长陈美宝、运输署署长谢咏谊、路政署署长邱国鼎、立法会交通事务委员会主席陈恒镔、立法会议员及政府代表周五（4日）到访北京亦庄的百度ApolloPark参观，并试乘体验萝…",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://www.stnn.cc/detail/6a9cb313b4b06b3f17fef910.html",
+      "published_at": "2026-09-06T07:05:00+08:00"
+    },
+    {
+      "id": "NEWS-CDEB73D60D6F91",
+      "title": "Tomás Olivo：11岁开始工作的男孩最终买下Telefónica格兰大道总部",
+      "summary": "西班牙企业家Tomás Olivo从11岁开始工作，最终收购了Telefónica位于马德里格兰大道的总部大楼。",
+      "category": "竞对动态",
+      "source_url": "https://okdiario.com/economia/cuentas-publicas/tomas-olivo-nino-que-fue-trabajar-11-anos-termino-comprando-sede-telefonica-gran-via-20231255",
+      "published_at": "2026-09-06T06:45:00+08:00"
+    },
     {
       "id": "NEWS-21BD3657004AA3",
       "title": "传中美拟在习特会前再谈AI安全，贝森特料带队",
@@ -49,22 +65,6 @@
       "category": "市场/产品类",
       "source_url": "https://news.google.com/rss/articles/CBMiowJBVV95cUxPeUlOM3VyU2d0Y1RXZm5lUi1kZFJDUmtUZGpsWW9LRExiSUc3WlZteVd0TEFNQ3dmSmUxZ0ViWWZhUmF2U1VDbUljWmhkSEtiM0p2VjgyYTZiVk9sRFJlcFM4cHZlY0Jmdi1PTHpfLTlsQ1p1WlBaSGg2M1dnb184WjZsSjJMWUk2Yld6OTdqeVhpSnpudDY4T3FYajl0SFNqbndCR3ZhWG1lYTBvbUxLUUVzMmNzcEhiUzVYeElDeEEtbWY5b2pEVFlYR013Qk5lc1RKRkpVMDFVSnM3QmtCTFBqdTlQTG9aaDZiM0dvSHlLaDJRaUREbjhXSGVjQnlqbVUtb3ZROFNxSEFSbm13Q1l5T3NMUmZ1N2U3ckozT1U0SUU?oc=5",
       "published_at": "2026-09-05T03:36:25+08:00"
-    },
-    {
-      "id": "NEWS-EA53B1589FD4E4",
-      "title": "香港五年规划推动算力金融产业化",
-      "summary": "香港推出五年规划，推动算力与金融产业化发展，布局数字基础设施。",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMikwJBVV95cUxNY2M3VWZyNEdyakFMUnB4eXZpSS1XT2cyUzlkbXhPNnNUR1RQLUNFVllBM1pzVy1FYjQ5aGd0TzhWcmVpWWE3alIwSEktZ296YjFIbmt3SkdNUHhEZm1VeTd3cEM4UDhoX09FYWEzRktlaG4ySFdNMmtsQnNWX3RSSnRuSGt6Z2UtRjhTV1lYMG9aX0NheHR0bndtUmwzQXYyNjBSY254aUppSGtGX2dBc1ExZXd3Zno4OERMYTgyZjJEMVBoRGdMYmNzZndhaXcxdVpycXo1NDVJZTFxb2RiSWw0T29fMnhlbjRYcG56NFF2d05tRHJ5R3JEc1U0aVJFMDFwdDV3Zi1tdHRISGlDYVEyWQ?oc=5",
-      "published_at": "2026-09-05T02:03:42+08:00"
-    },
-    {
-      "id": "NEWS-FE4A65254BD495",
-      "title": "Tesla Cybercab无人出租车亚洲路演首站选香港",
-      "summary": "Tesla Cybercab无人出租车正式开放乘坐，亚洲路演首站选址香港。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNWEhWT0c0ME5zbEFiRTFzVy0xN0VPaHptTzhYWVo1TVJoSjN3SkV4WlFFX0VDU21Edjk1OU1BOGdZaGNuckR6X2l2NG5PUGpFSElDX0tOMkZUblUzMkVYZWZ5Z3NVUllDblJ0cTBQX2labWN3VTNrbjQyem9SeV9rU2hR?oc=5",
-      "published_at": "2026-09-05T00:59:44+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "5a208c273aa9ce47ccafa4672bd6d2bcc92c079ac668eb6640eb01d6c235c7a4"
+  "site_version": "45a6f0eff2ab35dfc2275800c760871cf9f88ed31e0788d58db7d659dffbe93a"
 }

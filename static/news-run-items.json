@@ -1,4 +1,102 @@
 {
+  "20260906_140315_583298": [
+    {
+      "newsId": "NEWS-748564450F6C3A",
+      "title": "数据中心涌向泰国，五年投资预计超5700亿泰铢",
+      "summary": "云和AI推动数据中心成为亚太关键基础设施，泰国正成为亚太数据中心新热点，预计未来五年投资额将超过5700亿泰铢，有望跻身亚洲前三。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "กรุงเทพธุรกิจ",
+      "publishedAt": "2026-09-06T07:03:00+08:00",
+      "url": "https://www.bangkokbiznews.com/business/property/1250654",
+      "inclusionReason": "泰国数据中心大规模投资趋势涉及具体投资金额和区域排名变化，反映亚太数据中心基础设施需求增长，可影响区域网络部署和竞争格局。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-7FE3D0B5A5B031",
+      "title": "TCS宣布投资约7000亿卢比建设AI数据中心",
+      "summary": "TCS计划在海得拉巴建设容量达1吉瓦的大型AI数据中心，占地264英亩。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "News18 ગુજરાતી",
+      "publishedAt": "2026-09-06T06:37:00+08:00",
+      "url": "https://gujarati.news18.com/photogallery/business/tcs-is-going-to-invest-rs-70-thousand-crore-ai-data-center-will-be-built-in-264-acres-sv-2615205.html",
+      "inclusionReason": "TCS大规模投资建设1GW AI数据中心，涉及数据中心基础设施扩张，属于关键技术基础设施领域的重大投资事件，可影响行业算力供给格局。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-CDEB73D60D6F91",
+      "title": "Tomás Olivo：11岁开始工作的男孩最终买下Telefónica格兰大道总部",
+      "summary": "西班牙企业家Tomás Olivo从11岁开始工作，最终收购了Telefónica位于马德里格兰大道的总部大楼。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "Okdiario",
+      "publishedAt": "2026-09-06T06:45:00+08:00",
+      "url": "https://okdiario.com/economia/cuentas-publicas/tomas-olivo-nino-que-fue-trabajar-11-anos-termino-comprando-sede-telefonica-gran-via-20231255",
+      "inclusionReason": "Telefónica总部大楼被收购，涉及被监测竞对Telefónica的资产变动，属于竞对不动产相关经营动作。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-DB7D6BA3B566BE",
+      "title": "数据中心散热是否真的令周边社区升温？",
+      "summary": "泰国学者分析数据中心100兆瓦电力最终几乎全部转化为热量，探讨其对周边社区温度的影响。",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "ฐานเศรษฐกิจ",
+      "publishedAt": "2026-09-06T07:01:00+08:00",
+      "url": "https://www.thansettakij.com/blogs/columnist/neotech-forums/668255",
+      "inclusionReason": "泰国学者分析数据中心电力最终几乎全部转化为热量，涉及数据中心散热与能耗问题，可影响数据中心运营成本与选址。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-68FD1725532AD0",
+      "title": "泰国数据中心委员会拟管控2兆瓦以上项目应对备用电力危机",
+      "summary": "泰国数据中心委员会首次会议拟对2兆瓦以上项目设集中审核机制，因117个项目电力需求超2.9万兆瓦触及备用电力上限。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "ฐานเศรษฐกิจ on MSN",
+      "publishedAt": "2026-09-06T06:30:00+08:00",
+      "url": "https://www.msn.com/th-th/money/general/%E0%B9%80%E0%B8%88%E0%B8%B2%E0%B8%B0%E0%B8%A7%E0%B8%B2%E0%B8%A3%E0%B8%B0%E0%B8%A5%E0%B8%B1%E0%B8%9A%E0%B8%9A%E0%B8%AD%E0%B8%A3%E0%B9%8C%E0%B8%94data-center-%E0%B8%88%E0%B9%88%E0%B8%AD%E0%B8%84%E0%B8%B8%E0%B8%A1-dc-2-mw-%E0%B8%97%E0%B9%88%E0%B8%B2%E0%B8%A1%E0%B8%81%E0%B8%A5%E0%B8%B2%E0%B8%87%E0%B9%80%E0%B8%87%E0%B8%B2%E0%B8%A7%E0%B8%B4%E0%B8%81%E0%B8%A4%E0%B8%95%E0%B9%84%E0%B8%9F%E0%B8%9F%E0%B9%89%E0%B8%B2%E0%B8%AA%E0%B8%B3%E0%B8%A3%E0%B8%AD%E0%B8%87%E0%B8%9B%E0%B8%B5-71/ar-AA2bEW1u",
+      "inclusionReason": "泰国数据中心委员会拟对2兆瓦以上项目设集中审核机制，因117个项目电力需求超2.9万兆瓦触及备用电力上限，影响数据中心合规与电力供给。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-482AB46CA06674",
+      "title": "云南省首款人工智能医用软件获批上市",
+      "summary": "近日，云南省入选工业和信息化部、国家药监局“人工智能医疗器械创新任务”揭榜挂帅优胜项目——昆明同心医联科技有限公司自主研发的“颅内动脉瘤手术计划软件”，顺利通过国家药监局审批，获得第三类医疗…",
+      "category": "基础设施/网络/技术类",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-09-06T07:03:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5079014",
+      "inclusionReason": "云南省首款人工智能医用软件获批上市属于可验证的关键技术事件，影响竞争格局。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-124673264E19D2",
+      "title": "IFA展会聚焦物理AI，机器人及智能家居成焦点",
+      "summary": "IFA展会设置AI专题议程，集中展示机器人、AI穿戴与智能家居，人形机器人参展规模为历届之最，各企业加速布局物理AI。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "头部财经",
+      "publishedAt": "2026-09-06T07:03:00+08:00",
+      "url": "https://www.top168.com/news/show-979393.html",
+      "inclusionReason": "物理AI与机器人、智能家居融合趋势在IFA展会上集中体现，涉及IoT和物联网生态演进，可影响电信运营商在AI终端和智能家居领域的布局。",
+      "businessImpact": "产品与定价"
+    },
+    {
+      "newsId": "NEWS-1F7D14599472F6",
+      "title": "陈美宝到访北京百度ApolloPark试乘萝卜快跑，希望尽快在香港进入载客阶段",
+      "summary": "百度公布，运输及物流局局长陈美宝、运输署署长谢咏谊、路政署署长邱国鼎、立法会交通事务委员会主席陈恒镔、立法会议员及政府代表周五（4日）到访北京亦庄的百度ApolloPark参观，并试乘体验萝…",
+      "category": "基础设施/网络/技术类",
+      "region": "香港本地",
+      "source": "星岛环球网",
+      "publishedAt": "2026-09-06T07:05:00+08:00",
+      "url": "https://www.stnn.cc/detail/6a9cb313b4b06b3f17fef910.html",
+      "inclusionReason": "陈美宝到访北京百度ApolloPark试乘萝卜快跑，希望尽快在香港进入载客阶段属于可验证的关键技术事件，影响收入与需求。",
+      "businessImpact": "收入与需求"
+    }
+  ],
   "20260905_073044_443452": [
     {
       "newsId": "NEWS-F7B8063CBFC823",
