@@ -7,6 +7,13 @@
     pending: { key: "unknown", label: "待执行" },
   })[value] || { key: "unknown", label: "无记录" };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const fallbackNote = (publication) => {
+    const model = publication?.model_analysis;
+    if (publication?.result_status !== "completed_with_fallback" && !model?.fallback_used && !model?.discovery_fallback_used) return "";
+    if (!model || !Number.isFinite(model.focuses_passed) || !Number.isFinite(model.discoveries_passed)) return "部分洞察使用规则回退；详见发布记录";
+    const fallback = (model.fallback_used ? model.focuses_passed : 0) + (model.discovery_fallback_used ? model.discoveries_passed : 0);
+    return `模型生成 ${model.focuses_passed + model.discoveries_passed - fallback} 项 · 规则回退 ${fallback} 项`;
+  };
   const terms = { no_update: "库内已有·保留原值", verified: "已核验", missing: "本轮未找到", conflict: "待复核", not_applicable: "不适用", error: "执行失败" };
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
@@ -115,6 +122,10 @@
     ], status(run?.publication?.status), { publication: run?.publication });
     edges.push(["research-merge", "research-update", "可更新字段", "cyan", {}], ["research-update", "research-publish", "四库最新数据", "cyan", {}]);
     nodes.filter((node) => node.research).forEach((node) => {
+      if (node.key === "research-publish" && run?.publication?.status === "completed" && fallbackNote(run.publication)) {
+        node.health = { key: "warning", label: "含规则回退" };
+        node.note = `${fallbackNote(run.publication)}；页面发布状态：${run.publication.pages?.status || "未记录"}`;
+      }
       if (run && !incremental) {
         node.note = `历史运行 · ${node.note}`;
         if (node.health.key === "healthy") node.health = { key: "healthy", label: "历史记录" };
@@ -141,7 +152,7 @@
     if (node.key === "research-publish") {
       const items = data.insight_items || [];
       const publication = run?.publication;
-      return section(`本轮 ${publication?.insights ?? "—"} 项洞察具体内容`, `已读取 ${items.length} 项同一研究运行的明细。页面发布：${publication?.pages?.status || "未记录"}；版本：${publication?.pages?.site_version || "未记录"}`, items.map((item, i) => `<article><strong>${i + 1}. ${esc(item.headline || item.title || item.id || "跨库洞察")}</strong><p>${esc(domainNames[item.domain] || item.domain)} · ${esc(item.analysis || item.detail || item.insight || "未保存正文")}</p>${item.risk ? `<p>口径与风险：${esc(item.risk)}</p>` : ""}<p>${(item.source_urls || []).map(link).join("<br>")}</p></article>`));
+      return section(`本轮 ${publication?.insights ?? "—"} 项洞察具体内容`, `${fallbackNote(publication)}${fallbackNote(publication) ? "。" : ""}已读取 ${items.length} 项同一研究运行的明细。页面发布：${publication?.pages?.status || "未记录"}；版本：${publication?.pages?.site_version || "未记录"}`, items.map((item, i) => `<article><strong>${i + 1}. ${esc(item.headline || item.title || item.id || "跨库洞察")}</strong><p>${esc(domainNames[item.domain] || item.domain)} · ${esc(item.analysis || item.detail || item.insight || "未保存正文")}</p>${item.risk ? `<p>口径与风险：${esc(item.risk)}</p>` : ""}<p>${(item.source_urls || []).map(link).join("<br>")}</p></article>`));
     }
     const reports = (node.agent ? [node.agent] : data.agents || []).flatMap((a) => (a.reports || []).flatMap((r) => (r.items || []).map((item) => ({ ...item, company: r.company }))));
     const update = node.key === "research-update";

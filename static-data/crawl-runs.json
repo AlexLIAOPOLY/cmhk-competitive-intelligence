@@ -6,14 +6,112 @@
       "trigger": "四库与观察结论自动更新",
       "scope": "Agent审核 research_20260907_rerun_153534",
       "task_kind": "executive-intelligence-refresh",
-      "run_status": "running",
-      "phase": "更新主页UI",
-      "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
-      "heartbeat_at_hkt": "2026-09-07T18:33:13+08:00",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "在线AI连续 1 次未通过后，已使用通过全部证据门禁的确定性回退；19项洞察（含4条顶部跨库研判）及公开页面回读完整。",
+      "status_detail": "在线AI连续 1 次未通过后，已使用通过全部证据门禁的确定性回退；19项洞察（含4条顶部跨库研判）及公开页面回读完整。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-07T18:35:42+08:00",
       "started_at_hkt": "2026-09-07T18:29:38+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-07T18:35:42+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 363724,
       "final_audit": {},
-      "curation": {}
+      "curation": {},
+      "operational_summary": {
+        "attempts": 1,
+        "agent_run_id": "research_20260907_rerun_153534",
+        "failed_domains": [],
+        "status": "completed_with_fallback",
+        "notification_policy": "local_log_only",
+        "model_analysis": {
+          "ok": true,
+          "generated_at_hkt": "2026-09-07T18:33:01+08:00",
+          "model": "deterministic-evidence-fallback",
+          "domains": 4,
+          "focuses_expected": 15,
+          "focuses_passed": 15,
+          "discoveries_expected": 4,
+          "discoveries_passed": 4,
+          "insights_expected": 19,
+          "insights_passed": 19,
+          "reused": false,
+          "fallback_used": true,
+          "fallback_reason": "timed out",
+          "evidence_hash": "ca813095e92e992e519e83386227b53346ce73fff4293b3d7e9e33c90632ca6b",
+          "discovery_model": "DeepSeek-V4-Pro",
+          "discovery_evidence_repair_count": 0,
+          "discovery_fallback_used": false,
+          "discovery_fallback_reason": ""
+        },
+        "pages_publish": {
+          "ok": true,
+          "attempts": 1,
+          "status": "published",
+          "site_version": "7e4155a84972d4cc9975a1b7072ab46187ff0ca0438308f641f53b5c9c6ec8a9",
+          "item_count": 8,
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "11dca2e7f726b257db438dc7f979e67e3cd5f397",
+          "workbench_sha256": "756eab83480308999a47c168b96f73a75af355b173903e6cb37612e201b46fea",
+          "snapshot_source_url": ""
+        },
+        "feishu_detail_log": {
+          "ok": true,
+          "written": 631,
+          "skipped": 0,
+          "created": false,
+          "sheet_title": "四库爬虫明细日志",
+          "sheet_url": "",
+          "row_start": 91186,
+          "row_end": 91816,
+          "readback_verified": true,
+          "readback_reason": "live_full_event_id_readback",
+          "readback_scope": "all_live_event_ids",
+          "live_event_count": 91815,
+          "event_index_sha256": "4ed0c3aadfe77b0900dc16c42832efb7e083e3813d409db4a5e07c2510e80549",
+          "write_recovered_by_readback": false
+        },
+        "failure_stage": "",
+        "overview_source_recrawl": {
+          "ok": true,
+          "skipped": true,
+          "reason": "official_pages_already_read_by_research_agents"
+        },
+        "ui_value_changes": {
+          "baseline_available": true,
+          "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+          "changed": 0,
+          "added": 0,
+          "removed": 0,
+          "domains": {
+            "local": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "international": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "mainland": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "cloud": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            }
+          },
+          "items": []
+        }
+      }
     },
     {
       "crawl_run_id": "20260907_182401_238130",
