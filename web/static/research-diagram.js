@@ -49,7 +49,11 @@
     const incremental = isIncremental(run);
     const plan = data.plan || [];
     const agents = data.agents || [];
-    const nodes = legacy.nodes.filter((n) => ["strategic", "news-search", "news-ai", "news-dedupe", "news-output", "news-selection-agent", "app-result", "weekly-result"].includes(n.key));
+    const newsColumns = ["strategic", "news-search", "news-ai", "news-dedupe", "news-output", "news-selection-agent", "app-result", "weekly-result"];
+    // A 120px connector run between 230px cards also leaves room for the fork.
+    const nodes = legacy.nodes.filter((n) => newsColumns.includes(n.key)).map((node) => ({
+      ...node, position: [18 + Math.min(newsColumns.indexOf(node.key), 6) * 350, node.position[1]],
+    }));
     const newsKeys = new Set(nodes.map((node) => node.key));
     const edges = legacy.edges.filter(([from, to, , kind]) => newsKeys.has(from) && newsKeys.has(to) && !kind.startsWith("feedback"));
     const add = (key, label, position, value, unit, purpose, details, health, extra = {}) => {
@@ -116,7 +120,7 @@
         node.note = "本轮未形成可写入的新数据；待处理和执行失败原因见结果明细";
       }
     });
-    return { nodes, edges, canvasSize: [1850, 1040], laneLabels: [
+    return { nodes, edges, canvasSize: [2366, 1040], laneLabels: [
       { label: "战略新闻采集与初筛", position: [18, 22] },
       { label: "六 Agent 最新披露搜索与四库增量更新", position: [18, 325] },
     ], groups: [] };
