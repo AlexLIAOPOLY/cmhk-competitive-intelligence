@@ -8235,7 +8235,18 @@ document.addEventListener("keydown", (event) => {
     const normalizedUnit = String(unit || "").trim();
     const rawValue = String(value == null ? "" : value).trim();
     const numericMatch = rawValue.match(/^([><≈~]?\s*)(-?[\d,]+(?:\.\d+)?)$/);
-    if (!numericMatch) return { value, unit: normalizedUnit };
+    if (!numericMatch) {
+      const displayUnit = /^(?:百万|百萬)港元$/.test(normalizedUnit) || normalizedUnit === "HK$m"
+        ? "亿港元"
+        : /^(?:百万|百萬)美元$/.test(normalizedUnit)
+          ? "亿美元"
+          : /^(?:百万|百萬)元(?:人民币|人民幣)$/.test(normalizedUnit)
+            ? "亿元人民币"
+            : /^(?:百万|百萬)元$/.test(normalizedUnit)
+              ? "亿元"
+              : normalizedUnit;
+      return { value, unit: displayUnit };
+    }
     const prefix = numericMatch[1] || "";
     const numeric = Number(numericMatch[2].replace(/,/g, ""));
     if (!Number.isFinite(numeric)) return { value, unit: normalizedUnit };
@@ -8785,27 +8796,42 @@ document.addEventListener("keydown", (event) => {
     }
 
     if (visual === "trends") {
+      const trendValues = items.flatMap((item) => (Array.isArray(item.trend) ? item.trend : []))
+        .map((point) => Number(point.value))
+        .filter(Number.isFinite);
+      const trendLow = trendValues.length ? Math.min(...trendValues) : 0;
+      const trendHigh = trendValues.length ? Math.max(...trendValues) : 1;
+      const trendSpan = Math.max(trendHigh - trendLow, 1);
       return `<ul class="intelligence-viz intelligence-viz-trends" aria-label="${safe(focus.label)}趋势比较">${items.map((item, index) => {
-        const points = (Array.isArray(item.trend) ? item.trend : []).filter((point) => Number.isFinite(Number(point.value)));
-        const values = points.map((point) => Number(point.value));
-        const low = values.length ? Math.min(...values) : 0;
-        const high = values.length ? Math.max(...values) : 1;
-        const span = Math.max(high - low, 1);
-        const coordinates = points.map((point, pointIndex) => {
-          const x = points.length <= 1 ? 50 : pointIndex * (100 / (points.length - 1));
-          const y = 17 - ((Number(point.value) - low) / span * 14);
-          return `${x.toFixed(1)},${y.toFixed(1)}`;
-        }).join(" ");
-        const nodes = points.map((point, pointIndex) => {
-          const x = points.length <= 1 ? 50 : pointIndex * (100 / (points.length - 1));
-          const y = 17 - ((Number(point.value) - low) / span * 14);
+        const trendEntries = Array.isArray(item.trend) ? item.trend : [];
+        const positionedPoints = trendEntries.map((point, pointIndex) => ({ point, pointIndex }))
+          .filter(({ point }) => Number.isFinite(Number(point.value)));
+        const xFor = (pointIndex) => trendEntries.length <= 1 ? 50 : pointIndex * (100 / (trendEntries.length - 1));
+        const yFor = (point) => 17 - ((Number(point.value) - trendLow) / trendSpan * 14);
+        const trendSegments = [];
+        let activeSegment = [];
+        trendEntries.forEach((point, pointIndex) => {
+          if (Number.isFinite(Number(point.value))) {
+            activeSegment.push(`${xFor(pointIndex).toFixed(1)},${yFor(point).toFixed(1)}`);
+          } else if (activeSegment.length) {
+            trendSegments.push(activeSegment);
+            activeSegment = [];
+          }
+        });
+        if (activeSegment.length) trendSegments.push(activeSegment);
+        const lines = trendSegments.map((segment) => `
+          <polyline class="trend-depth" points="${segment.join(" ")}"></polyline>
+          <polyline class="trend-line" points="${segment.join(" ")}"></polyline>
+        `).join("");
+        const nodes = positionedPoints.map(({ point, pointIndex }) => {
+          const x = xFor(pointIndex);
+          const y = yFor(point);
           return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="1.25"></circle>`;
         }).join("");
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
           <span>${renderScrollingLabel(item.name)}</span>
           <svg viewBox="0 0 100 20" preserveAspectRatio="none" aria-hidden="true">
-            <polyline class="trend-depth" points="${coordinates}"></polyline>
-            <polyline class="trend-line" points="${coordinates}"></polyline>
+            ${lines}
             <g class="trend-nodes">${nodes}</g>
           </svg>
           <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>

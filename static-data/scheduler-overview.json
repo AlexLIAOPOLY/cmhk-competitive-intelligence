@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-07T13:58:37+08:00",
+  "checked_at_hkt": "2026-09-07T14:27:12+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -45,20 +45,20 @@
       "07:30",
       "14:00"
     ],
-    "next_scan_at": "2026-09-07T14:00:00+08:00",
-    "next_group_check_at": "2026-09-07T14:00:00+08:00",
-    "last_scan_at": "2026-09-07T10:33:18+08:00",
-    "last_group_check_at": "2026-09-07T13:01:10+08:00",
-    "last_cycle_at": "2026-09-07T13:58:12+08:00",
+    "next_scan_at": "2026-09-08T07:30:00+08:00",
+    "next_group_check_at": "2026-09-07T15:00:00+08:00",
+    "last_scan_at": "2026-09-07T14:20:36+08:00",
+    "last_group_check_at": "2026-09-07T14:25:39+08:00",
+    "last_cycle_at": "2026-09-07T14:25:39+08:00",
     "latest_scan_slot": {
-      "slot": "2026-09-07@07:30",
+      "slot": "2026-09-07@14:00",
       "status": "completed",
-      "at": "2026-09-07T10:33:18+08:00",
-      "candidate_count": 134,
-      "message_id": "om_x100b66d6683b10a8b1a9856d5115370",
+      "at": "2026-09-07T14:20:36+08:00",
+      "candidate_count": 11,
+      "message_id": "om_x100b66d135383080b36506e0ab7ae37",
       "recovered_from_archive": true
     },
-    "last_candidate_count": 134,
+    "last_candidate_count": 11,
     "feishu_identity": "bot",
     "last_error": "2026-09-01@07:30 新闻自动初筛未完成：LangChain 多轮补判后仍遗漏 1 条候选：NEWS-17C9439F5E5826",
     "active_task_kind": "",
@@ -3198,53 +3198,55 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260907_073003_068505",
+      "crawl_run_id": "20260907_140029_062890",
       "trigger": "战略新闻定时爬虫",
-      "scope": "晨间扫描（2026-09-07@07:30）",
+      "scope": "午后扫描（2026-09-07@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 56270,
+      "backend_pid": 38903,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 610 条，AI保留 163 条，历史重复 29 条，新增 134 条。",
-      "heartbeat_at_hkt": "2026-09-07T10:38:26+08:00",
-      "started_at_hkt": "2026-09-07T07:30:03+08:00",
-      "completed_at_hkt": "2026-09-07T10:38:26+08:00",
+      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 22 格，未重跑爬虫或重复发送群消息。",
+      "heartbeat_at_hkt": "2026-09-07T14:20:36+08:00",
+      "started_at_hkt": "2026-09-07T14:00:29+08:00",
+      "completed_at_hkt": "2026-09-07T14:20:36+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 308196,
+      "duration_ms": 1207647,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260907_073003_068505.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260907_140029_062890.jsonl"
       },
       "stream_log": {
-        "bytes": 97073,
-        "lines": 556
+        "bytes": 18645,
+        "lines": 109
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 610 条，AI保留 163 条，历史重复 29 条，新增 134 条。",
+      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 22 格，未重跑爬虫或重复发送群消息。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-09-07@07:30",
-        "discovered": 610,
-        "ai_retained": 163,
-        "history_duplicates": 29,
-        "new_count": 134,
+        "slot": "2026-09-07@14:00",
+        "crawl_stage_status": "completed",
+        "new_count": 11,
         "readback_verified": true,
+        "selection_agent_status": "completed",
         "notification_status": "sent",
-        "message_id": "om_x100b66d6683b10a8b1a9856d5115370",
+        "success_boundary": "feishu_readback",
+        "message_id": "om_x100b66d135383080b36506e0ab7ae37",
         "message_ids": [
-          "om_x100b66d6683b10a8b1a9856d5115370",
-          "om_x100b66d669dd10b8b2088e6ff01d74c"
+          "om_x100b66d135383080b36506e0ab7ae37",
+          "om_x100b66d132c5f0b4b242048ca0301fd"
         ],
         "notification_destination_count": 2,
-        "selection_agent_status": "completed",
-        "selection_agent_changed": 268
+        "selection_agent_changed": 22,
+        "selection_agent_recovered": true,
+        "selection_agent_recovery_task_run_id": "20260907_142051_709145",
+        "selection_agent_recovered_at": "2026-09-07T14:25:21+08:00"
       },
-      "amended_at_hkt": "2026-09-07T10:33:21+08:00"
+      "amended_at_hkt": "2026-09-07T14:25:21+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260907_042302_183902",

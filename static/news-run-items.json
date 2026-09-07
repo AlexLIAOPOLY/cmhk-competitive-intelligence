@@ -1,4 +1,138 @@
 {
+  "20260907_140029_062890": [
+    {
+      "newsId": "NEWS-E82E0CEAB6BFD6",
+      "title": "GIST与Arm在韩国联合设立半导体设计学院",
+      "summary": "韩国产业通商资源部与Arm在光州科学技术院联合设立半导体设计学院，计划培养1400名半导体设计人才。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "Telecompaper",
+      "publishedAt": "2026-09-07T06:42:00+08:00",
+      "url": "https://www.telecompaper.com/news/gist-and-arm-launch-semiconductor-design-school-in-south-korea--1581848",
+      "inclusionReason": "Arm在韩国设立半导体设计学院培养人才，涉及芯片设计能力建设与供应链人才培养，属于关键技术领域的半导体人才基础设施事件，对行业芯片设计生态有潜在影响。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-C8383910530568",
+      "title": "NTT DATA与Red Sea Global签署战略合作协议",
+      "summary": "NTT DATA与Red Sea Global签署战略合作协议，将在沙特阿拉伯及国际市场加速AI驱动创新和智慧行业解决方案。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "ZAWYA",
+      "publishedAt": "2026-09-07T06:59:00+08:00",
+      "url": "https://www.zawya.com/en/press-release/ntt-data-and-red-sea-global-sign-strategic-partnership-agreement-479870",
+      "inclusionReason": "NTT DATA（NTT集团旗下，属被监测国际对标运营商）与Red Sea Global签署AI与智慧行业战略合作协议，涉及沙特及国际市场，属于竞对在AI和数字化解决方案领域的业务拓展动作。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-EA7880D96FD741",
+      "title": "AI基础设施初创Gimlet Labs完成3亿美元融资估值达30亿",
+      "summary": "AI基础设施初创公司Gimlet Labs完成3亿美元融资，估值升至30亿美元，由a16z领投，Arm及微软M12参投。其软件可将AI任务自动拆解分配至最合适芯片。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "手机凤凰网",
+      "publishedAt": "2026-09-07T07:01:00+08:00",
+      "url": "https://i.ifeng.com/c/8wDoOoKwwN7",
+      "inclusionReason": "AI基础设施公司获大额融资，涉及跨芯片AI工作负载技术，反映AI算力基础设施投资热度与供应链变化。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-8E44AF81D2FF83",
+      "title": "A股5G通信指数劲扬5% 券商称光模块或受益于AI算力规模推进",
+      "summary": "A股5G通信指数上涨5%，券商分析认为光模块板块可能受益于AI算力规模推进。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "TradingView",
+      "publishedAt": "2026-09-07T11:23:38+08:00",
+      "url": "https://news.google.com/rss/articles/CBMid0FVX3lxTFBxNmZmRnRPTjNyWFZ5eWZpYV9rX2h2YTRzcEFjZUc0dm1Pa3o2MzdLR0FwcTNYazBVUFVGbTMyZEFHMms1cUlINmdIcHpZbjVybTV5ZXNXZkNLS2ZuZl81c2w0bi1RLXZBZ3d5MGt1RmQzYjAwX1Jz?oc=5",
+      "inclusionReason": "5G通信指数上涨反映市场对5G及AI算力相关光模块需求的预期变化，涉及行业趋势与资本流向。",
+      "businessImpact": "资本配置"
+    },
+    {
+      "newsId": "NEWS-9ECD5EB329E8EC",
+      "title": "皇岗口岸焕新推动深港融合 一地两检提升通关效率",
+      "summary": "皇岗口岸重建焕新，配合一地两检安排，进一步畅通深港双城往来，推动深港融合发展。",
+      "category": "基础设施/网络/技术类",
+      "region": "香港本地",
+      "source": "hkcd.com.hk",
+      "publishedAt": "2026-09-07T11:33:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1WRWFfUGQyMmxWcFM1UlhmSjNpbFQ3QkpJLUJmTlFHdUlrMk1zQm5oVEFKRENSNEtaUWd2YVZTVks3QzJ0TXNWcFhCOFZ4bElFSFJ0NHNkajljLWRKR3BsckdyeHc3R080SGx2S2NOdFJKVy1ORTdVTVEtQQ?oc=5",
+      "inclusionReason": "皇岗口岸重建与一地两检涉及深港跨境基础设施具体变化，可影响两地客流、物流及网络部署需求。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-FD840893181322",
+      "title": "Tesla Cybercab无人驾驶出租车香港首展 无方向盘无踏板",
+      "summary": "Tesla Cybercab Robotaxi将于9月9日在香港首次展出，车辆无方向盘和踏板，展示六大看点。",
+      "category": "行业动态",
+      "region": "香港本地",
+      "source": "ezone.hk",
+      "publishedAt": "2026-09-07T11:10:00+08:00",
+      "url": "https://news.google.com/rss/articles/CBMi7AJBVV95cUxPX2h5eFJMenFNV2RqUk9KWWtBeUFfV3dCY2VMSkZqMHYxZWVibnN5WlVjSjI5Y25xRTM5U3hBRHc3ZFU2aUljR3djZ0ZOcFdvZk8zWTllMWl5dlZ0clRwbFY0c0R5YWstV2ZyU1dHUEMwcVpfZlJtMzJCcmVCRDdBRkswZEI5bHlWbzlPanp2aXMxX0xxMlhaM0c0Y3MwbEdIYWEzWjlnNk44R3V3OUJZLTRaOW4wdjY1YS0zMkoxNHVTWFdDUnY1S2tVb1FUVjVXUUxXMkJ6X1hneTU2dVhKNERtRXkwV0s1cXlFUmREMHhMSDFnVGtDbG83cU9jZkRYUk9rVl9JUFN4T0JTQ0lORjhkdnlFS2p1UVB6NktNWkNzRE5uZmtsNzFsX2V0RVBhVzN0T01BRVZZSDgtQVVIRVJGSW5YRUtSSGpDSkxpQmZxTmF6OWhXcXZiWWk5TkY1Y1FRR1hSd3gxNnVh?oc=5",
+      "inclusionReason": "Tesla Cybercab在香港首展是自动驾驶出租车在香港落地的具体进展，涉及香港本地自动驾驶商业化与智慧交通发展。",
+      "businessImpact": "竞争格局"
+    },
+    {
+      "newsId": "NEWS-D84AD7BA1DDC81",
+      "title": "中国移动1058万套光缆接头盒集采，宏盛通信等12家中标",
+      "summary": "C114讯 9月7日消息（九九）中国移动采购与招标网日前发布2026年至2028年光缆接头盒产品集中采购项目中标候选人公示，浙江宏盛通信技术有限公司等12家中标。",
+      "category": "竞对动态",
+      "region": "国际/行业",
+      "source": "c114",
+      "publishedAt": "2026-09-07T07:01:00+08:00",
+      "url": "https://www.c114.com.cn/news/6564/a1317024.html",
+      "inclusionReason": "中国移动1058万套光缆接头盒集采，宏盛通信等12家中标显示正式监控竞对发生具体经营事件，影响网络与运营。",
+      "businessImpact": "网络与运营"
+    },
+    {
+      "newsId": "NEWS-1BAE6F64C6AD1E",
+      "title": "工业和信息化部等七部门组织开展2026年度视听系统典型案例征集",
+      "summary": "为贯彻落实《关于加快推进视听电子产业高质量发展的指导意见》，持续推动视听电子产业高质量发展，工业和信息化部等七部门组织开展2026年度视听系统典型案例征集工作。",
+      "category": "政策监管",
+      "region": "国际/行业",
+      "source": "wap.cj",
+      "publishedAt": "2026-09-07T07:01:00+08:00",
+      "url": "https://wap.cj.sina.cn/pc/7x24/5080059",
+      "inclusionReason": "工业和信息化部等七部门组织开展2026年度视听系统典型案例征集属于可验证的监管政策事件，影响合规与牌照。",
+      "businessImpact": "合规与牌照"
+    },
+    {
+      "newsId": "NEWS-DCFFBB97B98215",
+      "title": "泽伦斯基与美特使会谈后示警：战争恐将持续整个冬季",
+      "summary": "泽伦斯基与美特使维特科夫和库许纳会谈后表示，战争目前看来极可能延续至冬季，同时强调仰赖美欧伙伴支持。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "region": "国际/行业",
+      "source": "蕃新聞",
+      "publishedAt": "2026-09-07T07:01:00+08:00",
+      "url": "https://n.yam.com/Article/20260907170188",
+      "inclusionReason": "俄乌战争持续至冬季的预判涉及地缘冲突延续，可能影响全球供应链、能源价格及欧洲电信市场运营环境。",
+      "businessImpact": "供应韧性"
+    },
+    {
+      "newsId": "NEWS-D18C501169BE7F",
+      "title": "微软开源Argus：证据驱动自动研究系统解决20年数学难题",
+      "summary": "微软开源Argus系统，通过证据驱动方式实现1548小时自动研究，解决20年数学难题，涉及大模型、多模态模型及分布式算力集群等技术。",
+      "category": "行业动态",
+      "region": "国际/行业",
+      "source": "eu.36kr",
+      "publishedAt": "2026-09-07T07:01:00+08:00",
+      "url": "https://eu.36kr.com/zh/p/3972642030055688",
+      "inclusionReason": "微软开源AI研究系统展示了多模态大模型与分布式算力协同的前沿进展，IoT关键词在正文中作为感知数据来源出现，反映AI基础设施演进趋势。",
+      "businessImpact": "成本与效率"
+    },
+    {
+      "newsId": "NEWS-DA715C732672AD",
+      "title": "香港网约车合法化落实，智慧出行迈向新里程",
+      "summary": "香港网约车合法化政策落地，推动智慧出行发展，被视为香港迈向国际智慧城市的重要一步。",
+      "category": "政策监管",
+      "region": "香港本地",
+      "source": "香港01",
+      "publishedAt": "2026-09-07T08:00:05+08:00",
+      "url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFB6MGRTcDc0Zk93LUVzUlV3eWJTSEtYVzRoclJuMTJTZjc3SEdhNzlkT0FZV19uQ1BoNXE0WFo3aHpLVmRmamJud2tBWXdJZw?oc=5",
+      "inclusionReason": "香港网约车合法化是具体监管政策变化，涉及智慧出行与交通数字化，可能影响本地电信运营商的物联网、车联网及数据业务需求。",
+      "businessImpact": "收入与需求"
+    }
+  ],
   "20260907_073003_068505": [
     {
       "newsId": "NEWS-5EE6512C673568",

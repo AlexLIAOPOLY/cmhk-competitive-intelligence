@@ -1,7 +1,23 @@
 {
   "ok": true,
-  "generated_at": "2026-09-07T13:58:26+08:00",
+  "generated_at": "2026-09-07T14:26:58+08:00",
   "items": [
+    {
+      "id": "NEWS-9ECD5EB329E8EC",
+      "title": "皇岗口岸焕新推动深港融合 一地两检提升通关效率",
+      "summary": "皇岗口岸重建焕新，配合一地两检安排，进一步畅通深港双城往来，推动深港融合发展。",
+      "category": "基础设施/网络/技术类",
+      "source_url": "https://news.google.com/rss/articles/CBMie0FVX3lxTE1WRWFfUGQyMmxWcFM1UlhmSjNpbFQ3QkpJLUJmTlFHdUlrMk1zQm5oVEFKRENSNEtaUWd2YVZTVks3QzJ0TXNWcFhCOFZ4bElFSFJ0NHNkajljLWRKR3BsckdyeHc3R080SGx2S2NOdFJKVy1ORTdVTVEtQQ?oc=5",
+      "published_at": "2026-09-07T11:33:00+08:00"
+    },
+    {
+      "id": "NEWS-DA715C732672AD",
+      "title": "香港网约车合法化落实，智慧出行迈向新里程",
+      "summary": "香港网约车合法化政策落地，推动智慧出行发展，被视为香港迈向国际智慧城市的重要一步。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTFB6MGRTcDc0Zk93LUVzUlV3eWJTSEtYVzRoclJuMTJTZjc3SEdhNzlkT0FZV19uQ1BoNXE0WFo3aHpLVmRmamJud2tBWXdJZw?oc=5",
+      "published_at": "2026-09-07T08:00:05+08:00"
+    },
     {
       "id": "NEWS-8D09CFE001DFBB",
       "title": "科技园x恒生Living Lab2.0 银行真实环境科企实测助金融数码转型",
@@ -49,22 +65,6 @@
       "category": "市场/产品类",
       "source_url": "https://news.google.com/rss/articles/CBMid0FVX3lxTE5ocURZRXU1TEp6QnU5bU9mZUpYc1Y0WEV4TjhBX0xxVkRCd1pqb2NzT3ZGc1BoaVgzLW9xZ1E2NkJVc2VYcS13Ty1DZ1VRQ0djT2pEbE9CV1ZFc013Mjd6T3dtQThaQWM2TkR0alBiRXZITW1IMmtF?oc=5",
       "published_at": "2026-09-07T04:13:30+08:00"
-    },
-    {
-      "id": "NEWS-3F4DA5F0A0868A",
-      "title": "倡沙岭数据园区与内地数据集群合作 陈帆掌工程师学会 提携后进追赶",
-      "summary": "倡沙岭数据园区与内地数据集群合作 陈帆掌工程师学会 提携后进追赶 星岛头条",
-      "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMiygNBVV95cUxQeEJZSndTaE1HWGVYUktjMXBKUjhPYWdDbUJZNWFBZWUwc2ZoOGNGNnBVS09raEs1RmVrMkt2Sjl5N0NmNnpxOVFneGNCNUhac25fX0NiT3RUeUN6dHVCVlBjVGNUUEc2NnJDX0hMYXd2N3hqSzRsVjAxSWdXenQ1QWx1eVNqRGRuOS0xdGxLVTMwUU5VNHU0SUt4UWljQ0VJMTV6VGczUkN6QXdnczlVOV9NVk5qTjBuRHFGTk5tZUQ0eF8xdUpSMGFoRmV4YktDTzlfSnNVWGdvOHoyUHdLdzZIS0NqR29HRG5rRE5JNTJIREROZXgxR09NNXg5STRZb09yZ2lvaUY1bWZ6bzRZR0xFdVNkaU5TUXNXU3g2MEV4d3l2Tjljb3VjTlJWanFBanJCRGVWLTkwLTRQN3R6bmMzamZwYTI4b1JmamlpdXlBYTlUaDJWMi05Q2ZESTM4UTIwV2trREhrT1dGMERNSkxXQkNDRHpHRHRSdy1GOVM0Mm5XTmhhNHh6dHU0bG44X0dYUExfV2ZNRW1vZ1dZUzEtemM0ZV9OS2dxa0Z4bUpuR3JVSmE4ZWJHUE1sSWx1UVNlRDJxQWxBZw?oc=5",
-      "published_at": "2026-09-07T03:00:00+08:00"
-    },
-    {
-      "id": "NEWS-1C10541A7EDAA4",
-      "title": "曾俊华倡港当全球供应链「控制塔」",
-      "summary": "前财政司司长曾俊华建议香港定位为全球供应链「控制塔」。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiqAJBVV95cUxObm42cHdWcVNaNEZZeXNCY21ETGVmMXM1clYwZEFJNjFoNDU5WDNlbTYxX3RpU000ODVhbXpoOU9nYjQ3ZWpNUkxhQmhTQ09hLU9COTM2RDIwalFRb08weVR3eU91UlpXV2M2VUJ2V3JoZnlRR25YTUM2Ry0ydXlvU2xtUnBWV2trU2RqOU5UMjljci1Xa1dZb0ZGUmNvVTQ0MndfX1NPTnZtSzJMb3BMSkdIWWVkX2xqb3k0enlYMWpsVjQxdnNsM21VYVpaa2xUS0szZTYxOTUzQXpDMlhSakZ1Ynp5YTVRWGh0cVVidmZNNmt4SENiaGIzU1BFMWZPVlBhWml3T09jYlVsU3JoM3NlWkRCV21VTGJGV25vT3lyTmhNdjRmMA?oc=5",
-      "published_at": "2026-09-07T02:48:38+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "07b441e0765cdf9d751e0e42c6309257ba565f54572e10738bf461b70353a2af"
+  "site_version": "149da65f9f4ba592fa083ce17d30847d4408fb15241a673932f465d377a1851f"
 }
