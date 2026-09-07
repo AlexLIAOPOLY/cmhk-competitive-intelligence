@@ -75,7 +75,7 @@ class ResearchHarness:
                     score = sum(word in passage["text"].casefold() for word in words)
                     if score:
                         ranked.append((score, url, key, passage["text"]))
-            ranked.sort(key=lambda row: (-row[0], row[1], row[2]))
+            ranked.sort(key=lambda row: (-self.current.get("source_recency", {}).get(row[1], 0), -row[0], row[1], row[2]))
             self.emit("evidence_lookup", "在本轮原文中定位指标片段", {
                 "company": self.current["company"], "metric": self.current["metric"], "terms": words})
             return [{"source_url": url, "passage_id": key, "text": text}
@@ -144,7 +144,11 @@ class ResearchHarness:
                     request = request.override(system_message=request.system_message.model_copy(update={
                         "content": f"恢复请求唯一编号：{uuid.uuid4().hex}。此编号不是事实证据。\n"
                                    + str(request.system_message.content)}))
-                request = request.override(messages=[*request.messages, HumanMessage(content=(
+                request = request.override(messages=[HumanMessage(content=json.dumps({
+                    "company": self.current["company"], "metric": self.current["metric"],
+                    "relevant_passages": self.current.get("relevant_passages", []),
+                    "last_rejected": self.current.get("last_rejected", {}),
+                }, ensure_ascii=False)), HumanMessage(content=(
                     f"输出恢复请求，第{self.current['truncation_retries']}次：上次响应未形成合格的工具提交，未保存任何记录。"
                     "停止扩大分析，只用当前已有证据提交这一项。优先提交原文片段编号，不抄写长引文；"
                     "证据不足就提交missing并说明缺口，不要重新查找或输出长篇总结。"))])
@@ -225,9 +229,18 @@ class ResearchHarness:
                 if matches:
                     score = min(5, len(re.findall(r"\d[\d,.]+", text))) + int(".pdf" in url or "/Archives/edgar/" in url)
                     relevant.append((score, url, key, text))
-        relevant.sort(key=lambda row: -row[0])
+        from datetime import datetime
+        year = datetime.now().year
+        def source_recency(url):
+            source = pages[url]
+            title = str(source.get("discovery_title") or "") + " " + url
+            from .six_agent_research import disclosure_recency
+            return disclosure_recency({"url": url, "title": source.get("discovery_title", "")}, year)
+        relevant.sort(key=lambda row: (-source_recency(row[1]), -row[0]))
+        self.current["source_recency"] = {url: source_recency(url) for url in self.current["passages"]}
         excerpts = [{"source_url": url, "passage_id": key, "text": text}
                     for _, url, key, text in relevant[:5]]
+        self.current["relevant_passages"] = excerpts
         try:
             self.agent.invoke({"messages": [{"role": "user", "content": json.dumps({
                 "company": company, "metric": metric, "official_sources": catalog,

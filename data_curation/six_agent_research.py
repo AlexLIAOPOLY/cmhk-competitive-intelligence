@@ -118,7 +118,7 @@ different companies, search snippets and invented URLs becoming database facts.
         monetary = bool(re.search(r"收入|收益|EBITDA|净利润|淨利潤|ARPU|资本开支|資本開支|派息|股息", item["metric"], re.I))
         rendered = item["value"] + " " + item["unit"]
         rate_metric = bool(re.search(r"率|同比|增速|增幅|margin|growth", item["metric"], re.I))
-        has_currency = bool(re.search(r"[$€£¥￥]|(?<![A-Za-z])(?:HKD|USD|RMB|CNY|AED|SAR|SGD|AUD|JPY|KRW|EUR|GBP|INR|CAD)(?![A-Za-z])|人民币|人民幣|港币|港幣|日元|韩元|韓圓|美元|新加坡元", rendered, re.I))
+        has_currency = bool(re.search(r"[$€£¥￥]|(?<![A-Za-z])(?:HKD|USD|RMB|CNY|AED|SAR|SGD|AUD|JPY|KRW|EUR|GBP|INR|CAD)(?![A-Za-z])|\byen\b|\brupees?\b|\beuros?\b|\bwon\b|\b(?:US|U\.S\.|Hong Kong|Singapore|Australian|Canadian) dollars?\b|人民币|人民幣|港币|港幣|日元|韩元|韓圓|美元|新加坡元", rendered, re.I))
         if monetary and not has_currency and not (rate_metric and re.search(r"%|％", rendered)):
             errors.append("金额缺少明确币种；只写million或billion不足以更新金额指标")
         cloud_sales = item["metric"] == "云收入" and bool(re.search(r"sales|revenue|收入", quote, re.I)) and any(
@@ -138,15 +138,35 @@ different companies, search snippets and invented URLs becoming database facts.
     return item
 
 
+def disclosure_recency(row: dict, year: int) -> int:
+    """Rank discovery metadata only; never infer a fact's reporting period from a URL."""
+    text = str(row.get("title") or row.get("discovery_title") or "") + " " + str(row.get("url") or "")
+    years = [int(y) for y in re.findall(r"20\d{2}", text) if int(y) <= year]
+    current = max(years, default=year - 1)
+    dates = re.findall(r"(20\d{2})[/_-](0?[1-9]|1[0-2])[/_-](0?[1-9]|[12]\d|3[01])", text)
+    if dates:
+        valid = [int(y) * 10000 + int(m) * 100 + int(d) for y,m,d in dates if int(y) <= year]
+        if valid:
+            return max(valid)
+    quarter = re.search(r"[Qq]([1-4])", text)
+    month = int(quarter[1]) * 3 if quarter else 12 if re.search(r"annual|full.year|全年|年度", text, re.I) else 6 if re.search(r"interim|half|中期", text, re.I) else 0
+    return current * 10000 + month * 100
+
+
 def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: dict | None = None) -> tuple[dict, list[dict]]:
     from . import workflow as w
     from .schemas import CandidateFact
     profile = w._company_research_profile(company)
     year = datetime.now(HKT).year
     searches, ranked = [], {}
+    search_subject = {"Microsoft Azure": "Microsoft", "AWS": "Amazon AWS", "Google Cloud": "Alphabet Google Cloud",
+                      "Alibaba Cloud": "Alibaba", "Tencent Cloud": "Tencent", "Oracle Cloud": "Oracle"}.get(company, company)
     # Find the latest disclosure first. Old stored values never enter a search query.
-    queries = [("最新披露", f'"{company}" {year} latest results earnings interim financial report 最新 业绩 公告')]
-    queries += [(metric, w._fact_search_query(CandidateFact(id="search", company=company, metric=metric)).replace("2026", str(year))) for metric in metrics]
+    queries = [("最新披露", f'"{search_subject}" {year} latest financial results earnings')]
+    # Anchor discovery to governed investor sources, avoiding product/help pages.
+    queries += [("官方最新业绩", f'site:{host} {search_subject} {year} financial results earnings')
+                for host in profile["official_hosts"][:2]]
+    queries += [(metric, f'"{search_subject}" {year} {" ".join(w._metric_evidence_terms(metric)[:2]) or metric} results') for metric in metrics]
     for metric, query in queries:
         results, provider = w._public_web_search(query, limit=5, timeout=12.0)
         record = {"company": company, "metric": metric, "query": query, "provider": provider, "results": results}
@@ -159,10 +179,12 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
     def recency(row):
         text = str(row.get("title", "")) + " " + str(row.get("url", "")) + " " + str(row.get("snippet", ""))
         years = [int(value) for value in re.findall(r"20\d{2}", text) if int(value) <= year]
-        return (max(years, default=0), int(bool(re.search(r"result|earning|interim|业绩|業績", text, re.I))))
+        financial = int(bool(re.search(r"result|earning|interim|业绩|業績|financial", text, re.I)))
+        irrelevant = bool(re.search(r"learn\.microsoft\.com|developer\.microsoft\.com|/training/|/documentation/|/pricing/|/products/|/resources/cloud-computing", str(row.get("url", "")), re.I))
+        return (not irrelevant, disclosure_recency(row, year), financial)
     # Reserve room for official IR entries and the reports linked from them.
     initial = sorted(ranked.values(), key=recency, reverse=True)[:8]
-    initial += [{"url": url, "title": "官方最新公告入口"} for url in profile["seed_urls"][:2]]
+    initial += [{"url": url, "title": "官方最新公告入口"} for url in profile["seed_urls"][:4]]
     pages, discovered = {}, {}
     def read(row):
         url = row["url"]
@@ -263,7 +285,7 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
                     if metric not in {item["metric"] for item in report["items"]}:
                         save({"company": company, "metric": metric, "status": "error", "value": "",
                               "reason": compact(exc)[:500]})
-            report["status"] = "partial" if any(item["status"] == "error" for item in report["items"]) else "completed"
+            report["status"] = "partial" if any(item["status"] in {"error", "conflict"} for item in report["items"]) else "completed"
         except Exception as exc:
             report["status"] = "error"
             for metric in metrics:
@@ -302,7 +324,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "value": rendered_value if accepted else "",
                     "period": item.get("period", ""), "unit": item.get("unit", ""),
                     "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", "")])), "status": "ok" if accepted else "unavailable",
-                    "decision": "accepted" if accepted else "unchanged" if item["status"] in {"no_update", "missing", "not_applicable"} and report.get("incremental") else "review", "row_ref": f"row_{row}",
+                    "decision": "accepted" if accepted else "unchanged" if item["status"] == "no_update" and report.get("incremental") else "review", "row_ref": f"row_{row}",
                     "sources": [item["source_url"]] if item.get("source_url") else [],
                     "source_tier": "official" if accepted else "unknown", "source_score": 1.0 if accepted else 0,
                     "entity_supported": accepted, "metric_supported": accepted, "value_supported": accepted,

@@ -118,14 +118,15 @@ def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
                                  "title": a.get_text(" ", strip=True)[:200]}
                                 for a in soup.select("a[href]") if re.search(
                                     r"result|report|earning|interim|financial|业绩|業績|财报|財報|公告|\.pdf",
-                                    a.get_text(" ", strip=True) + " " + a.get("href", ""), re.I)][:120]
+                                    a.get_text(" ", strip=True) + " " + a.get("href", ""), re.I)]
         result = {
             "url": url,
             "final_url": str(response.url),
             "http_status": int(response.status_code),
             "opened": True,
             "blocked_reason": "",
-            "text": clean_text(page_text, 20000),
+            "text": clean_text(page_text, max(len(page_text), 1)),
+            "text_truncated": False,
             "disclosure_links": disclosure_links,
             "cache_hit": False,
         }

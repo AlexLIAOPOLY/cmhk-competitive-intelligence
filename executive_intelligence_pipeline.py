@@ -97,7 +97,7 @@ NEWS_METRIC_RE = re.compile(
 NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ...] = (
     ("local", "CMHK", ("CMHK", "China Mobile Hong Kong", "中国移动香港", "中國移動香港"), ("https://www.hk.chinamobile.com/en/", "https://www.hk.chinamobile.com/en/about_us/", "https://www.chinamobileltd.com/en/ir/reports.php")),
     ("local", "HKT", ("HKT", "香港电讯", "香港電訊"), ("https://www.hkt.com/en/about-hkt/investor-relations/financial-results/", "https://www.hkt.com/en/about-hkt/press-release/hkt-reports-solid-interim-results-for-2026/")),
-    ("local", "SmarTone", ("SmarTone", "数码通", "數碼通"), ("https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp",)),
+    ("local", "SmarTone", ("SmarTone", "数码通", "數碼通"), ("https://www.smartoneholdings.com/jsp/site/investor_relations/announcements/english/index.jsp", "https://www.smartoneholdings.com/jsp/site/investor_relations/results/english/index.jsp", "https://www.smartoneholdings.com/jsp/site/investor_relations/financial_reports/english/index.jsp")),
     ("local", "3HK", ("3HK", "3 Hong Kong", "和记电讯香港", "和記電訊香港"), ("https://www.hthkh.com/en/ir/reports.php", "https://www.hthkh.com/en/media/press.php?prid=/press/p260810")),
     ("local", "HKBN", ("HKBN", "香港宽频", "香港寬頻"), ("https://www.hkbn.net/group/en/investor-engagement/financial-results",)),
     ("local", "HGC", ("HGC", "HGC Global Communications", "环电", "環電", "环球全域电讯", "環球全域電訊"), ("https://www.hgc-intl.com/", "https://www.hgc-intl.com/press-releases", "https://www.hgc-intl.com/insight")),
@@ -145,7 +145,7 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
     ("mainland", "中国铁塔", ("中国铁塔", "中國鐵塔", "China Tower", "0788.HK"), ("https://ir.china-tower.com/", "https://ir.china-tower.com/en/ir/reports.php", "https://ir.china-tower.com/en/ir/presentation.php")),
     ("mainland", "中国广电", ("中国广电", "中國廣電", "China Broadnet", "China Broadcasting Network"), ("https://www.cbn.cn/",)),
     ("cloud", "AWS", ("AWS", "Amazon Web Services"), ("https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm", "https://ir.aboutamazon.com/quarterly-results/default.aspx")),
-    ("cloud", "Microsoft Azure", ("Azure", "Microsoft cloud"), ("https://www.microsoft.com/en-us/Investor/earnings",)),
+    ("cloud", "Microsoft Azure", ("Azure", "Microsoft cloud"), ("https://www.microsoft.com/en-us/investor/default", "https://www.microsoft.com/en-us/Investor/earnings")),
     ("cloud", "Google Cloud", ("Google Cloud", "Alphabet"), ("https://abc.xyz/investor/",)),
     ("cloud", "Alibaba Cloud", ("Alibaba Cloud", "阿里云", "阿里雲"), ("https://www.alibabagroup.com/en-US/ir-financial-reports-quarterly-results",)),
     ("cloud", "Tencent Cloud", ("Tencent Cloud", "腾讯云", "騰訊雲"), ("https://www.tencent.com/investors/results/",)),
@@ -3335,6 +3335,7 @@ def generate_model_domain_summaries(
     # Split them by domain immediately; each response remains independently gated.
     primary_attempts = 0 if entity_count > 40 else 3
     for attempt in range(primary_attempts):
+        content = ""
         body["messages"] = messages
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
@@ -3354,8 +3355,14 @@ def generate_model_domain_summaries(
             ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
+            if exc.code == 429 or exc.code >= 500:
+                last_error = exc
+                continue
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
+        except (TimeoutError, urllib.error.URLError) as exc:
+            last_error = exc
+            continue
         try:
             content = final_chat_message_text(payload, operation="17项AI洞察")
             raw_summaries = unwrap_items_payload(
@@ -3371,7 +3378,7 @@ def generate_model_domain_summaries(
             )
             used_models.add(str(body["model"]))
             break
-        except (ValueError, json.JSONDecodeError) as exc:
+        except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             if attempt + 1 < primary_attempts:
                 messages.extend(
@@ -3488,7 +3495,7 @@ def generate_model_domain_summaries(
                     domain_summary = candidate
                     used_models.add(str(body["model"]))
                     break
-                except (ValueError, json.JSONDecodeError) as exc:
+                except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                     domain_error = exc
                     if domain_attempt < 2:
                         domain_messages.append({
@@ -3597,7 +3604,7 @@ def generate_model_domain_summaries(
                             focus_candidate["focuses"] = returned_focuses
                             used_models.add(focus_model)
                             break
-                        except (ValueError, json.JSONDecodeError) as exc:
+                        except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                             focus_error = exc
                             if focus_attempt + 1 < len(focus_models):
                                 focus_messages.append({

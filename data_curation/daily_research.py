@@ -87,6 +87,8 @@ def execute(root: Path, run_id: str) -> dict:
             return previous
         summary = previous if previous.get("status") in {"completed", "partial"} else run_research(
             run_id=run_id, output_dir=directory, resume=bool(previous))
+        from .research_final_review import review_run
+        summary = review_run(directory)
         if summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted"):
             summary["publication"] = {"status": "completed", "completed_at": now(),
                 "database_updated": False, "insights": 0,

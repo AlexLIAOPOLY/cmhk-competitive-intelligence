@@ -1,0 +1,67 @@
+import json
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+from data_curation import workflow as w
+from data_curation.research_freshness import period_key
+from data_curation.six_agent_research import validate_fact
+from data_curation.research_final_review import review_run
+
+
+class ResearchReliabilityTests(unittest.TestCase):
+    def test_full_report_tail_survives_fetch(self):
+        class Response:
+            url = 'https://official.test/full-report'
+            status_code = 200
+            headers = {'content-type': 'text/html'}
+            text = '<p>' + 'Report introduction ' * 2000 + 'Revenue for 2026 was USD 123 million.</p>'
+            def raise_for_status(self): pass
+        w._SOURCE_PAGE_CACHE.pop(Response.url, None)
+        with patch('httpx.get', return_value=Response()):
+            page = w._read_source_page(Response.url, 1)
+        self.assertGreater(len(page['text']), 20000)
+        self.assertIn('USD 123 million', page['text'])
+        self.assertFalse(page['text_truncated'])
+
+    def test_actual_quarter_precedes_different_fiscal_year(self):
+        self.assertEqual(period_key('the first quarter (April - June 2026, Q1) of the fiscal year ending March 31, 2027 (FY2026)'), (2026, 6, 'quarter'))
+        self.assertEqual(period_key('Three-month period ended June 30, 2026 (FY2027)'), (2026, 6, 'quarter'))
+
+    def test_one_official_source_and_native_currency_are_sufficient(self):
+        text = 'KDDI reported revenue of 123 million yen for 2026.'
+        url = 'https://www.kddi.com/report'
+        fact = dict(company='KDDI', metric='收入', status='verified', value='123', period='2026', unit='million yen', source_url=url, quote=text)
+        self.assertEqual(validate_fact(fact, 'KDDI', ['收入'], {url: dict(opened=True, official=True, text=text)})['status'], 'verified')
+        self.assertEqual(validate_fact({**fact, 'unit': 'million'}, 'KDDI', ['收入'], {url: dict(opened=True, official=True, text=text)})['status'], 'conflict')
+
+    def test_final_reviewer_searches_missing_then_saves_without_replaying(self):
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp)
+            task = dict(key='hong-kong', title='香港', purpose='研究', companies=['HKT'])
+            summary = dict(run_id='test', plan=[task], research_policy='latest_disclosure_incremental_v1')
+            (directory/'manifest.json').write_text(json.dumps(summary))
+            report = dict(company='HKT', metrics=['收入'], incremental=True, status='partial', baseline={}, pages={}, searches=[], items=[dict(company='HKT', metric='收入', status='missing', value='', reason='未找到')])
+            (directory/'hong-kong.json').write_text(json.dumps(dict(task, reports=[report])))
+            text = 'HKT reported revenue of HK$ 123 million in 2026.'
+            url = 'https://www.hkt.com/report'
+            calls = []
+            def collect(*args):
+                calls.append(args[0]); return {url: dict(opened=True, official=True, text=text)}, [dict(query='HKT 2026 revenue', results=[dict(url=url)])]
+            class Harness:
+                def __init__(self, *args): pass
+                def extract(self, company, metric, pages, save, **kw):
+                    save(dict(company=company, metric=metric, status='verified', value='123', period='2026', unit='HK$ million', quote=text, source_url=url))
+            result = review_run(directory, model_factory=lambda: None, collector=collect, harness_factory=Harness)
+            self.assertEqual(result['outcome_counts'], dict(existing=0, updated=1, failed=0))
+            self.assertEqual(len((directory/'verified_facts.jsonl').read_text().splitlines()), 1)
+            review_run(directory, model_factory=lambda: self.fail('must not create model'), collector=collect, harness_factory=Harness)
+            self.assertEqual(calls, ['HKT'])
+
+    def test_model_timeout_enters_bounded_retry_not_immediate_fallback(self):
+        import executive_intelligence_pipeline as p
+        # No domain payload required: all three primary attempts time out before validation.
+        with patch('ai_config.load_ai_config', return_value={'api_key': 'test', 'base_url': 'https://example.test'}), patch('ai_rate_limit.wait_for_internal_ai_slot'), patch.object(p, 'open_llm_request', side_effect=TimeoutError('timed out')) as call, patch.object(p, '_validate_model_summaries', return_value=[]), patch.object(p, '_repair_model_summaries', side_effect=lambda s,e:s), patch.object(p, '_drop_unsupported_numeric_clauses', side_effect=lambda s,e:s):
+            p.generate_model_domain_summaries({'domains': []})
+            self.assertEqual(call.call_count, 3)

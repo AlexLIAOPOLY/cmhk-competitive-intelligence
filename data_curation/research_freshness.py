@@ -29,10 +29,14 @@ def period_key(value):
         return None
     year = int(years[-1])
     month_words = "january february march april may june july august september october november december".split()
-    ended = re.search(r"ended (?:on )?(?:\d{1,2} )?([a-z]+)(?: \d{1,2},?)? 20\d{2}", text)
+    span = re.search(r"(january|april|july|october)\s*[-–]\s*(march|june|september|december)\s+(20\d{2})", text)
+    if span and ("quarter" in text or re.search(r"\bq[1-4]\b", text)):
+        return int(span[3]), month_words.index(span[2]) + 1, "quarter"
+    ended = re.search(r"(?:ended|ending|to) (?:on )?(?:\d{1,2} )?([a-z]+)(?: \d{1,2},?)? (20\d{2})", text)
     if ended and ended[1] in month_words:
+        year = int(ended[2])
         month = month_words.index(ended[1]) + 1
-        grain = "half" if "six months" in text else "quarter" if "quarter" in text or "three months" in text else "year" if "year" in text else "date"
+        grain = "half" if "six months" in text else "quarter" if "quarter" in text or "three months" in text or "three-month" in text else "year" if "year" in text else "date"
         return year, month, grain
     text = re.sub(r"(first|second|third|fourth) quarter", lambda m: "q" + str(["first", "second", "third", "fourth"].index(m[1])+1), text)
     q = re.search(r"q([1-4])|([1-4])q|第([一二三四1-4])季", text)

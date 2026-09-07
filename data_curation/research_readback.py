@@ -10,6 +10,17 @@ from .research_plan import ARCHITECTURE_VERSION, research_plan
 from .six_agent_research import now
 
 
+def _display_results(payload):
+    from .research_freshness import period_key, metric_key
+    for agent in [*payload.get("agents", []), payload.get("final_reviewer") or {}]:
+        for report in agent.get("reports", []):
+            for item in report.get("items", []):
+                baseline = item.get("baseline") or report.get("baseline", {}).get(metric_key(item.get("metric")), [])
+                if baseline:
+                    item["latest_baseline"] = max(baseline, key=lambda row: period_key(row.get("period")) or (0, 0, ""))
+    return payload
+
+
 def research_snapshot(root: Path, date: str = "") -> dict:
     date = date or now()[:10]
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
@@ -27,7 +38,7 @@ def research_snapshot(root: Path, date: str = "") -> dict:
     payload = {"ok": True, "architecture": ARCHITECTURE_VERSION, "date": date, "plan": research_plan(),
                "runs": [manifest for manifest, _ in runs], "run": None, "agents": [], "events": []}
     if not runs:
-        return payload
+        return _display_results(payload)
     manifest, directory = runs[0]
     payload["run"] = manifest
     # Historical details must use the assignments that actually executed.
@@ -64,6 +75,13 @@ def research_snapshot(root: Path, date: str = "") -> dict:
             report["pages"] = {url: {key: value for key, value in page.items() if key != "text"}
                                for url, page in report.get("pages", {}).items()}
         payload["agents"].append(agent)
+    try:
+        payload["final_reviewer"] = json.loads((directory / "final-review.json").read_text(encoding="utf-8"))
+        for report in payload["final_reviewer"].get("reports", []):
+            report["pages"] = {url: {k: v for k, v in page.items() if k != "text"}
+                               for url, page in report.get("pages", {}).items()}
+    except (OSError, ValueError):
+        payload["final_reviewer"] = None
     trace_path = directory / "trace.jsonl"
     if trace_path.exists():
         for line in trace_path.read_text(encoding="utf-8").splitlines():
@@ -73,4 +91,4 @@ def research_snapshot(root: Path, date: str = "") -> dict:
                 continue
             if event.get("run_id") == manifest.get("run_id"):
                 payload["events"].append(event)
-    return payload
+    return _display_results(payload)
