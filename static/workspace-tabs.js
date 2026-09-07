@@ -4223,7 +4223,7 @@
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],
       ["reviewSheet", "review", fetchNewsReviewSheetSnapshot],
       ["newsFallback", "news", () => fetch("./static/news-run-items.json?v=1").then((response) => response.ok ? response.json() : {})],
-      ["workbench", "competitor", () => fetch("./static/competitor-workbench-data.json?v=2").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))],
+      ["workbench", "competitor", () => fetch("./static/competitor-workbench-data.json?v=3").then((response) => response.ok ? response.json() : Promise.reject(new Error(`workbench ${response.status}`)))],
     ];
     const activeDefinitions = definitions.filter(([, module]) => can(module));
     const requests = activeDefinitions.map(async ([key, module, request]) => {
