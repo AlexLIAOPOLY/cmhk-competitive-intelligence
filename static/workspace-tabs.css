@@ -2088,6 +2088,21 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .news-lineage.is-global .news-lineage-node.is-research-step > span { font-size: 16px; line-height: 1.5; }
 .news-lineage.is-global .news-lineage-node.is-research-agent > em,
 .news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; max-height: none; overflow: visible; }
+/* Match the strategic-news row to the horizontal research-card proportions. */
+.news-lineage.is-global .news-lineage-node:is(
+  [data-news-lineage-node="strategic"],
+  [data-news-lineage-node="news-search"],
+  [data-news-lineage-node="news-ai"],
+  [data-news-lineage-node="news-dedupe"],
+  [data-news-lineage-node="news-output"],
+  [data-news-lineage-node="news-selection-agent"],
+  [data-news-lineage-node="app-result"],
+  [data-news-lineage-node="weekly-result"]
+) { width: 250px; min-height: 160px; height: auto; padding: 30px 16px 16px; }
+.news-lineage.is-global .news-lineage-node:is(
+  [data-news-lineage-node="app-result"],
+  [data-news-lineage-node="weekly-result"]
+) { min-height: 132px; }
 /* Keep the strategic-news row readable at the same visual distance as the research cards. */
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="strategic"],
@@ -2167,3 +2182,9 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .news-lineage.is-global .news-lineage-node > span { font-size: 16px; }
   .news-lineage.is-global .news-lineage-node > em { font-size: 12px; white-space: normal; }
 }
+
+/* Keep concrete research objects visible before workflow and raw diagnostics. */
+.research-actual-list > p { padding: 0 16px; }
+.research-actual-list .news-lineage-preview-scroll { max-height: 440px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.research-actual-list article { padding: 14px 16px; border-bottom: 1px solid #294653; min-width: 0; }
+.research-actual-list article p { margin: 6px 0; line-height: 1.6; }

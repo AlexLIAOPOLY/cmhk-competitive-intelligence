@@ -1,6 +1,27 @@
 {
   "ok": true,
   "details": {
+    "crawl:20260907_104454_523692": {
+      "ok": true,
+      "run": {
+        "task_id": "crawl:20260907_104454_523692",
+        "task_run_id": "20260907_104454_523692",
+        "title": "新闻自动初筛",
+        "kind": "news-selection-agent",
+        "kind_label": "新闻自动初筛",
+        "scope": "爬虫后选材（2026-09-07@review-aa81c30a2e8b103c）",
+        "run_status": "completed",
+        "phase": "已完成",
+        "progress_detail": "新闻自动初筛完成；处理 4 条，验证 8 格，本次新写 8 格，已有 0 格；逐格回读通过。",
+        "status_detail": "新闻自动初筛完成；处理 4 条，验证 8 格，本次新写 8 格，已有 0 格；逐格回读通过。",
+        "started_at_hkt": "2026-09-07T10:44:54+08:00",
+        "heartbeat_at_hkt": "2026-09-07T10:45:30+08:00",
+        "completed_at_hkt": "2026-09-07T10:45:30+08:00",
+        "duration_ms": 36250,
+        "retry_index": 0
+      },
+      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
+    },
     "crawl:20260907_103321_434269": {
       "ok": true,
       "run": {
@@ -1005,27 +1026,6 @@
         "heartbeat_at_hkt": "2026-09-03T13:30:00+08:00",
         "completed_at_hkt": "2026-09-03T13:30:00+08:00",
         "duration_ms": 78044,
-        "retry_index": 0
-      },
-      "content": "公开快照仅保留任务摘要；内部运行日志未公开。"
-    },
-    "crawl:20260903_132112_714343": {
-      "ok": true,
-      "run": {
-        "task_id": "crawl:20260903_132112_714343",
-        "task_run_id": "20260903_132112_714343",
-        "title": "新闻自动初筛",
-        "kind": "news-selection-agent",
-        "kind_label": "新闻自动初筛",
-        "scope": "爬虫后选材（2026-09-03@review-342571356bc9925c）",
-        "run_status": "completed",
-        "phase": "已完成",
-        "progress_detail": "新闻自动初筛完成；处理 11 条，验证 22 格，本次新写 22 格，已有 0 格；逐格回读通过。",
-        "status_detail": "新闻自动初筛完成；处理 11 条，验证 22 格，本次新写 22 格，已有 0 格；逐格回读通过。",
-        "started_at_hkt": "2026-09-03T13:21:12+08:00",
-        "heartbeat_at_hkt": "2026-09-03T13:24:38+08:00",
-        "completed_at_hkt": "2026-09-03T13:24:38+08:00",
-        "duration_ms": 205924,
         "retry_index": 0
       },
       "content": "公开快照仅保留任务摘要；内部运行日志未公开。"

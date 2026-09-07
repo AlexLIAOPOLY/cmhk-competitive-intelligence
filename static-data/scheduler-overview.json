@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-07T10:44:06+08:00",
+  "checked_at_hkt": "2026-09-07T11:01:36+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -46,10 +46,10 @@
       "14:00"
     ],
     "next_scan_at": "2026-09-07T14:00:00+08:00",
-    "next_group_check_at": "2026-09-07T11:00:00+08:00",
+    "next_group_check_at": "2026-09-07T12:00:00+08:00",
     "last_scan_at": "2026-09-07T10:33:18+08:00",
     "last_group_check_at": "2026-09-07T10:33:17+08:00",
-    "last_cycle_at": "2026-09-07T10:43:15+08:00",
+    "last_cycle_at": "2026-09-07T10:58:41+08:00",
     "latest_scan_slot": {
       "slot": "2026-09-07@07:30",
       "status": "completed",
@@ -61,6 +61,7 @@
     "last_candidate_count": 134,
     "feishu_identity": "bot",
     "last_error": "2026-09-01@07:30 新闻自动初筛未完成：LangChain 多轮补判后仍遗漏 1 条候选：NEWS-17C9439F5E5826",
+    "active_task_kind": "",
     "active_task_id": "",
     "active_phase": "",
     "active_progress": "",
