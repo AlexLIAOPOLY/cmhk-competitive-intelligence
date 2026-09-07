@@ -834,11 +834,11 @@
 .intelligence-viz-rows li,
 .intelligence-viz-ranges li,
 .intelligence-viz-trends li {
-  grid-template-columns: minmax(96px, .8fr) minmax(44px, 1fr) minmax(96px, auto);
+  grid-template-columns: minmax(82px, .75fr) minmax(36px, 1fr) minmax(82px, auto);
   min-height: 32px;
 }
 .intelligence-viz-diverging li {
-  grid-template-columns: minmax(96px, .8fr) minmax(56px, 1fr) 72px;
+  grid-template-columns: minmax(82px, .75fr) minmax(44px, 1fr) 64px;
   min-height: 30px;
 }
 .intelligence-viz-rows li > span,
@@ -880,10 +880,10 @@
   .intelligence-viz-rows li,
   .intelligence-viz-ranges li,
   .intelligence-viz-trends li {
-    grid-template-columns: minmax(96px, .8fr) minmax(44px, 1fr) minmax(96px, auto);
+    grid-template-columns: minmax(82px, .75fr) minmax(36px, 1fr) minmax(82px, auto);
   }
   .intelligence-viz-diverging li {
-    grid-template-columns: minmax(96px, .8fr) minmax(52px, 1fr) 64px;
+    grid-template-columns: minmax(82px, .75fr) minmax(44px, 1fr) 60px;
   }
 }
 

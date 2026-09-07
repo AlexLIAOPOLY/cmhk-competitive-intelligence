@@ -299,7 +299,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertNotIn('data-intelligence-disclosure', app)
         self.assertIn('overflow-y: auto;', styles)
         self.assertIn('overscroll-behavior: contain;', styles)
-        self.assertIn('href="/static/leadership-board.css?v=22"', html)
+        self.assertIn('href="/static/leadership-board.css?v=23"', html)
         self.assertIn('class="ai-insight-mark"', app)
         self.assertIn('数据战略解读', app)
         self.assertIn('focus.ai_summary?.origin !== "evidence_rule"', app)
@@ -1013,7 +1013,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         server = (root / "web_app.py").read_text(encoding="utf-8")
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
-        self.assertIn('href="/static/leadership-board.css?v=22"', html)
+        self.assertIn('href="/static/leadership-board.css?v=23"', html)
         self.assertIn('src="/static/app.js?v=325"', html)
         self.assertIn('self.send_header("Cache-Control", "no-store")', server)
         self.assertIn('self.send_header("Cache-Control", "no-cache, must-revalidate")', server)
@@ -1026,7 +1026,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
         responsive_styles = (root / "web/static/responsive-layout-hardening.css").read_text(encoding="utf-8")
 
         self.assertIn('grid-template-columns: minmax(0, 1.15fr) minmax(230px, .85fr);', leadership_styles)
-        self.assertIn('grid-template-columns: minmax(96px, .8fr) minmax(44px, 1fr) minmax(96px, auto);', leadership_styles)
+        self.assertIn('grid-template-columns: minmax(82px, .75fr) minmax(36px, 1fr) minmax(82px, auto);', leadership_styles)
         self.assertIn('white-space: nowrap;', leadership_styles)
         self.assertIn('@media (min-width: 1181px) and (max-width: 1536px) and (max-height: 1000px)', responsive_styles)
 
