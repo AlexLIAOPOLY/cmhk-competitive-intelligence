@@ -8795,6 +8795,34 @@ document.addEventListener("keydown", (event) => {
       }).join("")}</ul>`;
     }
 
+    if (visual === "spark_columns") {
+      const trendValues = items.flatMap((item) => (Array.isArray(item.trend) ? item.trend : []))
+        .map((point) => Math.abs(Number(point.value)))
+        .filter(Number.isFinite);
+      const trendMaximum = trendValues.length ? Math.max(...trendValues) : 1;
+      return `<ul class="intelligence-viz intelligence-viz-trends intelligence-viz-spark-columns" aria-label="${safe(focus.label)}十年柱状趋势比较">${items.map((item, index) => {
+        const trendEntries = Array.isArray(item.trend) ? item.trend : [];
+        const latestAvailableIndex = trendEntries.reduce(
+          (last, point, pointIndex) => Number.isFinite(Number(point.value)) ? pointIndex : last,
+          -1,
+        );
+        const bars = trendEntries.map((point, pointIndex) => {
+          const numeric = Number(point.value);
+          const available = Number.isFinite(numeric);
+          const height = available ? Math.max(8, Math.abs(numeric) / trendMaximum * 100) : 0;
+          const pointValue = available
+            ? `${formatMetricValue(numeric, item.unit)}${formatMetricUnit(numeric, item.unit)}`
+            : "待核验";
+          return `<i class="spark-column ${available ? "is-available" : "is-missing"} ${pointIndex === latestAvailableIndex ? "is-latest" : ""}" style="--spark-height:${height.toFixed(2)}%" title="${safe(point.label)} · ${safe(pointValue)}"><b></b></i>`;
+        }).join("");
+        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
+          <span>${renderScrollingLabel(item.name)}</span>
+          <div class="spark-columns" aria-label="${safe(item.name)} FY2016至FY2025柱状趋势">${bars}</div>
+          <strong>${formatMetricValue(item.value, item.unit, item.gap_status)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
+        </li>`;
+      }).join("")}</ul>`;
+    }
+
     if (visual === "trends") {
       const trendValues = items.flatMap((item) => (Array.isArray(item.trend) ? item.trend : []))
         .map((point) => Number(point.value))

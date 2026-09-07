@@ -3714,7 +3714,7 @@
         {
           "id": "revenue",
           "label": "营收",
-          "visual": "trends",
+          "visual": "spark_columns",
           "headline": "SKT资源底盘更厚",
           "metric": {
             "value": 13158.97,
@@ -4211,7 +4211,7 @@
         {
           "id": "net_profit",
           "label": "净利润",
-          "visual": "trends",
+          "visual": "spark_columns",
           "headline": "SKT自我融资更厚",
           "metric": {
             "value": 1017.4,
@@ -4713,7 +4713,7 @@
         {
           "id": "capex",
           "label": "资本开支",
-          "visual": "trends",
+          "visual": "spark_columns",
           "headline": "SKT持续投入更厚",
           "metric": {
             "value": 1824.41,
@@ -5220,7 +5220,7 @@
         {
           "id": "mobile_arpu",
           "label": "移动ARPU",
-          "visual": "trends",
+          "visual": "spark_columns",
           "headline": "DOCOMO客户价值更高",
           "metric": {
             "value": 26.46,
