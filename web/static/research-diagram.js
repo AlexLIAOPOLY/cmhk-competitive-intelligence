@@ -151,6 +151,28 @@
     const note = update ? `实际读取 ${items.length} 项审核通过记录；本轮页面数值变化 ${run?.publication?.changes?.changed ?? "未记录"} 项。通过审核、写入事实层与主表数值变化分别记录。` : `只列本节点的公司与指标；${isIncremental(run) ? "区分可更新新数据、库内已有、未发现更新和执行失败" : "历史核验结果不代表数据库缺失，也不能换算成新增披露数量"}；共 ${items.length} 项处理记录。`;
     return section(title, note, selected.map((item, i) => `<article><strong>${i + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(item.value ?? "无可更新值")} · ${esc(item.period || "期间未记录")} · ${esc(item.unit || "单位未记录")} · ${esc(itemLabel(item.research_status || item.status || (item.decision === "accepted" ? "verified" : "conflict"), isIncremental(run)))}</p><p>${esc(item.reason || (item.reasons || []).join("；"))}</p>${item.baseline?.length ? `<p>库内基线：${item.baseline.map((old) => esc(`${old.period} · ${old.value} ${old.unit || ""}`)).join("；")}</p>` : ""}<p>${(item.sources || [item.source_url]).filter(Boolean).map(link).join("<br>")}</p></article>`));
   }
+  function searchHistory(node, agents, events) {
+    if (!node.assignment) return "";
+    const searches = events.filter((event) => event.phase === "search" && event.data?.query)
+      .map((event) => ({ ...event.data, ts: event.ts }));
+    // Checkpoints repeat the same searches as the trace. Match occurrences,
+    // preserving genuine retries and searches before a company checkpoint exists.
+    const identity = (search) => JSON.stringify([search.company, search.metric, search.query, search.provider]);
+    const remaining = new Map();
+    searches.forEach((search) => remaining.set(identity(search), (remaining.get(identity(search)) || 0) + 1));
+    agents.filter((agent) => agent.key === node.assignment.key).forEach((agent) => (agent.reports || []).forEach((report) => (report.searches || []).forEach((search) => {
+      const row = { ...search, company: search.company || report.company };
+      const key = identity(row);
+      if (remaining.get(key)) remaining.set(key, remaining.get(key) - 1);
+      else searches.push(row);
+    })));
+    const resultCount = searches.reduce((count, search) => count + (search.results || []).length, 0);
+    return `<section class="news-lineage-dialog-section research-actual-list research-search-history"><header><h3>AI 搜索关键词与返回结果</h3><span>已记录 ${searches.length} 次搜索 · ${resultCount} 条返回结果</span></header>
+      <p>逐次展示实际提交给搜索引擎的完整关键词及返回结果；搜索结果尚未经过原文核验。</p>
+      <div class="news-lineage-preview-scroll" role="region" aria-label="逐次搜索关键词与返回结果" tabindex="0">${searches.map((search, index) => `<article class="research-search-record"><strong>${index + 1}. ${esc(search.company || "公司未记录")} · ${esc(search.metric || "最新披露")}</strong>
+        <p class="research-search-query">搜索关键词：${esc(search.query)}</p><p>${esc(search.ts || "搜索时间未记录")} · 搜索来源：${esc(search.provider || "未记录")}</p>
+        ${(search.results || []).length ? `<details><summary>查看本次返回的 ${search.results.length} 条结果</summary><ol>${search.results.map((result) => `<li><strong>${esc(result.title || "标题未记录")}</strong><p>${link(result.url)}</p><p>${esc(result.snippet || "摘要未记录")}</p></li>`).join("")}</ol></details>` : "<p>本次未返回搜索结果；不能据此判断没有相关披露。</p>"}</article>`).join("") || "<p>本节点尚无已保存的搜索记录；关键词和结果将在搜索完成后显示。</p>"}</div></section>`;
+  }
   function companyCoverageOverview(node, run) {
     if (!node.agent) return "";
     const reports = node.agent.reports || [];
@@ -172,6 +194,7 @@
     return `<header><div><span>${esc(date)} · ${run && !isIncremental(run) ? "历史运行（新增披露未统计）" : "最新披露增量更新"} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(node.purpose)}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
       ${actualList(node, snapshot, date)}
+      ${searchHistory(node, agents, events)}
       ${companyCoverageOverview(node, run)}
       <section class="news-lineage-dialog-section"><header><h3>这个节点如何处理</h3></header><ol>${node.details.map((text) => `<li>${esc(text)}</li>`).join("")}</ol></section>
       <section class="news-lineage-dialog-section"><header><h3>本轮运行</h3></header><dl>${field("运行编号", esc(run?.run_id || "所选日期没有六Agent任务记录"))}${field("开始时间", esc(run?.started_at || "—"))}${field("结束时间", esc(run?.completed_at || "—"))}${field("本轮结果", esc(resultLabel))}</dl></section>

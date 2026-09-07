@@ -63,7 +63,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertLess(result['detail'].index('本节点逐条明细'), result['detail'].index('这个节点如何处理'))
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=13', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=14', (ROOT / 'web/static/index.html').read_text())
 
 
 if __name__ == '__main__':
