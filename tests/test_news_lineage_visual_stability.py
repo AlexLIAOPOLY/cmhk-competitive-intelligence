@@ -34,6 +34,23 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn(") > strong { font-size: 30px; }", STYLE)
         self.assertIn(") > em { font-size: 12px; line-height: 1.5; }", STYLE)
 
+    def test_strategic_news_cards_match_horizontal_research_card_width(self):
+        strategic_cards = STYLE.split("/* Match the strategic-news row to the horizontal research-card proportions. */", 1)[1]
+        strategic_cards = strategic_cards.split("/* Keep the strategic-news row readable", 1)[0]
+        for key in (
+            "strategic",
+            "news-search",
+            "news-ai",
+            "news-dedupe",
+            "news-output",
+            "news-selection-agent",
+            "app-result",
+            "weekly-result",
+        ):
+            self.assertIn(f'[data-news-lineage-node="{key}"]', strategic_cards)
+        self.assertIn("width: 250px; min-height: 160px; height: auto; padding: 30px 16px 16px", strategic_cards)
+        self.assertIn(") { min-height: 132px; }", strategic_cards)
+
     def test_user_date_is_pinned_before_run_selection_and_research_loaded_without_news(self):
         handler = SCRIPT.split('if (newsDate) {', 1)[1].split('return;', 1)[0]
         self.assertLess(handler.index('updateNewsDateUrl'), handler.index('const selected = selectedNewsRuns'))
@@ -141,9 +158,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=171', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=172', INDEX)
         self.assertIn('/static/research-diagram.js?v=6', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=207', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=208', INDEX)
 
 
 if __name__ == "__main__":
