@@ -890,7 +890,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         definition_lines.append(f"{company}={' / '.join(scopes) or '未标注'}")
     definitions = "\n".join(definition_lines)
     fx_context = (
-        f"\n汇率来源\n{fx_payload.get('publisher', '')} · {fx_payload.get('indicator', '')} · {fx_payload.get('source_url', '')}"
+        f"\n汇率来源\n{fx_payload.get('publisher', '')} · {fx_payload.get('indicator', '')} · 指标年份对应自然年平均（非财年逐月加权） · {fx_payload.get('source_url', '')}"
         if convert_to_usd else ""
     )
     config = load_ai_config(include_key=True)

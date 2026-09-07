@@ -5,7 +5,8 @@
   "publisher": "World Bank World Development Indicators",
   "source_organization": "International Monetary Fund, International Financial Statistics database",
   "source_url": "https://api.worldbank.org/v2/country/DEU;IND;JPN;KOR;SGP;USA/indicator/PA.NUS.FCRF?date=2016:2025&format=json&per_page=200",
-  "method": "reported local-currency value divided by the matching year's local-currency-per-US-dollar annual average",
+  "method": "reported local-currency value divided by the calendar-year average rate matching the metric year field",
+  "period_boundary": "calendar-year average keyed by metric year; not a monthly weighted average for non-calendar fiscal years",
   "usage_policy": "analysis-only currency translation; never replaces the operator's reported value or accounting currency",
   "years": [
     2016,
