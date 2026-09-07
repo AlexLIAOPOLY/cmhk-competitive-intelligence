@@ -2327,16 +2327,16 @@ def _requested_international_domain(
         }
 
     focuses = [
-        {"id": "revenue", "label": "营收", "visual": "trends", "headline": "SKT资源底盘更厚",
+        {"id": "revenue", "label": "营收", "visual": "spark_columns", "headline": "SKT资源底盘更厚",
          "metric": leader_metric(revenue_items),
          "context": "统一为美元；原币与汇率保留", "insight": "SK Telecom FY2024收入约13,158.97百万美元，Singtel约10,573.00百万美元；这表明SKT收入底盘与资源承载力更厚，但Singtel为3月年结。NTT DOCOMO与SoftBank Corp.当前库未收录同口径收入值，不补数。", "items": revenue_items},
-        {"id": "net_profit", "label": "净利润", "visual": "trends", "headline": "SKT自我融资更厚",
+        {"id": "net_profit", "label": "净利润", "visual": "spark_columns", "headline": "SKT自我融资更厚",
          "metric": leader_metric(profit_items),
          "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024净利润约1,017.40百万美元，Singtel约594.96百万美元；绝对值反映当期利润池规模，但财年区间不同。NTT DOCOMO与SoftBank Corp.当前库未收录同口径净利润值。", "items": profit_items},
-        {"id": "capex", "label": "资本开支", "visual": "trends", "headline": "SKT持续投入更厚",
+        {"id": "capex", "label": "资本开支", "visual": "spark_columns", "headline": "SKT持续投入更厚",
          "metric": leader_metric(capex_items),
          "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024资本开支约1,824.40百万美元，Singtel约1,608.99百万美元；SKT持续投入规模更高，但投入转化效率不能由绝对金额判断。NTT DOCOMO与SoftBank Corp.当前库未收录同口径资本开支值。", "items": capex_items},
-        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "trends", "headline": "DOCOMO客户价值更高",
+        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "spark_columns", "headline": "DOCOMO客户价值更高",
          "metric": leader_metric(arpu_items),
          "context": "统一为美元/月；用户范围按公司原口径", "insight": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；这表明DOCOMO客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。SK Telecom与Singtel当前库未收录同口径ARPU。", "items": arpu_items},
     ]

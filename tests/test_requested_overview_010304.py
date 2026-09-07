@@ -69,7 +69,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         requested = ["NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"]
         self.assertTrue(all([item["name"] for item in focus["items"]] == requested for focus in domain["focuses"]))
         self.assertEqual([focus["label"] for focus in domain["focuses"]], ["营收", "净利润", "资本开支", "移动ARPU"])
-        self.assertEqual({focus["visual"] for focus in domain["focuses"]}, {"trends"})
+        self.assertEqual({focus["visual"] for focus in domain["focuses"]}, {"spark_columns"})
 
         revenue = domain["focuses"][0]
         revenue_values = {item["name"]: item["value"] for item in revenue["items"]}
@@ -90,8 +90,8 @@ class RequestedOverview010304Tests(unittest.TestCase):
                 self.assertEqual([point["label"] for point in item["trend"]], [f"FY{year}" for year in range(2016, 2026)])
                 self.assertTrue(all(point.get("value") is not None or point.get("gap_status") == "knowledge_pending" for point in item["trend"]))
         app = (Path(__file__).resolve().parents[1] / "web/static/app.js").read_text(encoding="utf-8")
-        self.assertIn("trendEntries.length", app)
-        self.assertIn("trendSegments", app)
+        self.assertIn("intelligence-viz-spark-columns", app)
+        self.assertIn("latestAvailableIndex", app)
 
     def test_domain_02_top_right_metrics_show_the_current_leader(self):
         for focus in self.domains["international"]["focuses"]:

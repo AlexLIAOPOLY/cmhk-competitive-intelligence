@@ -16139,6 +16139,51 @@ body.report-library-open::before {
   filter: drop-shadow(0 0 4px color-mix(in srgb, var(--domain-accent) 28%, transparent));
 }
 
+.intelligence-viz-spark-columns .spark-columns {
+  display: grid;
+  grid-template-columns: repeat(10, minmax(3px, 1fr));
+  align-items: end;
+  gap: 3px;
+  width: 100%;
+  height: 24px;
+  padding: 2px 0;
+  border-bottom: 1px solid rgba(105, 176, 207, .2);
+}
+
+.intelligence-viz-spark-columns .spark-column {
+  position: relative;
+  display: block;
+  height: 100%;
+}
+
+.intelligence-viz-spark-columns .spark-column b {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: var(--spark-height);
+  min-height: 2px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--domain-accent) 94%, #dffaff), color-mix(in srgb, var(--domain-accent) 46%, #14425a));
+  box-shadow: 0 0 5px color-mix(in srgb, var(--domain-accent) 22%, transparent);
+  opacity: .68;
+}
+
+.intelligence-viz-spark-columns .spark-column.is-latest b {
+  opacity: 1;
+  box-shadow: 0 0 7px color-mix(in srgb, var(--domain-accent) 42%, transparent);
+}
+
+.intelligence-viz-spark-columns .spark-column.is-missing::after {
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+  height: 2px;
+  border: 1px solid color-mix(in srgb, var(--domain-accent) 30%, transparent);
+  content: "";
+  opacity: .48;
+}
+
 .intelligence-viz-disclosure {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 5px;
