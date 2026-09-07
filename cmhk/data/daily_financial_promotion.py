@@ -247,11 +247,15 @@ def _incremental_rows(lines: list[str]) -> list[dict[str, Any]]:
     from data_curation.research_freshness import period_key
     from data_curation.research_plan import research_plan
     carriers = {company for task in research_plan() if task["key"] != "cloud" for company in task["companies"]}
+    # Native fiscal quarters cannot be mapped to calendar quarter-end dates from
+    # a label alone. Preserve these in the fact layer until an explicit adapter exists.
+    native_fiscal_companies = {"SmarTone", "HKBN", "Singtel", "Telstra", "NTT", "NTT Docomo",
+                              "KDDI", "SoftBank", "BT", "Vodafone", "Bharti Airtel", "Reliance Jio"}
     output = []
     for line in lines:
         fact = json.loads(line)
         company = fact.get("company")
-        if company not in carriers or fact.get("decision") != "accepted" or fact.get("freshness") not in {"new_period", "new_metric"}:
+        if company not in carriers or company in native_fiscal_companies or fact.get("decision") != "accepted" or fact.get("freshness") not in {"new_period", "new_metric"}:
             continue
         if not all(fact.get(key) for key in ("entity_supported", "metric_supported", "value_supported", "evidence_hash")):
             continue
@@ -287,7 +291,7 @@ def _incremental_rows(lines: list[str]) -> list[dict[str, Any]]:
             evidence_hash=fact["evidence_hash"], row_ref=fact.get("row_ref", ""))
         row["verification_method"] = "incremental_official_source_extraction"
         if grain == "year":
-            row.update(grain="annual", disclosure_frequency="annual", period_end=f"{year}-12-31")
+            row.update(grain="annual", disclosure_frequency="annual", period_end=period)
         output.append(row)
     return output
 

@@ -73,3 +73,11 @@ class FreshnessTests(unittest.TestCase):
             self.assertEqual(result['upgraded_rows'],0)
             self.assertEqual(next(row for row in rows if row['period']=='Q2 2026'),old)
             self.assertEqual(next(row for row in rows if row['period']=='Q3 2026')['value'],200)
+
+    def test_native_fiscal_quarter_is_not_assigned_a_calendar_end(self):
+        from cmhk.data.daily_financial_promotion import _incremental_rows
+        fact = {'company':'Telstra','metric':'收入','period':'Q1 2026', 'value':'AUD 200 million',
+            'decision':'accepted','freshness':'new_period', 'entity_supported':True,
+            'metric_supported':True,'value_supported':True,'evidence_hash':'hash',
+            'sources':['https://telstra.com.au/results']}
+        self.assertEqual(_incremental_rows([json.dumps(fact)]), [])
