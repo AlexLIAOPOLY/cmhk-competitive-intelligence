@@ -8,6 +8,17 @@ from data_curation.six_agent_research import collect_sources
 
 
 class FreshnessTests(unittest.TestCase):
+    def test_stale_disclosure_cannot_be_new_just_because_baseline_is_older(self):
+        baseline = {'用户数': [{'period': 'six months ended 31 December 2013', 'value': 1}]}
+        item = {'status': 'verified', 'metric': '用户数', 'period': 'six months ended 31 December 2017', 'value': 2}
+        with patch('data_curation.research_freshness.datetime') as clock:
+            clock.now.return_value.year = 2026
+            result = compare_candidate(item, baseline)
+            self.assertEqual((result['status'], result['freshness']), ('conflict', 'stale_disclosure'))
+            self.assertEqual(compare_candidate({**item, 'period': 'H1 2026'}, baseline)['freshness'], 'new_period')
+            self.assertEqual(compare_candidate({**item, 'period': baseline['用户数'][0]['period']}, baseline)['status'], 'no_update')
+        self.assertEqual(baseline['用户数'][0]['value'], 1)
+
     def test_native_fiscal_periods_and_half_year_aliases(self):
         self.assertEqual(period_key('first half of 2026'), period_key("H1'26"))
         self.assertEqual(period_key('six months ended 31 December 2013'), (2013, 12, 'half'))

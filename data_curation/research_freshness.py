@@ -143,6 +143,9 @@ def compare_candidate(item: dict, baseline: dict) -> dict:
     elif period[:2] < max(rank[:2] for rank in known):
         result.update(status="no_update", freshness="older_period",
                       reason="该披露早于库内最新期间，保留已有数据，不计本轮更新。")
+    elif period[0] < datetime.now().year - 1:
+        result.update(status="conflict", freshness="stale_disclosure",
+                      reason="该披露虽晚于该指标的旧基线，但报告期间明显陈旧；只能作为历史补录候选，不能计为本轮最新披露。")
     else:
         result["freshness"] = "new_period"
     return result
