@@ -1131,6 +1131,8 @@ def _global_operator_exact_metric_chunks(
                 f"values={' | '.join(points)}; scope={first.get('scope')}; basis={first.get('basis')}; "
                 f"quality_note={first.get('quality_note')}; {comparison_guidance}"
                 "所有年份必须逐点读取；国际运营商若有analytic_usd_value，应以它作跨币种比较，同时保留原始披露币种；"
+                "原币单位后缀_million表示数值以百万原币计，回答时必须原样写为百万原币或保留英文单位，"
+                "不得只把单位改写成亿而不同时换算数值；"
                 "不得用有值、xxx或估算代替具体数值。"
             )
             links = []
@@ -1185,6 +1187,8 @@ def _global_operator_exact_metric_chunks(
             f"{comparison_guidance}"
             f"{missing_value_instruction}"
             "国际运营商若有analytic_usd_value，应以它作跨币种比较，同时保留并明确原始披露币种；"
+            "原币单位后缀_million表示数值以百万原币计，回答时必须原样写为百万原币或保留英文单位，"
+            "不得只把单位改写成亿而不同时换算数值；"
         )
         chunks.append({"source": source, "text": text, "links": links})
     return chunks

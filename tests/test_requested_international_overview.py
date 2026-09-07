@@ -149,6 +149,17 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertIn("FY2016=74.88", text)
         self.assertIn("FY2025=93.065", text)
 
+    def test_xiaojing_preserves_million_unit_when_presenting_fx_rows(self) -> None:
+        chunks = rag._global_operator_exact_metric_chunks(
+            "比较 SK Telecom 与 Singtel FY2024 营业收入，统一美元",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        combined = "\n".join(chunk["text"] for chunk in chunks)
+        self.assertIn("17940609 KRW_million", combined)
+        self.assertIn("14128 SGD_million", combined)
+        self.assertIn("原币单位后缀_million表示数值以百万原币计", combined)
+        self.assertIn("不得只把单位改写成亿而不同时换算数值", combined)
+
     def test_xiaojing_structured_four_carrier_answer_is_complete_and_exact(self) -> None:
         result = xiaojing_agent._structured_global_postpaid_answer(
             "Verizon、Deutsche Telekom、AT&T、NTT Group从2016到2025是否各有10个后付费用户年度点？",
