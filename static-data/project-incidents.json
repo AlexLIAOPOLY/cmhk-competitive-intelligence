@@ -486,6 +486,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "132a1a81d000a17badd17bf1",
+      "task_id": "incident:132a1a81d000a17badd17bf1",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-09-07T10:33:18+08:00",
+      "started_at_hkt": "2026-09-07T12:27:38+08:00",
+      "heartbeat_at_hkt": "2026-09-07T12:27:38+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "f396f94d3d58919c5225967e",
       "task_id": "incident:f396f94d3d58919c5225967e",
       "title": "战略新闻定时扫描 07:30",
@@ -5009,7 +5033,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T10:53:55+08:00",
-      "heartbeat_at_hkt": "2026-09-07T12:22:06+08:00",
+      "heartbeat_at_hkt": "2026-09-07T12:27:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -5033,7 +5057,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T10:53:55+08:00",
-      "heartbeat_at_hkt": "2026-09-07T12:22:06+08:00",
+      "heartbeat_at_hkt": "2026-09-07T12:27:38+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12671,32 +12695,6 @@
       "started_at_hkt": "2026-09-02T14:37:05+08:00",
       "heartbeat_at_hkt": "2026-09-02T15:06:33+08:00",
       "completed_at_hkt": "2026-09-02T15:07:05+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "b6d8c81194d7f224d63b3a0a",
-      "task_id": "incident:b6d8c81194d7f224d63b3a0a",
-      "title": "主项目Web后台",
-      "kind": "web-app",
-      "kind_label": "主项目Web后台",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P1",
-      "severity_label": "紧急",
-      "summary": "Web后台日志出现未处理异常",
-      "impact": "可能导致部分请求失败、后台任务中断或监控数据缺失，影响系统可用性与可观测性。",
-      "suggestions": [
-        "",
-        "关联2026-09-02T13:24:07+08:00前后/api/task-runs的请求日志，确认受影响的任务状态及是否需人工干预恢复。",
-        "验证相关依赖服务（如数据库、消息队列、外部API）在该时间段是否正常运行，排除外部因素导致的异常。",
-        "修复代码或配置问题后，重启web-app服务，并监控后续请求成功率、后台任务执行情况及监控指标是否恢复正常。"
-      ],
-      "occurred_at_hkt": "2026-09-02T14:36:35+08:00",
-      "started_at_hkt": "2026-09-02T13:06:10+08:00",
-      "heartbeat_at_hkt": "2026-09-02T14:36:35+08:00",
-      "completed_at_hkt": "2026-09-02T14:39:18+08:00",
       "handled_at_hkt": ""
     }
   ],
