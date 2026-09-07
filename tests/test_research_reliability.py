@@ -36,6 +36,27 @@ class ResearchReliabilityTests(unittest.TestCase):
         self.assertEqual(validate_fact(fact, 'KDDI', ['收入'], {url: dict(opened=True, official=True, text=text)})['status'], 'verified')
         self.assertEqual(validate_fact({**fact, 'unit': 'million'}, 'KDDI', ['收入'], {url: dict(opened=True, official=True, text=text)})['status'], 'conflict')
 
+    def test_period_heading_elsewhere_is_bound_to_same_official_document(self):
+        url = 'https://www.hkt.com/report'
+        text = 'HKT fiscal year ended June 30, 2026. ' + 'Overview. ' * 100 + 'Revenue was HK$ 123 million.'
+        fact = dict(company='HKT', metric='收入', status='verified', value='123', period='fiscal year ended June 30, 2026', unit='HK$ million', source_url=url, quote='Revenue was HK$ 123 million.', context_quote='HKT')
+        item = validate_fact(fact, 'HKT', ['收入'], {url:dict(opened=True, official=True, text=text)})
+        self.assertEqual(item['status'], 'verified')
+        self.assertIn(fact['period'], item['period_quote'])
+        self.assertIn(item['period_quote'], text)
+        self.assertEqual(validate_fact({**fact,'period':'fiscal year ended June 30, 2027'}, 'HKT',['收入'], {url:dict(opened=True,official=True,text=text)})['status'],'conflict')
+
+    def test_native_table_unit_and_approximation_are_not_lost(self):
+        url = 'https://www.smartoneholdings.com/report.pdf'
+        text = 'SmarTone 2026 Annual Results. All references to $ are to Hong Kong dollars. Revenues $000 6,603,624.'
+        fact = dict(company='SmarTone', metric='收入', status='verified', value='6,603,624', period='2026', unit='$000 (Hong Kong dollars)', source_url=url, quote=text)
+        self.assertEqual(validate_fact(fact,'SmarTone',['收入'], {url:dict(opened=True,official=True,text=text)})['status'], 'verified')
+        text = 'SmarTone 2026 revenue exceeded $100 million.'
+        fact.update(value='$100 million', unit='$ million', quote=text)
+        self.assertEqual(validate_fact(fact,'SmarTone',['收入'], {url:dict(opened=True,official=True,text=text)})['status'], 'conflict')
+        fact['value'] = 'exceeded $100 million'
+        self.assertEqual(validate_fact(fact,'SmarTone',['收入'], {url:dict(opened=True,official=True,text=text)})['status'], 'verified')
+
     def test_final_reviewer_searches_missing_then_saves_without_replaying(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)

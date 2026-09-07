@@ -1421,7 +1421,9 @@
         started_at_hkt: monitor.active_started_at || monitor.active_heartbeat_at || "",
       });
     }
-    const dates = [...new Set(visibleRuns.map(newsRunDate).filter(Boolean))].sort().reverse();
+    const researchDate = String(state.researchArchitecture?.run?.started_at || "").slice(0, 10);
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    const dates = [...new Set([...visibleRuns.map(newsRunDate), researchDate, today].filter(Boolean))].sort().reverse();
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     const pinnedDate = params.get("newsDate") || "";
     let selectedDate = state.newsSelectedDate || params.get("newsDate") || "";
@@ -3026,15 +3028,27 @@
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
     if (nodeKey.startsWith("research-")) {
-      const response = await fetch(`/api/news-research?date=${encodeURIComponent(state.newsSelectedDate)}`, { cache: "no-store" });
-      if (!response.ok) throw new Error(`研究记录读取失败 ${response.status}`);
-      state.researchArchitecture = await response.json();
-      const lineage = globalSchedulerLineageModel([], []);
-      const node = lineage.nodes.find((item) => item.key === nodeKey);
+      const selectedDate = state.newsSelectedDate;
       const dialog = document.querySelector("#newsLineageDialog");
-      if (!node || !dialog) return;
-      document.querySelector("#newsLineageDialogBody").innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, state.newsSelectedDate);
+      const body = document.querySelector("#newsLineageDialogBody");
+      if (!dialog || !body) return;
+      const render = () => {
+        const node = globalSchedulerLineageModel([], []).nodes.find((item) => item.key === nodeKey);
+        if (node) body.innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, selectedDate);
+      };
+      if (state.researchArchitecture?.date === selectedDate) render();
+      else body.innerHTML = `<header><h3>正在读取该节点</h3><button type="button" onclick="this.closest('dialog').close()" aria-label="关闭节点详情">关闭</button></header><p role="status">正在读取 ${esc(selectedDate)} 的公司指标与搜索结果。</p>`;
       dialog.showModal();
+      try {
+        const response = await fetch(`/api/news-research?date=${encodeURIComponent(selectedDate)}`, { cache: "no-store", signal: AbortSignal.timeout(15000) });
+        if (!response.ok) throw new Error(`研究记录读取失败 ${response.status}`);
+        const payload = await response.json();
+        if (!dialog.open || state.newsSelectedDate !== selectedDate || state.newsSelectedStage !== nodeKey) return;
+        state.researchArchitecture = payload;
+        render();
+      } catch (error) {
+        if (dialog.open && state.newsSelectedStage === nodeKey && state.newsSelectedDate === selectedDate) throw error;
+      }
       return;
     }
     const relatedRuns = lineageRunsForNode(nodeKey);

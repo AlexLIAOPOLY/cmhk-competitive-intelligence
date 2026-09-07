@@ -103,10 +103,20 @@ different companies, search snippets and invented URLs becoming database facts.
             errors.append("摘录没有明确对应公司主体")
         if not item["value"] or item["value"] not in quote:
             errors.append("数值或描述不在引用原文中")
-        if not item["period"] or item["period"] not in grounded:
+        elif re.search(r"(?:surpassed|exceeded|over|more than|less than|approximately|about|超过|超過|约|約|逾|至少|不足)\s*$", quote[:quote.find(item["value"])], re.I):
+            errors.append("原文含超过、约等限定词，value须保留该限定词，不能写成精确值")
+        # A report period is often a table/header passage, separate from the metric.
+        # Keep the model-selected literal period and attach its actual page excerpt;
+        # never invent a year from the URL or turn a relative phrase into a date.
+        if item["period"] and item["period"].casefold() not in grounded.casefold():
+            offset = body.casefold().find(item["period"].casefold())
+            if offset >= 0:
+                item["period_quote"] = body[max(0, offset - 100):offset + len(item["period"]) + 100]
+                grounded += " " + item["period_quote"]
+        if not item["period"] or item["period"].casefold() not in grounded.casefold():
             errors.append("缺少与数据相符的原文期间")
         if w._company_agent_metric_requires_direct_value(item["metric"]) and (
-            not item["unit"] or not all(part in grounded for part in item["unit"].split())
+            not item["unit"] or not all(part.casefold() in grounded.casefold() for part in re.sub(r"[()（）]", " ", item["unit"]).split())
         ):
             errors.append("数值缺少原文单位")
         scales = {"billion": r"\bbillions?\b|十亿|十億", "million": r"\bmillions?\b|百万|百萬",
@@ -323,7 +333,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "company": item["company"], "metric": item["metric"],
                     "value": rendered_value if accepted else "",
                     "period": item.get("period", ""), "unit": item.get("unit", ""),
-                    "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", "")])), "status": "ok" if accepted else "unavailable",
+                    "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", ""), item.get("period_quote", "")])), "status": "ok" if accepted else "unavailable",
                     "decision": "accepted" if accepted else "unchanged" if item["status"] == "no_update" and report.get("incremental") else "review", "row_ref": f"row_{row}",
                     "sources": [item["source_url"]] if item.get("source_url") else [],
                     "source_tier": "official" if accepted else "unknown", "source_score": 1.0 if accepted else 0,

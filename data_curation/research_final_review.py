@@ -25,6 +25,8 @@ def review_run(directory: Path, *, model_factory=None, collector=None, harness_f
     checkpoint = json.loads(checkpoint_path.read_text()) if checkpoint_path.exists() else {**task, "status": "running", "reports": []}
     completed = {r["company"] for r in checkpoint["reports"] if r.get("review_completed")}
     results = [json.loads((directory / f"{t['key']}.json").read_text()) for t in summary["plan"]]
+    baseline_path = directory / "baseline.json"
+    baseline = json.loads(baseline_path.read_text()).get("companies", {}) if baseline_path.exists() else {}
 
     def emit(phase, message, data):
         event = {"ts": now(), "run_id": summary["run_id"], "agent_id": task["key"], "node": task["title"],
@@ -47,6 +49,10 @@ def review_run(directory: Path, *, model_factory=None, collector=None, harness_f
                 report = json.loads(json.dumps(initial))
                 report["reviewed_metrics"] = []
                 checkpoint["reports"].append(report)
+            report.setdefault("pages", {})
+            report.setdefault("searches", [])
+            report.setdefault("baseline", baseline.get(company, {}))
+            report.setdefault("incremental", True)
             metrics = [i["metric"] for i in report["items"] if i.get("status") not in {"verified", "no_update", "not_applicable"}]
             emit("review_start", f"{company}：最终审核并补查 {len(metrics)} 项指标", {"company": company, "metrics": metrics})
             # Persist collected pages separately before any inference; resume never repeats a completed search.
@@ -97,6 +103,8 @@ def review_run(directory: Path, *, model_factory=None, collector=None, harness_f
     checkpoint["status"] = "completed"
     atomic_write_json(checkpoint_path, checkpoint)
     summary.update(accepted=len(accepted), review=failures, unchanged=counts["no_update"],
+                   agents=[{k: v for k, v in agent.items() if k != "reports"} for agent in results],
+                   business_status="updates_available" if accepted else "needs_review" if failures else "no_new_disclosures",
                    tasks=len(facts), metric_status_counts=dict(counts),
                    outcome_counts={"existing": counts["no_update"], "updated": len(accepted), "failed": failures},
                    status="partial" if failures else "completed", completed_at=now(),

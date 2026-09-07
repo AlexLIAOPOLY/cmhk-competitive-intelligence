@@ -501,6 +501,9 @@ def _cache_item_brand_consistent(item: dict) -> bool:
 def _passes_metric_gate(metric: str, value: str) -> bool:
     metric_text = str(metric or "")
     value_text = str(value or "")
+    native_money = bool(re.search(r"\d", value_text) and re.search(
+        r"[$€£¥￥₹]|\b(?:USD|JPY|EUR|GBP|INR|KRW|SGD|AUD|CAD|AED|SAR|yen|rupees?|euros?|won)\b|\bHong Kong dollars?\b",
+        value_text, re.I))
     if not value_text or "未提取到有效数据" in value_text:
         return False
     if any(term.lower() in value_text.lower() for term in DIRTY_SOURCE_LABEL_TERMS):
@@ -531,13 +534,13 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
             re.search(r"利润|溢利|EBITDA|收入|资本开支|折旧", value_text, re.IGNORECASE)
         )
     if re.search(r"EBITDA", metric_text, re.IGNORECASE):
-        return bool(re.search(r"\d", value_text)) and bool(
+        return bool(re.search(r"\d", value_text)) and (native_money or bool(
             re.search(
                 r"港元|人民币|亿元|亿|万元|百万|million|billion|bn|HK\$|US\$|RMB|增长|下降|上升|减少|同比|按年",
                 value_text,
                 re.IGNORECASE,
             )
-        ) and not bool(
+        )) and not bool(
             re.search(r"运营成本|营运成本|资本开支|折旧及摊销", value_text, re.IGNORECASE)
         )
     if re.search(r"派息|股息|分派|dividend", metric_text, re.IGNORECASE):
@@ -554,6 +557,7 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         )
     if re.search(r"资本开支|capex|capital expenditure", metric_text, re.IGNORECASE):
         return bool(re.search(r"资本开支|capex|capital expenditure", value_text, re.IGNORECASE)) or (
+            native_money and not bool(re.search(r"折旧|摊销", value_text))) or (
             bool(
                 re.search(
                     r"亿|万|百万|港元|元|美元|HK\\$|US\\$|Rs\.?|₹|crore|lakh",
@@ -577,7 +581,7 @@ def _passes_metric_gate(metric: str, value: str) -> bool:
         if re.fullmatch(r"[-+]?\d+(?:\.\d+)?%", value_text.strip()):
             return False
         if re.search(r"收入|收益|EBITDA|利润", metric_text, re.IGNORECASE):
-            return bool(
+            return native_money or bool(
                 re.search(
                     r"港元|港仙|人民币|亿元|亿|万元|百万|million|billion|bn|\bB\b|\d\s*M\b|HKD|CNY|HK\$|US\$|RMB|"
                     r"增长|下降|上升|减少|同比|按年",
