@@ -89,8 +89,9 @@ def execute(root: Path, run_id: str) -> dict:
             run_id=run_id, output_dir=directory, resume=bool(previous))
         if summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted"):
             summary["publication"] = {"status": "completed", "completed_at": now(),
-                "database_updated": False, "insights": 0, "result_status": "no_new_disclosures",
-                "note": "本轮没有可写入的新披露，保留现有数据库和页面；未重复生成洞察。"}
+                "database_updated": False, "insights": 0,
+                "result_status": "needs_review" if summary.get("review") else "no_new_disclosures",
+                "note": "本轮未形成可写入的新披露，保留现有数据库和页面；待处理或失败记录见研究结果，未重复生成洞察。"}
             atomic_write_json(manifest_path, summary)
             return summary
         summary["publication"] = {"status": "running", "started_at": now()}

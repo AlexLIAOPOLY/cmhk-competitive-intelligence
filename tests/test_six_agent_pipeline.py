@@ -129,6 +129,11 @@ class SixAgentPipelineTests(unittest.TestCase):
                 result = daily.execute(root, run_id)
             self.assertEqual(result["publication"]["result_status"], "no_new_disclosures")
             self.assertFalse(result["publication"]["database_updated"])
+            (run / "manifest.json").write_text(json.dumps({"status": "partial", "accepted": 0, "review": 1,
+                "research_policy": "latest_disclosure_incremental_v1"}))
+            with patch.object(daily, "ROOT", root):
+                result = daily.execute(root, run_id)
+            self.assertEqual(result["publication"]["result_status"], "needs_review")
 
     def test_six_research_publication_requires_its_own_finished_manifest(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(pipeline, "ROOT", Path(directory)):

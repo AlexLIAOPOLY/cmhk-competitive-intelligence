@@ -382,7 +382,7 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
                "processed_companies": sum(len(r["reports"]) for r in results),
                "completed_companies": sum(report["status"] == "completed" for r in results for report in r["reports"]),
                "metric_status_counts": dict(Counter(fact["research_status"] for fact in facts)),
-               "business_status": "updates_available" if accepted else "no_new_disclosures",
+               "business_status": "updates_available" if accepted else "needs_review" if any(fact["decision"] == "review" for fact in facts) else "no_new_disclosures",
                "recrawl_performed": False}
     atomic_write_json(output_dir / "manifest.json", summary)
     return summary
