@@ -2088,6 +2088,47 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .news-lineage.is-global .news-lineage-node.is-research-step > span { font-size: 16px; line-height: 1.5; }
 .news-lineage.is-global .news-lineage-node.is-research-agent > em,
 .news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; max-height: none; overflow: visible; }
+/* Keep the strategic-news row readable at the same visual distance as the research cards. */
+.news-lineage.is-global .news-lineage-node:is(
+  [data-news-lineage-node="strategic"],
+  [data-news-lineage-node="news-search"],
+  [data-news-lineage-node="news-ai"],
+  [data-news-lineage-node="news-dedupe"],
+  [data-news-lineage-node="news-output"],
+  [data-news-lineage-node="news-selection-agent"],
+  [data-news-lineage-node="app-result"],
+  [data-news-lineage-node="weekly-result"]
+) > span { font-size: 16px; line-height: 1.45; }
+.news-lineage.is-global .news-lineage-node:is(
+  [data-news-lineage-node="strategic"],
+  [data-news-lineage-node="news-search"],
+  [data-news-lineage-node="news-ai"],
+  [data-news-lineage-node="news-dedupe"],
+  [data-news-lineage-node="news-output"],
+  [data-news-lineage-node="news-selection-agent"],
+  [data-news-lineage-node="app-result"],
+  [data-news-lineage-node="weekly-result"]
+) > strong { font-size: 30px; }
+.news-lineage.is-global .news-lineage-node:is(
+  [data-news-lineage-node="strategic"],
+  [data-news-lineage-node="news-search"],
+  [data-news-lineage-node="news-ai"],
+  [data-news-lineage-node="news-dedupe"],
+  [data-news-lineage-node="news-output"],
+  [data-news-lineage-node="news-selection-agent"],
+  [data-news-lineage-node="app-result"],
+  [data-news-lineage-node="weekly-result"]
+) > strong small,
+.news-lineage.is-global .news-lineage-node:is(
+  [data-news-lineage-node="strategic"],
+  [data-news-lineage-node="news-search"],
+  [data-news-lineage-node="news-ai"],
+  [data-news-lineage-node="news-dedupe"],
+  [data-news-lineage-node="news-output"],
+  [data-news-lineage-node="news-selection-agent"],
+  [data-news-lineage-node="app-result"],
+  [data-news-lineage-node="weekly-result"]
+) > em { font-size: 12px; line-height: 1.5; }
 .research-node-detail { overflow-wrap: anywhere; }
 .research-node-detail ol { padding-left: 24px; line-height: 1.9; }
 .research-node-detail dl { margin: 10px 0; }
