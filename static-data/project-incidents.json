@@ -8,21 +8,23 @@
       "kind": "web-app",
       "kind_label": "主项目Web后台",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P1",
       "severity_label": "紧急",
       "summary": "Web后台日志出现未处理异常",
-      "impact": "至少一个请求、后台线程或战略监视周期可能中断。",
+      "impact": "已确认：至少一个请求、后台线程或战略监视周期可能中断。推断：若异常持续，可能导致服务降级、任务失败或数据不一致。",
       "suggestions": [
-        "按时间戳关联 /api/task-runs 与完整 web_app stderr。",
-        "确认受影响任务状态后再恢复；不要仅凭单行堆栈重启服务。"
+        "",
+        "关联 /api/task-runs 接口日志，确认该时间点是否有任务执行失败或状态异常。",
+        "根据堆栈信息修复根因（如代码缺陷或依赖问题），并在测试环境验证修复后，再部署到生产环境。",
+        "修复后监控 web_app.stderr.log 和任务运行状态，确保无新异常出现。"
       ],
       "occurred_at_hkt": "2026-09-07T11:22:35+08:00",
       "started_at_hkt": "2026-09-07T11:22:35+08:00",
       "heartbeat_at_hkt": "2026-09-07T11:22:35+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-07T11:24:21+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -32,21 +34,23 @@
       "kind": "web-app",
       "kind_label": "主项目后台任务",
       "scope": "web-app",
-      "incident_status": "open",
-      "run_status": "failed",
-      "phase": "待处理",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
       "severity": "P3",
       "severity_label": "中",
       "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "impact": "已确认：至少一个候选、去重、AI审核或后台处理步骤可能回退、延期或失败。推断：具体影响范围需结合任务归档确认，可能仅部分条目受影响。",
       "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+        "检查web-app日志中与错误时间点(2026-09-07T11:22:35+08:00)关联的完整堆栈和上下文，定位触发对账失败的具体条目或请求。",
+        "根据日志中的候选ID或任务标识，查询对应任务归档状态，确认受影响条目是否已回退成功或最终失败。",
+        "若条目进入待恢复队列，保留已有处理结果，仅重新触发失败的对账步骤，并监控执行结果。",
+        "修复后验证任务归档状态，确保受影响条目完成处理且无新增错误。"
       ],
       "occurred_at_hkt": "2026-09-07T11:22:35+08:00",
       "started_at_hkt": "2026-09-07T11:22:35+08:00",
       "heartbeat_at_hkt": "2026-09-07T11:22:35+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-07T11:24:21+08:00",
       "handled_at_hkt": ""
     },
     {
@@ -4849,7 +4853,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T10:53:55+08:00",
-      "heartbeat_at_hkt": "2026-09-07T11:22:35+08:00",
+      "heartbeat_at_hkt": "2026-09-07T11:28:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -4873,7 +4877,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T10:53:55+08:00",
-      "heartbeat_at_hkt": "2026-09-07T11:22:35+08:00",
+      "heartbeat_at_hkt": "2026-09-07T11:28:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
