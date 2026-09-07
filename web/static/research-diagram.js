@@ -3,7 +3,7 @@
   "use strict";
   const status = (value) => ({
     completed: { key: "healthy", label: "已完成" }, running: { key: "running", label: "运行中" },
-    partial: { key: "warning", label: "部分完成" }, error: { key: "critical", label: "执行失败" },
+    partial: { key: "warning", label: "执行失败" }, error: { key: "critical", label: "执行失败" },
     pending: { key: "unknown", label: "待执行" },
   })[value] || { key: "unknown", label: "无记录" };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -18,6 +18,11 @@
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
   const childTitle = (title) => String(title || "").replace(/研究 Agent$/, "研究子 Agent");
+  const metricValue = (item) => {
+    const value = String(item.value ?? "").trim();
+    const unit = String(item.unit || "").trim();
+    return !value ? "未取得可更新值" : !unit || unit.split(/\s+/).every((part) => value.includes(part)) ? value : `${value} ${unit}`;
+  };
   const link = (url) => /^https?:\/\//i.test(String(url || "")) ? `<a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(url)}</a>` : esc(url);
   const reportCoverage = (report) => {
     const items = Array.isArray(report?.items) ? report.items : [];
@@ -95,7 +100,7 @@
         "结果只分库内已有、新增更新、执行失败；找不到可靠内容时写明失败原因",
         "每次只提交一个指标，已完成结果立即保存；截断响应禁止入库，传输重试不触发重新抓取",
       ], researchHealth(actual, run), { assignment: task, agent: actual, variant: "research-agent",
-        note: `${run && !incremental ? "旧流程已处理" : "已完成搜索"} ${done}/${task.companies.length} 家公司${incremental && actual ? ` · ${resultCounts(reports)}` : ""} · 负责公司：${task.companies.join("、")}` });
+        note: `负责 ${task.companies.length} 家公司${incremental && actual ? ` · ${resultCounts(reports)}` : ""} · 负责公司：${task.companies.join("、")}` });
       edges.push(["research-dispatch", `research-${task.key}`, "", "research-fan", {}]);
       edges.push([`research-${task.key}`, "research-merge", "", "research-join", {}]);
     });
@@ -105,7 +110,7 @@
       "有可信原文支持的新数据进入更新批次；库内已有则保留，无法核实则记执行失败并说明原因",
       "输入：六个研究 Agent 的报告；输出：本轮可更新字段及待复核清单",
       "本轮结束后，下一次定时任务继续搜索最新披露；已有数据保持可信",
-    ], status(run?.final_review?.status || (run?.status === "running" ? undefined : run?.status)), {
+    ], status(run?.final_review?.status), {
       agent: data.final_reviewer || null,
       assignment: { key: "final-review" },
       note: data.final_reviewer ? resultCounts(data.final_reviewer.reports || []) : "收齐研究结果后，继续联网补查并核对",
@@ -162,7 +167,7 @@
     const selected = node.agent ? [...items].sort((a, b) => Number(b.status === "verified") - Number(a.status === "verified")) : items;
     const title = update ? `${isIncremental(run) ? "新增更新" : "历史核验通过"}的 ${run?.accepted ?? "—"} 项数据是哪几项` : node.agent ? `${node.label}：${isIncremental(run) ? "逐公司、逐指标结果" : "历史核验结果（新增未统计）"}` : `本轮 ${run?.tasks ?? "—"} 项指标结果清单`;
     const note = update ? `实际读取 ${items.length} 项审核通过记录；本轮页面数值变化 ${run?.publication?.changes?.changed ?? "未记录"} 项。通过审核、写入事实层与主表数值变化分别记录。` : `只列本节点的公司与指标；${isIncremental(run) ? "只显示库内已有、新增更新、执行失败；失败原因逐项写明" : "历史核验结果不代表数据库缺失，也不能换算成新增披露数量"}；共 ${items.length} 项处理记录。`;
-    return section(title, note, selected.map((raw, i) => { const existing = (raw.research_status || raw.status) === "no_update"; const item = existing && raw.latest_baseline ? { ...raw, ...raw.latest_baseline, baseline: [raw.latest_baseline] } : { ...raw, baseline: raw.latest_baseline ? [raw.latest_baseline] : [] }; return `<article><strong>${i + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(item.value === "" || item.value == null ? "未取得可更新值" : item.value)} · ${esc(item.period || "期间未记录")} · ${esc(item.unit || "单位未记录")} · ${esc(itemLabel(item.research_status || item.status || (item.decision === "accepted" ? "verified" : "conflict"), isIncremental(run)))}</p><p>${esc(item.reason || (item.reasons || []).join("；"))}</p>${item.baseline?.length ? `<p>库内基线：${item.baseline.map((old) => esc(`${old.period} · ${old.value} ${old.unit || ""}`)).join("；")}</p>` : ""}<p>${(item.sources || [item.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>")}</p></article>`; }));
+    return section(title, note, selected.map((raw, i) => { const existing = (raw.research_status || raw.status) === "no_update"; const item = existing && raw.latest_baseline ? { ...raw, ...raw.latest_baseline, baseline: [raw.latest_baseline] } : { ...raw, baseline: raw.latest_baseline ? [raw.latest_baseline] : [] }; return `<article><strong>${i + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(metricValue(item))} · ${esc(item.period || "期间未记录")} · ${esc(itemLabel(item.research_status || item.status || (item.decision === "accepted" ? "verified" : "conflict"), isIncremental(run)))}</p><p>${esc(item.reason || (item.reasons || []).join("；"))}</p>${!existing && item.baseline?.length ? `<p>库内已有：${item.baseline.map((old) => esc(`${old.period || "期间未记录"} · ${metricValue(old)}`)).join("；")}</p>` : ""}<p>${(item.sources || [item.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>")}</p></article>`; }));
   }
   function searchHistory(node, agents, events) {
     if (!node.assignment) return "";
