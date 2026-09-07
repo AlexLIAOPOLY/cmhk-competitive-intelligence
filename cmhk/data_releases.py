@@ -31,6 +31,7 @@ RELATED_PACKAGE_SPECS = {
             {
                 "annual_metrics.csv",
                 "annual_metrics.json",
+                "annual_fx_rates.json",
                 "sources.json",
                 "quality_audit.json",
                 "conflicts_and_scope_breaks.csv",

@@ -1,0 +1,436 @@
+{
+  "id": "official_annual_average_fx_to_usd_2016_2025",
+  "indicator": "PA.NUS.FCRF",
+  "indicator_label": "Official exchange rate (LCU per US$, period average)",
+  "publisher": "World Bank World Development Indicators",
+  "source_organization": "International Monetary Fund, International Financial Statistics database",
+  "source_url": "https://api.worldbank.org/v2/country/DEU;IND;JPN;KOR;SGP;USA/indicator/PA.NUS.FCRF?date=2016:2025&format=json&per_page=200",
+  "method": "reported local-currency value divided by the matching year's local-currency-per-US-dollar annual average",
+  "usage_policy": "analysis-only currency translation; never replaces the operator's reported value or accounting currency",
+  "years": [
+    2016,
+    2025
+  ],
+  "rates": [
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2016,
+      "local_per_usd": 0.903421436257263,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2017,
+      "local_per_usd": 0.885205508269372,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2018,
+      "local_per_usd": 0.846772667108111,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2019,
+      "local_per_usd": 0.893276257067409,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2020,
+      "local_per_usd": 0.875506396987998,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2021,
+      "local_per_usd": 0.84549413889045,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2022,
+      "local_per_usd": 0.949623753156941,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2023,
+      "local_per_usd": 0.924839558470698,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2024,
+      "local_per_usd": 0.923889546117607,
+      "observation_status": ""
+    },
+    {
+      "currency": "EUR",
+      "country": "DEU",
+      "year": 2025,
+      "local_per_usd": 0.88496895841236,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2016,
+      "local_per_usd": 67.1953128073894,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2017,
+      "local_per_usd": 65.1215686450659,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2018,
+      "local_per_usd": 68.3894670935422,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2019,
+      "local_per_usd": 70.4203405359551,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2020,
+      "local_per_usd": 74.0995668836052,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2021,
+      "local_per_usd": 73.9180128154351,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2022,
+      "local_per_usd": 78.6044905829916,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2023,
+      "local_per_usd": 82.5992764460784,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2024,
+      "local_per_usd": 83.669281580941,
+      "observation_status": ""
+    },
+    {
+      "currency": "INR",
+      "country": "IND",
+      "year": 2025,
+      "local_per_usd": 87.1584483507393,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2016,
+      "local_per_usd": 108.792900046834,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2017,
+      "local_per_usd": 112.166141081871,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2018,
+      "local_per_usd": 110.42317934106,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2019,
+      "local_per_usd": 109.009665900863,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2020,
+      "local_per_usd": 106.774582262437,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2021,
+      "local_per_usd": 109.754323839417,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2022,
+      "local_per_usd": 131.498140443764,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2023,
+      "local_per_usd": 140.49110006234,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2024,
+      "local_per_usd": 151.366291302752,
+      "observation_status": ""
+    },
+    {
+      "currency": "JPY",
+      "country": "JPN",
+      "year": 2025,
+      "local_per_usd": 149.657926890952,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2016,
+      "local_per_usd": 1160.7675,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2017,
+      "local_per_usd": 1131.00083333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2018,
+      "local_per_usd": 1100.16333333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2019,
+      "local_per_usd": 1165.3575,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2020,
+      "local_per_usd": 1180.26583333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2021,
+      "local_per_usd": 1143.95166666667,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2022,
+      "local_per_usd": 1291.44666666667,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2023,
+      "local_per_usd": 1305.6625,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2024,
+      "local_per_usd": 1363.375,
+      "observation_status": ""
+    },
+    {
+      "currency": "KRW",
+      "country": "KOR",
+      "year": 2025,
+      "local_per_usd": 1422.44083333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2016,
+      "local_per_usd": 1.38154636363636,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2017,
+      "local_per_usd": 1.380925,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2018,
+      "local_per_usd": 1.34884166666667,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2019,
+      "local_per_usd": 1.36415833333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2020,
+      "local_per_usd": 1.37974166666667,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2021,
+      "local_per_usd": 1.34348333333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2022,
+      "local_per_usd": 1.37866666666667,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2023,
+      "local_per_usd": 1.34276666666667,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2024,
+      "local_per_usd": 1.33623333333333,
+      "observation_status": ""
+    },
+    {
+      "currency": "SGD",
+      "country": "SGP",
+      "year": 2025,
+      "local_per_usd": 1.30745,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2016,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2017,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2018,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2019,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2020,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2021,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2022,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2023,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2024,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    },
+    {
+      "currency": "USD",
+      "country": "USA",
+      "year": 2025,
+      "local_per_usd": 1.0,
+      "observation_status": ""
+    }
+  ]
+}

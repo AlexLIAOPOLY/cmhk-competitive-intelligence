@@ -3546,7 +3546,7 @@ def main() -> None:
         "summary":"保留既有十家并新增 NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；四家建立完整十年指标骨架，每条有值记录至少三份不同底层官方文件核验，证据不足处保留为空。",
         "source_type":"official_public_multi_source", "updated_at":BUILD_TIME,
         "tags":["global_carriers","10_year_history","subscribers","5g","broadband","arpu","traffic","base_stations","financials"],
-        "entrypoints":["README.md","summary.md","annual_metrics.json","annual_metrics.csv","sources.json","coverage.csv","quality_audit.json","quality_audit.md","conflicts_and_scope_breaks.json","conflicts_and_scope_breaks.csv"],
+        "entrypoints":["README.md","summary.md","annual_metrics.json","annual_metrics.csv","annual_fx_rates.json","sources.json","coverage.csv","quality_audit.json","quality_audit.md","conflicts_and_scope_breaks.json","conflicts_and_scope_breaks.csv"],
         "row_count":len(rows), "quality":{
             "status":quality["status"],
             "source_count":len(SOURCES),

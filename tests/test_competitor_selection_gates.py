@@ -43,8 +43,10 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertIn("competitorHasCompleteMetric", SCRIPT)
         self.assertIn("function competitorHasComparablePeer", SCRIPT)
         self.assertIn("company.id !== companyId", SCRIPT)
-        self.assertIn(".filter((company) => competitorHasComparablePeer(data, company.id, years, metricKey))", SCRIPT)
+        self.assertIn("const auditedCompanies = new Set", SCRIPT)
         self.assertIn("selectedCompanies.includes(company.id) || competitorHasCompleteMetric", SCRIPT)
+        self.assertIn("function competitorUsdLookup", SCRIPT)
+        self.assertIn('return "usd_conversion"', SCRIPT)
         self.assertIn("...(data.gaps || [])", SCRIPT)
         self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
         self.assertIn("整个年份窗口均有披露值", SCRIPT)
@@ -56,6 +58,12 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertIn("const comparison = competitorComparableWindow(data, companies, metric, years);", SCRIPT)
         self.assertIn("if (companyIds.length === 1)", SCRIPT)
         self.assertIn("const audited = new Set(metricRows.map", SCRIPT)
+
+    def test_all_requested_asian_operators_are_visible_and_fx_is_embedded(self):
+        companies = {item["id"] for item in DATA["companies"]}
+        self.assertTrue({"NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"}.issubset(companies))
+        self.assertEqual(len(DATA["fxRates"]["rates"]), 60)
+        self.assertEqual(DATA["fxRates"]["indicator"], "PA.NUS.FCRF")
 
     def test_all_gap_metric_from_reported_screenshot_is_filtered_out(self):
         companies = ["3HK", "HKT", "SmarTone"]

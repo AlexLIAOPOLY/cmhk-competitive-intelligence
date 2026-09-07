@@ -1036,6 +1036,39 @@ def _global_operator_exact_metric_chunks(
         for item in (registry_payload.get("sources") or [])
         if isinstance(item, dict)
     }
+    international_operator_ids = {
+        "bharti_airtel", "reliance_jio", "verizon", "deutsche_telekom", "att",
+        "ntt_group", "ntt_docomo", "softbank_corp", "sk_telecom", "singtel",
+    }
+    fx_path = AGENT_KNOWLEDGE_ROOT / dataset_id / "annual_fx_rates.json"
+    try:
+        fx_payload = json.loads(fx_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        fx_payload = {}
+    fx_rates = {
+        (str(item.get("currency") or ""), int(item.get("year") or 0)): float(item.get("local_per_usd"))
+        for item in (fx_payload.get("rates") or [])
+        if isinstance(item, dict) and item.get("local_per_usd") is not None
+    }
+    fx_source_url = str(fx_payload.get("source_url") or "")
+
+    def usd_translation(row: dict[str, Any]) -> str:
+        value = str(row.get("official_value") or "").strip()
+        unit = str(row.get("unit") or "")
+        operator_id = str(row.get("operator_id") or "")
+        currency_match = re.search(r"(?:^|_)(USD|EUR|JPY|KRW|SGD|INR)(?:_|$)", unit, re.I)
+        if not value or operator_id not in international_operator_ids or not currency_match:
+            return ""
+        currency = currency_match.group(1).upper()
+        year = int(row.get("year") or 0)
+        rate = fx_rates.get((currency, year))
+        if rate is None or rate <= 0:
+            return ""
+        scale = 1000.0 if re.search(r"(?:^|_)billion(?:_|$)", unit, re.I) else 10.0 if re.search(r"(?:^|_)crore(?:_|$)", unit, re.I) else 1.0
+        usd_unit = "USD_per_user_month" if re.search(r"per_user|per_month|arpu|arpa", unit, re.I) else "USD_million"
+        usd_value = f"{float(value) * scale / rate:.6f}".rstrip("0").rstrip(".")
+        rate_text = f"{rate:.9f}".rstrip("0").rstrip(".")
+        return f"; analytic_usd_value={usd_value} {usd_unit}; fx_local_per_usd={rate_text}; fx_source={fx_source_url}"
 
     def row_links(row: dict[str, Any]) -> list[dict[str, str]]:
         primary_url = str(row.get("primary_source_url") or "").strip()
@@ -1077,7 +1110,7 @@ def _global_operator_exact_metric_chunks(
                 strict_sources = _strict_source_document_count(row, source_registry_path=registry_path)
                 row_value = str(row.get("official_value") or "").strip()
                 point_value = (
-                    f"{row_value} {row.get('unit')}"
+                    f"{row_value} {row.get('unit')}{usd_translation(row)}"
                     if row_value
                     else _governed_gap_value_text(str(row.get("verification_status") or ""))
                 )
@@ -1097,7 +1130,8 @@ def _global_operator_exact_metric_chunks(
                 f"metric_key={pair[1]}; metric_zh={first.get('metric_zh')}; point_count={len(pair_rows)}; "
                 f"values={' | '.join(points)}; scope={first.get('scope')}; basis={first.get('basis')}; "
                 f"quality_note={first.get('quality_note')}; {comparison_guidance}"
-                "所有年份必须逐点读取；不得用有值、xxx或估算代替具体数值。"
+                "所有年份必须逐点读取；国际运营商若有analytic_usd_value，应以它作跨币种比较，同时保留原始披露币种；"
+                "不得用有值、xxx或估算代替具体数值。"
             )
             links = []
             seen_link_urls = set()
@@ -1113,7 +1147,7 @@ def _global_operator_exact_metric_chunks(
         official_value = str(row.get("official_value") or "").strip()
         verification_status = str(row.get("verification_status") or "").strip()
         if official_value:
-            value_text = f"{official_value} {row.get('unit')}"
+            value_text = f"{official_value} {row.get('unit')}{usd_translation(row)}"
             missing_value_instruction = ""
         elif verification_status == "not_applicable_precommercial":
             value_text = _governed_gap_value_text(verification_status)
@@ -1150,6 +1184,7 @@ def _global_operator_exact_metric_chunks(
             f" reviewed_source_urls={json.dumps(reviewed_urls, ensure_ascii=False)}."
             f"{comparison_guidance}"
             f"{missing_value_instruction}"
+            "国际运营商若有analytic_usd_value，应以它作跨币种比较，同时保留并明确原始披露币种；"
         )
         chunks.append({"source": source, "text": text, "links": links})
     return chunks

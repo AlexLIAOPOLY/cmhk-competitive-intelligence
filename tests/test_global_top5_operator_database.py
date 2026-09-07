@@ -2247,5 +2247,19 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
         self.assertNotIn("competitor_product_tariffs", result)
 
 
+    def test_requested_international_rows_include_annual_average_usd_translation(self):
+        chunks = rag_llm._global_operator_exact_metric_chunks(
+            "SK Telecom 和 Singtel FY2024 营收是多少？统一美元比较",
+            dataset_ids={"global_top5_operators_2016_2025"},
+        )
+        combined = "\n".join(chunk["text"] for chunk in chunks)
+        self.assertIn("operator=SK Telecom", combined)
+        self.assertIn("operator=Singtel", combined)
+        self.assertIn("analytic_usd_value=", combined)
+        self.assertIn("USD_million", combined)
+        self.assertIn("fx_local_per_usd=1363.375", combined)
+        self.assertIn("fx_local_per_usd=1.336233333", combined)
+
+
 if __name__ == "__main__":
     unittest.main()

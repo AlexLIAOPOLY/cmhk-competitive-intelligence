@@ -150,6 +150,40 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertNotIn("999999", prompt)
         self.assertNotIn("fake", prompt)
 
+    def test_international_financial_comparison_is_translated_to_usd(self):
+        captured = {}
+
+        def open_request(request, timeout):
+            captured["body"] = json.loads(request.data.decode())
+            return _Response()
+
+        data = json.loads(web_app.COMPETITOR_WORKBENCH_DATA_PATH.read_text(encoding="utf-8"))
+        payload = {
+            "requestId": "asia-revenue-usd",
+            "companies": ["SK Telecom", "Singtel"],
+            "metric": {"key": "revenue", "label": "营业收入"},
+            "years": [2023, 2024],
+            "evidenceVersion": data["evidenceVersion"],
+        }
+        config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
+        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot"), patch(
+            "web_app.urllib.request.urlopen", side_effect=open_request
+        ):
+            web_app.generate_competitor_insight(payload)
+
+        prompt = captured["body"]["messages"][1]["content"]
+        self.assertIn("World Bank World Development Indicators", prompt)
+        self.assertIn("PA.NUS.FCRF", prompt)
+        self.assertIn("SK Telecom\t2024\t=", prompt)
+        self.assertIn("\tUSD million\t17940609.0\tKRW_million\t1363.375", prompt)
+        self.assertIn("\tUSD million\t14128.0\tSGD_million\t1.33623333333333", prompt)
+
+    def test_fx_unit_scaling_preserves_reported_magnitude(self):
+        value, unit = web_app._competitor_value_in_usd(100, "JPY_billion", 100)
+        self.assertEqual((value, unit), (1000, "USD million"))
+        value, unit = web_app._competitor_value_in_usd(4000, "JPY_per_user_month", 100)
+        self.assertEqual((value, unit), (40, "USD/户/月"))
+
     def test_streaming_mode_emits_real_status_and_content_deltas(self):
         captured = {}
         events = []

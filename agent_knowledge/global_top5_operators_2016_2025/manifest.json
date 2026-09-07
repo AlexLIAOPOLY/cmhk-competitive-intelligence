@@ -20,6 +20,7 @@
     "summary.md",
     "annual_metrics.json",
     "annual_metrics.csv",
+    "annual_fx_rates.json",
     "sources.json",
     "coverage.csv",
     "quality_audit.json",

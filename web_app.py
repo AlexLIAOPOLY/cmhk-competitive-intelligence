@@ -785,6 +785,19 @@ def _parse_competitor_strategic_indicator(content: object) -> str:
     return _parse_competitor_strategic_signal(content)[0]
 
 
+def _competitor_currency_from_unit(unit: str) -> str:
+    match = re.search(r"(?:^|_)(HKD|USD|EUR|CNY|RMB|JPY|KRW|SGD|INR|GBP)(?:_|$)", unit or "", re.I)
+    return (match.group(1).upper().replace("RMB", "CNY") if match else "")
+
+
+def _competitor_value_in_usd(value: float, unit: str, local_per_usd: float) -> tuple[float, str]:
+    if local_per_usd <= 0:
+        raise ValueError("年度平均汇率必须大于零")
+    scale = 1000.0 if re.search(r"(?:^|_)billion(?:_|$)", unit, re.I) else 10.0 if re.search(r"(?:^|_)crore(?:_|$)", unit, re.I) else 1.0
+    translated_unit = "USD/户/月" if re.search(r"per_user|per_month|arpu|arpa", unit, re.I) else "USD million"
+    return value * scale / local_per_usd, translated_unit
+
+
 def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     request_id = str(payload.get("requestId") or "")[:80]
     companies = [str(value)[:80] for value in (payload.get("companies") or []) if str(value).strip()]
@@ -826,8 +839,34 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     normalized.sort(key=lambda row: (row["year"], row["company"]))
     if not normalized or len(normalized) > 80:
         raise ValueError("当前比较范围没有可用的权威数据")
-    if len({row["unit"] for row in normalized}) != 1:
+    company_groups = {
+        str(item.get("id") or ""): str(item.get("group") or "")
+        for item in (canonical.get("companies") or [])
+        if isinstance(item, dict)
+    }
+    all_international = all(company_groups.get(company) == "国际运营商" for company in companies)
+    fx_payload = canonical.get("fxRates") if isinstance(canonical.get("fxRates"), dict) else {}
+    fx_rates = {
+        (str(item.get("currency") or ""), int(item.get("year") or 0)): float(item.get("local_per_usd"))
+        for item in (fx_payload.get("rates") or [])
+        if isinstance(item, dict) and item.get("local_per_usd") is not None
+    }
+    units = {row["unit"] for row in normalized}
+    currencies = {_competitor_currency_from_unit(unit) for unit in units}
+    convert_to_usd = all_international and bool(currencies) and "" not in currencies
+    if len(units) != 1 and not convert_to_usd:
         raise ValueError("所选数据单位不一致，不能直接比较")
+    if convert_to_usd:
+        for row in normalized:
+            currency = _competitor_currency_from_unit(row["unit"])
+            rate = fx_rates.get((currency, row["year"]))
+            if rate is None:
+                raise ValueError(f"缺少 {currency} {row['year']} 年官方平均汇率")
+            reported_value, reported_unit = row["value"], row["unit"]
+            row["value"], row["unit"] = _competitor_value_in_usd(reported_value, reported_unit, rate)
+            row["reported_value"] = reported_value
+            row["reported_unit"] = reported_unit
+            row["fx_local_per_usd"] = rate
     per_company_years = {company: {row["year"] for row in normalized if row["company"] == company} for company in companies}
     if any(len(company_years) < 2 for company_years in per_company_years.values()):
         raise ValueError("每家竞对至少需要两个有效年度")
@@ -841,7 +880,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     # source URLs remain available in the rendered evidence table and are not
     # useful input to this no-external-knowledge analysis.
     table = "\n".join(
-        "\t".join(str(row[key]) for key in ("company", "year", "comparator", "value", "unit"))
+        "\t".join(str(row.get(key, "")) for key in ("company", "year", "comparator", "value", "unit", "reported_value", "reported_unit", "fx_local_per_usd"))
         for row in comparison_rows
     )
     definition_lines: list[str] = []
@@ -850,6 +889,10 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         scopes = sorted({row["scope"] for row in company_rows if row["scope"]})
         definition_lines.append(f"{company}={' / '.join(scopes) or '未标注'}")
     definitions = "\n".join(definition_lines)
+    fx_context = (
+        f"\n汇率来源\n{fx_payload.get('publisher', '')} · {fx_payload.get('indicator', '')} · {fx_payload.get('source_url', '')}"
+        if convert_to_usd else ""
+    )
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or INTERNAL_AI_BASE_URL).strip().rstrip("/")
     api_key = str(config.get("api_key") or "").strip()
@@ -860,8 +903,8 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
     body = {
         "model": model,
         "messages": [
-            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值，句末不要句号或英文句点；并由你从公司、竞争动作、趋势拐点或胜负判断中选出1—3个最值得决策者关注的短语，每个2—10字，仅在该短语两侧加【】用于视觉强调，不包裹标点或整句。其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
-            {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\n{table}\n原生口径\n{definitions}"},
+            {"role": "system", "content": "只输出四行简体中文。第一行以战略指标｜开头，用一句不超过45字的话给出面向决策的竞争判断，不复述单个数据值，句末不要句号或英文句点；并由你从公司、竞争动作、趋势拐点或胜负判断中选出1—3个最值得决策者关注的短语，每个2—10字，仅在该短语两侧加【】用于视觉强调，不包裹标点或整句。其后三行每行35—70字，依次以竞争格局｜、公司定位｜、业务含义｜开头。四行必须基于同一组输入证据判断趋势、位置和业务意义；保留必要比较符；不得补数、使用Markdown或引用外部知识。若输入包含reported_value、reported_unit和fx_local_per_usd，比较值已按同期年度平均汇率统一为美元；必须说明换算口径，不得把换算值称为公司原始披露。若多家公司的原生口径标明共建共享且数值相同，必须说明这是同一共享网络口径，不得表述为各自拥有或将数值相加。"},
+            {"role": "user", "content": f"{metric_label}\n公司\t年\t比较符\t值\t单位\t原始值\t原币单位\t本币/美元年均汇率\n{table}{fx_context}\n原生口径\n{definitions}"},
         ],
         "temperature": 0.1,
         # The current internal V4 gateway may still emit hidden reasoning even

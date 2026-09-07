@@ -22,6 +22,9 @@ GLOBAL_OPERATOR_SOURCE = (
 GLOBAL_OPERATOR_SOURCES = (
     ROOT / "agent_knowledge/global_top5_operators_2016_2025/sources.json"
 )
+GLOBAL_OPERATOR_FX = (
+    ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_fx_rates.json"
+)
 LOCAL_HK_SOURCE = (
     ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.csv"
 )
@@ -290,6 +293,7 @@ def main() -> None:
     metric_meta: dict[str, dict] = {}
     availability: dict[tuple[str, str], set[int]] = defaultdict(set)
     global_source_payload = json.loads(GLOBAL_OPERATOR_SOURCES.read_text(encoding="utf-8"))
+    global_fx_payload = json.loads(GLOBAL_OPERATOR_FX.read_text(encoding="utf-8"))
     global_source_urls = {
         str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")
         for item in (global_source_payload.get("sources") or [])
@@ -565,6 +569,8 @@ def main() -> None:
     for source in REQUESTED_OVERVIEW_SOURCES:
         digest.update(source.name.encode("utf-8"))
         digest.update(source.read_bytes())
+    digest.update(GLOBAL_OPERATOR_FX.name.encode("utf-8"))
+    digest.update(GLOBAL_OPERATOR_FX.read_bytes())
     payload = {
         "generatedAt": datetime.fromtimestamp(
             max(source.stat().st_mtime for source in SOURCES + REQUESTED_OVERVIEW_SOURCES),
@@ -573,6 +579,7 @@ def main() -> None:
         "evidenceVersion": digest.hexdigest(),
         "sourceDatasets": [source.parent.name for source in SOURCES] + [REQUESTED_OVERVIEW_DATASET_ID],
         "knowledgeBases": knowledge_bases,
+        "fxRates": global_fx_payload,
         "companies": [value for key, value in sorted(company_meta.items()) if key in active_companies],
         "metrics": [value for key, value in sorted(metric_meta.items(), key=lambda item: item[1]["label"]) if key in active_metrics],
         "cells": cells,
