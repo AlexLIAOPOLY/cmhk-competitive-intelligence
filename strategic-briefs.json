@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-07T17:33:01+08:00",
+  "generated_at": "2026-09-07T17:38:16+08:00",
   "items": [
     {
       "id": "NEWS-1DAD2EC6821089",
@@ -35,14 +35,6 @@
       "published_at": "2026-09-06T17:57:12+08:00"
     },
     {
-      "id": "NEWS-5FAD35D08AEF43",
-      "title": "中华电信开学季加码5G、宽频及影音优惠",
-      "summary": "中华电信网络门市推出开学活动，整合行动、宽频、影音及购物优惠，新申请或携码可抽耳机，升速光世代可抽MacBook。",
-      "category": "竞对动态",
-      "source_url": "https://www.ctee.com.tw/news/20260906700485-430201",
-      "published_at": "2026-09-06T16:34:00+08:00"
-    },
-    {
       "id": "NEWS-8BCE43640C2AE4",
       "title": "香港证监会拟向券商发布AI应用指引",
       "summary": "香港证监会计划向券商发布人工智能应用指引，加强对券商使用AI的监管。",
@@ -65,6 +57,14 @@
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBzRXBKMFJSZVhEMnZYSm1PMmFya1ZIWnpDYklKVHIxNTNEcmZuVDhON0RtcEdaZG5UN1ZwOXJITGQtb3JsY3haVUluN3RwQUdzc2FLYzU2MXFzRlJXN2ZMX0hyS1h3NHgwc3c?oc=5",
       "published_at": "2026-09-04T22:59:41+08:00"
+    },
+    {
+      "id": "NEWS-7110B55AB34CE1",
+      "title": "立法会交通事务委员会北京考察 了解自动驾驶立法及技术发展 (22:52) - 20260904",
+      "summary": "立法会交通事务委员会北京考察 了解自动驾驶立法及技术发展 (22:52) - 20260904 - 港闻 明报新闻网",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMi1ANBVV95cUxPZEFxVGtrOEVrYmxtX2ZVRlN4eFkwdHZpQjgwYjRoTTNwSlNCVlgwSjBBM19BaThLSDNKeUEtYWNybDdReTYxQjBJeUxjZEdXdy1POUhSa194TU5yYi1ndkIxdWV5ZWZLSGQwZFFFYVJSaW03bDJDaFpjZVFDUXBfclR6Z0NmZklTOE9tRDBEMGxUMS1sTWdZTlFRTHhtajlsbW1hUXlNdHFkUDJTMVRUMzh5aXlSaUdHZVVoaFc3MTd3TUE4YVJ5NkxtV1VKOTlIRWMtSG02TXkyWmdyVjU1bjhZanJVX2t3U2lBaFhTQ05CNG1GNmdBaTRablBoMy10a2l1c0UyUjU4VEVnRkZiUXZLWVNLcE1QbmY4QXRzT1pOZ2g0Rm9QVUo1THUxcTZvMmg4LUdrbmlRb1BWMmxEdThheEc0d0wzMmRlc0Q4MnFIaUNzbUxFb2hTUFl2bTgtSWdYWWZ5OUlzcFBrblU2TGY2X3hmd3o4V2RkVDduUEpYWjRXYXM2c243cDlIYkVtM3F4b2FZQTlhWVNNdnQtMDZ2aEozNm5aRkxmNldMRnlxMnlnQVNhX3hyWFpQUGsyRy0zLWFZT3VaTW52eElxYmJEZ3M?oc=5",
+      "published_at": "2026-09-04T22:52:30+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "e5951569e703e4443f9ef3b429eb5646fe98475b09133208a54f4da21795a0a0"
+  "site_version": "b27213db3da6d6e05c93a6da228205e987d24bfda3bbb4abfae128968cc41ad3"
 }
