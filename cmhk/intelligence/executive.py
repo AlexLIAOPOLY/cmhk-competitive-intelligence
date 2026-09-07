@@ -22,6 +22,7 @@ LOCAL_FINANCIAL_PATH = (
 )
 GLOBAL_OPERATOR_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json"
 GLOBAL_OPERATOR_SOURCES_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/sources.json"
+GLOBAL_OPERATOR_FX_PATH = ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_fx_rates.json"
 LOCAL_OPERATING_PATH = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/annual_metrics.json"
 LOCAL_OPERATING_SOURCES_PATH = ROOT / "agent_knowledge/local_hk_operator_operating_metrics_2016_2025/sources.json"
 CLOUD_PATH = ROOT / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json"
@@ -32,7 +33,7 @@ DISPLAY_REFERENCE_PATH = ROOT / "agent_knowledge/executive_intelligence_referenc
 ONLINE_GAP_AUDIT_PATH = ROOT / "agent_knowledge/executive_intelligence_reference/online_gap_audit_2026-08-25.json"
 INSIGHT_FORMAT_VERSION = "strategic_operating_judgement_v9"
 
-DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, GLOBAL_OPERATOR_SOURCES_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
+DOMAIN_PATHS = (LOCAL_PATH, LOCAL_FINANCIAL_PATH, INTERNATIONAL_PATH, GLOBAL_OPERATOR_PATH, GLOBAL_OPERATOR_SOURCES_PATH, GLOBAL_OPERATOR_FX_PATH, LOCAL_OPERATING_PATH, LOCAL_OPERATING_SOURCES_PATH, CLOUD_PATH, MACRO_PATH, AI_ANALYSIS_PATH, REFRESH_STATE_PATH, DISPLAY_REFERENCE_PATH, ONLINE_GAP_AUDIT_PATH)
 INTERNATIONAL_SUBJECTS = ("中国移动", "中国电信", "中国联通", "中国铁塔")
 SAFE_VERIFICATION_STATUSES = {
     "official_match",
@@ -2203,28 +2204,49 @@ def _reader_facing_copy(value: Any) -> Any:
 
 def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     """Build strategic-overview domain 02 from the four requested carriers."""
-    requested = ("Verizon", "Deutsche Telekom", "AT&T", "NTT Group")
-    rows = [
-        row for row in (payload.get("rows") or [])
-        if row.get("operator") in requested
-        and row.get("verification_status") == "official_three_distinct_sources_verified"
-        and int(row.get("distinct_source_document_count") or 0) >= 3
-    ]
+    requested = ("NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel")
+    all_rows = [row for row in (payload.get("rows") or []) if row.get("operator") in requested]
+    rows = [row for row in all_rows
+            if row.get("verification_status") == "official_three_distinct_sources_verified"
+            and int(row.get("distinct_source_document_count") or 0) >= 3]
+    fx_payload = _read_json_optional(GLOBAL_OPERATOR_FX_PATH, {})
+    fx_rates = {
+        (str(item.get("currency") or ""), int(item.get("year") or 0)): float(item["local_per_usd"])
+        for item in (fx_payload.get("rates") or [])
+        if isinstance(item, dict) and item.get("local_per_usd") is not None
+    }
 
     def row_for(operator: str, metric: str, year: int) -> dict[str, Any] | None:
         return next((row for row in rows if row.get("operator") == operator
                      and row.get("metric_key") == metric and int(row.get("year") or 0) == year), None)
 
+    def currency_from_unit(unit: str) -> str:
+        match = re.search(r"(?:^|_)(JPY|KRW|SGD)(?:_|$)", unit or "", re.I)
+        return match.group(1).upper() if match else ""
+
+    def translated_value(row: dict[str, Any] | None) -> tuple[float | None, str, float | None]:
+        value = _verified_number(row)
+        if value is None or not row:
+            return None, "", None
+        unit = str(row.get("unit") or "")
+        currency = currency_from_unit(unit)
+        rate = fx_rates.get((currency, int(row.get("year") or 0)))
+        if not rate:
+            return None, currency, None
+        if "per_user_month" in unit:
+            return value / rate, currency, rate
+        scale = 1000.0 if "billion" in unit else 10.0 if "crore" in unit else 1.0
+        return value * scale / rate, currency, rate
+
     def history(operator: str, metric: str) -> list[dict[str, Any]]:
         result: list[dict[str, Any]] = []
         for year in range(2016, 2026):
             row = row_for(operator, metric, year)
-            value = _verified_number(row)
-            if value is None:
-                continue
+            value, _, _ = translated_value(row)
             result.append({
                 "label": f"FY{year}",
-                "value": value,
+                "value": round(value, 2) if value is not None else None,
+                "gap_status": "" if value is not None else "public_not_found",
                 "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
                 "verification_status": str((row or {}).get("verification_status") or ""),
                 "source_urls": _row_source_urls(row),
@@ -2232,137 +2254,102 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         return result
 
     def make_item(
-        operator: str, metric: str, value: float, unit: str, detail: str, analysis: str,
+        operator: str, metric: str, year: int, unit: str, analysis: str,
         *, trend: list[dict[str, Any]] | None = None,
-        components: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
-        row = row_for(operator, metric, 2025) or {}
+        row = row_for(operator, metric, year)
+        value, currency, rate = translated_value(row)
+        raw_value = _verified_number(row)
+        raw_unit = str((row or {}).get("unit") or "")
+        period = str((row or {}).get("period") or f"FY{year}")
+        if value is None:
+            detail = f"FY{year} 当前数据库未见同期间同口径直接披露 · 不估算、不写0"
+            components = [_component("披露状态", None, "", f"FY{year}未见同口径直接值")]
+        else:
+            rate_text = f"{rate:.9f}".rstrip("0").rstrip(".") if rate else ""
+            detail = f"原披露 {raw_value:g} {raw_unit} · 1 USD = {rate_text} {currency}"
+            components = [
+                _component("原币披露", raw_value, raw_unit, period),
+                _component("自然年平均汇率", rate, f"{currency}/USD", f"指标年份{year}"),
+            ]
         result = {
-            "name": operator, "value": round(value, 2), "unit": unit, "period": "FY2025",
+            "name": operator, "value": round(value, 2) if value is not None else None,
+            "unit": unit, "period": period,
             "detail": detail, "analysis": analysis,
-            "components": components or [_component(row.get("metric_zh") or metric, round(value, 2), unit, "FY2025")],
-            "component_count": len(components or [None]),
-            "source_url": str(row.get("primary_source_url") or ""),
-            "verification_count": int(row.get("distinct_source_document_count") or 0),
-            "verification_status": str(row.get("verification_status") or ""),
+            "components": components, "component_count": len(components),
+            "source_url": str((row or {}).get("primary_source_url") or ""),
+            "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
+            "verification_status": str((row or {}).get("verification_status") or "source_gap_confirmed"),
             "source_urls": _row_source_urls(row),
+            "gap_status": "" if value is not None else "public_not_found",
         }
-        if trend:
+        if trend is not None:
             result["trend"] = trend
         return result
 
-    conversion_reference = _display_reference_data().get("international_2025_conversion") or {}
-    native_units = {
-        operator: str((conversion_reference.get(operator) or {}).get("native_unit") or "")
-        for operator in requested
-    }
-    usd_per_native = {
-        operator: float((conversion_reference.get(operator) or {}).get("usd_billions_per_native_unit") or 0)
-        for operator in requested
-    }
-
-    def usd_billions(operator: str, value: float) -> float:
-        return value * usd_per_native[operator]
-
-    def usd_trend(operator: str, metric: str) -> list[dict[str, Any]]:
-        return [
-            {**point, "value": round(usd_billions(operator, float(point["value"])), 2)}
-            for point in history(operator, metric)
-        ]
     revenue_items: list[dict[str, Any]] = []
-    ebitda_items: list[dict[str, Any]] = []
     profit_items: list[dict[str, Any]] = []
-    postpaid_items: list[dict[str, Any]] = []
+    capex_items: list[dict[str, Any]] = []
+    arpu_items: list[dict[str, Any]] = []
     for operator in requested:
-        unit = native_units[operator]
-        revenue = _verified_number(row_for(operator, "revenue", 2025))
-        if revenue is not None:
-            revenue_usd = usd_billions(operator, revenue)
-            revenue_items.append(make_item(
-                operator, "revenue", revenue_usd, "十亿美元",
-                f"FY2025约{revenue_usd:.2f}十亿美元 · 原披露{revenue:g} {unit}",
-                "金额及十年趋势均按统一汇率折算为十亿美元。",
-                trend=usd_trend(operator, "revenue"),
-            ))
-
-        ebitda = _verified_number(row_for(operator, "adjusted_ebitda", 2025))
-        if ebitda is not None:
-            ebitda_usd = usd_billions(operator, ebitda)
-            ebitda_items.append(make_item(
-                operator, "adjusted_ebitda", ebitda_usd, "十亿美元",
-                f"FY2025约{ebitda_usd:.2f}十亿美元 · 原披露{ebitda:g} {unit}",
-                "只展示调整后EBITDA绝对值；Deutsche Telekom为EBITDA AL，非GAAP调整项不完全相同。",
-                trend=usd_trend(operator, "adjusted_ebitda"),
-            ))
-
-        profit = _verified_number(row_for(operator, "net_profit", 2025))
-        if profit is not None:
-            profit_usd = usd_billions(operator, profit)
-            profit_items.append(make_item(
-                operator, "net_profit", profit_usd, "十亿美元",
-                f"FY2025约{profit_usd:.2f}十亿美元 · 原披露{profit:g} {unit}",
-                "按统一汇率折算为十亿美元，原币金额保留在明细中。",
-                trend=usd_trend(operator, "net_profit"),
-            ))
-
-        subscriber_metric = "mobile_service_subscriptions" if operator == "NTT Group" else "postpaid_connections"
-        arpu_metric = {"Verizon": "postpaid_arpa", "NTT Group": "mobile_arpu"}.get(operator, "postpaid_phone_arpu")
-        subscribers = _verified_number(row_for(operator, subscriber_metric, 2025))
-        arpu = _verified_number(row_for(operator, arpu_metric, 2025))
-        if subscribers is None or arpu is None:
-            continue
-        arpu_usd = arpu * usd_per_native["NTT Group"] if operator == "NTT Group" else arpu
-        if operator == "Verizon":
-            detail = f"后付费连接 {subscribers:.3f}百万 · ARPA ${arpu_usd:.2f}/账户/月"
-            warning = "Verizon披露的是ARPA（每账户），不写成ARPU。"
-        elif operator == "NTT Group":
-            detail = f"移动电话服务订阅 {subscribers:.3f}百万（替代口径） · 移动ARPU约${arpu_usd:.2f}/用户/月 · 原披露¥{arpu:.0f}"
-            warning = "NTT未披露后付费口径；替代值包含MVNO与通信模块合约，不与后付费用户直接等同。"
-        else:
-            detail = f"后付费用户 {subscribers:.3f}百万 · 后付费手机ARPU ${arpu:.2f}/用户/月"
-            warning = ("Deutsche Telekom用户数为T-Mobile US分部后付费总客户，ARPU为后付费手机口径。"
-                       if operator == "Deutsche Telekom" else "AT&T用户数为美国Mobility后付费总客户，ARPU为后付费手机口径。")
-        postpaid_items.append(make_item(
-            operator, subscriber_metric, subscribers, "百万", detail, warning,
-            trend=history(operator, subscriber_metric),
-                components=[_component("后付费用户数", subscribers, "百万", "FY2025"),
-                        _component("ARPU/ARPA", round(arpu_usd, 2), "美元/月", "FY2025")],
+        revenue_items.append(make_item(
+            operator, "revenue", 2024, "百万美元",
+            "FY2024原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+            trend=history(operator, "revenue"),
+        ))
+        profit_items.append(make_item(
+            operator, "net_profit", 2024, "百万美元",
+            "FY2024原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
+            trend=history(operator, "net_profit"),
+        ))
+        capex_items.append(make_item(
+            operator, "capex", 2024, "百万美元",
+            "FY2024原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
+            trend=history(operator, "capex"),
+        ))
+        arpu_items.append(make_item(
+            operator, "mobile_arpu", 2025, "美元/月",
+            "FY2025移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
+            trend=history(operator, "mobile_arpu"),
         ))
 
     def leader_metric(items: list[dict[str, Any]]) -> dict[str, Any]:
-        leader = max(items, key=lambda item: float(item["value"]))
+        available = [item for item in items if _number(item.get("value")) is not None]
+        if not available:
+            return {"value": "-", "unit": "", "label": "当前无同口径披露"}
+        leader = max(available, key=lambda item: float(item["value"]))
         return {
             "value": leader["value"],
             "unit": leader["unit"],
-            "label": f"{leader['name']} FY2025",
+            "label": f"{leader['name']} {leader['period']}",
         }
 
     focuses = [
-        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "Verizon资源底盘领先",
+        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "SKT资源底盘更厚",
          "metric": leader_metric(revenue_items),
-         "context": "统一为十亿美元；原币明细保留", "insight": "Verizon为138.19十亿美元、NTT Group为96.34十亿美元；这表明Verizon的跨国经营资源底盘更厚，更能承担网络、渠道与获客投入，但营收不等同盈利能力。", "items": revenue_items},
-        {"id": "ebitda", "label": "EBITDA", "visual": "rows", "headline": "美德双强造血",
-         "metric": leader_metric(ebitda_items),
-         "context": "统一为十亿美元；非GAAP调整项存在公司差异", "insight": "Verizon与Deutsche Telekom均约50.00十亿美元，NTT Group为22.89十亿美元；这表明美德两家的经营造血代理更强，网络投入与价战容错更厚。", "items": ebitda_items},
-        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "AT&T自我融资最强",
+         "context": "统一为美元；原币与汇率保留", "insight": "SK Telecom FY2024收入约13,158.97百万美元，Singtel约10,573.00百万美元；这表明SKT收入底盘与资源承载力更厚，但Singtel为3月年结。NTT DOCOMO与SoftBank Corp.当前库未收录同口径收入值，不补数。", "items": revenue_items},
+        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "SKT自我融资更厚",
          "metric": leader_metric(profit_items),
-         "context": "统一为十亿美元", "insight": "AT&T净利润21.95十亿美元、NTT Group为6.93十亿美元；这表明AT&T当期自我融资、再投资与周期防守空间更厚，但绝对值不等同盈利效率。", "items": profit_items},
-        {"id": "postpaid_arpu", "label": "后付费用户数", "visual": "rows", "headline": "Verizon客户经营信号最强",
-         "metric": leader_metric(postpaid_items),
-         "context": "Verizon为ARPA；NTT为移动电话服务订阅替代口径", "insight": "Verizon 126.70百万连接、ARPA 170.61美元/月；NTT Group 93.06百万手机订阅、ARPU 26.48美元/月。Verizon在自身口径下同时呈现大规模与高账户价值信号；NTT为替代口径，不可混排。", "items": postpaid_items},
+         "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024净利润约1,017.40百万美元，Singtel约594.96百万美元；绝对值反映当期利润池规模，但财年区间不同。NTT DOCOMO与SoftBank Corp.当前库未收录同口径净利润值。", "items": profit_items},
+        {"id": "capex", "label": "资本开支", "visual": "rows", "headline": "SKT持续投入更厚",
+         "metric": leader_metric(capex_items),
+         "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024资本开支约1,824.40百万美元，Singtel约1,608.99百万美元；SKT持续投入规模更高，但投入转化效率不能由绝对金额判断。NTT DOCOMO与SoftBank Corp.当前库未收录同口径资本开支值。", "items": capex_items},
+        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "rows", "headline": "DOCOMO客户价值更高",
+         "metric": leader_metric(arpu_items),
+         "context": "统一为美元/月；用户范围按公司原口径", "insight": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；这表明DOCOMO客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。SK Telecom与Singtel当前库未收录同口径ARPU。", "items": arpu_items},
     ]
-    all_items = revenue_items + ebitda_items + profit_items + postpaid_items
+    all_items = revenue_items + profit_items + capex_items + arpu_items
     return {
         "id": "international", "index": "02", "title": "国际运营商",
-        "kicker": "营收、EBITDA、净利润与后付费用户价值",
+        "kicker": "营收、净利润、资本开支与移动ARPU",
         "metric": {"value": 10, "unit": "年", "label": "FY2016–FY2025财务历史"},
-        "context": "Verizon、Deutsche Telekom、AT&T、NTT Group；展示值经三份不同底层官方文件核验",
-        "insight": "对比金额统一为十亿美元，ARPU统一为美元/月；Verizon为ARPA，NTT的用户口径已单独标注。",
+        "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值记录经三份不同底层官方文件核验",
+        "insight": "金额统一为美元，ARPU统一为美元/月；原币、自然年平均汇率和财年截止日保留，缺口不估算。",
         "entities": revenue_items, "focuses": focuses,
         "relations": [{"title": item["name"], "detail": "四项指标口径已校准", "kind": "三来源认证"} for item in revenue_items],
         "sources": _dedupe_sources(
             [_source(item["name"], item["source_url"]) for item in all_items]
-            + [_source(label, url) for label, url in _fx_sources()]
+            + [_source("世界银行 WDI 年度平均汇率", fx_payload.get("source_url"))]
         ),
     }
 
@@ -2474,7 +2461,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         financial_payload, _read_json(LOCAL_OPERATING_PATH), _read_json(LOCAL_OPERATING_SOURCES_PATH),
         _read_json_optional(LOCAL_FINANCIAL_PATH, {}),
     )
-    # 第二数据域沿用原有布局，展示合并后的六家国际运营商。
+    # 第二数据域沿用原有布局，固定比较用户指定的四家国际运营商。
     international = _requested_international_domain(global_payload)
     global_source_registry = {
         str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")

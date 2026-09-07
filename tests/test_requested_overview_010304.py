@@ -19,6 +19,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
 
     def _aligned_snapshot(self):
         evidence = pipeline._analysis_input_snapshot()
+        current_ai_payload = json.loads(executive.AI_ANALYSIS_PATH.read_text(encoding="utf-8"))
         model_analysis = {
             "generated_at_hkt": "2026-08-30T00:00:00+08:00",
             "model": "deterministic-test",
@@ -30,7 +31,13 @@ class RequestedOverview010304Tests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "ai_analysis.json"
             path.write_text(
-                json.dumps({"model_analysis": model_analysis}, ensure_ascii=False),
+                json.dumps(
+                    {
+                        "domains": current_ai_payload.get("domains") or {},
+                        "model_analysis": model_analysis,
+                    },
+                    ensure_ascii=False,
+                ),
                 encoding="utf-8",
             )
             with patch.object(executive, "AI_ANALYSIS_PATH", path):
@@ -58,15 +65,32 @@ class RequestedOverview010304Tests(unittest.TestCase):
 
     def test_domain_02_keeps_colleague_international_contract(self):
         domain = self.domains["international"]
-        self.assertEqual([focus["id"] for focus in domain["focuses"]], ["revenue", "ebitda", "net_profit", "postpaid_arpu"])
-        self.assertEqual([item["name"] for item in domain["focuses"][0]["items"]], ["Verizon", "Deutsche Telekom", "AT&T", "NTT Group"])
+        self.assertEqual([focus["id"] for focus in domain["focuses"]], ["revenue", "net_profit", "capex", "mobile_arpu"])
+        requested = ["NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"]
+        self.assertTrue(all([item["name"] for item in focus["items"]] == requested for focus in domain["focuses"]))
+        self.assertEqual([focus["label"] for focus in domain["focuses"]], ["营收", "净利润", "资本开支", "移动ARPU"])
+
+        revenue = domain["focuses"][0]
+        revenue_values = {item["name"]: item["value"] for item in revenue["items"]}
+        self.assertEqual(revenue_values["SK Telecom"], 13158.97)
+        self.assertEqual(revenue_values["Singtel"], 10573.0)
+        self.assertIsNone(revenue_values["NTT DOCOMO"])
+        self.assertEqual({item["unit"] for item in revenue["items"]}, {"百万美元"})
+
+        arpu = domain["focuses"][-1]
+        arpu_values = {item["name"]: item["value"] for item in arpu["items"]}
+        self.assertEqual(arpu_values["NTT DOCOMO"], 26.46)
+        self.assertEqual(arpu_values["SoftBank Corp."], 24.86)
+        self.assertEqual({item["unit"] for item in arpu["items"]}, {"美元/月"})
+        self.assertTrue(any("世界银行" in source["label"] for source in domain["sources"]))
 
     def test_domain_02_top_right_metrics_show_the_current_leader(self):
         for focus in self.domains["international"]["focuses"]:
-            leader = max(focus["items"], key=lambda item: item["value"])
+            available = [item for item in focus["items"] if item["value"] is not None]
+            leader = max(available, key=lambda item: item["value"])
             self.assertEqual(focus["metric"]["value"], leader["value"])
             self.assertEqual(focus["metric"]["unit"], leader["unit"])
-            self.assertEqual(focus["metric"]["label"], f"{leader['name']} FY2025")
+            self.assertEqual(focus["metric"]["label"], f"{leader['name']} {leader['period']}")
 
     def test_hong_kong_and_mainland_units_are_consistent(self):
         local = {focus["id"]: focus for focus in self.domains["local"]["focuses"]}
@@ -276,7 +300,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIn("本地知识库", self.snapshot["method"])
         self.assertEqual(
             self.snapshot["data_audit"]["gap_status_counts"],
-            {"public_not_found": 5},
+            {"public_not_found": 5, "knowledge_pending": 8},
         )
         root = Path(__file__).resolve().parents[1]
         app = (root / "web/static/app.js").read_text(encoding="utf-8")

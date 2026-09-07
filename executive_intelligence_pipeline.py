@@ -847,10 +847,10 @@ _OVERVIEW_STRATEGIC_HEADLINES = {
     ("local", "ebitda"): "HKT造血能力最强",
     ("local", "net_profit"): "HKT稳健三港承压",
     ("local", "postpaid"): "HKT客户底盘更稳",
-    ("international", "revenue"): "Verizon资源底盘领先",
-    ("international", "ebitda"): "美德双强造血",
-    ("international", "net_profit"): "AT&T自我融资最强",
-    ("international", "postpaid_arpu"): "Verizon客户经营信号最强",
+    ("international", "revenue"): "SKT资源底盘更厚",
+    ("international", "net_profit"): "SKT自我融资更厚",
+    ("international", "capex"): "SKT持续投入更厚",
+    ("international", "mobile_arpu"): "DOCOMO客户价值更高",
     ("mainland", "revenue"): "中国移动资源底盘最强",
     ("mainland", "ebitda"): "中国移动造血能力最强",
     ("mainland", "net_profit"): "中国移动盈利韧性最强",
@@ -865,10 +865,10 @@ _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS = {
     ("local", "ebitda"): ("HKT造血能力最强", "HKT价战缓冲更厚", "3HK经营容错最窄"),
     ("local", "net_profit"): ("HKT稳健三港承压", "HKT再投资弹药更足", "3HK盈利防线失守"),
     ("local", "postpaid"): ("HKT客户底盘更稳", "HKT续约底盘更厚", "3HK客户底盘较窄"),
-    ("international", "revenue"): ("Verizon资源底盘领先", "Verizon跨国投入弹药更足", "NTT资源容错较窄"),
-    ("international", "ebitda"): ("美德双强造血", "Verizon经营缓冲更厚", "NTT价战容错较窄"),
-    ("international", "net_profit"): ("AT&T自我融资最强", "AT&T再投资弹药更足", "NTT周期防守较弱"),
-    ("international", "postpaid_arpu"): ("Verizon客户经营信号最强", "Verizon账户价值信号更强", "NTT客户口径不可混排"),
+    ("international", "revenue"): ("SKT资源底盘更厚", "SKT收入底盘更厚", "两家财年边界不同"),
+    ("international", "net_profit"): ("SKT自我融资更厚", "SKT利润池更大", "两家财年边界不同"),
+    ("international", "capex"): ("SKT持续投入更厚", "韩新投入量级接近", "投入不等同回报"),
+    ("international", "mobile_arpu"): ("DOCOMO客户价值更高", "日系用户价值分层", "用户范围不可混排"),
     ("mainland", "revenue"): ("中国移动资源底盘最强", "中国移动竞争弹药最足", "中国联通资源容错最窄"),
     ("mainland", "ebitda"): ("中国移动造血能力最强", "中国移动价战缓冲最厚", "中国电信经营容错较窄"),
     ("mainland", "net_profit"): ("中国移动盈利韧性最强", "中国移动再投资弹药最足", "中国联通盈利防守较薄"),
@@ -1018,9 +1018,9 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         ("local", "fibre_value"): ("增长质量", "低价吸引", "全市场覆盖"),
         ("local", "overlap"): ("增长质量", "增长能力"),
         ("international", "revenue"): ("EBITDA", "利润", "资本", "用户", "ARPU", "ARPA"),
-        ("international", "ebitda"): ("净利润", "用户", "ARPU", "ARPA", "资本开支", "利润率", "增速", "同比"),
         ("international", "net_profit"): ("EBITDA", "用户", "ARPU", "ARPA", "资本开支", "利润率", "增速", "同比"),
-        ("international", "postpaid_arpu"): ("EBITDA", "净利润", "资本开支"),
+        ("international", "capex"): ("EBITDA", "净利润", "用户", "ARPU", "ARPA", "利润率", "增速", "同比"),
+        ("international", "mobile_arpu"): ("EBITDA", "净利润", "资本开支", "营收"),
     }
     forbidden_terms = forbidden_by_focus.get((domain, focus_id), ())
     leaked_terms = [term for term in forbidden_terms if term in analysis]
@@ -1028,7 +1028,7 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         return (
             f"AI分析分类混入其他页维度{leaked_terms}：{domain}.{focus_id}"
         )
-    if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"}:
+    if domain == "international" and focus_id in {"revenue", "net_profit", "capex", "mobile_arpu"}:
         mentioned = {
             str(item.get("name") or "")
             for item in evidence_focus.get("items") or []
@@ -1036,30 +1036,10 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         }
         if len(mentioned) < 2:
             return f"国际运营商AI解读必须引用至少两家公司原值：{domain}.{focus_id}"
-        if focus_id == "postpaid_arpu":
-            if not all(term in analysis for term in ("Verizon", "ARPA", "NTT Group", "手机订阅")):
-                return f"后付费用户数解读必须保留Verizon ARPA与NTT手机订阅替代口径：{domain}.{focus_id}"
-            items = [item for item in evidence_focus.get("items") or [] if isinstance(item, dict)]
-            positions = sorted(
-                (analysis.find(str(item.get("name") or "")), item)
-                for item in items
-                if str(item.get("name") or "") and str(item.get("name") or "") in analysis
-            )
-            paired_companies = 0
-            for index, (start, item) in enumerate(positions):
-                end = positions[index + 1][0] if index + 1 < len(positions) else len(analysis)
-                segment = analysis[start:end]
-                components = item.get("components") or []
-                arpu_component = next(
-                    (component for component in components if "ARPU/ARPA" in str(component.get("label") or "")),
-                    None,
-                )
-                main_value = _display_number(item.get("value"))
-                arpu_value = _display_number((arpu_component or {}).get("value"))
-                if main_value in segment and arpu_value in segment:
-                    paired_companies += 1
-            if paired_companies < 2:
-                return f"后付费用户数解读必须把至少两家公司的用户数与各自ARPU或ARPA正确配对：{domain}.{focus_id}"
+        if focus_id == "mobile_arpu" and not all(
+            term in analysis for term in ("NTT DOCOMO", "SoftBank Corp.", "美元/月")
+        ):
+            return f"移动ARPU解读必须保留两家日系运营商及美元月均单位：{domain}.{focus_id}"
     if (domain, focus_id) == ("local", "mobile_price"):
         ranges = [
             (float(item["low"]), float(item["high"]))
@@ -1982,40 +1962,32 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
                 f"{named}当前均缺少可比移动客户原值；披露不足使客户覆盖底盘无法穿透比较，"
                 "且不能由5G用户数替代集团移动客户总数。"
             )
-    if domain == "international" and focus_id in {"revenue", "ebitda", "net_profit", "postpaid_arpu"} and items:
+    if domain == "international" and focus_id in {"revenue", "net_profit", "capex", "mobile_arpu"} and items:
         high, low = items[0], items[-1]
         high_name, low_name = str(high.get("name") or ""), str(low.get("name") or "")
         high_value, low_value = _display_number(high.get("value")), _display_number(low.get("value"))
         if focus_id == "revenue":
             return (
-                f"{high_name} FY2025营收{high_value}十亿美元，{low_name}{low_value}十亿美元，"
+                f"{high_name} FY2024营收{high_value}百万美元，{low_name}{low_value}百万美元，"
                 f"表明{high_name}的经营资源底盘更厚、资源承载力更强，"
                 f"更能承担跨国网络、渠道与获客投入；{low_name}资源容错较窄，但营收不等同盈利能力。"
             )
-        if focus_id == "ebitda":
+        if focus_id == "capex":
             return (
-                f"{high_name} EBITDA约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
-                f"表明{high_name}的经营造血代理更强，网络投入与价格竞争容错更厚；{low_name}相对承压，但非GAAP调整口径不可完全等同。"
+                f"{high_name} FY2024资本开支约{high_value}百万美元，{low_name}约{low_value}百万美元；"
+                f"这表明{high_name}持续投入与资本军备规模更高，但资本开支绝对值不等同投资回报或投入转化效率，且两家财年区间不同。"
             )
         if focus_id == "net_profit":
             return (
-                f"{high_name} FY2025净利润约{high_value}十亿美元，{low_name}约{low_value}十亿美元，"
+                f"{high_name} FY2024净利润约{high_value}百万美元，{low_name}约{low_value}百万美元，"
                 f"表明{high_name}当期盈利状态更强，自我融资、再投资与周期防守空间更厚；{low_name}缓冲较窄，绝对值不等同盈利效率。"
             )
-        verizon = by_name.get("Verizon") or high
-        ntt = by_name.get("NTT Group") or low
-        verizon_arpu = next(
-            (component.get("value") for component in verizon.get("components") or [] if "ARPU/ARPA" in str(component.get("label") or "")),
-            None,
-        )
-        ntt_arpu = next(
-            (component.get("value") for component in ntt.get("components") or [] if "ARPU/ARPA" in str(component.get("label") or "")),
-            None,
-        )
+        docomo = by_name.get("NTT DOCOMO") or high
+        softbank = by_name.get("SoftBank Corp.") or low
         return (
-            f"Verizon {_display_number(verizon.get('value'))}百万连接、ARPA {_display_number(verizon_arpu)}美元/月；"
-            f"NTT Group {_display_number(ntt.get('value'))}百万手机订阅、ARPU {_display_number(ntt_arpu)}美元/月。"
-            "这表明Verizon自身口径兼具规模与账户价值信号，客户经营画像更强；NTT为替代口径，不可混排。"
+            f"NTT DOCOMO FY2025移动ARPU约{_display_number(docomo.get('value'))}美元/月，"
+            f"SoftBank Corp.约{_display_number(softbank.get('value'))}美元/月；"
+            "美元换算表明DOCOMO的客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。"
         )
     if strategic_fallback and _has_deep_interpretation(strategic_fallback):
         return strategic_fallback
@@ -2600,10 +2572,10 @@ def generate_model_focus_insight(
         ("international", "momentum"): "只比较四家企业本期与上期营收增速变化，说明放缓范围或梯队，不使用驱动、导致等因果词。",
         ("international", "investment"): "只比较同期间资本开支占营收比例，并明确缺失主体与投入比例不等于投资回报。",
         ("international", "margin"): "只比较已披露且同口径经营利润率的层次与样本边界，不计算输入外差值。",
-        ("international", "revenue"): "只比较统一折算为十亿美元的营收绝对值和十年绝对值序列；不得引入增速、指数、利润、资本或用户维度。",
-        ("international", "ebitda"): "只比较FY2025统一折算的EBITDA绝对值；不得引入利润率、增速、净利润、资本或用户维度。",
-        ("international", "net_profit"): "只比较FY2025统一折算的净利润绝对值；不得引入同比、增速、利润率、EBITDA、资本或用户维度。",
-        ("international", "postpaid_arpu"): "只比较百万用户和美元/月的ARPU/ARPA；必须说明Verizon是ARPA、NTT为手机订阅替代口径。",
+        ("international", "revenue"): "只比较FY2024统一折算为百万美元的营收绝对值和十年序列；不得引入增速、利润、资本或用户维度。",
+        ("international", "net_profit"): "只比较FY2024统一折算的净利润绝对值；不得引入同比、增速、利润率、资本或用户维度。",
+        ("international", "capex"): "只比较FY2024统一折算的资本开支绝对值；必须说明投入规模不等同投资回报。",
+        ("international", "mobile_arpu"): "只比较NTT DOCOMO和SoftBank Corp. FY2025统一折算的美元/月移动ARPU，并保留用户范围边界。",
         ("cloud", "revenue"): "只比较FY2024云收入绝对金额；先区分直接云收入口径与代理分部口径，不得引入增速、利润率或自行换算。",
         ("cloud", "trend"): "只比较同一厂商FY2024至FY2025收入增速方向，说明提速覆盖面与例外主体。",
         ("cloud", "profit"): "只解释FY2024云利润绝对金额及经营利润、调整后EBITA和代理分部毛利的定义边界；不得引入利润率、增速或自行换算。",
@@ -2686,28 +2658,28 @@ def generate_model_focus_insight(
             "说明利润率不等于绝对利润，仍须引用至少两个主体原值",
         ),
         ("international", "revenue"): (
-            "比较FY2025统一折算营收的高低梯队，至少引用两家原值",
+            "比较FY2024统一折算营收的高低梯队，至少引用两家原值",
             "比较四家十年营收绝对值方向，不计算增速或指数",
             "从头部营收是否接近切入，不计算输入外差值",
             "说明统一汇率便于规模比较，但不等于盈利能力",
         ),
-        ("international", "ebitda"): (
-            "比较FY2025 EBITDA折算金额梯队，保留非GAAP口径边界",
-            "只比较EBITDA绝对规模，不引入利润率或增速",
-            "从高位集中度切入，不把不同调整项视为完全可比",
-            "引用至少两家EBITDA绝对值形成判断",
-        ),
         ("international", "net_profit"): (
-            "按FY2025净利润绝对值分层，引用最高与最低原值",
+            "按FY2024净利润绝对值分层，引用最高与最低原值",
             "只比较净利润折算金额，不引入同比、增速或利润率",
             "从绝对规模差距切入，不将单年数值外推为增长趋势",
             "说明集团范围与财年口径边界",
         ),
-        ("international", "postpaid_arpu"): (
-            "比较百万用户规模与美元/月用户价值的梯队",
-            "说明Verizon ARPA与其他ARPU不能直接等同",
-            "说明NTT手机订阅数不是后付费用户口径",
-            "引用至少两家用户数与ARPU/ARPA原值形成分层判断",
+        ("international", "capex"): (
+            "比较FY2024资本开支美元绝对值，引用两家原值",
+            "说明投入规模不等同投资回报",
+            "保留SK Telecom与Singtel财年截止日差异",
+            "只分析资本开支，不混入收入或利润",
+        ),
+        ("international", "mobile_arpu"): (
+            "比较NTT DOCOMO与SoftBank Corp.美元/月ARPU",
+            "说明两家用户范围按原披露保留",
+            "引用两家ARPU美元原值形成量级判断",
+            "说明汇率统一不代表用户定义统一",
         ),
         ("local", "revenue"): (
             "从最高与最低营收原值提炼竞争资源承载力分层",
