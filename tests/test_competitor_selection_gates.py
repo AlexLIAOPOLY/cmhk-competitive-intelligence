@@ -47,6 +47,8 @@ class CompetitorSelectionGateTests(unittest.TestCase):
         self.assertIn("selectedCompanies.includes(company.id) || competitorHasCompleteMetric", SCRIPT)
         self.assertIn("function competitorUsdLookup", SCRIPT)
         self.assertIn('return "usd_conversion"', SCRIPT)
+        self.assertNotIn("统一换算美元", SCRIPT)
+        self.assertIn('${unit ? ` · ${esc(unit)}` : ""}', SCRIPT)
         self.assertIn("...(data.gaps || [])", SCRIPT)
         self.assertIn('!validYears.has(years) ? "disabled"', SCRIPT)
         self.assertIn("整个年份窗口均有披露值", SCRIPT)
