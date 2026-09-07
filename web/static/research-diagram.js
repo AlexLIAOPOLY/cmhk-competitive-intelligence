@@ -71,7 +71,7 @@
     };
     // Spread the research lane across the same full canvas width as the news lane.
     const dispatchX = plan.length ? Math.round((researchX(0) + researchX(plan.length - 1)) / 2) : Math.round((canvasWidth - researchCardWidth) / 2);
-    add("research-dispatch", "03:00 Supervisor · Agent 任务分配", [dispatchX, 365], plan.length || "—", "个研究 Agent", "规则型 Supervisor 主控：以库内数据为可信基线，分配六组最新披露搜索任务", [
+    add("research-dispatch", "03:00 Supervisor · Agent 任务分配", [dispatchX, 330], plan.length || "—", "个研究 Agent", "规则型 Supervisor 主控：以库内数据为可信基线，分配六组最新披露搜索任务", [
       "这是同一个规则型 Supervisor 主控的任务分配阶段；不是额外调用大模型的研究 Agent",
       "香港、内地、亚太、欧洲、美洲与中东、全球云厂商六组并行研究",
       "已有数据库默认正确；任务目标是搜索尚未入库的新披露，保留库内同期间与更新期间数据",

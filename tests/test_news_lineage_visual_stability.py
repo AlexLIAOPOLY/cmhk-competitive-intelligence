@@ -20,7 +20,11 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("同一个规则型 Supervisor 主控", RESEARCH)
         self.assertIn("不是额外调用大模型的研究 Agent", RESEARCH)
         self.assertIn("(researchX(0) + researchX(plan.length - 1)) / 2", RESEARCH)
-        self.assertIn("[dispatchX, 365]", RESEARCH)
+        self.assertIn("[dispatchX, 330]", RESEARCH)
+
+    def test_supervisor_clears_fan_out_rail_and_lane_titles_are_prominent(self):
+        self.assertIn('padding: 7px 14px; border-left: 4px solid #61cadc', STYLE)
+        self.assertIn('font-size: 16px; font-weight: 750', STYLE)
 
     def test_research_lane_spreads_workers_and_outputs_across_full_canvas(self):
         self.assertIn("const canvasWidth = 2366", RESEARCH)
@@ -166,8 +170,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=175', INDEX)
-        self.assertIn('/static/research-diagram.js?v=12', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=176', INDEX)
+        self.assertIn('/static/research-diagram.js?v=13', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=212', INDEX)
 
 
