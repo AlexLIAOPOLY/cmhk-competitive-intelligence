@@ -2528,10 +2528,14 @@
           ],
           "ai_summary": {
             "id": "net_profit",
-            "headline": "电讯盈科利润池深度分化",
-            "analysis": "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "HKT稳健三港承压",
+            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -3367,260 +3371,7 @@
           "verification_status": "official_document_extracted"
         }
       ],
-      "ai_analysis": [
-        {
-          "company": "HKT",
-          "metric": "EBITDA",
-          "analysis": "HK$6,586 million",
-          "basis": "disciplined execution and relentless focus on innovation, HKT’s key business segments maintained steady growth in the first half of 2026. The robust growth in our enterprise business and increased broadband and mobile revenue contributed to a total revenue growth of 8% to HK$18,685 million; total revenue excluding Mobile product sales rose by 3% to HK$16,831 million. The Group continued to integrate AI across its operations, enhancing efficiency and productivity, resulting in over 3% growth in total EBITDA to HK$6,586 million. Alongside prudent capital management, adjusted funds flow (“AFF”) also climbed by 3% to HK$2,639 million. Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million. The Board of Directors has recommended an interim distribution of 34.80 HK cents per Share Stapled Unit. Leveraging the Group’s unparallelled network assets, well-established distribution capabilities, and long-standing, trusted customer relationships, HKT is well positioned to capture growth in the AI era – as an infrastructure provider, AI aggregator, and AI enabler\ndisciplined execution and relentless focus on innovation, HKT’s key business segments maintained steady growth in the first half of 2026. The robust growth in our enterprise business and increased broadband and mobile revenue contributed to a total revenue growth of 8% to HK$18,685 million; total revenue excluding Mobile product sales rose by 3% to HK$16,831 million. The Group continued to integrate AI across its operations, enhancing efficiency and productivity, resulting in over 3% growth in total EBITDA to HK$6,586 million. Alongside prudent capital management, adjusted funds flow (“AFF”) also climbed by 3% to HK$2,639 million. Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million. The Board of Directors has recommended an interim distribution of 34.80 HK cents per Share Stapled Unit. Leveraging the Group’s unparallelled network assets, well-established distribution capabilities, and long-standing, trusted customer relationships, HKT is well positioned to capture growth in the AI era – as an infrastructure provider, AI aggregator, and AI enabler",
-          "period": "first half of 2026",
-          "unit": "HK$ million",
-          "source_url": "https://www.hkt.com/en/about-hkt/press-release/hkt-reports-solid-interim-results-for-2026/",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "b9d962b41997e40f630250cb99a9ab1c8cc979e060f9d173adbb0d4c1b1667b7"
-        },
-        {
-          "company": "HKT",
-          "metric": "净利润",
-          "analysis": "HK$2,153 million",
-          "basis": "disciplined execution and relentless focus on innovation, HKT’s key business segments maintained steady growth in the first half of 2026. The robust growth in our enterprise business and increased broadband and mobile revenue contributed to a total revenue growth of 8% to HK$18,685 million; total revenue excluding Mobile product sales rose by 3% to HK$16,831 million. The Group continued to integrate AI across its operations, enhancing efficiency and productivity, resulting in over 3% growth in total EBITDA to HK$6,586 million. Alongside prudent capital management, adjusted funds flow (“AFF”) also climbed by 3% to HK$2,639 million. Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million. The Board of Directors has recommended an interim distribution of 34.80 HK cents per Share Stapled Unit. Leveraging the Group’s unparallelled network assets, well-established distribution capabilities, and long-standing, trusted customer relationships, HKT is well positioned to capture growth in the AI era – as an infrastructure provider, AI aggregator, and AI enabler\ndisciplined execution and relentless focus on innovation, HKT’s key business segments maintained steady growth in the first half of 2026. The robust growth in our enterprise business and increased broadband and mobile revenue contributed to a total revenue growth of 8% to HK$18,685 million; total revenue excluding Mobile product sales rose by 3% to HK$16,831 million. The Group continued to integrate AI across its operations, enhancing efficiency and productivity, resulting in over 3% growth in total EBITDA to HK$6,586 million. Alongside prudent capital management, adjusted funds flow (“AFF”) also climbed by 3% to HK$2,639 million. Profit attributable to holders of Share Stapled Units increased by 4% to HK$2,153 million. The Board of Directors has recommended an interim distribution of 34.80 HK cents per Share Stapled Unit. Leveraging the Group’s unparallelled network assets, well-established distribution capabilities, and long-standing, trusted customer relationships, HKT is well positioned to capture growth in the AI era – as an infrastructure provider, AI aggregator, and AI enabler",
-          "period": "first half of 2026",
-          "unit": "HK$ million",
-          "source_url": "https://www.hkt.com/en/about-hkt/press-release/hkt-reports-solid-interim-results-for-2026/",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "b9d962b41997e40f630250cb99a9ab1c8cc979e060f9d173adbb0d4c1b1667b7"
-        },
-        {
-          "company": "HKT",
-          "metric": "客户数/用户数",
-          "analysis": "2.2 million 5G customers",
-          "basis": "MobiFone Continued 5G Adoption and Value Uplift 13 5G customers reached 2.2 million 16% YoY 1,894 2,200 H1'25 H1'26 54% 62% 5G Penetration to Total Post-paid Base ('000) Proactively introducing cutting-edge AI services, devices, and training, including support for setting up personal AI assistants and workshops on various LLMs, to broaden AI adoption Future AI elements to drive data usage Empowering Wireless Network Excellence Through New Technology Adoption 14 Continuous Enhancements & Optimisation Along MTR Routes Elevating Network Performance via Coverage & Capacity Expansion Choi Shek Lane LPH Tuen Mun Law Court Kwai Chung Hospital Sha Tau Kok Fire Station Indoor and Outdoor Coverage Enhancement • 35 cell sites added in 1H26 • Strategic locations including Kwai Chung Hospital, Choi Shek Lane Light Public Housing, and Fanling/Tuen Mun/Tsuen Wan Law Court Buildings • Coverage enhancement in rural areas such as Sha Tau Kok Fire Station • Network evolved to 5GA; supporting SA 3CC+ with 5G+ devices • Support “Enhance 5G for Apps” for SA users, allowing further uplift of user\n2026 Interim Results For the six months ended 30 June 2026 29 July 2026 Hong Kong Forward Looking Statement This presentation may contain “forward-looking statements” that are not historical in nature. These forward-looking statements, which include, without limitation, statements regarding HKT’s future results of operations, financial condition or business prospects, are based on the current beliefs, assumptions, expectations, estimates, and projections of the directors and management of HKT about the business, the industry and the markets in which HKT operates. These statements are not guarantees of future performance and are subject to risks, uncertainties and other factors, some of which are beyond HKT’s control and are difficult to predict. Actual results could differ materially from those expressed, implied or forecasted in these forward-looking statements for a variety of factors. Business Overview Susanna Hui Group Managing Director Solid Performance Anchored in Business Resilience and Innovation Total Revenue (US$ million) 2,396 2,158 Excluding Mobile Product Sales 8% YoY 3%",
-          "period": "six months ended 30 June 2026",
-          "unit": "5G customers",
-          "source_url": "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "18767a0200e5c57d5af6790fa5f2e1a7a70e4906d0218536214ad3128c87df4a"
-        },
-        {
-          "company": "HKT",
-          "metric": "5G用户数",
-          "analysis": "2.2 million customers",
-          "basis": "MobiFone Continued 5G Adoption and Value Uplift 13 5G customers reached 2.2 million 16% YoY 1,894 2,200 H1'25 H1'26 54% 62% 5G Penetration to Total Post-paid Base ('000) Proactively introducing cutting-edge AI services, devices, and training, including support for setting up personal AI assistants and workshops on various LLMs, to broaden AI adoption Future AI elements to drive data usage Empowering Wireless Network Excellence Through New Technology Adoption 14 Continuous Enhancements & Optimisation Along MTR Routes Elevating Network Performance via Coverage & Capacity Expansion Choi Shek Lane LPH Tuen Mun Law Court Kwai Chung Hospital Sha Tau Kok Fire Station Indoor and Outdoor Coverage Enhancement • 35 cell sites added in 1H26 • Strategic locations including Kwai Chung Hospital, Choi Shek Lane Light Public Housing, and Fanling/Tuen Mun/Tsuen Wan Law Court Buildings • Coverage enhancement in rural areas such as Sha Tau Kok Fire Station • Network evolved to 5GA; supporting SA 3CC+ with 5G+ devices • Support “Enhance 5G for Apps” for SA users, allowing further uplift of user\nMobiFone Continued 5G Adoption and Value Uplift 13 5G customers reached 2.2 million 16% YoY 1,894 2,200 H1'25 H1'26 54% 62% 5G Penetration to Total Post-paid Base ('000) Proactively introducing cutting-edge AI services, devices, and training, including support for setting up personal AI assistants and workshops on various LLMs, to broaden AI adoption Future AI elements to drive data usage Empowering Wireless Network Excellence Through New Technology Adoption 14 Continuous Enhancements & Optimisation Along MTR Routes Elevating Network Performance via Coverage & Capacity Expansion Choi Shek Lane LPH Tuen Mun Law Court Kwai Chung Hospital Sha Tau Kok Fire Station Indoor and Outdoor Coverage Enhancement • 35 cell sites added in 1H26 • Strategic locations including Kwai Chung Hospital, Choi Shek Lane Light Public Housing, and Fanling/Tuen Mun/Tsuen Wan Law Court Buildings • Coverage enhancement in rural areas such as Sha Tau Kok Fire Station • Network evolved to 5GA; supporting SA 3CC+ with 5G+ devices • Support “Enhance 5G for Apps” for SA users, allowing further uplift of user",
-          "period": "H1'26",
-          "unit": "customers",
-          "source_url": "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "18767a0200e5c57d5af6790fa5f2e1a7a70e4906d0218536214ad3128c87df4a"
-        },
-        {
-          "company": "HKT",
-          "metric": "用户数",
-          "analysis": "2.2 million 5G customers",
-          "basis": "MobiFone Continued 5G Adoption and Value Uplift 13 5G customers reached 2.2 million 16% YoY 1,894 2,200 H1'25 H1'26 54% 62% 5G Penetration to Total Post-paid Base ('000) Proactively introducing cutting-edge AI services, devices, and training, including support for setting up personal AI assistants and workshops on various LLMs, to broaden AI adoption Future AI elements to drive data usage Empowering Wireless Network Excellence Through New Technology Adoption 14 Continuous Enhancements & Optimisation Along MTR Routes Elevating Network Performance via Coverage & Capacity Expansion Choi Shek Lane LPH Tuen Mun Law Court Kwai Chung Hospital Sha Tau Kok Fire Station Indoor and Outdoor Coverage Enhancement • 35 cell sites added in 1H26 • Strategic locations including Kwai Chung Hospital, Choi Shek Lane Light Public Housing, and Fanling/Tuen Mun/Tsuen Wan Law Court Buildings • Coverage enhancement in rural areas such as Sha Tau Kok Fire Station • Network evolved to 5GA; supporting SA 3CC+ with 5G+ devices • Support “Enhance 5G for Apps” for SA users, allowing further uplift of user\n2026 Interim Results For the six months ended 30 June 2026 29 July 2026 Hong Kong Forward Looking Statement This presentation may contain “forward-looking statements” that are not historical in nature. These forward-looking statements, which include, without limitation, statements regarding HKT’s future results of operations, financial condition or business prospects, are based on the current beliefs, assumptions, expectations, estimates, and projections of the directors and management of HKT about the business, the industry and the markets in which HKT operates. These statements are not guarantees of future performance and are subject to risks, uncertainties and other factors, some of which are beyond HKT’s control and are difficult to predict. Actual results could differ materially from those expressed, implied or forecasted in these forward-looking statements for a variety of factors. Business Overview Susanna Hui Group Managing Director Solid Performance Anchored in Business Resilience and Innovation Total Revenue (US$ million) 2,396 2,158 Excluding Mobile Product Sales 8% YoY 3%",
-          "period": "six months ended 30 June 2026",
-          "unit": "5G customers",
-          "source_url": "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "18767a0200e5c57d5af6790fa5f2e1a7a70e4906d0218536214ad3128c87df4a"
-        },
-        {
-          "company": "SmarTone",
-          "metric": "运营收入/总收益",
-          "analysis": "$6,531 million Hong Kong dollars",
-          "basis": "- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531\n- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531",
-          "period": "six months ended 31 December 2013",
-          "unit": "Hong Kong dollars",
-          "source_url": "https://www.smartoneholdings.com/about/investor/results/english/1314_interim_results.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "73b1785e69de27bc948f6b11d3a9387fc28b35e6c15de284ab238ab2cb17144b"
-        },
-        {
-          "company": "SmarTone",
-          "metric": "服务收入",
-          "analysis": "$2,789 million Hong Kong dollars",
-          "basis": "Chairman Hong Kong, 13 February 2014 - 4 - MANAGEMENT DISCUSSION AND ANALYSIS Review of financial results During the period under review, the Group’s revenue increased by 11% to $6,531 million (first half of 2012/2013: $5,888 million), comprising a 24% increase in handset and accessory sales, partly offset by a 3% decline in service revenue. EBITDA fell by 12% to $1,348 million (first half of 2012/13: $1,537 million). Profit attributable to equity holders of the Company decreased by 32% to $311 million (first half of 2012/13: $459 million). Revenues rose by $643 million or 11% to $6,531 million (first half of 2012/13: $5,888 million).  Service revenue declined by $80 million or 3% to $2,789 million (first half of 2012/13: $2,869 million) driven by lower lo cal mobile service revenue, roaming revenue and the continuing scale down of wireless fixed broadband business. Local mobile service revenue declined by 1% amidst customers’ migration from handset-bundled plans to SIM-only price plans, partly offset by the revenue increase from the growth in customer numbers. The drop in roaming\n- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531",
-          "period": "six months ended 31 December 2013",
-          "unit": "Hong Kong dollars",
-          "source_url": "https://www.smartoneholdings.com/about/investor/results/english/1314_interim_results.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "73b1785e69de27bc948f6b11d3a9387fc28b35e6c15de284ab238ab2cb17144b"
-        },
-        {
-          "company": "SmarTone",
-          "metric": "EBITDA",
-          "analysis": "$1,348 million Hong Kong dollars",
-          "basis": "million, with a 24% growth in handset and accessory sales, partly offset by a 3% decrease in service revenue, compared to the same period last year. The increase in handset and accessory sales reflects strong volume growth of the wholesale handset business. Increased network operating costs from strongly rising data usage, higher depreciation from completion of the 4G network, and reduced handset margins affected profitability. EBITDA declined 12% to $1,348 million and net profit decreased 32% to $311 million. - 2 - Dividend In line with our dividend policy of 60% payout of profit attributable to equity holders excluding extraordinary items, your Board declares an interim dividend of 18 cents per share. Shareholders have the option to receive new and fully paid shares in lieu of cash under a scrip dividend scheme. Business Review In Hong Kong, competition continues to intensify in the period under review. While SmarTone increased Hong Kong customer numbers, in both postpaid and prepaid segments, by 8% to 1.87 million, service revenue declined 2%. This reflects competitive pricing\n- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531",
-          "period": "six months ended 31 December 2013",
-          "unit": "Hong Kong dollars",
-          "source_url": "https://www.smartoneholdings.com/about/investor/results/english/1314_interim_results.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "73b1785e69de27bc948f6b11d3a9387fc28b35e6c15de284ab238ab2cb17144b"
-        },
-        {
-          "company": "SmarTone",
-          "metric": "客户数/用户数",
-          "analysis": "1.87 million",
-          "basis": "million, with a 24% growth in handset and accessory sales, partly offset by a 3% decrease in service revenue, compared to the same period last year. The increase in handset and accessory sales reflects strong volume growth of the wholesale handset business. Increased network operating costs from strongly rising data usage, higher depreciation from completion of the 4G network, and reduced handset margins affected profitability. EBITDA declined 12% to $1,348 million and net profit decreased 32% to $311 million. - 2 - Dividend In line with our dividend policy of 60% payout of profit attributable to equity holders excluding extraordinary items, your Board declares an interim dividend of 18 cents per share. Shareholders have the option to receive new and fully paid shares in lieu of cash under a scrip dividend scheme. Business Review In Hong Kong, competition continues to intensify in the period under review. While SmarTone increased Hong Kong customer numbers, in both postpaid and prepaid segments, by 8% to 1.87 million, service revenue declined 2%. This reflects competitive pricing\n- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531",
-          "period": "six months ended 31 December 2013",
-          "unit": "million",
-          "source_url": "https://www.smartoneholdings.com/about/investor/results/english/1314_interim_results.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "73b1785e69de27bc948f6b11d3a9387fc28b35e6c15de284ab238ab2cb17144b"
-        },
-        {
-          "company": "SmarTone",
-          "metric": "收入",
-          "analysis": "$6,531 million Hong Kong dollars",
-          "basis": "- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531\n- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531",
-          "period": "six months ended 31 December 2013",
-          "unit": "Hong Kong dollars",
-          "source_url": "https://www.smartoneholdings.com/about/investor/results/english/1314_interim_results.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "73b1785e69de27bc948f6b11d3a9387fc28b35e6c15de284ab238ab2cb17144b"
-        },
-        {
-          "company": "SmarTone",
-          "metric": "用户数",
-          "analysis": "1.87 million",
-          "basis": "million, with a 24% growth in handset and accessory sales, partly offset by a 3% decrease in service revenue, compared to the same period last year. The increase in handset and accessory sales reflects strong volume growth of the wholesale handset business. Increased network operating costs from strongly rising data usage, higher depreciation from completion of the 4G network, and reduced handset margins affected profitability. EBITDA declined 12% to $1,348 million and net profit decreased 32% to $311 million. - 2 - Dividend In line with our dividend policy of 60% payout of profit attributable to equity holders excluding extraordinary items, your Board declares an interim dividend of 18 cents per share. Shareholders have the option to receive new and fully paid shares in lieu of cash under a scrip dividend scheme. Business Review In Hong Kong, competition continues to intensify in the period under review. While SmarTone increased Hong Kong customer numbers, in both postpaid and prepaid segments, by 8% to 1.87 million, service revenue declined 2%. This reflects competitive pricing\n- 1 - Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the c ontents of this document, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this document. SmarTone Telecommunications Holdings Limited (Incorporated in Bermuda with limited liability) (Stock code: 315) 2013 / 2014 INTERIM RESULTS ANNOUNCEMENT (All references to “$” are to the Hong Kong dollars)  Group total revenue increased 11% to $6,531 million  Hong Kong customer numbers increased 8% to 1.87 million  Increased network operating costs with strongly rising data usage  Higher depreciation from completion of 4G network  Group EBITDA declined 12%  Net profit fell 32% to $311 million  Interim dividend of $0.18 per share, 60% payout CHAIRMAN’S STATEMENT I am pleased to report the results of the Group for the six months ended 31 December 2013. Financial Highlights Total revenue increased 11% to $6,531",
-          "period": "six months ended 31 December 2013",
-          "unit": "million",
-          "source_url": "https://www.smartoneholdings.com/about/investor/results/english/1314_interim_results.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "73b1785e69de27bc948f6b11d3a9387fc28b35e6c15de284ab238ab2cb17144b"
-        },
-        {
-          "company": "HKBN",
-          "metric": "总收入",
-          "analysis": "$6,029 million",
-          "basis": "Press Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest\nPress Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest",
-          "period": "the six months ended 28 February 2026",
-          "unit": "million",
-          "source_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "a8699a09512924e80a57fcd970992ac7a0940d16c62d91da43d8866ac0445509"
-        },
-        {
-          "company": "HKBN",
-          "metric": "板块收入分拆",
-          "analysis": "$6,029 million",
-          "basis": "Press Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest\nPress Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest",
-          "period": "the six months ended 28 February 2026",
-          "unit": "million",
-          "source_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "a8699a09512924e80a57fcd970992ac7a0940d16c62d91da43d8866ac0445509"
-        },
-        {
-          "company": "HKBN",
-          "metric": "EBITDA",
-          "analysis": "$1,257 million",
-          "basis": "Press Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest\nPress Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest",
-          "period": "six months ended 28 February 2026",
-          "unit": "million",
-          "source_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "a8699a09512924e80a57fcd970992ac7a0940d16c62d91da43d8866ac0445509"
-        },
-        {
-          "company": "HKBN",
-          "metric": "净利润",
-          "analysis": "108 million $",
-          "basis": "payments. Net profit amounted to $108 million. During the period, the financing structure was optimised. Although the early retirement of banking facilities incurred a one‑off expense, interest expenses were significantly reduced, while the core business remained resilient with strong profitability. In consideration of the Company’s dividend policy and anticipated capital expenditure needs to drive long-term shareholder value, the Board has resolved to declare an interim dividend of 15.5 cents per share (28 February 2025: 15.5 cents per share). Mr. Li Xin, HKBN Executive Director and Group Chief Executive Officer , said, “Today, HKBN is more confident and capable than ever in becoming a leading force in digital services. We will continue to deepen our strategic synergies, accelerate the integration of AI into our core business, and leverage our ample resources and proactive approach to drive digital infrastructure development, creating long-term value for our stakeholders.” Enterprise Solutions: Integrating Telecom and Technology Expertise to Drive Revenue Growth As the Group’s core\nPress Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest",
-          "period": "six months ended 28 February 2026",
-          "unit": "$",
-          "source_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "a8699a09512924e80a57fcd970992ac7a0940d16c62d91da43d8866ac0445509"
-        },
-        {
-          "company": "HKBN",
-          "metric": "董事会",
-          "analysis": "15.5 cents per share",
-          "basis": "payments. Net profit amounted to $108 million. During the period, the financing structure was optimised. Although the early retirement of banking facilities incurred a one‑off expense, interest expenses were significantly reduced, while the core business remained resilient with strong profitability. In consideration of the Company’s dividend policy and anticipated capital expenditure needs to drive long-term shareholder value, the Board has resolved to declare an interim dividend of 15.5 cents per share (28 February 2025: 15.5 cents per share). Mr. Li Xin, HKBN Executive Director and Group Chief Executive Officer , said, “Today, HKBN is more confident and capable than ever in becoming a leading force in digital services. We will continue to deepen our strategic synergies, accelerate the integration of AI into our core business, and leverage our ample resources and proactive approach to drive digital infrastructure development, creating long-term value for our stakeholders.” Enterprise Solutions: Integrating Telecom and Technology Expertise to Drive Revenue Growth As the Group’s core\nPress Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest",
-          "period": "six months ended 28 February 2026",
-          "unit": "cents per share",
-          "source_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "a8699a09512924e80a57fcd970992ac7a0940d16c62d91da43d8866ac0445509"
-        },
-        {
-          "company": "HKBN",
-          "metric": "收入",
-          "analysis": "$6,029 million",
-          "basis": "Press Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest\nPress Releases | HKBN Press release HKBN Announces FY26 Interim Results Strong Revenue, Proactive Investment, Integration Value Gradually Realised (Hong Kong - 24 April 2026) HKBN Ltd. (“HKBN” or the “Company”; SEHK stock code: 1310) today announced its operational and financial results for the six months ended 28 February 2026 (“1H2026”). The Group demonstrated exceptional business resilience and strategic execution. Despite ongoing geopolitical uncertainties and a challenging macroeconomic environment, the Group’s total revenue recorded steady growth, underscoring the competitive strength of its business model. ANNOUNCEMENT HIGHLIGHTS Total revenue showed a strong performance, increasing by 5.1% to $6,029 million. Notably, after excluding handsets and other product sales, core service revenue grew by 8%. EBITDA increased by 4.2% to $1,257 million, attributable to strategic initiatives aimed at driving growth and benefiting from strong operational performance. Adjusted free cash flow grew by 24.5% to $157 million, attributable to improved EBITDA and reduced bank loan interest",
-          "period": "the six months ended 28 February 2026",
-          "unit": "million",
-          "source_url": "https://www.hkbn.net/group/en/newsroom/press-releases/20260424_FY26_Interim_Results",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "a8699a09512924e80a57fcd970992ac7a0940d16c62d91da43d8866ac0445509"
-        },
-        {
-          "company": "HKBN",
-          "metric": "ARPU",
-          "analysis": "HK$184",
-          "basis": "million as we continued to gain market share within the residential broadband market mainly by converting our competitors’ legacy copper-based customers to our fibre-based services. During the six months ended 28 February 2015, 30,000 net additions were achieved for a total of 722,000 residential broadband subscriptions together with a 6% year-on-year increase in residential ARPU to HK$184. The Company’s market share by residential broadband subscriptions increased to 35.4%* as of 31 January 2015 (28 February 2014: 33.0%). Continued expansion in the enterprise market The Company’s enterprise business is on positive momentum with revenue growing by 10% year-on-year to HK$229 million as a result of our strategic focus on SME market, as well as further development of a comprehensive set of service offerings to these customers. During the six months ended 28 February 2015, the Company achieved 3,000 net additions to enterprise customers for a total of 35,000, which more than offset a 3% year-on-year decrease in enterprise ARPU to HK$1,025. The Company’s market share by enterprise\nHKBN Ltd. (SEHK Stock Code: 1310) today reported its unaudited consolidated results for the six months ended 28 February 2015.",
-          "period": "six months ended 28 February 2015",
-          "unit": "HK$",
-          "source_url": "https://reg.hkbn.net/WwwCMS/upload/web/en/Engagement-news-20150429-FY15-interim-results-web.html",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_47",
-          "evidence_hash": "9b28d749d0258c1813c10a0b97e27b4c08274ef22721014d5fe94d9ed132ddc9"
-        }
-      ],
+      "ai_analysis": [],
       "ai_summary": {
         "domain": "local",
         "headline": "本地运营商最新证据已更新",
@@ -3757,10 +3508,14 @@
           },
           {
             "id": "net_profit",
-            "headline": "电讯盈科利润池深度分化",
-            "analysis": "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "HKT稳健三港承压",
+            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
             "entities": [
               {
                 "name": "CMHK",
@@ -3871,8 +3626,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T04:23:02+08:00",
-      "ai_run_id": "research_20260907"
+      "ai_updated_at": "2026-09-07T18:29:38+08:00",
+      "ai_run_id": "research_20260907_rerun_153534"
     },
     {
       "id": "international",
@@ -7310,7 +7065,64 @@
           "url": "https://api.worldbank.org/v2/country/DEU;IND;JPN;KOR;SGP;USA/indicator/PA.NUS.FCRF?date=2016:2025&format=json&per_page=200"
         }
       ],
-      "ai_analysis": [],
+      "ai_analysis": [
+        {
+          "company": "Singtel",
+          "metric": "收入",
+          "analysis": "14,261 S$ million",
+          "basis": "Financial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds\nFinancial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds",
+          "period": "Financial Year ended March 2026",
+          "unit": "S$ million",
+          "source_url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
+          "source_tier": "official",
+          "quality_score": 0.9,
+          "confidence": 0.9,
+          "row_ref": "row_19",
+          "evidence_hash": "63c3c6f3d44c2ba25df42ffe27a876b702fa1596f0b98bb6ae5447284facbca1"
+        },
+        {
+          "company": "Singtel",
+          "metric": "净利润",
+          "analysis": "5,606 S$ million",
+          "basis": "Financial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds\nFinancial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds",
+          "period": "Financial Year ended March 2026",
+          "unit": "S$ million",
+          "source_url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
+          "source_tier": "official",
+          "quality_score": 0.9,
+          "confidence": 0.9,
+          "row_ref": "row_19",
+          "evidence_hash": "63c3c6f3d44c2ba25df42ffe27a876b702fa1596f0b98bb6ae5447284facbca1"
+        },
+        {
+          "company": "SK Telecom",
+          "metric": "AI",
+          "analysis": "KRW 136.2 billion",
+          "basis": "execution The AI data center (AIDC) business is the fastest-growing segment among SKT’s business areas. In the second quarter, AIDC revenue reached KRW 136.2 billion, up 92.5% year over year, driven by expanded operations. As generative AI adoption spreads across industries and demand for high-performance computing infrastructure surges, timely delivery of AI infrastructure for customers such as global Big Tech companies has never been more critical. Last month, SKT established SK Hyper to spearhead AIDC business development, strengthening the company’s execution engine. SK Hyper will proactively secure key resources, including land and power capacity, and attract global customers to accelerate execution and seize market leadership. Led by SK Hyper, SKT has set an initial goal of bringing AIDCs online in phases starting in 2029, targeting a combined capacity of 5 GW. The telecommunications business continues to deliver qualitative growth centered on customer lifetime value (CLV).* Through efficient marketing activities such as identifying new customer segments and running\nSK Telecom Announces Q2 2026 Results – SK telecom newsroom SK telecom newsroom | SK Telecom Announces Q2 2026 Results Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Press Release SK Telecom Announces Q2 2026 Results Press Release 2026.08.05 SK Telecom PR Reading Time 4 min Share Facebook X Email Copy URL Print · SK Telecom announces consolidated revenue of KRW 4.3591 trillion, with operating income of KRW 566.0 billion, up 67.3% year-over-year. · AI data center revenue maintained solid growth, accelerating business expansion with the establishment of SK Hyper. · Mobile subscriber net additions continued on the back of stronger customer value, while the company declared a quarterly dividend of KRW 830 per share for the second consecutive quarter. SK Telecom (NYSE: SKM, hereinafter “SKT”) today announced its consolidated earnings for the second quarter of 2026, based on Korean International Financial Reporting",
+          "period": "Q2 2026",
+          "unit": "KRW billion",
+          "source_url": "https://news.sktelecom.com/en/3218",
+          "source_tier": "official",
+          "quality_score": 0.9,
+          "confidence": 0.9,
+          "row_ref": "row_19",
+          "evidence_hash": "16787147137f2bf63cfe664dbd09a6dc120821735936c74f5f06e44dae7198a4"
+        },
+        {
+          "company": "SK Telecom",
+          "metric": "净利润",
+          "analysis": "466.0 KRW billion",
+          "basis": "Standards (K-IFRS): revenue of KRW 4.3591 trillion, operating income of KRW 566.0 billion, and net income of KRW 466.0 billion. Compared with the same period last year, revenue increased by 0.5%, driven by growth in the data center business. Through efficient, profitability‑focused management, operating income rose 5.3% quarter over quarter (QoQ). Year over year (YoY), it surged 67.3%, supported in part by a favorable base effect from one‑off expenses in the prior year. The telecommunications business, which has remained focused on restoring customer trust, showed a clear turnaround driven by efforts to enhance customer value and improve profitability. The AI business also recorded robust growth as execution accelerated under the company’s strategy of focus and prioritization. On a non-consolidated basis, the company reported revenue of KRW 3.1170 trillion, operating income of KRW 427.7 billion, and net income of KRW 310.6 billion. The second-quarter dividend is KRW 830 per share, unchanged from the first quarter. AI data center business gains momentum, fueling growth through rapid\nSK Telecom Announces Q2 2026 Results – SK telecom newsroom SK telecom newsroom | SK Telecom Announces Q2 2026 Results Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Press Release SK Telecom Announces Q2 2026 Results Press Release 2026.08.05 SK Telecom PR Reading Time 4 min Share Facebook X Email Copy URL Print · SK Telecom announces consolidated revenue of KRW 4.3591 trillion, with operating income of KRW 566.0 billion, up 67.3% year-over-year. · AI data center revenue maintained solid growth, accelerating business expansion with the establishment of SK Hyper. · Mobile subscriber net additions continued on the back of stronger customer value, while the company declared a quarterly dividend of KRW 830 per share for the second consecutive quarter. SK Telecom (NYSE: SKM, hereinafter “SKT”) today announced its consolidated earnings for the second quarter of 2026, based on Korean International Financial Reporting",
+          "period": "Q2 2026",
+          "unit": "KRW billion",
+          "source_url": "https://news.sktelecom.com/en/3218",
+          "source_tier": "official",
+          "quality_score": 0.9,
+          "confidence": 0.9,
+          "row_ref": "row_19",
+          "evidence_hash": "16787147137f2bf63cfe664dbd09a6dc120821735936c74f5f06e44dae7198a4"
+        }
+      ],
       "ai_summary": {
         "domain": "international",
         "headline": "国际运营商最新证据已更新",
@@ -7584,8 +7396,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T04:23:02+08:00",
-      "ai_run_id": "research_20260907"
+      "ai_updated_at": "2026-09-07T18:29:38+08:00",
+      "ai_run_id": "research_20260907_rerun_153534"
     },
     {
       "id": "mainland",
@@ -10441,40 +10253,12 @@
       "ai_analysis": [
         {
           "company": "中国移动",
-          "metric": "收入",
-          "analysis": "RMB538.0 billion",
-          "basis": "intelligence) services. We made positive progress across all key initiatives and our business operations and development demonstrated resilience. 2026 Interim Results In the first half of 2026, the Company recorded operating revenue of RMB538.0 billion, representing a year-on-year decrease of 1.1%, while achieving growth on a comparable basis1. Of which, revenue from principal businesses 2 reached RMB452.7 billion, down by 3.1% year-on-year, while revenue from other businesses amounted to RMB85.4 billion, representing a year-on-year increase of 11.2%. Revenue from computing services 3 and AI services 4 accounted for 22.6% of revenue from principal businesses, representing an increase of 2.2 percentage points year-on-year. 1 Comparable basis refers to excluding the impact of the policy adjustment related to the scope of VAT items; the same applies below. 2 Operating revenue = revenue from principal businesses + revenue from other businesses; revenue from principal businesses includes revenue from three principal businesses: communications services, computing services and AI services;\n– 1 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement. CHINA MOBILE LIMITED ʮ̡ (Incorporated in Hong Kong with limited liability under the Companies Ordinance) Stock Codes: 941 (HKD Counter) and 80941 (RMB Counter) 2026 INTERIM RESULTS • Operating revenue was RMB538.0 billion, achieving growth on a comparable basis; of which, revenue from principal businesses was RMB452.7 billion, and revenue from computing services and AI services accounted for 22.6% of revenue from principal businesses • Profit attributable to equity shareholders was RMB78.9 billion, achieving growth on a comparable basis; EBITDA was RMB173.6 billion, accounting for 38.4% of revenue from principal businesses • Net cash generated from operating activities was RMB114.9 billion, up",
-          "period": "first half of 2026",
-          "unit": "RMB billion",
-          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300218.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_49",
-          "evidence_hash": "73015a1d1bb9581fcb08c9db2bd7a8027b5c01abf33f0d1cc977f5aeaded1552"
-        },
-        {
-          "company": "中国移动",
-          "metric": "净利润",
-          "analysis": "RMB78.9 billion",
-          "basis": "revenue from other businesses mainly consists of sales of mobile handsets and other terminal products. 3 Computing services include data centers, cloud computing services and cloud computing applications. 4 AI services include data algorithms, embodied intelligence, digital and intelligent culture, digital and intelligent e-commerce and industry digital and intelligent services. – 3 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” Profit attributable to equity shareholders was RMB78.9 billion, down by 6.3% year-on-year, while achieving growth on a comparable basis. Earnings per share amounted to RMB3.64. EBITDA 5 was RMB173.6 billion, down by 6.6% year-on-year, and EBITDA accounted for 38.4% of revenue from principal businesses. Our profitability maintained its leading position among top-tier global telecommunications operators. Net cash generated from operating activities was RMB114.9 billion, an increase of 37.0% year-on-year. Free cash flow was RMB53.9 billion, an increase of 111.6% year-on-year. To align with the Company ’s RMB-denominated accounting system while accommodating the currency needs of\n– 1 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement. CHINA MOBILE LIMITED ʮ̡ (Incorporated in Hong Kong with limited liability under the Companies Ordinance) Stock Codes: 941 (HKD Counter) and 80941 (RMB Counter) 2026 INTERIM RESULTS • Operating revenue was RMB538.0 billion, achieving growth on a comparable basis; of which, revenue from principal businesses was RMB452.7 billion, and revenue from computing services and AI services accounted for 22.6% of revenue from principal businesses • Profit attributable to equity shareholders was RMB78.9 billion, achieving growth on a comparable basis; EBITDA was RMB173.6 billion, accounting for 38.4% of revenue from principal businesses • Net cash generated from operating activities was RMB114.9 billion, up",
-          "period": "2026 INTERIM RESULTS",
-          "unit": "RMB billion",
-          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300218.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_49",
-          "evidence_hash": "73015a1d1bb9581fcb08c9db2bd7a8027b5c01abf33f0d1cc977f5aeaded1552"
-        },
-        {
-          "company": "中国移动",
-          "metric": "有线宽带用户",
-          "analysis": "337 million",
-          "basis": "billion, down by 5.7% year-on-year. Mobile customers reached 1,011 million, with a net increase of 5.88 million; 5G network customers reached 687 million, with a net increase of 44.74 million. Handset data traffic increased by 16.0% year-on-year, with the growth rate increasing significantly. Integrated broadband network 7 customers reached 337 million, with a net increase of 7.70 million. IoT (Internet of Things) card connections reached 1,511 million, with a net increase of 29.58 million. Computing services demonstrated strong growth momentum. The Company focused on building a solid foundation for its computing services system, strengthening the China Mobile Cloud brand, and expanding intelligent computing business scale. In the first half of the year, computing service revenue reached RMB52.9 billion, representing a year-on-year increase of 14.0%. China Mobile Cloud ’s market influence continued to grow, with public cloud revenue ranking among the top three in the domestic market for the first time 8. Data center revenue was RMB19.0 billion, up by 13.2% year-on-year, of which AIDC\nbillion, down by 5.7% year-on-year. Mobile customers reached 1,011 million, with a net increase of 5.88 million; 5G network customers reached 687 million, with a net increase of 44.74 million. Handset data traffic increased by 16.0% year-on-year, with the growth rate increasing significantly. Integrated broadband network 7 customers reached 337 million, with a net increase of 7.70 million. IoT (Internet of Things) card connections reached 1,511 million, with a net increase of 29.58 million. Computing services demonstrated strong growth momentum. The Company focused on building a solid foundation for its computing services system, strengthening the China Mobile Cloud brand, and expanding intelligent computing business scale. In the first half of the year, computing service revenue reached RMB52.9 billion, representing a year-on-year increase of 14.0%. China Mobile Cloud ’s market influence continued to grow, with public cloud revenue ranking among the top three in the domestic market for the first time 8. Data center revenue was RMB19.0 billion, up by 13.2% year-on-year, of which AIDC",
-          "period": "In the first half of the year",
+          "metric": "移动客户数",
+          "analysis": "1,011 million",
+          "basis": "by 37.0% year-on-year; free cash flow was RMB53.9 billion, up by 111.6% year-on-year • Mobile customers reached 1,011 million, with a net increase of 5.88 million; integrated broadband network customers reached 337 million, with a net increase of 7.70 million; IoT card connections reached 1,511 million, with a net increase of 29.58 million • Payment of an interim dividend of RMB2.51 per share was declared, up by 0.3% year-on-year, which is equivalent to HK$2.9003 per share, up by 5.5% year-on-year – 2 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” CHAIRMAN ’S STATEMENT Dear Shareholders, The first half of 2026 brought its fair share of external headwinds and multifaceted challenges. In response, we proactively identified, adapted to and drove changes. Anchored by our vision to become a world-class sci-tech service enterprise, we advanced our strategic priorities – strengthening network foundation and driving full-stack innovation – while channelling our efforts into strengthening, optimizing and expanding our three principal businesses: communications services, computing services and AI (artificial\n– 1 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement. CHINA MOBILE LIMITED ʮ̡ (Incorporated in Hong Kong with limited liability under the Companies Ordinance) Stock Codes: 941 (HKD Counter) and 80941 (RMB Counter) 2026 INTERIM RESULTS • Operating revenue was RMB538.0 billion, achieving growth on a comparable basis; of which, revenue from principal businesses was RMB452.7 billion, and revenue from computing services and AI services accounted for 22.6% of revenue from principal businesses • Profit attributable to equity shareholders was RMB78.9 billion, achieving growth on a comparable basis; EBITDA was RMB173.6 billion, accounting for 38.4% of revenue from principal businesses • Net cash generated from operating activities was RMB114.9 billion, up",
+          "period": "2026",
           "unit": "million",
-          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0813/2026081300218.pdf",
+          "source_url": "https://www.chinamobileltd.com/en/file/view.php?id=342603",
           "source_tier": "official",
           "quality_score": 0.9,
           "confidence": 0.9,
@@ -10482,32 +10266,18 @@
           "evidence_hash": "73015a1d1bb9581fcb08c9db2bd7a8027b5c01abf33f0d1cc977f5aeaded1552"
         },
         {
-          "company": "中国联通",
-          "metric": "收入",
-          "analysis": "RMB201.4 billion",
-          "basis": "– 1 – Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement. (Incorporated in Hong Kong with limited liability) (Stock Code: 762) 2026 INTERIM RESULTS ANNOUNCEMENT Highlights: • Revenue performance was stable in the first half of 2026. Against a backdrop where the overall industry growth was facing challenges, operating revenue reached RMB201.4 billion, representing a year-on-year increase of 0.6%. Service revenue was RMB178.0 billion, representing a year-on-year decrease of 0.2%. • Profitability was under short-term pressure due to the value-added tax (VAT) and the change in the timing of employee benefit expenses spending, but the full-year profit contraction is expected to narrow significantly 1. In the first half of 2026, net profit 2 was RMB9.5 billion, representing a\nand the society! Dong Xin Chairman and Chief Executive Officer Hong Kong, 18 August 2026 Note 1: This forecast is made by the Company based on the current external environment and actual operational circumstances, and does not constitute a substantive commitment by the Company to investors. Note 2: Net profit = Profit attributable to equity shareholders of the Company. Note 3: Computing power revenue = data centre revenue + computing service revenue + digital smart applications revenue + cloud-AI services revenue. Note 4: Total connectivity subscriber scale = aggregate number of mobile billing subscribers + aggregate number of fixed-line broadband subscribers + aggregate number of fixed-line local access subscribers + aggregate number of Internet-of-things terminal connections + aggregate number of networking leased line subscribers. Note 5: Number of standard cabinets is calculated based on 2.5 kW per cabinet. – 8 – GROUP RESULTS China Unicom (Hong Kong) Limited (the “Company”) is pleased to announce the unaudited condensed consolidated interim results of the Company and its",
-          "period": "first half of 2026",
-          "unit": "RMB billion",
-          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+          "company": "中国电信",
+          "metric": "云收入",
+          "analysis": "618 人民币亿元",
+          "basis": "7.1%，占收比达到 12.8%，同比提升 1.1pp。 有关公司详细业务情况分析请见本报告“第三节 管理层讨论与分析”之“二、经营情况的讨 论与分析”。 报告期内公司新增重要非主营业务的说明 □适用 √不适用 二、经营情况的讨论与分析 2026年上半年，中国电信完整、准确、全面贯彻新发展理念，积极服务和融入新发展格局， 坚定履行建设网络强国、科技强国、数字中国和维护网信安全的责任，全面实施云改数转智惠战 略，持续深化“五位一体”智能云体系，科技创新成效显著，“AI+”行动深入推进，云网能力持 续提升，以“智改”为核心推动改革开放不断深化，发展动能向新、结构向优，企业高质量发展 迈出坚实步伐。 中国电信股份有限公司2026 年半年度报告 10 1.总体业绩 2026 年上半年，公司营业收入为人民币 2,590 亿元，主营收入 1 为人民币 2,441 亿元，可比口 径 2 保持基本稳定，其中通信收入为人民币 2,130 亿元，智能收入为人民币 311 亿元，同比增长 7.1%， 占收比达到 12.8%，同比提升 1.1pp。天翼云收入达到人民币 618 亿元，同比增长 7.8%。归属于 上市公司股东的净利润为人民币 196 亿元，可比口径保持良好增长，基本每股收益为人民币 0.21 元。资本开支为人民币 324 亿元。自由现金流 3 为人民币 289 亿元，同比增长 121.3%。 在充分考虑盈利、现金流水平及未来发展资金需求后，董事会决定2026年继续派发中期股息， 以现金方式分配的利润为上半年本公司股东应占利润的75%，同比提升3pp，即每股人民币0.1606 元（含税），持续为股东创造价值。 2. 全面实施云改数转智惠战略，企业高质量发展迈出坚实步伐 公司全面拥抱人工智能，全面实施云改数转智惠战略，持续加强“息壤”第一科技攻关，持 续深化智能云体系建设，加快建设新型数字信息基础设施，推动服务型、科技型、安全型企业建 设再上新台阶。 2.1 锚定科技领军企业建设目标，加大关键核心技术攻关 公司着力提升科技创新实力，推动科技创新和产业创新深度融合，增加高质量科技供给，增 强企业核心竞争力。上半年，研发费用 4 达到人民币 52.1 亿元，同比增长 8.9%。云及云网融合方 向，参与“‘鹏城云脑’超大规模国产智能算力系统及产业化工程”项目，获得 2025 年度国家科 学技术进步奖一等奖，牵头建设的云计算原创技术策源地及云计算创新联合体获国资委 A 等次评 价；继天翼云自研操作系统 CTyunOS 之后，自研数据库产品 TeleDB 通过国家安全可靠测评，自研\n7.1%，占收比达到 12.8%，同比提升 1.1pp。 有关公司详细业务情况分析请见本报告“第三节 管理层讨论与分析”之“二、经营情况的讨 论与分析”。 报告期内公司新增重要非主营业务的说明 □适用 √不适用 二、经营情况的讨论与分析 2026年上半年，中国电信完整、准确、全面贯彻新发展理念，积极服务和融入新发展格局， 坚定履行建设网络强国、科技强国、数字中国和维护网信安全的责任，全面实施云改数转智惠战 略，持续深化“五位一体”智能云体系，科技创新成效显著，“AI+”行动深入推进，云网能力持 续提升，以“智改”为核心推动改革开放不断深化，发展动能向新、结构向优，企业高质量发展 迈出坚实步伐。 中国电信股份有限公司2026 年半年度报告 10 1.总体业绩 2026 年上半年，公司营业收入为人民币 2,590 亿元，主营收入 1 为人民币 2,441 亿元，可比口 径 2 保持基本稳定，其中通信收入为人民币 2,130 亿元，智能收入为人民币 311 亿元，同比增长 7.1%， 占收比达到 12.8%，同比提升 1.1pp。天翼云收入达到人民币 618 亿元，同比增长 7.8%。归属于 上市公司股东的净利润为人民币 196 亿元，可比口径保持良好增长，基本每股收益为人民币 0.21 元。资本开支为人民币 324 亿元。自由现金流 3 为人民币 289 亿元，同比增长 121.3%。 在充分考虑盈利、现金流水平及未来发展资金需求后，董事会决定2026年继续派发中期股息， 以现金方式分配的利润为上半年本公司股东应占利润的75%，同比提升3pp，即每股人民币0.1606 元（含税），持续为股东创造价值。 2. 全面实施云改数转智惠战略，企业高质量发展迈出坚实步伐 公司全面拥抱人工智能，全面实施云改数转智惠战略，持续加强“息壤”第一科技攻关，持 续深化智能云体系建设，加快建设新型数字信息基础设施，推动服务型、科技型、安全型企业建 设再上新台阶。 2.1 锚定科技领军企业建设目标，加大关键核心技术攻关 公司着力提升科技创新实力，推动科技创新和产业创新深度融合，增加高质量科技供给，增 强企业核心竞争力。上半年，研发费用 4 达到人民币 52.1 亿元，同比增长 8.9%。云及云网融合方 向，参与“‘鹏城云脑’超大规模国产智能算力系统及产业化工程”项目，获得 2025 年度国家科 学技术进步奖一等奖，牵头建设的云计算原创技术策源地及云计算创新联合体获国资委 A 等次评 价；继天翼云自研操作系统 CTyunOS 之后，自研数据库产品 TeleDB 通过国家安全可靠测评，自研",
+          "period": "2026年上半年",
+          "unit": "人民币亿元",
+          "source_url": "https://www.chinatelecom-h.com/sc/ir/report/interim2026_ashare.pdf",
           "source_tier": "official",
           "quality_score": 0.9,
           "confidence": 0.9,
           "row_ref": "row_49",
-          "evidence_hash": "919f31d9bcf6606d1f404c5f798ce54c6bf1e4e212886725ebaeb67ac0f7a611"
-        },
-        {
-          "company": "中国联通",
-          "metric": "净利润",
-          "analysis": "RMB9.5 billion",
-          "basis": "– 1 – Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement. (Incorporated in Hong Kong with limited liability) (Stock Code: 762) 2026 INTERIM RESULTS ANNOUNCEMENT Highlights: • Revenue performance was stable in the first half of 2026. Against a backdrop where the overall industry growth was facing challenges, operating revenue reached RMB201.4 billion, representing a year-on-year increase of 0.6%. Service revenue was RMB178.0 billion, representing a year-on-year decrease of 0.2%. • Profitability was under short-term pressure due to the value-added tax (VAT) and the change in the timing of employee benefit expenses spending, but the full-year profit contraction is expected to narrow significantly 1. In the first half of 2026, net profit 2 was RMB9.5 billion, representing a\nand the society! Dong Xin Chairman and Chief Executive Officer Hong Kong, 18 August 2026 Note 1: This forecast is made by the Company based on the current external environment and actual operational circumstances, and does not constitute a substantive commitment by the Company to investors. Note 2: Net profit = Profit attributable to equity shareholders of the Company. Note 3: Computing power revenue = data centre revenue + computing service revenue + digital smart applications revenue + cloud-AI services revenue. Note 4: Total connectivity subscriber scale = aggregate number of mobile billing subscribers + aggregate number of fixed-line broadband subscribers + aggregate number of fixed-line local access subscribers + aggregate number of Internet-of-things terminal connections + aggregate number of networking leased line subscribers. Note 5: Number of standard cabinets is calculated based on 2.5 kW per cabinet. – 8 – GROUP RESULTS China Unicom (Hong Kong) Limited (the “Company”) is pleased to announce the unaudited condensed consolidated interim results of the Company and its",
-          "period": "first half of 2026",
-          "unit": "RMB billion",
-          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_49",
-          "evidence_hash": "919f31d9bcf6606d1f404c5f798ce54c6bf1e4e212886725ebaeb67ac0f7a611"
+          "evidence_hash": "2d362aad834efab77fb2d3c5b9a3d9a531cdba782fedc523e8bb18fbb70ca090"
         }
       ],
       "ai_summary": {
@@ -10719,8 +10489,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T04:23:02+08:00",
-      "ai_run_id": "research_20260907"
+      "ai_updated_at": "2026-09-07T18:29:38+08:00",
+      "ai_run_id": "research_20260907_rerun_153534"
     },
     {
       "id": "cloud",
@@ -14851,21 +14621,7 @@
       "ai_analysis": [
         {
           "company": "AWS",
-          "metric": "云收入",
-          "analysis": "$42.2 billion",
-          "basis": "EX-99.1 2 amzn-20260630xex991.htm EX-99.1 Document Exhibit 99.1 AMAZON.COM ANNOUNCES SECOND QUARTER RESULTS Net sales increased 20% year-over-year Operating income was $27.5 billion, up 43% year-over-year AWS net sales increased 37%—its fastest growth in 18 quarters—to a $169 billion annualized revenue run rate SEATTLE—(BUSINESS WIRE) July 30, 2026—Amazon.com, Inc. (NASDAQ: AMZN) today announced financial results for its second quarter ended June 30, 2026. • Net sales increased 20% to $200.6 billion in the second quarter, compared with $167.7 billion in second quarter 2025. Excluding the $0.1 billion favorable impact from year-over-year changes in foreign exchange rates throughout the quarter, net sales increased 20% compared with second quarter 2025. • North America segment sales increased 16% year-over-year to $116.2 billion. • International segment sales increased 15% year-over-year to $42.2 billion. • AWS segment sales increased 37% year-over-year to $42.2 billion. • Operating income increased to $27.5 billion in the second quarter, compared with $19.2 billion in second quarter\nEX-99.1 2 amzn-20260630xex991.htm EX-99.1 Document Exhibit 99.1 AMAZON.COM ANNOUNCES SECOND QUARTER RESULTS Net sales increased 20% year-over-year Operating income was $27.5 billion, up 43% year-over-year AWS net sales increased 37%—its fastest growth in 18 quarters—to a $169 billion annualized revenue run rate SEATTLE—(BUSINESS WIRE) July 30, 2026—Amazon.com, Inc. (NASDAQ: AMZN) today announced financial results for its second quarter ended June 30, 2026. • Net sales increased 20% to $200.6 billion in the second quarter, compared with $167.7 billion in second quarter 2025. Excluding the $0.1 billion favorable impact from year-over-year changes in foreign exchange rates throughout the quarter, net sales increased 20% compared with second quarter 2025. • North America segment sales increased 16% year-over-year to $116.2 billion. • International segment sales increased 15% year-over-year to $42.2 billion. • AWS segment sales increased 37% year-over-year to $42.2 billion. • Operating income increased to $27.5 billion in the second quarter, compared with $19.2 billion in second quarter",
-          "period": "second quarter ended June 30, 2026",
-          "unit": "billion",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_50",
-          "evidence_hash": "597a5868b71464f2ff2d641697ca056e929ad60a9e50932ab0fcbd8916468044"
-        },
-        {
-          "company": "AWS",
-          "metric": "经营利润或利润率",
+          "metric": "经营利润",
           "analysis": "$16.6 billion",
           "basis": "2025. • North America segment operating income was $9.1 billion, compared with $7.5 billion in second quarter 2025. • International segment operating income was $1.7 billion, compared with $1.5 billion in second quarter 2025. • AWS segment operating income was $16.6 billion, compared with $10.2 billion in second quarter 2025. • Net income increased to $62.6 billion in the second quarter, or $5.75 per diluted share, compared with $18.2 billion, or $1.68 per diluted share, in second quarter 2025. • Second quarter 2026 net income includes non-operating pre-tax other income of $53.4 billion, primarily from our investments in Anthropic. • Operating cash flow increased 33% to $161.4 billion for the trailing twelve months, compared with $121.1 billion for the trailing twelve months ended June 30, 2025. • Free cash flow decreased to an outflow of $7.6 billion for the trailing twelve months, driven primarily by a year-over-year increase of $66.1 billion in purchases of property and equipment, net of proceeds from sales and incentives. This increase primarily reflects investments in artificial\nEX-99.1 2 amzn-20260630xex991.htm EX-99.1 Document Exhibit 99.1 AMAZON.COM ANNOUNCES SECOND QUARTER RESULTS Net sales increased 20% year-over-year Operating income was $27.5 billion, up 43% year-over-year AWS net sales increased 37%—its fastest growth in 18 quarters—to a $169 billion annualized revenue run rate SEATTLE—(BUSINESS WIRE) July 30, 2026—Amazon.com, Inc. (NASDAQ: AMZN) today announced financial results for its second quarter ended June 30, 2026. • Net sales increased 20% to $200.6 billion in the second quarter, compared with $167.7 billion in second quarter 2025. Excluding the $0.1 billion favorable impact from year-over-year changes in foreign exchange rates throughout the quarter, net sales increased 20% compared with second quarter 2025. • North America segment sales increased 16% year-over-year to $116.2 billion. • International segment sales increased 15% year-over-year to $42.2 billion. • AWS segment sales increased 37% year-over-year to $42.2 billion. • Operating income increased to $27.5 billion in the second quarter, compared with $19.2 billion in second quarter",
           "period": "second quarter ended June 30, 2026",
@@ -14878,18 +14634,18 @@
           "evidence_hash": "597a5868b71464f2ff2d641697ca056e929ad60a9e50932ab0fcbd8916468044"
         },
         {
-          "company": "AWS",
-          "metric": "AWS经营利润",
-          "analysis": "$16.6 billion",
-          "basis": "2025. • North America segment operating income was $9.1 billion, compared with $7.5 billion in second quarter 2025. • International segment operating income was $1.7 billion, compared with $1.5 billion in second quarter 2025. • AWS segment operating income was $16.6 billion, compared with $10.2 billion in second quarter 2025. • Net income increased to $62.6 billion in the second quarter, or $5.75 per diluted share, compared with $18.2 billion, or $1.68 per diluted share, in second quarter 2025. • Second quarter 2026 net income includes non-operating pre-tax other income of $53.4 billion, primarily from our investments in Anthropic. • Operating cash flow increased 33% to $161.4 billion for the trailing twelve months, compared with $121.1 billion for the trailing twelve months ended June 30, 2025. • Free cash flow decreased to an outflow of $7.6 billion for the trailing twelve months, driven primarily by a year-over-year increase of $66.1 billion in purchases of property and equipment, net of proceeds from sales and incentives. This increase primarily reflects investments in artificial\nEX-99.1 2 amzn-20260630xex991.htm EX-99.1 Document Exhibit 99.1 AMAZON.COM ANNOUNCES SECOND QUARTER RESULTS Net sales increased 20% year-over-year Operating income was $27.5 billion, up 43% year-over-year AWS net sales increased 37%—its fastest growth in 18 quarters—to a $169 billion annualized revenue run rate SEATTLE—(BUSINESS WIRE) July 30, 2026—Amazon.com, Inc. (NASDAQ: AMZN) today announced financial results for its second quarter ended June 30, 2026. • Net sales increased 20% to $200.6 billion in the second quarter, compared with $167.7 billion in second quarter 2025. Excluding the $0.1 billion favorable impact from year-over-year changes in foreign exchange rates throughout the quarter, net sales increased 20% compared with second quarter 2025. • North America segment sales increased 16% year-over-year to $116.2 billion. • International segment sales increased 15% year-over-year to $42.2 billion. • AWS segment sales increased 37% year-over-year to $42.2 billion. • Operating income increased to $27.5 billion in the second quarter, compared with $19.2 billion in second quarter",
-          "period": "second quarter ended June 30, 2026",
+          "company": "Microsoft Azure",
+          "metric": "Intelligent Cloud收入",
+          "analysis": "$39.3 billion",
+          "basis": "Microsoft 365 Commercial cloud revenue increased 14%. · Microsoft 365 Consumer cloud revenue increased 24% (up 22% in constant currency) · LinkedIn revenue increased 12% (up 10% in constant currency) · Dynamics 365 revenue increased 13% (up 12% in constant currency) Revenue in Intelligent Cloud was $39.3 billion and increased 32% (up 31% in constant currency), with the following business highlights: · Azure and other cloud services revenue increased 43% Revenue in More Personal Computing was $12.9 billion and decreased 4% (down 5% in constant currency), with the following business highlights: · Windows OEM and Devices revenue decreased 7% · XBOX content and services revenue decreased 10% · Search advertising revenue excluding traffic acquisition costs increased 10% (up 9% in constant currency) Microsoft returned $10.2 billion to shareholders in the form of dividends and share repurchases in the fourth quarter of fiscal year 2026. Fiscal Year 2026 Results Microsoft Corp. today announced the following results for the fiscal year ended June 30, 2026, as compared to the corresponding\nREDMOND, Wash. — July 29, 2026 — Microsoft Corp. today announced the following results for the quarter ended June 30, 2026, as compared to the corresponding period of last fiscal year: · Revenue was $90.0 billion and increased 18% (up 17% in constant currency) · Operating income was $40.6 billion and increased 18% · Net income was $35.8 billion and increased 31% on a GAAP basis, and was $35.3 billion and increased 22% on a non-GAAP basis · Diluted earnings per share was $4.81 and increased 32% on a GAAP basis, and was $4.74 and increased 23% on a non-GAAP basis · Non-GAAP results exclude the impact from investments in OpenAI, explained in the Non-GAAP Definition section below Several discrete items impacted our financial results in the quarter when compared to our forward-looking guidance provided on April 29, 2026, resulting in a benefit of $0.27 on diluted earnings per share. These include a $3.2 billion gain from our investment in Anthropic and lower-than-expected expenses related to the Voluntary Retirement Program which were partially offset by severance expense and impairment",
+          "period": "quarter ended June 30, 2026",
           "unit": "billion",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
+          "source_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q4/press-release-webcast",
           "source_tier": "official",
           "quality_score": 0.9,
           "confidence": 0.9,
           "row_ref": "row_50",
-          "evidence_hash": "597a5868b71464f2ff2d641697ca056e929ad60a9e50932ab0fcbd8916468044"
+          "evidence_hash": "2f99bddc7364d78ef10c2893408496697efd5016a8856aecaeb84fc6c2f3bf8a"
         }
       ],
       "ai_summary": {
@@ -15230,56 +14986,56 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T04:23:02+08:00",
-      "ai_run_id": "research_20260907"
+      "ai_updated_at": "2026-09-07T18:29:38+08:00",
+      "ai_run_id": "research_20260907_rerun_153534"
     }
   ],
   "relations": [
     {
-      "from": "mainland",
-      "to": "local",
-      "title": "FY2025香港与内地财务口径分开",
-      "detail": "内地营收卡片为10501.9亿元，香港为36553百万港元；两组均采用FY2025/FY2025最新已核验披露，但币种与主体范围结构不同；这表明数值高低不能直接等同经营质量。",
-      "kind": "证据规则回退",
+      "from": "local",
+      "to": "international",
+      "title": "本地龙头营收底盘仍低于日韩国际头部",
+      "detail": "HKT营收36553.0百万港元，SoftBank Corp.营收47031.92百万美元，差距表明本地与国际运营商营收规模存在梯队分化，并非同一量级的资源承载力。",
+      "kind": "AI综合研判",
       "source_urls": [
-        "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-        "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+        "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+        "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
       ],
       "origin": "ai"
     },
     {
       "from": "international",
-      "to": "cloud",
-      "title": "FY2025云收入与运营商财务分口径",
-      "detail": "云收入卡片为128725百万美元，国际营收卡片为47031.9百万美元；分别采用FY2025/FY2025最新已核验披露，分部规模与集团财务口径结构不同，因此不能直接混合排名。",
-      "kind": "证据规则回退",
+      "to": "mainland",
+      "title": "国际ARPU高于内地但客户规模远低于内地",
+      "detail": "NTT DOCOMO移动ARPU为26.46美元/月，中国移动移动客户数为10.05亿户，分化表明国际与内地运营商在客户价值与客户规模维度存在结构差异，并非同一市场阶段的效率可比。",
+      "kind": "AI综合研判",
       "source_urls": [
-        "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
-        "https://abc.xyz/investor/earnings/"
-      ],
-      "origin": "ai"
-    },
-    {
-      "from": "local",
-      "to": "cloud",
-      "title": "FY2025香港财务与云收入边界不同",
-      "detail": "香港营收卡片为36553百万港元，云收入卡片为128725百万美元；分别采用FY2025/FY2025最新已核验披露，公司整体与云分部范围结构不同；这表明两者不可直接比较。",
-      "kind": "证据规则回退",
-      "source_urls": [
-        "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-        "https://abc.xyz/investor/earnings/"
+        "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+        "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
       ],
       "origin": "ai"
     },
     {
       "from": "mainland",
-      "to": "international",
-      "title": "FY2025内地与国际用户口径分开",
-      "detail": "内地后付费用户数披露不足，国际营收卡片为47031.9百万美元；国际侧采用FY2025最新披露；两者用户口径结构不同，因此不能直接拿移动用户总数替代后付费竞争判断。",
-      "kind": "证据规则回退",
+      "to": "cloud",
+      "title": "内地运营商利润池远低于全球云厂商利润",
+      "detail": "中国移动净利润1370.95亿元，AWS云利润45606.0百万美元，差距表明内地运营商与全球云厂商在盈利维度存在资本回报梯队分化，并非同一利润定义下的规模比较。",
+      "kind": "AI综合研判",
       "source_urls": [
-        "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-        "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
+        "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+        "https://ir.aboutamazon.com/quarterly-results/default.aspx"
+      ],
+      "origin": "ai"
+    },
+    {
+      "from": "cloud",
+      "to": "local",
+      "title": "云厂商资本开支远超本地运营商投资规模",
+      "detail": "AWS集团资本开支77658.0百万美元，HKT EBITDA为14234.0百万港元，差距表明云厂商与本地运营商在资本维度存在投入强度脱钩，并非同一口径的扩张能力。",
+      "kind": "AI综合研判",
+      "source_urls": [
+        "https://ir.aboutamazon.com/quarterly-results/default.aspx",
+        "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
       ],
       "origin": "ai"
     }
@@ -15294,133 +15050,14 @@
     "verified_public_fact_count": 9
   },
   "refresh": {
-    "ok": true,
-    "status": "completed",
-    "started_at_hkt": "2026-09-07T04:23:02+08:00",
-    "agent_run_id": "research_20260907",
+    "ok": false,
+    "status": "running",
+    "started_at_hkt": "2026-09-07T18:29:38+08:00",
+    "agent_run_id": "research_20260907_rerun_153534",
     "dry_run": false,
-    "task_run_id": "20260907_042302_183902",
+    "task_run_id": "20260907_182938_676530",
     "attempt": 1,
-    "domains": {
-      "local": {
-        "ok": true,
-        "changed": false,
-        "validation": {
-          "rows": 161,
-          "path": "",
-          "latest_period": "",
-          "quality": "passed",
-          "verified_rows": 161,
-          "financial_reports": 5,
-          "latest_financial_period": "H1 2026",
-          "latest_financial_publication_date": "2026-08-27"
-        },
-        "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
-        "agent_fact_update": {
-          "facts": 35,
-          "changed": true,
-          "published": true
-        },
-        "database_changed": true
-      },
-      "international": {
-        "ok": true,
-        "changed": false,
-        "promoted": false,
-        "validation": {
-          "rows": 3084,
-          "path": "",
-          "latest_period": "Jun '26 Jun 30, 2026",
-          "quality": "passed",
-          "verified_rows": 2698
-        },
-        "merge": {
-          "strategy": "preserve_existing_verified_rows_and_add_new_builder_rows",
-          "current_rows": 3084,
-          "builder_rows": 2866,
-          "added_rows": 0,
-          "upgraded_rows": 0,
-          "published_rows": 3084
-        },
-        "release": {
-          "ok": true,
-          "created": true,
-          "release_root": "",
-          "release_dir": "",
-          "current_pointer": "",
-          "schema_version": "1.0",
-          "dataset_key": "quarterly_competitor_metrics",
-          "release_id": "qcm_e493d4e5757bbdbafb764407",
-          "release_manifest": "releases/qcm_e493d4e5757bbdbafb764407/release.json",
-          "release_manifest_sha256": "8b1e4551720e390bb97563b848becbffeb9556be8bd474352d15b9ba65804bc2",
-          "published_at": "2026-09-06T20:23:40+00:00",
-          "data_as_of": "2026-06-30",
-          "row_count": 3084,
-          "content_sha256": "e493d4e5757bbdbafb764407d67d3b1eacbd07636cd34d5496dc018d2f4b82c2",
-          "task_id": "crawl:20260907_042325_844076",
-          "task_run_id": "20260907_042325_844076"
-        },
-        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-international-refresh-dphgiws5/dataset\nRows: 2866\n",
-        "agent_fact_update": {
-          "facts": 15,
-          "changed": false,
-          "published": false
-        },
-        "database_changed": false
-      },
-      "cloud": {
-        "ok": true,
-        "changed": false,
-        "promoted": false,
-        "validation": {
-          "rows": 430,
-          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-_b9lzbb1/dataset/cloud_vendor_metrics_2023_2025.json",
-          "latest_period": "2025",
-          "quality": "passed",
-          "verified_rows": 171
-        },
-        "stdout_tail": "Wrote /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-cloud-refresh-_b9lzbb1/dataset\nRows: 430\n",
-        "agent_fact_update": {
-          "facts": 11,
-          "changed": false,
-          "published": false
-        },
-        "database_changed": false
-      },
-      "macro": {
-        "ok": true,
-        "changed": false,
-        "promoted": false,
-        "validation": {
-          "rows": 7751,
-          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-bb9cgskx/dataset/macro_policy_metrics.json",
-          "latest_period": "2026-07-31",
-          "quality": "passed",
-          "verified_rows": 7748
-        },
-        "stdout_tail": "wrote 7751 rows to /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-bb9cgskx/dataset\n"
-      },
-      "mainland": {
-        "ok": true,
-        "changed": false,
-        "daily_main_database_promotion": {
-          "ok": true,
-          "changed": false,
-          "candidates": 15,
-          "added_rows": 0,
-          "upgraded_rows": 0,
-          "preserved_stronger_rows": 15,
-          "published_rows": 3084,
-          "dry_run": false
-        },
-        "agent_fact_update": {
-          "facts": 15,
-          "changed": false,
-          "published": false
-        },
-        "database_changed": false
-      }
-    },
+    "domains": {},
     "ui_contract": {
       "domain_ids": [
         "local",
@@ -15430,181 +15067,7 @@
       ],
       "supporting_database_ids": [
         "macro"
-      ],
-      "focuses_expected": 15,
-      "focuses_passed": 15,
-      "discoveries_expected": 4,
-      "discoveries_passed": 4,
-      "insights_expected": 19,
-      "insights_passed": 19,
-      "summary_domain_ids": [
-        "local",
-        "international",
-        "mainland",
-        "cloud"
-      ],
-      "aligned": true
-    },
-    "news_database_signals": {
-      "available": false,
-      "required": false,
-      "reason": "research_agents_search_in_current_run"
-    },
-    "ai_analysis": {
-      "ok": true,
-      "changed": true,
-      "domain_counts": {
-        "local": 18,
-        "international": 5,
-        "mainland": 5,
-        "cloud": 3,
-        "macro": 0
-      },
-      "path": ""
-    },
-    "domain_fact_sidecars": {
-      "local": {
-        "path": "",
-        "facts": 35,
-        "submitted_facts": 18,
-        "changed": true,
-        "published": true
-      },
-      "international": {
-        "path": "",
-        "facts": 15,
-        "submitted_facts": 5,
-        "changed": false,
-        "published": false
-      },
-      "mainland": {
-        "path": "",
-        "facts": 15,
-        "submitted_facts": 5,
-        "changed": false,
-        "published": false
-      },
-      "cloud": {
-        "path": "",
-        "facts": 11,
-        "submitted_facts": 3,
-        "changed": false,
-        "published": false
-      },
-      "macro": {
-        "path": "",
-        "facts": 0,
-        "changed": false,
-        "published": false,
-        "skipped": true
-      }
-    },
-    "daily_main_database_promotion": {
-      "ok": true,
-      "changed": false,
-      "candidates": 15,
-      "added_rows": 0,
-      "upgraded_rows": 0,
-      "preserved_stronger_rows": 15,
-      "published_rows": 3084,
-      "dry_run": false
-    },
-    "overview_source_recrawl": {
-      "ok": true,
-      "skipped": true,
-      "reason": "official_pages_already_read_by_research_agents"
-    },
-    "model_analysis": {
-      "ok": true,
-      "generated_at_hkt": "2026-09-07T04:31:05+08:00",
-      "model": "DeepSeek-V4-Pro",
-      "domains": 4,
-      "focuses_expected": 15,
-      "focuses_passed": 15,
-      "discoveries_expected": 4,
-      "discoveries_passed": 4,
-      "insights_expected": 19,
-      "insights_passed": 19,
-      "reused": false,
-      "fallback_used": false,
-      "fallback_reason": "",
-      "evidence_hash": "323bf6e0acb4a4e1acb589f714c695ade882c796c93eb2e2a47ce2b7afb1f8f9",
-      "discovery_model": "DeepSeek-V4-Pro",
-      "discovery_evidence_repair_count": 3,
-      "discovery_fallback_used": false,
-      "discovery_fallback_reason": ""
-    },
-    "ui_value_changes": {
-      "baseline_available": true,
-      "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
-      "changed": 0,
-      "added": 0,
-      "removed": 0,
-      "domains": {
-        "local": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        },
-        "international": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        },
-        "mainland": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        },
-        "cloud": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        }
-      },
-      "items": []
-    },
-    "pages_publish": {
-      "ok": true,
-      "attempts": 2,
-      "status": "published",
-      "site_version": "56b66b96b3039d35f4999a056214e17e7ef652f8d1ddf23b024ffe913e5fd991",
-      "item_count": 8,
-      "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-      "commit": "ea063dbbf55a24418452cb63ebe1a3f69094e76d",
-      "snapshot_source_url": ""
-    },
-    "failed_domains": [],
-    "completed_at_hkt": "2026-09-07T04:31:59+08:00",
-    "duration_ms": 536945,
-    "fallback_preserved": false,
-    "change_summary": {
-      "database_changed_domains": [
-        "local"
-      ],
-      "source_content_changed_domains": [],
-      "ui_numeric_changed_domains": [],
-      "ui_verified": true
-    },
-    "feishu_detail_log": {
-      "ok": true,
-      "written": 631,
-      "skipped": 0,
-      "created": false,
-      "sheet_title": "四库爬虫明细日志",
-      "sheet_url": "",
-      "row_start": 90555,
-      "row_end": 91185,
-      "readback_verified": true,
-      "readback_reason": "live_full_event_id_readback",
-      "readback_scope": "all_live_event_ids",
-      "live_event_count": 91184,
-      "event_index_sha256": "a7712847d3e883283bfec252bea72527431d85af96dffe53922e26836fd4e5bd",
-      "write_recovered_by_readback": false
+      ]
     }
   },
   "ui_contract": {
@@ -15624,21 +15087,21 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-07T04:31:59+08:00"
+    "last_checked_at_hkt": "2026-09-07T18:29:38+08:00"
   },
   "ai": {
-    "agent_run_id": "research_20260907",
-    "updated_at": "2026-09-07T04:23:02+08:00",
+    "agent_run_id": "research_20260907_rerun_153534",
+    "updated_at": "2026-09-07T18:29:38+08:00",
     "domain_counts": {
-      "local": 18,
-      "international": 5,
-      "mainland": 5,
-      "cloud": 3,
+      "local": 0,
+      "international": 13,
+      "mainland": 2,
+      "cloud": 2,
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-07T15:29:03+08:00",
-      "model": "DeepSeek-V4-Pro",
+      "generated_at_hkt": "2026-09-07T18:33:01+08:00",
+      "model": "deterministic-evidence-fallback",
       "summaries": [
         {
           "domain": "local",
@@ -15776,10 +15239,14 @@
             },
             {
               "id": "net_profit",
-              "headline": "电讯盈科利润池深度分化",
-              "analysis": "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "HKT稳健三港承压",
+              "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
               "entities": [
                 {
                   "name": "CMHK",
@@ -16711,103 +16178,62 @@
           ]
         }
       ],
+      "fallback_used": true,
+      "fallback_reason": "timed out",
       "discoveries": [
         {
-          "from": "mainland",
-          "to": "local",
-          "title": "FY2025香港与内地财务口径分开",
-          "detail": "内地营收卡片为10501.9亿元，香港为36553百万港元；两组均采用FY2025/FY2025最新已核验披露，但币种与主体范围结构不同；这表明数值高低不能直接等同经营质量。",
-          "kind": "证据规则回退",
+          "from": "local",
+          "to": "international",
+          "title": "本地龙头营收底盘仍低于日韩国际头部",
+          "detail": "HKT营收36553.0百万港元，SoftBank Corp.营收47031.92百万美元，差距表明本地与国际运营商营收规模存在梯队分化，并非同一量级的资源承载力。",
+          "kind": "AI综合研判",
           "source_urls": [
-            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-            "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+            "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+            "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
           ]
         },
         {
           "from": "international",
-          "to": "cloud",
-          "title": "FY2025云收入与运营商财务分口径",
-          "detail": "云收入卡片为128725百万美元，国际营收卡片为47031.9百万美元；分别采用FY2025/FY2025最新已核验披露，分部规模与集团财务口径结构不同，因此不能直接混合排名。",
-          "kind": "证据规则回退",
+          "to": "mainland",
+          "title": "国际ARPU高于内地但客户规模远低于内地",
+          "detail": "NTT DOCOMO移动ARPU为26.46美元/月，中国移动移动客户数为10.05亿户，分化表明国际与内地运营商在客户价值与客户规模维度存在结构差异，并非同一市场阶段的效率可比。",
+          "kind": "AI综合研判",
           "source_urls": [
-            "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
-            "https://abc.xyz/investor/earnings/"
-          ]
-        },
-        {
-          "from": "local",
-          "to": "cloud",
-          "title": "FY2025香港财务与云收入边界不同",
-          "detail": "香港营收卡片为36553百万港元，云收入卡片为128725百万美元；分别采用FY2025/FY2025最新已核验披露，公司整体与云分部范围结构不同；这表明两者不可直接比较。",
-          "kind": "证据规则回退",
-          "source_urls": [
-            "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-            "https://abc.xyz/investor/earnings/"
+            "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+            "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
           ]
         },
         {
           "from": "mainland",
-          "to": "international",
-          "title": "FY2025内地与国际用户口径分开",
-          "detail": "内地后付费用户数披露不足，国际营收卡片为47031.9百万美元；国际侧采用FY2025最新披露；两者用户口径结构不同，因此不能直接拿移动用户总数替代后付费竞争判断。",
-          "kind": "证据规则回退",
+          "to": "cloud",
+          "title": "内地运营商利润池远低于全球云厂商利润",
+          "detail": "中国移动净利润1370.95亿元，AWS云利润45606.0百万美元，差距表明内地运营商与全球云厂商在盈利维度存在资本回报梯队分化，并非同一利润定义下的规模比较。",
+          "kind": "AI综合研判",
           "source_urls": [
-            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-            "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+            "https://ir.aboutamazon.com/quarterly-results/default.aspx"
+          ]
+        },
+        {
+          "from": "cloud",
+          "to": "local",
+          "title": "云厂商资本开支远超本地运营商投资规模",
+          "detail": "AWS集团资本开支77658.0百万美元，HKT EBITDA为14234.0百万港元，差距表明云厂商与本地运营商在资本维度存在投入强度脱钩，并非同一口径的扩张能力。",
+          "kind": "AI综合研判",
+          "source_urls": [
+            "https://ir.aboutamazon.com/quarterly-results/default.aspx",
+            "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf"
           ]
         }
       ],
       "discovery_model": "DeepSeek-V4-Pro",
-      "discovery_generated_at_hkt": "2026-09-07T04:31:06+08:00",
-      "discovery_evidence_repair_count": 3,
-      "evidence_hash": "8f5729145d42375a3ffce1549796d23dfd9f79301653d66601e2aa4109eec172",
+      "discovery_generated_at_hkt": "2026-09-07T18:33:12+08:00",
+      "discovery_evidence_repair_count": 0,
+      "evidence_hash": "ca813095e92e992e519e83386227b53346ce73fff4293b3d7e9e33c90632ca6b",
       "insight_format": "strategic_operating_judgement_v9",
-      "reused": false,
-      "manual_focus_regeneration_history": {
-        "international.revenue": [
-          "SK Telecom与Singtel为12021.04百万美元和10819.53百万美元，形成高低两层，这表明前两家企业的资源承载与持续投入能力更强，后两家的防守空间相对更窄，但营收绝对值不能等同于盈利质量或客户价值。",
-          "SoftBank Corp. FY2025营收47031.9百万美元，Singtel10819.5百万美元；收入底盘差距表明资源承载分层，但不等同盈利能力。",
-          "SoftBank Corp. FY2025营收47031.92百万美元，NTT DOCOMO为43152.41百万美元，Singtel为10819.53百万美元，表明其资源承载与持续投入能力更强，但营收绝对值不能等同盈利质量或客户价值。",
-          "SoftBank Corp. FY2025营收47031.9百万美元，Singtel10819.5百万美元，收入底盘差距表明资源承载分层，但不等同盈利能力，NTT DOCOMO为43152.41百万美元，与前两家形成高低两层。"
-        ],
-        "international.mobile_arpu": [
-          "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；美元换算表明DOCOMO的客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。",
-          "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月，但两家公司用户范围结构不同，不能直接等同，说明其客户经营更依赖规模而非单客价值，自我造血和再投资空间相对承压。"
-        ],
-        "local.net_profit": [
-          "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-          "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。"
-        ]
-      },
-      "manual_focus_regeneration_counts": {
-        "international.revenue": 3,
-        "international.mobile_arpu": 1,
-        "local.net_profit": 1
-      },
-      "manual_focus_regeneration_title_history": {
-        "international.revenue": [
-          "SoftBank资源底盘领先",
-          "四家财年边界不同",
-          "DOCOMO收入底盘接近"
-        ],
-        "international.mobile_arpu": [
-          "DOCOMO客户价值更高",
-          "客户价值盘明显分层"
-        ],
-        "local.net_profit": [
-          "HKT稳健三港承压",
-          "电讯盈科利润池深度分化"
-        ]
-      },
-      "manual_focus_regeneration": {
-        "domain": "local",
-        "focus": "net_profit",
-        "generated_at_hkt": "2026-09-07T15:29:03+08:00"
-      },
-      "fallback_used": true,
-      "fallback_reason": "仅当前洞察由AI重新生成，其他洞察使用当前证据回退。"
+      "reused": false
     },
-    "evidence_hash": "8f5729145d42375a3ffce1549796d23dfd9f79301653d66601e2aa4109eec172",
+    "evidence_hash": "ca813095e92e992e519e83386227b53346ce73fff4293b3d7e9e33c90632ca6b",
     "model_analysis_fresh": true,
     "discoveries_generated": true
   },
