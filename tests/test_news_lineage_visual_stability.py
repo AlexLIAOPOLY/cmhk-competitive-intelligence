@@ -22,6 +22,14 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("20 + Math.max(0, plan.length - 1) * 300 / 2", RESEARCH)
         self.assertIn("[dispatchX, 365]", RESEARCH)
 
+    def test_research_merge_note_describes_audit_and_strategic_news_copy_is_larger(self):
+        self.assertIn("审核六个研究 Agent 提交的结果", RESEARCH)
+        self.assertIn('[data-news-lineage-node="strategic"]', STYLE)
+        self.assertIn('[data-news-lineage-node="weekly-result"]', STYLE)
+        self.assertIn(") > span { font-size: 16px; line-height: 1.45; }", STYLE)
+        self.assertIn(") > strong { font-size: 30px; }", STYLE)
+        self.assertIn(") > em { font-size: 12px; line-height: 1.5; }", STYLE)
+
     def test_user_date_is_pinned_before_run_selection_and_research_loaded_without_news(self):
         handler = SCRIPT.split('if (newsDate) {', 1)[1].split('return;', 1)[0]
         self.assertLess(handler.index('updateNewsDateUrl'), handler.index('const selected = selectedNewsRuns'))
@@ -129,7 +137,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=170', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=171', INDEX)
+        self.assertIn('/static/research-diagram.js?v=5', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=207', INDEX)
 
 

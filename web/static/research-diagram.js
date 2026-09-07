@@ -50,7 +50,7 @@
       edges.push([`research-${task.key}`, "research-merge", "", "research-join", {}]);
     });
     add("research-merge", "Supervisor · Agent 结果汇总", [20, 820], run?.tasks ?? "—", "项指标结果", "规则型 Supervisor 主控：收齐六个 Agent 的结果，统一校验来源与字段并合并", [
-      "这是同一个规则型 Supervisor 主控的结果汇总阶段，与03:00任务分配共用一轮运行编号；不是新增一个研究 Agent",
+      "审核六个研究 Agent 提交的结果，检查公司与指标覆盖、来源、字段、重复项与完整性",
       "检查公司与指标覆盖、重复项、原文摘录、数值、期间和单位",
       "有原文支持的数据进入更新批次；缺失、冲突和执行失败分别记录",
       "输入：六个研究 Agent 的报告；输出：本轮可更新事实及待复核清单",
