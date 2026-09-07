@@ -936,6 +936,40 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             self.assertEqual(progress[0], "正在读取当前证据")
             self.assertEqual(progress[-1], "证据校验通过，正在返回洞察")
 
+    def test_focus_regeneration_is_not_blocked_by_invalid_sibling_focus(self):
+        evidence = pipeline._analysis_input_snapshot()
+        domain = next(item for item in evidence["domains"] if item["id"] == "local")
+        focus = next(item for item in domain["focuses"] if item["id"] == "revenue")
+        summaries = pipeline._deterministic_domain_summaries(evidence, validate=False)
+        local_summary = next(item for item in summaries if item["domain"] == "local")
+        generated_focus = next(
+            item for item in local_summary["focuses"] if item["id"] == "revenue"
+        )
+        generated_focus = {
+            **generated_focus,
+            "headline": "经营资源底盘分层",
+            "analysis": pipeline._compact_grounded_focus_analysis("local", focus),
+        }
+        sibling_focus = next(item for item in local_summary["focuses"] if item["id"] != "revenue")
+        sibling_focus["analysis"] = "过长" * 121 + "。"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            path = Path(temp_dir) / "analysis.json"
+            path.write_text("{}", encoding="utf-8")
+            with (
+                patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
+                patch("executive_intelligence_pipeline._deterministic_domain_summaries", return_value=summaries),
+                patch("executive_intelligence_pipeline.generate_model_focus_insight", return_value={
+                    "model": "test-model",
+                    "focus": generated_focus,
+                }),
+            ):
+                result = pipeline.regenerate_model_focus_summary(
+                    "local", "revenue", path=path
+                )
+
+        self.assertTrue(result["ok"])
+        self.assertEqual(result["focus"], "revenue")
+
     def test_current_focus_regeneration_is_registered_and_persisted(self):
         evidence = pipeline._analysis_input_snapshot()
         revenue = next(

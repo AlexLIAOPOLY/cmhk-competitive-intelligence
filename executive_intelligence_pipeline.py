@@ -1401,6 +1401,7 @@ def _validate_model_summaries(
     evidence: dict[str, Any],
     *,
     expected_domains: set[str] | None = None,
+    expected_focus_ids_by_domain: dict[str, set[str]] | None = None,
 ) -> list[dict[str, Any]]:
     if not isinstance(raw, list):
         raise ValueError("AI分析没有返回items数组")
@@ -1450,11 +1451,15 @@ def _validate_model_summaries(
         unknown_numbers = _numeric_tokens(summary) - allowed_numbers
         if unknown_numbers:
             raise ValueError(f"AI分析出现输入之外的数字：{sorted(unknown_numbers)}")
-        expected_focuses = {
-            str(focus.get("id") or "")
-            for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
-            if str(focus.get("id") or "")
-        }
+        expected_focuses = (
+            set(expected_focus_ids_by_domain.get(domain, set()))
+            if expected_focus_ids_by_domain is not None
+            else {
+                str(focus.get("id") or "")
+                for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
+                if str(focus.get("id") or "")
+            }
+        )
         raw_focuses = item.get("focuses") or []
         if expected_focuses:
             if not isinstance(raw_focuses, list):
@@ -4381,9 +4386,28 @@ def regenerate_model_focus_summary(
     repaired_target = next(
         item for item in repaired_summaries if str(item.get("domain") or "") == domain_id
     )
-    validated_target = _validate_model_summaries(
-        [repaired_target], evidence, expected_domains={domain_id},
-    )[0]
+    target_focus_only = {
+        **repaired_target,
+        "focuses": [
+            item for item in repaired_target.get("focuses") or []
+            if str(item.get("id") or "") == focus_id
+        ],
+    }
+    validated_target_focus = _validate_model_summaries(
+        [target_focus_only],
+        evidence,
+        expected_domains={domain_id},
+        expected_focus_ids_by_domain={domain_id: {focus_id}},
+    )[0]["focuses"][0]
+    validated_target = {
+        **repaired_target,
+        "focuses": [
+            validated_target_focus
+            if str(item.get("id") or "") == focus_id
+            else item
+            for item in repaired_target.get("focuses") or []
+        ],
+    }
     previous_by_domain = {
         str(item.get("domain") or ""): item
         for item in previous.get("summaries") or []
