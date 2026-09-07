@@ -662,6 +662,12 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('row.weeklyStatus === "接受"', SCRIPT)
         self.assertIn("当天选用明细", SCRIPT)
         self.assertIn(".news-lineage.is-global .news-lineage-node.is-result", STYLE)
+        self.assertIn('monitor.active_task_kind === "strategic-news"', SCRIPT)
+        self.assertIn('"/api/scheduler-overview?live=1"', SCRIPT)
+        self.assertIn("selectionNodeValue", SCRIPT)
+        self.assertIn("selectionLiveHeartbeat", SCRIPT)
+        self.assertIn("newsLiveSelectionTerminalSignature", SCRIPT)
+        self.assertIn("window.setInterval(refreshNewsLiveData, 3000)", SCRIPT)
 
     def test_news_module_maps_all_periodic_crawlers_into_four_database_updates(self):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)

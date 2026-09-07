@@ -2570,10 +2570,30 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
                 "status": "unavailable",
                 "last_error": str(exc)[:240],
             }
+        latest_news_summary = (
+            latest_news.get("operational_summary")
+            if isinstance(latest_news.get("operational_summary"), dict)
+            else {}
+        )
+        latest_news_slot = str(latest_news_summary.get("slot") or "").strip()
+        if not latest_news_slot:
+            latest_news_slot_match = re.search(
+                r"(\d{4}-\d{2}-\d{2}@\d{2}:\d{2})",
+                str(latest_news.get("scope") or ""),
+            )
+            latest_news_slot = latest_news_slot_match.group(1) if latest_news_slot_match else ""
+        starting_slot = dict(strategic_monitor.get("latest_scan_slot") or {})
+        starting_slot_key = str(starting_slot.get("slot") or "").strip()
+        starting_slot_has_registered_run = bool(
+            starting_slot_key
+            and latest_news_slot
+            and starting_slot_key == latest_news_slot
+        )
         if str(latest_news.get("run_status") or "") == "running":
             strategic_monitor.update(
                 {
                     "status": "running",
+                    "active_task_kind": "strategic-news",
                     "active_task_id": str(latest_news.get("crawl_run_id") or ""),
                     "active_phase": str(latest_news.get("phase") or "执行中"),
                     "active_progress": str(latest_news.get("progress_detail") or "任务正在执行。"),
@@ -2582,11 +2602,14 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
                     "task_visible": True,
                 }
             )
-        elif str((strategic_monitor.get("latest_scan_slot") or {}).get("status") or "") == "starting":
-            starting_slot = dict(strategic_monitor.get("latest_scan_slot") or {})
+        elif (
+            str(starting_slot.get("status") or "") == "starting"
+            and not starting_slot_has_registered_run
+        ):
             strategic_monitor.update(
                 {
                     "status": "starting",
+                    "active_task_kind": "strategic-news",
                     "active_task_id": f"slot:{starting_slot.get('slot') or ''}",
                     "active_phase": "调度已交接",
                     "active_progress": "调度器已开始启动战略爬虫，等待任务登记。",
@@ -2598,6 +2621,7 @@ def build_scheduler_overview(*, force: bool = False) -> dict[str, object]:
         else:
             strategic_monitor.update(
                 {
+                    "active_task_kind": "",
                     "active_task_id": "",
                     "active_phase": "",
                     "active_progress": "",
@@ -7159,7 +7183,11 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/scheduler-overview":
             try:
-                json_response(self, build_scheduler_overview())
+                query = parse_qs(parsed.query)
+                live = str(query.get("live", [""])[0] or "").lower() in {
+                    "1", "true", "yes",
+                }
+                json_response(self, build_scheduler_overview(force=live))
             except Exception as exc:
                 json_response(
                     self,

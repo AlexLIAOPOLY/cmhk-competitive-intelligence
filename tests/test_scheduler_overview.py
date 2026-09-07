@@ -70,6 +70,7 @@ class SchedulerOverviewTests(TestCase):
         monitor = payload["strategic_monitor"]
         self.assertEqual(monitor["status"], "running")
         self.assertTrue(monitor["task_visible"])
+        self.assertEqual(monitor["active_task_kind"], "strategic-news")
         self.assertEqual(monitor["active_task_id"], "news-running")
         self.assertEqual(monitor["active_phase"], "AI批量审核")
         self.assertEqual(monitor["active_heartbeat_at"], "2026-09-05T11:10:17+08:00")
@@ -98,5 +99,39 @@ class SchedulerOverviewTests(TestCase):
         monitor = payload["strategic_monitor"]
         self.assertEqual(monitor["status"], "starting")
         self.assertTrue(monitor["task_visible"])
+        self.assertEqual(monitor["active_task_kind"], "strategic-news")
         self.assertEqual(monitor["active_task_id"], "slot:2026-09-05@14:00")
         self.assertEqual(monitor["active_phase"], "调度已交接")
+
+    def test_overview_hides_stale_starting_slot_after_run_is_registered(self):
+        completed = {
+            "crawl_run_id": "news-completed",
+            "task_kind": "strategic-news",
+            "run_status": "completed",
+            "scope": "晨间扫描（2026-09-05@14:00）",
+            "operational_summary": {"slot": "2026-09-05@14:00"},
+        }
+        snapshot = {
+            "monitor": {
+                "enabled": True,
+                "status": "active",
+                "latest_scan_slot": {
+                    "slot": "2026-09-05@14:00",
+                    "status": "starting",
+                    "scheduled_for": "2026-09-05T14:00:00+08:00",
+                    "at": "2026-09-05T14:00:03+08:00",
+                },
+            }
+        }
+        with (
+            mock.patch.object(scheduler, "load_state", return_value={}),
+            mock.patch.object(scheduler, "due_rows", return_value=([], [])),
+            mock.patch.object(web_app, "load_crawl_run_history", return_value=[completed]),
+            mock.patch("strategic_briefing.public_snapshot", return_value=snapshot),
+        ):
+            payload = web_app.build_scheduler_overview(force=True)
+
+        monitor = payload["strategic_monitor"]
+        self.assertFalse(monitor["task_visible"])
+        self.assertEqual(monitor["active_task_id"], "")
+        self.assertEqual(monitor["active_task_kind"], "")

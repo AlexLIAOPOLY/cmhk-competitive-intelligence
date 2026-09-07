@@ -39,6 +39,7 @@
     newsLiveRefreshInFlight: false,
     newsLiveReviewTick: 0,
     newsLiveSignature: "",
+    newsLiveSelectionTerminalSignature: "",
     schedulerOverview: null,
     executiveIntelligence: null,
     previewRequest: { weekly: 0, performance: 0 },
@@ -1343,8 +1344,11 @@
   function selectedNewsRuns() {
     const monitor = state.schedulerOverview?.strategic_monitor || {};
     const monitorRunId = String(monitor.active_task_id || "");
+    const monitorRepresentsStrategicNews = monitor.active_task_kind === "strategic-news"
+      || (monitor.status === "starting" && monitorRunId.startsWith("slot:"));
     const visibleRuns = [...state.newsRuns];
-    if (monitor.task_visible === true && monitorRunId && !visibleRuns.some((run) => run.crawl_run_id === monitorRunId)) {
+    if (monitor.task_visible === true && monitorRepresentsStrategicNews && monitorRunId
+      && !visibleRuns.some((run) => run.crawl_run_id === monitorRunId)) {
       visibleRuns.unshift({
         crawl_run_id: monitorRunId,
         task_kind: "strategic-news",
@@ -1896,6 +1900,34 @@
       summary.verified = summary.verified && item.readback_verified === true;
       return summary;
     }, { candidates: 0, verifiedCells: 0, newCells: 0, alreadyAppliedCells: 0, appAccepted: 0, weeklyAccepted: 0, verified: selectionRuns.length > 0 });
+    const activeSelectionRun = selectionAttemptRuns.find((run) => (
+      ["running", "queued", "pending"].includes(String(run.run_status || run.status || "").toLowerCase())
+    ));
+    const activeSelectionDetail = activeSelectionRun
+      ? state.newsRunDetails[activeSelectionRun.crawl_run_id] || {}
+      : {};
+    const liveSelectionVerified = Array.isArray(activeSelectionDetail.newsSelectionItems)
+      ? activeSelectionDetail.newsSelectionItems.length
+      : 0;
+    const selectionParentRun = activeSelectionRun
+      ? state.newsRuns.find((run) => run.crawl_run_id === linkedParentRunId(activeSelectionRun)) || {}
+      : {};
+    const liveSelectionCandidates = Number(
+      activeSelectionRun?.operational_summary?.candidate_count
+      || selectionParentRun.operational_summary?.new_count
+      || reviewResults.rows?.length
+      || 0
+    );
+    const selectionLivePhase = String(activeSelectionRun?.phase || "正在处理").trim();
+    const selectionLiveHeartbeat = String(activeSelectionRun?.heartbeat_at_hkt || "").slice(11, 19);
+    const selectionNodeValue = activeSelectionRun
+      ? (liveSelectionVerified && liveSelectionCandidates
+        ? `已回读 ${number(liveSelectionVerified)}/${number(liveSelectionCandidates)} 条`
+        : `${liveSelectionCandidates ? number(liveSelectionCandidates) : "—"} 条处理中`)
+      : selectionRuns.length ? `周报新闻 ${number(selectionSummary.weeklyAccepted)} 条` : "—";
+    const selectionNodeNote = activeSelectionRun
+      ? `${selectionLivePhase}${selectionLiveHeartbeat ? ` · ${selectionLiveHeartbeat} 更新` : ""}`
+      : selectionRuns.length ? `滚动栏新闻 ${number(selectionSummary.appAccepted)} 条` : "当天未留下新闻初筛任务日志";
     const reviewEvidence = (rows, label) => rows.length
       ? rows.map((row) => `审核表第 ${row.rowNumber} 行｜${row.title || "未命名新闻"}｜${label}`).join("\n")
       : reviewResults.available ? `当天没有${label}的消息。` : "审核表数据暂时无法读取。";
@@ -1915,7 +1947,7 @@
       { key: "news-ai", label: "AI 新闻相关性审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条相关新闻通过审核", note: preciseStrategicNote("news-ai", `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`), health: preciseStrategicHealth("news-ai", strategicAiHealth), variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条新闻`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条新闻`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下新闻 AI 审核日志" },
       { key: "news-dedupe", label: "历史新闻重复检查", value: number(strategicDedupe.lost), unit: "条历史重复新闻", note: preciseStrategicNote("news-dedupe", `去重后留下 ${number(strategicDedupe.value)} 条新闻`), health: preciseStrategicHealth("news-dedupe", strategicDedupeHealth), variant: "gate", position: [849, 52], details: [`当天确认 ${number(strategicDedupe.lost)} 条重复新闻`, `当天去重后保留 ${number(strategicDedupe.value)} 条新闻`], evidence: strategicDedupe.evidence || "当天未留下新闻历史去重日志" },
       { key: "news-output", label: "新增战略新闻保存与归档", value: number(strategicDedupe.value), unit: "条新增战略新闻", note: preciseStrategicNote("news-output", "写入飞书新闻审核表＋本地任务归档"), health: preciseStrategicHealth("news-output", strategicOutputHealth), variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条战略新闻`, "逐条写入飞书新闻审核表并逐格回读，同时保存到本地 strategy_briefing/runs 任务归档", `当天识别 ${number(strategicDedupe.lost)} 条历史重复新闻；重复项不写入新增归档`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下新闻写入与通知日志" },
-      { key: "news-selection-agent", label: "AI 滚动栏与周报初筛", value: selectionRuns.length ? `周报新闻 ${number(selectionSummary.weeklyAccepted)} 条` : "—", unit: "", note: selectionRuns.length ? `滚动栏新闻 ${number(selectionSummary.appAccepted)} 条` : "当天未留下新闻初筛任务日志", health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`AI逐条判断每条新增新闻是否适合滚动栏、战略周报，两个字段分别给出接受/不接受`, `权威新闻批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `AI初筛纳入周报 ${number(selectionSummary.weeklyAccepted)} 条新闻；纳入滚动栏 ${number(selectionSummary.appAccepted)} 条新闻`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
+      { key: "news-selection-agent", label: "AI 滚动栏与周报初筛", value: selectionNodeValue, unit: "", note: selectionNodeNote, health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`AI逐条判断每条新增新闻是否适合滚动栏、战略周报，两个字段分别给出接受/不接受`, `权威新闻批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `AI初筛纳入周报 ${number(selectionSummary.weeklyAccepted)} 条新闻；纳入滚动栏 ${number(selectionSummary.appAccepted)} 条新闻`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
       { key: "app-result", label: "滚动栏新闻最终接受结果", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.appMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.appHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: [reviewResults.cached ? "新闻审核表读取短暂失败，按最近完整快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.appHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条新闻同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
       { key: "weekly-result", label: "周报新闻最终接受结果", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "新闻审核表读取短暂失败，按最近完整快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验新闻发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日两轮新闻合并参考", value: number(previousReferenceCount), unit: "条去重新闻参考", note: previousReferenceTruncated ? `07:30/14:00合并去重 · 输入上限 ${number(previousReferenceLimit)} 条` : `${number(previousReferenceRunCount)} 个权威批次合并后按URL/标题去重`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: [`只读取前一日最后两个已完成的权威新闻批次（通常为07:30、14:00）`, `把两批“公开网页发现＋候选新闻”合并，再按URL；没有URL时按标题去重`, previousReferenceLegacyCapped ? `该历史归档触及 ${number(previousReferenceLimit)} 条输入上限；当时没有保存去重后的完整总数，因此300不是长期累计，也不能解释为刚好只有300条` : previousReferenceTruncated ? `去重后实际共有 ${number(previousReferenceUniqueTotal)} 条；为控制01:00任务输入量，只带入前 ${number(previousReferenceLimit)} 条，所以卡片显示 ${number(previousReferenceCount)} 条` : `两批合并去重后共有 ${number(previousReferenceCount)} 条，没有把同一链接重复累计`, "这些新闻只给01:00补缺搜索提供方向，不直接成为数据库数据"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日战略新闻归档" },
@@ -3205,6 +3237,7 @@
 
   function newsLiveRenderSignature() {
     const attemptRuns = selectedNewsRuns();
+    const selectionAttemptRuns = selectionAttemptRunsForDate(state.newsSelectedDate);
     const runs = authoritativeStrategicNewsRuns(attemptRuns);
     const stages = runs.length ? aggregateNewsStages(runs) : [];
     const lineage = globalSchedulerLineageModel(runs, stages, attemptRuns);
@@ -3214,6 +3247,10 @@
       nodes: lineage.nodes.map((node) => [node.key, node.purpose, node.value, node.unit, node.note, node.health?.key, node.evidence]),
       edges: lineage.edges.map(([from, to, label, kind, line]) => [from, to, label, kind, line?.key, line?.reason]),
       runs: attemptRuns.map((run) => [run.crawl_run_id, run.run_status || run.status, run.heartbeat_at_hkt, run.completed_at_hkt, run.progress_detail, run.status_detail]),
+      selectionRuns: selectionAttemptRuns.map((run) => {
+        const detail = state.newsRunDetails[run.crawl_run_id] || {};
+        return [run.crawl_run_id, run.run_status || run.status, run.phase, run.heartbeat_at_hkt, run.completed_at_hkt, run.progress_detail, (detail.newsSelectionItems || []).length];
+      }),
       details: runs.map((run) => {
         const detail = state.newsRunDetails[run.crawl_run_id] || {};
         return [run.crawl_run_id, String(detail.content || "").slice(-1200), (detail.newsItems || []).length];
@@ -3295,7 +3332,7 @@
         ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
         ["crawlRuns", "/api/crawl-runs?limit=500"],
         ["fixedSourceSummary", "/api/fixed-source-summary"],
-        ["scheduler", "/api/scheduler-overview"],
+        ["scheduler", "/api/scheduler-overview?live=1"],
       ];
       if (state.newsLiveReviewTick % 3 === 0) requests.push(
         ["tasks", "/api/project-incidents?limit=500"],
@@ -3324,10 +3361,24 @@
         else if (key === "intelligence") state.executiveIntelligence = payload;
       });
       const selectedRuns = selectedNewsRuns();
-      const selectedRunIds = selectedRuns.map((run) => run.crawl_run_id);
+      const selectionAttemptRuns = selectionAttemptRunsForDate(state.newsSelectedDate);
+      const selectedRunIds = [...new Set([
+        ...selectedRuns.map((run) => run.crawl_run_id),
+        ...selectionAttemptRuns.map((run) => run.crawl_run_id),
+      ])];
       await loadNewsRuns(selectedRunIds, { force: true, quiet: true });
       state.newsLiveReviewTick += 1;
-      if (state.newsLiveReviewTick % 4 === 0) {
+      const terminalSelectionSignature = selectionAttemptRuns
+        .filter(verifiedSelectionRun)
+        .map((run) => `${run.crawl_run_id}:${run.completed_at_hkt || run.heartbeat_at_hkt || ""}`)
+        .sort()
+        .join("|");
+      const selectionJustCompleted = Boolean(
+        terminalSelectionSignature
+        && terminalSelectionSignature !== state.newsLiveSelectionTerminalSignature
+      );
+      state.newsLiveSelectionTerminalSignature = terminalSelectionSignature;
+      if (selectionJustCompleted || state.newsLiveReviewTick % 3 === 0) {
         try { state.newsReviewSheet = await fetchNewsReviewSheetSnapshot(); } catch (_error) { /* keep the last complete snapshot */ }
       }
       const nextSignature = newsLiveRenderSignature();
@@ -3348,7 +3399,7 @@
   function startNewsLiveRefresh() {
     if (state.newsLivePollTimer || !can("news")) return;
     state.newsLiveSignature = newsLiveRenderSignature();
-    state.newsLivePollTimer = window.setInterval(refreshNewsLiveData, 4000);
+    state.newsLivePollTimer = window.setInterval(refreshNewsLiveData, 3000);
     window.addEventListener("workspace-tab-change", (event) => {
       if (event.detail?.tab === "news") refreshNewsLiveData();
     });
