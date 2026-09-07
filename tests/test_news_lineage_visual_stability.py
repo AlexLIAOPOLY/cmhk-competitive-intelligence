@@ -24,6 +24,10 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_research_merge_note_describes_audit_and_strategic_news_copy_is_larger(self):
         self.assertIn("审核六个研究 Agent 提交的结果", RESEARCH)
+        self.assertIn('"可更新字段", "cyan"', RESEARCH)
+        self.assertIn("输出：本轮可更新字段及待复核清单", RESEARCH)
+        self.assertNotIn("可更新事实", RESEARCH)
+        self.assertNotIn("审核事实", RESEARCH)
         self.assertIn('[data-news-lineage-node="strategic"]', STYLE)
         self.assertIn('[data-news-lineage-node="weekly-result"]', STYLE)
         self.assertIn(") > span { font-size: 16px; line-height: 1.45; }", STYLE)
@@ -138,7 +142,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertIn('/static/workspace-tabs.css?v=171', INDEX)
-        self.assertIn('/static/research-diagram.js?v=5', INDEX)
+        self.assertIn('/static/research-diagram.js?v=6', INDEX)
         self.assertIn('/static/workspace-tabs.js?v=207', INDEX)
 
 

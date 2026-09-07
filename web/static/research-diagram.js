@@ -53,14 +53,14 @@
       "审核六个研究 Agent 提交的结果，检查公司与指标覆盖、来源、字段、重复项与完整性",
       "检查公司与指标覆盖、重复项、原文摘录、数值、期间和单位",
       "有原文支持的数据进入更新批次；缺失、冲突和执行失败分别记录",
-      "输入：六个研究 Agent 的报告；输出：本轮可更新事实及待复核清单",
+      "输入：六个研究 Agent 的报告；输出：本轮可更新字段及待复核清单",
       "流程单向结束；下一次定时研究再检查未找到的数据",
     ], status(run?.status === "running" ? undefined : run?.status));
     add("research-update", "四库数据更新", [660, 820], run?.publication?.database_updated ? run.accepted : "—", "条本轮通过数据", "统一写入本地、国际、内地运营商和全球云厂商四库", [
       "由一个更新步骤处理六个 Agent 提交的数据，防止多个研究任务同时覆盖文件",
-      "先写入四库审核事实层；主表继续执行既有的字段、期间和核验等级门禁，不强制覆盖KPI",
-      "分别记录审核事实发布、主表增量晋升、文件变化和界面数值变化，不能把四者混为一谈",
-      "输入：本轮审核通过事实；输出：四库更新结果与前后变化记录",
+      "先写入四库已审核字段；主表继续执行既有的字段、期间和核验等级门禁，不强制覆盖KPI",
+      "分别记录已审核字段写入、主表增量更新、文件变化和界面数值变化，不能把四者混为一谈",
+      "输入：本轮审核通过字段；输出：四库更新结果与前后变化记录",
     ], status(run?.publication?.database_updated ? "completed" : run?.publication?.status), { publication: run?.publication });
     add("research-publish", "AI 洞察生成与页面发布", [1320, 820], run?.publication?.insights ?? "—", "项洞察", "使用四库最新数据生成洞察，更新页面并读取发布结果", [
       "读取更新后的四库数据，生成分库分析和跨库洞察",
@@ -68,7 +68,7 @@
       "发布后读取实际版本，只有成功读取后才记录为发布完成",
       "输入：四库已发布数据；输出：AI洞察、页面版本及发布结果",
     ], status(run?.publication?.status), { publication: run?.publication });
-    edges.push(["research-merge", "research-update", "可更新事实", "cyan", {}], ["research-update", "research-publish", "四库最新数据", "cyan", {}]);
+    edges.push(["research-merge", "research-update", "可更新字段", "cyan", {}], ["research-update", "research-publish", "四库最新数据", "cyan", {}]);
     return { nodes, edges, canvasSize: [1850, 1040], laneLabels: [
       { label: "战略新闻采集与初筛", position: [18, 22] },
       { label: "六 Agent 并行研究与四库更新", position: [18, 325] },
