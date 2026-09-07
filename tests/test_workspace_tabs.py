@@ -396,7 +396,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_competitor_workbench_starts_empty_and_uses_historical_data(self):
         self.assertIn("competitor-workbench-data.json", SCRIPT)
-        self.assertIn("competitor-workbench-data.json?v=2", SCRIPT)
+        self.assertIn("competitor-workbench-data.json?v=3", SCRIPT)
         self.assertIn('competitorSelection: { companies: [], metric: "", years: null }', SCRIPT)
         self.assertIn('state.competitorSelection = { companies: [], metric: "", years: null }', SCRIPT)
         self.assertIn('if (companies.length < 1 || !metric || !years)', SCRIPT)

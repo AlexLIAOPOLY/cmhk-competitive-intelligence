@@ -69,13 +69,14 @@ class RequestedOverview010304Tests(unittest.TestCase):
         requested = ["NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"]
         self.assertTrue(all([item["name"] for item in focus["items"]] == requested for focus in domain["focuses"]))
         self.assertEqual([focus["label"] for focus in domain["focuses"]], ["营收", "净利润", "资本开支", "移动ARPU"])
-        self.assertEqual({focus["visual"] for focus in domain["focuses"]}, {"spark_columns"})
+        self.assertEqual({focus["visual"] for focus in domain["focuses"]}, {"rows"})
 
         revenue = domain["focuses"][0]
         revenue_values = {item["name"]: item["value"] for item in revenue["items"]}
-        self.assertEqual(revenue_values["SK Telecom"], 13158.97)
-        self.assertEqual(revenue_values["Singtel"], 10573.0)
-        self.assertIsNone(revenue_values["NTT DOCOMO"])
+        self.assertEqual(revenue_values["NTT DOCOMO"], 43152.41)
+        self.assertEqual(revenue_values["SoftBank Corp."], 47031.92)
+        self.assertEqual(revenue_values["SK Telecom"], 12021.04)
+        self.assertEqual(revenue_values["Singtel"], 10819.53)
         self.assertEqual({item["unit"] for item in revenue["items"]}, {"百万美元"})
 
         arpu = domain["focuses"][-1]
@@ -90,8 +91,14 @@ class RequestedOverview010304Tests(unittest.TestCase):
                 self.assertEqual([point["label"] for point in item["trend"]], [f"FY{year}" for year in range(2016, 2026)])
                 self.assertTrue(all(point.get("value") is not None or point.get("gap_status") == "knowledge_pending" for point in item["trend"]))
         app = (Path(__file__).resolve().parents[1] / "web/static/app.js").read_text(encoding="utf-8")
-        self.assertIn("intelligence-viz-spark-columns", app)
-        self.assertIn("latestAvailableIndex", app)
+        self.assertIn("intelligence-viz-rows", app)
+
+    def test_domain_02_uses_each_company_latest_verified_year(self):
+        revenue = {item["name"]: item for item in self.domains["international"]["focuses"][0]["items"]}
+        self.assertEqual(revenue["NTT DOCOMO"]["period"], "FY2025")
+        self.assertEqual(revenue["SoftBank Corp."]["period"], "FY2025")
+        self.assertEqual(revenue["SK Telecom"]["period"], "FY2025")
+        self.assertEqual(revenue["Singtel"]["period"], "FY2025")
 
     def test_domain_02_top_right_metrics_show_the_current_leader(self):
         for focus in self.domains["international"]["focuses"]:
@@ -309,7 +316,7 @@ class RequestedOverview010304Tests(unittest.TestCase):
         self.assertIn("本地知识库", self.snapshot["method"])
         self.assertEqual(
             self.snapshot["data_audit"]["gap_status_counts"],
-            {"public_not_found": 5, "knowledge_pending": 8},
+            {"public_not_found": 5},
         )
         root = Path(__file__).resolve().parents[1]
         app = (root / "web/static/app.js").read_text(encoding="utf-8")

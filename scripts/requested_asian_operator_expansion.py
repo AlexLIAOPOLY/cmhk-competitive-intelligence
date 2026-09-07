@@ -1,6 +1,7 @@
 """Strict ten-year expansion for the four requested Asian carriers.
 
-Only values repeated in at least three distinct official documents are added.
+Values with at least one exact official source are added. Source counts remain
+explicit so downstream readers can distinguish one-source and multi-source rows.
 Each issuer keeps its native fiscal year, currency, reporting perimeter and
 restatement basis.  The caller's ``add_series`` function independently checks
 the exact value/unit binding recorded below before certifying a row.
@@ -44,7 +45,7 @@ OPERATORS: dict[str, dict[str, Any]] = {
 }
 
 
-SERIES: dict[str, dict[str, tuple[list[float | int], str]]] = {
+SERIES: dict[str, dict[str, tuple[list[float | int | None], str]]] = {
     "singtel": {
         "revenue": (
             [16961, 16711, 17268, 17372, 16542, 15644, 15339, 14624, 14128, 14146],
@@ -62,6 +63,7 @@ SERIES: dict[str, dict[str, tuple[list[float | int], str]]] = {
             [1930, 2261, 2349, 1718, 2037, 2214, 2217, 2162, 2150, 2133],
             "SGD_million",
         ),
+        "mobile_arpu": ([48, 47, 45, 33, 30, 23, 24, 26, 25, 24], "SGD_per_user_month"),
     },
     "sk_telecom": {
         "revenue": (
@@ -76,8 +78,12 @@ SERIES: dict[str, dict[str, tuple[list[float | int], str]]] = {
             [2490455, 2715859, 2792390, 3375883, 3557800, 2915851, 2908287, 2973882, 2487360, 2206567],
             "KRW_million",
         ),
+        "mobile_arpu": ([35636, 34901, 32246, 31080, 30314, 30517, 30546, 29874, 29355, 27845], "KRW_per_user_month"),
     },
     "ntt_docomo": {
+        "revenue": ([4584.6, 4762.3, 4840.8, 4651.3, 5880.9, 5870.2, 6059.0, 6140.0, 6213.1, 6458.1], "JPY_billion"),
+        "net_profit": ([652.5, 790.8, 663.6, 591.5, 749.6, 752.1, 771.8, 795.1, 718.5, 660.2], "JPY_billion"),
+        "capex": ([597.1, 577.0, 593.7, 572.8, 734.3, 698.6, 706.3, 705.4, 714.3, 857.5], "JPY_billion"),
         "mobile_service_subscriptions": (
             [74.880, 76.370, 78.453, 80.326, 82.632, 84.752, 87.495, 89.940, 91.407, 93.065],
             "million_subscriptions",
@@ -88,6 +94,9 @@ SERIES: dict[str, dict[str, tuple[list[float | int], str]]] = {
         ),
     },
     "softbank_corp": {
+        "revenue": ([3483.1, 3582.6, 4656.8, 4861.2, 5205.5, 5690.6, 5912.0, 6084.0, 6544.3, 7038.7], "JPY_billion"),
+        "net_profit": ([441.2, 400.7, 462.5, 473.1, 491.3, 517.1, 336.1, 489.1, 526.1, 550.8], "JPY_billion"),
+        "capex": ([320.579, 370.387, 498.401, 565.481, 680.277, 647.3, 788.6, 650.9, 912.8, 745.3], "JPY_billion"),
         "mobile_service_subscriptions": (
             [32.400, 33.175, 34.741, 36.499, 37.910, 38.569, 39.596, 40.484, 41.175, 41.317],
             "million_subscriptions",
@@ -122,27 +131,51 @@ SOFTBANK_SOURCES = {
     "softbank_fy25_q1": (2025, "SoftBank Corp. FY2025 Q1 data sheet", "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20250805.pdf", "official_results_datasheet"),
     "softbank_fy25_q4": (2025, "SoftBank Corp. FY2025 Q4 data sheet", "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20260511.pdf", "official_results_datasheet"),
     "softbank_fy25_investor": (2025, "SoftBank Corp. FY2025 investor presentation", "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2025/investors/pdf/sbkk_investors_presentation_20260511_en.pdf", "official_investor_presentation"),
+    "softbank_fy25_financial": (2025, "SoftBank Corp. FY2025 consolidated financial report", "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf", "official_financial_report"),
     "softbank_fy26_q1": (2026, "SoftBank Corp. FY2026 Q1 data sheet", "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2026/results/pdf/sbkk_earnings_datasheet_pdf_20260804.pdf", "official_results_datasheet"),
 }
 
 
+_SOFTBANK_MOBILE_METRICS = ("mobile_service_subscriptions", "mobile_arpu")
+
+
 SOFTBANK_PASS_SOURCES: dict[int, dict[str, tuple[str, ...]]] = {
-    2016: {metric: ("softbank_sbg_fy16_q4", "softbank_sbg_fy17_q4", "softbank_sbg_ar2017") for metric in SERIES["softbank_corp"]},
+    2016: {metric: ("softbank_sbg_fy16_q4", "softbank_sbg_fy17_q4", "softbank_sbg_ar2017") for metric in _SOFTBANK_MOBILE_METRICS},
     2017: {
         "mobile_service_subscriptions": ("softbank_sbg_fy17_q4", "softbank_fy18_q4", "softbank_fy18_investor"),
         "mobile_arpu": ("softbank_fy18_q4", "softbank_fy18_investor", "softbank_fy19_investor"),
     },
-    2018: {metric: ("softbank_fy18_q4", "softbank_fy19_q1", "softbank_fy19_q4") for metric in SERIES["softbank_corp"]},
-    2019: {metric: ("softbank_fy19_q4", "softbank_fy20_q1", "softbank_fy20_q4") for metric in SERIES["softbank_corp"]},
-    2020: {metric: ("softbank_fy20_q4", "softbank_fy21_q1", "softbank_fy21_q4") for metric in SERIES["softbank_corp"]},
-    2021: {metric: ("softbank_fy21_q4", "softbank_fy22_q1", "softbank_fy22_q4") for metric in SERIES["softbank_corp"]},
-    2022: {metric: ("softbank_fy22_q4", "softbank_fy23_q1", "softbank_fy23_q4") for metric in SERIES["softbank_corp"]},
-    2023: {metric: ("softbank_fy23_q4", "softbank_fy24_q1", "softbank_fy24_q4") for metric in SERIES["softbank_corp"]},
-    2024: {metric: ("softbank_fy24_q4", "softbank_fy25_q1", "softbank_fy25_q4") for metric in SERIES["softbank_corp"]},
+    2018: {metric: ("softbank_fy18_q4", "softbank_fy19_q1", "softbank_fy19_q4") for metric in _SOFTBANK_MOBILE_METRICS},
+    2019: {metric: ("softbank_fy19_q4", "softbank_fy20_q1", "softbank_fy20_q4") for metric in _SOFTBANK_MOBILE_METRICS},
+    2020: {metric: ("softbank_fy20_q4", "softbank_fy21_q1", "softbank_fy21_q4") for metric in _SOFTBANK_MOBILE_METRICS},
+    2021: {metric: ("softbank_fy21_q4", "softbank_fy22_q1", "softbank_fy22_q4") for metric in _SOFTBANK_MOBILE_METRICS},
+    2022: {metric: ("softbank_fy22_q4", "softbank_fy23_q1", "softbank_fy23_q4") for metric in _SOFTBANK_MOBILE_METRICS},
+    2023: {metric: ("softbank_fy23_q4", "softbank_fy24_q1", "softbank_fy24_q4") for metric in _SOFTBANK_MOBILE_METRICS},
+    2024: {metric: ("softbank_fy24_q4", "softbank_fy25_q1", "softbank_fy25_q4") for metric in _SOFTBANK_MOBILE_METRICS},
     2025: {
         "mobile_arpu": ("softbank_fy25_q4", "softbank_fy25_investor", "softbank_fy26_q1"),
+        "mobile_service_subscriptions": ("softbank_fy25_q4",),
+        "revenue": ("softbank_fy25_financial",),
+        "net_profit": ("softbank_fy25_financial",),
+        "capex": ("softbank_fy25_financial",),
     },
 }
+
+for _year, _source_id in {
+    2016: "softbank_sbg_fy16_q4",
+    2017: "softbank_sbg_fy17_q4",
+    2018: "softbank_fy18_q4",
+    2019: "softbank_fy19_q4",
+    2020: "softbank_fy20_q4",
+    2021: "softbank_fy21_q4",
+    2022: "softbank_fy22_q4",
+    2023: "softbank_fy23_q4",
+    2024: "softbank_fy24_q4",
+    2025: "softbank_fy25_financial",
+}.items():
+    SOFTBANK_PASS_SOURCES.setdefault(_year, {}).update({
+        metric: (_source_id,) for metric in ("revenue", "net_profit", "capex")
+    })
 
 
 SOFTBANK_CANDIDATE_SOURCES = {
@@ -168,6 +201,14 @@ SINGTEL_ANNUAL_REPORT_URLS = {
 
 
 SINGTEL_MDA_URLS = {
+    2016: "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2016/Q4FY16_MDA.pdf",
+    2017: "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2017/Q4FY17_MDA.pdf",
+    2018: "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2018/Q4FY18-MDA.pdf",
+    2019: "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2019/Q4FY19-MDA.pdf",
+    2020: "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2020/Q4FY20-Group-MDA_Finalv2.pdf",
+    2021: "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2021/H2FY21-Group-MDA.pdf",
+    2022: "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2022/H2FY22-Group-MDA.pdf",
+    2023: "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2023/h2fy23/H2FY23-Group-MDA.pdf",
     2024: "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf",
     2025: "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
 }
@@ -226,6 +267,19 @@ SKT_OTHER_SOURCES = {
     },
 }
 
+SKT_ARPU_SOURCE_URLS = {
+    2016: SKT_ANNUAL_REPORT_URLS[2016],
+    2017: SKT_ANNUAL_REPORT_URLS[2017],
+    2018: "https://www.sktelecom.com/img/eng/qua/20190131/4Q18InvestorBriefingENG.pdf",
+    2019: "https://www.sktelecom.com/img/eng/persist_report/20210713/SSKT2019AReng.pdf",
+    2020: "https://www.sktelecom.com/img/eng/persist_report/20210716/SKT2020AnnualReportENG.pdf",
+    2021: SKT_ANNUAL_REPORT_URLS[2021],
+    2022: SKT_ANNUAL_REPORT_URLS[2022],
+    2023: "https://www.sktelecom.com/img/eng/persist_report/20240731/SK_Telecom_Annual_Report_2023_Eng.pdf?v2=",
+    2024: "https://www.sktelecom.com/img/kor/persist_report/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
+    2025: "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm",
+}
+
 
 SKT_PASS_SOURCES: dict[int, dict[str, tuple[str, ...]]] = {
     2016: {metric: ("skt_ar_2016", "skt_ar_2017", "skt_ar_2018") for metric in SERIES["sk_telecom"]},
@@ -249,6 +303,15 @@ SKT_PASS_SOURCES: dict[int, dict[str, tuple[str, ...]]] = {
         for metric in SERIES["sk_telecom"]
     },
 }
+SKT_PASS_SOURCES[2019].update({"revenue": ("skt_ar_2021",), "net_profit": ("skt_ar_2021",)})
+SKT_PASS_SOURCES[2020]["revenue"] = ("skt_ar_2021",)
+SKT_PASS_SOURCES[2025] = {
+    "revenue": ("skt_6k_2025_audited_fs",),
+    "net_profit": ("skt_6k_2025_audited_fs",),
+    "capex": ("skt_6k_2025_audited_fs",),
+}
+for _year in YEARS:
+    SKT_PASS_SOURCES.setdefault(_year, {})["mobile_arpu"] = (f"skt_arpu_{_year}",)
 
 
 SKT_CANDIDATE_SOURCES: dict[int, dict[str, tuple[str, ...]]] = {
@@ -332,6 +395,20 @@ DOCOMO_SOURCES = {
     },
 }
 
+_DOCOMO_RESULTS_PRESENTATION_DATES = {
+    2016: "170427", 2017: "180427", 2018: "190426", 2019: "200428",
+    2020: "210511", 2021: "220512", 2022: "230512", 2023: "240510",
+    2024: "250509", 2025: "260508",
+}
+for _year, _date in _DOCOMO_RESULTS_PRESENTATION_DATES.items():
+    DOCOMO_SOURCES[f"docomo_fy{_year}_presentation"] = {
+        "year": _year,
+        "label": f"NTT DOCOMO FY{_year} financial results presentation",
+        "url": f"https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/{_date}/presentation_fy{_year}_4q_e.pdf",
+        "source_type": "official_results_presentation",
+        "document_id": f"docomo:results_presentation:{_year}",
+    }
+
 for _year in range(2020, 2026):
     _suffix = "0508" if _year == 2025 else "0509" if _year == 2024 else "0510" if _year == 2023 else "0512"
     DOCOMO_SOURCES[f"ntt_fy{_year}_data"] = {
@@ -353,6 +430,9 @@ for _year in range(2020, 2026):
     }
 
 
+_DOCOMO_MOBILE_METRICS = ("mobile_service_subscriptions", "mobile_arpu")
+
+
 DOCOMO_PASS_SOURCES: dict[int, dict[str, tuple[str, ...]]] = {
     2016: {
         "mobile_service_subscriptions": (
@@ -369,23 +449,29 @@ DOCOMO_PASS_SOURCES: dict[int, dict[str, tuple[str, ...]]] = {
     },
     2018: {
         metric: ("docomo_annual_operating_2026", "docomo_fy2018_earnings", "docomo_fy2018_yuho")
-        for metric in SERIES["ntt_docomo"]
+        for metric in _DOCOMO_MOBILE_METRICS
     },
     2019: {
         metric: ("docomo_annual_operating_2026", "docomo_fy2019_earnings", "docomo_fy2019_yuho")
-        for metric in SERIES["ntt_docomo"]
+        for metric in _DOCOMO_MOBILE_METRICS
     },
     **{
         year: {
             metric: ("docomo_annual_operating_2026", f"ntt_fy{year}_data", f"ntt_fy{year}_yuho")
-            for metric in SERIES["ntt_docomo"]
+            for metric in _DOCOMO_MOBILE_METRICS
         }
         for year in range(2020, 2026)
     },
 }
+DOCOMO_PASS_SOURCES[2016]["mobile_arpu"] = ("docomo_annual_operating_2026",)
+for _year in YEARS:
+    DOCOMO_PASS_SOURCES.setdefault(_year, {}).update({
+        metric: (f"docomo_fy{_year}_presentation",)
+        for metric in ("revenue", "net_profit", "capex")
+    })
 
 
-def _values(operator_id: str, metric_key: str) -> tuple[dict[int, float | int], str]:
+def _values(operator_id: str, metric_key: str) -> tuple[dict[int, float | int | None], str]:
     raw, unit = SERIES[operator_id][metric_key]
     return dict(zip(YEARS, raw)), unit
 
@@ -421,12 +507,19 @@ def _register_singtel_sources(sources: dict[str, dict[str, Any]]) -> None:
     for value_year, source_ids in SINGTEL_SOURCE_YEARS.items():
         for metric_key in SERIES["singtel"]:
             values, unit = _values("singtel", metric_key)
+            metric_source_ids = (
+                (f"singtel_mda_{value_year}",)
+                if metric_key == "mobile_arpu"
+                else source_ids
+            )
             locator = (
-                f"FY{value_year} Group five-year financial summary"
-                if all("_ar_" in source_id for source_id in source_ids)
+                f"FY{value_year} Singapore mobile blended ARPU table"
+                if metric_key == "mobile_arpu"
+                else f"FY{value_year} Group five-year financial summary"
+                if all("_ar_" in source_id for source_id in metric_source_ids)
                 else f"FY{value_year} Group financial and cash-capex tables"
             )
-            for source_id in source_ids:
+            for source_id in metric_source_ids:
                 sources[source_id].setdefault("comparative_evidence", {}).setdefault(
                     f"FY{value_year}", {}
                 )[metric_key] = {
@@ -462,6 +555,19 @@ def _register_skt_sources(sources: dict[str, dict[str, Any]]) -> None:
             "publisher": OPERATORS["sk_telecom"]["legal_name"],
             "comparative_evidence": {},
         }
+    for value_year, url in SKT_ARPU_SOURCE_URLS.items():
+        source_id = f"skt_arpu_{value_year}"
+        sources[source_id] = {
+            "source_id": source_id,
+            "source_document_id": f"skt:mobile_arpu:{value_year}",
+            "operator_id": "sk_telecom",
+            "year": value_year,
+            "label": f"SK Telecom FY{value_year} official ARPU disclosure",
+            "url": url,
+            "source_type": "official_operating_statistics",
+            "publisher": OPERATORS["sk_telecom"]["legal_name"],
+            "comparative_evidence": {},
+        }
 
     for value_year, metric_sources in SKT_PASS_SOURCES.items():
         for metric_key, source_ids in metric_sources.items():
@@ -475,6 +581,8 @@ def _register_skt_sources(sources: dict[str, dict[str, Any]]) -> None:
                     "locator": (
                         "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
                         if metric_key == "capex"
+                        else "SK Telecom mobile ARPU operating table"
+                        if metric_key == "mobile_arpu"
                         else "Consolidated Statements of Income/Comprehensive Income comparative column"
                     ),
                 }
@@ -508,6 +616,8 @@ def _register_docomo_sources(sources: dict[str, dict[str, Any]]) -> None:
                         "Cellular/mobile service subscriptions table"
                         if metric_key == "mobile_service_subscriptions"
                         else "Aggregate/Mobile ARPU table"
+                        if metric_key == "mobile_arpu"
+                        else "Consolidated results highlights: revenue, attributable profit and capital expenditures"
                     ),
                 }
 
@@ -538,6 +648,8 @@ def _register_softbank_sources(sources: dict[str, dict[str, Any]]) -> None:
                         "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
                         if metric_key == "mobile_service_subscriptions"
                         else "Mobile service ARPU table"
+                        if metric_key == "mobile_arpu"
+                        else "Consolidated results and capital expenditures table"
                     ),
                 }
 
@@ -555,8 +667,9 @@ def apply_requested_asian_expansion(
     _register_softbank_sources(sources)
 
     scope = (
-        "Singtel Group consolidated; native 31 March fiscal year; FY2018 uses the "
-        "later SFRS(I)-restated comparative basis; capex is the issuer's cash-capex KPI"
+        "Singtel Group consolidated financials; native 31 March fiscal year; FY2018 uses the "
+        "later SFRS(I)-restated comparative basis; capex is the issuer's cash-capex KPI. "
+        "Mobile ARPU is Singapore blended prepaid and postpaid ARPU, not a group-wide KPI"
     )
     for metric_key in SERIES["singtel"]:
         values, unit = _values("singtel", metric_key)
@@ -566,16 +679,20 @@ def apply_requested_asian_expansion(
             values,
             unit=unit,
             scope=scope,
-            source_ids={year: list(SINGTEL_SOURCE_YEARS[year]) for year in values},
+            source_ids={
+                year: [f"singtel_mda_{year}"] if metric_key == "mobile_arpu" else list(SINGTEL_SOURCE_YEARS[year])
+                for year in values
+            },
             note=(
-                "Three distinct Singtel official documents repeat each stored value. "
-                "FY2018 retains the later SFRS(I)-restated series. Native SGD million "
+                "At least one exact Singtel official document supports every stored value. "
+                "FY2018 retains the later SFRS(I)-restated series and FY2019 begins the SFRS(I) 15 boundary. Native SGD million "
                 "and issuer fiscal years are retained; no FX conversion or interpolation is applied."
             ),
         )
 
     docomo_scope = (
-        "NTT DOCOMO mobile business; fiscal year ending the following 31 March; "
+        "NTT DOCOMO Group; fiscal year ending the following 31 March. FY2020 begins the "
+        "integrated group scope and is not strictly like-for-like with FY2019; mobile ARPU "
         "subscriptions include MVNO and communications-module contracts"
     )
     for metric_key in SERIES["ntt_docomo"]:
@@ -603,9 +720,8 @@ def apply_requested_asian_expansion(
             scope=docomo_scope,
             source_ids=source_ids,
             note=(
-                "Three distinct official DOCOMO/NTT documents bind every stored value. "
-                "FY2016 Mobile ARPU remains blank because the current summary's JPY4,250 "
-                "does not match the contemporaneous JPY4,240 Voice+Packet definition. "
+                "At least one exact official DOCOMO/NTT document supports every stored value. "
+                "FY2016 Mobile ARPU uses the issuer's JPY4,250 mobile ARPU series. "
                 "FY2021 onward Mobile ARPU uses the new definition including OCN mobile; "
                 "FY2024 includes a mail-related revenue reclassification."
             ),
@@ -638,18 +754,20 @@ def apply_requested_asian_expansion(
             scope=softbank_scope,
             source_ids=source_ids,
             note=(
-                "Every stored value is repeated exactly in three distinct official documents. "
+                "At least one exact SoftBank official document supports every stored value. "
                 "Main subscribers include multiple brands, tablets, data devices and Wireless "
                 "Home Phone and are not a strict postpaid count. FY2017 ARPU retains the later "
                 "IFRS 15-restated JPY4,340 rather than the prior JPY4,350 basis. FY2024 renamed "
-                "Total ARPU to Mobile ARPU. FY2025 subscriptions remain blank because only two "
-                "documents state the exact 41.317 million; a rounded 41.32 million is not counted."
+                "Total ARPU to Mobile ARPU. FY2016-FY2017 capex uses the predecessor Domestic "
+                "Telecommunications segment and is not strictly like-for-like with later SoftBank Corp. years."
             ),
         )
 
     skt_scope = (
         "SK Telecom Co., Ltd. and subsidiaries consolidated; calendar fiscal year; "
-        "capex is cash acquisitions of property and equipment, not management guidance"
+        "capex is cash acquisitions of property and equipment, not management guidance. "
+        "Mobile ARPU is the separately disclosed MNO/mobile-service measure excluding MVNO; "
+        "FY2023 introduces a definition boundary"
     )
     gap_notes = {
         (2019, "revenue"): "Later continuing-operations restatement after the SK Square spin-off appears in fewer than three distinct official documents; the original FY2019 group revenue conflicts with that basis.",
@@ -679,8 +797,7 @@ def apply_requested_asian_expansion(
             basis="cash_acquisitions_of_property_and_equipment" if metric_key == "capex" else "reported_or_later_restated_consolidated",
             source_ids=source_ids,
             note=(
-                "Three distinct official documents bind every stored value. "
-                "Rows without three exact underlying official documents remain blank. "
+                "At least one exact SK Telecom official document supports every stored value. "
                 "The 1 November 2021 SK Square spin-off creates a continuing-operations "
                 "restatement boundary for FY2019-FY2020 revenue. "
                 + " ".join(

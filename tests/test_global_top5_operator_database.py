@@ -90,12 +90,10 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn("distinct_source_document_count=3", combined)
             self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
 
-    def test_requested_asian_operators_have_ten_year_skeleton_and_strict_values(self):
+    def test_requested_asian_operators_have_ten_year_skeleton_and_official_values(self):
         expected_metrics = {
-            "ntt_docomo": {"mobile_service_subscriptions", "mobile_arpu"},
-            "softbank_corp": {"mobile_service_subscriptions", "mobile_arpu"},
-            "sk_telecom": {"revenue", "net_profit", "capex"},
-            "singtel": {"revenue", "ebitda", "net_profit", "capex"},
+            operator_id: {"revenue", "net_profit", "capex", "mobile_arpu"}
+            for operator_id in ("ntt_docomo", "softbank_corp", "sk_telecom", "singtel")
         }
         for operator_id, metrics in expected_metrics.items():
             for metric_key in metrics:
@@ -108,30 +106,22 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                     if row["value"] is None:
                         self.assertEqual(row["verification_status"], "source_gap_confirmed")
                     else:
-                        self.assertGreaterEqual(row["distinct_official_source_document_count"], 3)
-                        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+                        self.assertGreaterEqual(row["distinct_official_source_document_count"], 1)
+                        self.assertIn(
+                            row["verification_status"],
+                            {"official_single_source", "official_two_distinct_sources", "official_three_distinct_sources_verified"},
+                        )
 
         gaps = {
             (row["operator_id"], row["year"], row["metric_key"])
             for row in self.rows
             if row["operator_id"] in expected_metrics and row["value"] is None
         }
-        self.assertEqual(
-            gaps,
-            {
-                ("ntt_docomo", 2016, "mobile_arpu"),
-                ("softbank_corp", 2025, "mobile_service_subscriptions"),
-                ("sk_telecom", 2019, "revenue"),
-                ("sk_telecom", 2019, "net_profit"),
-                ("sk_telecom", 2020, "revenue"),
-                ("sk_telecom", 2025, "revenue"),
-                ("sk_telecom", 2025, "net_profit"),
-                ("sk_telecom", 2025, "capex"),
-            },
-        )
+        self.assertEqual(gaps, set())
 
     def test_requested_asian_entity_and_restatement_boundaries_are_preserved(self):
-        self.assertNotIn(("ntt_docomo", 2025, "revenue"), self.index)
+        self.assertEqual(self.index[("ntt_docomo", 2025, "revenue")]["operator"], "NTT DOCOMO")
+        self.assertIn("integrated group scope", self.index[("ntt_docomo", 2025, "revenue")]["scope"])
         self.assertEqual(self.index[("ntt_group", 2025, "revenue")]["operator"], "NTT Group")
         self.assertEqual(self.index[("ntt_docomo", 2025, "mobile_service_subscriptions")]["value"], 93.065)
         self.assertEqual(self.index[("softbank_corp", 2017, "mobile_arpu")]["value"], 4340)

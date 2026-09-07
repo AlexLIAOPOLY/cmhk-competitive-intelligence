@@ -847,9 +847,9 @@ _OVERVIEW_STRATEGIC_HEADLINES = {
     ("local", "ebitda"): "HKT造血能力最强",
     ("local", "net_profit"): "HKT稳健三港承压",
     ("local", "postpaid"): "HKT客户底盘更稳",
-    ("international", "revenue"): "SKT资源底盘更厚",
-    ("international", "net_profit"): "SKT自我融资更厚",
-    ("international", "capex"): "SKT持续投入更厚",
+    ("international", "revenue"): "SoftBank资源底盘领先",
+    ("international", "net_profit"): "DOCOMO利润池当期领先",
+    ("international", "capex"): "DOCOMO持续投入更厚",
     ("international", "mobile_arpu"): "DOCOMO客户价值更高",
     ("mainland", "revenue"): "中国移动资源底盘最强",
     ("mainland", "ebitda"): "中国移动造血能力最强",
@@ -865,9 +865,9 @@ _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS = {
     ("local", "ebitda"): ("HKT造血能力最强", "HKT价战缓冲更厚", "3HK经营容错最窄"),
     ("local", "net_profit"): ("HKT稳健三港承压", "HKT再投资弹药更足", "3HK盈利防线失守"),
     ("local", "postpaid"): ("HKT客户底盘更稳", "HKT续约底盘更厚", "3HK客户底盘较窄"),
-    ("international", "revenue"): ("SKT资源底盘更厚", "SKT收入底盘更厚", "两家财年边界不同"),
-    ("international", "net_profit"): ("SKT自我融资更厚", "SKT利润池更大", "两家财年边界不同"),
-    ("international", "capex"): ("SKT持续投入更厚", "韩新投入量级接近", "投入不等同回报"),
+    ("international", "revenue"): ("SoftBank资源底盘领先", "DOCOMO收入底盘接近", "四家财年边界不同"),
+    ("international", "net_profit"): ("DOCOMO利润池当期领先", "SoftBank自我融资紧随", "四家财年边界不同"),
+    ("international", "capex"): ("DOCOMO持续投入更厚", "SoftBank资本军备紧随", "投入不等同回报"),
     ("international", "mobile_arpu"): ("DOCOMO客户价值更高", "日系用户价值分层", "用户范围不可混排"),
     ("mainland", "revenue"): ("中国移动资源底盘最强", "中国移动竞争弹药最足", "中国联通资源容错最窄"),
     ("mainland", "ebitda"): ("中国移动造血能力最强", "中国移动价战缓冲最厚", "中国电信经营容错较窄"),
@@ -1968,24 +1968,24 @@ def _compact_grounded_focus_analysis(domain: str, focus: dict[str, Any]) -> str:
                 "且不能由5G用户数替代集团移动客户总数。"
             )
     if domain == "international" and focus_id in {"revenue", "net_profit", "capex", "mobile_arpu"} and items:
-        high, low = items[0], items[-1]
+        ranked = sorted(items, key=lambda item: float(item.get("value") or 0), reverse=True)
+        high, low = ranked[0], ranked[-1]
         high_name, low_name = str(high.get("name") or ""), str(low.get("name") or "")
         high_value, low_value = _display_number(high.get("value")), _display_number(low.get("value"))
         if focus_id == "revenue":
             return (
-                f"{high_name} FY2024营收{high_value}百万美元，{low_name}{low_value}百万美元，"
-                f"表明{high_name}的经营资源底盘更厚、资源承载力更强，"
-                f"更能承担跨国网络、渠道与获客投入；{low_name}资源容错较窄，但营收不等同盈利能力。"
+                f"{high_name} FY2025营收{high_value}百万美元，{low_name}{low_value}百万美元；"
+                "收入底盘差距表明资源承载分层，但不等同盈利能力。"
             )
         if focus_id == "capex":
             return (
-                f"{high_name} FY2024资本开支约{high_value}百万美元，{low_name}约{low_value}百万美元；"
-                f"这表明{high_name}持续投入与资本军备规模更高，但资本开支绝对值不等同投资回报或投入转化效率，且两家财年区间不同。"
+                f"{high_name} FY2025资本开支{high_value}百万美元，{low_name}{low_value}百万美元；"
+                "持续投入与资本军备差距表明投入分层，但不等同投入转化效率。"
             )
         if focus_id == "net_profit":
             return (
-                f"{high_name} FY2024净利润约{high_value}百万美元，{low_name}约{low_value}百万美元，"
-                f"表明{high_name}当期盈利状态更强，自我融资、再投资与周期防守空间更厚；{low_name}缓冲较窄，绝对值不等同盈利效率。"
+                f"{high_name} FY2025净利润{high_value}百万美元，{low_name}{low_value}百万美元；"
+                "利润池分层表明自我融资与再投资空间不同，绝对值不等同盈利效率。"
             )
         docomo = by_name.get("NTT DOCOMO") or high
         softbank = by_name.get("SoftBank Corp.") or low
@@ -2577,10 +2577,10 @@ def generate_model_focus_insight(
         ("international", "momentum"): "只比较四家企业本期与上期营收增速变化，说明放缓范围或梯队，不使用驱动、导致等因果词。",
         ("international", "investment"): "只比较同期间资本开支占营收比例，并明确缺失主体与投入比例不等于投资回报。",
         ("international", "margin"): "只比较已披露且同口径经营利润率的层次与样本边界，不计算输入外差值。",
-        ("international", "revenue"): "只比较FY2024统一折算为百万美元的营收绝对值和十年序列；不得引入增速、利润、资本或用户维度。",
-        ("international", "net_profit"): "只比较FY2024统一折算的净利润绝对值；不得引入同比、增速、利润率、资本或用户维度。",
-        ("international", "capex"): "只比较FY2024统一折算的资本开支绝对值；必须说明投入规模不等同投资回报。",
-        ("international", "mobile_arpu"): "只比较NTT DOCOMO和SoftBank Corp. FY2025统一折算的美元/月移动ARPU，并保留用户范围边界。",
+        ("international", "revenue"): "只比较四家公司各自最新完整财年统一折算为百万美元的营收绝对值；十年序列仅留在后台，不得引入增速、利润、资本或用户维度。",
+        ("international", "net_profit"): "只比较四家公司各自最新完整财年统一折算的净利润绝对值；不得引入同比、增速、利润率、资本或用户维度。",
+        ("international", "capex"): "只比较四家公司各自最新完整财年统一折算的资本开支绝对值；必须说明投入规模不等同投资回报。",
+        ("international", "mobile_arpu"): "只比较四家公司各自最新完整财年统一折算的美元/月移动ARPU，并保留用户范围边界。",
         ("cloud", "revenue"): "只比较FY2024云收入绝对金额；先区分直接云收入口径与代理分部口径，不得引入增速、利润率或自行换算。",
         ("cloud", "trend"): "只比较同一厂商FY2024至FY2025收入增速方向，说明提速覆盖面与例外主体。",
         ("cloud", "profit"): "只解释FY2024云利润绝对金额及经营利润、调整后EBITA和代理分部毛利的定义边界；不得引入利润率、增速或自行换算。",
@@ -2663,27 +2663,27 @@ def generate_model_focus_insight(
             "说明利润率不等于绝对利润，仍须引用至少两个主体原值",
         ),
         ("international", "revenue"): (
-            "比较FY2024统一折算营收的高低梯队，至少引用两家原值",
-            "比较四家十年营收绝对值方向，不计算增速或指数",
+            "比较四家各自最新完整财年统一折算营收的高低梯队，至少引用两家原值",
+            "只展示最新年度营收绝对值，十年序列仅作后台溯源",
             "从头部营收是否接近切入，不计算输入外差值",
             "说明统一汇率便于规模比较，但不等于盈利能力",
         ),
         ("international", "net_profit"): (
-            "按FY2024净利润绝对值分层，引用最高与最低原值",
+            "按四家各自最新完整财年净利润绝对值分层，引用最高与最低原值",
             "只比较净利润折算金额，不引入同比、增速或利润率",
             "从绝对规模差距切入，不将单年数值外推为增长趋势",
             "说明集团范围与财年口径边界",
         ),
         ("international", "capex"): (
-            "比较FY2024资本开支美元绝对值，引用两家原值",
+            "比较四家各自最新完整财年资本开支美元绝对值，引用两家原值",
             "说明投入规模不等同投资回报",
             "保留SK Telecom与Singtel财年截止日差异",
             "只分析资本开支，不混入收入或利润",
         ),
         ("international", "mobile_arpu"): (
-            "比较NTT DOCOMO与SoftBank Corp.美元/月ARPU",
-            "说明两家用户范围按原披露保留",
-            "引用两家ARPU美元原值形成量级判断",
+            "比较四家各自最新完整财年美元/月ARPU",
+            "说明四家用户范围按原披露保留",
+            "至少引用两家ARPU美元原值形成量级判断",
             "说明汇率统一不代表用户定义统一",
         ),
         ("local", "revenue"): (
@@ -4821,6 +4821,13 @@ def _publish_and_verify_github_pages() -> dict[str, Any]:
     for key in ("HTTP_PROXY", "HTTPS_PROXY", "ALL_PROXY", "http_proxy", "https_proxy", "all_proxy"):
         environment.pop(key, None)
     environment.setdefault("CMHK_INTELLIGENCE_SOURCE_URL", "http://127.0.0.1:8765/")
+    # The comparison view and its AI endpoint consume this separate canonical file.
+    rebuilt = _run_builder(
+        [_builder_python(), str(ROOT / "scripts/build_competitor_workbench_data.py")],
+        environment, 180,
+    )
+    if rebuilt.returncode:
+        raise RuntimeError(f"竞对前端数据重建失败：{(rebuilt.stderr or rebuilt.stdout)[-1200:]}")
     result: dict[str, Any] = {}
     busy_wait_seconds = max(30, int(os.environ.get("CMHK_PAGES_BUSY_WAIT_SECONDS", "600")))
     busy_deadline = time.monotonic() + busy_wait_seconds

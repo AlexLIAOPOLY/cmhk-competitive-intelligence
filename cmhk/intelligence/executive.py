@@ -2208,9 +2208,11 @@ def _requested_international_domain(
     """Build strategic-overview domain 02 from the four requested carriers."""
     requested = ("NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel")
     all_rows = [row for row in (payload.get("rows") or []) if row.get("operator") in requested]
-    rows = [row for row in all_rows
-            if row.get("verification_status") == "official_three_distinct_sources_verified"
-            and int(row.get("distinct_source_document_count") or 0) >= 3]
+    rows = [
+        row for row in all_rows
+        if str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
+        and int(row.get("distinct_official_source_document_count") or 0) >= 1
+    ]
     fx_payload = _read_json_optional(GLOBAL_OPERATOR_FX_PATH, {})
     fx_rates = {
         (str(item.get("currency") or ""), int(item.get("year") or 0)): float(item["local_per_usd"])
@@ -2289,29 +2291,41 @@ def _requested_international_domain(
             result["trend"] = trend
         return result
 
+    def latest_verified_year(operator: str, metric: str) -> int:
+        """Use each operator's latest verified point; keep FY2025 as the gap horizon."""
+        for year in range(2025, 2015, -1):
+            value, _, _ = translated_value(row_for(operator, metric, year))
+            if value is not None:
+                return year
+        return 2025
+
     revenue_items: list[dict[str, Any]] = []
     profit_items: list[dict[str, Any]] = []
     capex_items: list[dict[str, Any]] = []
     arpu_items: list[dict[str, Any]] = []
     for operator in requested:
+        revenue_year = latest_verified_year(operator, "revenue")
+        profit_year = latest_verified_year(operator, "net_profit")
+        capex_year = latest_verified_year(operator, "capex")
+        arpu_year = latest_verified_year(operator, "mobile_arpu")
         revenue_items.append(make_item(
-            operator, "revenue", 2024, "百万美元",
-            "FY2024原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+            operator, "revenue", revenue_year, "百万美元",
+            "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
             trend=history(operator, "revenue"),
         ))
         profit_items.append(make_item(
-            operator, "net_profit", 2024, "百万美元",
-            "FY2024原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
+            operator, "net_profit", profit_year, "百万美元",
+            "最新已核验原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
             trend=history(operator, "net_profit"),
         ))
         capex_items.append(make_item(
-            operator, "capex", 2024, "百万美元",
-            "FY2024原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
+            operator, "capex", capex_year, "百万美元",
+            "最新已核验原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
             trend=history(operator, "capex"),
         ))
         arpu_items.append(make_item(
-            operator, "mobile_arpu", 2025, "美元/月",
-            "FY2025移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
+            operator, "mobile_arpu", arpu_year, "美元/月",
+            "最新已核验移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
             trend=history(operator, "mobile_arpu"),
         ))
 
@@ -2326,29 +2340,43 @@ def _requested_international_domain(
             "label": f"{leader['name']} {leader['period']}",
         }
 
+    def latest_comparison_insight(label: str, items: list[dict[str, Any]], strategic_meaning: str, caveat: str) -> str:
+        available = sorted(
+            [item for item in items if _number(item.get("value")) is not None],
+            key=lambda item: float(item["value"]),
+            reverse=True,
+        )
+        facts = "；".join(
+            f"{item['name']} {item['period']}约{float(item['value']):,.2f}{item['unit']}"
+            for item in available[:2]
+        )
+        missing = [item["name"] for item in items if _number(item.get("value")) is None]
+        gap = f"。{'、'.join(missing)}截至FY2025尚未定位到可追溯的官方数值，不补数" if missing else ""
+        return f"最新已核验{label}：{facts}{gap}。{strategic_meaning}；{caveat}"
+
     focuses = [
-        {"id": "revenue", "label": "营收", "visual": "spark_columns", "headline": "SKT资源底盘更厚",
+        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "SoftBank资源底盘领先",
          "metric": leader_metric(revenue_items),
-         "context": "统一为美元；原币与汇率保留", "insight": "SK Telecom FY2024收入约13,158.97百万美元，Singtel约10,573.00百万美元；这表明SKT收入底盘与资源承载力更厚，但Singtel为3月年结。NTT DOCOMO与SoftBank Corp.当前库未收录同口径收入值，不补数。", "items": revenue_items},
-        {"id": "net_profit", "label": "净利润", "visual": "spark_columns", "headline": "SKT自我融资更厚",
+         "context": "各公司最新已核验年度；统一为美元", "insight": latest_comparison_insight("营收", revenue_items, "更高收入底盘意味着更强资源承载能力", "各公司财年截止日差异保留。"), "items": revenue_items},
+        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "DOCOMO利润池当期领先",
          "metric": leader_metric(profit_items),
-         "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024净利润约1,017.40百万美元，Singtel约594.96百万美元；绝对值反映当期利润池规模，但财年区间不同。NTT DOCOMO与SoftBank Corp.当前库未收录同口径净利润值。", "items": profit_items},
-        {"id": "capex", "label": "资本开支", "visual": "spark_columns", "headline": "SKT持续投入更厚",
+         "context": "各公司最新已核验年度；统一为美元", "insight": latest_comparison_insight("净利润", profit_items, "利润池规模影响再投资和经营容错空间", "绝对值只反映当期利润池规模。"), "items": profit_items},
+        {"id": "capex", "label": "资本开支", "visual": "rows", "headline": "DOCOMO持续投入更厚",
          "metric": leader_metric(capex_items),
-         "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024资本开支约1,824.40百万美元，Singtel约1,608.99百万美元；SKT持续投入规模更高，但投入转化效率不能由绝对金额判断。NTT DOCOMO与SoftBank Corp.当前库未收录同口径资本开支值。", "items": capex_items},
-        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "spark_columns", "headline": "DOCOMO客户价值更高",
+         "context": "各公司最新已核验年度；统一为美元", "insight": latest_comparison_insight("资本开支", capex_items, "持续投入规模反映网络和增长的资本军备强度", "投入转化效率不能由绝对金额判断。"), "items": capex_items},
+        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "rows", "headline": "DOCOMO客户价值更高",
          "metric": leader_metric(arpu_items),
-         "context": "统一为美元/月；用户范围按公司原口径", "insight": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；这表明DOCOMO客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。SK Telecom与Singtel当前库未收录同口径ARPU。", "items": arpu_items},
+         "context": "各公司最新已核验年度；统一为美元/月", "insight": latest_comparison_insight("移动ARPU", arpu_items, "ARPU反映客户价值量级", "各公司用户范围结构不同，不直接等同。"), "items": arpu_items},
     ]
     all_items = revenue_items + profit_items + capex_items + arpu_items
     return {
         "id": "international", "index": "02", "title": "国际运营商",
         "kicker": "营收、净利润、资本开支与移动ARPU",
         "metric": {"value": 10, "unit": "年", "label": "FY2016–FY2025比较窗口"},
-        "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值记录经三份不同底层官方文件核验",
+        "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值即展示，官方来源数量在后台保留",
         "insight": "金额统一为美元，ARPU统一为美元/月；原币、自然年平均汇率和财年截止日保留，缺口不估算。",
         "entities": revenue_items, "focuses": focuses,
-        "relations": [{"title": item["name"], "detail": "四项指标口径已校准", "kind": "三来源认证"} for item in revenue_items],
+        "relations": [{"title": item["name"], "detail": "四项指标口径已校准", "kind": "官方来源已标注"} for item in revenue_items],
         "sources": _dedupe_sources(
             [_source(item["name"], item["source_url"]) for item in all_items]
             + [_source("世界银行 WDI 年度平均汇率", fx_payload.get("source_url"))]

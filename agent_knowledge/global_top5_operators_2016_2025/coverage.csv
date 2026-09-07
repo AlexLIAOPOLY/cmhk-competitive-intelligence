@@ -630,7 +630,7 @@ ntt_group,NTT Group,2025,revenue,available
 ntt_group,NTT Group,2025,net_profit,available
 ntt_group,NTT Group,2025,reported_mobile_connections,available
 ntt_docomo,NTT DOCOMO,2016,mobile_service_subscriptions,available
-ntt_docomo,NTT DOCOMO,2016,mobile_arpu,source_gap_confirmed
+ntt_docomo,NTT DOCOMO,2016,mobile_arpu,available
 ntt_docomo,NTT DOCOMO,2017,mobile_service_subscriptions,available
 ntt_docomo,NTT DOCOMO,2017,mobile_arpu,available
 ntt_docomo,NTT DOCOMO,2018,mobile_service_subscriptions,available
@@ -667,7 +667,7 @@ softbank_corp,SoftBank Corp.,2023,mobile_service_subscriptions,available
 softbank_corp,SoftBank Corp.,2023,mobile_arpu,available
 softbank_corp,SoftBank Corp.,2024,mobile_service_subscriptions,available
 softbank_corp,SoftBank Corp.,2024,mobile_arpu,available
-softbank_corp,SoftBank Corp.,2025,mobile_service_subscriptions,source_gap_confirmed
+softbank_corp,SoftBank Corp.,2025,mobile_service_subscriptions,available
 softbank_corp,SoftBank Corp.,2025,mobile_arpu,available
 sk_telecom,SK Telecom,2016,revenue,available
 sk_telecom,SK Telecom,2016,net_profit,available
@@ -678,10 +678,10 @@ sk_telecom,SK Telecom,2017,capex,available
 sk_telecom,SK Telecom,2018,revenue,available
 sk_telecom,SK Telecom,2018,net_profit,available
 sk_telecom,SK Telecom,2018,capex,available
-sk_telecom,SK Telecom,2019,revenue,source_gap_confirmed
-sk_telecom,SK Telecom,2019,net_profit,source_gap_confirmed
+sk_telecom,SK Telecom,2019,revenue,available
+sk_telecom,SK Telecom,2019,net_profit,available
 sk_telecom,SK Telecom,2019,capex,available
-sk_telecom,SK Telecom,2020,revenue,source_gap_confirmed
+sk_telecom,SK Telecom,2020,revenue,available
 sk_telecom,SK Telecom,2020,net_profit,available
 sk_telecom,SK Telecom,2020,capex,available
 sk_telecom,SK Telecom,2021,revenue,available
@@ -696,9 +696,9 @@ sk_telecom,SK Telecom,2023,capex,available
 sk_telecom,SK Telecom,2024,revenue,available
 sk_telecom,SK Telecom,2024,net_profit,available
 sk_telecom,SK Telecom,2024,capex,available
-sk_telecom,SK Telecom,2025,revenue,source_gap_confirmed
-sk_telecom,SK Telecom,2025,net_profit,source_gap_confirmed
-sk_telecom,SK Telecom,2025,capex,source_gap_confirmed
+sk_telecom,SK Telecom,2025,revenue,available
+sk_telecom,SK Telecom,2025,net_profit,available
+sk_telecom,SK Telecom,2025,capex,available
 singtel,Singtel,2016,revenue,available
 singtel,Singtel,2016,ebitda,available
 singtel,Singtel,2016,net_profit,available

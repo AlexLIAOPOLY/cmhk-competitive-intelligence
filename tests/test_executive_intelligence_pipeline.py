@@ -137,12 +137,12 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         evidence = pipeline._analysis_input_snapshot()
         expected = {
             ("mainland", "local"): {"10501.9亿元", "36553百万港元"},
-            ("local", "international"): {"36553百万港元", "138.19十亿美元"},
+            ("local", "international"): {"36553百万港元", "47031.9百万美元"},
             ("local", "mainland"): {"36553百万港元", "10501.9亿元"},
-            ("international", "cloud"): {"138.19十亿美元", "128725百万美元"},
+            ("international", "cloud"): {"47031.9百万美元", "128725百万美元"},
             ("mainland", "cloud"): {"10501.9亿元", "128725百万美元"},
             ("local", "cloud"): {"36553百万港元", "128725百万美元"},
-            ("mainland", "international"): {"10501.9亿元", "138.19十亿美元"},
+            ("mainland", "international"): {"10501.9亿元", "47031.9百万美元"},
         }
         for pair, values in expected.items():
             scoped = pipeline._manual_discovery_evidence(evidence, *pair)
@@ -889,18 +889,18 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_focus_regeneration_merges_one_validated_insight(self):
         evidence = pipeline._analysis_input_snapshot()
         domain = next(item for item in evidence["domains"] if item["id"] == "international")
-        focus = next(item for item in domain["focuses"] if item["id"] == "ebitda")
+        focus = next(item for item in domain["focuses"] if item["id"] == "revenue")
         scoped_summary = next(
             item for item in pipeline._deterministic_domain_summaries(evidence)
             if item["domain"] == "international"
         )
         scoped_summary["focuses"] = [
-            item for item in scoped_summary["focuses"] if item["id"] == "ebitda"
+            item for item in scoped_summary["focuses"] if item["id"] == "revenue"
         ]
         scoped_summary["focuses"][0]["analysis"] = pipeline._compact_grounded_focus_analysis(
             "international", focus
         )
-        scoped_summary["focuses"][0]["headline"] = "经营造血能力分层"
+        scoped_summary["focuses"][0]["headline"] = "收入底盘资源分层"
         with tempfile.TemporaryDirectory() as temp_dir:
             path = Path(temp_dir) / "analysis.json"
             path.write_text("{}", encoding="utf-8")
@@ -913,24 +913,24 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             ):
                 progress = []
                 result = pipeline.regenerate_model_focus_summary(
-                    "international", "ebitda", path=path, progress=progress.append
+                    "international", "revenue", path=path, progress=progress.append
                 )
 
             saved = json.loads(path.read_text(encoding="utf-8"))["model_analysis"]
             self.assertTrue(result["ok"])
-            self.assertEqual(result["focus"], "ebitda")
-            self.assertEqual(saved["manual_focus_regeneration"]["focus"], "ebitda")
+            self.assertEqual(result["focus"], "revenue")
+            self.assertEqual(saved["manual_focus_regeneration"]["focus"], "revenue")
             self.assertEqual(
-                saved["manual_focus_regeneration_history"]["international.ebitda"][-1],
+                saved["manual_focus_regeneration_history"]["international.revenue"][-1],
                 scoped_summary["focuses"][0]["analysis"],
             )
-            self.assertEqual(saved["manual_focus_regeneration_counts"]["international.ebitda"], 1)
+            self.assertEqual(saved["manual_focus_regeneration_counts"]["international.revenue"], 1)
             saved_focus = next(
                 item for item in next(
                     summary for summary in saved["summaries"] if summary["domain"] == "international"
-                )["focuses"] if item["id"] == "ebitda"
+                )["focuses"] if item["id"] == "revenue"
             )
-            self.assertEqual(saved_focus["headline"], "经营造血能力分层")
+            self.assertEqual(saved_focus["headline"], "收入底盘资源分层")
             self.assertEqual(len(saved["summaries"]), 4)
             self.assertEqual(generate.call_args.kwargs["temperature"], 0.25)
             self.assertEqual(progress[0], "正在读取当前证据")
@@ -2258,6 +2258,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         )
         with (
             patch("executive_intelligence_pipeline.subprocess.run", side_effect=[busy, verified]) as run,
+            patch("executive_intelligence_pipeline._run_builder", return_value=mock.Mock(returncode=0, stdout="", stderr="")),
             patch("executive_intelligence_pipeline.time.sleep") as sleep,
         ):
             result = pipeline._publish_and_verify_github_pages()

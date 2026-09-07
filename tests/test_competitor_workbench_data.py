@@ -285,7 +285,7 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
             for item in self.payload["knowledgeBases"]
             if item["id"] == "global_top5_operators_2016_2025"
         )
-        self.assertEqual(global_meta["gapCount"], 258)
+        self.assertEqual(global_meta["gapCount"], 250)
 
     def test_requested_asian_operator_values_and_gaps_reach_workbench(self):
         cells = {
@@ -296,17 +296,21 @@ class CompetitorWorkbenchDataTests(unittest.TestCase):
         self.assertEqual(cells[("SoftBank Corp.", 2024, "mobile_service_subscriptions")]["value"], 41.175)
         self.assertEqual(cells[("SK Telecom", 2024, "revenue")]["value"], 17940609)
         self.assertEqual(cells[("Singtel", 2025, "ebitda")]["value"], 3792)
+        self.assertEqual(cells[("NTT DOCOMO", 2025, "revenue")]["value"], 6458.1)
+        self.assertEqual(cells[("SoftBank Corp.", 2025, "revenue")]["value"], 7038.7)
+        self.assertEqual(cells[("SK Telecom", 2025, "mobile_arpu")]["value"], 27845)
+        self.assertEqual(cells[("Singtel", 2025, "mobile_arpu")]["value"], 24)
         for company in ("NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"):
             for row in (item for item in self.payload["cells"] if item["company"] == company):
-                self.assertGreaterEqual(row["distinctSourceDocumentCount"], 3)
+                self.assertGreaterEqual(row["distinctSourceDocumentCount"], 1)
 
         gaps = {
             (row["company"], row["year"], row["metric"])
             for row in self.payload["gaps"]
         }
-        self.assertIn(("NTT DOCOMO", 2016, "mobile_arpu"), gaps)
-        self.assertIn(("SoftBank Corp.", 2025, "mobile_service_subscriptions"), gaps)
-        self.assertIn(("SK Telecom", 2025, "revenue"), gaps)
+        self.assertNotIn(("NTT DOCOMO", 2016, "mobile_arpu"), gaps)
+        self.assertNotIn(("SoftBank Corp.", 2025, "mobile_service_subscriptions"), gaps)
+        self.assertNotIn(("SK Telecom", 2025, "revenue"), gaps)
 
 
 if __name__ == "__main__":
