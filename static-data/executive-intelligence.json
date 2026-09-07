@@ -2528,14 +2528,10 @@
           ],
           "ai_summary": {
             "id": "net_profit",
-            "headline": "HKT稳健三港承压",
-            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-            ],
+            "headline": "电讯盈科利润池深度分化",
+            "analysis": "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "CMHK",
@@ -3761,14 +3757,10 @@
           },
           {
             "id": "net_profit",
-            "headline": "HKT稳健三港承压",
-            "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-            "source_urls": [
-              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-            ],
+            "headline": "电讯盈科利润池深度分化",
+            "analysis": "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。",
+            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+            "source_urls": [],
             "entities": [
               {
                 "name": "CMHK",
@@ -7193,10 +7185,14 @@
           ],
           "ai_summary": {
             "id": "mobile_arpu",
-            "headline": "客户价值盘明显分层",
-            "analysis": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月，但两家公司用户范围结构不同，不能直接等同，说明其客户经营更依赖规模而非单客价值，自我造血和再投资空间相对承压。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "DOCOMO客户价值更高",
+            "analysis": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；美元换算表明DOCOMO的客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+              "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20260511.pdf",
+              "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+            ],
             "entities": [
               {
                 "name": "NTT DOCOMO",
@@ -7523,10 +7519,14 @@
           },
           {
             "id": "mobile_arpu",
-            "headline": "客户价值盘明显分层",
-            "analysis": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月，但两家公司用户范围结构不同，不能直接等同，说明其客户经营更依赖规模而非单客价值，自我造血和再投资空间相对承压。",
-            "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-            "source_urls": [],
+            "headline": "DOCOMO客户价值更高",
+            "analysis": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；美元换算表明DOCOMO的客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。",
+            "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+            "source_urls": [
+              "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+              "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20260511.pdf",
+              "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+            ],
             "entities": [
               {
                 "name": "NTT DOCOMO",
@@ -15637,7 +15637,7 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-07T15:22:00+08:00",
+      "generated_at_hkt": "2026-09-07T15:29:03+08:00",
       "model": "DeepSeek-V4-Pro",
       "summaries": [
         {
@@ -15776,14 +15776,10 @@
             },
             {
               "id": "net_profit",
-              "headline": "HKT稳健三港承压",
-              "analysis": "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
-              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
-              "source_urls": [
-                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
-              ],
+              "headline": "电讯盈科利润池深度分化",
+              "analysis": "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。",
+              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
+              "source_urls": [],
               "entities": [
                 {
                   "name": "CMHK",
@@ -16102,10 +16098,14 @@
             },
             {
               "id": "mobile_arpu",
-              "headline": "客户价值盘明显分层",
-              "analysis": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月，但两家公司用户范围结构不同，不能直接等同，说明其客户经营更依赖规模而非单客价值，自我造血和再投资空间相对承压。",
-              "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-              "source_urls": [],
+              "headline": "DOCOMO客户价值更高",
+              "analysis": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；美元换算表明DOCOMO的客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。",
+              "risk": "仅基于当前已核验来源和已披露口径，缺失数据不估算。",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+                "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20260511.pdf",
+                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+              ],
               "entities": [
                 {
                   "name": "NTT DOCOMO",
@@ -16765,32 +16765,44 @@
       "reused": false,
       "manual_focus_regeneration_history": {
         "international.revenue": [
-          "",
-          "SK Telecom与Singtel为12021.04百万美元和10819.53百万美元，形成高低两层，这表明前两家企业的资源承载与持续投入能力更强，后两家的防守空间相对更窄，但营收绝对值不能等同于盈利质量或客户价值。"
+          "SK Telecom与Singtel为12021.04百万美元和10819.53百万美元，形成高低两层，这表明前两家企业的资源承载与持续投入能力更强，后两家的防守空间相对更窄，但营收绝对值不能等同于盈利质量或客户价值。",
+          "SoftBank Corp. FY2025营收47031.9百万美元，Singtel10819.5百万美元；收入底盘差距表明资源承载分层，但不等同盈利能力。",
+          "SoftBank Corp. FY2025营收47031.92百万美元，NTT DOCOMO为43152.41百万美元，Singtel为10819.53百万美元，表明其资源承载与持续投入能力更强，但营收绝对值不能等同盈利质量或客户价值。",
+          "SoftBank Corp. FY2025营收47031.9百万美元，Singtel10819.5百万美元，收入底盘差距表明资源承载分层，但不等同盈利能力，NTT DOCOMO为43152.41百万美元，与前两家形成高低两层。"
         ],
         "international.mobile_arpu": [
           "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；美元换算表明DOCOMO的客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。",
           "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月，但两家公司用户范围结构不同，不能直接等同，说明其客户经营更依赖规模而非单客价值，自我造血和再投资空间相对承压。"
+        ],
+        "local.net_profit": [
+          "HKT FY2025净利润5286百万港元，3HK-25百万港元且已为负值；这表明HKT盈利状态最稳、自我融资与再投资空间最厚，3HK的盈利防线明显承压。",
+          "HKT FY2025净利润5286百万港元，为四者中最高；3HK FY2025净利润-25百万港元，为唯一负值。两者绝对值差距反映盈利韧性分化，HKT的利润池厚度远大于3HK。"
         ]
       },
       "manual_focus_regeneration_counts": {
-        "international.revenue": 1,
-        "international.mobile_arpu": 1
+        "international.revenue": 3,
+        "international.mobile_arpu": 1,
+        "local.net_profit": 1
       },
       "manual_focus_regeneration_title_history": {
         "international.revenue": [
-          "",
-          "SoftBank资源底盘领先"
+          "SoftBank资源底盘领先",
+          "四家财年边界不同",
+          "DOCOMO收入底盘接近"
         ],
         "international.mobile_arpu": [
           "DOCOMO客户价值更高",
           "客户价值盘明显分层"
+        ],
+        "local.net_profit": [
+          "HKT稳健三港承压",
+          "电讯盈科利润池深度分化"
         ]
       },
       "manual_focus_regeneration": {
-        "domain": "international",
-        "focus": "mobile_arpu",
-        "generated_at_hkt": "2026-09-07T15:22:00+08:00"
+        "domain": "local",
+        "focus": "net_profit",
+        "generated_at_hkt": "2026-09-07T15:29:03+08:00"
       },
       "fallback_used": true,
       "fallback_reason": "仅当前洞察由AI重新生成，其他洞察使用当前证据回退。"
