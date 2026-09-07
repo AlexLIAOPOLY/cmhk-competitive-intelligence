@@ -108,6 +108,7 @@ def execute(root: Path, run_id: str) -> dict:
                 "task_run_id": task["crawl_run_id"], "completed_at": now(),
                 "database_updated": bool(result.get("domains")) and not result.get("failed_domains"),
                 "insights": result.get("model_analysis", {}).get("insights_passed", 0),
+                "model_analysis": result.get("model_analysis", {}),
                 "domains": result.get("domains", {}), "changes": result.get("ui_value_changes", {}),
                 "pages": result.get("pages_publish", {}), "error": result.get("error", ""),
                 "result_status": result.get("status", ""),
