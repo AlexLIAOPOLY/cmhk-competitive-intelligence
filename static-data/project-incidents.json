@@ -512,6 +512,30 @@
       "handled_at_hkt": ""
     },
     {
+      "incident_id": "2f833d8471f9ce4c8817a8e9",
+      "task_id": "incident:2f833d8471f9ce4c8817a8e9",
+      "title": "战略新闻AI补审队列",
+      "kind": "strategic-news",
+      "kind_label": "战略新闻AI补审队列",
+      "scope": "strategic-news",
+      "incident_status": "open",
+      "run_status": "failed",
+      "phase": "待处理",
+      "severity": "P2",
+      "severity_label": "高",
+      "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
+      "impact": "这些新闻不会出现在群通报里，只能靠后续轮次补进表，时效性下降。",
+      "suggestions": [
+        "检查内部模型额度与限流，确认审核请求不是被持续拒绝。",
+        "查看 candidate_ai_editor_audit.json 的 deferred 原因分布。"
+      ],
+      "occurred_at_hkt": "2026-09-07T10:33:18+08:00",
+      "started_at_hkt": "2026-09-07T12:43:37+08:00",
+      "heartbeat_at_hkt": "2026-09-07T12:43:37+08:00",
+      "completed_at_hkt": "",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "f396f94d3d58919c5225967e",
       "task_id": "incident:f396f94d3d58919c5225967e",
       "title": "战略新闻定时扫描 07:30",
@@ -5035,7 +5059,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T10:53:55+08:00",
-      "heartbeat_at_hkt": "2026-09-07T12:38:05+08:00",
+      "heartbeat_at_hkt": "2026-09-07T12:43:37+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -5059,7 +5083,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T10:53:55+08:00",
-      "heartbeat_at_hkt": "2026-09-07T12:38:05+08:00",
+      "heartbeat_at_hkt": "2026-09-07T12:43:37+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12671,32 +12695,6 @@
       "started_at_hkt": "2026-09-02T14:39:18+08:00",
       "heartbeat_at_hkt": "2026-09-02T14:43:36+08:00",
       "completed_at_hkt": "2026-09-02T14:44:05+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "5576315c6dfcf3d6bb206906",
-      "task_id": "incident:5576315c6dfcf3d6bb206906",
-      "title": "主爬虫与定时爬虫",
-      "kind": "crawl",
-      "kind_label": "主爬虫与定时爬虫",
-      "scope": "crawl",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "任务失败：定时爬虫",
-      "impact": "已确认：本轮定时爬虫任务未达到完整成功条件，受影响阶段等待恢复；已有成功阶段和旧数据继续保留。推断：若审核阶段长期无法恢复，可能影响后续依赖该任务的数据处理流程。",
-      "suggestions": [
-        "检查Agent审核服务状态和日志，确认审核超时的具体原因（如服务响应、节点资源或逻辑阻塞）。",
-        "根据crawl_run_id=20260902_030051_422316查看运行日志文件agent_knowledge/crawl_run_logs/runs/20260902_030051_422316.jsonl，定位审核阶段异常详情。",
-        "在确认审核服务恢复正常后，仅恢复agent_review阶段，不重新触发已完成抓取，保留已有抓取结果。",
-        "恢复后验证审核阶段是否成功完成，并检查feishu_log写入和readback_verified状态。"
-      ],
-      "occurred_at_hkt": "2026-09-02T14:36:39+08:00",
-      "started_at_hkt": "2026-09-02T14:37:05+08:00",
-      "heartbeat_at_hkt": "2026-09-02T15:06:33+08:00",
-      "completed_at_hkt": "2026-09-02T15:07:05+08:00",
       "handled_at_hkt": ""
     }
   ],
