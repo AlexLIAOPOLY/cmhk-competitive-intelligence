@@ -587,8 +587,9 @@
         const failed = Number(job.result?.failed_count || 0);
         state.notice = failed ? `推送已结束，其中 ${failed} 项失败；请查看推送记录` : "推送完成，所有消息均已发送并回读";
         state.noticeKind = failed ? "error" : "success";
-        await loadData({ keepNotice: true });
+        render();
         if (!failed) announceDeliveredMessage("pushLatest", job.result?.batch_id || job.job_id);
+        loadData({ keepNotice: true }).catch(() => {});
       } else {
         state.notice = `推送失败：${job.error || job.detail || "未知错误"}`;
         state.noticeKind = "error";

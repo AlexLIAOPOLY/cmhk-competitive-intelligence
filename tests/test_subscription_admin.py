@@ -12,7 +12,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=15', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=27', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=28', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -38,6 +38,13 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('@keyframes notice-enter', STYLE)
         self.assertIn('@keyframes notice-exit', STYLE)
         self.assertIn('.notice.is-leaving', STYLE)
+
+    def test_manual_push_completion_renders_before_background_refresh(self):
+        completion = SCRIPT.split('if (job.status === "completed")', 1)[1].split("} else {", 1)[0]
+
+        self.assertLess(completion.index("render();"), completion.index("loadData({ keepNotice: true }).catch"))
+        self.assertLess(completion.index("announceDeliveredMessage"), completion.index("loadData({ keepNotice: true }).catch"))
+        self.assertNotIn("await loadData", completion)
 
     def test_report_delivery_exposes_supported_modes(self):
         self.assertIn('{ key: "pdf", label: "仅 PDF" }', SCRIPT)
