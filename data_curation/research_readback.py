@@ -30,6 +30,8 @@ def research_snapshot(root: Path, date: str = "") -> dict:
         return payload
     manifest, directory = runs[0]
     payload["run"] = manifest
+    # Historical details must use the assignments that actually executed.
+    payload["plan"] = manifest.get("plan") or payload["plan"]
     for key, filename in (("accepted_items", "verified_facts.jsonl"), ("result_items", "candidate_facts.jsonl")):
         path = directory / filename
         payload[key] = None
@@ -50,7 +52,7 @@ def research_snapshot(root: Path, date: str = "") -> dict:
             payload["insight_items"] += [dict(item, domain="cross") for item in model.get("discoveries", [])]
     except (OSError, ValueError):
         pass
-    for task in research_plan():
+    for task in payload["plan"]:
         path = directory / f"{task['key']}.json"
         try:
             agent = json.loads(path.read_text(encoding="utf-8"))

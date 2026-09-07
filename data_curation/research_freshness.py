@@ -60,29 +60,34 @@ def load_baseline(root: Path) -> dict:
         "hk_competitor_product_tariffs/cmhk.data.local_financial_results.json",
         "quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
         "global_top5_operators_2016_2025/annual_metrics.json",
+        "local_hk_operator_operating_metrics_2016_2025/annual_metrics.json",
+        "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json",
+        "requested_overview_010304_2016_2025/annual_facts.json",
         "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json",
         "hk_competitor_product_tariffs/agent_verified_facts.json",
         "quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
         "global_top5_operators_2016_2025/agent_verified_facts.json",
         "cloud_vendor_metrics_2026-06-17/agent_verified_facts.json")]
     index = {}
-    aliases = {"3HK / Hutchison": "3HK", "HKT / csl / 1O1O": "HKT"}
+    aliases = {"3HK / Hutchison": "3HK", "HKT / csl / 1O1O": "HKT",
+               "NTT DOCOMO": "NTT Docomo", "NTT Group": "NTT", "SoftBank Corp.": "SoftBank"}
     def visit(row, inherited=None):
         if isinstance(row, list):
             for value in row:
                 visit(value, inherited)
         elif isinstance(row, dict):
             context = {**(inherited or {}), **{k: v for k, v in row.items() if k in
-                ("company", "subject", "operator", "vendor", "period", "unit", "source_url", "publication_date", "fiscal_year", "year")}}
+                ("company", "subject", "operator", "vendor", "entity", "period", "unit", "source_url", "publication_date", "fiscal_year", "year")}}
             if row.get("fiscal_year") is not None and not row.get("period"):
                 context["period"] = "FY" + str(row["fiscal_year"])
-            name = context.get("company") or context.get("subject") or context.get("operator") or context.get("vendor")
+            name = context.get("company") or context.get("subject") or context.get("operator") or context.get("vendor") or context.get("entity")
             company = aliases.get(name, name)
             metric = metric_key(row.get("metric") or row.get("metric_zh") or row.get("metric_key"))
             value = row.get("value", row.get("analysis"))
             if company and metric and value not in (None, ""):
                 item = {"period": context.get("period") or str(context.get("fiscal_year") or context.get("year") or ""), "value": value,
-                        "unit": context.get("unit", ""), "source_url": context.get("source_url") or row.get("official_source_url", "")}
+                        "unit": context.get("unit", ""), "source_url": context.get("source_url") or row.get("official_source_url") or row.get("primary_source_url") or next(iter(row.get("source_urls") or []), ""),
+                        "scope": row.get("scope") or row.get("scope_note", "")}
                 bucket = index.setdefault(company, {}).setdefault(metric, [])
                 if item not in bucket:
                     bucket.append(item)

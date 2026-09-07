@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 import hashlib
 import json
+import os
+import tempfile
 import sys
 from collections import defaultdict
 from datetime import datetime, timezone
@@ -585,7 +587,17 @@ def main() -> None:
         "cells": cells,
         "gaps": gaps,
     }
-    OUTPUT.write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
+    # Readers must see either the old complete dataset or the new complete one.
+    with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=OUTPUT.parent,
+                                     prefix=".workbench-", suffix=".json", delete=False) as handle:
+        staging = Path(handle.name)
+        try:
+            json.dump(payload, handle, ensure_ascii=False, separators=(",", ":"))
+            handle.flush()
+            os.fsync(handle.fileno())
+            os.replace(staging, OUTPUT)
+        finally:
+            staging.unlink(missing_ok=True)
     print(f"wrote {OUTPUT} companies={len(payload['companies'])} metrics={len(payload['metrics'])} cells={len(cells)} gaps={len(gaps)}")
 
 

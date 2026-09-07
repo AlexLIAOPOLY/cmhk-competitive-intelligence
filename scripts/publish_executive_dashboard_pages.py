@@ -49,6 +49,7 @@ PUBLIC_STATIC_FILES = (
     "organization-admin.css",
     "organization-admin.js",
     "responsive-layout-hardening.css",
+    "research-diagram.js",
     "styles.css",
     "workspace-tabs.css",
     "workspace-responsive-system.css",
@@ -195,6 +196,12 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     }
     if (!requestUrl.pathname.startsWith("/api/")) return nativeFetch(input, init);
     const route = requestUrl.pathname;
+    if (method === "GET" && route === "/api/news-research") {
+      const plan = "__CMHK_PUBLIC_RESEARCH_PLAN__";
+      return Promise.resolve(jsonResponse({ ok: true, date: requestUrl.searchParams.get("date") || "",
+        plan: Array.isArray(plan) ? plan : [], run: null, runs: [], agents: [], events: [],
+        note: "公开快照仅展示任务分工，实际研究记录请在内网主页查看。" }));
+    }
     if (method === "GET" && snapshotRoutes.has(route)) {
       return nativeFetch(new URL(snapshotRoutes.get(route), root), { cache: "no-store" });
     }
@@ -886,6 +893,8 @@ def _build_site(
     *,
     intelligence_static_dir: Path | None = None,
 ) -> tuple[str, dict[str, Any]]:
+    from data_curation.research_plan import research_plan
+
     destination.mkdir(parents=True, exist_ok=True)
     source_url = _local_source_url()
     snapshots = _build_public_runtime_snapshots(source_url)
@@ -990,7 +999,7 @@ def _build_site(
             )
         (static_destination / name).write_text(content, encoding="utf-8")
     (static_destination / "public-snapshot-bootstrap.js").write_text(
-        PUBLIC_SNAPSHOT_BOOTSTRAP,
+        PUBLIC_SNAPSHOT_BOOTSTRAP.replace('"__CMHK_PUBLIC_RESEARCH_PLAN__"', json.dumps(research_plan(), ensure_ascii=False)),
         encoding="utf-8",
     )
     (static_destination / "public-subscriptions.html").write_text(
@@ -1082,7 +1091,7 @@ def _build_site(
     return site_version, payload
 
 
-def _verify(public_url: str, site_version: str) -> None:
+def _verify(public_url: str, site_version: str, workbench_hash: str = "") -> None:
     target = public_url.rstrip("/") + "/strategic-briefs.json"
     last_error = ""
     for _ in range(24):
@@ -1103,6 +1112,11 @@ def _verify(public_url: str, site_version: str) -> None:
             )
             payload = json.loads(response.stdout)
             if payload.get("site_version") == site_version:
+                if workbench_hash:
+                    asset = _run(["curl", "--fail", "--location", "--silent", "--show-error",
+                                  "--max-time", "20", public_url.rstrip("/") + "/static/competitor-workbench-data.json"])
+                    if hashlib.sha256(asset.stdout.encode("utf-8")).hexdigest() != workbench_hash:
+                        raise RuntimeError("公开竞对数据尚未更新到本次构建版本")
                 return
             last_error = "deployed snapshot has not reached the expected version"
         except Exception as exc:
@@ -1203,13 +1217,15 @@ def publish(*, force: bool = False, dry_run: bool = False) -> dict[str, Any]:
                     )
                     _run(_git("push", "origin", branch), cwd=checkout)
                 commit = _run(_git("rev-parse", "HEAD"), cwd=checkout).stdout.strip()
-                _verify(public_url, site_version)
+                workbench_hash = hashlib.sha256((generated / "static/competitor-workbench-data.json").read_bytes()).hexdigest()
+                _verify(public_url, site_version, workbench_hash)
                 result = {
                     "status": "published" if changed else "verified",
                     "site_version": site_version,
                     "item_count": len(payload["items"]),
                     "public_url": public_url,
                     "commit": commit,
+                    "workbench_sha256": workbench_hash,
                     "snapshot_source_url": _local_source_url(),
                 }
                 _write_state(
