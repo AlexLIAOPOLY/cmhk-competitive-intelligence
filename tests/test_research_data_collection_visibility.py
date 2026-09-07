@@ -19,6 +19,10 @@ class ResearchDataCollectionVisibilityTests(unittest.TestCase):
     def test_company_drilldown_shows_collection_coverage_at_a_glance(self):
         self.assertIn('已收集 ${companyCoverage.collected}/${companyCoverage.total} 条数据', RESEARCH)
         self.assertIn('${records.length} 份公司报告 · 已收集 ${coverage.collected}/${coverage.total} 条数据', RESEARCH)
+        self.assertIn('分公司数据收集覆盖率', RESEARCH)
+        self.assertIn('公司研究完成不等于数据已收齐', RESEARCH)
+        self.assertIn('${companyCoverageOverview(node)}', RESEARCH)
+        self.assertIn('<details class="research-company"><summary>', RESEARCH)
 
     def test_research_asset_cache_version_is_bumped(self):
         self.assertIn('/static/research-diagram.js?v=7', INDEX)

@@ -99,6 +99,12 @@
       { label: "六 Agent 并行研究与四库更新", position: [18, 325] },
     ], groups: [] };
   }
+  function companyCoverageOverview(node) {
+    if (!node.agent) return "";
+    const reports = node.agent.reports || [];
+    const coverage = reportsCoverage(reports);
+    return `<section class="news-lineage-dialog-section research-actual-list"><header><h3>分公司数据收集覆盖率</h3><span>已收集 ${coverage.collected}/${coverage.total} 条数据</span></header><p>公司研究完成不等于数据已收齐；以下分子仅计已核验数据。</p><div class="news-lineage-preview-scroll" role="region" aria-label="分公司数据收集覆盖率" tabindex="0">${reports.map((report, index) => { const current = reportCoverage(report); return `<article><strong>${index + 1}. ${esc(report.company)} · 已收集 ${current.collected}/${current.total} 条数据</strong><p>${esc(reportTerms[report.status] || report.status || "未记录状态")}</p></article>`; }).join("") || "<p>暂无分公司研究记录。</p>"}</div></section>`;
+  }
   function detail(node, snapshot, date) {
     const run = snapshot?.date === date ? snapshot.run : null;
     const agent = node.agent;
@@ -112,11 +118,12 @@
       : `已核验 ${run.accepted ?? "未提供"} 项，待复核或缺失 ${run.review ?? "未提供"} 项`;
     return `<header><div><span>${esc(date)} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(node.purpose)}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
+      ${companyCoverageOverview(node)}
       <section class="news-lineage-dialog-section"><header><h3>这个节点如何处理</h3></header><ol>${node.details.map((text) => `<li>${esc(text)}</li>`).join("")}</ol></section>
       <section class="news-lineage-dialog-section"><header><h3>本轮运行</h3></header><dl>${field("运行编号", esc(run?.run_id || "所选日期没有六Agent任务记录"))}${field("开始时间", esc(run?.started_at || "—"))}${field("结束时间", esc(run?.completed_at || "—"))}${field("本轮结果", esc(resultLabel))}</dl></section>
       ${node.publication ? `<section class="news-lineage-dialog-section"><header><h3>四库及页面交付明细</h3></header><pre>${esc(JSON.stringify(node.publication, null, 2))}</pre></section>` : ""}
       <section class="news-lineage-dialog-section"><header><h3>逐公司、逐指标处理结果</h3><span>${records.length} 份公司报告 · 已收集 ${coverage.collected}/${coverage.total} 条数据</span></header>
-      ${records.map(({ a, report }) => { const companyCoverage = reportCoverage(report); return `<details class="research-company" ${agent ? "open" : ""}><summary>${esc(report.company)} · 已收集 ${companyCoverage.collected}/${companyCoverage.total} 条数据 · ${esc(reportTerms[report.status] || report.status || "未记录状态")}</summary>
+      ${records.map(({ a, report }) => { const companyCoverage = reportCoverage(report); return `<details class="research-company"><summary>${esc(report.company)} · 已收集 ${companyCoverage.collected}/${companyCoverage.total} 条数据 · ${esc(reportTerms[report.status] || report.status || "未记录状态")}</summary>
         ${(report.items || []).map((item) => `<article class="research-metric"><h4>${esc(item.metric)} <small>${esc(terms[item.status] || item.status)}</small></h4><dl>${field("记录值", esc(item.value || "无可更新值"))}${field("期间与单位", esc([item.period, item.unit].filter(Boolean).join(" · ") || "—"))}${field("处理说明", esc(item.reason || "—"))}${field("原文", link(item.source_url || "—"))}${field("原文摘录", esc(item.quote || "—"))}${field("期间及单位上下文", esc(item.context_quote || "—"))}${field("披露主体依据", esc(item.entity_quote || "主体见原文摘录"))}${field("来源内容哈希", esc(item.evidence_hash || "—"))}</dl></article>`).join("")}
         <details><summary>全部检索与网页读取记录</summary>${(report.searches || []).map((search) => `<article><strong>${esc(search.metric)}</strong><p>检索：${esc(search.query)} · ${esc(search.provider)}</p><ul>${(search.results || []).map((r) => `<li>${link(r.url)}<p>${esc(r.title)} · ${esc(r.snippet)}</p></li>`).join("")}</ul></article>`).join("")}
         ${Object.entries(report.pages || {}).map(([url, page]) => `<p>${link(url)} · HTTP ${esc(page.http_status)} · ${page.opened ? "已读取" : "读取失败"} ${esc(page.blocked_reason || "")}</p>`).join("")}</details></details>`; }).join("") || "<p>该节点的实际处理记录将在任务运行后显示。</p>"}</section>
