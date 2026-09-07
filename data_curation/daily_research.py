@@ -72,7 +72,7 @@ def dispatch(root: Path, reference: datetime, *, dry_run: bool = False) -> dict:
 
 def execute(root: Path, run_id: str) -> dict:
     import re
-    if root.resolve() != ROOT.resolve() or not re.fullmatch(r"research_\d{8}", run_id):
+    if root.resolve() != ROOT.resolve() or not re.fullmatch(r"research_\d{8}(?:_rerun_\d{6})?", run_id):
         raise ValueError("运行目录或研究编号不符合定时任务约定")
     directory = root / "curation_data" / "research_runs" / run_id
     directory.mkdir(parents=True, exist_ok=True)

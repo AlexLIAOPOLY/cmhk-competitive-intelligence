@@ -2017,7 +2017,7 @@ def run_due_four_database_source_discovery(
 
 def standalone_research_process_running() -> bool:
     """Do not launch a second six-worker batch during a manual validation run."""
-    result = subprocess.run(["pgrep", "-f", "[pP]ython.*-m data_curation.six_agent_research"],
+    result = subprocess.run(["pgrep", "-f", "[pP]ython.*-m data_curation.(six_agent_research|daily_research)"],
                             capture_output=True, text=True, check=False)
     return result.returncode == 0
 

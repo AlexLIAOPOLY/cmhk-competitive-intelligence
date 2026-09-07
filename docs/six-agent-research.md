@@ -93,3 +93,5 @@ python -m unittest tests.test_research_harness tests.test_six_agent_pipeline tes
 本次验证不触发模型研究、飞书写入或公开业务重发布；下次真实任务的成功与否仍以该轮归档和公开数据回读为准。
 
 新增量研究的指标为原监控字段与当前首页四域关注指标的并集，直接读取前端快照定义；国际运营商因此包含营收、净利润、资本开支、移动ARPU。恢复已有公司任务时保留 checkpoint 的指标合同，不把新前端指标伪装成旧运行已处理。
+
+手动整轮重跑使用独立编号 `research_YYYYMMDD_rerun_HHMMSS`，通过 `python -m data_curation.daily_research --root <正式运行目录> --run-id <独立编号>` 执行同一研究、入库和发布链。保留原日任务归档；定时器检测到独立研究或完整研究进程时不再派发另一轮。
