@@ -3371,7 +3371,22 @@
           "verification_status": "official_document_extracted"
         }
       ],
-      "ai_analysis": [],
+      "ai_analysis": [
+        {
+          "company": "HKT",
+          "metric": "漫游",
+          "analysis": "8% YoY growth",
+          "basis": "H1'26 ('000) 44k YoY Improved Churn Rate for 1O1O and csl Base Reflecting Deeper Customer Loyalty Premium Brand Strength Driving Continued Growth in 1O1O and csl Base 2% YoY H1'25 H1'26 0.7% 0.6% H1'25 H1'26 Further Expansion of High Value, Loyal Mobile Customer Base 11 Enhanced Service Offerings and Network Experience Driving Sustained Growth in Roaming Revenue Deepening Roamer PenetrationSustained Growth in Roaming Revenue H1'25 H1'26 28% YoY Inbound Revenue H1'25 H1'26 11% YoY Consumer Outbound Revenue H1'25 H1'26 8% YoY Total Roaming Revenue Consumer Roamer Penetration in June 2026 73% + 4 p.p. YoY 12 * New destinations added in H1’26 Golden Roaming Covering 10 popular travel destinations via 13 leading partner networks Priority access to the Golden Spectrum for improved network speed and stability And more to come… Destination Partner Destination Partner Chinese Mainland China Unicom, China Telecom Macao CTM Japan KDDI, Softbank Thailand AIS Philippines Globe Telecom South Korea SK Telecom Taiwan Taiwan Mobile Malaysia Maxis Indonesia * Telkomsel Vietnam * Viettel Telecom,\n2026 Interim Results For the six months ended 30 June 2026 29 July 2026 Hong Kong Forward Looking Statement This presentation may contain “forward-looking statements” that are not historical in nature. These forward-looking statements, which include, without limitation, statements regarding HKT’s future results of operations, financial condition or business prospects, are based on the current beliefs, assumptions, expectations, estimates, and projections of the directors and management of HKT about the business, the industry and the markets in which HKT operates. These statements are not guarantees of future performance and are subject to risks, uncertainties and other factors, some of which are beyond HKT’s control and are difficult to predict. Actual results could differ materially from those expressed, implied or forecasted in these forward-looking statements for a variety of factors. Business Overview Susanna Hui Group Managing Director Solid Performance Anchored in Business Resilience and Innovation Total Revenue (US$ million) 2,396 2,158 Excluding Mobile Product Sales 8% YoY 3%",
+          "period": "six months ended 30 June 2026",
+          "unit": "YoY growth",
+          "source_url": "https://www.hkt.com/api-service/assets/c01-2026_Interim_Report.pdf",
+          "source_tier": "official",
+          "quality_score": 0.9,
+          "confidence": 0.9,
+          "row_ref": "row_47",
+          "evidence_hash": "18767a0200e5c57d5af6790fa5f2e1a7a70e4906d0218536214ad3128c87df4a"
+        }
+      ],
       "ai_summary": {
         "domain": "local",
         "headline": "本地运营商最新证据已更新",
@@ -3626,8 +3641,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T18:29:38+08:00",
-      "ai_run_id": "research_20260907_rerun_153534"
+      "ai_updated_at": "2026-09-08T05:42:02+08:00",
+      "ai_run_id": "research_20260908"
     },
     {
       "id": "international",
@@ -7065,64 +7080,7 @@
           "url": "https://api.worldbank.org/v2/country/DEU;IND;JPN;KOR;SGP;USA/indicator/PA.NUS.FCRF?date=2016:2025&format=json&per_page=200"
         }
       ],
-      "ai_analysis": [
-        {
-          "company": "Singtel",
-          "metric": "收入",
-          "analysis": "14,261 S$ million",
-          "basis": "Financial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds\nFinancial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds",
-          "period": "Financial Year ended March 2026",
-          "unit": "S$ million",
-          "source_url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_19",
-          "evidence_hash": "63c3c6f3d44c2ba25df42ffe27a876b702fa1596f0b98bb6ae5447284facbca1"
-        },
-        {
-          "company": "Singtel",
-          "metric": "净利润",
-          "analysis": "5,606 S$ million",
-          "basis": "Financial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds\nFinancial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds",
-          "period": "Financial Year ended March 2026",
-          "unit": "S$ million",
-          "source_url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_19",
-          "evidence_hash": "63c3c6f3d44c2ba25df42ffe27a876b702fa1596f0b98bb6ae5447284facbca1"
-        },
-        {
-          "company": "SK Telecom",
-          "metric": "AI",
-          "analysis": "KRW 136.2 billion",
-          "basis": "execution The AI data center (AIDC) business is the fastest-growing segment among SKT’s business areas. In the second quarter, AIDC revenue reached KRW 136.2 billion, up 92.5% year over year, driven by expanded operations. As generative AI adoption spreads across industries and demand for high-performance computing infrastructure surges, timely delivery of AI infrastructure for customers such as global Big Tech companies has never been more critical. Last month, SKT established SK Hyper to spearhead AIDC business development, strengthening the company’s execution engine. SK Hyper will proactively secure key resources, including land and power capacity, and attract global customers to accelerate execution and seize market leadership. Led by SK Hyper, SKT has set an initial goal of bringing AIDCs online in phases starting in 2029, targeting a combined capacity of 5 GW. The telecommunications business continues to deliver qualitative growth centered on customer lifetime value (CLV).* Through efficient marketing activities such as identifying new customer segments and running\nSK Telecom Announces Q2 2026 Results – SK telecom newsroom SK telecom newsroom | SK Telecom Announces Q2 2026 Results Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Press Release SK Telecom Announces Q2 2026 Results Press Release 2026.08.05 SK Telecom PR Reading Time 4 min Share Facebook X Email Copy URL Print · SK Telecom announces consolidated revenue of KRW 4.3591 trillion, with operating income of KRW 566.0 billion, up 67.3% year-over-year. · AI data center revenue maintained solid growth, accelerating business expansion with the establishment of SK Hyper. · Mobile subscriber net additions continued on the back of stronger customer value, while the company declared a quarterly dividend of KRW 830 per share for the second consecutive quarter. SK Telecom (NYSE: SKM, hereinafter “SKT”) today announced its consolidated earnings for the second quarter of 2026, based on Korean International Financial Reporting",
-          "period": "Q2 2026",
-          "unit": "KRW billion",
-          "source_url": "https://news.sktelecom.com/en/3218",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_19",
-          "evidence_hash": "16787147137f2bf63cfe664dbd09a6dc120821735936c74f5f06e44dae7198a4"
-        },
-        {
-          "company": "SK Telecom",
-          "metric": "净利润",
-          "analysis": "466.0 KRW billion",
-          "basis": "Standards (K-IFRS): revenue of KRW 4.3591 trillion, operating income of KRW 566.0 billion, and net income of KRW 466.0 billion. Compared with the same period last year, revenue increased by 0.5%, driven by growth in the data center business. Through efficient, profitability‑focused management, operating income rose 5.3% quarter over quarter (QoQ). Year over year (YoY), it surged 67.3%, supported in part by a favorable base effect from one‑off expenses in the prior year. The telecommunications business, which has remained focused on restoring customer trust, showed a clear turnaround driven by efforts to enhance customer value and improve profitability. The AI business also recorded robust growth as execution accelerated under the company’s strategy of focus and prioritization. On a non-consolidated basis, the company reported revenue of KRW 3.1170 trillion, operating income of KRW 427.7 billion, and net income of KRW 310.6 billion. The second-quarter dividend is KRW 830 per share, unchanged from the first quarter. AI data center business gains momentum, fueling growth through rapid\nSK Telecom Announces Q2 2026 Results – SK telecom newsroom SK telecom newsroom | SK Telecom Announces Q2 2026 Results Skip to the content SKT NewsRoom Corporate Fact sheet Earnings Sustainability Report Insight Press Center Press Release Media Library Linkedin Menu Search Toggle Theme EN KO EN Clear Inputbox Search #AI #AIDC #Earning 닫기 Press Release SK Telecom Announces Q2 2026 Results Press Release 2026.08.05 SK Telecom PR Reading Time 4 min Share Facebook X Email Copy URL Print · SK Telecom announces consolidated revenue of KRW 4.3591 trillion, with operating income of KRW 566.0 billion, up 67.3% year-over-year. · AI data center revenue maintained solid growth, accelerating business expansion with the establishment of SK Hyper. · Mobile subscriber net additions continued on the back of stronger customer value, while the company declared a quarterly dividend of KRW 830 per share for the second consecutive quarter. SK Telecom (NYSE: SKM, hereinafter “SKT”) today announced its consolidated earnings for the second quarter of 2026, based on Korean International Financial Reporting",
-          "period": "Q2 2026",
-          "unit": "KRW billion",
-          "source_url": "https://news.sktelecom.com/en/3218",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_19",
-          "evidence_hash": "16787147137f2bf63cfe664dbd09a6dc120821735936c74f5f06e44dae7198a4"
-        }
-      ],
+      "ai_analysis": [],
       "ai_summary": {
         "domain": "international",
         "headline": "国际运营商最新证据已更新",
@@ -7396,8 +7354,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T18:29:38+08:00",
-      "ai_run_id": "research_20260907_rerun_153534"
+      "ai_updated_at": "2026-09-08T05:42:02+08:00",
+      "ai_run_id": "research_20260908"
     },
     {
       "id": "mainland",
@@ -10250,36 +10208,7 @@
           "url": "https://www.chinaunicom.com.hk/en/ir/presentations/pre260319.pdf"
         }
       ],
-      "ai_analysis": [
-        {
-          "company": "中国移动",
-          "metric": "移动客户数",
-          "analysis": "1,011 million",
-          "basis": "by 37.0% year-on-year; free cash flow was RMB53.9 billion, up by 111.6% year-on-year • Mobile customers reached 1,011 million, with a net increase of 5.88 million; integrated broadband network customers reached 337 million, with a net increase of 7.70 million; IoT card connections reached 1,511 million, with a net increase of 29.58 million • Payment of an interim dividend of RMB2.51 per share was declared, up by 0.3% year-on-year, which is equivalent to HK$2.9003 per share, up by 5.5% year-on-year – 2 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” CHAIRMAN ’S STATEMENT Dear Shareholders, The first half of 2026 brought its fair share of external headwinds and multifaceted challenges. In response, we proactively identified, adapted to and drove changes. Anchored by our vision to become a world-class sci-tech service enterprise, we advanced our strategic priorities – strengthening network foundation and driving full-stack innovation – while channelling our efforts into strengthening, optimizing and expanding our three principal businesses: communications services, computing services and AI (artificial\n– 1 – j 1. ɛΤʔᓙБ 2. ͜ᔊ᜗ “䅎” Hong Kong Exchanges and Clearing Limited and The Stock Exchange of Hong Kong Limited take no responsibility for the contents of this announcement, make no representation as to its accuracy or completeness and expressly disclaim any liability whatsoever for any loss howsoever arising from or in reliance upon the whole or any part of the contents of this announcement. CHINA MOBILE LIMITED ʮ̡ (Incorporated in Hong Kong with limited liability under the Companies Ordinance) Stock Codes: 941 (HKD Counter) and 80941 (RMB Counter) 2026 INTERIM RESULTS • Operating revenue was RMB538.0 billion, achieving growth on a comparable basis; of which, revenue from principal businesses was RMB452.7 billion, and revenue from computing services and AI services accounted for 22.6% of revenue from principal businesses • Profit attributable to equity shareholders was RMB78.9 billion, achieving growth on a comparable basis; EBITDA was RMB173.6 billion, accounting for 38.4% of revenue from principal businesses • Net cash generated from operating activities was RMB114.9 billion, up",
-          "period": "2026",
-          "unit": "million",
-          "source_url": "https://www.chinamobileltd.com/en/file/view.php?id=342603",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_49",
-          "evidence_hash": "73015a1d1bb9581fcb08c9db2bd7a8027b5c01abf33f0d1cc977f5aeaded1552"
-        },
-        {
-          "company": "中国电信",
-          "metric": "云收入",
-          "analysis": "618 人民币亿元",
-          "basis": "7.1%，占收比达到 12.8%，同比提升 1.1pp。 有关公司详细业务情况分析请见本报告“第三节 管理层讨论与分析”之“二、经营情况的讨 论与分析”。 报告期内公司新增重要非主营业务的说明 □适用 √不适用 二、经营情况的讨论与分析 2026年上半年，中国电信完整、准确、全面贯彻新发展理念，积极服务和融入新发展格局， 坚定履行建设网络强国、科技强国、数字中国和维护网信安全的责任，全面实施云改数转智惠战 略，持续深化“五位一体”智能云体系，科技创新成效显著，“AI+”行动深入推进，云网能力持 续提升，以“智改”为核心推动改革开放不断深化，发展动能向新、结构向优，企业高质量发展 迈出坚实步伐。 中国电信股份有限公司2026 年半年度报告 10 1.总体业绩 2026 年上半年，公司营业收入为人民币 2,590 亿元，主营收入 1 为人民币 2,441 亿元，可比口 径 2 保持基本稳定，其中通信收入为人民币 2,130 亿元，智能收入为人民币 311 亿元，同比增长 7.1%， 占收比达到 12.8%，同比提升 1.1pp。天翼云收入达到人民币 618 亿元，同比增长 7.8%。归属于 上市公司股东的净利润为人民币 196 亿元，可比口径保持良好增长，基本每股收益为人民币 0.21 元。资本开支为人民币 324 亿元。自由现金流 3 为人民币 289 亿元，同比增长 121.3%。 在充分考虑盈利、现金流水平及未来发展资金需求后，董事会决定2026年继续派发中期股息， 以现金方式分配的利润为上半年本公司股东应占利润的75%，同比提升3pp，即每股人民币0.1606 元（含税），持续为股东创造价值。 2. 全面实施云改数转智惠战略，企业高质量发展迈出坚实步伐 公司全面拥抱人工智能，全面实施云改数转智惠战略，持续加强“息壤”第一科技攻关，持 续深化智能云体系建设，加快建设新型数字信息基础设施，推动服务型、科技型、安全型企业建 设再上新台阶。 2.1 锚定科技领军企业建设目标，加大关键核心技术攻关 公司着力提升科技创新实力，推动科技创新和产业创新深度融合，增加高质量科技供给，增 强企业核心竞争力。上半年，研发费用 4 达到人民币 52.1 亿元，同比增长 8.9%。云及云网融合方 向，参与“‘鹏城云脑’超大规模国产智能算力系统及产业化工程”项目，获得 2025 年度国家科 学技术进步奖一等奖，牵头建设的云计算原创技术策源地及云计算创新联合体获国资委 A 等次评 价；继天翼云自研操作系统 CTyunOS 之后，自研数据库产品 TeleDB 通过国家安全可靠测评，自研\n7.1%，占收比达到 12.8%，同比提升 1.1pp。 有关公司详细业务情况分析请见本报告“第三节 管理层讨论与分析”之“二、经营情况的讨 论与分析”。 报告期内公司新增重要非主营业务的说明 □适用 √不适用 二、经营情况的讨论与分析 2026年上半年，中国电信完整、准确、全面贯彻新发展理念，积极服务和融入新发展格局， 坚定履行建设网络强国、科技强国、数字中国和维护网信安全的责任，全面实施云改数转智惠战 略，持续深化“五位一体”智能云体系，科技创新成效显著，“AI+”行动深入推进，云网能力持 续提升，以“智改”为核心推动改革开放不断深化，发展动能向新、结构向优，企业高质量发展 迈出坚实步伐。 中国电信股份有限公司2026 年半年度报告 10 1.总体业绩 2026 年上半年，公司营业收入为人民币 2,590 亿元，主营收入 1 为人民币 2,441 亿元，可比口 径 2 保持基本稳定，其中通信收入为人民币 2,130 亿元，智能收入为人民币 311 亿元，同比增长 7.1%， 占收比达到 12.8%，同比提升 1.1pp。天翼云收入达到人民币 618 亿元，同比增长 7.8%。归属于 上市公司股东的净利润为人民币 196 亿元，可比口径保持良好增长，基本每股收益为人民币 0.21 元。资本开支为人民币 324 亿元。自由现金流 3 为人民币 289 亿元，同比增长 121.3%。 在充分考虑盈利、现金流水平及未来发展资金需求后，董事会决定2026年继续派发中期股息， 以现金方式分配的利润为上半年本公司股东应占利润的75%，同比提升3pp，即每股人民币0.1606 元（含税），持续为股东创造价值。 2. 全面实施云改数转智惠战略，企业高质量发展迈出坚实步伐 公司全面拥抱人工智能，全面实施云改数转智惠战略，持续加强“息壤”第一科技攻关，持 续深化智能云体系建设，加快建设新型数字信息基础设施，推动服务型、科技型、安全型企业建 设再上新台阶。 2.1 锚定科技领军企业建设目标，加大关键核心技术攻关 公司着力提升科技创新实力，推动科技创新和产业创新深度融合，增加高质量科技供给，增 强企业核心竞争力。上半年，研发费用 4 达到人民币 52.1 亿元，同比增长 8.9%。云及云网融合方 向，参与“‘鹏城云脑’超大规模国产智能算力系统及产业化工程”项目，获得 2025 年度国家科 学技术进步奖一等奖，牵头建设的云计算原创技术策源地及云计算创新联合体获国资委 A 等次评 价；继天翼云自研操作系统 CTyunOS 之后，自研数据库产品 TeleDB 通过国家安全可靠测评，自研",
-          "period": "2026年上半年",
-          "unit": "人民币亿元",
-          "source_url": "https://www.chinatelecom-h.com/sc/ir/report/interim2026_ashare.pdf",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_49",
-          "evidence_hash": "2d362aad834efab77fb2d3c5b9a3d9a531cdba782fedc523e8bb18fbb70ca090"
-        }
-      ],
+      "ai_analysis": [],
       "ai_summary": {
         "domain": "mainland",
         "headline": "内地运营商最新证据已更新",
@@ -10489,8 +10418,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T18:29:38+08:00",
-      "ai_run_id": "research_20260907_rerun_153534"
+      "ai_updated_at": "2026-09-08T05:42:02+08:00",
+      "ai_run_id": "research_20260908"
     },
     {
       "id": "cloud",
@@ -14618,36 +14547,7 @@
           "url": "https://www.huawei.com/minisite/annual-report-download/annual_report_2024_en.pdf"
         }
       ],
-      "ai_analysis": [
-        {
-          "company": "AWS",
-          "metric": "经营利润",
-          "analysis": "$16.6 billion",
-          "basis": "2025. • North America segment operating income was $9.1 billion, compared with $7.5 billion in second quarter 2025. • International segment operating income was $1.7 billion, compared with $1.5 billion in second quarter 2025. • AWS segment operating income was $16.6 billion, compared with $10.2 billion in second quarter 2025. • Net income increased to $62.6 billion in the second quarter, or $5.75 per diluted share, compared with $18.2 billion, or $1.68 per diluted share, in second quarter 2025. • Second quarter 2026 net income includes non-operating pre-tax other income of $53.4 billion, primarily from our investments in Anthropic. • Operating cash flow increased 33% to $161.4 billion for the trailing twelve months, compared with $121.1 billion for the trailing twelve months ended June 30, 2025. • Free cash flow decreased to an outflow of $7.6 billion for the trailing twelve months, driven primarily by a year-over-year increase of $66.1 billion in purchases of property and equipment, net of proceeds from sales and incentives. This increase primarily reflects investments in artificial\nEX-99.1 2 amzn-20260630xex991.htm EX-99.1 Document Exhibit 99.1 AMAZON.COM ANNOUNCES SECOND QUARTER RESULTS Net sales increased 20% year-over-year Operating income was $27.5 billion, up 43% year-over-year AWS net sales increased 37%—its fastest growth in 18 quarters—to a $169 billion annualized revenue run rate SEATTLE—(BUSINESS WIRE) July 30, 2026—Amazon.com, Inc. (NASDAQ: AMZN) today announced financial results for its second quarter ended June 30, 2026. • Net sales increased 20% to $200.6 billion in the second quarter, compared with $167.7 billion in second quarter 2025. Excluding the $0.1 billion favorable impact from year-over-year changes in foreign exchange rates throughout the quarter, net sales increased 20% compared with second quarter 2025. • North America segment sales increased 16% year-over-year to $116.2 billion. • International segment sales increased 15% year-over-year to $42.2 billion. • AWS segment sales increased 37% year-over-year to $42.2 billion. • Operating income increased to $27.5 billion in the second quarter, compared with $19.2 billion in second quarter",
-          "period": "second quarter ended June 30, 2026",
-          "unit": "billion",
-          "source_url": "https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_50",
-          "evidence_hash": "597a5868b71464f2ff2d641697ca056e929ad60a9e50932ab0fcbd8916468044"
-        },
-        {
-          "company": "Microsoft Azure",
-          "metric": "Intelligent Cloud收入",
-          "analysis": "$39.3 billion",
-          "basis": "Microsoft 365 Commercial cloud revenue increased 14%. · Microsoft 365 Consumer cloud revenue increased 24% (up 22% in constant currency) · LinkedIn revenue increased 12% (up 10% in constant currency) · Dynamics 365 revenue increased 13% (up 12% in constant currency) Revenue in Intelligent Cloud was $39.3 billion and increased 32% (up 31% in constant currency), with the following business highlights: · Azure and other cloud services revenue increased 43% Revenue in More Personal Computing was $12.9 billion and decreased 4% (down 5% in constant currency), with the following business highlights: · Windows OEM and Devices revenue decreased 7% · XBOX content and services revenue decreased 10% · Search advertising revenue excluding traffic acquisition costs increased 10% (up 9% in constant currency) Microsoft returned $10.2 billion to shareholders in the form of dividends and share repurchases in the fourth quarter of fiscal year 2026. Fiscal Year 2026 Results Microsoft Corp. today announced the following results for the fiscal year ended June 30, 2026, as compared to the corresponding\nREDMOND, Wash. — July 29, 2026 — Microsoft Corp. today announced the following results for the quarter ended June 30, 2026, as compared to the corresponding period of last fiscal year: · Revenue was $90.0 billion and increased 18% (up 17% in constant currency) · Operating income was $40.6 billion and increased 18% · Net income was $35.8 billion and increased 31% on a GAAP basis, and was $35.3 billion and increased 22% on a non-GAAP basis · Diluted earnings per share was $4.81 and increased 32% on a GAAP basis, and was $4.74 and increased 23% on a non-GAAP basis · Non-GAAP results exclude the impact from investments in OpenAI, explained in the Non-GAAP Definition section below Several discrete items impacted our financial results in the quarter when compared to our forward-looking guidance provided on April 29, 2026, resulting in a benefit of $0.27 on diluted earnings per share. These include a $3.2 billion gain from our investment in Anthropic and lower-than-expected expenses related to the Voluntary Retirement Program which were partially offset by severance expense and impairment",
-          "period": "quarter ended June 30, 2026",
-          "unit": "billion",
-          "source_url": "https://www.microsoft.com/en-us/Investor/earnings/FY-2026-Q4/press-release-webcast",
-          "source_tier": "official",
-          "quality_score": 0.9,
-          "confidence": 0.9,
-          "row_ref": "row_50",
-          "evidence_hash": "2f99bddc7364d78ef10c2893408496697efd5016a8856aecaeb84fc6c2f3bf8a"
-        }
-      ],
+      "ai_analysis": [],
       "ai_summary": {
         "domain": "cloud",
         "headline": "全球云厂商最新证据已更新",
@@ -14986,8 +14886,8 @@
           }
         ]
       },
-      "ai_updated_at": "2026-09-07T18:29:38+08:00",
-      "ai_run_id": "research_20260907_rerun_153534"
+      "ai_updated_at": "2026-09-08T05:42:02+08:00",
+      "ai_run_id": "research_20260908"
     }
   ],
   "relations": [
@@ -15051,103 +14951,13 @@
   },
   "refresh": {
     "ok": false,
-    "status": "completed_with_fallback",
-    "started_at_hkt": "2026-09-07T18:29:38+08:00",
-    "agent_run_id": "research_20260907_rerun_153534",
+    "status": "running",
+    "started_at_hkt": "2026-09-08T05:42:02+08:00",
+    "agent_run_id": "research_20260908",
     "dry_run": false,
-    "task_run_id": "20260907_182938_676530",
+    "task_run_id": "20260908_054202_216263",
     "attempt": 1,
-    "domains": {
-      "local": {
-        "ok": true,
-        "changed": false,
-        "validation": {
-          "rows": 161,
-          "path": "",
-          "latest_period": "",
-          "quality": "passed",
-          "verified_rows": 161,
-          "financial_reports": 5,
-          "latest_financial_period": "H1 2026",
-          "latest_financial_publication_date": "2026-08-27"
-        },
-        "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
-        "agent_fact_update": {
-          "facts": 35,
-          "changed": false,
-          "published": false
-        },
-        "database_changed": false
-      },
-      "international": {
-        "ok": true,
-        "changed": false,
-        "validation": {
-          "rows": 3089,
-          "path": "",
-          "latest_period": "Jun '26 Jun 30, 2026",
-          "quality": "passed",
-          "verified_rows": 2703
-        },
-        "note": "本次仅验证现有数据库，未执行联网重建。",
-        "agent_fact_update": {
-          "facts": 21,
-          "changed": true,
-          "published": true
-        },
-        "database_changed": true
-      },
-      "cloud": {
-        "ok": true,
-        "changed": false,
-        "validation": {
-          "rows": 430,
-          "path": "",
-          "latest_period": "2025",
-          "quality": "passed",
-          "verified_rows": 171
-        },
-        "note": "本次仅验证现有数据库，未执行联网重建。",
-        "agent_fact_update": {
-          "facts": 13,
-          "changed": false,
-          "published": false
-        },
-        "database_changed": false
-      },
-      "macro": {
-        "ok": true,
-        "changed": false,
-        "validation": {
-          "rows": 7751,
-          "path": "",
-          "latest_period": "2026-07-31",
-          "quality": "passed",
-          "verified_rows": 7748
-        },
-        "note": "本次仅验证现有数据库，未执行联网重建。"
-      },
-      "mainland": {
-        "ok": true,
-        "changed": false,
-        "daily_main_database_promotion": {
-          "ok": true,
-          "changed": false,
-          "candidates": 5,
-          "added_rows": 0,
-          "upgraded_rows": 0,
-          "preserved_stronger_rows": 5,
-          "published_rows": 3089,
-          "dry_run": false
-        },
-        "agent_fact_update": {
-          "facts": 17,
-          "changed": false,
-          "published": false
-        },
-        "database_changed": false
-      }
-    },
+    "domains": {},
     "ui_contract": {
       "domain_ids": [
         "local",
@@ -15157,182 +14967,7 @@
       ],
       "supporting_database_ids": [
         "macro"
-      ],
-      "focuses_expected": 15,
-      "focuses_passed": 15,
-      "discoveries_expected": 4,
-      "discoveries_passed": 4,
-      "insights_expected": 19,
-      "insights_passed": 19,
-      "summary_domain_ids": [
-        "local",
-        "international",
-        "mainland",
-        "cloud"
-      ],
-      "aligned": true
-    },
-    "news_database_signals": {
-      "available": false,
-      "required": false,
-      "reason": "research_agents_search_in_current_run"
-    },
-    "ai_analysis": {
-      "ok": true,
-      "changed": true,
-      "domain_counts": {
-        "local": 0,
-        "international": 13,
-        "mainland": 2,
-        "cloud": 2,
-        "macro": 0
-      },
-      "path": ""
-    },
-    "domain_fact_sidecars": {
-      "local": {
-        "path": "",
-        "facts": 35,
-        "submitted_facts": 0,
-        "changed": false,
-        "published": false
-      },
-      "international": {
-        "path": "",
-        "facts": 21,
-        "submitted_facts": 13,
-        "changed": true,
-        "published": true
-      },
-      "mainland": {
-        "path": "",
-        "facts": 17,
-        "submitted_facts": 2,
-        "changed": false,
-        "published": false
-      },
-      "cloud": {
-        "path": "",
-        "facts": 13,
-        "submitted_facts": 2,
-        "changed": false,
-        "published": false
-      },
-      "macro": {
-        "path": "",
-        "facts": 0,
-        "changed": false,
-        "published": false,
-        "skipped": true
-      }
-    },
-    "daily_main_database_promotion": {
-      "ok": true,
-      "changed": false,
-      "candidates": 5,
-      "added_rows": 0,
-      "upgraded_rows": 0,
-      "preserved_stronger_rows": 5,
-      "published_rows": 3089,
-      "dry_run": false
-    },
-    "overview_source_recrawl": {
-      "ok": true,
-      "skipped": true,
-      "reason": "official_pages_already_read_by_research_agents"
-    },
-    "model_analysis": {
-      "ok": true,
-      "generated_at_hkt": "2026-09-07T18:33:01+08:00",
-      "model": "deterministic-evidence-fallback",
-      "domains": 4,
-      "focuses_expected": 15,
-      "focuses_passed": 15,
-      "discoveries_expected": 4,
-      "discoveries_passed": 4,
-      "insights_expected": 19,
-      "insights_passed": 19,
-      "reused": false,
-      "fallback_used": true,
-      "fallback_reason": "timed out",
-      "evidence_hash": "ca813095e92e992e519e83386227b53346ce73fff4293b3d7e9e33c90632ca6b",
-      "discovery_model": "DeepSeek-V4-Pro",
-      "discovery_evidence_repair_count": 0,
-      "discovery_fallback_used": false,
-      "discovery_fallback_reason": ""
-    },
-    "ui_value_changes": {
-      "baseline_available": true,
-      "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
-      "changed": 0,
-      "added": 0,
-      "removed": 0,
-      "domains": {
-        "local": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        },
-        "international": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        },
-        "mainland": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        },
-        "cloud": {
-          "baseline_available": true,
-          "changed": 0,
-          "added": 0,
-          "removed": 0
-        }
-      },
-      "items": []
-    },
-    "pages_publish": {
-      "ok": true,
-      "attempts": 1,
-      "status": "published",
-      "site_version": "7e4155a84972d4cc9975a1b7072ab46187ff0ca0438308f641f53b5c9c6ec8a9",
-      "item_count": 8,
-      "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-      "commit": "11dca2e7f726b257db438dc7f979e67e3cd5f397",
-      "workbench_sha256": "756eab83480308999a47c168b96f73a75af355b173903e6cb37612e201b46fea",
-      "snapshot_source_url": ""
-    },
-    "failed_domains": [],
-    "completed_at_hkt": "2026-09-07T18:34:09+08:00",
-    "duration_ms": 270504,
-    "fallback_preserved": true,
-    "change_summary": {
-      "database_changed_domains": [
-        "international"
-      ],
-      "source_content_changed_domains": [],
-      "ui_numeric_changed_domains": [],
-      "ui_verified": true
-    },
-    "feishu_detail_log": {
-      "ok": true,
-      "written": 631,
-      "skipped": 0,
-      "created": false,
-      "sheet_title": "四库爬虫明细日志",
-      "sheet_url": "",
-      "row_start": 91186,
-      "row_end": 91816,
-      "readback_verified": true,
-      "readback_reason": "live_full_event_id_readback",
-      "readback_scope": "all_live_event_ids",
-      "live_event_count": 91815,
-      "event_index_sha256": "4ed0c3aadfe77b0900dc16c42832efb7e083e3813d409db4a5e07c2510e80549",
-      "write_recovered_by_readback": false
+      ]
     }
   },
   "ui_contract": {
@@ -15352,20 +14987,20 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-07T18:34:09+08:00"
+    "last_checked_at_hkt": "2026-09-08T05:42:02+08:00"
   },
   "ai": {
-    "agent_run_id": "research_20260907_rerun_153534",
-    "updated_at": "2026-09-07T18:29:38+08:00",
+    "agent_run_id": "research_20260908",
+    "updated_at": "2026-09-08T05:42:02+08:00",
     "domain_counts": {
-      "local": 0,
-      "international": 13,
-      "mainland": 2,
-      "cloud": 2,
+      "local": 1,
+      "international": 3,
+      "mainland": 0,
+      "cloud": 0,
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-07T18:33:01+08:00",
+      "generated_at_hkt": "2026-09-08T05:45:04+08:00",
       "model": "deterministic-evidence-fallback",
       "summaries": [
         {
@@ -16492,13 +16127,13 @@
         }
       ],
       "discovery_model": "DeepSeek-V4-Pro",
-      "discovery_generated_at_hkt": "2026-09-07T18:33:12+08:00",
+      "discovery_generated_at_hkt": "2026-09-08T05:46:01+08:00",
       "discovery_evidence_repair_count": 0,
-      "evidence_hash": "ca813095e92e992e519e83386227b53346ce73fff4293b3d7e9e33c90632ca6b",
+      "evidence_hash": "fd91e82be5f1f3eb8bc46ec5342ec1cbc95ff9bc69528d09b1c99a58d6cdc998",
       "insight_format": "strategic_operating_judgement_v9",
       "reused": false
     },
-    "evidence_hash": "ca813095e92e992e519e83386227b53346ce73fff4293b3d7e9e33c90632ca6b",
+    "evidence_hash": "fd91e82be5f1f3eb8bc46ec5342ec1cbc95ff9bc69528d09b1c99a58d6cdc998",
     "model_analysis_fresh": true,
     "discoveries_generated": true
   },
