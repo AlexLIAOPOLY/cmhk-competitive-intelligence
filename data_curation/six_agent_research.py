@@ -184,6 +184,21 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
     return pages, searches
 
 
+NO_METRIC_EVIDENCE = "本轮读取的披露中未找到该指标的新数据；不代表库内缺失或已有值错误，保留原库。"
+
+
+def page_mentions_metric(metric: str, pages: dict) -> bool:
+    """Screen the entire opened text; navigation can precede the disclosure."""
+    from . import workflow as w
+    terms = w._metric_evidence_terms(metric)
+    if metric == "云收入":
+        terms = [*terms, "sales", "revenue", "收入"]
+    return any(
+        any(w._metric_term_position(re.sub(r"\s+", " ", str(page.get("text") or "")), term) >= 0 for term in terms)
+        for page in pages.values() if page.get("opened") and page.get("official")
+    )
+
+
 def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
                    model_factory: Callable | None = None, collector: Callable = collect_sources, baseline: dict | None = None) -> dict:
     from . import workflow as w
@@ -194,6 +209,15 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     factory = model_factory or (lambda: w._build_supervisor_model(max_tokens=4096, max_retries=0))
     harness = ResearchHarness(task, factory(), emit, validate_fact)
     reports = list((checkpoint or {}).get("reports") or [])
+    for report in reports:
+        retry = [item for item in report.get("items", [])
+                 if item.get("status") == "missing" and item.get("reason") == NO_METRIC_EVIDENCE
+                 and page_mentions_metric(item["metric"], report.get("pages", {}))]
+        if retry:
+            report["items"] = [item for item in report["items"] if item not in retry]
+            report["status"] = "running"
+            emit("screening_recovered", "从已保存完整原文恢复被截断预筛选遗漏的指标", {
+                "company": report["company"], "metrics": [item["metric"] for item in retry]})
     completed = {report["company"] for report in reports if report.get("status") == "completed"}
     emit("start", task["purpose"], {"companies": task["companies"]})
     for company in task["companies"]:
@@ -227,12 +251,10 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
             for metric in metrics:
                 if metric in saved:
                     continue
-                possible = any(w._evidence_mentions_metric(metric, str(page.get("text") or "")) or (
-                    metric == "云收入" and re.search(r"sales|revenue|收入", str(page.get("text") or ""), re.I))
-                    for page in report["pages"].values() if page.get("opened") and page.get("official"))
+                possible = page_mentions_metric(metric, report["pages"])
                 if not possible:
                     save({"company": company, "metric": metric, "status": "missing", "value": "",
-                          "reason": "本轮读取的披露中未找到该指标的新数据；不代表库内缺失或已有值错误，保留原库。"})
+                          "reason": NO_METRIC_EVIDENCE})
                     continue
                 try:
                     harness.extract(company, metric, report["pages"], save, baseline=company_baseline if baseline is not None else None)
