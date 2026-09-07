@@ -18,43 +18,51 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         payload = json.loads((
             ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json"
         ).read_text(encoding="utf-8"))
+        sources = json.loads((
+            ROOT / "agent_knowledge/global_top5_operators_2016_2025/sources.json"
+        ).read_text(encoding="utf-8"))
+        source_registry = {
+            str(item.get("source_id") or ""): str(item.get("url") or "")
+            for item in sources.get("sources") or []
+        }
 
-        domain = _requested_international_domain(payload)
+        domain = _requested_international_domain(payload, source_registry)
 
         self.assertEqual(domain["index"], "02")
         self.assertEqual(domain["title"], "国际运营商")
         self.assertEqual(
             {item["name"] for item in domain["entities"]},
-            {"Verizon", "Deutsche Telekom", "AT&T", "NTT Group"},
+            {"NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"},
         )
         self.assertEqual(
             [focus["id"] for focus in domain["focuses"]],
-            ["revenue", "ebitda", "net_profit", "postpaid_arpu"],
+            ["revenue", "net_profit", "capex", "mobile_arpu"],
         )
         self.assertEqual(
             [focus["label"] for focus in domain["focuses"]],
-            ["营收", "EBITDA", "净利润", "后付费用户数"],
+            ["营收", "净利润", "资本开支", "移动ARPU"],
         )
-        self.assertTrue(all(item["unit"] == "十亿美元" for item in domain["focuses"][0]["items"]))
-        self.assertTrue(all(item["unit"] == "十亿美元" for item in domain["focuses"][1]["items"]))
-        self.assertTrue(all(item["unit"] == "十亿美元" for item in domain["focuses"][2]["items"]))
-        self.assertTrue(all(item["components"][1]["unit"] == "美元/月" for item in domain["focuses"][3]["items"]))
+        self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][0]["items"]))
+        self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][1]["items"]))
+        self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][2]["items"]))
+        self.assertTrue(all(item["unit"] == "美元/月" for item in domain["focuses"][3]["items"]))
         self.assertNotIn("同比", json.dumps(domain["focuses"][:3], ensure_ascii=False))
         self.assertNotIn("利润率", json.dumps(domain["focuses"][:3], ensure_ascii=False))
         self.assertTrue(all(len(focus["items"]) == 4 for focus in domain["focuses"]))
         self.assertTrue(all(len(item["trend"]) == 10 for item in domain["focuses"][0]["items"]))
         self.assertTrue(all(len(item["trend"]) == 10 for item in domain["focuses"][2]["items"]))
         self.assertTrue(all(len(item["trend"]) == 10 for item in domain["focuses"][3]["items"]))
-        postpaid = {item["name"]: item for item in domain["focuses"][3]["items"]}
-        self.assertEqual(postpaid["Verizon"]["value"], 126.7)
-        self.assertEqual(postpaid["Deutsche Telekom"]["value"], 116.44)
-        self.assertEqual(postpaid["AT&T"]["value"], 90.88)
-        self.assertEqual(postpaid["NTT Group"]["value"], 93.06)
-        self.assertIn("替代口径", postpaid["NTT Group"]["detail"])
-        self.assertTrue(all(item["verification_count"] >= 3 for item in domain["entities"]))
-        self.assertNotIn("Comcast", json.dumps(domain, ensure_ascii=False))
+        arpu = {item["name"]: item for item in domain["focuses"][3]["items"]}
+        self.assertEqual(arpu["NTT DOCOMO"]["value"], 26.46)
+        self.assertEqual(arpu["SoftBank Corp."]["value"], 24.86)
+        self.assertIsNone(arpu["SK Telecom"]["value"])
+        self.assertIsNone(arpu["Singtel"]["value"])
+        self.assertNotIn("NTT Group", json.dumps(domain, ensure_ascii=False))
+        available = [item for focus in domain["focuses"] for item in focus["items"] if item["value"] is not None]
+        self.assertTrue(all(item["verification_count"] >= 3 for item in available))
+        self.assertTrue(all(len(item["source_urls"]) >= 3 for item in available))
         self.assertNotIn("Bharti Airtel", json.dumps(domain, ensure_ascii=False))
-        self.assertIn("ARPA", json.dumps(domain, ensure_ascii=False))
+        self.assertNotIn("ARPA", json.dumps(domain, ensure_ascii=False))
 
     def test_xiaojing_retrieves_new_metric_pairs(self) -> None:
         cases = {
@@ -175,21 +183,20 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertIn("非后付费客户数", answer)
         self.assertEqual(len(evidence["series"]), 4)
 
-    def test_postpaid_ai_gate_rejects_cross_company_arpu_pairing(self) -> None:
+    def test_mobile_arpu_ai_gate_rejects_non_comparable_pairing(self) -> None:
         snapshot = pipeline._analysis_input_snapshot()
         focus = next(
             focus
             for domain in snapshot["domains"] if domain["id"] == "international"
-            for focus in domain["focuses"] if focus["id"] == "postpaid_arpu"
+            for focus in domain["focuses"] if focus["id"] == "mobile_arpu"
         )
         bad_analysis = (
-            "Verizon后付费连接达126.7百万，ARPU为50.71美元/月；"
-            "NTT Group手机订阅52.97百万，ARPU为26.48美元/月；"
-            "Verizon为ARPA口径，两家定义不同，不可直接混排。"
+            "NTT DOCOMO移动ARPU为26.46美元/月；"
+            "SK Telecom客户经营底盘较强，两家定义不同，不可直接混排。"
         )
         self.assertIn(
-            "正确配对",
-            pipeline._focus_gate_error("international", "postpaid_arpu", bad_analysis, focus),
+            "两家日系运营商",
+            pipeline._focus_gate_error("international", "mobile_arpu", bad_analysis, focus),
         )
 
 

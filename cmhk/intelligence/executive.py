@@ -2202,7 +2202,9 @@ def _reader_facing_copy(value: Any) -> Any:
     return value
 
 
-def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
+def _requested_international_domain(
+    payload: dict[str, Any], source_registry: dict[str, str] | None = None
+) -> dict[str, Any]:
     """Build strategic-overview domain 02 from the four requested carriers."""
     requested = ("NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel")
     all_rows = [row for row in (payload.get("rows") or []) if row.get("operator") in requested]
@@ -2246,10 +2248,10 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             result.append({
                 "label": f"FY{year}",
                 "value": round(value, 2) if value is not None else None,
-                "gap_status": "" if value is not None else "public_not_found",
+                "gap_status": "" if value is not None else "knowledge_pending",
                 "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
                 "verification_status": str((row or {}).get("verification_status") or ""),
-                "source_urls": _row_source_urls(row),
+                "source_urls": _row_source_urls(row, source_registry or {}),
             })
         return result
 
@@ -2280,8 +2282,8 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
             "source_url": str((row or {}).get("primary_source_url") or ""),
             "verification_count": int((row or {}).get("distinct_source_document_count") or 0),
             "verification_status": str((row or {}).get("verification_status") or "source_gap_confirmed"),
-            "source_urls": _row_source_urls(row),
-            "gap_status": "" if value is not None else "public_not_found",
+            "source_urls": _row_source_urls(row, source_registry or {}),
+            "gap_status": "" if value is not None else "knowledge_pending",
         }
         if trend is not None:
             result["trend"] = trend
@@ -2325,16 +2327,16 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
         }
 
     focuses = [
-        {"id": "revenue", "label": "营收", "visual": "rows", "headline": "SKT资源底盘更厚",
+        {"id": "revenue", "label": "营收", "visual": "trends", "headline": "SKT资源底盘更厚",
          "metric": leader_metric(revenue_items),
          "context": "统一为美元；原币与汇率保留", "insight": "SK Telecom FY2024收入约13,158.97百万美元，Singtel约10,573.00百万美元；这表明SKT收入底盘与资源承载力更厚，但Singtel为3月年结。NTT DOCOMO与SoftBank Corp.当前库未收录同口径收入值，不补数。", "items": revenue_items},
-        {"id": "net_profit", "label": "净利润", "visual": "rows", "headline": "SKT自我融资更厚",
+        {"id": "net_profit", "label": "净利润", "visual": "trends", "headline": "SKT自我融资更厚",
          "metric": leader_metric(profit_items),
          "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024净利润约1,017.40百万美元，Singtel约594.96百万美元；绝对值反映当期利润池规模，但财年区间不同。NTT DOCOMO与SoftBank Corp.当前库未收录同口径净利润值。", "items": profit_items},
-        {"id": "capex", "label": "资本开支", "visual": "rows", "headline": "SKT持续投入更厚",
+        {"id": "capex", "label": "资本开支", "visual": "trends", "headline": "SKT持续投入更厚",
          "metric": leader_metric(capex_items),
          "context": "统一为美元；缺口不估算", "insight": "SK Telecom FY2024资本开支约1,824.40百万美元，Singtel约1,608.99百万美元；SKT持续投入规模更高，但投入转化效率不能由绝对金额判断。NTT DOCOMO与SoftBank Corp.当前库未收录同口径资本开支值。", "items": capex_items},
-        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "rows", "headline": "DOCOMO客户价值更高",
+        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "trends", "headline": "DOCOMO客户价值更高",
          "metric": leader_metric(arpu_items),
          "context": "统一为美元/月；用户范围按公司原口径", "insight": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；这表明DOCOMO客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。SK Telecom与Singtel当前库未收录同口径ARPU。", "items": arpu_items},
     ]
@@ -2342,7 +2344,7 @@ def _requested_international_domain(payload: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": "international", "index": "02", "title": "国际运营商",
         "kicker": "营收、净利润、资本开支与移动ARPU",
-        "metric": {"value": 10, "unit": "年", "label": "FY2016–FY2025财务历史"},
+        "metric": {"value": 10, "unit": "年", "label": "FY2016–FY2025比较窗口"},
         "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值记录经三份不同底层官方文件核验",
         "insight": "金额统一为美元，ARPU统一为美元/月；原币、自然年平均汇率和财年截止日保留，缺口不估算。",
         "entities": revenue_items, "focuses": focuses,
@@ -2462,12 +2464,12 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         _read_json_optional(LOCAL_FINANCIAL_PATH, {}),
     )
     # 第二数据域沿用原有布局，固定比较用户指定的四家国际运营商。
-    international = _requested_international_domain(global_payload)
     global_source_registry = {
         str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")
         for item in (_read_json(GLOBAL_OPERATOR_SOURCES_PATH).get("sources") or [])
         if isinstance(item, dict)
     }
+    international = _requested_international_domain(global_payload, global_source_registry)
     mainland = _requested_mainland_domain(
         financial_payload, global_payload, global_source_registry
     )
@@ -2477,7 +2479,14 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     ai_payload = _read_json_optional(AI_ANALYSIS_PATH, {})
     ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
     for domain in domains:
-        domain["ai_analysis"] = list((ai_domains or {}).get(domain["id"]) or [])
+        ai_analysis = list((ai_domains or {}).get(domain["id"]) or [])
+        if domain["id"] == "international":
+            current_entities = {"NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"}
+            ai_analysis = [
+                item for item in ai_analysis
+                if str(item.get("company") or "") in current_entities
+            ]
+        domain["ai_analysis"] = ai_analysis
     domains = _reader_percent_units(domains)
     evidence = _analysis_evidence_snapshot(domains)
     evidence_hash = _content_hash(evidence)
@@ -2549,7 +2558,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "from": "mainland",
             "to": "international",
             "title": f"{mainland_period}内地与国际用户口径分开",
-            "detail": f"内地页按{mainland_period}披露区分移动用户总数、5G网络用户和5G套餐客户；国际页采用{international_period}各公司原生连接/订阅及ARPU口径，两者不直接相加或排名。",
+            "detail": f"内地页按{mainland_period}披露区分移动用户总数、5G网络用户和5G套餐客户；国际页采用{international_period}公司财务与移动ARPU原生口径，两者不直接相加或排名。",
             "kind": "数据边界",
         },
     ]
