@@ -418,6 +418,7 @@ def update_performance_report_preference(
 SUBSCRIPTION_OPERATION_ACTIONS = {
     "publish": "subscription.card_send",
     "update": "subscription.settings_update",
+    "resetSubscriber": "subscription.settings_reset",
     "updateReportSchedule": "subscription.report_schedule_update",
     "updatePerformanceSchedule": "subscription.performance_schedule_update",
     "updateNewsSchedule": "subscription.news_schedule_update",
@@ -7892,6 +7893,8 @@ class AppHandler(BaseHTTPRequestHandler):
                         news_item_limit=int(payload.get("newsItemLimit") or 10),
                         news_categories=payload.get("newsCategories"),
                     )
+                elif action == "resetSubscriber":
+                    result = service.reset_subscriber(str(payload.get("openId") or ""))
                 elif action == "updateReportSchedule":
                     result = service.update_report_schedule(
                         days=payload.get("days"),

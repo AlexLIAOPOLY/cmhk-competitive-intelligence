@@ -800,6 +800,13 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_item_limit INTEGER NOT NULL DEFAULT 10")
             if "news_categories" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_categories TEXT NOT NULL DEFAULT '[]'")
+            if "default_preferences" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN default_preferences TEXT NOT NULL DEFAULT '{}'")
+            for row in db.execute("SELECT * FROM subscribers WHERE default_preferences='{}'").fetchall():
+                services = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (row["open_id"],))]
+                defaults = {key: row[key] for key in ("status", "frequency", "report_mode", "news_item_limit")}
+                defaults.update(services=services, news_categories=normalize_news_categories(row["news_categories"]))
+                db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
             all_categories_json = json.dumps(list(NEWS_CATEGORY_LABELS), ensure_ascii=False, separators=(",", ":"))
             for row in db.execute("SELECT open_id, news_categories FROM subscribers").fetchall():
                 categories = normalize_news_categories(row["news_categories"])
@@ -1186,6 +1193,11 @@ class SubscriptionService:
             news_item_limit=news_item_limit,
             news_categories=news_categories,
         )
+        # A person's latest submission is their restore point; admin edits never replace it.
+        with closing(self._connect()) as db, db:
+            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories")}
+            defaults["status"] = "active"
+            db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), identity["open_id"]))
         record_invitation_response("accepted")
         labels = "、".join(SERVICE_LABELS[item] for item in saved["services"])
         category_labels = "、".join(saved["news_category_labels"])
@@ -2376,6 +2388,16 @@ class SubscriptionService:
             "status": "pending",
         }
 
+    def reset_subscriber(self, open_id: str) -> dict[str, Any]:
+        with closing(self._connect()) as db:
+            row = db.execute("SELECT default_preferences FROM subscribers WHERE open_id=?", (open_id,)).fetchone()
+        if row is None:
+            raise ValueError("订阅者不存在")
+        defaults = json.loads(row["default_preferences"])
+        if not defaults.get("services"):
+            raise ValueError("该订阅者尚无可恢复的默认选项")
+        return self.update_subscriber(open_id, **defaults)
+
     def update_subscriber(
         self,
         open_id: str,
@@ -2396,6 +2418,13 @@ class SubscriptionService:
             ).fetchone()
         if row is None:
             raise ValueError("订阅者不存在")
+        with closing(self._connect()) as db, db:
+            current = db.execute("SELECT * FROM subscribers WHERE open_id=?", (open_id,)).fetchone()
+            if current["default_preferences"] == "{}":
+                defaults = {key: current[key] for key in ("status", "frequency", "report_mode", "news_item_limit")}
+                defaults["services"] = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (open_id,))]
+                defaults["news_categories"] = normalize_news_categories(current["news_categories"])
+                db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), open_id))
         result = self.save_subscriptions(
             open_id,
             str(row["display_name"]),

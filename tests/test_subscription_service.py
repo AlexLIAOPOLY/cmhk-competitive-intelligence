@@ -466,6 +466,11 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(subscribers["ou_personb123"]["news_item_limit"], 20)
         self.assertEqual(subscribers["ou_persona123"]["preference_source"], "group_card")
         self.assertEqual(subscribers["ou_personb123"]["preference_message_id"], "om_test123")
+        self.service.update_subscriber("ou_persona123", services=["weekly"], news_item_limit=20)
+        restored = self.service.reset_subscriber("ou_persona123")
+        self.assertEqual(restored["services"], ["news"])
+        self.assertEqual(restored["news_categories"], ["竞对动态"])
+        self.assertEqual(restored["news_item_limit"], 5)
         group_invitation = self.service.list_summary()["group_invitations"][0]
         self.assertEqual(group_invitation["status"], "responded")
         self.assertEqual(group_invitation["response_count"], 2)
@@ -478,6 +483,24 @@ class SubscriptionServiceTests(unittest.TestCase):
             db.commit()
         reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
         self.assertEqual(reloaded.list_summary()["group_invitations"][0]["response_count"], 2)
+
+    def test_admin_edit_survives_reload_and_reset_restores_only_target(self):
+        self.service.save_subscriptions("ou_persona123", "甲", ["news"], news_categories=["竞对动态"], news_item_limit=5)
+        self.service.save_subscriptions("ou_personb123", "乙", ["weekly"])
+        self.service.update_subscriber("ou_persona123", services=["weekly", "news"], news_categories=["政策监管"], news_item_limit=20, report_mode="audio", frequency="twice_daily", status="paused")
+        reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
+        rows = {r["open_id"]: r for r in reloaded.list_summary()["subscribers"]}
+        self.assertEqual(rows["ou_persona123"]["news_item_limit"], 20)
+        self.assertEqual(rows["ou_persona123"]["status"], "paused")
+        restored = reloaded.reset_subscriber("ou_persona123")
+        self.assertEqual(restored["services"], ["news"])
+        self.assertEqual(restored["news_categories"], ["竞对动态"])
+        self.assertEqual(restored["news_item_limit"], 5)
+        self.assertEqual(restored["status"], "active")
+        self.assertEqual(restored["report_mode"], "pdf")
+        self.assertEqual(restored["frequency"], "once_daily")
+        rows = {r["open_id"]: r for r in reloaded.list_summary()["subscribers"]}
+        self.assertEqual(rows["ou_personb123"]["services"], ["weekly"])
 
     def test_personal_card_still_rejects_a_different_operator(self):
         self.service._send_entry_card_to_user("ou_invited123")

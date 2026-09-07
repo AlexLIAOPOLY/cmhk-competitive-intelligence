@@ -13,6 +13,7 @@
     manualPerformancePath: "", performancePickerOpen: false, performancePickerQuery: "", performancePickerBusy: false,
     manualPushJob: null,
   };
+  const subscriberDrafts = new Map();
   let noticeTimer = 0;
   let noticeExitTimer = 0;
   let scheduledNoticeSignature = "";
@@ -101,7 +102,8 @@
     const rows = state.data?.subscribers || [];
     if (!rows.length) return '<tr><td colspan="7" class="empty">尚无订阅者</td></tr>';
     const categoryLabels = new Map((state.data?.news_categories || []).map((category) => [category.key, category.label]));
-    return rows.map((item) => {
+    return rows.map((savedItem) => {
+      const item = { ...savedItem, ...subscriberDrafts.get(savedItem.open_id) };
       const filterText = [
         item.display_name, item.open_id, ...(item.services || []).flatMap((service) => [service, serviceLabel(service)]),
         ...(item.news_categories || []).flatMap((category) => [category, categoryLabels.get(category)]),
@@ -109,13 +111,13 @@
         item.status, item.status === "paused" ? "暂停" : "启用",
       ].filter(Boolean).join(" ");
       return `<tr data-subscriber-row="${esc(item.open_id)}" data-subscriber-filter-row data-filter-services="${esc((item.services || []).join(" "))}" data-filter-status="${esc(item.status || "active")}" data-filter-frequency="${esc(item.news_frequency || item.frequency || "once_daily")}" data-filter-text="${esc(filterText)}">
-      <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
+      <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}<span class="subscriber-actions"><button class="icon-button" type="button" data-reset-subscriber aria-label="恢复 ${esc(item.display_name)} 的默认选项" title="恢复此人默认选项（本人重新提交卡片时更新）">${icon("refresh")}</button><button class="button compact-save" type="button" data-save-subscriber>保存${subscriberDrafts.has(item.open_id) ? " *" : ""}</button></span></span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
       <td><div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div></td>
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
-      <td><div class="subscriber-actions"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button><button class="button compact-save" type="button" data-save-subscriber>保存</button></div></td></tr>`;
+      <td><div class="subscriber-actions"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button></div></td></tr>`;
     }).join("") + '<tr data-subscriber-filter-empty hidden><td colspan="7" class="empty">没有匹配的订阅者</td></tr>';
   }
 
@@ -550,6 +552,7 @@
     const response = await fetch("/api/subscriptions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
     const result = await response.json();
     if (!response.ok || !result.ok) throw new Error(result.error || `HTTP ${response.status}`);
+    if (["update", "resetSubscriber"].includes(payload.action)) subscriberDrafts.delete(payload.openId);
     const evidence = result.result?.message_id || result.result?.batch_id || "已完成";
     state.notice = `操作成功：${evidence}`;
     state.noticeKind = "success";
@@ -778,6 +781,14 @@
       catch (error) { state.notice = `邀请发送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
+    const reset = event.target.closest("[data-reset-subscriber]");
+    if (reset) {
+      const openId = reset.closest("[data-subscriber-row]").dataset.subscriberRow;
+      try {
+        await post({ action: "resetSubscriber", openId }, "正在恢复此人的默认选项…");
+      } catch (error) { state.notice = `恢复失败：${error.message}`; state.noticeKind = "error"; render(); }
+      return;
+    }
     const save = event.target.closest("[data-save-subscriber]");
     if (save) {
       const row = save.closest("[data-subscriber-row]");
@@ -842,6 +853,19 @@
   });
 
   document.addEventListener("change", (event) => {
+    const row = event.target.closest("[data-subscriber-row]");
+    if (row) {
+      subscriberDrafts.set(row.dataset.subscriberRow, {
+        services: Array.from(row.querySelectorAll('.service-check input:checked'), input => input.value),
+        news_categories: Array.from(row.querySelectorAll('[data-news-category]:checked'), input => input.value),
+        report_mode: row.querySelector('[data-subscriber-report-mode]').value,
+        news_frequency: row.querySelector('[data-subscriber-news-frequency]').value,
+        news_item_limit: Number(row.querySelector('[data-subscriber-news-limit]').value),
+        status: row.querySelector('[data-subscriber-status]').value,
+      });
+      row.querySelector('[data-save-subscriber]').textContent = "保存 *";
+      return;
+    }
     const filter = event.target.closest("[data-filter-section][data-filter-field]");
     if (!filter) return;
     state.filters[filter.dataset.filterSection][filter.dataset.filterField] = filter.value;
