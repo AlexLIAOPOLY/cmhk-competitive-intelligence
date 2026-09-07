@@ -49,6 +49,13 @@
     const incremental = isIncremental(run);
     const plan = data.plan || [];
     const agents = data.agents || [];
+    const canvasWidth = 2366;
+    const researchInset = 20;
+    const researchCardWidth = 250;
+    const researchSpan = canvasWidth - researchInset * 2 - researchCardWidth;
+    const researchX = (index) => plan.length <= 1
+      ? Math.round((canvasWidth - researchCardWidth) / 2)
+      : Math.round(researchInset + index * researchSpan / (plan.length - 1));
     const newsColumns = ["strategic", "news-search", "news-ai", "news-dedupe", "news-output", "news-selection-agent", "app-result", "weekly-result"];
     // A 120px connector run between 230px cards also leaves room for the fork.
     const nodes = legacy.nodes.filter((n) => newsColumns.includes(n.key)).map((node) => ({
@@ -62,8 +69,8 @@
       nodes.push(node);
       return node;
     };
-    // Align the supervisor with the midpoint of the six equal-width worker cards.
-    const dispatchX = 20 + Math.max(0, plan.length - 1) * 300 / 2;
+    // Spread the research lane across the same full canvas width as the news lane.
+    const dispatchX = plan.length ? Math.round((researchX(0) + researchX(plan.length - 1)) / 2) : Math.round((canvasWidth - researchCardWidth) / 2);
     add("research-dispatch", "03:00 Supervisor · Agent 任务分配", [dispatchX, 365], plan.length || "—", "个研究 Agent", "规则型 Supervisor 主控：以库内数据为可信基线，分配六组最新披露搜索任务", [
       "这是同一个规则型 Supervisor 主控的任务分配阶段；不是额外调用大模型的研究 Agent",
       "香港、内地、亚太、欧洲、美洲与中东、全球云厂商六组并行研究",
@@ -76,7 +83,7 @@
       const actual = agents.find((agent) => agent.key === task.key);
       const reports = actual?.reports || [];
       const done = reports.filter((report) => report.status === "completed").length;
-      add(`research-${task.key}`, childTitle(task.title), [20 + index * 300, 560], incremental && actual && (reports.some((report) => (report.items || []).length) || actual.status === "completed") ? reports.flatMap((report) => report.items || []).filter((item) => item.status === "verified").length : "—", run && !incremental ? "新增披露未统计" : "条可更新新数据", "查找负责公司的最新披露，与库内可信基线比较，仅提交新期间或新指标", [
+      add(`research-${task.key}`, childTitle(task.title), [researchX(index), 560], incremental && actual && (reports.some((report) => (report.items || []).length) || actual.status === "completed") ? reports.flatMap((report) => report.items || []).filter((item) => item.status === "verified").length : "—", run && !incremental ? "新增披露未统计" : "条可更新新数据", "查找负责公司的最新披露，与库内可信基线比较，仅提交新期间或新指标", [
         `负责 ${task.companies.length} 家公司：${task.companies.join("、")}`,
         "先读取库内最新期间，再查最新业绩公告；继续打开官方公告入口中关联的报告原文",
         "提交主体、指标、期间、数值、单位、原文地址、引用摘录和处理结果",
@@ -94,13 +101,13 @@
       "输入：六个研究 Agent 的报告；输出：本轮可更新字段及待复核清单",
       "本轮结束后，下一次定时任务继续搜索最新披露；已有数据保持可信",
     ], status(run?.status === "running" ? undefined : run?.status));
-    add("research-update", "四库数据更新", [660, 820], run?.publication?.database_updated ? run.accepted : incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—", incremental ? "条通过入库筛选的新数据" : "条历史核验通过数据", "统一写入本地、国际、内地运营商和全球云厂商四库", [
+    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.database_updated ? run.accepted : incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—", incremental ? "条通过入库筛选的新数据" : "条历史核验通过数据", "统一写入本地、国际、内地运营商和全球云厂商四库", [
       "由一个更新步骤处理六个 Agent 提交的数据，防止多个研究任务同时覆盖文件",
       "仅把有来源支持的新期间或新指标写入四库；已有同期间数据作为可信基线保留",
       "分别记录已审核字段写入、主表增量更新、文件变化和界面数值变化，不能把四者混为一谈",
       "输入：本轮审核通过字段；输出：四库更新结果与前后变化记录",
     ], status(run?.publication?.database_updated ? "completed" : run?.publication?.status), { publication: run?.publication });
-    add("research-publish", "AI 洞察生成与页面发布", [1320, 820], run?.publication?.insights ?? "—", "项洞察", "使用四库最新数据生成洞察，更新页面并读取发布结果", [
+    add("research-publish", "AI 洞察生成与页面发布", [canvasWidth - researchInset - researchCardWidth, 820], run?.publication?.insights ?? "—", "项洞察", "使用四库最新数据生成洞察，更新页面并读取发布结果", [
       "读取更新后的四库数据，生成分库分析和跨库洞察",
       "校验洞察引用的数据与主体，更新主页数据和公开页面",
       "发布后读取实际版本，只有成功读取后才记录为发布完成",
@@ -120,7 +127,7 @@
         node.note = "本轮未形成可写入的新数据；待处理和执行失败原因见结果明细";
       }
     });
-    return { nodes, edges, canvasSize: [2366, 1040], laneLabels: [
+    return { nodes, edges, canvasSize: [canvasWidth, 1040], laneLabels: [
       { label: "战略新闻采集与初筛", position: [18, 22] },
       { label: "六 Agent 最新披露搜索与四库增量更新", position: [18, 325] },
     ], groups: [] };

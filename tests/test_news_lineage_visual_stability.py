@@ -19,8 +19,15 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("Supervisor · Agent 结果汇总", RESEARCH)
         self.assertIn("同一个规则型 Supervisor 主控", RESEARCH)
         self.assertIn("不是额外调用大模型的研究 Agent", RESEARCH)
-        self.assertIn("20 + Math.max(0, plan.length - 1) * 300 / 2", RESEARCH)
+        self.assertIn("(researchX(0) + researchX(plan.length - 1)) / 2", RESEARCH)
         self.assertIn("[dispatchX, 365]", RESEARCH)
+
+    def test_research_lane_spreads_workers_and_outputs_across_full_canvas(self):
+        self.assertIn("const canvasWidth = 2366", RESEARCH)
+        self.assertIn("index * researchSpan / (plan.length - 1)", RESEARCH)
+        self.assertIn("[researchX(index), 560]", RESEARCH)
+        self.assertIn("[Math.round((canvasWidth - researchCardWidth) / 2), 820]", RESEARCH)
+        self.assertIn("[canvasWidth - researchInset - researchCardWidth, 820]", RESEARCH)
 
     def test_research_merge_note_describes_audit_and_strategic_news_copy_is_larger(self):
         self.assertIn("比较六个研究 Agent 的新披露与库内可信基线", RESEARCH)
@@ -159,9 +166,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=174', INDEX)
-        self.assertIn('/static/research-diagram.js?v=10', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=210', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=175', INDEX)
+        self.assertIn('/static/research-diagram.js?v=12', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=212', INDEX)
 
 
 if __name__ == "__main__":
