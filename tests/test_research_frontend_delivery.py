@@ -71,3 +71,41 @@ class FrontendDeliveryTests(unittest.TestCase):
             self.assertEqual(snapshot["plan"], plan)
             self.assertEqual(len(snapshot["agents"]), 1)
             self.assertIsNone(research_snapshot(root, "2026-09-08")["run"])
+
+    def test_research_metrics_follow_current_frontend_focus_labels(self):
+        from data_curation.research_plan import frontend_metric_plan
+        snapshot = {"domains": [{"id": "international", "focuses": [{"label": label} for label in ["营收", "净利润", "资本开支", "移动ARPU", "新披露指标"]]}]}
+        with patch("cmhk.intelligence.executive.build_executive_intelligence_snapshot", return_value=snapshot):
+            self.assertEqual(frontend_metric_plan()["international"], ["收入", "净利润", "资本开支", "ARPU", "新披露指标"])
+
+    def test_current_four_frontend_domains_have_research_metrics(self):
+        from data_curation.research_plan import frontend_metric_plan
+        plan = frontend_metric_plan()
+        self.assertEqual(set(plan), {"local", "international", "mainland", "cloud"})
+        self.assertTrue({"收入", "净利润", "资本开支", "ARPU"} <= set(plan["international"]))
+
+    def test_overview_focus_ids_keep_cloud_and_customer_scope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / "agent_knowledge/requested_overview_010304_2016_2025/annual_facts.json"
+            target.parent.mkdir(parents=True)
+            target.write_text(json.dumps({"rows": [
+                {"entity": "AWS", "domain": "04", "metric": "revenue", "period": "FY2025", "value": 10},
+                {"entity": "中国移动", "domain": "03", "metric": "postpaid", "period": "FY2025", "value": 20},
+                {"entity": "HKT", "domain": "01", "metric": "postpaid", "period": "FY2025", "value": 30}]}))
+            data = load_baseline(root)["companies"]
+            self.assertIn("云收入", data["AWS"])
+            self.assertNotIn("收入", data["AWS"])
+            self.assertIn("移动客户数", data["中国移动"])
+            self.assertIn("后付费用户数", data["HKT"])
+
+    def test_incremental_assignment_adds_ui_metrics_but_resume_keeps_saved_contract(self):
+        from data_curation.six_agent_research import run_assignment
+        task = {"key": "asia-pacific", "title": "亚太", "purpose": "研究", "companies": ["Singtel"]}
+        collector = lambda *args: ({"https://example.test": {"opened": True, "official": True, "text": ""}}, [])
+        with patch("data_curation.research_harness.ResearchHarness"), patch("data_curation.workflow._company_expected_metrics", return_value=["AI"]):
+            new = run_assignment(task, lambda *args: None, model_factory=lambda: object(), collector=collector, baseline={})
+            self.assertTrue({"AI", "收入", "净利润", "资本开支", "ARPU"} <= set(new["reports"][0]["metrics"]))
+            old = {"reports": [{"company": "Singtel", "status": "partial", "metrics": ["AI"], "items": []}]}
+            resumed = run_assignment(task, lambda *args: None, checkpoint=old, model_factory=lambda: object(), collector=collector, baseline={})
+            self.assertEqual(resumed["reports"][0]["metrics"], ["AI"])

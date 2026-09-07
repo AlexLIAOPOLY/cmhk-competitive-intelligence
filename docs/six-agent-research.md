@@ -91,3 +91,5 @@ python -m unittest tests.test_research_harness tests.test_six_agent_pipeline tes
 四库和洞察通过后，发布前必须运行 `scripts/build_competitor_workbench_data.py`，重建竞对页面及其 AI 接口共用的数据文件。文件原子替换；重建失败则中止发布。公开发布包包含 `research-diagram.js`，发布回读同时比较新闻版本与竞对数据 SHA-256，不能仅凭新闻版本宣布最新前端数据已交付。
 
 本次验证不触发模型研究、飞书写入或公开业务重发布；下次真实任务的成功与否仍以该轮归档和公开数据回读为准。
+
+新增量研究的指标为原监控字段与当前首页四域关注指标的并集，直接读取前端快照定义；国际运营商因此包含营收、净利润、资本开支、移动ARPU。恢复已有公司任务时保留 checkpoint 的指标合同，不把新前端指标伪装成旧运行已处理。

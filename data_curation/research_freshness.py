@@ -17,7 +17,7 @@ def metric_key(value):
     aliases = {"收入/总收益": "收入", "运营收入/总收益": "收入", "总收入": "收入", "云收入/云相关分部收入": "云收入", "营收": "收入", "revenue": "收入", "total_revenue": "收入",
                "net_income": "净利润", "net_profit": "净利润", "ebitda": "EBITDA",
                "capital_expenditures": "资本开支", "capital_expenditure": "资本开支",
-               "cloud_revenue": "云收入"}
+               "cloud_revenue": "云收入", "capex": "资本开支", "mobile_arpu": "ARPU"}
     return aliases.get(text, text)
 
 
@@ -83,6 +83,18 @@ def load_baseline(root: Path) -> dict:
             name = context.get("company") or context.get("subject") or context.get("operator") or context.get("vendor") or context.get("entity")
             company = aliases.get(name, name)
             metric = metric_key(row.get("metric") or row.get("metric_zh") or row.get("metric_key"))
+            # Overview focus IDs are domain-dependent (cloud revenue is not group revenue).
+            domain = str(row.get("domain") or "")
+            focus = row.get("metric")
+            if domain in {"01", "02", "03", "04", "local", "international", "mainland", "cloud"}:
+                if focus == "revenue" and domain in {"04", "cloud"}:
+                    metric = "云收入"
+                elif focus == "postpaid":
+                    metric = "移动客户数" if domain in {"03", "mainland"} else "后付费用户数"
+                elif focus == "investment":
+                    metric = "资本开支"
+                elif focus == "profit" and domain in {"04", "cloud"}:
+                    metric = "经营利润"
             value = row.get("value", row.get("analysis"))
             if company and metric and value not in (None, ""):
                 item = {"period": context.get("period") or str(context.get("fiscal_year") or context.get("year") or ""), "value": value,

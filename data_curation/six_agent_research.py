@@ -189,6 +189,8 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     from . import workflow as w
     from .research_harness import ResearchHarness
     from .research_freshness import compare_candidate
+    from .research_plan import frontend_metric_plan
+    ui_metrics = frontend_metric_plan() if baseline is not None else {}
     factory = model_factory or (lambda: w._build_supervisor_model(max_tokens=4096, max_retries=0))
     harness = ResearchHarness(task, factory(), emit, validate_fact)
     reports = list((checkpoint or {}).get("reports") or [])
@@ -197,8 +199,12 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     for company in task["companies"]:
         if company in completed:
             continue
-        metrics = w._company_expected_metrics(company, [])
         previous = next((report for report in reports if report["company"] == company), {})
+        # Resume keeps the saved contract; new incremental tasks follow today's UI.
+        metrics = previous.get("metrics") or list(dict.fromkeys([
+            *w._company_expected_metrics(company, []),
+            *ui_metrics.get(w._company_agent_group(company), []),
+        ]))
         company_baseline = (baseline or {}).get(company, {})
         report = {"company": company, "status": "running", "metrics": metrics, "baseline": company_baseline, "incremental": baseline is not None,
                   "items": [item for item in previous.get("items", []) if item.get("status") != "error"],

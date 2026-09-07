@@ -43,3 +43,15 @@ def research_plan() -> list[dict]:
     if set(assigned) != set(ALL_COMPANY_CURRENT_RESULT_TARGETS):
         raise ValueError("研究任务分工与当前公司目录不一致，请补齐明确的任务归属")
     return [asdict(task) for task in ASSIGNMENTS]
+
+
+def frontend_metric_plan() -> dict[str, list[str]]:
+    """Use the current dashboard focus definitions, including their subject scope."""
+    from cmhk.intelligence.executive import build_executive_intelligence_snapshot
+    labels = {"营收": "收入", "移动ARPU": "ARPU", "云利润": "经营利润"}
+    return {
+        domain["id"]: list(dict.fromkeys(labels.get(focus["label"], focus["label"])
+                                        for focus in domain.get("focuses", [])))
+        for domain in build_executive_intelligence_snapshot()["domains"]
+        if domain["id"] in {"local", "international", "mainland", "cloud"}
+    }
