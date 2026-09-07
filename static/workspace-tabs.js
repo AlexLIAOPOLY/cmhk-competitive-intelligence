@@ -344,6 +344,13 @@
     return `<div class="workspace-table-scroll-note">表格可左右滑动查看完整内容</div><div class="workspace-table-wrap"><table class="workspace-table"><thead><tr><th style="width:48%">文件</th><th style="width:24%">生成时间</th><th style="width:14%">音频摘要</th><th style="width:14%">操作</th></tr></thead><tbody>${items.slice(0, 10).map((item) => `<tr><td class="workspace-cell-title" title="${esc(item.name)}">${esc(item.name)}</td><td class="workspace-cell-muted">${esc(item.mtimeText)}</td><td>${item.audio?.exists ? "已生成" : "—"}</td><td><a href="${esc(safeUrl(item.url, { allowOutput: true }))}">下载</a></td></tr>`).join("")}</tbody></table></div>`;
   }
 
+  function competitorUnitComparisonMode(units, allInternational = false) {
+    const values = [...new Set((units || []).filter(Boolean))];
+    const currencyUnit = /(?:^|_)(?:hkd|usd|eur|cny|rmb|jpy|krw|sgd|inr|gbp)(?:_|$)/i;
+    if (allInternational && values.length && values.every((unit) => currencyUnit.test(unit))) return "usd_conversion";
+    return values.length <= 1 ? "same_unit" : "incompatible";
+  }
+
   function competitorComparableWindow(data, companyIds, metricKey, years) {
     if (!companyIds.length || !metricKey) return { ok: false, reason: "selection_incomplete", visibleYears: [], sharedVisibleYears: [] };
     const cells = data.cells.filter((cell) => companyIds.includes(cell.company) && cell.metric === metricKey);
@@ -351,7 +358,10 @@
     const auditedRows = [...cells, ...gaps];
     const coveredCompanies = new Set(cells.map((cell) => cell.company));
     const units = [...new Set(auditedRows.map((row) => row.unit).filter(Boolean))];
-    if (units.length !== 1) return { ok: false, reason: "unit_mismatch", visibleYears: [], sharedVisibleYears: [] };
+    const companyGroups = new Map(data.companies.map((company) => [company.id, company.group]));
+    const allInternational = companyIds.every((company) => companyGroups.get(company) === "国际运营商");
+    const unitMode = competitorUnitComparisonMode(units, allInternational);
+    if (unitMode === "incompatible") return { ok: false, reason: "unit_mismatch", visibleYears: [], sharedVisibleYears: [] };
     const companyYears = companyIds.map((company) => new Set(cells.filter((cell) => cell.company === company).map((cell) => cell.year)));
     const allYears = [...new Set(auditedRows.map((row) => row.year))].sort((a, b) => a - b);
     const commonYears = allYears.filter((year) => companyYears.every((set) => set.has(year)));
@@ -362,7 +372,7 @@
     const sharedVisibleYears = visibleYears.filter((year) => companyYears.every((set) => set.has(year)));
     const pointsPerCompany = companyYears.map((set) => visibleYears.filter((year) => set.has(year)).length);
     const ok = visibleYears.length > 0 && auditedRows.length > 0;
-    return { ok, reason: ok ? "" : "no_audited_rows", unit: units[0], allYears, commonYears, visibleYears, sharedVisibleYears, companyYears, coveredCompanies, pointsPerCompany };
+    return { ok, reason: ok ? "" : "no_audited_rows", unit: units[0], units, unitMode, allYears, commonYears, visibleYears, sharedVisibleYears, companyYears, coveredCompanies, pointsPerCompany };
   }
 
   function competitorHasCompleteMetric(data, companyIds, years, metricKey = "") {
@@ -372,9 +382,17 @@
       const metricRows = rows.filter((row) => companyIds.includes(row.company) && row.metric === metric.key);
       const coveredCompanies = new Set(metricRows.map((row) => row.company));
       const units = new Set(metricRows.map((row) => row.unit).filter(Boolean));
-      if (coveredCompanies.size !== companyIds.length || units.size !== 1) return false;
+      const companyGroups = new Map(data.companies.map((company) => [company.id, company.group]));
+      const allInternational = companyIds.every((company) => companyGroups.get(company) === "国际运营商");
+      if (coveredCompanies.size !== companyIds.length || competitorUnitComparisonMode([...units], allInternational) === "incompatible") return false;
       // All history keeps audited gaps visible; fixed windows still require completeness.
-      if (years === 99) return companyIds.length === 1 || companyIds.every((company) => data.cells.some((cell) => cell.company === company && cell.metric === metric.key && Number.isFinite(cell.value)));
+      if (years === 99) {
+        if (companyIds.length === 1) return true;
+        const disclosedYears = companyIds.map((company) => new Set(data.cells
+          .filter((cell) => cell.company === company && cell.metric === metric.key && Number.isFinite(cell.value))
+          .map((cell) => cell.year)));
+        return disclosedYears.length > 1 && [...disclosedYears[0]].filter((year) => disclosedYears.every((set) => set.has(year))).length >= 2;
+      }
       const windows = years ? [years] : [3, 5, 10, 99];
       return windows.some((windowYears) => {
         const comparison = competitorComparableWindow(data, companyIds, metric.key, windowYears);
@@ -400,9 +418,10 @@
   }
 
   function visibleCompetitorIds(data, selectedCompanies, years, metricKey = "") {
-    if (!selectedCompanies.length) return new Set(data.companies
-      .filter((company) => competitorHasComparablePeer(data, company.id, years, metricKey))
-      .map((company) => company.id));
+    if (!selectedCompanies.length) {
+      const auditedCompanies = new Set([...data.cells, ...(data.gaps || [])].map((row) => row.company));
+      return new Set(data.companies.filter((company) => auditedCompanies.has(company.id)).map((company) => company.id));
+    }
     return new Set(data.companies
       .filter((company) => selectedCompanies.includes(company.id) || competitorHasCompleteMetric(data, [...selectedCompanies, company.id], years, metricKey))
       .map((company) => company.id));
@@ -419,6 +438,34 @@
     return new Set([3, 5, 10, 99].filter((years) => years === 99
       || !selection.companies.length || !selection.metric
       || competitorHasCompleteMetric(data, selection.companies, years, selection.metric)));
+  }
+
+  function competitorUsdLookup(data, companies, visibleYears, lookup) {
+    const rates = new Map((data.fxRates?.rates || []).map((item) => [`${item.currency}|${item.year}`, Number(item.local_per_usd)]));
+    const currencyFromUnit = (unit) => String(unit || "").match(/(?:^|_)(HKD|USD|EUR|CNY|RMB|JPY|KRW|SGD|INR|GBP)(?:_|$)/i)?.[1]?.toUpperCase().replace("RMB", "CNY") || "";
+    const scaleToUsdUnit = (unit) => /(?:^|_)billion(?:_|$)/i.test(unit) ? 1000 : /(?:^|_)crore(?:_|$)/i.test(unit) ? 10 : 1;
+    const converted = new Map();
+    let convertedUnit = "USD million";
+    companies.forEach((company) => visibleYears.forEach((year) => {
+      const cell = lookup.get(`${company}|${year}`);
+      if (!Number.isFinite(cell?.value)) return;
+      const currency = currencyFromUnit(cell.unit);
+      const rate = rates.get(`${currency}|${year}`);
+      if (!currency || !Number.isFinite(rate) || rate <= 0) return;
+      const perUser = /per_user|per_month|arpu|arpa/i.test(cell.unit);
+      const value = cell.value * scaleToUsdUnit(cell.unit) / rate;
+      if (perUser) convertedUnit = "USD/户/月";
+      converted.set(`${company}|${year}`, {
+        ...cell,
+        value,
+        rawValue: cell.value,
+        rawUnit: cell.unit,
+        fxCurrency: currency,
+        fxLocalPerUsd: rate,
+        convertedUnit: perUser ? "USD/户/月" : "USD million",
+      });
+    }));
+    return { lookup: converted, unit: convertedUnit, source: data.fxRates?.source_url || "" };
   }
 
   let competitorOptionsTransitionTimer = null;
@@ -439,6 +486,9 @@
     const metricUnit = (metric) => {
       const selectedRows = [...data.cells, ...(data.gaps || [])].filter((row) => (!selection.companies.length || selection.companies.includes(row.company)) && row.metric === metric.key);
       const units = [...new Set(selectedRows.map((row) => row.unit).filter(Boolean))];
+      const selectedMeta = data.companies.filter((company) => selection.companies.includes(company.id));
+      if (selectedMeta.length && selectedMeta.every((company) => company.group === "国际运营商")
+        && competitorUnitComparisonMode(units, true) === "usd_conversion") return "统一换算美元";
       return units.length === 1 ? (metric.unitLabels?.[units[0]] || units[0]) : "按所选竞对确定单位";
     };
     const comparableMetrics = selection.companies.length
@@ -533,15 +583,17 @@
     const gapLookup = new Map(auditedGaps.map((gap) => [`${gap.company}|${gap.year}`, gap]));
     const companyMeta = new Map(data.companies.map((item) => [item.id, item]));
     const companyLabel = (company) => companyMeta.get(company)?.label || company;
-    const unitLabel = metricMeta.unitLabels?.[comparison.unit] || comparison.unit;
-    const coincidentGroups = competitorCoincidentGroups(companies, visibleYears, lookup);
+    const usdConversion = comparison.unitMode === "usd_conversion" ? competitorUsdLookup(data, companies, visibleYears, lookup) : null;
+    const displayLookup = usdConversion?.lookup?.size ? usdConversion.lookup : lookup;
+    const unitLabel = usdConversion?.lookup?.size ? usdConversion.unit : (metricMeta.unitLabels?.[comparison.unit] || comparison.unit);
+    const coincidentGroups = competitorCoincidentGroups(companies, visibleYears, displayLookup);
     const coincidentMembers = new Set(coincidentGroups.flatMap((group) => group.companies));
     const chartLegend = companies.map((company, index) => `<span class="${coincidentMembers.has(company) ? "is-coincident" : ""}"><i style="--series-color:${COMPETITOR_CHART_PALETTE[index % COMPETITOR_CHART_PALETTE.length]}"></i>${esc(companyLabel(company))}${coincidentMembers.has(company) ? "<em>曲线重合</em>" : ""}</span>`).join("");
-    const coreSummary = buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit: unitLabel, coincidentGroups });
+    const coreSummary = buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup: displayLookup, unit: unitLabel, coincidentGroups, convertedToUsd: Boolean(usdConversion?.lookup?.size) });
     const chartKey = `${companies.join("|")}|${metric}|${years}`;
     const chartType = state.competitorChartTypes[chartKey] || competitorDefaultChartType(metricMeta);
-    const chartPayload = { companies, companyLabel, visibleYears, lookup, unit: unitLabel, chartType };
-    const visibleValueCount = visibleYears.reduce((count, year) => count + companies.filter((company) => Number.isFinite(lookup.get(`${company}|${year}`)?.value)).length, 0);
+    const chartPayload = { companies, companyLabel, visibleYears, lookup: displayLookup, unit: unitLabel, chartType };
+    const visibleValueCount = visibleYears.reduce((count, year) => count + companies.filter((company) => Number.isFinite(displayLookup.get(`${company}|${year}`)?.value)).length, 0);
     const chart = visibleValueCount ? buildCompetitorChart(chartPayload) : `<figure class="competitor-chart-card competitor-chart-no-values"><div><strong>已完成官方来源复核</strong><span>当前窗口没有可直接复用的年度数值，未披露原因与复核链接见下方明细。</span></div></figure>`;
     const rows = visibleYears.map((year) => `<tr><th>${year}</th>${companies.map((company) => {
       const cell = lookup.get(`${company}|${year}`);
@@ -578,9 +630,14 @@
           : gap
             ? "— 未披露"
             : "— 尚无审计记录";
-      return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.usagePolicy, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(cell.value)}`)}</strong><small>${esc([cell.period, cell.periodEnd, sourceAuthorityLabel].filter(Boolean).join(" · "))}</small>${disclosedSourceLinks}` : `<span class="competitor-missing">${gapLabel}</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedSourceLinks}`}</td>`;
+      const converted = displayLookup.get(`${company}|${year}`);
+      const translated = converted?.rawUnit
+        ? `<small>统一美元：≈${esc(new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 2 }).format(converted.value))} ${esc(converted.convertedUnit)} · 年均汇率 1 USD = ${esc(new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 6 }).format(converted.fxLocalPerUsd))} ${esc(converted.fxCurrency)}</small>`
+        : "";
+      return `<td title="${esc(cell ? [cell.period, cell.periodEnd, cell.scope, cell.basis, cell.usagePolicy, cell.note].filter(Boolean).join(" · ") : gapTitle)}">${cell ? `<strong>${esc(`${competitorComparator(cell.comparator)}${new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 6 }).format(cell.value)} ${metricMeta.unitLabels?.[cell.unit] || cell.unit}`)}</strong><small>${esc([cell.period, cell.periodEnd, sourceAuthorityLabel].filter(Boolean).join(" · "))}</small>${translated}${disclosedSourceLinks}` : `<span class="competitor-missing">${gapLabel}</span>${relatedEvidence}<small>${esc(gap?.reason || "尚无审计记录")}</small>${reviewedSourceLinks}`}</td>`;
     }).join("")}</tr>`).join("");
-    host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${companies.length} 家 · ${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>
+    const fxNote = usdConversion?.lookup?.size ? `<p class="competitor-fx-note">国际运营商按指标年份对应的自然年平均汇率统一换算美元；这不是非自然财年的逐月加权汇率，原币值不变并保留在明细中。<a href="${esc(safeUrl(usdConversion.source))}" target="_blank" rel="noreferrer">世界银行 WDI 汇率来源</a></p>` : "";
+    host.innerHTML = `<header class="workspace-panel-header competitor-result-header"><div><h2>${esc(metricMeta.label)}</h2><span>${companies.length} 家 · ${esc(unitLabel)} · ${visibleYears[0] || "—"}—${visibleYears.at(-1) || "—"}</span></div><div class="competitor-chart-legend" aria-label="竞对图例">${chartLegend}</div></header>${fxNote}
       <div class="competitor-core-summary is-loading" role="status" aria-live="polite" aria-busy="true" data-competitor-core-summary-shell data-fallback="${esc(coreSummary)}"><strong data-competitor-core-summary><i aria-hidden="true"><u></u><u></u><u></u></i></strong></div>
       <div class="competitor-result-overview">
       ${chart}
@@ -625,7 +682,7 @@
     }));
   }
 
-  function buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit, coincidentGroups = [] }) {
+  function buildCompetitorCoreSummary({ companies, companyLabel, visibleYears, lookup, unit, coincidentGroups = [], convertedToUsd = false }) {
     const lastYear = visibleYears.at(-1);
     const latest = companies.map((company) => ({ company, cell: lookup.get(`${company}|${lastYear}`) })).filter((item) => Number.isFinite(item.cell?.value));
     const sharedOverlap = coincidentGroups.find((group) => group.sharedScope);
@@ -639,7 +696,7 @@
     if (!ranked.length) return "当前窗口暂无可用的共同披露值。";
     const leader = ranked[0];
     const overlap = coincidentGroups.length ? `；${coincidentGroups[0].companies.map(companyLabel).join("与")}暂未形成可区分的位置` : "";
-    return `${companyLabel(leader.company)}当前处于领先位置，其他公司能否缩小差距，将决定后续竞争格局${overlap}。`;
+    return `${companyLabel(leader.company)}当前${convertedToUsd ? "按同期年度平均汇率换算美元后" : ""}处于领先位置，其他公司能否缩小差距，将决定后续竞争格局${overlap}。`;
   }
 
   function buildCompetitorFallbackInsight({ companies, companyLabel, visibleYears, lookup, unit }) {
@@ -727,7 +784,9 @@
       .map((item) => ({
         company: companyLabel(item.company),
         period: item.cell.period || `${year}年`,
-        value: `${competitorComparator(item.cell.comparator)}${format(item.cell.value)} ${unit}`,
+        value: item.cell.rawUnit
+          ? `${competitorComparator(item.cell.comparator)}${format(item.cell.value)} ${unit}（原值 ${format(item.cell.rawValue)} ${item.cell.rawUnit}）`
+          : `${competitorComparator(item.cell.comparator)}${format(item.cell.value)} ${unit}`,
         shared: /shared|共建|共享/i.test(String(item.cell.scope || "")),
       }));
   }

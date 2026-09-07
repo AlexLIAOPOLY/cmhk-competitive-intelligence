@@ -2,6 +2,45 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260907_120704_100772",
+      "trigger": "季度竞对数据发布",
+      "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
+      "task_kind": "quarterly-data-release",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "发布 qcm_0dfe291b0cae4b6b22df105f 完成，共 3084 行；数据截至 2026-06-30；已经同步到飞书。",
+      "status_detail": "发布 qcm_0dfe291b0cae4b6b22df105f 完成，共 3084 行；数据截至 2026-06-30；已经同步到飞书。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-07T12:11:37+08:00",
+      "started_at_hkt": "2026-09-07T12:07:04+08:00",
+      "completed_at_hkt": "2026-09-07T12:11:37+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 273822,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "release_id": "qcm_0dfe291b0cae4b6b22df105f",
+        "content_sha256": "0dfe291b0cae4b6b22df105f6b07bfdb24af5d62c2bfe71c1d278bd02626859d",
+        "release_manifest_sha256": "d7b964109696ea2beca5e93e92fe30e7782f79f7b3170639b47b1f0fe8ce68ce",
+        "row_count": 3084,
+        "data_as_of": "2026-06-30",
+        "created": true,
+        "parent_crawl_run_id": "",
+        "feishu_sheet_title": "競對資料庫",
+        "feishu_row_count": 7919,
+        "feishu_written": 7919,
+        "feishu_readback_verified": true,
+        "feishu_readback_scope": "all_rows_all_core_fields",
+        "feishu_readback_sha256": "c2d5e0e8ce29e54b3708e982e573102e771fc65f01c77117c6d99eda5710ae69",
+        "feishu_coverage_ratio": 1.0,
+        "feishu_active_row_count": 7919,
+        "feishu_tombstone_row_count": 0,
+        "feishu_pre_publish_written": 0,
+        "feishu_migrated_sync_key_count": 0,
+        "feishu_compacted_tombstone_count": 0
+      }
+    },
+    {
       "crawl_run_id": "20260907_111227_380174",
       "trigger": "季度竞对数据发布",
       "scope": "quarterly_competitor_metrics · quarterly_competitor_metrics_2026-06-18",
@@ -302513,6 +302552,6 @@
       }
     }
   ],
-  "total": 444,
+  "total": 445,
   "truncated": false
 }
