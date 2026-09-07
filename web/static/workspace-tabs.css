@@ -2088,7 +2088,7 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .news-lineage.is-global .news-lineage-node.is-research-step > span { font-size: 16px; line-height: 1.5; }
 .news-lineage.is-global .news-lineage-node.is-research-agent > em,
 .news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; max-height: none; overflow: visible; }
-/* Match the strategic-news row to the horizontal research-card proportions. */
+/* Keep the strategic-news row horizontal while preserving readable connector runs. */
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="strategic"],
   [data-news-lineage-node="news-search"],
@@ -2098,7 +2098,7 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   [data-news-lineage-node="news-selection-agent"],
   [data-news-lineage-node="app-result"],
   [data-news-lineage-node="weekly-result"]
-) { width: 250px; min-height: 160px; height: auto; padding: 30px 16px 16px; }
+) { width: 230px; min-height: 160px; height: auto; padding: 30px 16px 16px; }
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="app-result"],
   [data-news-lineage-node="weekly-result"]
@@ -2124,6 +2124,7 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   [data-news-lineage-node="app-result"],
   [data-news-lineage-node="weekly-result"]
 ) > strong { font-size: 30px; }
+.news-lineage.is-global .news-lineage-node[data-news-lineage-node="news-selection-agent"] > strong { font-size: 24px; }
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="strategic"],
   [data-news-lineage-node="news-search"],
