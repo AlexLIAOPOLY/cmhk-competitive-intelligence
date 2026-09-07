@@ -1705,11 +1705,15 @@
   }
 
   function globalSchedulerLineageModel(runs, stages, attemptRuns = runs) {
-    return window.CmhkResearchDiagram.build(
-      legacySchedulerLineageModel(runs, stages, attemptRuns),
-      state.researchArchitecture,
-      state.newsSelectedDate || newsRunDate(runs[0]),
+    const date = state.newsSelectedDate || newsRunDate(runs[0]);
+    const model = window.CmhkResearchDiagram.build(
+      legacySchedulerLineageModel(runs, stages, attemptRuns), state.researchArchitecture, date,
     );
+    const nodes = new Map(model.nodes.map((node) => [node.key, node]));
+    const assessments = activeLineageRouteAssessments(date);
+    model.edges = model.edges.map(([from, to, label, kind, line]) => [from, to, label, kind,
+      from.startsWith("research-") ? newsLineageEdgeStatus(from, to, nodes, date, assessments) : line]);
+    return model;
   }
 
   function legacySchedulerLineageModel(runs, stages, attemptRuns = runs) {
@@ -3001,14 +3005,12 @@
     const reviewItemDetails = (node.reviewRows || []).length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天选用明细</h3><span>${number(node.reviewRows.length)} 条审核表记录</span></header><div class="news-lineage-detail-items">${node.reviewRows.map((item) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(item.publishedAt || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title || "未命名新闻")}</a>` : esc(item.title || "未命名新闻")}</h4><p>${esc(item.summary || "审核表未保存内容简介。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>APP状态</dt><dd>${esc(item.rollingStatus || "未记录")} · ${esc(item.syncStatus || "未记录同步状态")}</dd></div><div><dt>周报状态</dt><dd>${esc(item.weeklyStatus || "未记录")}</dd></div><div><dt>入池理由</dt><dd>${esc(item.reason || "审核表未记录入池理由。")}</dd></div></dl></article>`).join("")}</div></section>` : "";
     body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>只展示所选日期真实发生的处理事件，不展示通用逻辑原则。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
       <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>当天运行</dt><dd>${relatedRuns.length ? relatedRuns.map((run) => `${newsRunTime(run)} · ${run.crawl_run_id}`).join("、") : "未找到当天运行归档"}</dd></div><div><dt>上下游</dt><dd>${esc(`${incoming.join("、") || "无"} → ${outgoing.join("、") || "无"}`)}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate)}</dd></div></dl></section>
+      ${itemDetails || reviewItemDetails || renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
       ${renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, detailedRecords, events, incoming, outgoing)}
       ${nodeKey === "agent" ? renderCompanyAgentExecutionGraph(relatedRuns) : ""}
       ${renderNewsErrors(nodeKey, relatedRuns)}
       <section class="news-lineage-dialog-section is-process-flow"><header><h3>当天实际处理轨迹</h3><span>${number(events.length)} 条真实运行事件</span></header>${traceBody}</section>
-      ${renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>当天结果摘要</h3><span>来自当天归档</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("") || "<li>当天未留下结果摘要。</li>"}</ul></section>
-      ${itemDetails}
-      ${reviewItemDetails}
       <section class="news-lineage-dialog-section is-node-evidence"><header><h3>当天归档摘要</h3><span>运行状态与交付记录</span></header><pre class="news-lineage-node-evidence">${esc(node.evidence || "当天归档未保存可展示的摘要。")}</pre></section>
     </div>`;
     bindCompanyAgentGraphInteractions(dialog);

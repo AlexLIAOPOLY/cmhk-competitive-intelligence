@@ -30,6 +30,26 @@ def research_snapshot(root: Path, date: str = "") -> dict:
         return payload
     manifest, directory = runs[0]
     payload["run"] = manifest
+    for key, filename in (("accepted_items", "verified_facts.jsonl"), ("result_items", "candidate_facts.jsonl")):
+        path = directory / filename
+        payload[key] = None
+        if path.exists():
+            try:
+                payload[key] = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
+            except (OSError, ValueError):
+                pass
+    # A latest analysis belongs to this date only when the research run ID matches.
+    payload["insight_items"] = []
+    try:
+        analysis = json.loads((root / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json").read_text(encoding="utf-8"))
+        if (analysis.get("agent_run_id") == manifest.get("run_id")
+                and str((analysis.get("model_analysis") or {}).get("generated_at_hkt", "")) >= str(manifest.get("started_at", ""))):
+            model = analysis.get("model_analysis") or {}
+            payload["insight_items"] = [dict(item, domain=summary.get("domain"))
+                for summary in model.get("summaries", []) for item in summary.get("focuses", [])]
+            payload["insight_items"] += [dict(item, domain="cross") for item in model.get("discoveries", [])]
+    except (OSError, ValueError):
+        pass
     for task in research_plan():
         path = directory / f"{task['key']}.json"
         try:

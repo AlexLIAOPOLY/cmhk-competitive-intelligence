@@ -82,7 +82,7 @@ class ResearchHarness:
                     for _, url, key, text in ranked[:8]]
 
         @tool
-        def submit_metric(status: Literal["verified", "missing", "conflict", "not_applicable"],
+        def submit_metric(status: Literal["verified", "missing", "conflict", "not_applicable", "no_update"],
                           value: str = "", period: str = "", unit: str = "",
                           source_url: str = "", quote: str = "", context_quote: str = "",
                           passage_id: str = "", context_passage_id: str = "",
@@ -200,7 +200,7 @@ class ResearchHarness:
         if "task" in tool_names:
             raise RuntimeError("Harness unexpectedly enabled nested delegation")
 
-    def extract(self, company: str, metric: str, pages: dict, save: Callable) -> dict:
+    def extract(self, company: str, metric: str, pages: dict, save: Callable, baseline: dict | None = None) -> dict:
         from . import workflow as w
         self.current = {"company": company, "metric": metric, "pages": pages,
                         "save": save, "submitted": None, "passages": {}}
@@ -231,6 +231,8 @@ class ResearchHarness:
         try:
             self.agent.invoke({"messages": [{"role": "user", "content": json.dumps({
                 "company": company, "metric": metric, "official_sources": catalog,
+                "trusted_database_baseline": (baseline or {}).get(metric, []),
+                "research_objective": "查找比库内最新期间更新的披露或库内尚未收录的新指标。已有数据库默认正确，不重审已有值。如果只找到同期间或旧期间，直接提交no_update并说明库内已有，无需摘录和核验旧数据。优先最新公告和最新报告期；旧数据不能充当更新成果。未找到新披露说明本轮未发现更新，不声称库内缺失。" if baseline is not None else "按原文提取指标",
                 "relevant_passages": excerpts, "instruction": "已提供相关原文片段；证据充分可直接提交片段编号，无需重复读取。"}, ensure_ascii=False)}]},
                 config={"recursion_limit": 48})
         except ModelCallLimitExceededError:

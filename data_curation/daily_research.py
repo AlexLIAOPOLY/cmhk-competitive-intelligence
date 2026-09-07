@@ -87,6 +87,12 @@ def execute(root: Path, run_id: str) -> dict:
             return previous
         summary = previous if previous.get("status") in {"completed", "partial"} else run_research(
             run_id=run_id, output_dir=directory, resume=bool(previous))
+        if summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted"):
+            summary["publication"] = {"status": "completed", "completed_at": now(),
+                "database_updated": False, "insights": 0, "result_status": "no_new_disclosures",
+                "note": "本轮没有可写入的新披露，保留现有数据库和页面；未重复生成洞察。"}
+            atomic_write_json(manifest_path, summary)
+            return summary
         summary["publication"] = {"status": "running", "started_at": now()}
         atomic_write_json(manifest_path, summary)
         try:

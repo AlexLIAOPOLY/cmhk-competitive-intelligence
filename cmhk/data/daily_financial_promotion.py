@@ -242,9 +242,59 @@ def _candidate_rows(local_payload: dict[str, Any], verified_lines: list[str]) ->
     return output
 
 
+def _incremental_rows(lines: list[str]) -> list[dict[str, Any]]:
+    """Adapt only newly discovered financial facts; do not revisit stored reports."""
+    from data_curation.research_freshness import period_key
+    from data_curation.research_plan import research_plan
+    carriers = {company for task in research_plan() if task["key"] != "cloud" for company in task["companies"]}
+    output = []
+    for line in lines:
+        fact = json.loads(line)
+        company = fact.get("company")
+        if company not in carriers or fact.get("decision") != "accepted" or fact.get("freshness") not in {"new_period", "new_metric"}:
+            continue
+        if not all(fact.get(key) for key in ("entity_supported", "metric_supported", "value_supported", "evidence_hash")):
+            continue
+        mapped = METRICS.get(str(fact.get("metric", "")).casefold())
+        rank = period_key(fact.get("period"))
+        rendered = str(fact.get("value", "")) + " " + str(fact.get("unit", ""))
+        number = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", str(fact.get("value", "")))
+        currency = re.search(r"HKD|HK\$|USD|US\$|RMB|CNY|SGD|AUD|JPY|KRW|EUR|GBP|INR|AED|SAR", rendered, re.I)
+        sources = list(dict.fromkeys(url for url in fact.get("sources", []) if str(url).startswith("https://")))
+        if not mapped or not rank or not number or not currency or not sources or "%" in rendered:
+            continue
+        year, month, grain = rank
+        if grain == "quarter":
+            period = f"Q{month // 3} {year}"
+        elif grain == "half" and month == 6:
+            period = f"H1 {year}"
+        elif grain == "year":
+            period = f"FY{year}"
+        else:
+            # Off-calendar half years remain in the domain fact layer with native periods.
+            continue
+        scale = 1000 if re.search(r"billion|\bbn\b", rendered, re.I) else 1 if re.search(r"million|百万|百萬", rendered, re.I) else None
+        if scale is None:
+            continue
+        amount = float(number[0].replace(",", "")) * scale
+        if re.match(r"^\s*-\s*[A-Za-z$]", str(fact.get("value", ""))):
+            amount = -abs(amount)
+        code = {"HK$": "HKD", "US$": "USD", "RMB": "CNY"}.get(currency[0].upper(), currency[0].upper())
+        subject = {"HKT": "HKT / csl / 1O1O", "3HK": "3HK / Hutchison"}.get(company, company)
+        row = _record(subject=subject, period=period, metric_key=mapped[0], metric_zh=mapped[1],
+            value=amount, unit=f"millions {code}", source_url=sources[0], source_label="本轮最新官方披露",
+            evidence=fact.get("basis", ""), verification_sources=[{"url":url,"label":"官方原文","evidence":fact.get("basis", "")} for url in sources],
+            evidence_hash=fact["evidence_hash"], row_ref=fact.get("row_ref", ""))
+        row["verification_method"] = "incremental_official_source_extraction"
+        if grain == "year":
+            row.update(grain="annual", disclosure_frequency="annual", period_end=f"{year}-12-31")
+        output.append(row)
+    return output
+
+
 def promote_daily_financial_facts(*, database_path: Path, local_financial_path: Path,
                                   verified_facts_path: Path, dry_run: bool = False,
-                                  generated_at: str = "") -> dict[str, Any]:
+                                  generated_at: str = "", incremental_only: bool = False) -> dict[str, Any]:
     payload = _read_json(database_path, {}) or {}
     current_rows = list(payload.get("rows") or [])
     local_payload = _read_json(local_financial_path, {}) or {}
@@ -252,7 +302,7 @@ def promote_daily_financial_facts(*, database_path: Path, local_financial_path: 
         verified_lines = verified_facts_path.read_text(encoding="utf-8").splitlines()
     except OSError:
         verified_lines = []
-    candidates = _candidate_rows(local_payload, verified_lines)
+    candidates = _incremental_rows(verified_lines) if incremental_only else _candidate_rows(local_payload, verified_lines)
     keyed = {(str(row.get("subject") or ""), str(row.get("period") or ""), str(row.get("metric_key") or "")): row for row in current_rows}
     added = upgraded = preserved = 0
     for candidate in candidates:
@@ -261,7 +311,7 @@ def promote_daily_financial_facts(*, database_path: Path, local_financial_path: 
         if previous is None:
             keyed[key] = candidate
             added += 1
-        elif STATUS_STRENGTH.get(str(previous.get("verification_status") or ""), 0) < STATUS_STRENGTH["official_only"]:
+        elif not incremental_only and STATUS_STRENGTH.get(str(previous.get("verification_status") or ""), 0) < STATUS_STRENGTH["official_only"]:
             keyed[key] = candidate
             upgraded += 1
         else:

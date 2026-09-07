@@ -23,7 +23,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("[dispatchX, 365]", RESEARCH)
 
     def test_research_merge_note_describes_audit_and_strategic_news_copy_is_larger(self):
-        self.assertIn("审核六个研究 Agent 提交的结果", RESEARCH)
+        self.assertIn("比较六个研究 Agent 的新披露与库内可信基线", RESEARCH)
         self.assertIn('"可更新字段", "cyan"', RESEARCH)
         self.assertIn("输出：本轮可更新字段及待复核清单", RESEARCH)
         self.assertNotIn("可更新事实", RESEARCH)
@@ -104,7 +104,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_news_lineage_live_refresh_is_fast_quiet_and_preserves_view(self):
         self.assertIn("function refreshNewsLiveData()", SCRIPT)
-        self.assertIn("window.setInterval(refreshNewsLiveData, 4000)", SCRIPT)
+        self.assertIn("window.setInterval(refreshNewsLiveData, 3000)", SCRIPT)
         self.assertIn('activeWorkspaceModule() !== "news"', SCRIPT)
         self.assertIn("loadNewsRuns(selectedRunIds, { force: true, quiet: true })", SCRIPT)
         self.assertIn("function newsLiveRenderSignature()", SCRIPT)
@@ -159,9 +159,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=173', INDEX)
-        self.assertIn('/static/research-diagram.js?v=8', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=208', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=174', INDEX)
+        self.assertIn('/static/research-diagram.js?v=9', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=210', INDEX)
 
 
 if __name__ == "__main__":

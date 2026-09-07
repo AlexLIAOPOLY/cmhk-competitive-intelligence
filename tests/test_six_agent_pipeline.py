@@ -57,6 +57,29 @@ class SixAgentPipelineTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 research_snapshot(root, "../../secrets")
 
+    def test_detail_objects_use_archived_decisions_and_matching_insight_run(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = root / "curation_data/research_runs/research_20260905"
+            run.mkdir(parents=True)
+            (run / "manifest.json").write_text(json.dumps({"architecture": ARCHITECTURE_VERSION,
+                "run_id": run.name, "started_at": "2026-09-05T03:00:00+08:00"}))
+            fact = {"company": "HKT", "metric": "收入", "value": 0, "decision": "accepted"}
+            (run / "verified_facts.jsonl").write_text(json.dumps(fact) + "\n")
+            (run / "candidate_facts.jsonl").write_text(json.dumps(fact) + "\n")
+            analysis = root / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json"
+            analysis.parent.mkdir(parents=True)
+            model = {"agent_run_id": "other_run", "model_analysis": {"generated_at_hkt": "2026-09-05T04:00:00+08:00",
+                "summaries": [{"domain": "local", "focuses": [{"headline": "收入"}]}],
+                "discoveries": [{"title": "跨库研判"}]}}
+            analysis.write_text(json.dumps(model))
+            snapshot = research_snapshot(root, "2026-09-05")
+            self.assertEqual(snapshot["accepted_items"], [fact])
+            self.assertEqual(snapshot["insight_items"], [])
+            model["agent_run_id"] = run.name
+            analysis.write_text(json.dumps(model))
+            self.assertEqual(len(research_snapshot(root, "2026-09-05")["insight_items"]), 2)
+
     def test_six_agent_four_library_upsert_keeps_missing_and_historical_values(self):
         with tempfile.TemporaryDirectory() as directory:
             paths = {domain: Path(directory) / (domain + ".json") for domain in pipeline.FACT_DOMAIN_IDS}
@@ -78,6 +101,34 @@ class SixAgentPipelineTests(unittest.TestCase):
             self.assertEqual(paths["local"].read_text(), first)
             pipeline.publish_domain_fact_sidecars({**analysis, "domains": {}}, output_paths=paths)
             self.assertEqual(len(json.loads(paths["local"].read_text())["facts"]), 2)
+
+    def test_incremental_sidecar_preserves_existing_value_and_adds_new_period(self):
+        with tempfile.TemporaryDirectory() as directory:
+            paths = {domain: Path(directory) / (domain + ".json") for domain in pipeline.FACT_DOMAIN_IDS}
+            old = {"company": "HKT", "metric": "收入", "period": "H1 2026", "unit": "HKD million",
+                   "analysis": "100", "quality_score": .1, "source_tier": "official", "source_url": "https://hkt.com/old"}
+            paths["local"].write_text(json.dumps({"facts": [old]}))
+            analysis = {"architecture": ARCHITECTURE_VERSION, "research_policy": "latest_disclosure_incremental_v1",
+                        "domains": {"local": [{**old, "analysis": "999", "quality_score": 1},
+                                              {**old, "period": "Q3 2026", "analysis": "200"}]}}
+            pipeline.publish_domain_fact_sidecars(analysis, output_paths=paths)
+            rows = json.loads(paths["local"].read_text())["facts"]
+            self.assertEqual(len(rows), 2)
+            self.assertEqual(next(row for row in rows if row["period"] == "H1 2026")["analysis"], "100")
+
+    def test_no_new_disclosure_does_not_rebuild_or_publish(self):
+        import data_curation.daily_research as daily
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run_id = "research_20260905"
+            run = root / "curation_data/research_runs" / run_id
+            run.mkdir(parents=True)
+            (run / "manifest.json").write_text(json.dumps({"status": "completed", "accepted": 0,
+                "research_policy": "latest_disclosure_incremental_v1"}))
+            with patch.object(daily, "ROOT", root), patch.object(pipeline, "_start_refresh_task", side_effect=AssertionError("must not publish")):
+                result = daily.execute(root, run_id)
+            self.assertEqual(result["publication"]["result_status"], "no_new_disclosures")
+            self.assertFalse(result["publication"]["database_updated"])
 
     def test_six_research_publication_requires_its_own_finished_manifest(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(pipeline, "ROOT", Path(directory)):

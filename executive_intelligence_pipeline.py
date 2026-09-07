@@ -578,6 +578,7 @@ def build_ai_analysis(
         "generated_at_hkt": _now(),
         "agent_run_id": agent_run_id,
         **({"architecture": summary["architecture"]} if summary.get("architecture") else {}),
+        **({"research_policy": summary["research_policy"]} if summary.get("research_policy") else {}),
         "curation": {
             "accepted": int(summary.get("accepted") or 0),
             "rejected": int(summary.get("rejected") or 0),
@@ -647,6 +648,14 @@ def publish_domain_fact_sidecars(
             merged = {identity(item): item for item in previous.get("facts") or []}
             for item in facts:
                 old = merged.get(identity(item), {})
+                if analysis.get("research_policy") == "latest_disclosure_incremental_v1":
+                    from data_curation.research_freshness import compare_candidate, metric_key
+                    baseline = {}
+                    for saved in merged.values():
+                        if saved.get("company") == item.get("company"):
+                            baseline.setdefault(metric_key(saved.get("metric")), []).append(saved)
+                    if compare_candidate(dict(item, status="verified"), baseline).get("status") != "verified":
+                        continue
                 if float(item.get("quality_score") or 0) >= float(old.get("quality_score") or 0):
                     merged[identity(item)] = item
             facts = sorted(merged.values(), key=identity)
@@ -4940,6 +4949,7 @@ def run_pipeline(
     attempt: int = 1,
 ) -> dict[str, Any]:
     six_agent_run = (curation_summary or {}).get("architecture") == "six_research_agents_v1"
+    incremental_run = (curation_summary or {}).get("research_policy") == "latest_disclosure_incremental_v1"
     facts_path = VERIFIED_FACTS_PATH
     if six_agent_run:
         if not re.fullmatch(r"[A-Za-z0-9_-]+", agent_run_id):
@@ -5051,7 +5061,7 @@ def run_pipeline(
             f"本地竞对库校验通过，共 {local_rows} 条记录；官方财报 {financial_reports} 份"
             f"{f'；最新 {latest_finance}' if latest_finance else ''}。",
         )
-        if refresh_builders:
+        if refresh_builders and not incremental_run:
             for domain in ("international", "cloud", "macro"):
                 label = DOMAIN_LABELS[domain]
                 _task_event(
@@ -5099,6 +5109,7 @@ def run_pipeline(
                     local_financial_path=LOCAL_FINANCIAL_PATH,
                     verified_facts_path=facts_path,
                     dry_run=dry_run,
+                    incremental_only=incremental_run,
                 )
                 state["daily_main_database_promotion"] = promotion
                 mainland_state = state["domains"].setdefault("mainland", {"ok": True, "changed": False})

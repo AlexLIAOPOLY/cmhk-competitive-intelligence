@@ -7,7 +7,7 @@
     pending: { key: "unknown", label: "待执行" },
   })[value] || { key: "unknown", label: "无记录" };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  const terms = { verified: "已核验", missing: "本轮未找到", conflict: "待复核", not_applicable: "不适用", error: "执行失败" };
+  const terms = { no_update: "库内已有·保留原值", verified: "已核验", missing: "本轮未找到", conflict: "待复核", not_applicable: "不适用", error: "执行失败" };
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
   const childTitle = (title) => String(title || "").replace(/研究 Agent$/, "研究子 Agent");
@@ -25,6 +25,10 @@
     return { collected: sum.collected + current.collected, total: sum.total + current.total };
   }, { collected: 0, total: 0 });
   const researchHealth = (actual, run, coverage) => {
+    if (actual?.incremental && actual.status === "completed") {
+      const needsReview = (actual.reports || []).some((report) => (report.items || []).some((item) => item.status === "conflict"));
+      return { key: needsReview ? "warning" : "healthy", label: needsReview ? "新披露待处理" : "新披露搜索完成" };
+    }
     const execution = actual?.status || (run?.status === "running" ? "running" : undefined);
     if (execution === "completed" && coverage.total > 0 && coverage.collected < coverage.total) {
       return { key: "warning", label: "研究完成·有缺口" };
@@ -37,6 +41,7 @@
   function build(legacy, snapshot, date) {
     const data = snapshot?.date === date ? snapshot : { plan: snapshot?.plan || [] };
     const run = data.run;
+    const incremental = run?.research_policy === "latest_disclosure_incremental_v1";
     const plan = data.plan || [];
     const agents = data.agents || [];
     const nodes = legacy.nodes.filter((n) => ["strategic", "news-search", "news-ai", "news-dedupe", "news-output", "news-selection-agent", "app-result", "weekly-result"].includes(n.key));
@@ -50,11 +55,11 @@
     };
     // Align the supervisor with the midpoint of the six equal-width worker cards.
     const dispatchX = 20 + Math.max(0, plan.length - 1) * 300 / 2;
-    add("research-dispatch", "03:00 Supervisor · Agent 任务分配", [dispatchX, 365], plan.length || "—", "个研究 Agent", "规则型 Supervisor 主控：按公司与指标目录分配六个研究 Agent 的任务", [
+    add("research-dispatch", "03:00 Supervisor · Agent 任务分配", [dispatchX, 365], plan.length || "—", "个研究 Agent", "规则型 Supervisor 主控：以库内数据为可信基线，分配六组最新披露搜索任务", [
       "这是同一个规则型 Supervisor 主控的任务分配阶段；不是额外调用大模型的研究 Agent",
       "香港、内地、亚太、欧洲、美洲与中东、全球云厂商六组并行研究",
-      "公司是任务条目，每家公司只归属一个研究 Agent；所有预期指标必须返回处理结果",
-      "输入：公司目录、需要更新的指标和当前日期；输出：六份明确的研究任务",
+      "已有数据库默认正确；任务目标是搜索尚未入库的新披露，保留库内同期间与更新期间数据",
+      "输入：公司、指标、库内最新期间与当前日期；输出：六份最新披露搜索任务",
       "每天03:00启动；各 Agent 的网页搜索与原文读取在同一轮内完成",
       "执行基础：Deep Agents 0.7.13 开源 harness；关闭默认嵌套子 Agent，研究 Agent 最多六个",
     ], status(run?.status === "running" ? "completed" : run?.status), { note: "规则型主控：每日分配六组研究任务" });
@@ -63,11 +68,11 @@
       const reports = actual?.reports || [];
       const done = reports.filter((report) => report.status === "completed").length;
       const coverage = reportsCoverage(reports);
-      add(`research-${task.key}`, childTitle(task.title), [20 + index * 300, 560], run && coverage.total ? `${coverage.collected}/${coverage.total}` : "—", "条数据已收集", task.purpose, [
+      add(`research-${task.key}`, childTitle(task.title), [20 + index * 300, 560], run && coverage.total ? incremental ? coverage.collected : `${coverage.collected}/${coverage.total}` : "—", incremental ? "条新增数据" : "条数据已收集", task.purpose, [
         `负责 ${task.companies.length} 家公司：${task.companies.join("、")}`,
-        "逐公司读取指标任务，联网搜索相关披露，去重后读取官方网页或财报",
+        "先读取库内最新期间，再查最新业绩公告；继续打开官方公告入口中关联的报告原文",
         "提交主体、指标、期间、数值、单位、原文地址、引用摘录和处理结果",
-        "缺失指标明确返回本轮未找到；有冲突的值交汇总步骤标记待复核",
+        "分别记录新增披露、库内已有、本轮未发现更新与执行失败；未找到新数据不代表已有数据错误",
         "每次只提交一个指标，已完成结果立即保存；截断响应禁止入库，传输重试不触发重新抓取",
       ], researchHealth(actual, run, coverage), { assignment: task, agent: actual, variant: "research-agent",
         note: `公司研究完成 ${done}/${task.companies.length} · 负责 ${task.companies.length} 家公司：${task.companies.join("、")}` });
@@ -75,15 +80,15 @@
       edges.push([`research-${task.key}`, "research-merge", "", "research-join", {}]);
     });
     add("research-merge", "Supervisor · Agent 结果汇总", [20, 820], run?.tasks ?? "—", "项指标结果", "规则型 Supervisor 主控：收齐六个 Agent 的结果，统一校验来源与字段并合并", [
-      "审核六个研究 Agent 提交的结果，检查公司与指标覆盖、来源、字段、重复项与完整性",
+      "比较六个研究 Agent 的新披露与库内可信基线，排除同期间已有数据和更旧的披露",
       "检查公司与指标覆盖、重复项、原文摘录、数值、期间和单位",
       "有原文支持的数据进入更新批次；缺失、冲突和执行失败分别记录",
       "输入：六个研究 Agent 的报告；输出：本轮可更新字段及待复核清单",
       "流程单向结束；下一次定时研究再检查未找到的数据",
     ], status(run?.status === "running" ? undefined : run?.status));
-    add("research-update", "四库数据更新", [660, 820], run?.publication?.database_updated ? run.accepted : "—", "条本轮通过数据", "统一写入本地、国际、内地运营商和全球云厂商四库", [
+    add("research-update", "四库数据更新", [660, 820], run?.publication?.database_updated ? run.accepted : incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—", incremental ? "条本轮新增数据" : "条本轮通过数据", "统一写入本地、国际、内地运营商和全球云厂商四库", [
       "由一个更新步骤处理六个 Agent 提交的数据，防止多个研究任务同时覆盖文件",
-      "先写入四库已审核字段；主表继续执行既有的字段、期间和核验等级门禁，不强制覆盖KPI",
+      "仅把有来源支持的新期间或新指标写入四库；已有同期间数据作为可信基线保留",
       "分别记录已审核字段写入、主表增量更新、文件变化和界面数值变化，不能把四者混为一谈",
       "输入：本轮审核通过字段；输出：四库更新结果与前后变化记录",
     ], status(run?.publication?.database_updated ? "completed" : run?.publication?.status), { publication: run?.publication });
@@ -99,10 +104,30 @@
       { label: "六 Agent 并行研究与四库更新", position: [18, 325] },
     ], groups: [] };
   }
+  const domainNames = { local: "本地运营商", international: "国际运营商", mainland: "内地运营商", cloud: "全球云厂商", cross: "跨库研判" };
+  function actualList(node, snapshot, date) {
+    const data = snapshot?.date === date ? snapshot : {};
+    const run = data.run;
+    const section = (title, note, rows) => `<section class="news-lineage-dialog-section research-actual-list"><header><h3>${esc(title)}</h3><span>${rows.length} 条明细</span></header><p>${esc(note)}</p><div class="news-lineage-preview-scroll" role="region" aria-label="本节点逐条明细" tabindex="0">${rows.join("") || "<p>本轮未保存可展示明细；不以其他日期的数据补齐。</p>"}</div></section>`;
+    if (node.key === "research-dispatch") return section("本轮分配给哪六个研究 Agent", run ? `运行 ${run.run_id}` : "尚未执行；以下是计划任务", (run?.plan || data.plan || []).map((task, i) => `<article><strong>${i + 1}. ${esc(childTitle(task.title))}</strong><p>${esc(task.companies.join("、"))}</p><p>${esc(task.purpose)}</p></article>`));
+    if (node.key === "research-publish") {
+      const items = data.insight_items || [];
+      const publication = run?.publication;
+      return section(`本轮 ${publication?.insights ?? "—"} 项洞察具体内容`, `已读取 ${items.length} 项同一研究运行的明细。页面发布：${publication?.pages?.status || "未记录"}；版本：${publication?.pages?.site_version || "未记录"}`, items.map((item, i) => `<article><strong>${i + 1}. ${esc(item.headline || item.title || item.id || "跨库洞察")}</strong><p>${esc(domainNames[item.domain] || item.domain)} · ${esc(item.analysis || item.detail || item.insight || "未保存正文")}</p>${item.risk ? `<p>口径与风险：${esc(item.risk)}</p>` : ""}<p>${(item.source_urls || []).map(link).join("<br>")}</p></article>`));
+    }
+    const reports = (node.agent ? [node.agent] : data.agents || []).flatMap((a) => (a.reports || []).flatMap((r) => (r.items || []).map((item) => ({ ...item, company: r.company }))));
+    const update = node.key === "research-update";
+    const items = update ? data.accepted_items || [] : node.key === "research-merge" ? data.result_items || reports : reports;
+    const selected = node.agent ? [...items].sort((a, b) => Number(b.status === "verified") - Number(a.status === "verified")) : items;
+    const title = update ? `本轮${run?.research_policy ? "新增" : "通过"}的 ${run?.accepted ?? "—"} 项数据是哪几项` : node.agent ? `${node.label}：已收集数据与缺口清单` : `本轮 ${run?.tasks ?? "—"} 项指标结果清单`;
+    const note = update ? `实际读取 ${items.length} 项审核通过记录；本轮页面数值变化 ${run?.publication?.changes?.changed ?? "未记录"} 项。通过审核、写入事实层与主表数值变化分别记录。` : `只列本节点的公司与指标，已核验、待复核和未找到分别标注；共 ${items.length} 项处理记录。`;
+    return section(title, note, selected.map((item, i) => `<article><strong>${i + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(item.value ?? "无可更新值")} · ${esc(item.period || "期间未记录")} · ${esc(item.unit || "单位未记录")} · ${esc(terms[item.research_status || item.status] || (item.decision === "accepted" ? "已核验" : "待复核"))}</p><p>${esc(item.reason || (item.reasons || []).join("；"))}</p>${item.baseline?.length ? `<p>库内基线：${item.baseline.map((old) => esc(`${old.period} · ${old.value} ${old.unit || ""}`)).join("；")}</p>` : ""}<p>${(item.sources || [item.source_url]).filter(Boolean).map(link).join("<br>")}</p></article>`));
+  }
   function companyCoverageOverview(node) {
     if (!node.agent) return "";
     const reports = node.agent.reports || [];
     const coverage = reportsCoverage(reports);
+    if (node.agent.incremental) return `<section class="news-lineage-dialog-section"><header><h3>各公司最新披露搜索结果</h3></header>${reports.map((report) => `<article><strong>${esc(report.company)}</strong><p>新增 ${(report.items || []).filter((item) => item.status === "verified").length} 项 · 库内已有 ${(report.items || []).filter((item) => item.status === "no_update").length} 项 · 本轮未发现更新 ${(report.items || []).filter((item) => item.status === "missing").length} 项</p></article>`).join("")}</section>`;
     return `<section class="news-lineage-dialog-section research-actual-list"><header><h3>分公司数据收集覆盖率</h3><span>已收集 ${coverage.collected}/${coverage.total} 条数据</span></header><p>公司研究完成不等于数据已收齐；以下分子仅计已核验数据。</p><div class="news-lineage-preview-scroll" role="region" aria-label="分公司数据收集覆盖率" tabindex="0">${reports.map((report, index) => { const current = reportCoverage(report); return `<article><strong>${index + 1}. ${esc(report.company)} · 已收集 ${current.collected}/${current.total} 条数据</strong><p>${esc(reportTerms[report.status] || report.status || "未记录状态")}</p></article>`; }).join("") || "<p>暂无分公司研究记录。</p>"}</div></section>`;
   }
   function detail(node, snapshot, date) {
@@ -115,16 +140,17 @@
     const coverage = reportsCoverage(records.map(({ report }) => report));
     const resultLabel = !run ? "尚无本轮结果" : run.status === "running"
       ? `研究仍在进行，已保存 ${records.reduce((count, { report }) => count + (report.items || []).length, 0)} 项指标记录；最终通过数量待汇总校验`
-      : `已核验 ${run.accepted ?? "未提供"} 项，待复核或缺失 ${run.review ?? "未提供"} 项`;
+      : run.research_policy ? `新增 ${run.accepted ?? "未提供"} 项，保留原库／未发现更新 ${run.unchanged ?? "未提供"} 项，待处理 ${run.review ?? "未提供"} 项` : `已核验 ${run.accepted ?? "未提供"} 项，待复核或缺失 ${run.review ?? "未提供"} 项（历史运行未区分新增与重复数据）`;
     return `<header><div><span>${esc(date)} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(node.purpose)}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
+      ${actualList(node, snapshot, date)}
       ${companyCoverageOverview(node)}
       <section class="news-lineage-dialog-section"><header><h3>这个节点如何处理</h3></header><ol>${node.details.map((text) => `<li>${esc(text)}</li>`).join("")}</ol></section>
       <section class="news-lineage-dialog-section"><header><h3>本轮运行</h3></header><dl>${field("运行编号", esc(run?.run_id || "所选日期没有六Agent任务记录"))}${field("开始时间", esc(run?.started_at || "—"))}${field("结束时间", esc(run?.completed_at || "—"))}${field("本轮结果", esc(resultLabel))}</dl></section>
       ${node.publication ? `<section class="news-lineage-dialog-section"><header><h3>四库及页面交付明细</h3></header><pre>${esc(JSON.stringify(node.publication, null, 2))}</pre></section>` : ""}
       <section class="news-lineage-dialog-section"><header><h3>逐公司、逐指标处理结果</h3><span>${records.length} 份公司报告 · 已收集 ${coverage.collected}/${coverage.total} 条数据</span></header>
       ${records.map(({ a, report }) => { const companyCoverage = reportCoverage(report); return `<details class="research-company"><summary>${esc(report.company)} · 已收集 ${companyCoverage.collected}/${companyCoverage.total} 条数据 · ${esc(reportTerms[report.status] || report.status || "未记录状态")}</summary>
-        ${(report.items || []).map((item) => `<article class="research-metric"><h4>${esc(item.metric)} <small>${esc(terms[item.status] || item.status)}</small></h4><dl>${field("记录值", esc(item.value || "无可更新值"))}${field("期间与单位", esc([item.period, item.unit].filter(Boolean).join(" · ") || "—"))}${field("处理说明", esc(item.reason || "—"))}${field("原文", link(item.source_url || "—"))}${field("原文摘录", esc(item.quote || "—"))}${field("期间及单位上下文", esc(item.context_quote || "—"))}${field("披露主体依据", esc(item.entity_quote || "主体见原文摘录"))}${field("来源内容哈希", esc(item.evidence_hash || "—"))}</dl></article>`).join("")}
+        ${(report.items || []).map((item) => `<article class="research-metric"><h4>${esc(item.metric)} <small>${esc(terms[item.status] || item.status)}</small></h4><dl>${field("记录值", esc(item.value ?? "无可更新值"))}${field("期间与单位", esc([item.period, item.unit].filter(Boolean).join(" · ") || "—"))}${field("处理说明", esc(item.reason || "—"))}${field("原文", link(item.source_url || "—"))}${field("原文摘录", esc(item.quote || "—"))}${field("期间及单位上下文", esc(item.context_quote || "—"))}${field("披露主体依据", esc(item.entity_quote || "主体见原文摘录"))}${field("来源内容哈希", esc(item.evidence_hash || "—"))}</dl></article>`).join("")}
         <details><summary>全部检索与网页读取记录</summary>${(report.searches || []).map((search) => `<article><strong>${esc(search.metric)}</strong><p>检索：${esc(search.query)} · ${esc(search.provider)}</p><ul>${(search.results || []).map((r) => `<li>${link(r.url)}<p>${esc(r.title)} · ${esc(r.snippet)}</p></li>`).join("")}</ul></article>`).join("")}
         ${Object.entries(report.pages || {}).map(([url, page]) => `<p>${link(url)} · HTTP ${esc(page.http_status)} · ${page.opened ? "已读取" : "读取失败"} ${esc(page.blocked_reason || "")}</p>`).join("")}</details></details>`; }).join("") || "<p>该节点的实际处理记录将在任务运行后显示。</p>"}</section>
       <section class="news-lineage-dialog-section"><header><h3>执行时间线</h3><span>${events.length} 条记录</span></header><ol>${events.map((event) => `<li><time>${esc(event.ts)}</time> · ${esc(event.message)}<details><summary>${esc(event.phase)} · 查看原始处理记录</summary><pre>${esc(JSON.stringify(event.data || {}, null, 2))}</pre></details></li>`).join("") || "<li>暂无执行记录。</li>"}</ol></section></div>`;

@@ -103,6 +103,7 @@ def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
         )
         response.raise_for_status()
         content_type = str(response.headers.get("content-type") or "").lower()
+        disclosure_links = []
         if "pdf" in content_type or url.lower().split("?", 1)[0].endswith(".pdf"):
             from io import BytesIO
             from pypdf import PdfReader
@@ -112,6 +113,12 @@ def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
         else:
             soup = BeautifulSoup(response.text, "html.parser")
             page_text = soup.get_text(" ", strip=True)
+            from urllib.parse import urljoin
+            disclosure_links = [{"url": urljoin(str(response.url), a.get("href", "")),
+                                 "title": a.get_text(" ", strip=True)[:200]}
+                                for a in soup.select("a[href]") if re.search(
+                                    r"result|report|earning|interim|financial|业绩|業績|财报|財報|公告|\.pdf",
+                                    a.get_text(" ", strip=True) + " " + a.get("href", ""), re.I)][:120]
         result = {
             "url": url,
             "final_url": str(response.url),
@@ -119,6 +126,7 @@ def _read_source_page(url: str, timeout: float) -> dict[str, Any]:
             "opened": True,
             "blocked_reason": "",
             "text": clean_text(page_text, 20000),
+            "disclosure_links": disclosure_links,
             "cache_hit": False,
         }
     except Exception as exc:

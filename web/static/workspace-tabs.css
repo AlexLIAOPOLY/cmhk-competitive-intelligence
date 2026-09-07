@@ -2183,3 +2183,9 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .news-lineage.is-global .news-lineage-node > span { font-size: 16px; }
   .news-lineage.is-global .news-lineage-node > em { font-size: 12px; white-space: normal; }
 }
+
+/* Keep concrete research objects visible before workflow and raw diagnostics. */
+.research-actual-list > p { padding: 0 16px; }
+.research-actual-list .news-lineage-preview-scroll { max-height: 440px; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.research-actual-list article { padding: 14px 16px; border-bottom: 1px solid #294653; min-width: 0; }
+.research-actual-list article p { margin: 6px 0; line-height: 1.6; }

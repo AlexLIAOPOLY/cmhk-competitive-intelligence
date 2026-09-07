@@ -25,7 +25,7 @@ from .storage import atomic_write_json, atomic_write_jsonl
 
 
 HKT = ZoneInfo("Asia/Hong_Kong")
-TERMINAL = {"verified", "missing", "conflict", "not_applicable", "error"}
+TERMINAL = {"verified", "missing", "conflict", "not_applicable", "error", "no_update"}
 
 
 def now() -> str:
@@ -138,39 +138,57 @@ different companies, search snippets and invented URLs becoming database facts.
     return item
 
 
-def collect_sources(company: str, metrics: list[str], emit: Callable) -> tuple[dict, list[dict]]:
+def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: dict | None = None) -> tuple[dict, list[dict]]:
     from . import workflow as w
     from .schemas import CandidateFact
     profile = w._company_research_profile(company)
-    searches = []
-    ranked: dict[str, dict] = {}
-    # Each required metric is searched once; pages are deduplicated per company.
-    for metric in metrics:
-        query = w._fact_search_query(CandidateFact(id="search", company=company, metric=metric))
-        results, provider = w._public_web_search(query, limit=4, timeout=12.0)
+    year = datetime.now(HKT).year
+    searches, ranked = [], {}
+    # Find the latest disclosure first. Old stored values never enter a search query.
+    queries = [("最新披露", f'"{company}" {year} latest results earnings interim financial report 最新 业绩 公告')]
+    queries += [(metric, w._fact_search_query(CandidateFact(id="search", company=company, metric=metric)).replace("2026", str(year))) for metric in metrics]
+    for metric, query in queries:
+        results, provider = w._public_web_search(query, limit=5, timeout=12.0)
         record = {"company": company, "metric": metric, "query": query, "provider": provider, "results": results}
         searches.append(record)
-        emit("search", f"{company}：检索{metric}", record)
+        emit("search", f"{company}：查找最新披露 · {metric}", record)
         for result in results:
             url = str(result.get("url") or "")
             if w._host_matches_governed_official(url, profile["official_hosts"]):
                 ranked.setdefault(url, result)
-    for url in profile["seed_urls"]:
-        ranked.setdefault(url, {"url": url, "title": "官方参考入口"})
-    pages = {}
-    for url in list(ranked)[:8]:
+    def recency(row):
+        text = str(row.get("title", "")) + " " + str(row.get("url", "")) + " " + str(row.get("snippet", ""))
+        years = [int(value) for value in re.findall(r"20\d{2}", text) if int(value) <= year]
+        return (max(years, default=0), int(bool(re.search(r"result|earning|interim|业绩|業績", text, re.I))))
+    # Reserve room for official IR entries and the reports linked from them.
+    initial = sorted(ranked.values(), key=recency, reverse=True)[:8]
+    initial += [{"url": url, "title": "官方最新公告入口"} for url in profile["seed_urls"][:2]]
+    pages, discovered = {}, {}
+    def read(row):
+        url = row["url"]
+        if url in pages:
+            return
         page = w._read_source_page(url, timeout=15.0)
-        page = {**page, "official": w._host_matches_governed_official(
+        page = {**page, "discovery_title": row.get("title", ""), "official": w._host_matches_governed_official(
             str(page.get("final_url") or url), profile["official_hosts"])}
         pages[url] = page
-        emit("read", f"{company}：读取官方原文", {"company": company, **{k: v for k, v in page.items() if k != "text"}})
+        emit("read", f"{company}：读取最新披露原文", {"company": company, **{k: v for k, v in page.items() if k != "text"}})
+        if page.get("opened") and page.get("official"):
+            for child in page.get("disclosure_links", []):
+                if child.get("url") not in pages and w._host_matches_governed_official(child.get("url", ""), profile["official_hosts"]):
+                    discovered.setdefault(child["url"], child)
+    for row in initial:
+        read(row)
+    for row in sorted(discovered.values(), key=recency, reverse=True)[:6]:
+        read(row)
     return pages, searches
 
 
 def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
-                   model_factory: Callable | None = None, collector: Callable = collect_sources) -> dict:
+                   model_factory: Callable | None = None, collector: Callable = collect_sources, baseline: dict | None = None) -> dict:
     from . import workflow as w
     from .research_harness import ResearchHarness
+    from .research_freshness import compare_candidate
     factory = model_factory or (lambda: w._build_supervisor_model(max_tokens=4096, max_retries=0))
     harness = ResearchHarness(task, factory(), emit, validate_fact)
     reports = list((checkpoint or {}).get("reports") or [])
@@ -181,18 +199,24 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
             continue
         metrics = w._company_expected_metrics(company, [])
         previous = next((report for report in reports if report["company"] == company), {})
-        report = {"company": company, "status": "running", "metrics": metrics,
+        company_baseline = (baseline or {}).get(company, {})
+        report = {"company": company, "status": "running", "metrics": metrics, "baseline": company_baseline, "incremental": baseline is not None,
                   "items": [item for item in previous.get("items", []) if item.get("status") != "error"],
                   "pages": previous.get("pages", {}), "searches": previous.get("searches", [])}
         reports = [row for row in reports if row["company"] != company] + [report]
         def save(item):
+            if baseline is not None:
+                item = compare_candidate(item, company_baseline)
+                item.setdefault("baseline", company_baseline.get(item.get("metric"), []))
             report["items"] = [row for row in report["items"] if row["metric"] != item["metric"]] + [item]
             emit("metric_saved", f"{company}：{item['metric']}已独立保存", item)
             emit("checkpoint", "逐项保存研究进度", {"reports": reports})
         try:
             if not report["pages"]:
-                report["pages"], report["searches"] = collector(company, metrics, emit)
+                report["pages"], report["searches"] = (collector(company, metrics, emit, company_baseline) if collector is collect_sources else collector(company, metrics, emit))
                 emit("checkpoint", "保存本轮原文；恢复时不重复抓取", {"reports": reports})
+            if baseline is not None and not any(page.get("opened") and page.get("official") for page in report["pages"].values()):
+                raise RuntimeError("本轮官方披露页面读取全部失败，不能判断是否有更新；保留原库并记录执行失败")
             saved = {item["metric"] for item in report["items"]}
             for metric in metrics:
                 if metric in saved:
@@ -202,10 +226,10 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
                     for page in report["pages"].values() if page.get("opened") and page.get("official"))
                 if not possible:
                     save({"company": company, "metric": metric, "status": "missing", "value": "",
-                          "reason": "本轮成功读取的官方原文中未定位到该指标；记录缺口，不调用模型补写或触发回抓"})
+                          "reason": "本轮读取的披露中未找到该指标的新数据；不代表库内缺失或已有值错误，保留原库。"})
                     continue
                 try:
-                    harness.extract(company, metric, report["pages"], save)
+                    harness.extract(company, metric, report["pages"], save, baseline=company_baseline if baseline is not None else None)
                 except Exception as exc:
                     # A later network/length failure cannot discard earlier accepted records.
                     if metric not in {item["metric"] for item in report["items"]}:
@@ -220,7 +244,7 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
         report["completed_at"] = now()
         emit("company_complete", f"{company}研究结束", {"company": company, "status": report["status"], "items": report["items"]})
         emit("checkpoint", "保存研究进度", {"reports": reports})
-    result = {**task, "status": "completed" if all(r["status"] == "completed" for r in reports) else "partial",
+    result = {**task, "incremental": baseline is not None, "status": "completed" if all(r["status"] == "completed" for r in reports) else "partial",
               "reports": reports, "completed_at": now()}
     emit("complete", f"{task['title']}提交结果", {"status": result["status"], "companies": len(reports)})
     return result
@@ -250,7 +274,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "value": rendered_value if accepted else "",
                     "period": item.get("period", ""), "unit": item.get("unit", ""),
                     "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", "")])), "status": "ok" if accepted else "unavailable",
-                    "decision": "accepted" if accepted else "review", "row_ref": f"row_{row}",
+                    "decision": "accepted" if accepted else "unchanged" if item["status"] in {"no_update", "missing", "not_applicable"} and report.get("incremental") else "review", "row_ref": f"row_{row}",
                     "sources": [item["source_url"]] if item.get("source_url") else [],
                     "source_tier": "official" if accepted else "unknown", "source_score": 1.0 if accepted else 0,
                     "entity_supported": accepted, "metric_supported": accepted, "value_supported": accepted,
@@ -258,6 +282,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "evidence_hash": item.get("evidence_hash", ""), "reasons": [item.get("reason", "")],
                     "entity_basis": item.get("entity_quote", ""),
                     "research_agent_id": agent["key"], "research_status": item["status"],
+                    "freshness": item.get("freshness", ""), "baseline": item.get("baseline", []),
                 })
     return facts
 
@@ -296,6 +321,13 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
         if previous.get("status") == "completed":
             return previous
         started_at = previous["started_at"]
+    from .research_freshness import load_baseline, POLICY
+    baseline_path = output_dir / "baseline.json"
+    if resume and baseline_path.exists():
+        baseline = json.loads(baseline_path.read_text())
+    else:
+        baseline = load_baseline(output_dir.parent.parent.parent)
+        atomic_write_json(baseline_path, baseline)
     lock = threading.Lock()
     trace_path = output_dir / "trace.jsonl"
     def emit_for(task):
@@ -311,7 +343,7 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
         return emit
     manifest = {"architecture": ARCHITECTURE_VERSION, "run_id": run_id, "started_at": started_at,
                 "harness": {"name": "deepagents", "version": "0.7.13", "atomic_metric_submission": True},
-                "status": "running", "plan": plan, "agent_count": len(plan), "company_count": len(companies)}
+                "status": "running", "research_policy": POLICY, "plan": plan, "agent_count": len(plan), "company_count": len(companies)}
     atomic_write_json(output_dir / "manifest.json", manifest)
     results = []
     with ThreadPoolExecutor(max_workers=len(plan)) as pool:
@@ -319,7 +351,7 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
         for task in plan:
             path = output_dir / f"{task['key']}.json"
             checkpoint = json.loads(path.read_text()) if resume and path.exists() else None
-            future = pool.submit(run_assignment, task, emit_for(task), checkpoint, model_factory, collector)
+            future = pool.submit(run_assignment, task, emit_for(task), checkpoint, model_factory, collector, baseline["companies"])
             futures[future] = task
         for future in as_completed(futures):
             task = futures[future]
@@ -344,12 +376,13 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
     atomic_write_jsonl(output_dir / "candidate_facts.jsonl", facts)
     atomic_write_jsonl(output_dir / "verified_facts.jsonl", accepted)
     summary = {**manifest, "completed_at": now(), "status": "completed" if all(r["status"] == "completed" for r in results) else "partial",
-               "tasks": len(facts), "accepted": len(accepted), "review": len(facts) - len(accepted),
+               "tasks": len(facts), "accepted": len(accepted), "review": sum(fact["decision"] == "review" for fact in facts),
+               "unchanged": sum(fact["decision"] == "unchanged" for fact in facts),
                "agents": [{k: v for k, v in result.items() if k != "reports"} for result in results],
                "processed_companies": sum(len(r["reports"]) for r in results),
                "completed_companies": sum(report["status"] == "completed" for r in results for report in r["reports"]),
                "metric_status_counts": dict(Counter(fact["research_status"] for fact in facts)),
-               "business_status": "updates_available" if accepted else "no_verified_updates",
+               "business_status": "updates_available" if accepted else "no_new_disclosures",
                "recrawl_performed": False}
     atomic_write_json(output_dir / "manifest.json", summary)
     return summary
