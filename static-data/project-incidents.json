@@ -2,6 +2,58 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "b1b397660ad1dea26756b56c",
+      "task_id": "incident:b1b397660ad1dea26756b56c",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个竞争指标AI洞察处理步骤失败。推断：该条目可能回退或延期，但整体任务完成状态需结合任务归档确认。",
+      "suggestions": [
+        "检查对应任务归档和候选ID，确认受影响的条目是否已回退成功或最终失败。",
+        "若条目进入待恢复队列，保留已有结果，仅恢复失败的AI洞察步骤。",
+        "验证恢复后任务归档状态，确保处理完成。",
+        "检查AI响应解析逻辑，增加对仅含思考内容响应的容错处理。"
+      ],
+      "occurred_at_hkt": "2026-09-07T15:40:22+08:00",
+      "started_at_hkt": "2026-09-07T15:40:22+08:00",
+      "heartbeat_at_hkt": "2026-09-07T15:40:22+08:00",
+      "completed_at_hkt": "2026-09-07T15:41:21+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "fa6872f19d49819aefe732ea",
+      "task_id": "incident:fa6872f19d49819aefe732ea",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个竞争指标AI洞察处理步骤失败。推断：该条目可能回退或延期，但整体任务完成状态需结合任务归档确认。",
+      "suggestions": [
+        "检查对应任务归档和候选ID，确认受影响的条目是否已回退成功或最终失败。",
+        "若条目进入待恢复队列，保留已有结果，仅恢复失败的AI洞察步骤。",
+        "验证恢复后任务归档状态，确保处理完成。",
+        "检查AI响应解析逻辑，增加对仅含思考内容响应的容错处理。"
+      ],
+      "occurred_at_hkt": "2026-09-07T15:37:33+08:00",
+      "started_at_hkt": "2026-09-07T15:37:33+08:00",
+      "heartbeat_at_hkt": "2026-09-07T15:37:33+08:00",
+      "completed_at_hkt": "2026-09-07T15:39:21+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "5908d16b310563d1b71096ae",
       "task_id": "incident:5908d16b310563d1b71096ae",
       "title": "主项目后台任务",
@@ -5672,7 +5724,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T15:23:35+08:00",
-      "heartbeat_at_hkt": "2026-09-07T15:36:33+08:00",
+      "heartbeat_at_hkt": "2026-09-07T15:42:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -5696,7 +5748,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T15:23:35+08:00",
-      "heartbeat_at_hkt": "2026-09-07T15:36:33+08:00",
+      "heartbeat_at_hkt": "2026-09-07T15:42:06+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12668,54 +12720,6 @@
       "started_at_hkt": "2026-09-02T19:12:03+08:00",
       "heartbeat_at_hkt": "2026-09-02T19:12:03+08:00",
       "completed_at_hkt": "2026-09-02T19:13:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "28d06ec1f8a764b6984f3652",
-      "task_id": "incident:28d06ec1f8a764b6984f3652",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-09-02T19:09:36+08:00",
-      "started_at_hkt": "2026-09-02T19:09:36+08:00",
-      "heartbeat_at_hkt": "2026-09-02T19:09:36+08:00",
-      "completed_at_hkt": "2026-09-02T19:11:03+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "c2253fc16481844aa84834f4",
-      "task_id": "incident:c2253fc16481844aa84834f4",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-09-02T18:44:03+08:00",
-      "started_at_hkt": "2026-09-02T18:44:03+08:00",
-      "heartbeat_at_hkt": "2026-09-02T18:44:03+08:00",
-      "completed_at_hkt": "2026-09-02T18:44:33+08:00",
       "handled_at_hkt": ""
     }
   ],
