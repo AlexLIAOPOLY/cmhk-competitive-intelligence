@@ -1,7 +1,7 @@
 {
   "id": "global_top5_operators_2016_2025",
-  "title": "全球重点十家运营商2016–2025财务与运营数据库",
-  "summary": "保留既有六家并新增 Verizon、Deutsche Telekom、AT&T、NTT Group；新增四家每条有值记录至少三份不同底层官方文件核验，Comcast 未纳入。",
+  "title": "全球重点十四家运营商2016–2025财务与运营数据库",
+  "summary": "保留既有十家并新增 NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；四家建立完整十年指标骨架，每条有值记录至少三份不同底层官方文件核验，证据不足处保留为空。",
   "source_type": "official_public_multi_source",
   "updated_at": "2026-08-18T00:00:00+08:00",
   "tags": [
@@ -27,18 +27,22 @@
     "conflicts_and_scope_breaks.json",
     "conflicts_and_scope_breaks.csv"
   ],
-  "row_count": 844,
+  "row_count": 954,
   "quality": {
     "status": "backlog_open",
-    "source_count": 376,
-    "available_value_rows": 594,
-    "three_distinct_source_certified_rows": 494,
+    "source_count": 444,
+    "available_value_rows": 696,
+    "three_distinct_source_certified_rows": 596,
     "three_source_certified_rows_by_operator": {
       "AT&T": 42,
       "Bharti Airtel": 98,
       "Deutsche Telekom": 40,
+      "NTT DOCOMO": 19,
       "NTT Group": 37,
       "Reliance Jio": 27,
+      "SK Telecom": 24,
+      "Singtel": 40,
+      "SoftBank Corp.": 19,
       "Verizon": 39,
       "中国广电": 2,
       "中国电信": 64,

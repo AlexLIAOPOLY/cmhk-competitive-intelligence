@@ -1,9 +1,9 @@
-# 全球重点十家运营商数据库质量审计
+# 全球重点十四家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：844
-- 有值行：594
-- 来源条目：376
+- 明细行：954
+- 有值行：696
+- 来源条目：444
 - 重复键：0
 - 无效来源引用：0
 
@@ -14,18 +14,22 @@
 - `official_derived_from_verified_rows`: 6
 - `official_multi_source_verified`: 20
 - `official_single_source`: 39
-- `official_three_distinct_sources_verified`: 494
+- `official_three_distinct_sources_verified`: 596
 - `official_two_distinct_sources`: 25
 - `scope_not_comparable`: 20
-- `source_gap_confirmed`: 203
+- `source_gap_confirmed`: 211
 
 ## 三来源认证行（按运营商）
 
 - AT&T: 42
 - Bharti Airtel: 98
 - Deutsche Telekom: 40
+- NTT DOCOMO: 19
 - NTT Group: 37
 - Reliance Jio: 27
+- SK Telecom: 24
+- Singtel: 40
+- SoftBank Corp.: 19
 - Verizon: 39
 - 中国广电: 2
 - 中国电信: 64
@@ -37,8 +41,11 @@
 - AT&T: 7
 - Bharti Airtel: 5
 - Deutsche Telekom: 7
+- NTT DOCOMO: 1
 - NTT Group: 7
 - Reliance Jio: 40
+- SK Telecom: 6
+- SoftBank Corp.: 1
 - Verizon: 7
 - 中国广电: 124
 - 中国电信: 14
@@ -61,5 +68,9 @@
 - Airtel FY2022 exact comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers; FY2023 onward uses a later recast basis, so direct growth across the boundary needs a scope warning.
 - Jio value of sales/services is not the same as revenue from operations; both are stored separately.
 - Airtel and Jio use total_customers because their group disclosures include non-mobile categories; these rows are not mobile-subscriber counts.
+- NTT DOCOMO is a separate operating entity from NTT Group; DOCOMO operating KPIs are not copied into NTT Group financial rows.
+- SoftBank FY2016-FY2017 uses the predecessor Domestic Telecommunications segment; FY2017 ARPU uses the later IFRS 15-restated basis.
+- SK Telecom FY2019-FY2020 has a continuing-operations restatement boundary following the SK Square spin-off; conflicting values remain blank.
+- Singtel FY2018 uses the later SFRS(I)-restated comparative basis.
 
 缺口保留为 `source_gap_confirmed` 或 `not_applicable_precommercial`，没有插值和估算。

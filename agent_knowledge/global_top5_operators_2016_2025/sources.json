@@ -13611,6 +13611,2591 @@
           }
         }
       }
+    },
+    {
+      "source_id": "singtel_ar_2016",
+      "source_document_id": "singtel:annual_report:2016",
+      "operator_id": "singtel",
+      "year": 2016,
+      "label": "Singtel Annual Report 2016",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2016/Singtel_AR2016.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 16961,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 5013,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3871,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 1930,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2017",
+      "source_document_id": "singtel:annual_report:2017",
+      "operator_id": "singtel",
+      "year": 2017,
+      "label": "Singtel Annual Report 2017",
+      "url": "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2017/singtelar17-full-AR.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 16961,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 5013,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3871,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 1930,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          }
+        },
+        "FY2017": {
+          "revenue": {
+            "value": 16711,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4998,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3853,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2261,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2018",
+      "source_document_id": "singtel:annual_report:2018",
+      "operator_id": "singtel",
+      "year": 2018,
+      "label": "Singtel Annual Report 2018",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2018/singtel-annual-report-2018.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 16961,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 5013,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3871,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 1930,
+            "unit": "SGD_million",
+            "locator": "FY2016 Group five-year financial summary"
+          }
+        },
+        "FY2017": {
+          "revenue": {
+            "value": 16711,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4998,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3853,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2261,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2019",
+      "source_document_id": "singtel:annual_report:2019",
+      "operator_id": "singtel",
+      "year": 2019,
+      "label": "Singtel Annual Report 2019",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2019/singtel-annual-report-2019.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 16711,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4998,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3853,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2261,
+            "unit": "SGD_million",
+            "locator": "FY2017 Group five-year financial summary"
+          }
+        },
+        "FY2018": {
+          "revenue": {
+            "value": 17268,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 5051,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 5473,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2349,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          }
+        },
+        "FY2019": {
+          "revenue": {
+            "value": 17372,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4692,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3095,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 1718,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2020",
+      "source_document_id": "singtel:annual_report:2020",
+      "operator_id": "singtel",
+      "year": 2020,
+      "label": "Singtel Annual Report 2020",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2020/singtel-annual-report-2020.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 17268,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 5051,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 5473,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2349,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          }
+        },
+        "FY2019": {
+          "revenue": {
+            "value": 17372,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4692,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3095,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 1718,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          }
+        },
+        "FY2020": {
+          "revenue": {
+            "value": 16542,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4541,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 1075,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2037,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2021",
+      "source_document_id": "singtel:annual_report:2021",
+      "operator_id": "singtel",
+      "year": 2021,
+      "label": "Singtel Annual Report 2021",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2021/singtel-annual-report-2021.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 17268,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 5051,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 5473,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2349,
+            "unit": "SGD_million",
+            "locator": "FY2018 Group five-year financial summary"
+          }
+        },
+        "FY2019": {
+          "revenue": {
+            "value": 17372,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4692,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 3095,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 1718,
+            "unit": "SGD_million",
+            "locator": "FY2019 Group five-year financial summary"
+          }
+        },
+        "FY2020": {
+          "revenue": {
+            "value": 16542,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4541,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 1075,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2037,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          }
+        },
+        "FY2021": {
+          "revenue": {
+            "value": 15644,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3832,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 554,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2214,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2022",
+      "source_document_id": "singtel:annual_report:2022",
+      "operator_id": "singtel",
+      "year": 2022,
+      "label": "Singtel Annual Report 2022",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2022/Singtel-Annual-Report-2022.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2020": {
+          "revenue": {
+            "value": 16542,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 4541,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 1075,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2037,
+            "unit": "SGD_million",
+            "locator": "FY2020 Group five-year financial summary"
+          }
+        },
+        "FY2021": {
+          "revenue": {
+            "value": 15644,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3832,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 554,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2214,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          }
+        },
+        "FY2022": {
+          "revenue": {
+            "value": 15339,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3767,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 1949,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2217,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2023",
+      "source_document_id": "singtel:annual_report:2023",
+      "operator_id": "singtel",
+      "year": 2023,
+      "label": "Singtel Annual Report 2023",
+      "url": "https://media.aws.singtel.com/info-singtel/annualreport/2023/Singtel_Annual_Report_2023_Higher_Res.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 15644,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3832,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 554,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2214,
+            "unit": "SGD_million",
+            "locator": "FY2021 Group five-year financial summary"
+          }
+        },
+        "FY2022": {
+          "revenue": {
+            "value": 15339,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3767,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 1949,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2217,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          }
+        },
+        "FY2023": {
+          "revenue": {
+            "value": 14624,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3686,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 2225,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2162,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2024",
+      "source_document_id": "singtel:annual_report:2024",
+      "operator_id": "singtel",
+      "year": 2024,
+      "label": "Singtel Annual Report 2024",
+      "url": "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 15339,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3767,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 1949,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2217,
+            "unit": "SGD_million",
+            "locator": "FY2022 Group five-year financial summary"
+          }
+        },
+        "FY2023": {
+          "revenue": {
+            "value": 14624,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3686,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 2225,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2162,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          }
+        },
+        "FY2024": {
+          "revenue": {
+            "value": 14128,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "ebitda": {
+            "value": 3597,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "net_profit": {
+            "value": 795,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "capex": {
+            "value": 2150,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2025",
+      "source_document_id": "singtel:annual_report:2025",
+      "operator_id": "singtel",
+      "year": 2025,
+      "label": "Singtel Annual Report 2025",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 14624,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "ebitda": {
+            "value": 3686,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "net_profit": {
+            "value": 2225,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          },
+          "capex": {
+            "value": 2162,
+            "unit": "SGD_million",
+            "locator": "FY2023 Group five-year financial summary"
+          }
+        },
+        "FY2024": {
+          "revenue": {
+            "value": 14128,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "ebitda": {
+            "value": 3597,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "net_profit": {
+            "value": 795,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "capex": {
+            "value": 2150,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          }
+        },
+        "FY2025": {
+          "revenue": {
+            "value": 14146,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "ebitda": {
+            "value": 3792,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "net_profit": {
+            "value": 4017,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "capex": {
+            "value": 2133,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_ar_2026",
+      "source_document_id": "singtel:annual_report:2026",
+      "operator_id": "singtel",
+      "year": 2026,
+      "label": "Singtel Annual Report 2026",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2026/AR2026.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 14146,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "ebitda": {
+            "value": 3792,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "net_profit": {
+            "value": 4017,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "capex": {
+            "value": 2133,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_mda_2024",
+      "source_document_id": "singtel:management_discussion:2024",
+      "operator_id": "singtel",
+      "year": 2024,
+      "label": "Singtel FY2024 Management Discussion and Analysis",
+      "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf",
+      "source_type": "official_results_mda",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 14128,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "ebitda": {
+            "value": 3597,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "net_profit": {
+            "value": 795,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          },
+          "capex": {
+            "value": 2150,
+            "unit": "SGD_million",
+            "locator": "FY2024 Group financial and cash-capex tables"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "singtel_mda_2025",
+      "source_document_id": "singtel:management_discussion:2025",
+      "operator_id": "singtel",
+      "year": 2025,
+      "label": "Singtel FY2025 Management Discussion and Analysis",
+      "url": "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
+      "source_type": "official_results_mda",
+      "publisher": "Singapore Telecommunications Limited",
+      "comparative_evidence": {
+        "FY2025": {
+          "revenue": {
+            "value": 14146,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "ebitda": {
+            "value": 3792,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "net_profit": {
+            "value": 4017,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          },
+          "capex": {
+            "value": 2133,
+            "unit": "SGD_million",
+            "locator": "FY2025 Group financial and cash-capex tables"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2016",
+      "source_document_id": "skt:annual_report:2016",
+      "operator_id": "sk_telecom",
+      "year": 2016,
+      "label": "SK Telecom Annual Report 2016",
+      "url": "https://www.sktelecom.com/img/eng/annual/20210713/SKT2016AReng.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 17091816,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1660101,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2490455,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2017",
+      "source_document_id": "skt:annual_report:2017",
+      "operator_id": "sk_telecom",
+      "year": 2017,
+      "label": "SK Telecom Annual Report 2017",
+      "url": "https://www.sktelecom.com/img/eng/annual/20210713/SKT2017AReng.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 17091816,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1660101,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2490455,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2017": {
+          "revenue": {
+            "value": 17520013,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 2657595,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2715859,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2018",
+      "source_document_id": "skt:annual_report:2018",
+      "operator_id": "sk_telecom",
+      "year": 2018,
+      "label": "SK Telecom Annual Report 2018",
+      "url": "https://www.sktelecom.com/img/eng/annual/20210713/SKT2018AReng.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2016": {
+          "revenue": {
+            "value": 17091816,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1660101,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2490455,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2017": {
+          "revenue": {
+            "value": 17520013,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 2657595,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2715859,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2018": {
+          "revenue": {
+            "value": 16873960,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 3131988,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2792390,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2019",
+      "source_document_id": "skt:annual_report:2019",
+      "operator_id": "sk_telecom",
+      "year": 2019,
+      "label": "SK Telecom Annual Report 2019",
+      "url": "https://www.sktelecom.com/img/eng/annual/20210713/SKT2019AReng.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2017": {
+          "revenue": {
+            "value": 17520013,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 2657595,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2715859,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2018": {
+          "revenue": {
+            "value": 16873960,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 3131988,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2792390,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2019": {
+          "capex": {
+            "value": 3375883,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2020",
+      "source_document_id": "skt:annual_report:2020",
+      "operator_id": "sk_telecom",
+      "year": 2020,
+      "label": "SK Telecom Annual Report 2020",
+      "url": "https://www.sktelecom.com/img/eng/annual/20210716/SKT2020AnnualReportENG.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2018": {
+          "revenue": {
+            "value": 16873960,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 3131988,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2792390,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2019": {
+          "capex": {
+            "value": 3375883,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2020": {
+          "net_profit": {
+            "value": 1500538,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 3557800,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2021",
+      "source_document_id": "skt:annual_report:2021",
+      "operator_id": "sk_telecom",
+      "year": 2021,
+      "label": "SK Telecom Annual Report 2021",
+      "url": "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2019": {
+          "capex": {
+            "value": 3375883,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2020": {
+          "net_profit": {
+            "value": 1500538,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 3557800,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2021": {
+          "revenue": {
+            "value": 16748585,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 2418989,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2915851,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2022",
+      "source_document_id": "skt:annual_report:2022",
+      "operator_id": "sk_telecom",
+      "year": 2022,
+      "label": "SK Telecom Annual Report 2022",
+      "url": "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_AnnualReport_2022_Eng.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2020": {
+          "net_profit": {
+            "value": 1500538,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 3557800,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2021": {
+          "revenue": {
+            "value": 16748585,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 2418989,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2915851,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2022": {
+          "revenue": {
+            "value": 17304973,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 947831,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2908287,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2023",
+      "source_document_id": "skt:annual_report:2023",
+      "operator_id": "sk_telecom",
+      "year": 2023,
+      "label": "SK Telecom Annual Report 2023",
+      "url": "https://www.sktelecom.com/img/eng/annual/20240731/SK_Telecom_Annual_Report_2023_Eng.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2021": {
+          "revenue": {
+            "value": 16748585,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 2418989,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2915851,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2022": {
+          "revenue": {
+            "value": 17304973,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 947831,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2908287,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2023": {
+          "revenue": {
+            "value": 17608511,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1145937,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2973882,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_ar_2024",
+      "source_document_id": "skt:annual_report:2024",
+      "operator_id": "sk_telecom",
+      "year": 2024,
+      "label": "SK Telecom Annual Report 2024",
+      "url": "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2022": {
+          "revenue": {
+            "value": 17304973,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 947831,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2908287,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2023": {
+          "revenue": {
+            "value": 17608511,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1145937,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2973882,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2024": {
+          "revenue": {
+            "value": 17940609,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1387095,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2487360,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_audit_2024_consolidated",
+      "source_document_id": "skt:consolidated_audit:2024",
+      "operator_id": "sk_telecom",
+      "year": 2024,
+      "label": "SK Telecom FY2024 consolidated audit report",
+      "url": "https://www.sktelecom.com/img/eng/audit/20250311/FY2024_Audit_Report%28Consolidated%29.pdf",
+      "source_type": "official_audited_financial_statements",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2023": {
+          "revenue": {
+            "value": 17608511,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1145937,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2973882,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        },
+        "FY2024": {
+          "revenue": {
+            "value": 17940609,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1387095,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2487360,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_20f_2025",
+      "source_document_id": "skt:20f:2025",
+      "operator_id": "sk_telecom",
+      "year": 2025,
+      "label": "SK Telecom 2025 Form 20-F",
+      "url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm",
+      "source_type": "official_regulatory_filing",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {
+        "FY2024": {
+          "revenue": {
+            "value": 17940609,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "net_profit": {
+            "value": 1387095,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Income/Comprehensive Income comparative column"
+          },
+          "capex": {
+            "value": 2487360,
+            "unit": "KRW_million",
+            "locator": "Consolidated Statements of Cash Flows > acquisitions of property and equipment"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "skt_6k_2025_audited_fs",
+      "source_document_id": "skt:6k_audited_financials:2025",
+      "operator_id": "sk_telecom",
+      "year": 2025,
+      "label": "SK Telecom FY2025 audited financial statements furnished on Form 6-K",
+      "url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm",
+      "source_type": "official_regulatory_filing",
+      "publisher": "SK Telecom Co., Ltd.",
+      "comparative_evidence": {}
+    },
+    {
+      "source_id": "docomo_annual_operating_2026",
+      "source_document_id": "docomo:annual_operating_data:2026",
+      "operator_id": "ntt_docomo",
+      "year": 2025,
+      "label": "NTT DOCOMO Annual Operating Data through FY2025",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+      "source_type": "official_operating_statistics",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_service_subscriptions": {
+            "value": 74.88,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          }
+        },
+        "FY2017": {
+          "mobile_service_subscriptions": {
+            "value": 76.37,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4370,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2018": {
+          "mobile_service_subscriptions": {
+            "value": 78.453,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4360,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2019": {
+          "mobile_service_subscriptions": {
+            "value": 80.326,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4230,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2020": {
+          "mobile_service_subscriptions": {
+            "value": 82.632,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4280,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2021": {
+          "mobile_service_subscriptions": {
+            "value": 84.752,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4150,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2022": {
+          "mobile_service_subscriptions": {
+            "value": 87.495,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4050,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2023": {
+          "mobile_service_subscriptions": {
+            "value": 89.94,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3980,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2024": {
+          "mobile_service_subscriptions": {
+            "value": 91.407,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3940,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2025": {
+          "mobile_service_subscriptions": {
+            "value": 93.065,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3960,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2016_earnings",
+      "source_document_id": "docomo:earnings:2016",
+      "operator_id": "ntt_docomo",
+      "year": 2016,
+      "label": "NTT DOCOMO FY2016 earnings release",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/earnings/earnings_release_fy2016_4q_e.pdf",
+      "source_type": "official_earnings_release",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_service_subscriptions": {
+            "value": 74.88,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2016_20f",
+      "source_document_id": "docomo:20f:2016",
+      "operator_id": "ntt_docomo",
+      "year": 2016,
+      "label": "NTT DOCOMO FY2016 Form 20-F",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/sec/20f_fy2016_e.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_service_subscriptions": {
+            "value": 74.88,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2017_earnings",
+      "source_document_id": "docomo:earnings:2017",
+      "operator_id": "ntt_docomo",
+      "year": 2017,
+      "label": "NTT DOCOMO FY2017 earnings release",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/earnings/earnings_release_fy2017_4q_e.pdf",
+      "source_type": "official_earnings_release",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_service_subscriptions": {
+            "value": 76.37,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2017_yuho",
+      "source_document_id": "docomo:yuho:2017",
+      "operator_id": "ntt_docomo",
+      "year": 2017,
+      "label": "NTT DOCOMO FY2017 annual securities report",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/report/fy2017/yuho_fy2017_e.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_service_subscriptions": {
+            "value": 76.37,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2018_earnings",
+      "source_document_id": "docomo:earnings:2018",
+      "operator_id": "ntt_docomo",
+      "year": 2018,
+      "label": "NTT DOCOMO FY2018 earnings release",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/earnings/earnings_release_fy2018_4q_e.pdf",
+      "source_type": "official_earnings_release",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_arpu": {
+            "value": 4370,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2018": {
+          "mobile_service_subscriptions": {
+            "value": 78.453,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4360,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2018_yuho",
+      "source_document_id": "docomo:yuho:2018",
+      "operator_id": "ntt_docomo",
+      "year": 2018,
+      "label": "NTT DOCOMO FY2018 annual securities report",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/report/fy2018/annual_securities_fy2018_e.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_arpu": {
+            "value": 4370,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        },
+        "FY2018": {
+          "mobile_service_subscriptions": {
+            "value": 78.453,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4360,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2019_earnings",
+      "source_document_id": "docomo:earnings:2019",
+      "operator_id": "ntt_docomo",
+      "year": 2019,
+      "label": "NTT DOCOMO FY2019 earnings release",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/earnings/earnings_release_fy2019_4q_e.pdf",
+      "source_type": "official_earnings_release",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2019": {
+          "mobile_service_subscriptions": {
+            "value": 80.326,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4230,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "docomo_fy2019_yuho",
+      "source_document_id": "docomo:yuho:2019:revised",
+      "operator_id": "ntt_docomo",
+      "year": 2019,
+      "label": "NTT DOCOMO FY2019 annual securities report (revised)",
+      "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/report/fy2019/annual_securities_fy2019_e_revised.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT DOCOMO, INC.",
+      "comparative_evidence": {
+        "FY2019": {
+          "mobile_service_subscriptions": {
+            "value": 80.326,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4230,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2020_data",
+      "source_document_id": "ntt:annual_results_data:2020",
+      "operator_id": "ntt_docomo",
+      "year": 2020,
+      "label": "NTT FY2020 annual results data workbook",
+      "url": "https://group.ntt/en/ir/library/results/2020/excel/fy2020q4data0512.xlsx",
+      "source_type": "official_results_workbook",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "mobile_service_subscriptions": {
+            "value": 82.632,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4280,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2020_yuho",
+      "source_document_id": "ntt:yuho:2020",
+      "operator_id": "ntt_docomo",
+      "year": 2020,
+      "label": "NTT FY2020 annual securities report",
+      "url": "https://group.ntt/en/ir/library/yuho/2020/pdf/36yuho.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2020": {
+          "mobile_service_subscriptions": {
+            "value": 82.632,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4280,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2021_data",
+      "source_document_id": "ntt:annual_results_data:2021",
+      "operator_id": "ntt_docomo",
+      "year": 2021,
+      "label": "NTT FY2021 annual results data workbook",
+      "url": "https://group.ntt/en/ir/library/results/2021/excel/fy2021q4data0512.xlsx",
+      "source_type": "official_results_workbook",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "mobile_service_subscriptions": {
+            "value": 84.752,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4150,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2021_yuho",
+      "source_document_id": "ntt:yuho:2021",
+      "operator_id": "ntt_docomo",
+      "year": 2021,
+      "label": "NTT FY2021 annual securities report",
+      "url": "https://group.ntt/en/ir/library/yuho/2021/pdf/37yuho_2.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2021": {
+          "mobile_service_subscriptions": {
+            "value": 84.752,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4150,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2022_data",
+      "source_document_id": "ntt:annual_results_data:2022",
+      "operator_id": "ntt_docomo",
+      "year": 2022,
+      "label": "NTT FY2022 annual results data workbook",
+      "url": "https://group.ntt/en/ir/library/results/2022/excel/fy2022q4data0512.xlsx",
+      "source_type": "official_results_workbook",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "mobile_service_subscriptions": {
+            "value": 87.495,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4050,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2022_yuho",
+      "source_document_id": "ntt:yuho:2022",
+      "operator_id": "ntt_docomo",
+      "year": 2022,
+      "label": "NTT FY2022 annual securities report",
+      "url": "https://group.ntt/en/ir/library/yuho/2022/pdf/38yuho.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2022": {
+          "mobile_service_subscriptions": {
+            "value": 87.495,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 4050,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2023_data",
+      "source_document_id": "ntt:annual_results_data:2023",
+      "operator_id": "ntt_docomo",
+      "year": 2023,
+      "label": "NTT FY2023 annual results data workbook",
+      "url": "https://group.ntt/en/ir/library/results/2023/excel/fy2023q4data0510.xlsx",
+      "source_type": "official_results_workbook",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "mobile_service_subscriptions": {
+            "value": 89.94,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3980,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2023_yuho",
+      "source_document_id": "ntt:yuho:2023",
+      "operator_id": "ntt_docomo",
+      "year": 2023,
+      "label": "NTT FY2023 annual securities report",
+      "url": "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2023": {
+          "mobile_service_subscriptions": {
+            "value": 89.94,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3980,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2024_data",
+      "source_document_id": "ntt:annual_results_data:2024",
+      "operator_id": "ntt_docomo",
+      "year": 2024,
+      "label": "NTT FY2024 annual results data workbook",
+      "url": "https://group.ntt/en/ir/library/results/2024/excel/fy2024q4data0509.xlsx",
+      "source_type": "official_results_workbook",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "mobile_service_subscriptions": {
+            "value": 91.407,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3940,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2024_yuho",
+      "source_document_id": "ntt:yuho:2024",
+      "operator_id": "ntt_docomo",
+      "year": 2024,
+      "label": "NTT FY2024 annual securities report",
+      "url": "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2024": {
+          "mobile_service_subscriptions": {
+            "value": 91.407,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3940,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2025_data",
+      "source_document_id": "ntt:annual_results_data:2025",
+      "operator_id": "ntt_docomo",
+      "year": 2025,
+      "label": "NTT FY2025 annual results data workbook",
+      "url": "https://group.ntt/en/ir/library/results/2025/excel/fy2025q4data0508.xlsx",
+      "source_type": "official_results_workbook",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "mobile_service_subscriptions": {
+            "value": 93.065,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3960,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "ntt_fy2025_yuho",
+      "source_document_id": "ntt:yuho:2025",
+      "operator_id": "ntt_docomo",
+      "year": 2025,
+      "label": "NTT FY2025 annual securities report",
+      "url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+      "source_type": "official_regulatory_filing",
+      "publisher": "NTT, Inc.",
+      "comparative_evidence": {
+        "FY2025": {
+          "mobile_service_subscriptions": {
+            "value": 93.065,
+            "unit": "million_subscriptions",
+            "locator": "Cellular/mobile service subscriptions table"
+          },
+          "mobile_arpu": {
+            "value": 3960,
+            "unit": "JPY_per_user_month",
+            "locator": "Aggregate/Mobile ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_sbg_fy16_q4",
+      "source_document_id": "softbank:sbg_fy16_q4",
+      "operator_id": "softbank_corp",
+      "year": 2016,
+      "label": "SoftBank Group FY2016 Q4 data sheet",
+      "url": "https://group.softbank/system/files/pdf/ir/presentations/2016/earnings-datasheet_q4fy2016_01_en.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Group Corp.",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_service_subscriptions": {
+            "value": 32.4,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4500,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_sbg_fy17_q4",
+      "source_document_id": "softbank:sbg_fy17_q4",
+      "operator_id": "softbank_corp",
+      "year": 2017,
+      "label": "SoftBank Group FY2017 Q4 data sheet",
+      "url": "https://group.softbank/system/files/pdf/ir/presentations/2017/earnings-datasheet_q4fy2017_01_en.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Group Corp.",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_service_subscriptions": {
+            "value": 32.4,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4500,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2017": {
+          "mobile_service_subscriptions": {
+            "value": 33.175,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_sbg_ar2017",
+      "source_document_id": "softbank:sbg_ar2017",
+      "operator_id": "softbank_corp",
+      "year": 2017,
+      "label": "SoftBank Group Annual Report 2017",
+      "url": "https://group.softbank/system/files/pdf/ir/financials/annual_reports/annual-report_fy2017_02_en.pdf",
+      "source_type": "official_annual_report",
+      "publisher": "SoftBank Group Corp.",
+      "comparative_evidence": {
+        "FY2016": {
+          "mobile_service_subscriptions": {
+            "value": 32.4,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4500,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy18_q4",
+      "source_document_id": "softbank:fy18_q4",
+      "operator_id": "softbank_corp",
+      "year": 2018,
+      "label": "SoftBank Corp. FY2018 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2018/results/pdf/sbkk_earnings_datasheet_20190508.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_service_subscriptions": {
+            "value": 33.175,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4340,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2018": {
+          "mobile_service_subscriptions": {
+            "value": 34.741,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4360,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy18_investor",
+      "source_document_id": "softbank:fy18_investor",
+      "operator_id": "softbank_corp",
+      "year": 2018,
+      "label": "SoftBank Corp. FY2018 investor presentation",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2018/investors/pdf/sbkk_investors_presentation_20190508_en.pdf",
+      "source_type": "official_investor_presentation",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_service_subscriptions": {
+            "value": 33.175,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4340,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy19_investor",
+      "source_document_id": "softbank:fy19_investor",
+      "operator_id": "softbank_corp",
+      "year": 2019,
+      "label": "SoftBank Corp. FY2019 investor presentation",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/investors/pdf/sbkk_investors_presentation_20200511_en.pdf",
+      "source_type": "official_investor_presentation",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2017": {
+          "mobile_arpu": {
+            "value": 4340,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy19_q1",
+      "source_document_id": "softbank:fy19_q1",
+      "operator_id": "softbank_corp",
+      "year": 2019,
+      "label": "SoftBank Corp. FY2019 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/results/pdf/sbkk_earnings_datasheet_20190805.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2018": {
+          "mobile_service_subscriptions": {
+            "value": 34.741,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4360,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy19_q4",
+      "source_document_id": "softbank:fy19_q4",
+      "operator_id": "softbank_corp",
+      "year": 2019,
+      "label": "SoftBank Corp. FY2019 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/results/pdf/sbkk_earnings_datasheet_20200511.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2018": {
+          "mobile_service_subscriptions": {
+            "value": 34.741,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4360,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2019": {
+          "mobile_service_subscriptions": {
+            "value": 36.499,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4420,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy20_q1",
+      "source_document_id": "softbank:fy20_q1",
+      "operator_id": "softbank_corp",
+      "year": 2020,
+      "label": "SoftBank Corp. FY2020 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2020/results/pdf/sbkk_earnings_datasheet_20200804.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2019": {
+          "mobile_service_subscriptions": {
+            "value": 36.499,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4420,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy20_q4",
+      "source_document_id": "softbank:fy20_q4",
+      "operator_id": "softbank_corp",
+      "year": 2020,
+      "label": "SoftBank Corp. FY2020 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2020/results/pdf/sbkk_earnings_datasheet_20210511.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2019": {
+          "mobile_service_subscriptions": {
+            "value": 36.499,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4420,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2020": {
+          "mobile_service_subscriptions": {
+            "value": 37.91,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4290,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy21_q1",
+      "source_document_id": "softbank:fy21_q1",
+      "operator_id": "softbank_corp",
+      "year": 2021,
+      "label": "SoftBank Corp. FY2021 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2021/results/pdf/sbkk_earnings_datasheet_20210804.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2020": {
+          "mobile_service_subscriptions": {
+            "value": 37.91,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4290,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy21_q4",
+      "source_document_id": "softbank:fy21_q4",
+      "operator_id": "softbank_corp",
+      "year": 2021,
+      "label": "SoftBank Corp. FY2021 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2021/results/pdf/sbkk_earnings_datasheet_20220511.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2020": {
+          "mobile_service_subscriptions": {
+            "value": 37.91,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4290,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2021": {
+          "mobile_service_subscriptions": {
+            "value": 38.569,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4070,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy22_q1",
+      "source_document_id": "softbank:fy22_q1",
+      "operator_id": "softbank_corp",
+      "year": 2022,
+      "label": "SoftBank Corp. FY2022 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2022/results/pdf/sbkk_earnings_datasheet_20220804.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2021": {
+          "mobile_service_subscriptions": {
+            "value": 38.569,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4070,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy22_q4",
+      "source_document_id": "softbank:fy22_q4",
+      "operator_id": "softbank_corp",
+      "year": 2022,
+      "label": "SoftBank Corp. FY2022 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2022/results/pdf/sbkk_earnings_datasheet_20230510.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2021": {
+          "mobile_service_subscriptions": {
+            "value": 38.569,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 4070,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2022": {
+          "mobile_service_subscriptions": {
+            "value": 39.596,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3850,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy23_q1",
+      "source_document_id": "softbank:fy23_q1",
+      "operator_id": "softbank_corp",
+      "year": 2023,
+      "label": "SoftBank Corp. FY2023 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2023/results/pdf/sbkk_earnings_datasheet_20230804.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2022": {
+          "mobile_service_subscriptions": {
+            "value": 39.596,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3850,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy23_q4",
+      "source_document_id": "softbank:fy23_q4",
+      "operator_id": "softbank_corp",
+      "year": 2023,
+      "label": "SoftBank Corp. FY2023 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2023/results/pdf/sbkk_earnings_datasheet_pdf_20240509.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2022": {
+          "mobile_service_subscriptions": {
+            "value": 39.596,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3850,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2023": {
+          "mobile_service_subscriptions": {
+            "value": 40.484,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3740,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy24_q1",
+      "source_document_id": "softbank:fy24_q1",
+      "operator_id": "softbank_corp",
+      "year": 2024,
+      "label": "SoftBank Corp. FY2024 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2024/results/pdf/sbkk_earnings_datasheet_pdf_20240806.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2023": {
+          "mobile_service_subscriptions": {
+            "value": 40.484,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3740,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy24_q4",
+      "source_document_id": "softbank:fy24_q4",
+      "operator_id": "softbank_corp",
+      "year": 2024,
+      "label": "SoftBank Corp. FY2024 Q4 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2024/results/pdf/sbkk_earnings_datasheet_pdf_20250508.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2023": {
+          "mobile_service_subscriptions": {
+            "value": 40.484,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3740,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2024": {
+          "mobile_service_subscriptions": {
+            "value": 41.175,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3740,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy25_q1",
+      "source_document_id": "softbank:fy25_q1",
+      "operator_id": "softbank_corp",
+      "year": 2025,
+      "label": "SoftBank Corp. FY2025 Q1 data sheet",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20250805.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2024": {
+          "mobile_service_subscriptions": {
+            "value": 41.175,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3740,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy25_q4",
+      "source_document_id": "softbank:fy25_q4",
+      "operator_id": "softbank_corp",
+      "year": 2025,
+      "label": "SoftBank Corp. FY2025 Q4 data sheet",
+      "url": "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20260511.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2024": {
+          "mobile_service_subscriptions": {
+            "value": 41.175,
+            "unit": "million_subscriptions",
+            "locator": "Mobile service: main subscribers table (reported in thousands; normalized to millions)"
+          },
+          "mobile_arpu": {
+            "value": 3740,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        },
+        "FY2025": {
+          "mobile_arpu": {
+            "value": 3720,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy25_investor",
+      "source_document_id": "softbank:fy25_investor",
+      "operator_id": "softbank_corp",
+      "year": 2025,
+      "label": "SoftBank Corp. FY2025 investor presentation",
+      "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2025/investors/pdf/sbkk_investors_presentation_20260511_en.pdf",
+      "source_type": "official_investor_presentation",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2025": {
+          "mobile_arpu": {
+            "value": 3720,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
+    },
+    {
+      "source_id": "softbank_fy26_q1",
+      "source_document_id": "softbank:fy26_q1",
+      "operator_id": "softbank_corp",
+      "year": 2026,
+      "label": "SoftBank Corp. FY2026 Q1 data sheet",
+      "url": "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2026/results/pdf/sbkk_earnings_datasheet_pdf_20260804.pdf",
+      "source_type": "official_results_datasheet",
+      "publisher": "SoftBank Corp.",
+      "comparative_evidence": {
+        "FY2025": {
+          "mobile_arpu": {
+            "value": 3720,
+            "unit": "JPY_per_user_month",
+            "locator": "Mobile service ARPU table"
+          }
+        }
+      }
     }
   ]
 }

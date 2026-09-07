@@ -39,8 +39,12 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
                 "AT&T": 42,
                 "Bharti Airtel": 98,
                 "Deutsche Telekom": 40,
+                "NTT DOCOMO": 19,
                 "NTT Group": 37,
                 "Reliance Jio": 27,
+                "SK Telecom": 24,
+                "Singtel": 40,
+                "SoftBank Corp.": 19,
                 "Verizon": 39,
                 "中国广电": 2,
                 "中国电信": 64,
@@ -85,6 +89,73 @@ class GlobalTop5OperatorDatabaseTest(unittest.TestCase):
             self.assertIn(expected[1], combined)
             self.assertIn("distinct_source_document_count=3", combined)
             self.assertIn("triple_source_status=three_distinct_sources_verified", combined)
+
+    def test_requested_asian_operators_have_ten_year_skeleton_and_strict_values(self):
+        expected_metrics = {
+            "ntt_docomo": {"mobile_service_subscriptions", "mobile_arpu"},
+            "softbank_corp": {"mobile_service_subscriptions", "mobile_arpu"},
+            "sk_telecom": {"revenue", "net_profit", "capex"},
+            "singtel": {"revenue", "ebitda", "net_profit", "capex"},
+        }
+        for operator_id, metrics in expected_metrics.items():
+            for metric_key in metrics:
+                metric_rows = [
+                    row for row in self.rows
+                    if row["operator_id"] == operator_id and row["metric_key"] == metric_key
+                ]
+                self.assertEqual([row["year"] for row in metric_rows], list(range(2016, 2026)))
+                for row in metric_rows:
+                    if row["value"] is None:
+                        self.assertEqual(row["verification_status"], "source_gap_confirmed")
+                    else:
+                        self.assertGreaterEqual(row["distinct_official_source_document_count"], 3)
+                        self.assertEqual(row["triple_source_status"], "three_distinct_sources_verified")
+
+        gaps = {
+            (row["operator_id"], row["year"], row["metric_key"])
+            for row in self.rows
+            if row["operator_id"] in expected_metrics and row["value"] is None
+        }
+        self.assertEqual(
+            gaps,
+            {
+                ("ntt_docomo", 2016, "mobile_arpu"),
+                ("softbank_corp", 2025, "mobile_service_subscriptions"),
+                ("sk_telecom", 2019, "revenue"),
+                ("sk_telecom", 2019, "net_profit"),
+                ("sk_telecom", 2020, "revenue"),
+                ("sk_telecom", 2025, "revenue"),
+                ("sk_telecom", 2025, "net_profit"),
+                ("sk_telecom", 2025, "capex"),
+            },
+        )
+
+    def test_requested_asian_entity_and_restatement_boundaries_are_preserved(self):
+        self.assertNotIn(("ntt_docomo", 2025, "revenue"), self.index)
+        self.assertEqual(self.index[("ntt_group", 2025, "revenue")]["operator"], "NTT Group")
+        self.assertEqual(self.index[("ntt_docomo", 2025, "mobile_service_subscriptions")]["value"], 93.065)
+        self.assertEqual(self.index[("softbank_corp", 2017, "mobile_arpu")]["value"], 4340)
+        self.assertIn("IFRS 15-restated", self.index[("softbank_corp", 2017, "mobile_arpu")]["quality_note"])
+        self.assertEqual(self.index[("singtel", 2018, "revenue")]["value"], 17268)
+        self.assertIn("SFRS(I)-restated", self.index[("singtel", 2018, "revenue")]["quality_note"])
+
+    def test_xiaojing_retrieves_requested_asian_operators_without_ntt_entity_collision(self):
+        cases = {
+            "NTT DOCOMO FY2025移动ARPU是多少？": ("operator=NTT DOCOMO", "official_value=3960 JPY_per_user_month"),
+            "SoftBank Corp FY2024主用户数是多少？": ("operator=SoftBank Corp.", "official_value=41.175 million_subscriptions"),
+            "SK Telecom FY2024营收是多少？": ("operator=SK Telecom", "official_value=17940609 KRW_million"),
+            "Singtel FY2025 EBITDA是多少？": ("operator=Singtel", "official_value=3792 SGD_million"),
+        }
+        for question, expected in cases.items():
+            combined = "\n".join(
+                chunk["text"] for chunk in rag_llm._global_operator_exact_metric_chunks(
+                    question, dataset_ids={"global_top5_operators_2016_2025"}
+                )
+            )
+            self.assertIn(expected[0], combined)
+            self.assertIn(expected[1], combined)
+            if "NTT DOCOMO" in question:
+                self.assertNotIn("operator=NTT Group;", combined)
 
     def test_china_broadnet_2024_5g_users_have_exact_metric_evidence(self):
         row = self.index[("china_broadnet", 2024, "5g_network_subscribers")]

@@ -802,7 +802,11 @@ def _global_operator_exact_metric_chunks(
         "verizon": ["verizon", "美国电话电报之外的美国运营商", "威瑞森"],
         "deutsche_telekom": ["deutsche telekom", "德国电信"],
         "att": ["at&t", "at＆t", "at and t", "美国电话电报"],
-        "ntt_group": ["ntt group", "ntt", "日本电报电话公司", "日本电报电话"],
+        "ntt_group": ["ntt group", "日本电报电话公司", "日本电报电话集团"],
+        "ntt_docomo": ["ntt docomo", "docomo", "nttドコモ", "日本都科摩"],
+        "softbank_corp": ["softbank corp", "softbank", "软银电信", "日本软银"],
+        "sk_telecom": ["sk telecom", "skt", "sk电讯", "韩国sk电讯"],
+        "singtel": ["singtel", "新加坡电信"],
     }
     matched_subjects = {
         operator_id
@@ -872,7 +876,7 @@ def _global_operator_exact_metric_chunks(
         "shareholders_equity": ["股东权益", "shareholders equity", "shareholder's equity"],
         "reported_mobile_connections": ["披露口径移动连接", "移动连接", "移动连接数", "移动用户规模", "reported mobile connections", "mobile connections"],
         "postpaid_connections": ["后付费用户", "后付费客户", "后付费连接", "后付用户", "postpaid customers", "postpaid connections"],
-        "mobile_service_subscriptions": ["移动电话服务订阅", "手机订阅", "手机用户", "mobile phone service subscriptions"],
+        "mobile_service_subscriptions": ["移动电话服务订阅", "手机订阅", "手机用户", "主用户数", "main subscribers", "mobile phone service subscriptions"],
     }
     matched_metrics = {
         metric_key

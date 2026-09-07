@@ -629,3 +629,113 @@ ntt_group,NTT Group,2024,reported_mobile_connections,available
 ntt_group,NTT Group,2025,revenue,available
 ntt_group,NTT Group,2025,net_profit,available
 ntt_group,NTT Group,2025,reported_mobile_connections,available
+ntt_docomo,NTT DOCOMO,2016,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2016,mobile_arpu,source_gap_confirmed
+ntt_docomo,NTT DOCOMO,2017,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2017,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2018,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2018,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2019,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2019,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2020,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2020,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2021,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2021,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2022,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2022,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2023,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2023,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2024,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2024,mobile_arpu,available
+ntt_docomo,NTT DOCOMO,2025,mobile_service_subscriptions,available
+ntt_docomo,NTT DOCOMO,2025,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2016,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2016,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2017,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2017,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2018,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2018,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2019,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2019,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2020,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2020,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2021,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2021,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2022,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2022,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2023,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2023,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2024,mobile_service_subscriptions,available
+softbank_corp,SoftBank Corp.,2024,mobile_arpu,available
+softbank_corp,SoftBank Corp.,2025,mobile_service_subscriptions,source_gap_confirmed
+softbank_corp,SoftBank Corp.,2025,mobile_arpu,available
+sk_telecom,SK Telecom,2016,revenue,available
+sk_telecom,SK Telecom,2016,net_profit,available
+sk_telecom,SK Telecom,2016,capex,available
+sk_telecom,SK Telecom,2017,revenue,available
+sk_telecom,SK Telecom,2017,net_profit,available
+sk_telecom,SK Telecom,2017,capex,available
+sk_telecom,SK Telecom,2018,revenue,available
+sk_telecom,SK Telecom,2018,net_profit,available
+sk_telecom,SK Telecom,2018,capex,available
+sk_telecom,SK Telecom,2019,revenue,source_gap_confirmed
+sk_telecom,SK Telecom,2019,net_profit,source_gap_confirmed
+sk_telecom,SK Telecom,2019,capex,available
+sk_telecom,SK Telecom,2020,revenue,source_gap_confirmed
+sk_telecom,SK Telecom,2020,net_profit,available
+sk_telecom,SK Telecom,2020,capex,available
+sk_telecom,SK Telecom,2021,revenue,available
+sk_telecom,SK Telecom,2021,net_profit,available
+sk_telecom,SK Telecom,2021,capex,available
+sk_telecom,SK Telecom,2022,revenue,available
+sk_telecom,SK Telecom,2022,net_profit,available
+sk_telecom,SK Telecom,2022,capex,available
+sk_telecom,SK Telecom,2023,revenue,available
+sk_telecom,SK Telecom,2023,net_profit,available
+sk_telecom,SK Telecom,2023,capex,available
+sk_telecom,SK Telecom,2024,revenue,available
+sk_telecom,SK Telecom,2024,net_profit,available
+sk_telecom,SK Telecom,2024,capex,available
+sk_telecom,SK Telecom,2025,revenue,source_gap_confirmed
+sk_telecom,SK Telecom,2025,net_profit,source_gap_confirmed
+sk_telecom,SK Telecom,2025,capex,source_gap_confirmed
+singtel,Singtel,2016,revenue,available
+singtel,Singtel,2016,ebitda,available
+singtel,Singtel,2016,net_profit,available
+singtel,Singtel,2016,capex,available
+singtel,Singtel,2017,revenue,available
+singtel,Singtel,2017,ebitda,available
+singtel,Singtel,2017,net_profit,available
+singtel,Singtel,2017,capex,available
+singtel,Singtel,2018,revenue,available
+singtel,Singtel,2018,ebitda,available
+singtel,Singtel,2018,net_profit,available
+singtel,Singtel,2018,capex,available
+singtel,Singtel,2019,revenue,available
+singtel,Singtel,2019,ebitda,available
+singtel,Singtel,2019,net_profit,available
+singtel,Singtel,2019,capex,available
+singtel,Singtel,2020,revenue,available
+singtel,Singtel,2020,ebitda,available
+singtel,Singtel,2020,net_profit,available
+singtel,Singtel,2020,capex,available
+singtel,Singtel,2021,revenue,available
+singtel,Singtel,2021,ebitda,available
+singtel,Singtel,2021,net_profit,available
+singtel,Singtel,2021,capex,available
+singtel,Singtel,2022,revenue,available
+singtel,Singtel,2022,ebitda,available
+singtel,Singtel,2022,net_profit,available
+singtel,Singtel,2022,capex,available
+singtel,Singtel,2023,revenue,available
+singtel,Singtel,2023,ebitda,available
+singtel,Singtel,2023,net_profit,available
+singtel,Singtel,2023,capex,available
+singtel,Singtel,2024,revenue,available
+singtel,Singtel,2024,ebitda,available
+singtel,Singtel,2024,net_profit,available
+singtel,Singtel,2024,capex,available
+singtel,Singtel,2025,revenue,available
+singtel,Singtel,2025,ebitda,available
+singtel,Singtel,2025,net_profit,available
+singtel,Singtel,2025,capex,available

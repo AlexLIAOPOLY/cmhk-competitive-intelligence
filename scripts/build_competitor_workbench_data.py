@@ -47,7 +47,7 @@ KNOWLEDGE_BASE_META = {
     GLOBAL_OPERATOR_SOURCE: {
         "label": "全球重点运营商年度知识库",
         "type": "财务 + 运营指标",
-        "scope": "内地四家 + 印度两家 + 国际四家 · 2016–2025",
+        "scope": "内地四家 + 印度两家 + 国际八家 · 2016–2025",
     },
     LOCAL_HK_SOURCE: {
         "label": "香港本地运营商年度知识库",
@@ -88,6 +88,10 @@ COMPANY_GROUPS = {
     "Deutsche Telekom": "国际运营商",
     "AT&T": "国际运营商",
     "NTT Group": "国际运营商",
+    "NTT DOCOMO": "国际运营商",
+    "SoftBank Corp.": "国际运营商",
+    "SK Telecom": "国际运营商",
+    "Singtel": "国际运营商",
 }
 UNIT_LABELS = {
     "percent": "%",
@@ -107,6 +111,10 @@ UNIT_LABELS = {
     "USD_million": "百万美元",
     "EUR_billion": "十亿欧元",
     "JPY_billion": "十亿日元",
+    "JPY_per_user_month": "日元/户/月",
+    "KRW_million": "百万韩元",
+    "SGD_million": "百万新加坡元",
+    "million_subscriptions": "百万订阅",
     "HKD_million": "百万港元",
     "CNY_100million": "亿元",
     "RMB_millions": "百万人民币",

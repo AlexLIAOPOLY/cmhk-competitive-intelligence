@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from global_operator_expansion import apply_expansion
+from requested_asian_operator_expansion import apply_requested_asian_expansion
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -3227,6 +3228,7 @@ for _row in ROWS:
 # excluded. The expansion module keeps source/evidence declarations reviewable
 # without adding another large hard-coded block to this already mature builder.
 apply_expansion(OPERATORS, METRICS, SOURCES, add_series)
+apply_requested_asian_expansion(OPERATORS, METRICS, SOURCES, add_series)
 
 
 def write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
@@ -3265,6 +3267,10 @@ def build_coverage(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
         "deutsche_telekom": ["revenue", "net_profit", "reported_mobile_connections"],
         "att": ["revenue", "net_profit", "reported_mobile_connections"],
         "ntt_group": ["revenue", "net_profit", "reported_mobile_connections"],
+        "ntt_docomo": ["mobile_service_subscriptions", "mobile_arpu"],
+        "softbank_corp": ["mobile_service_subscriptions", "mobile_arpu"],
+        "sk_telecom": ["revenue", "net_profit", "capex"],
+        "singtel": ["revenue", "ebitda", "net_profit", "capex"],
     }
     index = {(r["operator_id"], r["year"], r["metric_key"]): r for r in rows}
     result = []
@@ -3319,6 +3325,27 @@ def main() -> None:
     keys = [(r["operator_id"], r["year"], r["metric_key"], r["scope"]) for r in rows]
     duplicate_keys = [list(key) for key, count in Counter(keys).items() if count > 1]
     invalid_source_ids = sorted({sid for r in rows for sid in r["candidate_sources"] if sid not in SOURCES})
+    requested_asian_operator_ids = {"ntt_docomo", "softbank_corp", "sk_telecom", "singtel"}
+    requested_asian_rows = [r for r in rows if r["operator_id"] in requested_asian_operator_ids]
+    missing_requested_operators = requested_asian_operator_ids - {
+        r["operator_id"] for r in requested_asian_rows
+    }
+    if missing_requested_operators:
+        raise RuntimeError(f"Requested Asian operator rows missing: {sorted(missing_requested_operators)}")
+    weak_requested_values = [
+        (r["operator_id"], r["year"], r["metric_key"])
+        for r in requested_asian_rows
+        if r["value"] is not None
+        and (
+            r["distinct_official_source_document_count"] < 3
+            or r["triple_source_status"] != "three_distinct_sources_verified"
+        )
+    ]
+    if weak_requested_values:
+        raise RuntimeError(
+            "Requested Asian operator values failed the strict three-document gate: "
+            f"{weak_requested_values}"
+        )
     coverage = build_coverage(rows)
     available = [r for r in rows if r["value"] is not None]
     triple_source_rows = [
@@ -3360,6 +3387,10 @@ def main() -> None:
             "Airtel FY2022 exact comparatives explicitly exclude the consolidation impact of erstwhile Bharti Infratel/Indus Towers; FY2023 onward uses a later recast basis, so direct growth across the boundary needs a scope warning.",
             "Jio value of sales/services is not the same as revenue from operations; both are stored separately.",
             "Airtel and Jio use total_customers because their group disclosures include non-mobile categories; these rows are not mobile-subscriber counts.",
+            "NTT DOCOMO is a separate operating entity from NTT Group; DOCOMO operating KPIs are not copied into NTT Group financial rows.",
+            "SoftBank FY2016-FY2017 uses the predecessor Domestic Telecommunications segment; FY2017 ARPU uses the later IFRS 15-restated basis.",
+            "SK Telecom FY2019-FY2020 has a continuing-operations restatement boundary following the SK Square spin-off; conflicting values remain blank.",
+            "Singtel FY2018 uses the later SFRS(I)-restated comparative basis.",
         ],
     }
     conflicts = [
@@ -3482,7 +3513,7 @@ def main() -> None:
         writer.writeheader(); writer.writerows(conflicts)
     missing = Counter(r["operator"] for r in coverage if r["status"] != "available")
     quality_md = "\n".join([
-        "# 全球重点十家运营商数据库质量审计", "",
+        "# 全球重点十四家运营商数据库质量审计", "",
         f"- 结论：`{quality['status']}`", f"- 明细行：{len(rows)}", f"- 有值行：{len(available)}", f"- 来源条目：{len(SOURCES)}",
         f"- 重复键：{len(duplicate_keys)}", f"- 无效来源引用：{len(invalid_source_ids)}", "",
         "## 全库核验等级", "", *[f"- `{name}`: {count}" for name,count in sorted(status_counts.items())], "",
@@ -3493,24 +3524,26 @@ def main() -> None:
     ])
     (OUT / "quality_audit.md").write_text(quality_md, encoding="utf-8")
     summary = "\n".join([
-        "# 全球重点十家运营商 2016–2025 数据摘要", "",
-        "本库保留既有六家研究对象，并加入 Verizon、Deutsche Telekom、AT&T、NTT Group；Comcast 按用户要求排除。新增四家均收录 2016–2025 营收、归母净利润和 2023–2025 官方披露口径移动连接/用户规模，每条有值记录绑定至少三份不同底层官方文件。各公司移动连接定义并不完全一致，财务数据保留原币和原生财年，不做汇率换算。", "",
+        "# 全球重点十四家运营商 2016–2025 数据摘要", "",
+        "本库保留既有十家研究对象，并加入 NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel。四家新增对象均建立 FY2016–FY2025 年度骨架；每条有值记录绑定至少三份不同底层官方文件，证据不足或口径冲突的单元格保留为空。财务数据保留原币和原生财年，不做汇率换算。", "",
         "## 2025 年末客户规模", "",
         "| 排名 | 运营商 | 客户数（百万） | 口径 |", "|---:|---|---:|---|",
         "| 1 | 中国移动 | 1,005.0 | 移动客户 |", "| 2 | Bharti Airtel | 590.5 | 集团总客户口径 |", "| 3 | Reliance Jio | 488.2 | 移动及固网总客户 |", "| 4 | 中国电信 | 438.7 | 移动客户 |", "| 5 | 中国联通 | ≈357.3 | 由官方期初与净增推导的移动出账用户 |", "| 补充 | 中国广电 | ≈42.0 | 广电5G用户；非集团总客户口径，不参与原排名 |", "",
-        "## 新增国际运营商 FY2025", "", "| 运营商 | 营收 | 归母净利润 | 披露口径移动连接/用户规模 |", "|---|---:|---:|---:|", "| Verizon | 138,191百万美元 | 17,174百万美元 | 115.903百万连接 |", "| Deutsche Telekom | 119.1十亿欧元 | 9.6十亿欧元 | 273.2百万连接 |", "| AT&T | 125,648百万美元 | 21,953百万美元 | 120.105百万连接 |", "| NTT Group | 14,409.1十亿日元 | 1,037.0十亿日元 | 93.065百万连接 |", "", "## 使用边界", "", "- 排名用于确定研究对象，不代表收入、市值或网络资产排名。", "- 5G套餐用户与5G网络用户不合并。", "- 共建共享基站不在运营商间相加。", "- 财年结束日不同；NTT Group FY2025 截止 2026-03-31，比较时必须使用 `period_end`。", "- 新增四家连接规模只作披露规模比较，Verizon、AT&T、Deutsche Telekom、NTT Group 的客户/设备/批发范围不同。", "- 所有缺口、重述和口径断点见 `quality_audit.md` 与逐行 `quality_note`。", "",
+        "## 新增国际运营商 FY2025", "", "| 运营商 | 营收 | 归母净利润 | 披露口径移动连接/用户规模 |", "|---|---:|---:|---:|", "| Verizon | 138,191百万美元 | 17,174百万美元 | 115.903百万连接 |", "| Deutsche Telekom | 119.1十亿欧元 | 9.6十亿欧元 | 273.2百万连接 |", "| AT&T | 125,648百万美元 | 21,953百万美元 | 120.105百万连接 |", "| NTT Group | 14,409.1十亿日元 | 1,037.0十亿日元 | 93.065百万连接 |", "",
+        "## 本次新增亚洲运营商", "", "| 运营商 | 十年指标骨架 | 三文档有值单元格 | 明确保留的空值 |", "|---|---|---:|---|", "| NTT DOCOMO | 服务订阅数、移动 ARPU | 19 | FY2016 ARPU |", "| SoftBank Corp. | 主用户数、移动 ARPU | 19 | FY2025 主用户数 |", "| SK Telecom | 营收、净利润、现金购置固定资产 | 24 | FY2019 营收/净利润、FY2020 营收、FY2025 三项 |", "| Singtel | 营收、EBITDA、净利润、现金资本开支 | 40 | 无 |", "",
+        "## 使用边界", "", "- 排名用于确定研究对象，不代表收入、市值或网络资产排名。", "- 5G套餐用户与5G网络用户不合并。", "- 共建共享基站不在运营商间相加。", "- 财年结束日不同；NTT Group FY2025 截止 2026-03-31，比较时必须使用 `period_end`。", "- NTT DOCOMO 与 NTT Group 分开建模；SoftBank 主用户并非严格后付费用户。", "- SK Telecom 的 SK Square 分拆重述断点不得跨期直接比较；Singtel FY2018 使用后续 SFRS(I) 重述口径。", "- 所有缺口、重述和口径断点见 `quality_audit.md` 与逐行 `quality_note`。", "",
     ])
     (OUT / "summary.md").write_text(summary, encoding="utf-8")
     readme = "\n".join([
-        "# 全球重点十家运营商 2016–2025 数据库", "",
+        "# 全球重点十四家运营商 2016–2025 数据库", "",
         "## 入口", "", "- `annual_metrics.json`：主数据和元数据。", "- `annual_metrics.csv`：长表。", "- `sources.json`：官方来源登记。", "- `coverage.csv`：逐运营商、逐年、逐指标覆盖/缺口。", "- `quality_audit.json` / `quality_audit.md`：质量门禁。", "- `conflicts_and_scope_breaks.json` / `.csv`：重述、冲突、推导值与口径断点。", "- `summary.md`：研究对象与使用边界。", "",
-        "## 与原数据库的关系", "", "中国移动、中国电信、中国联通的财务数据继续以 `quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json` 为唯一事实源；中国广电及四家内地运营商的新增运营指标写入该原数据库目录的 `annual_operating_metrics_2016_2025.*`。本目录沿用历史兼容 ID `global_top5_operators_2016_2025`，内容现为十家整合视图。Airtel、Jio、Verizon、Deutsche Telekom、AT&T、NTT Group 的财务和运营记录均在本库；Comcast 未纳入。", "",
+        "## 与原数据库的关系", "", "中国移动、中国电信、中国联通的财务数据继续以 `quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json` 为唯一事实源；中国广电及四家内地运营商的新增运营指标写入该原数据库目录的 `annual_operating_metrics_2016_2025.*`。本目录沿用历史兼容 ID `global_top5_operators_2016_2025`，内容现为十四家整合视图。Airtel、Jio、Verizon、Deutsche Telekom、AT&T、NTT Group、NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel 的财务或运营记录均在本库；Comcast 未纳入。", "",
         "## 重建", "", "```bash", "python3 scripts/build_global_top5_operator_database.py", "```", "",
     ])
     (OUT / "README.md").write_text(readme, encoding="utf-8")
     manifest = {
-        "id":"global_top5_operators_2016_2025", "title":"全球重点十家运营商2016–2025财务与运营数据库",
-        "summary":"保留既有六家并新增 Verizon、Deutsche Telekom、AT&T、NTT Group；新增四家每条有值记录至少三份不同底层官方文件核验，Comcast 未纳入。",
+        "id":"global_top5_operators_2016_2025", "title":"全球重点十四家运营商2016–2025财务与运营数据库",
+        "summary":"保留既有十家并新增 NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；四家建立完整十年指标骨架，每条有值记录至少三份不同底层官方文件核验，证据不足处保留为空。",
         "source_type":"official_public_multi_source", "updated_at":BUILD_TIME,
         "tags":["global_carriers","10_year_history","subscribers","5g","broadband","arpu","traffic","base_stations","financials"],
         "entrypoints":["README.md","summary.md","annual_metrics.json","annual_metrics.csv","sources.json","coverage.csv","quality_audit.json","quality_audit.md","conflicts_and_scope_breaks.json","conflicts_and_scope_breaks.csv"],
