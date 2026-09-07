@@ -904,7 +904,7 @@
       "scope": "strategic-news",
       "incident_status": "resolved",
       "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
+      "phase": "恢复证据已确认",
       "severity": "P2",
       "severity_label": "高",
       "summary": "AI 补审队列持续积压，条目迟迟没有进入审核表",
@@ -5495,7 +5495,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T14:14:38+08:00",
-      "heartbeat_at_hkt": "2026-09-07T14:47:08+08:00",
+      "heartbeat_at_hkt": "2026-09-07T14:52:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -5519,7 +5519,7 @@
       ],
       "occurred_at_hkt": "2026-09-05 03:12:43",
       "started_at_hkt": "2026-09-07T14:14:38+08:00",
-      "heartbeat_at_hkt": "2026-09-07T14:47:08+08:00",
+      "heartbeat_at_hkt": "2026-09-07T14:52:05+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },

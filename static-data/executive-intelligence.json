@@ -3229,222 +3229,300 @@
         "unit": "年",
         "label": "FY2016–FY2025比较窗口"
       },
-      "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值记录经三份不同底层官方文件核验",
+      "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值即展示，官方来源数量在后台保留",
       "insight": "金额统一为美元，ARPU统一为美元/月；原币、自然年平均汇率和财年截止日保留，缺口不估算。",
       "entities": [
         {
           "name": "NTT DOCOMO",
+          "value": 43152.41,
           "unit": "百万美元",
-          "period": "FY2024",
-          "detail": "本地库待核验 · 不得表述为互联网未披露",
-          "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
-          "components": [
-            {
-              "label": "披露状态",
-              "detail": "本地库待核验"
-            }
-          ],
-          "component_count": 1,
-          "source_url": "",
-          "verification_count": 0,
-          "verification_status": "source_gap_confirmed",
-          "source_urls": [],
-          "gap_status": "knowledge_pending",
-          "trend": [
-            {
-              "label": "FY2016",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2017",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2018",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2019",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2020",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2021",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2022",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2023",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2024",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2025",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            }
-          ],
-          "gap_label": "本地库待核验"
-        },
-        {
-          "name": "SoftBank Corp.",
-          "unit": "百万美元",
-          "period": "FY2024",
-          "detail": "本地库待核验 · 不得表述为互联网未披露",
-          "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
-          "components": [
-            {
-              "label": "披露状态",
-              "detail": "本地库待核验"
-            }
-          ],
-          "component_count": 1,
-          "source_url": "",
-          "verification_count": 0,
-          "verification_status": "source_gap_confirmed",
-          "source_urls": [],
-          "gap_status": "knowledge_pending",
-          "trend": [
-            {
-              "label": "FY2016",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2017",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2018",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2019",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2020",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2021",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2022",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2023",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2024",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            },
-            {
-              "label": "FY2025",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
-            }
-          ],
-          "gap_label": "本地库待核验"
-        },
-        {
-          "name": "SK Telecom",
-          "value": 13158.97,
-          "unit": "百万美元",
-          "period": "FY2024",
-          "detail": "原披露 1.79406e+07 KRW_million · 1 USD = 1363.375 KRW",
-          "analysis": "FY2024原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+          "period": "FY2025",
+          "detail": "原披露 6458.1 JPY_billion · 1 USD = 149.657926891 JPY",
+          "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
           "components": [
             {
               "label": "原币披露",
-              "value": 17940609.0,
-              "unit": "KRW_million",
-              "detail": "FY2024"
+              "value": 6458.1,
+              "unit": "JPY_billion",
+              "detail": "FY2025"
             },
             {
               "label": "自然年平均汇率",
-              "value": 1363.375,
-              "unit": "KRW/USD",
-              "detail": "指标年份2024"
+              "value": 149.657926890952,
+              "unit": "JPY/USD",
+              "detail": "指标年份2025"
             }
           ],
           "component_count": 2,
-          "source_url": "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-          "verification_count": 3,
-          "verification_status": "official_three_distinct_sources_verified",
+          "source_url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
+          "verification_count": 1,
+          "verification_status": "official_single_source",
           "source_urls": [
-            "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-            "https://www.sktelecom.com/img/eng/audit/20250311/FY2024_Audit_Report%28Consolidated%29.pdf",
-            "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+            "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+          ],
+          "gap_status": "",
+          "trend": [
+            {
+              "label": "FY2016",
+              "value": 42140.62,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/170427/presentation_fy2016_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2017",
+              "value": 42457.55,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/180427/presentation_fy2017_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2018",
+              "value": 43838.62,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/190426/presentation_fy2018_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2019",
+              "value": 42668.69,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/200428/presentation_fy2019_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2020",
+              "value": 55077.71,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/210511/presentation_fy2020_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2021",
+              "value": 53484.91,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/220512/presentation_fy2021_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2022",
+              "value": 46076.7,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/230512/presentation_fy2022_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2023",
+              "value": 43703.84,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/240510/presentation_fy2023_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2024",
+              "value": 41046.79,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/250509/presentation_fy2024_4q_e.pdf"
+              ]
+            },
+            {
+              "label": "FY2025",
+              "value": 43152.41,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SoftBank Corp.",
+          "value": 47031.92,
+          "unit": "百万美元",
+          "period": "FY2025",
+          "detail": "原披露 7038.7 JPY_billion · 1 USD = 149.657926891 JPY",
+          "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+          "components": [
+            {
+              "label": "原币披露",
+              "value": 7038.7,
+              "unit": "JPY_billion",
+              "detail": "FY2025"
+            },
+            {
+              "label": "自然年平均汇率",
+              "value": 149.657926890952,
+              "unit": "JPY/USD",
+              "detail": "指标年份2025"
+            }
+          ],
+          "component_count": 2,
+          "source_url": "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf",
+          "verification_count": 1,
+          "verification_status": "official_single_source",
+          "source_urls": [
+            "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+          ],
+          "gap_status": "",
+          "trend": [
+            {
+              "label": "FY2016",
+              "value": 32015.88,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://group.softbank/system/files/pdf/ir/presentations/2016/earnings-datasheet_q4fy2016_01_en.pdf"
+              ]
+            },
+            {
+              "label": "FY2017",
+              "value": 31940.12,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://group.softbank/system/files/pdf/ir/presentations/2017/earnings-datasheet_q4fy2017_01_en.pdf"
+              ]
+            },
+            {
+              "label": "FY2018",
+              "value": 42172.31,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2018/results/pdf/sbkk_earnings_datasheet_20190508.pdf"
+              ]
+            },
+            {
+              "label": "FY2019",
+              "value": 44594.21,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/results/pdf/sbkk_earnings_datasheet_20200511.pdf"
+              ]
+            },
+            {
+              "label": "FY2020",
+              "value": 48752.24,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2020/results/pdf/sbkk_earnings_datasheet_20210511.pdf"
+              ]
+            },
+            {
+              "label": "FY2021",
+              "value": 51848.53,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2021/results/pdf/sbkk_earnings_datasheet_20220511.pdf"
+              ]
+            },
+            {
+              "label": "FY2022",
+              "value": 44958.81,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2022/results/pdf/sbkk_earnings_datasheet_20230510.pdf"
+              ]
+            },
+            {
+              "label": "FY2023",
+              "value": 43305.23,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2023/results/pdf/sbkk_earnings_datasheet_pdf_20240509.pdf"
+              ]
+            },
+            {
+              "label": "FY2024",
+              "value": 43234.86,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2024/results/pdf/sbkk_earnings_datasheet_pdf_20250508.pdf"
+              ]
+            },
+            {
+              "label": "FY2025",
+              "value": 47031.92,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SK Telecom",
+          "value": 12021.04,
+          "unit": "百万美元",
+          "period": "FY2025",
+          "detail": "原披露 1.70992e+07 KRW_million · 1 USD = 1422.440833333 KRW",
+          "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+          "components": [
+            {
+              "label": "原币披露",
+              "value": 17099213.0,
+              "unit": "KRW_million",
+              "detail": "FY2025"
+            },
+            {
+              "label": "自然年平均汇率",
+              "value": 1422.44083333333,
+              "unit": "KRW/USD",
+              "detail": "指标年份2025"
+            }
+          ],
+          "component_count": 2,
+          "source_url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm",
+          "verification_count": 1,
+          "verification_status": "official_single_source",
+          "source_urls": [
+            "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
           ],
           "gap_status": "",
           "trend": [
@@ -3486,17 +3564,23 @@
             },
             {
               "label": "FY2019",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
+              "value": 13228.93,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf"
+              ]
             },
             {
               "label": "FY2020",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
+              "value": 13630.61,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf"
+              ]
             },
             {
               "label": "FY2021",
@@ -3548,42 +3632,45 @@
             },
             {
               "label": "FY2025",
-              "gap_status": "knowledge_pending",
-              "verification_count": 0,
-              "verification_status": "",
-              "source_urls": []
+              "value": 12021.04,
+              "gap_status": "",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
+              ]
             }
           ]
         },
         {
           "name": "Singtel",
-          "value": 10573.0,
+          "value": 10819.53,
           "unit": "百万美元",
-          "period": "FY2024",
-          "detail": "原披露 14128 SGD_million · 1 USD = 1.336233333 SGD",
-          "analysis": "FY2024原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+          "period": "FY2025",
+          "detail": "原披露 14146 SGD_million · 1 USD = 1.30745 SGD",
+          "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
           "components": [
             {
               "label": "原币披露",
-              "value": 14128.0,
+              "value": 14146.0,
               "unit": "SGD_million",
-              "detail": "FY2024"
+              "detail": "FY2025"
             },
             {
               "label": "自然年平均汇率",
-              "value": 1.33623333333333,
+              "value": 1.30745,
               "unit": "SGD/USD",
-              "detail": "指标年份2024"
+              "detail": "指标年份2025"
             }
           ],
           "component_count": 2,
-          "source_url": "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
+          "source_url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
           "verification_count": 3,
           "verification_status": "official_three_distinct_sources_verified",
           "source_urls": [
-            "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
             "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
-            "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf"
+            "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2026/AR2026.pdf",
+            "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
           ],
           "gap_status": "",
           "trend": [
@@ -3714,231 +3801,309 @@
         {
           "id": "revenue",
           "label": "营收",
-          "visual": "spark_columns",
-          "headline": "SKT资源底盘更厚",
+          "visual": "rows",
+          "headline": "SoftBank资源底盘领先",
           "metric": {
-            "value": 13158.97,
+            "value": 47031.92,
             "unit": "百万美元",
-            "label": "SK Telecom FY2024"
+            "label": "SoftBank Corp. FY2025"
           },
-          "context": "统一为美元；原币与汇率保留",
-          "insight": "SK Telecom FY2024收入约13,158.97百万美元，Singtel约10,573.00百万美元；这表明SKT收入底盘与资源承载力更厚，但Singtel为3月年结。NTT DOCOMO与SoftBank Corp.当前库未收录同口径收入值，不补数。",
+          "context": "各公司最新已核验年度；统一为美元",
+          "insight": "最新已核验营收：SoftBank Corp. FY2025约47,031.92百万美元；NTT DOCOMO FY2025约43,152.41百万美元。更高收入底盘意味着更强资源承载能力；各公司财年截止日差异保留。",
           "items": [
             {
               "name": "NTT DOCOMO",
+              "value": 43152.41,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "period": "FY2025",
+              "detail": "原披露 6458.1 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 6458.1,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 42140.62,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/170427/presentation_fy2016_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 42457.55,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/180427/presentation_fy2017_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 43838.62,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/190426/presentation_fy2018_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 42668.69,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/200428/presentation_fy2019_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 55077.71,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/210511/presentation_fy2020_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 53484.91,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/220512/presentation_fy2021_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 46076.7,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/230512/presentation_fy2022_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 43703.84,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/240510/presentation_fy2023_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 41046.79,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/250509/presentation_fy2024_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 43152.41,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "SoftBank Corp.",
+              "value": 47031.92,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "period": "FY2025",
+              "detail": "原披露 7038.7 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 7038.7,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 32015.88,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://group.softbank/system/files/pdf/ir/presentations/2016/earnings-datasheet_q4fy2016_01_en.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 31940.12,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://group.softbank/system/files/pdf/ir/presentations/2017/earnings-datasheet_q4fy2017_01_en.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 42172.31,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2018/results/pdf/sbkk_earnings_datasheet_20190508.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 44594.21,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/results/pdf/sbkk_earnings_datasheet_20200511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 48752.24,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2020/results/pdf/sbkk_earnings_datasheet_20210511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 51848.53,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2021/results/pdf/sbkk_earnings_datasheet_20220511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 44958.81,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2022/results/pdf/sbkk_earnings_datasheet_20230510.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 43305.23,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2023/results/pdf/sbkk_earnings_datasheet_pdf_20240509.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 43234.86,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2024/results/pdf/sbkk_earnings_datasheet_pdf_20250508.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 47031.92,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "SK Telecom",
-              "value": 13158.97,
+              "value": 12021.04,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "原披露 1.79406e+07 KRW_million · 1 USD = 1363.375 KRW",
-              "analysis": "FY2024原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+              "period": "FY2025",
+              "detail": "原披露 1.70992e+07 KRW_million · 1 USD = 1422.440833333 KRW",
+              "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
               "components": [
                 {
                   "label": "原币披露",
-                  "value": 17940609.0,
+                  "value": 17099213.0,
                   "unit": "KRW_million",
-                  "detail": "FY2024"
+                  "detail": "FY2025"
                 },
                 {
                   "label": "自然年平均汇率",
-                  "value": 1363.375,
+                  "value": 1422.44083333333,
                   "unit": "KRW/USD",
-                  "detail": "指标年份2024"
+                  "detail": "指标年份2025"
                 }
               ],
               "component_count": 2,
-              "source_url": "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-              "verification_count": 3,
-              "verification_status": "official_three_distinct_sources_verified",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
               "source_urls": [
-                "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-                "https://www.sktelecom.com/img/eng/audit/20250311/FY2024_Audit_Report%28Consolidated%29.pdf",
-                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
               ],
               "gap_status": "",
               "trend": [
@@ -3980,17 +4145,23 @@
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 13228.93,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 13630.61,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
@@ -4042,43 +4213,46 @@
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 12021.04,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
+                  ]
                 }
               ],
               "ai_summary": {}
             },
             {
               "name": "Singtel",
-              "value": 10573.0,
+              "value": 10819.53,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "原披露 14128 SGD_million · 1 USD = 1.336233333 SGD",
-              "analysis": "FY2024原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
+              "period": "FY2025",
+              "detail": "原披露 14146 SGD_million · 1 USD = 1.30745 SGD",
+              "analysis": "最新已核验原币收入按指标年份自然年平均汇率换算；财年截止日差异保留。",
               "components": [
                 {
                   "label": "原币披露",
-                  "value": 14128.0,
+                  "value": 14146.0,
                   "unit": "SGD_million",
-                  "detail": "FY2024"
+                  "detail": "FY2025"
                 },
                 {
                   "label": "自然年平均汇率",
-                  "value": 1.33623333333333,
+                  "value": 1.30745,
                   "unit": "SGD/USD",
-                  "detail": "指标年份2024"
+                  "detail": "指标年份2025"
                 }
               ],
               "component_count": 2,
-              "source_url": "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
+              "source_url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
               "verification_count": 3,
               "verification_status": "official_three_distinct_sources_verified",
               "source_urls": [
-                "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
                 "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
-                "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf"
+                "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2026/AR2026.pdf",
+                "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
               ],
               "gap_status": "",
               "trend": [
@@ -4211,231 +4385,309 @@
         {
           "id": "net_profit",
           "label": "净利润",
-          "visual": "spark_columns",
-          "headline": "SKT自我融资更厚",
+          "visual": "rows",
+          "headline": "DOCOMO利润池当期领先",
           "metric": {
-            "value": 1017.4,
+            "value": 4411.39,
             "unit": "百万美元",
-            "label": "SK Telecom FY2024"
+            "label": "NTT DOCOMO FY2025"
           },
-          "context": "统一为美元；缺口不估算",
-          "insight": "SK Telecom FY2024净利润约1,017.40百万美元，Singtel约594.96百万美元；绝对值反映当期利润池规模，但财年区间不同。NTT DOCOMO与SoftBank Corp.当前库未收录同口径净利润值。",
+          "context": "各公司最新已核验年度；统一为美元",
+          "insight": "最新已核验净利润：NTT DOCOMO FY2025约4,411.39百万美元；SoftBank Corp. FY2025约3,680.39百万美元。利润池规模影响再投资和经营容错空间；绝对值只反映当期利润池规模。",
           "items": [
             {
               "name": "NTT DOCOMO",
+              "value": 4411.39,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "period": "FY2025",
+              "detail": "原披露 660.2 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "最新已核验原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 660.2,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5997.63,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/170427/presentation_fy2016_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 7050.26,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/180427/presentation_fy2017_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6009.61,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/190426/presentation_fy2018_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5426.12,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/200428/presentation_fy2019_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 7020.4,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/210511/presentation_fy2020_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6852.58,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/220512/presentation_fy2021_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5869.28,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/230512/presentation_fy2022_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5659.43,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/240510/presentation_fy2023_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4746.76,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/250509/presentation_fy2024_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4411.39,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "SoftBank Corp.",
+              "value": 3680.39,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "period": "FY2025",
+              "detail": "原披露 550.8 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "最新已核验原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 550.8,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4055.41,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://group.softbank/system/files/pdf/ir/presentations/2016/earnings-datasheet_q4fy2016_01_en.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 3572.38,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://group.softbank/system/files/pdf/ir/presentations/2017/earnings-datasheet_q4fy2017_01_en.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4188.43,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2018/results/pdf/sbkk_earnings_datasheet_20190508.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4339.98,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/results/pdf/sbkk_earnings_datasheet_20200511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4601.28,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2020/results/pdf/sbkk_earnings_datasheet_20210511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4711.43,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2021/results/pdf/sbkk_earnings_datasheet_20220511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 2555.93,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2022/results/pdf/sbkk_earnings_datasheet_20230510.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 3481.36,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2023/results/pdf/sbkk_earnings_datasheet_pdf_20240509.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 3475.67,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2024/results/pdf/sbkk_earnings_datasheet_pdf_20250508.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 3680.39,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "SK Telecom",
-              "value": 1017.4,
+              "value": 263.69,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "原披露 1.3871e+06 KRW_million · 1 USD = 1363.375 KRW",
-              "analysis": "FY2024原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
+              "period": "FY2025",
+              "detail": "原披露 375084 KRW_million · 1 USD = 1422.440833333 KRW",
+              "analysis": "最新已核验原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
                   "label": "原币披露",
-                  "value": 1387095.0,
+                  "value": 375084.0,
                   "unit": "KRW_million",
-                  "detail": "FY2024"
+                  "detail": "FY2025"
                 },
                 {
                   "label": "自然年平均汇率",
-                  "value": 1363.375,
+                  "value": 1422.44083333333,
                   "unit": "KRW/USD",
-                  "detail": "指标年份2024"
+                  "detail": "指标年份2025"
                 }
               ],
               "component_count": 2,
-              "source_url": "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-              "verification_count": 3,
-              "verification_status": "official_three_distinct_sources_verified",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
               "source_urls": [
-                "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-                "https://www.sktelecom.com/img/eng/audit/20250311/FY2024_Audit_Report%28Consolidated%29.pdf",
-                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
               ],
               "gap_status": "",
               "trend": [
@@ -4477,10 +4729,13 @@
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 738.6,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
@@ -4544,43 +4799,46 @@
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 263.69,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
+                  ]
                 }
               ],
               "ai_summary": {}
             },
             {
               "name": "Singtel",
-              "value": 594.96,
+              "value": 3072.39,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "原披露 795 SGD_million · 1 USD = 1.336233333 SGD",
-              "analysis": "FY2024原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
+              "period": "FY2025",
+              "detail": "原披露 4017 SGD_million · 1 USD = 1.30745 SGD",
+              "analysis": "最新已核验原币净利润按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
                   "label": "原币披露",
-                  "value": 795.0,
+                  "value": 4017.0,
                   "unit": "SGD_million",
-                  "detail": "FY2024"
+                  "detail": "FY2025"
                 },
                 {
                   "label": "自然年平均汇率",
-                  "value": 1.33623333333333,
+                  "value": 1.30745,
                   "unit": "SGD/USD",
-                  "detail": "指标年份2024"
+                  "detail": "指标年份2025"
                 }
               ],
               "component_count": 2,
-              "source_url": "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
+              "source_url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
               "verification_count": 3,
               "verification_status": "official_three_distinct_sources_verified",
               "source_urls": [
-                "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
                 "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
-                "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf"
+                "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2026/AR2026.pdf",
+                "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
               ],
               "gap_status": "",
               "trend": [
@@ -4713,231 +4971,309 @@
         {
           "id": "capex",
           "label": "资本开支",
-          "visual": "spark_columns",
-          "headline": "SKT持续投入更厚",
+          "visual": "rows",
+          "headline": "DOCOMO持续投入更厚",
           "metric": {
-            "value": 1824.41,
+            "value": 5729.73,
             "unit": "百万美元",
-            "label": "SK Telecom FY2024"
+            "label": "NTT DOCOMO FY2025"
           },
-          "context": "统一为美元；缺口不估算",
-          "insight": "SK Telecom FY2024资本开支约1,824.40百万美元，Singtel约1,608.99百万美元；SKT持续投入规模更高，但投入转化效率不能由绝对金额判断。NTT DOCOMO与SoftBank Corp.当前库未收录同口径资本开支值。",
+          "context": "各公司最新已核验年度；统一为美元",
+          "insight": "最新已核验资本开支：NTT DOCOMO FY2025约5,729.73百万美元；SoftBank Corp. FY2025约4,980.02百万美元。持续投入规模反映网络和增长的资本军备强度；投入转化效率不能由绝对金额判断。",
           "items": [
             {
               "name": "NTT DOCOMO",
+              "value": 5729.73,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "period": "FY2025",
+              "detail": "原披露 857.5 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "最新已核验原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 857.5,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5488.41,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/170427/presentation_fy2016_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5144.15,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/180427/presentation_fy2017_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5376.59,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/190426/presentation_fy2018_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5254.58,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/200428/presentation_fy2019_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6877.1,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/210511/presentation_fy2020_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6365.13,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/220512/presentation_fy2021_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5371.18,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/230512/presentation_fy2022_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5020.96,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/240510/presentation_fy2023_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4719.02,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/250509/presentation_fy2024_4q_e.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5729.73,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "SoftBank Corp.",
+              "value": 4980.02,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "period": "FY2025",
+              "detail": "原披露 745.3 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "最新已核验原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 745.3,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 2946.69,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://group.softbank/system/files/pdf/ir/presentations/2016/earnings-datasheet_q4fy2016_01_en.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 3302.13,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://group.softbank/system/files/pdf/ir/presentations/2017/earnings-datasheet_q4fy2017_01_en.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4513.55,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2018/results/pdf/sbkk_earnings_datasheet_20190508.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5187.44,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2019/results/pdf/sbkk_earnings_datasheet_20200511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6371.15,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2020/results/pdf/sbkk_earnings_datasheet_20210511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5897.72,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2021/results/pdf/sbkk_earnings_datasheet_20220511.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 5997.04,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2022/results/pdf/sbkk_earnings_datasheet_20230510.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4633.03,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2023/results/pdf/sbkk_earnings_datasheet_pdf_20240509.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 6030.4,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/presentations/fy2024/results/pdf/sbkk_earnings_datasheet_pdf_20250508.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 4980.02,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "SK Telecom",
-              "value": 1824.41,
+              "value": 1551.25,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "原披露 2.48736e+06 KRW_million · 1 USD = 1363.375 KRW",
-              "analysis": "FY2024原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
+              "period": "FY2025",
+              "detail": "原披露 2.20657e+06 KRW_million · 1 USD = 1422.440833333 KRW",
+              "analysis": "最新已核验原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
                   "label": "原币披露",
-                  "value": 2487360.0,
+                  "value": 2206567.0,
                   "unit": "KRW_million",
-                  "detail": "FY2024"
+                  "detail": "FY2025"
                 },
                 {
                   "label": "自然年平均汇率",
-                  "value": 1363.375,
+                  "value": 1422.44083333333,
                   "unit": "KRW/USD",
-                  "detail": "指标年份2024"
+                  "detail": "指标年份2025"
                 }
               ],
               "component_count": 2,
-              "source_url": "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-              "verification_count": 3,
-              "verification_status": "official_three_distinct_sources_verified",
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
               "source_urls": [
-                "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf",
-                "https://www.sktelecom.com/img/eng/audit/20250311/FY2024_Audit_Report%28Consolidated%29.pdf",
-                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
               ],
               "gap_status": "",
               "trend": [
@@ -5051,43 +5387,46 @@
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 1551.25,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
+                  ]
                 }
               ],
               "ai_summary": {}
             },
             {
               "name": "Singtel",
-              "value": 1609.0,
+              "value": 1631.42,
               "unit": "百万美元",
-              "period": "FY2024",
-              "detail": "原披露 2150 SGD_million · 1 USD = 1.336233333 SGD",
-              "analysis": "FY2024原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
+              "period": "FY2025",
+              "detail": "原披露 2133 SGD_million · 1 USD = 1.30745 SGD",
+              "analysis": "最新已核验原币资本开支按指标年份自然年平均汇率换算；缺口不估算。",
               "components": [
                 {
                   "label": "原币披露",
-                  "value": 2150.0,
+                  "value": 2133.0,
                   "unit": "SGD_million",
-                  "detail": "FY2024"
+                  "detail": "FY2025"
                 },
                 {
                   "label": "自然年平均汇率",
-                  "value": 1.33623333333333,
+                  "value": 1.30745,
                   "unit": "SGD/USD",
-                  "detail": "指标年份2024"
+                  "detail": "指标年份2025"
                 }
               ],
               "component_count": 2,
-              "source_url": "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
+              "source_url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
               "verification_count": 3,
               "verification_status": "official_three_distinct_sources_verified",
               "source_urls": [
-                "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf",
                 "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf",
-                "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf"
+                "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2026/AR2026.pdf",
+                "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
               ],
               "gap_status": "",
               "trend": [
@@ -5220,15 +5559,15 @@
         {
           "id": "mobile_arpu",
           "label": "移动ARPU",
-          "visual": "spark_columns",
+          "visual": "rows",
           "headline": "DOCOMO客户价值更高",
           "metric": {
             "value": 26.46,
             "unit": "美元/月",
             "label": "NTT DOCOMO FY2025"
           },
-          "context": "统一为美元/月；用户范围按公司原口径",
-          "insight": "NTT DOCOMO FY2025移动ARPU约26.46美元/月，SoftBank Corp.约24.86美元/月；这表明DOCOMO客户价值量级更高，但两家公司用户范围结构不同，不能直接等同。SK Telecom与Singtel当前库未收录同口径ARPU。",
+          "context": "各公司最新已核验年度；统一为美元/月",
+          "insight": "最新已核验移动ARPU：NTT DOCOMO FY2025约26.46美元/月；SoftBank Corp. FY2025约24.86美元/月。ARPU反映客户价值量级；各公司用户范围结构不同，不直接等同。",
           "items": [
             {
               "name": "NTT DOCOMO",
@@ -5236,7 +5575,7 @@
               "unit": "美元/月",
               "period": "FY2025",
               "detail": "原披露 3960 JPY_per_user_month · 1 USD = 149.657926891 JPY",
-              "analysis": "FY2025移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
+              "analysis": "最新已核验移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
               "components": [
                 {
                   "label": "原币披露",
@@ -5264,10 +5603,13 @@
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 39.07,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212"
+                  ]
                 },
                 {
                   "label": "FY2017",
@@ -5386,7 +5728,7 @@
               "unit": "美元/月",
               "period": "FY2025",
               "detail": "原披露 3720 JPY_per_user_month · 1 USD = 149.657926891 JPY",
-              "analysis": "FY2025移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
+              "analysis": "最新已核验移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
               "components": [
                 {
                   "label": "原币披露",
@@ -5537,188 +5879,268 @@
             },
             {
               "name": "SK Telecom",
+              "value": 19.58,
               "unit": "美元/月",
               "period": "FY2025",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "detail": "原披露 27845 KRW_per_user_month · 1 USD = 1422.440833333 KRW",
+              "analysis": "最新已核验移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 27845.0,
+                  "unit": "KRW_per_user_month",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 1422.44083333333,
+                  "unit": "KRW/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 30.7,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20210713/SKT2016AReng.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 30.86,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20210713/SKT2017AReng.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 29.31,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/qua/20190131/4Q18InvestorBriefingENG.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 26.67,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/persist_report/20210713/SSKT2019AReng.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 25.68,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/persist_report/20210716/SKT2020AnnualReportENG.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 26.68,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_Annual_Report_2021_Eng_F.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 23.65,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/annual/20240409/SK_Telecom_AnnualReport_2022_Eng.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 22.88,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/eng/persist_report/20240731/SK_Telecom_Annual_Report_2023_Eng.pdf?v2="
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 21.53,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sktelecom.com/img/kor/persist_report/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 19.58,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             },
             {
               "name": "Singtel",
+              "value": 18.36,
               "unit": "美元/月",
               "period": "FY2025",
-              "detail": "本地库待核验 · 不得表述为互联网未披露",
-              "analysis": "当前本地知识库未完成同口径核验；不代表互联网未披露。",
+              "detail": "原披露 24 SGD_per_user_month · 1 USD = 1.30745 SGD",
+              "analysis": "最新已核验移动ARPU按指标年份自然年平均汇率换算；不同用户范围不直接等同。",
               "components": [
                 {
-                  "label": "披露状态",
-                  "detail": "本地库待核验"
+                  "label": "原币披露",
+                  "value": 24.0,
+                  "unit": "SGD_per_user_month",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 1.30745,
+                  "unit": "SGD/USD",
+                  "detail": "指标年份2025"
                 }
               ],
-              "component_count": 1,
-              "source_url": "",
-              "verification_count": 0,
-              "verification_status": "source_gap_confirmed",
-              "source_urls": [],
-              "gap_status": "knowledge_pending",
+              "component_count": 2,
+              "source_url": "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
+              ],
+              "gap_status": "",
               "trend": [
                 {
                   "label": "FY2016",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 34.74,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2016/Q4FY16_MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2017",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 34.04,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2017/Q4FY17_MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2018",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 33.36,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2018/Q4FY18-MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2019",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 24.19,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2019/Q4FY19-MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2020",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 21.74,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2020/Q4FY20-Group-MDA_Finalv2.pdf"
+                  ]
                 },
                 {
                   "label": "FY2021",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 17.12,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2021/H2FY21-Group-MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2022",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 17.41,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2022/H2FY22-Group-MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2023",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 19.36,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2023/h2fy23/H2FY23-Group-MDA.pdf"
+                  ]
                 },
                 {
                   "label": "FY2024",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 18.71,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2024/h2fy24/Group-Mar-2024-MDA-2.pdf"
+                  ]
                 },
                 {
                   "label": "FY2025",
-                  "gap_status": "knowledge_pending",
-                  "verification_count": 0,
-                  "verification_status": "",
-                  "source_urls": []
+                  "value": 18.36,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
+                  ]
                 }
               ],
-              "gap_label": "本地库待核验",
               "ai_summary": {}
             }
           ],
@@ -5749,12 +6171,20 @@
       ],
       "sources": [
         {
+          "label": "NTT DOCOMO",
+          "url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf"
+        },
+        {
+          "label": "SoftBank Corp.",
+          "url": "https://www.softbank.jp/en/corp/set/data/ir/documents/financial_reports/fy2025/pdf/sbkk_financial_report_20260511_en.pdf"
+        },
+        {
           "label": "SK Telecom",
-          "url": "https://www.sktelecom.com/img/eng/annual/20250808/SK_Telecom_Annual_Report_2024_ENG_F_0808.pdf"
+          "url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526101145/d25304d6k.htm"
         },
         {
           "label": "Singtel",
-          "url": "https://media.aws.singtel.com/info-singtel/annualreport/2024/Annual-Report-2024.pdf"
+          "url": "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf"
         },
         {
           "label": "NTT DOCOMO",
@@ -5763,6 +6193,14 @@
         {
           "label": "SoftBank Corp.",
           "url": "https://www.softbank.jp/corp/set/data/ir/documents/presentations/fy2025/results/pdf/sbkk_earnings_datasheet_pdf_20260511.pdf"
+        },
+        {
+          "label": "SK Telecom",
+          "url": "https://www.sec.gov/Archives/edgar/data/1015650/000119312526188763/d78252d20f.htm"
+        },
+        {
+          "label": "Singtel",
+          "url": "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
         },
         {
           "label": "世界银行 WDI 年度平均汇率",
@@ -12003,8 +12441,7 @@
     "audited_at_hkt": "2026-08-25T09:18:57+08:00",
     "policy": "本地知识库未完成核验不等于互联网未披露；只有检索了对应公司官网、年报、业绩公告和业绩演示后仍未见独立指标，才标记为 public_not_found。",
     "gap_status_counts": {
-      "public_not_found": 5,
-      "knowledge_pending": 8
+      "public_not_found": 5
     },
     "verified_public_fact_count": 9
   },
@@ -12352,7 +12789,7 @@
       "macro": 0
     },
     "model_analysis": {},
-    "evidence_hash": "d67d47e049ad4435c6afcca3faaf207426d84a90359d7d724f1aa4b4bb1de41e",
+    "evidence_hash": "8f5729145d42375a3ffce1549796d23dfd9f79301653d66601e2aa4109eec172",
     "model_analysis_fresh": false,
     "discoveries_generated": false
   },
