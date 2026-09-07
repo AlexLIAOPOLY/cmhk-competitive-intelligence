@@ -53,6 +53,7 @@ const data = JSON.parse(fs.readFileSync('web/static/competitor-workbench-data.js
 const ctx = vm.createContext({}); vm.runInContext(helpers, ctx);
 const visible = [...ctx.visibleCompetitorIds(data, [], null, '')];
 for (const company of ['NTT DOCOMO','SoftBank Corp.','SK Telecom','Singtel']) assert(visible.includes(company));
+assert(ctx.visibleCompetitorIds(data,['SK Telecom'],null,'').has('Singtel'));
 assert.equal(ctx.competitorHasCompleteMetric(data,['SK Telecom','Singtel'],99,'revenue'),true);
 const comparison = ctx.competitorComparableWindow(data,['SK Telecom','Singtel'],'revenue',99);
 assert.equal(comparison.unitMode,'usd_conversion');
