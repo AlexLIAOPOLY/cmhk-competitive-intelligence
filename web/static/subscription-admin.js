@@ -11,10 +11,13 @@
     openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
     manualWeeklyPath: "", weeklyPickerOpen: false, weeklyPickerQuery: "", weeklyPickerBusy: false,
     manualPerformancePath: "", performancePickerOpen: false, performancePickerQuery: "", performancePickerBusy: false,
+    manualPushJob: null,
   };
   let noticeTimer = 0;
   let noticeExitTimer = 0;
   let scheduledNoticeSignature = "";
+  let manualPushPollTimer = 0;
+  let manualPushPollId = "";
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
   const highlight = (value, query = state.searchQuery) => {
     const text = String(value ?? "");
@@ -26,6 +29,13 @@
       : esc(part)).join("");
   };
   const number = (value) => new Intl.NumberFormat("zh-CN").format(Number(value || 0));
+  const manualPushBusy = () => ["queued", "running"].includes(state.manualPushJob?.status);
+  const manualPushProgressText = (job) => {
+    const completed = Number(job?.completed_steps || 0);
+    const total = Number(job?.total_steps || 0);
+    const progress = total ? `（${completed}/${total}）` : "";
+    return `${job?.detail || "正在后台发送并回读"}${progress}；页面可以继续操作`;
+  };
   const serviceLabel = (value) => ({ weekly: "战略双周报", performance: "运营商业绩摘要", news: "战略新闻" }[value] || value);
   const modeLabel = (value) => ({ text: "文字", pdf: "PDF 文件", pdf_audio: "PDF + 独立语音", audio: "语音", both: "文字 + 语音" }[value] || value);
   const invitationStatus = (value) => ({ pending: "等待选择", accepted: "已接受", paused: "已暂停", failed: "发送失败", verified: "已发送并回读", responded: "已有人选择" }[value] || value);
@@ -105,7 +115,7 @@
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
-      <td><div class="subscriber-actions"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}">${icon("send")}</button><button class="button compact-save" type="button" data-save-subscriber>保存</button></div></td></tr>`;
+      <td><div class="subscriber-actions"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button><button class="button compact-save" type="button" data-save-subscriber>保存</button></div></td></tr>`;
     }).join("") + '<tr data-subscriber-filter-empty hidden><td colspan="7" class="empty">没有匹配的订阅者</td></tr>';
   }
 
@@ -367,7 +377,7 @@
       <main class="three-block-layout">
         <div class="upper-grid">
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions">${compactFilter("invite")}<button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送">${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>操作</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
         <section class="surface version-surface"><header class="surface-header"><div><h2>推送版本</h2><p>分别选择周报和业绩摘要的推送版本；不选则自动使用最新正式版</p></div></header><div class="surface-body report-version-grid"><div>${weeklyReportPicker()}<p>${esc(weeklySelectionCopy())}</p></div><div>${performanceReportPicker()}<p>${esc(performanceSelectionCopy())}</p></div></div></section>
         <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>业绩摘要定时推送</h3><p>按排期推送上方选定的业绩摘要；未选时使用最新正式版</p></div><p class="report-schedule-countdown" data-performance-schedule-countdown title="${esc(scheduleSummary(performanceSchedule))}">${esc(countdownText(performanceSchedule))}</p></div><form id="performanceScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((performanceSchedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(performanceSchedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${performanceSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${performanceSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存业绩摘要排期</button></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><p class="report-schedule-countdown" data-report-schedule-countdown title="${esc(scheduleSummary(schedule))}">${esc(countdownText(schedule))}</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
@@ -388,6 +398,12 @@
       window.clearTimeout(noticeTimer);
       window.clearTimeout(noticeExitTimer);
       scheduledNoticeSignature = "";
+      return;
+    }
+    if (state.noticeKind === "progress") {
+      window.clearTimeout(noticeTimer);
+      window.clearTimeout(noticeExitTimer);
+      scheduledNoticeSignature = signature;
       return;
     }
     if (signature === scheduledNoticeSignature) return;
@@ -418,7 +434,14 @@
     const performanceServerPath = String(payload.performance_report_preference?.path || "");
     state.manualPerformancePath = (payload.reports || []).some((item) => item.report_type === "carrier-performance" && item.path === performanceServerPath) ? performanceServerPath : "";
     if (!keepNotice) { state.notice = ""; state.noticeKind = ""; }
+    const serverPushJob = payload.manual_push_job;
+    if (["queued", "running"].includes(serverPushJob?.status)) {
+      state.manualPushJob = serverPushJob;
+      state.notice = manualPushProgressText(serverPushJob);
+      state.noticeKind = "progress";
+    }
     render();
+    if (manualPushBusy()) scheduleManualPushPoll(state.manualPushJob.job_id);
   }
 
   function applyWeeklyPickerFilter(query) {
@@ -534,6 +557,71 @@
     announceDeliveredMessage(payload.action, evidence);
   }
 
+  function scheduleManualPushPoll(jobId, delay = 800) {
+    if (!jobId) return;
+    if (manualPushPollTimer && manualPushPollId === jobId) return;
+    window.clearTimeout(manualPushPollTimer);
+    manualPushPollId = jobId;
+    manualPushPollTimer = window.setTimeout(() => {
+      manualPushPollTimer = 0;
+      pollManualPush(jobId);
+    }, delay);
+  }
+
+  async function pollManualPush(jobId) {
+    try {
+      const response = await fetch(`/api/subscriptions/push-status?id=${encodeURIComponent(jobId)}`, { cache: "no-store" });
+      const payload = await response.json();
+      if (!response.ok || !payload.ok) throw new Error(payload.error || `HTTP ${response.status}`);
+      const job = payload.job || {};
+      state.manualPushJob = job;
+      if (["queued", "running"].includes(job.status)) {
+        state.notice = manualPushProgressText(job);
+        state.noticeKind = "progress";
+        render();
+        scheduleManualPushPoll(jobId);
+        return;
+      }
+      manualPushPollId = "";
+      if (job.status === "completed") {
+        const failed = Number(job.result?.failed_count || 0);
+        state.notice = failed ? `推送已结束，其中 ${failed} 项失败；请查看推送记录` : "推送完成，所有消息均已发送并回读";
+        state.noticeKind = failed ? "error" : "success";
+        await loadData({ keepNotice: true });
+        if (!failed) announceDeliveredMessage("pushLatest", job.result?.batch_id || job.job_id);
+      } else {
+        state.notice = `推送失败：${job.error || job.detail || "未知错误"}`;
+        state.noticeKind = "error";
+        render();
+      }
+    } catch (error) {
+      manualPushPollId = "";
+      state.notice = `推送状态读取失败：${error.message}；后台任务可能仍在继续`;
+      state.noticeKind = "error";
+      render();
+      scheduleManualPushPoll(jobId, 3000);
+    }
+  }
+
+  async function startManualPush(payload, pendingText) {
+    state.manualPushJob = { status: "queued", detail: pendingText, completed_steps: 0, total_steps: 0 };
+    state.notice = pendingText;
+    state.noticeKind = "progress";
+    render();
+    const response = await fetch("/api/subscriptions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, action: "pushLatestAsync" }),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || `HTTP ${response.status}`);
+    state.manualPushJob = result.result;
+    state.notice = manualPushProgressText(result.result);
+    state.noticeKind = "progress";
+    render();
+    scheduleManualPushPoll(result.result?.job_id);
+  }
+
   document.addEventListener("click", async (event) => {
     const weeklyPickerTrigger = event.target.closest("[data-weekly-picker-trigger]");
     if (weeklyPickerTrigger) {
@@ -614,8 +702,8 @@
     if (event.target.closest("[data-manual-push-all]")) {
       const confirmed = await window.CMHKDialog.confirm({ title: "向全部订阅者推送？", message: reportSelectionCopy(), detail: "消息发送后无法撤回，系统会按每位订阅者设置发送并逐条回读结果。", confirmLabel: "确认全部推送" });
       if (!confirmed) return;
-      try { await post({ action: "pushLatest", confirmBulk: true, weeklyReportPath: state.manualWeeklyPath, performanceReportPath: state.manualPerformancePath }, "正在向全部有效订阅者推送所选内容并逐条回读…"); }
-      catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
+      try { await startManualPush({ confirmBulk: true, weeklyReportPath: state.manualWeeklyPath, performanceReportPath: state.manualPerformancePath }, "正在创建后台推送任务…"); }
+      catch (error) { state.manualPushJob = null; state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
     const manualPerson = event.target.closest("[data-manual-push-person]");
@@ -625,8 +713,8 @@
       const targetName = row?.querySelector(".table-person-name")?.textContent?.trim() || "当前订阅者";
       const confirmed = await window.CMHKDialog.confirm({ title: `向 ${targetName} 推送？`, message: reportSelectionCopy(), detail: `系统会按 ${targetName} 当前订阅设置发送；消息发送后无法撤回，完成后会回读结果。`, confirmLabel: "确认推送" });
       if (!confirmed) return;
-      try { await post({ action: "pushLatest", targetOpenId, weeklyReportPath: state.manualWeeklyPath, performanceReportPath: state.manualPerformancePath }, `正在把所选内容推送给 ${targetName} 并回读…`); }
-      catch (error) { state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
+      try { await startManualPush({ targetOpenId, weeklyReportPath: state.manualWeeklyPath, performanceReportPath: state.manualPerformancePath }, `正在创建给 ${targetName} 的后台推送任务…`); }
+      catch (error) { state.manualPushJob = null; state.notice = `推送失败：${error.message}`; state.noticeKind = "error"; render(); }
       return;
     }
     if (event.target.closest("[data-open-management]")) {

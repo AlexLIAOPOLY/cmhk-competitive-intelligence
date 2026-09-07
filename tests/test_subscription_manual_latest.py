@@ -63,7 +63,58 @@ class PreferredBothSubscriptionService(PreferredSubscriptionService):
         return {"path": report_path}
 
 
+class WeeklyOnlySubscriptionService(FakeSubscriptionService):
+    def list_summary(self):
+        return {
+            "subscribers": [
+                {
+                    "open_id": "ou_target123",
+                    "status": "active",
+                    "services": ["weekly"],
+                }
+            ]
+        }
+
+
+class ImmediateThread:
+    def __init__(self, *, target, **_kwargs):
+        self.target = target
+
+    def start(self):
+        self.target()
+
+
 class LatestSubscriptionPushTests(unittest.TestCase):
+    def test_manual_push_job_returns_immediately_and_persists_completion(self):
+        service = WeeklyOnlySubscriptionService()
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            weekly = root / "weekly.docx"
+            weekly.write_bytes(b"weekly")
+            status = {
+                "outputs": [
+                    {"reportType": "weekly", "path_str": weekly.name, "isEdited": False},
+                ]
+            }
+            jobs_path = root / "var/subscriptions/manual_push_jobs.json"
+            with (
+                mock.patch.object(web_app, "ROOT", root),
+                mock.patch.object(web_app, "SUBSCRIPTION_PUSH_JOBS_PATH", jobs_path),
+                mock.patch.object(web_app, "build_status", return_value=status),
+                mock.patch.object(web_app.threading, "Thread", ImmediateThread),
+            ):
+                queued = web_app.start_subscription_push_job(
+                    service,
+                    target_open_id="ou_target123",
+                )
+                completed = web_app.subscription_push_job_snapshot(queued["job_id"])
+
+        self.assertEqual(queued["status"], "queued")
+        self.assertEqual(completed["status"], "completed")
+        self.assertEqual(completed["completed_steps"], 1)
+        self.assertEqual(completed["total_steps"], 1)
+        self.assertEqual(completed["result"]["verified_count"], 1)
+
     def test_person_icon_uses_latest_content_and_current_subscription_preferences(self):
         service = FakeSubscriptionService()
         with tempfile.TemporaryDirectory() as folder:

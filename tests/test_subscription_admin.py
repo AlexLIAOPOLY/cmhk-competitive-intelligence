@@ -12,13 +12,16 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=15', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=26', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=27', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
     def test_admin_supports_controlled_delivery_and_mobile_layout(self):
         self.assertIn('action: "publish"', SCRIPT)
-        self.assertIn('action: "pushLatest"', SCRIPT)
+        self.assertNotIn('action: "pushLatest"', SCRIPT)
+        self.assertIn('action: "pushLatestAsync"', SCRIPT)
+        self.assertIn('/api/subscriptions/push-status?id=', SCRIPT)
+        self.assertIn('页面可以继续操作', SCRIPT)
         self.assertIn("confirmBulk", SCRIPT)
         self.assertIn("推送记录", SCRIPT)
         self.assertIn("@media (max-width: 560px)", STYLE)

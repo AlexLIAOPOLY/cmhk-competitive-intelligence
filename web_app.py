@@ -124,6 +124,8 @@ MARKET_NEWS_INSIGHT_LOCK = threading.Lock()
 SCHEDULER_OVERVIEW_LOCK = threading.Lock()
 SCHEDULER_OVERVIEW_CACHE: dict[str, object] = {}
 SCHEDULER_OVERVIEW_CACHE_SECONDS = 90
+SUBSCRIPTION_PUSH_JOBS_PATH = ROOT / "var" / "subscriptions" / "manual_push_jobs.json"
+SUBSCRIPTION_PUSH_JOBS_LOCK = threading.Lock()
 TASK_HEARTBEAT_INTERVAL_SECONDS = 10
 STATIC_DIR = ROOT / "web" / "static"
 COMPETITOR_WORKBENCH_DATA_PATH = STATIC_DIR / "competitor-workbench-data.json"
@@ -426,6 +428,7 @@ SUBSCRIPTION_OPERATION_ACTIONS = {
     "invite": "subscription.invite_send",
     "inviteTarget": "subscription.invite_send",
     "pushLatest": "subscription.content_send",
+    "pushLatestAsync": "subscription.content_send",
     "push": "subscription.content_send",
 }
 
@@ -3718,6 +3721,7 @@ def push_latest_subscription_content(
     confirm_bulk: bool = False,
     weekly_report_path: str = "",
     performance_report_path: str = "",
+    progress_callback=None,
 ) -> dict:
     """Send each active subscription's latest formal content without a second form."""
     summary = service.list_summary()
@@ -3840,11 +3844,18 @@ def push_latest_subscription_content(
         raise ValueError("当前没有可供人工推送的最新正式内容")
 
     results = []
+    total_steps = len(content) + sum(
+        1 for subscriber in active
+        if latest_news and "news" in (subscriber.get("services") or [])
+    )
+    completed_steps = 0
+    if callable(progress_callback):
+        progress_callback(completed_steps, total_steps, "发送内容已准备完成")
     for service_key in ("weekly", "performance"):
         if service_key not in content:
             continue
         item = content[service_key]
-        results.append(service.push(
+        result = service.push(
             service=service_key,
             mode=str(item["mode"]),
             path=str(item.get("path") or ""),
@@ -3853,7 +3864,15 @@ def push_latest_subscription_content(
             target_open_id=target_open_id,
             confirm_bulk=confirm_bulk,
             allow_user_edited=service_key == "weekly" and bool(item.get("isEdited")),
-        ))
+        )
+        results.append(result)
+        completed_steps += 1
+        if callable(progress_callback):
+            progress_callback(
+                completed_steps,
+                total_steps,
+                f"{'周报' if service_key == 'weekly' else '业绩摘要'}已发送并回读",
+            )
     if latest_news:
         for subscriber in active:
             if "news" not in (subscriber.get("services") or []):
@@ -3865,13 +3884,17 @@ def push_latest_subscription_content(
                 news_categories,
                 limit=item_limit,
             )
-            results.append(service.push(
+            result = service.push(
                 service="news",
                 mode="text",
                 title=f"CMHK战略新闻｜最新{len(news_items)}条｜{news_category_summary(news_categories)}",
                 body=encode_strategic_news_digest(news_items),
                 target_open_id=str(subscriber.get("open_id") or ""),
-            ))
+            )
+            results.append(result)
+            completed_steps += 1
+            if callable(progress_callback):
+                progress_callback(completed_steps, total_steps, "战略新闻已发送并回读")
     return {
         "batch_id": f"manual-latest-{uuid.uuid4().hex[:12]}",
         "target_open_id": target_open_id,
@@ -3885,6 +3908,150 @@ def push_latest_subscription_content(
         "failed_count": sum(int(item.get("failed_count") or 0) for item in results),
         "results": results,
     }
+
+
+def _read_subscription_push_jobs() -> list[dict]:
+    try:
+        payload = json.loads(SUBSCRIPTION_PUSH_JOBS_PATH.read_text(encoding="utf-8"))
+    except (OSError, TypeError, ValueError):
+        return []
+    jobs = payload.get("jobs") if isinstance(payload, dict) else None
+    return [item for item in jobs if isinstance(item, dict)] if isinstance(jobs, list) else []
+
+
+def _write_subscription_push_jobs(jobs: list[dict]) -> None:
+    _task_atomic_json(SUBSCRIPTION_PUSH_JOBS_PATH, {"jobs": jobs[:100]})
+
+
+def _fail_stale_subscription_push_jobs(jobs: list[dict]) -> bool:
+    changed = False
+    now = datetime.now().astimezone().isoformat(timespec="seconds")
+    for job in jobs:
+        if str(job.get("status") or "") not in {"queued", "running"}:
+            continue
+        if int(job.get("backend_pid") or 0) == os.getpid():
+            continue
+        job.update({
+            "status": "failed",
+            "detail": "服务重启，后台推送任务已中断",
+            "error": "服务重启后无法继续原后台任务，请核对推送记录后重试",
+            "updated_at": now,
+        })
+        changed = True
+    return changed
+
+
+def subscription_push_job_snapshot(job_id: str = "") -> dict | None:
+    with SUBSCRIPTION_PUSH_JOBS_LOCK:
+        jobs = _read_subscription_push_jobs()
+        if _fail_stale_subscription_push_jobs(jobs):
+            _write_subscription_push_jobs(jobs)
+    if job_id:
+        return next((dict(item) for item in jobs if str(item.get("job_id") or "") == job_id), None)
+    return dict(jobs[0]) if jobs else None
+
+
+def _update_subscription_push_job(job_id: str, **changes) -> dict | None:
+    with SUBSCRIPTION_PUSH_JOBS_LOCK:
+        jobs = _read_subscription_push_jobs()
+        updated = None
+        for job in jobs:
+            if str(job.get("job_id") or "") != job_id:
+                continue
+            job.update(changes)
+            job["updated_at"] = datetime.now().astimezone().isoformat(timespec="seconds")
+            updated = dict(job)
+            break
+        if updated:
+            _write_subscription_push_jobs(jobs)
+        return updated
+
+
+def start_subscription_push_job(
+    service: SubscriptionService,
+    *,
+    target_open_id: str = "",
+    confirm_bulk: bool = False,
+    weekly_report_path: str = "",
+    performance_report_path: str = "",
+) -> dict:
+    """Queue a manual push so Feishu sends/readback do not hold the browser request open."""
+    if target_open_id and not re.fullmatch(r"ou_[A-Za-z0-9_-]+", target_open_id):
+        raise ValueError("手动推送接收人格式无效")
+    if not target_open_id and not confirm_bulk:
+        raise ValueError("一键推送必须在后台完成二次确认")
+    now = datetime.now().astimezone().isoformat(timespec="seconds")
+    job_id = "subscription-push:" + uuid.uuid4().hex[:16]
+    job = {
+        "job_id": job_id,
+        "status": "queued",
+        "target_open_id": target_open_id,
+        "completed_steps": 0,
+        "total_steps": 0,
+        "queued_count": 1,
+        "detail": "后台已接收推送任务",
+        "error": "",
+        "result": {},
+        "backend_pid": os.getpid(),
+        "created_at": now,
+        "updated_at": now,
+    }
+    with SUBSCRIPTION_PUSH_JOBS_LOCK:
+        jobs = _read_subscription_push_jobs()
+        if _fail_stale_subscription_push_jobs(jobs):
+            _write_subscription_push_jobs(jobs)
+        active_job = next(
+            (item for item in jobs if str(item.get("status") or "") in {"queued", "running"}),
+            None,
+        )
+        if active_job:
+            raise ValueError("已有人工推送正在后台发送，请等待当前任务完成")
+        jobs.insert(0, job)
+        _write_subscription_push_jobs(jobs)
+
+    def progress(completed_steps: int, total_steps: int, detail: str) -> None:
+        _update_subscription_push_job(
+            job_id,
+            status="running",
+            completed_steps=max(0, int(completed_steps)),
+            total_steps=max(0, int(total_steps)),
+            detail=str(detail or "正在发送并回读"),
+        )
+
+    def worker() -> None:
+        _update_subscription_push_job(job_id, status="running", detail="正在准备最新推送内容")
+        try:
+            result = push_latest_subscription_content(
+                service,
+                target_open_id=target_open_id,
+                confirm_bulk=confirm_bulk,
+                weekly_report_path=weekly_report_path,
+                performance_report_path=performance_report_path,
+                progress_callback=progress,
+            )
+            failed_count = int(result.get("failed_count") or 0)
+            _update_subscription_push_job(
+                job_id,
+                status="completed",
+                detail="推送完成" if not failed_count else f"推送完成，其中 {failed_count} 项失败",
+                error="",
+                result=result,
+            )
+        except Exception as exc:
+            logging.exception("订阅人工推送后台任务失败")
+            _update_subscription_push_job(
+                job_id,
+                status="failed",
+                detail="推送失败",
+                error=str(exc)[:900],
+            )
+
+    threading.Thread(
+        target=worker,
+        name="subscription-push-" + job_id.rsplit(":", 1)[-1],
+        daemon=True,
+    ).start()
+    return dict(job)
 
 
 def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> bool:
@@ -7105,6 +7272,17 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, status=500)
             return
+        if path == "/api/subscriptions/push-status":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
+                return
+            job_id = str((parse_qs(parsed.query).get("id") or [""])[0])
+            job = subscription_push_job_snapshot(job_id)
+            if not job:
+                json_response(self, {"ok": False, "error": "找不到该推送任务"}, status=404)
+                return
+            json_response(self, {"ok": True, "job": job})
+            return
         if path == "/api/subscriptions":
             if not is_loopback_client(str(self.client_address[0])):
                 json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
@@ -7153,6 +7331,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         for key, label in NEWS_CATEGORY_LABELS.items()
                     ],
                     "reports": reports,
+                    "manual_push_job": subscription_push_job_snapshot(),
                     "test_target": {
                         "callback_open_id": str(card_actions.get("primary_handler_open_id") or ""),
                         "delivery_open_id": str(card_actions.get("primary_handler_open_id") or ""),
@@ -7771,6 +7950,14 @@ class AppHandler(BaseHTTPRequestHandler):
                     )
                 elif action == "pushLatest":
                     result = push_latest_subscription_content(
+                        service,
+                        target_open_id=str(payload.get("targetOpenId") or ""),
+                        confirm_bulk=payload.get("confirmBulk") is True,
+                        weekly_report_path=str(payload.get("weeklyReportPath") or ""),
+                        performance_report_path=str(payload.get("performanceReportPath") or ""),
+                    )
+                elif action == "pushLatestAsync":
+                    result = start_subscription_push_job(
                         service,
                         target_open_id=str(payload.get("targetOpenId") or ""),
                         confirm_bulk=payload.get("confirmBulk") is True,
