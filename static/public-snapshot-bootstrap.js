@@ -77,6 +77,12 @@
     }
     if (!requestUrl.pathname.startsWith("/api/")) return nativeFetch(input, init);
     const route = requestUrl.pathname;
+    if (method === "GET" && route === "/api/news-research") {
+      const plan = [{"key": "hong-kong", "title": "香港运营商研究 Agent", "purpose": "研究香港运营商经营业绩、用户、网络及产品资费", "companies": ["CMHK", "HKT", "SmarTone", "3HK", "HKBN", "HGC", "i-CABLE"]}, {"key": "mainland", "title": "内地运营商研究 Agent", "purpose": "研究内地运营商及铁塔公司的经营指标和最新披露", "companies": ["中国移动", "中国电信", "中国联通", "中国铁塔", "中国广电"]}, {"key": "asia-pacific", "title": "亚太运营商研究 Agent", "purpose": "研究亚太运营商的业绩、用户规模和网络投入", "companies": ["Singtel", "Telstra", "SK Telecom", "KT", "NTT Docomo", "KDDI", "SoftBank", "Bharti Airtel", "Reliance Jio", "NTT"]}, {"key": "europe", "title": "欧洲运营商研究 Agent", "purpose": "研究欧洲运营商的收入、利润、用户和资本开支", "companies": ["Vodafone", "Deutsche Telekom", "Orange", "Telefonica", "BT", "TIM"]}, {"key": "americas-middle-east", "title": "美洲与中东运营商研究 Agent", "purpose": "研究美国与中东运营商的最新业绩及经营变化", "companies": ["Verizon", "AT&T", "T-Mobile US", "e&", "stc"]}, {"key": "cloud", "title": "全球云厂商研究 Agent", "purpose": "研究云收入、增长、利润、订单和资本开支，保留分部口径", "companies": ["AWS", "Microsoft Azure", "Google Cloud", "Alibaba Cloud", "Tencent Cloud", "Huawei Cloud", "Oracle Cloud", "China Mobile Cloud"]}];
+      return Promise.resolve(jsonResponse({ ok: true, date: requestUrl.searchParams.get("date") || "",
+        plan: Array.isArray(plan) ? plan : [], run: null, runs: [], agents: [], events: [],
+        note: "公开快照仅展示任务分工，实际研究记录请在内网主页查看。" }));
+    }
     if (method === "GET" && snapshotRoutes.has(route)) {
       return nativeFetch(new URL(snapshotRoutes.get(route), root), { cache: "no-store" });
     }
