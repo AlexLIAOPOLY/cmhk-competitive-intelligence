@@ -25,7 +25,7 @@ class ResearchDataCollectionVisibilityTests(unittest.TestCase):
         self.assertIn('<details class="research-company"><summary>', RESEARCH)
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=7', INDEX)
+        self.assertIn('/static/research-diagram.js?v=8', INDEX)
 
 
 if __name__ == "__main__":
