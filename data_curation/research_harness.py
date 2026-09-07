@@ -193,6 +193,7 @@ class ResearchHarness:
                 "value、period、unit必须取自真实原文，不翻译、换算或补算。period带明确年份和报告期，不能只写本年度。"
                 "value保留surpassed、about等限定词；unit只拼接原文币种和数量级，不加解释性文字。"
                 "不混用不同公司、集团/子公司、不同期间或累计/单季口径。"
+                "在集团报告里，目标子公司或业务名称必须与该数值处于同一句段；报告别处出现子公司名称不足以把集团总额归给它。"
                 "缺失证据标missing，不重新搜索、不要求回溯。最终提交后结束。"),
             middleware=[SummarizationMiddleware(model=model, backend=backend,
                                                 trigger=("tokens", 16000), keep=("messages", 6)),

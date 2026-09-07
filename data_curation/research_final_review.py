@@ -7,7 +7,7 @@ from pathlib import Path
 
 from .storage import atomic_write_json, atomic_write_jsonl
 from .six_agent_research import collect_sources, merge_results, now, validate_fact, page_mentions_metric
-from .research_freshness import compare_candidate
+from .research_freshness import compare_candidate, metric_key
 
 
 def review_run(directory: Path, *, model_factory=None, collector=None, harness_factory=None) -> dict:
@@ -53,6 +53,12 @@ def review_run(directory: Path, *, model_factory=None, collector=None, harness_f
             report.setdefault("searches", [])
             report.setdefault("baseline", baseline.get(company, {}))
             report.setdefault("incremental", True)
+            for position, item in enumerate(report["items"]):
+                if item.get("status") == "no_update" and not report["baseline"].get(metric_key(item.get("metric"))):
+                    item.update(status="conflict", value="", reason="库内未找到该指标基线，最终审核须继续补查，不能标记库内已有")
+                if item.get("status") == "verified":
+                    report["items"][position] = compare_candidate(
+                        validate_fact(item, company, report["metrics"], report["pages"]), report["baseline"])
             metrics = [i["metric"] for i in report["items"] if i.get("status") not in {"verified", "no_update", "not_applicable"}]
             emit("review_start", f"{company}：最终审核并补查 {len(metrics)} 项指标", {"company": company, "metrics": metrics})
             # Persist collected pages separately before any inference; resume never repeats a completed search.

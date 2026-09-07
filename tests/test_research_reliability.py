@@ -6,11 +6,17 @@ from unittest.mock import patch
 
 from data_curation import workflow as w
 from data_curation.research_freshness import period_key
-from data_curation.six_agent_research import validate_fact
+from data_curation.six_agent_research import validate_fact, company_value_is_bound
 from data_curation.research_final_review import review_run
 
 
 class ResearchReliabilityTests(unittest.TestCase):
+    def test_parent_group_amount_cannot_become_subsidiary_amount(self):
+        self.assertFalse(company_value_is_bound('CMHK','RMB538.0 billion','China Mobile Hong Kong Treasury Company Limited. The Company recorded operating revenue of RMB538.0 billion.','https://www.chinamobileltd.com/en/ir/reports/ir2026.pdf'))
+        self.assertTrue(company_value_is_bound('CMHK','HK$100 million','China Mobile Hong Kong recorded revenue of HK$100 million.','https://www.chinamobileltd.com/report.pdf'))
+        self.assertFalse(company_value_is_bound('Google Cloud','$100 billion','Alphabet revenue was $100 billion. Google Cloud operates worldwide.','https://abc.xyz/report'))
+        self.assertTrue(company_value_is_bound('Google Cloud','$10 billion','Google Cloud revenue was $10 billion.','https://abc.xyz/report'))
+
     def test_full_report_tail_survives_fetch(self):
         class Response:
             url = 'https://official.test/full-report'

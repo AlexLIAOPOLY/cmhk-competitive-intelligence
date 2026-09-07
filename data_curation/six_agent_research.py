@@ -62,6 +62,35 @@ def metric_value_is_bound(metric: str, value: str, quote: str) -> bool:
     return False
 
 
+def company_value_is_bound(company: str, value: str, quote: str, source_url: str) -> bool:
+    """A group filing mentioning a subsidiary is not that subsidiary's revenue."""
+    from urllib.parse import urlparse
+    scoped = {
+        "CMHK": (["CMHK", "China Mobile Hong Kong", "中国移动香港", "中國移動香港"], ["hk.chinamobile.com"]),
+        "AWS": (["AWS", "Amazon Web Services"], ["aws.amazon.com"]),
+        "Microsoft Azure": (["Azure"], ["azure.microsoft.com"]),
+        "Google Cloud": (["Google Cloud"], ["cloud.google.com"]),
+        "Alibaba Cloud": (["Alibaba Cloud", "阿里云", "阿里雲"], ["alibabacloud.com"]),
+        "Tencent Cloud": (["Tencent Cloud", "腾讯云", "騰訊雲"], ["cloud.tencent.com"]),
+        "Huawei Cloud": (["Huawei Cloud", "华为云", "華為雲"], ["huaweicloud.com"]),
+        "Oracle Cloud": (["Oracle Cloud", "Cloud services", "cloud infrastructure"], []),
+        "China Mobile Cloud": (["China Mobile Cloud", "Mobile Cloud", "移动云", "移動雲"], ["ecloud.10086.cn"]),
+        "Reliance Jio": (["Jio"], ["jio.com"]),
+    }
+    if company not in scoped or not re.search(r"\d", value):
+        return True
+    aliases, own_hosts = scoped[company]
+    host = (urlparse(source_url).hostname or "").lower()
+    if any(host == own or host.endswith("." + own) for own in own_hosts):
+        return True
+    for match in re.finditer(re.escape(value), quote):
+        prefix = re.split(r"[。；;•]|(?<=[a-z])\.\s+", quote[max(0, match.start()-180):match.start()])[-1]
+        nearby = prefix + value
+        if any(re.search(r"(?<![A-Za-z])" + re.escape(alias) + r"(?![A-Za-z]|\s+(?:Treasury|Innovation Research))", nearby, re.I) for alias in aliases):
+            return True
+    return False
+
+
 def validate_fact(proposed: dict, company: str, metrics: list[str], pages: dict[str, dict]) -> dict:
     """Bind a proposed value to an actually opened official passage and period.
 
@@ -137,6 +166,8 @@ different companies, search snippets and invented URLs becoming database facts.
             errors.append("引用原文没有对应指标")
         if not metric_value_is_bound(item["metric"], item["value"], quote):
             errors.append("数值所在原文句段没有对应指标标签；不得用总收入替代服务收入等子指标")
+        if not company_value_is_bound(company, item["value"], quote, item["source_url"]):
+            errors.append("数值所在句段没有明确归属目标子公司或业务；集团总额不能作为该公司指标")
         if not w._passes_metric_gate(item["metric"], f"{item['value']} {item['unit']}"):
             errors.append("值不符合指标类型")
         item["evidence_hash"] = hashlib.sha256(body.encode()).hexdigest()
