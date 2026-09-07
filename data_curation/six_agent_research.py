@@ -103,7 +103,7 @@ different companies, search snippets and invented URLs becoming database facts.
             errors.append("摘录没有明确对应公司主体")
         if not item["value"] or item["value"] not in quote:
             errors.append("数值或描述不在引用原文中")
-        elif re.search(r"(?:surpassed|exceeded|over|more than|less than|approximately|about|超过|超過|约|約|逾|至少|不足)\s*$", quote[:quote.find(item["value"])], re.I):
+        elif re.search(r"(?:surpassed|exceeded|over|more than|less than|approximately|about|超过|超過|约|約|逾|至少|不足)\s*(?:(?:HK|US)?[$€£¥￥]|USD|HKD)?\s*$", quote[:quote.find(item["value"])], re.I):
             errors.append("原文含超过、约等限定词，value须保留该限定词，不能写成精确值")
         # A report period is often a table/header passage, separate from the metric.
         # Keep the model-selected literal period and attach its actual page excerpt;

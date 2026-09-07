@@ -40,6 +40,16 @@ def submission(reason="未找到"):
 
 
 class ResearchHarnessTests(unittest.TestCase):
+    def test_no_update_cannot_claim_a_nonexistent_baseline(self):
+        claimed = submission('沿用库内数据')
+        claimed.tool_calls[0]['args']['status'] = 'no_update'
+        model = ToolModel(responses=[claimed, submission('库内尚无数据且本轮未找到')])
+        saved = []
+        harness = ResearchHarness(TASK, model, lambda *args: None, validate_fact)
+        harness.extract('HKT', '收入', {}, saved.append, baseline={})
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0]['status'], 'missing')
+
     def test_exactly_six_agents_cover_catalog_once(self):
         plan = research_plan()
         self.assertEqual(len(plan), 6)

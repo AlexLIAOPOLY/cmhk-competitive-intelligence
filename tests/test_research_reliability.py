@@ -54,6 +54,8 @@ class ResearchReliabilityTests(unittest.TestCase):
         text = 'SmarTone 2026 revenue exceeded $100 million.'
         fact.update(value='$100 million', unit='$ million', quote=text)
         self.assertEqual(validate_fact(fact,'SmarTone',['收入'], {url:dict(opened=True,official=True,text=text)})['status'], 'conflict')
+        fact['value'] = '100 million'
+        self.assertEqual(validate_fact(fact,'SmarTone',['收入'], {url:dict(opened=True,official=True,text=text)})['status'], 'conflict')
         fact['value'] = 'exceeded $100 million'
         self.assertEqual(validate_fact(fact,'SmarTone',['收入'], {url:dict(opened=True,official=True,text=text)})['status'], 'verified')
 
@@ -79,6 +81,24 @@ class ResearchReliabilityTests(unittest.TestCase):
             self.assertEqual(len((directory/'verified_facts.jsonl').read_text().splitlines()), 1)
             review_run(directory, model_factory=lambda: self.fail('must not create model'), collector=collect, harness_factory=Harness)
             self.assertEqual(calls, ['HKT'])
+
+    def test_failed_review_fetch_keeps_archived_evidence(self):
+        with tempfile.TemporaryDirectory() as temp:
+            directory = Path(temp)
+            task = dict(key='hong-kong', title='香港', companies=['HKT'])
+            url = 'https://www.hkt.com/report'
+            text = 'HKT reported revenue of HK$ 123 million in 2026.'
+            report = dict(company='HKT', metrics=['收入'], pages={url:dict(opened=True,official=True,text=text)}, items=[dict(company='HKT',metric='收入',status='missing')])
+            (directory/'manifest.json').write_text(json.dumps(dict(run_id='test',plan=[task])))
+            (directory/'hong-kong.json').write_text(json.dumps(dict(task,reports=[report])))
+            class Harness:
+                def __init__(self,*args): pass
+                def extract(self,company,metric,pages,save,**kw):
+                    self_test.assertEqual(pages[url]['text'],text)
+                    save(dict(company=company,metric=metric,status='verified',value='123',period='2026',unit='HK$ million',quote=text,source_url=url))
+            self_test = self
+            result = review_run(directory,model_factory=lambda:None,collector=lambda *args:({url:dict(opened=False,error='timeout')},[]),harness_factory=Harness)
+            self.assertEqual(result['outcome_counts'],dict(existing=0,updated=1,failed=0))
 
     def test_model_timeout_enters_bounded_retry_not_immediate_fallback(self):
         import executive_intelligence_pipeline as p

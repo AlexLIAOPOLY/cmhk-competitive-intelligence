@@ -59,7 +59,10 @@ def review_run(directory: Path, *, model_factory=None, collector=None, harness_f
             if metrics and not report.get("review_search_completed"):
                 try:
                     pages, searches = collector(company, metrics, emit, report.get("baseline", {}))
-                    report["pages"].update(pages)
+                    # A failed re-read must never erase already archived evidence.
+                    for url, page in pages.items():
+                        if page.get("opened") or not report["pages"].get(url, {}).get("opened"):
+                            report["pages"][url] = page
                     report["searches"] = [*report.get("searches", []), *searches]
                 except Exception as exc:
                     report["review_search_error"] = str(exc)[:500]

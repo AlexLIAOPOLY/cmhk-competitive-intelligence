@@ -111,9 +111,11 @@ class ResearchHarness:
             item = self.validator(proposed, self.current["company"],
                                   [self.current["metric"]], self.current["pages"])
             if self.current.get("baseline") is not None:
-                from .research_freshness import compare_candidate
+                from .research_freshness import compare_candidate, metric_key
                 item = compare_candidate(item, self.current["baseline"])
-            if status == "verified" and item["status"] not in {"verified", "no_update"}:
+                if status == "no_update" and not self.current["baseline"].get(metric_key(self.current["metric"])):
+                    item.update(status="conflict", reason="库内没有该指标的已存数据，不能提交库内已有；请查找可信新披露，未找到则提交missing。")
+            if status in {"verified", "no_update"} and item["status"] not in {"verified", "no_update"}:
                 self.current["last_rejected"] = item
                 self.emit("validation_rejected", "本条提交未通过原文校验，尚未入库", item)
                 self.current["format_attempts"] = self.current.get("format_attempts", 0) + 1
