@@ -9431,6 +9431,7 @@ document.addEventListener("keydown", (event) => {
           discoveries: (data.relations || []).map((relation) => [relation.from, relation.to, relation.title, relation.detail]),
           metrics: (data.domains || []).map((domain) => [domain.id, domain.metric, domain.context]),
           financials: (data.domains || []).map((domain) => [domain.id, domain.latest_financial_results]),
+          references: (data.domains || []).map((domain) => [domain.id, (domain.focuses || []).map((focus) => [focus.id, focus.reference_items || []])]),
         });
         if (!initial && signature === payloadSignature) return;
         payloadSignature = signature;
