@@ -25,7 +25,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         result = self.render(incremental=False)
         node = next(n for n in result['nodes'] if n['key'] == 'research-asia')
         self.assertEqual(node['value'], '—')
-        self.assertEqual(node['unit'], '新增披露未统计')
+        self.assertEqual(node['unit'], '新增数据未统计')
         self.assertEqual(node['health']['label'], '历史记录')
         self.assertIn('不代表原库缺失', result['detail'])
         self.assertNotIn('条数据已收集', result['detail'])
@@ -37,7 +37,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertEqual(node['health'], {'key': 'warning', 'label': '执行失败'})
         self.assertIn('执行失败 1 项', node['note'])
         self.assertIn('无新增·沿用页面', str(result['nodes']))
-        self.assertNotIn('历史核验通过', result['detail'])
+        self.assertNotIn('历史核对通过', result['detail'])
 
     def test_pending_search_has_no_fake_zero(self):
         result = self.render(state='pending', items=[])
@@ -63,7 +63,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertLess(result['detail'].index('本节点逐条明细'), result['detail'].index('这个节点如何处理'))
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=15', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=16', (ROOT / 'web/static/index.html').read_text())
 
 
 if __name__ == '__main__':

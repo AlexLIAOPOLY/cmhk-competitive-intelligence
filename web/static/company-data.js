@@ -83,7 +83,7 @@ function highlightNumbers(value) {
 }
 
 function sourceTypeLabel(value) {
-  if (value === "verified-performance") return "核验业绩";
+  if (value === "verified-performance") return "已核对业绩";
   if (value === "public-crawl") return "公开监测";
   return value || "-";
 }
@@ -149,9 +149,9 @@ function renderStats(data) {
   els.stats.innerHTML = `
     <span><strong>${summary.companies || 0}</strong> 家公司</span>
     <span><strong>${summary.metrics || 0}</strong> 类指标</span>
-    <span><strong>${summary.verifiedRecords || 0}</strong> 条核验字段</span>
-    <span><strong>${summary.publishedAiFacts || summary.crawlRecords || 0}</strong> 条 AI 发布事实</span>
-    <span><strong>${summary.acceptedAiFacts || 0}</strong> 条 AI 接受事实</span>
+    <span><strong>${summary.verifiedRecords || 0}</strong> 条已核对字段数据</span>
+    <span><strong>${summary.publishedAiFacts || summary.crawlRecords || 0}</strong> 条 AI 已发布字段数据</span>
+    <span><strong>${summary.acceptedAiFacts || 0}</strong> 条 AI 审核通过字段数据</span>
     <span><strong>${summary.suppressedRecords || 0}</strong> 条已拦截</span>
     <span>更新于 ${escapeHtml(data.generatedAt || "-")}</span>
   `;
@@ -208,11 +208,11 @@ function openMetricModal(row) {
   els.metricModalContent.innerHTML = `
     ${rows.map((item, index) => `
       <article class="metric-modal-fact">
-        ${rows.length > 1 ? `<span class="metric-modal-index">确认事实 ${index + 1}</span>` : ""}
+        ${rows.length > 1 ? `<span class="metric-modal-index">字段数据 ${index + 1}</span>` : ""}
         <p class="metric-modal-value">${highlightNumbers(item.detail || item.value || "-")}</p>
         <dl>
-          <div><dt>披露口径</dt><dd>${escapeHtml(item.disclosure || item.rowRef || "-")}</dd></div>
-          <div><dt>披露日期</dt><dd>${escapeHtml(item.disclosureDate || "-")}</dd></div>
+          <div><dt>数据说明</dt><dd>${escapeHtml(item.disclosure || item.rowRef || "-")}</dd></div>
+          <div><dt>公布日期</dt><dd>${escapeHtml(item.disclosureDate || "-")}</dd></div>
           <div><dt>数据状态</dt><dd>${escapeHtml(rowQualityText(item))}</dd></div>
         </dl>
         <div class="metric-modal-sources">
@@ -308,7 +308,7 @@ function renderMatrix() {
     matrixTable.style.minWidth = `${190 + metrics.length * 210}px`;
   }
   const hiddenMetricCount = Math.max(0, availableMetrics.length - metrics.length);
-  els.matrixCount.textContent = `${companies.length} 个主体 · 显示 ${metrics.length}/${availableMetrics.length} 项指标 · ${rows.length} 条确认数据${hiddenMetricCount ? " · 其余请用筛选/明细查看" : ""}`;
+  els.matrixCount.textContent = `${companies.length} 家公司 · 显示 ${metrics.length}/${availableMetrics.length} 项指标 · ${rows.length} 条确认数据${hiddenMetricCount ? " · 其余请用筛选/明细查看" : ""}`;
   
   if (!companies.length) {
     els.matrixHead.innerHTML = `

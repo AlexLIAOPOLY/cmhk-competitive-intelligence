@@ -39,7 +39,7 @@
   };
   const serviceLabel = (value) => ({ weekly: "战略双周报", performance: "运营商业绩摘要", news: "战略新闻" }[value] || value);
   const modeLabel = (value) => ({ text: "文字", pdf: "PDF 文件", pdf_audio: "PDF + 独立语音", audio: "语音", both: "文字 + 语音" }[value] || value);
-  const invitationStatus = (value) => ({ pending: "等待选择", accepted: "已接受", paused: "已暂停", failed: "发送失败", verified: "已发送并回读", responded: "已有人选择" }[value] || value);
+  const invitationStatus = (value) => ({ pending: "等待选择", accepted: "已接受", paused: "已暂停", failed: "发送失败", verified: "已确认发送", responded: "已有人选择" }[value] || value);
   const icon = (name) => ({
     add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>',
@@ -128,7 +128,7 @@
       const openId = item.recipient_open_id || item.open_id || "";
       const recipientName = item.recipient_name || openId || "接收人未记录";
       const recipientIdentity = item.recipient_name && openId ? `${openId.slice(0, 10)}${openId.length > 10 ? "…" : ""}` : "";
-      return `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="delivery-recipient" title="${esc(openId)}"><strong>${esc(recipientName)}</strong>${recipientIdentity ? `<small>${esc(recipientIdentity)}</small>` : ""}</span></td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已发送并回读" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "cancelled" ? "门禁关闭，已取消" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`;
+      return `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="delivery-recipient" title="${esc(openId)}"><strong>${esc(recipientName)}</strong>${recipientIdentity ? `<small>${esc(recipientIdentity)}</small>` : ""}</span></td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已确认发送" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "cancelled" ? "发送功能已关闭，已取消" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`;
     }).join("");
   }
 
@@ -153,10 +153,10 @@
     const groupRows = groups.map((item) => {
       const responses = item.responses || [];
       const responseCount = Number(item.response_count || responses.length || 0);
-      const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已选择" : "已发送并回读", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
+      const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已选择" : "已确认发送", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
       return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${responseCount ? "accepted" : "verified"}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
         <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · ${esc(item.message_id)}</small></span>
-        <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已发送并回读"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
+        <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已确认发送"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
       </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
     }).join("");
     const personRows = rows.map((item) => {
@@ -588,7 +588,7 @@
       manualPushPollId = "";
       if (job.status === "completed") {
         const failed = Number(job.result?.failed_count || 0);
-        state.notice = failed ? `推送已结束，其中 ${failed} 项失败；请查看推送记录` : "推送完成，所有消息均已发送并回读";
+        state.notice = failed ? `推送已结束，其中 ${failed} 项失败；请查看推送记录` : "推送完成，所有消息均已确认发送";
         state.noticeKind = failed ? "error" : "success";
         render();
         if (!failed) announceDeliveredMessage("pushLatest", job.result?.batch_id || job.job_id);

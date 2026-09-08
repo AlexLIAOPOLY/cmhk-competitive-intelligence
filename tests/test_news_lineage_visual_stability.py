@@ -15,10 +15,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('childTitle(task.title)', RESEARCH)
 
     def test_supervisor_phases_are_named_and_dispatch_tracks_worker_midpoint(self):
-        self.assertIn("03:00 Supervisor · Agent 任务分配", RESEARCH)
-        self.assertIn("Supervisor · Agent 结果汇总", RESEARCH)
-        self.assertIn("同一个规则型 Supervisor 主控", RESEARCH)
-        self.assertIn("不是额外调用大模型的研究 Agent", RESEARCH)
+        self.assertIn("03:00 研究任务分配", RESEARCH)
+        self.assertIn("最终审核 Agent · 联网核对", RESEARCH)
+        self.assertIn("程序按公司分配任务，此步骤不调用 AI", RESEARCH)
         self.assertIn("(researchX(0) + researchX(plan.length - 1)) / 2", RESEARCH)
         self.assertIn("[dispatchX, 330]", RESEARCH)
 
@@ -34,9 +33,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn("[canvasWidth - researchInset - researchCardWidth, 820]", RESEARCH)
 
     def test_research_merge_note_describes_audit_and_strategic_news_copy_is_larger(self):
-        self.assertIn("比较六个研究 Agent 的新披露与库内可信基线", RESEARCH)
+        self.assertIn("比较六个研究 Agent 的新数据与库内已有数据", RESEARCH)
         self.assertIn('"可更新字段", "cyan"', RESEARCH)
-        self.assertIn("输出：本轮可更新字段及待复核清单", RESEARCH)
+        self.assertIn("输出：本次可更新字段及待核对清单", RESEARCH)
         self.assertNotIn("可更新事实", RESEARCH)
         self.assertNotIn("审核事实", RESEARCH)
         self.assertIn('[data-news-lineage-node="strategic"]', STYLE)
@@ -170,9 +169,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=176', INDEX)
-        self.assertIn('/static/research-diagram.js?v=14', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=214', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=177', INDEX)
+        self.assertIn('/static/research-diagram.js?v=16', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=217', INDEX)
 
 
 if __name__ == "__main__":
