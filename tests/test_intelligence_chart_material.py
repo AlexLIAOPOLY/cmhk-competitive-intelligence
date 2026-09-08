@@ -26,7 +26,8 @@ class IntelligenceChartMaterialTests(unittest.TestCase):
         self.assertIn("animation: none !important; transform: none !important;", STYLES)
 
     def test_homepage_loads_new_chart_styles(self):
-        self.assertIn('/static/styles.css?v=295', INDEX)
+        self.assertIn('/static/styles.css?v=297', INDEX)
+        self.assertIn('/static/app.js?v=329', INDEX)
 
 
 if __name__ == "__main__":

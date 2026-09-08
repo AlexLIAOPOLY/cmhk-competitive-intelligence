@@ -89,6 +89,17 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         missing = next(item for item in after["focuses"][3]["reference_items"] if item["name"] == "Verizon")
         self.assertIsNone(missing["value"])  # ARPA must not be substituted for ARPU.
 
+    def test_reference_operators_render_comparison_bars_without_entering_ranking(self) -> None:
+        app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn(
+            "const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);",
+            app,
+        )
+        reference_branch = app.split('if (item.ranking_eligible === false) {', 1)[1].split("const periodPrefix", 1)[0]
+        self.assertIn('class="intelligence-viz-entity intelligence-reference-row', reference_branch)
+        self.assertIn('<i aria-label="${safe(item.period)}"><b style="--row-width:${width.toFixed(2)}%"></b></i>', reference_branch)
+        self.assertNotIn('class="intelligence-reference-period"', reference_branch)
+
     def test_xiaojing_retrieves_new_metric_pairs(self) -> None:
         cases = {
             "Verizon FY2025后付费用户和ARPA是多少？": {"postpaid_connections", "postpaid_arpa"},

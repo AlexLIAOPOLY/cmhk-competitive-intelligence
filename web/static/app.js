@@ -8646,7 +8646,10 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderDomainVisual(domain, items, selectedIndex, focus) {
-    const maxValue = Math.max(...items.filter((item) => item.ranking_eligible !== false).map((item) => Math.abs(Number(item.value) || 0)), 1);
+    // Size every visible row against the same scale. Reference operators remain
+    // excluded from ranking and AI evidence, but their bars must still be
+    // comparable with the ranked sample shown in this chart.
+    const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
     const visual = focus?.visual || "rows";
     const entityAttributes = (item, index) => `
       role="button" tabindex="0" data-intelligence-entity="${index}"
@@ -8930,9 +8933,10 @@ document.addEventListener("keydown", (event) => {
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
       if (item.ranking_eligible === false) {
+        const width = Math.max(2, Math.abs(Number(item.value) || 0) / maxValue * 100);
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <span>${renderScrollingLabel(item.name)}</span>
-            <span class="intelligence-reference-period">${safe(item.period)}</span>
+            <i aria-label="${safe(item.period)}"><b style="--row-width:${width.toFixed(2)}%"></b></i>
             <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
           </li>`;
       }
