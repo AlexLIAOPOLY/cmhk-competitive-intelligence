@@ -1232,7 +1232,7 @@ class SubscriptionService:
         saved["confirmation_message_id"] = confirmation
         return {"status": "subscription_saved", "source_profile": source_profile, **saved}
 
-    def list_summary(self, *, delivery_limit: int = 80) -> dict[str, Any]:
+    def list_summary(self, *, delivery_limit: int | None = None) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
                 """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.default_preferences,
@@ -1241,8 +1241,7 @@ class SubscriptionService:
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
                    GROUP BY s.open_id ORDER BY s.updated_at DESC"""
             ).fetchall()
-            deliveries = db.execute(
-                """SELECT d.*,
+            delivery_query = """SELECT d.*,
                           COALESCE(
                               NULLIF((SELECT s.display_name FROM subscribers s
                                       WHERE s.open_id=d.open_id LIMIT 1), ''),
@@ -1254,11 +1253,15 @@ class SubscriptionService:
                                       WHERE i.delivery_open_id=d.open_id ORDER BY i.id DESC LIMIT 1), ''),
                               ''
                           ) AS recipient_name
-                   FROM deliveries d ORDER BY d.id DESC LIMIT ?""",
-                (max(1, min(delivery_limit, 300)),),
-            ).fetchall()
+                   FROM deliveries d ORDER BY d.id DESC"""
+            delivery_params: tuple[int, ...] = ()
+            if delivery_limit is not None:
+                delivery_query += " LIMIT ?"
+                delivery_params = (max(1, min(delivery_limit, 2000)),)
+            deliveries = db.execute(delivery_query, delivery_params).fetchall()
+            delivery_total = int(db.execute("SELECT COUNT(*) FROM deliveries").fetchone()[0])
             invitations = db.execute(
-                "SELECT * FROM subscription_invitations ORDER BY id DESC LIMIT 200"
+                "SELECT * FROM subscription_invitations ORDER BY id DESC"
             ).fetchall()
             group_cards = db.execute(
                 """SELECT c.*,
@@ -1368,9 +1371,20 @@ class SubscriptionService:
             ],
             "subscribers": subscribers,
             "deliveries": delivery_items,
+            "delivery_history": {
+                "total": delivery_total,
+                "returned": len(delivery_items),
+                "newest_at": str(delivery_items[0].get("created_at") or "") if delivery_items else "",
+                "oldest_at": str(delivery_items[-1].get("created_at") or "") if delivery_items else "",
+            },
             "invite_candidates": self.list_invite_candidates(),
             "group_invitations": group_invitation_items,
             "invitations": [dict(item) for item in invitations],
+            "invitation_history": {
+                "total": len(invitations),
+                "newest_at": str(invitations[0]["sent_at"] or "") if invitations else "",
+                "oldest_at": str(invitations[-1]["sent_at"] or "") if invitations else "",
+            },
             "invitation_counts": {
                 status: sum(1 for item in invitations if str(item["status"]) == status)
                 for status in ("pending", "accepted", "paused", "failed")

@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=19', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=34', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=20', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=38', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -170,6 +170,31 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('.compact-filter-panel', STYLE)
         self.assertIn('.filter-trigger.is-active', STYLE)
         self.assertNotIn('type="search" data-section-filter', SCRIPT)
+
+    def test_delivery_history_is_complete_and_filterable(self):
+        self.assertNotIn("rows.slice(0, 40)", SCRIPT)
+        self.assertIn("data-delivery-filter-row", SCRIPT)
+        self.assertIn('data-delivery-filter="query"', SCRIPT)
+        self.assertIn('data-delivery-filter="from"', SCRIPT)
+        self.assertIn('data-delivery-filter="to"', SCRIPT)
+        self.assertIn('data-delivery-filter="service"', SCRIPT)
+        self.assertIn('data-delivery-filter="recipient"', SCRIPT)
+        self.assertIn("全部推送人", SCRIPT)
+        self.assertIn('data-delivery-filter="status"', SCRIPT)
+        self.assertIn("完整范围 ${oldest} 至 ${newest}", SCRIPT)
+        self.assertIn(".delivery-filter-toolbar", STYLE)
+
+    def test_invitation_history_is_complete_and_filterable(self):
+        self.assertNotIn("rows.slice(0, 60)", SCRIPT)
+        self.assertIn("data-invitation-filter-row", SCRIPT)
+        self.assertIn('data-invitation-filter="query"', SCRIPT)
+        self.assertIn('data-invitation-filter="from"', SCRIPT)
+        self.assertIn('data-invitation-filter="to"', SCRIPT)
+        self.assertIn('data-invitation-filter="person"', SCRIPT)
+        self.assertIn("全部邀请对象", SCRIPT)
+        self.assertIn('data-invitation-filter="status"', SCRIPT)
+        self.assertIn("applyInvitationFilter()", SCRIPT)
+        self.assertIn(".invitation-filter-toolbar", STYLE)
 
     def test_subscriber_reset_and_save_are_dedicated_right_side_columns(self):
         subscriber_header = SCRIPT.split('<section class="surface subscriber-surface">', 1)[1].split('</thead>', 1)[0]

@@ -126,6 +126,14 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .table-person-id { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
 .preference-source { margin-top: 3px; color: #72c7ad; font-size: 7px; font-weight: 600; }
 .delivery-table table { min-width: 880px; }
+.delivery-filter-toolbar { display: grid; grid-template-columns: minmax(190px, 1fr) repeat(2, minmax(126px, auto)) minmax(120px, auto) minmax(142px, auto) minmax(132px, auto) auto; align-items: end; gap: 8px; margin-bottom: 10px; }
+.invitation-filter-toolbar { display: grid; grid-template-columns: minmax(210px, 1fr) repeat(2, minmax(132px, auto)) minmax(150px, auto) minmax(132px, auto) auto; align-items: end; gap: 8px; margin-bottom: 10px; }
+.delivery-filter-toolbar label, .invitation-filter-toolbar label { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px; color: #78949e; }
+.delivery-filter-toolbar input, .delivery-filter-toolbar select, .invitation-filter-toolbar input, .invitation-filter-toolbar select, .delivery-filter-clear { height: 34px; min-height: 34px; }
+.delivery-filter-toolbar input[type="date"], .invitation-filter-toolbar input[type="date"] { min-width: 126px; }
+.delivery-search { grid-template-columns: 1fr !important; }
+.delivery-history-summary { grid-column: 1 / -1; color: #78949e; font-size: 10px; }
+.delivery-filter-clear { padding: 0 12px; }
 .delivery-recipient { display: block; min-width: 116px; }
 .delivery-recipient strong, .delivery-recipient small { display: block; white-space: nowrap; }
 .delivery-recipient strong { color: #edf5f7; font-size: 9px; font-weight: 600; }
@@ -269,6 +277,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .manual-report-sendbar { grid-template-columns: 1fr; align-items: start; }
   .report-version-grid { grid-template-columns: 1fr; }
   .push-workbench { max-width: none; padding: 0 18px; }
+  .delivery-filter-toolbar, .invitation-filter-toolbar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .delivery-search { grid-column: 1 / -1; }
 }
 @media (max-width: 560px) {
   .admin { padding: 10px; }
@@ -304,6 +314,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .push-actions { align-items: stretch; flex-direction: column; }
   .push-actions .button { width: 100%; }
   .management-drawer, .people-picker { width: 100vw; }
+  .delivery-filter-toolbar, .invitation-filter-toolbar { grid-template-columns: 1fr 1fr; }
+  .delivery-filter-toolbar label:has(select), .invitation-filter-toolbar label:has(select), .delivery-filter-clear { min-width: 0; }
   .compact-send { min-width: 36px; padding: 0 9px; }
   .compact-send span { display: none; }
 }

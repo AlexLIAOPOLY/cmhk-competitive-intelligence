@@ -8,6 +8,8 @@
       invite: { kind: "all", status: "all" },
       subscriber: { service: "all", status: "all", frequency: "all" },
     },
+    deliveryFilters: { query: "", from: "", to: "", service: "all", recipient: "all", status: "all" },
+    invitationFilters: { query: "", from: "", to: "", person: "all", status: "all" },
     openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
     manualWeeklyPath: "", weeklyPickerOpen: false, weeklyPickerQuery: "", weeklyPickerBusy: false,
     manualPerformancePath: "", performancePickerOpen: false, performancePickerQuery: "", performancePickerBusy: false,
@@ -176,12 +178,68 @@
   function deliveryRows() {
     const rows = state.data?.deliveries || [];
     if (!rows.length) return '<tr><td colspan="7" class="empty">尚无推送记录</td></tr>';
-    return rows.slice(0, 40).map((item) => {
+    return rows.map((item) => {
       const openId = item.recipient_open_id || item.open_id || "";
       const recipientName = item.recipient_name || openId || "接收人未记录";
       const recipientIdentity = item.recipient_name && openId ? `${openId.slice(0, 10)}${openId.length > 10 ? "…" : ""}` : "";
-      return `<tr><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="delivery-recipient" title="${esc(openId)}"><strong>${esc(recipientName)}</strong>${recipientIdentity ? `<small>${esc(recipientIdentity)}</small>` : ""}</span></td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已确认发送" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "cancelled" ? "发送功能已关闭，已取消" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`;
-    }).join("");
+      const deliveryStatus = item.status === "verified" ? "verified" : ["queued", "sending", "retrying"].includes(item.status) ? "pending" : "issue";
+      const filterText = [item.created_at, serviceLabel(item.service), modeLabel(item.mode), item.content_ref, recipientName, openId, item.status, item.error].filter(Boolean).join(" ");
+      const recipientKey = recipientName;
+      return `<tr data-delivery-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-service="${esc(item.service || "")}" data-filter-recipient="${esc(recipientKey)}" data-filter-status="${deliveryStatus}" data-filter-text="${esc(filterText)}"><td>${esc(item.created_at)}</td><td>${esc(serviceLabel(item.service))}</td><td>${esc(modeLabel(item.mode))}</td><td class="muted">${esc(item.content_ref || "—")}</td><td><span class="delivery-recipient" title="${esc(openId)}"><strong>${esc(recipientName)}</strong>${recipientIdentity ? `<small>${esc(recipientIdentity)}</small>` : ""}</span></td><td><span class="status ${esc(item.status)}">${item.status === "verified" ? "已确认发送" : item.status === "queued" ? "等待重试" : item.status === "sending" ? "发送中" : item.status === "retrying" ? "等待重试" : item.status === "cancelled" ? "发送功能已关闭，已取消" : item.status === "superseded" ? "已按新规则停用" : "失败"}</span></td><td title="${esc(item.error || "")}">${item.error ? esc(item.error.slice(0, 90)) : number(item.message_ids?.length || 0) + " 条消息"}</td></tr>`;
+    }).join("") + '<tr data-delivery-filter-empty hidden><td colspan="7" class="empty">没有匹配的推送记录</td></tr>';
+  }
+
+  function deliveryRecipientOptions() {
+    const recipients = new Map();
+    (state.data?.deliveries || []).forEach((item) => {
+      const openId = item.recipient_open_id || item.open_id || "";
+      const name = item.recipient_name || openId || "接收人未记录";
+      recipients.set(name, name);
+    });
+    return Array.from(recipients.entries()).sort((left, right) => left[1].localeCompare(right[1], "zh-CN"))
+      .map(([value, label]) => `<option value="${esc(value)}"${state.deliveryFilters.recipient === value ? " selected" : ""}>${esc(label)}</option>`).join("");
+  }
+
+  function deliveryFilterToolbar() {
+    const filters = state.deliveryFilters;
+    const history = state.data?.delivery_history || {};
+    const oldest = String(history.oldest_at || "").slice(0, 10);
+    const newest = String(history.newest_at || "").slice(0, 10);
+    return `<div class="delivery-filter-toolbar" aria-label="筛选推送记录">
+      <label class="delivery-search"><span class="sr-only">搜索推送记录</span><input type="search" value="${esc(filters.query)}" data-delivery-filter="query" placeholder="搜索接收人、内容或错误" autocomplete="off"></label>
+      <label><span>从</span><input type="date" value="${esc(filters.from)}" min="${esc(oldest)}" max="${esc(newest)}" data-delivery-filter="from"></label>
+      <label><span>到</span><input type="date" value="${esc(filters.to)}" min="${esc(oldest)}" max="${esc(newest)}" data-delivery-filter="to"></label>
+      <label><span class="sr-only">服务</span><select data-delivery-filter="service"><option value="all"${filters.service === "all" ? " selected" : ""}>全部服务</option><option value="news"${filters.service === "news" ? " selected" : ""}>战略新闻</option><option value="weekly"${filters.service === "weekly" ? " selected" : ""}>战略双周报</option><option value="performance"${filters.service === "performance" ? " selected" : ""}>运营商业绩摘要</option></select></label>
+      <label><span class="sr-only">推送人</span><select data-delivery-filter="recipient" aria-label="按推送人筛选"><option value="all"${filters.recipient === "all" ? " selected" : ""}>全部推送人</option>${deliveryRecipientOptions()}</select></label>
+      <label><span class="sr-only">状态</span><select data-delivery-filter="status"><option value="all"${filters.status === "all" ? " selected" : ""}>全部状态</option><option value="verified"${filters.status === "verified" ? " selected" : ""}>已确认发送</option><option value="pending"${filters.status === "pending" ? " selected" : ""}>处理中 / 重试</option><option value="issue"${filters.status === "issue" ? " selected" : ""}>失败 / 已停用</option></select></label>
+      <button class="button delivery-filter-clear" type="button" data-clear-delivery-filters>清除</button>
+      <p class="delivery-history-summary" data-delivery-filter-summary>全部历史 ${number(history.total ?? (state.data?.deliveries || []).length)} 条${oldest && newest ? ` · ${esc(oldest)} 至 ${esc(newest)}` : ""}</p>
+    </div>`;
+  }
+
+  function applyDeliveryFilter() {
+    const filters = state.deliveryFilters;
+    const query = String(filters.query || "").trim().toLocaleLowerCase();
+    const rows = Array.from(root.querySelectorAll("[data-delivery-filter-row]"));
+    let visibleCount = 0;
+    rows.forEach((row) => {
+      const date = row.dataset.filterDate || "";
+      const visible = (!query || String(row.dataset.filterText || "").toLocaleLowerCase().includes(query))
+        && (!filters.from || date >= filters.from)
+        && (!filters.to || date <= filters.to)
+        && (filters.service === "all" || row.dataset.filterService === filters.service)
+        && (filters.recipient === "all" || row.dataset.filterRecipient === filters.recipient)
+        && (filters.status === "all" || row.dataset.filterStatus === filters.status);
+      row.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+    const total = Number(state.data?.delivery_history?.total ?? rows.length);
+    const oldest = String(state.data?.delivery_history?.oldest_at || "").slice(0, 10);
+    const newest = String(state.data?.delivery_history?.newest_at || "").slice(0, 10);
+    const summary = root.querySelector("[data-delivery-filter-summary]");
+    if (summary) summary.textContent = `显示 ${number(visibleCount)} / ${number(total)} 条历史记录${oldest && newest ? ` · 完整范围 ${oldest} 至 ${newest}` : ""}`;
+    const empty = root.querySelector("[data-delivery-filter-empty]");
+    if (empty) empty.hidden = visibleCount > 0;
   }
 
   function searchResultRows() {
@@ -276,20 +334,77 @@
   function applySavedFilters() {
     applySectionFilter("invite");
     applySectionFilter("subscriber");
+    applyDeliveryFilter();
+    applyInvitationFilter();
   }
 
   function invitationRows() {
     const rows = state.data?.invitations || [];
     if (!rows.length) return '<tr><td colspan="4" class="empty">尚无邀请记录</td></tr>';
-    return rows.slice(0, 60).map((item) => `<tr><td class="name">${esc(item.display_name)}</td><td>${esc(item.sent_at || "-")}</td><td><span class="status ${esc(item.status)}">${esc(invitationStatus(item.status))}</span></td><td class="muted">${esc(item.message_id || "-")}</td></tr>`).join("");
+    return rows.map((item) => {
+      const personKey = item.callback_open_id || item.delivery_open_id || item.display_name || "";
+      const filterText = [item.display_name, item.callback_open_id, item.delivery_open_id, item.sent_at, invitationStatus(item.status), item.message_id, item.last_error].filter(Boolean).join(" ");
+      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.sent_at || "").slice(0, 10))}" data-filter-person="${esc(personKey)}" data-filter-status="${esc(item.status || "")}" data-filter-text="${esc(filterText)}"><td class="name">${esc(item.display_name)}</td><td>${esc(item.sent_at || "-")}</td><td><span class="status ${esc(item.status)}">${esc(invitationStatus(item.status))}</span></td><td class="muted">${esc(item.message_id || "-")}</td></tr>`;
+    }).join("") + '<tr data-invitation-filter-empty hidden><td colspan="4" class="empty">没有匹配的邀请结果</td></tr>';
+  }
+
+  function invitationPersonOptions() {
+    const people = new Map();
+    (state.data?.invitations || []).forEach((item) => {
+      const key = item.callback_open_id || item.delivery_open_id || item.display_name || "";
+      if (key) people.set(key, item.display_name || key);
+    });
+    return Array.from(people.entries()).sort((left, right) => left[1].localeCompare(right[1], "zh-CN"))
+      .map(([value, label]) => `<option value="${esc(value)}"${state.invitationFilters.person === value ? " selected" : ""}>${esc(label)}</option>`).join("");
+  }
+
+  function invitationFilterToolbar() {
+    const filters = state.invitationFilters;
+    const history = state.data?.invitation_history || {};
+    const oldest = String(history.oldest_at || "").slice(0, 10);
+    const newest = String(history.newest_at || "").slice(0, 10);
+    return `<div class="invitation-filter-toolbar" aria-label="筛选邀请结果">
+      <label class="delivery-search"><span class="sr-only">搜索邀请结果</span><input type="search" value="${esc(filters.query)}" data-invitation-filter="query" placeholder="搜索姓名、消息 ID 或错误" autocomplete="off"></label>
+      <label><span>从</span><input type="date" value="${esc(filters.from)}" min="${esc(oldest)}" max="${esc(newest)}" data-invitation-filter="from"></label>
+      <label><span>到</span><input type="date" value="${esc(filters.to)}" min="${esc(oldest)}" max="${esc(newest)}" data-invitation-filter="to"></label>
+      <label><span class="sr-only">邀请对象</span><select data-invitation-filter="person" aria-label="按邀请对象筛选"><option value="all"${filters.person === "all" ? " selected" : ""}>全部邀请对象</option>${invitationPersonOptions()}</select></label>
+      <label><span class="sr-only">状态</span><select data-invitation-filter="status"><option value="all"${filters.status === "all" ? " selected" : ""}>全部状态</option><option value="pending"${filters.status === "pending" ? " selected" : ""}>等待选择</option><option value="accepted"${filters.status === "accepted" ? " selected" : ""}>已接受</option><option value="paused"${filters.status === "paused" ? " selected" : ""}>已暂停</option><option value="failed"${filters.status === "failed" ? " selected" : ""}>发送失败</option></select></label>
+      <button class="button delivery-filter-clear" type="button" data-clear-invitation-filters>清除</button>
+      <p class="delivery-history-summary" data-invitation-filter-summary></p>
+    </div>`;
+  }
+
+  function applyInvitationFilter() {
+    const filters = state.invitationFilters;
+    const query = String(filters.query || "").trim().toLocaleLowerCase();
+    const rows = Array.from(root.querySelectorAll("[data-invitation-filter-row]"));
+    let visibleCount = 0;
+    rows.forEach((row) => {
+      const date = row.dataset.filterDate || "";
+      const visible = (!query || String(row.dataset.filterText || "").toLocaleLowerCase().includes(query))
+        && (!filters.from || date >= filters.from)
+        && (!filters.to || date <= filters.to)
+        && (filters.person === "all" || row.dataset.filterPerson === filters.person)
+        && (filters.status === "all" || row.dataset.filterStatus === filters.status);
+      row.hidden = !visible;
+      if (visible) visibleCount += 1;
+    });
+    const history = state.data?.invitation_history || {};
+    const total = Number(history.total ?? rows.length);
+    const oldest = String(history.oldest_at || "").slice(0, 10);
+    const newest = String(history.newest_at || "").slice(0, 10);
+    const summary = root.querySelector("[data-invitation-filter-summary]");
+    if (summary) summary.textContent = `显示 ${number(visibleCount)} / ${number(total)} 条邀请结果${oldest && newest ? ` · 完整范围 ${oldest} 至 ${newest}` : ""}`;
+    const empty = root.querySelector("[data-invitation-filter-empty]");
+    if (empty) empty.hidden = visibleCount > 0;
   }
 
   function drawerContent() {
     const data = state.data || {};
     if (state.drawerTab === "deliveries") {
-      return `<div class="table-wrap delivery-table"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>推送给</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div>`;
+      return `${deliveryFilterToolbar()}<div class="table-wrap delivery-table"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>推送给</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div>`;
     }
-    return `<p class="drawer-summary">待选择 ${number(data.invitation_counts?.pending)} · 已接受 ${number(data.invitation_counts?.accepted)} · 失败 ${number(data.invitation_counts?.failed)}</p><div class="table-wrap"><table><thead><tr><th>人员</th><th>发送时间</th><th>状态</th><th>消息 ID</th></tr></thead><tbody>${invitationRows()}</tbody></table></div>`;
+    return `<p class="drawer-summary">待选择 ${number(data.invitation_counts?.pending)} · 已接受 ${number(data.invitation_counts?.accepted)} · 失败 ${number(data.invitation_counts?.failed)}</p>${invitationFilterToolbar()}<div class="table-wrap"><table><thead><tr><th>人员</th><th>发送时间</th><th>状态</th><th>消息 ID</th></tr></thead><tbody>${invitationRows()}</tbody></table></div>`;
   }
 
   function scheduleSummary(schedule) {
@@ -798,6 +913,16 @@
       render();
       return;
     }
+    if (event.target.closest("[data-clear-delivery-filters]")) {
+      state.deliveryFilters = { query: "", from: "", to: "", service: "all", recipient: "all", status: "all" };
+      render();
+      return;
+    }
+    if (event.target.closest("[data-clear-invitation-filters]")) {
+      state.invitationFilters = { query: "", from: "", to: "", person: "all", status: "all" };
+      render();
+      return;
+    }
     if (event.target.closest("[data-test-card]")) {
       try { await post({ action: "publish", targetType: "user", targetId: state.data?.test_target?.callback_open_id || "" }, "正在把订阅卡片发给你本人并回读…"); }
       catch (error) { state.notice = `测试卡片发送失败：${error.message}`; state.noticeKind = "error"; render(); }
@@ -908,6 +1033,18 @@
   });
 
   document.addEventListener("change", (event) => {
+    const deliveryFilter = event.target.closest("[data-delivery-filter]");
+    if (deliveryFilter) {
+      state.deliveryFilters[deliveryFilter.dataset.deliveryFilter] = deliveryFilter.value;
+      applyDeliveryFilter();
+      return;
+    }
+    const invitationFilter = event.target.closest("[data-invitation-filter]");
+    if (invitationFilter) {
+      state.invitationFilters[invitationFilter.dataset.invitationFilter] = invitationFilter.value;
+      applyInvitationFilter();
+      return;
+    }
     const row = event.target.closest("[data-subscriber-row]");
     if (row) {
       const services = Array.from(row.querySelectorAll('.service-check input:checked'), input => input.value);
@@ -933,6 +1070,18 @@
   });
 
   document.addEventListener("input", (event) => {
+    const deliveryFilter = event.target.closest('[data-delivery-filter="query"]');
+    if (deliveryFilter) {
+      state.deliveryFilters.query = deliveryFilter.value;
+      applyDeliveryFilter();
+      return;
+    }
+    const invitationFilter = event.target.closest('[data-invitation-filter="query"]');
+    if (invitationFilter) {
+      state.invitationFilters.query = invitationFilter.value;
+      applyInvitationFilter();
+      return;
+    }
     const weeklySearch = event.target.closest("[data-weekly-picker-search]");
     if (weeklySearch) {
       state.weeklyPickerQuery = weeklySearch.value;

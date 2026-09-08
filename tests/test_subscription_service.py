@@ -579,6 +579,23 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["header"]["title"]["content"], "真实新闻")
         self.assertIn("经审核的新闻正文", card["elements"][0]["content"])
 
+    def test_delivery_summary_returns_complete_history_by_default(self):
+        with closing(self.service._connect()) as db, db:
+            db.executemany(
+                """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
+                   VALUES(?, ?, 'news', 'text', ?, 'verified', '[]', '', ?)""",
+                [
+                    (f"batch-{index}", "ou_delivery123", f"history-{index}", f"2026-08-{(index % 28) + 1:02d}T08:00:00+08:00")
+                    for index in range(85)
+                ],
+            )
+
+        summary = self.service.list_summary()
+
+        self.assertEqual(len(summary["deliveries"]), 85)
+        self.assertEqual(summary["delivery_history"]["total"], 85)
+        self.assertEqual(summary["delivery_history"]["returned"], 85)
+
     def test_strategic_news_card_uses_clean_personal_subscription_format(self):
         items = [{
             "title": f"新闻 {index}", "summary": f"摘要 {index}", "category": "竞对动态",
