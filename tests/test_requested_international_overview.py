@@ -100,6 +100,9 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
     def test_reference_operators_render_comparison_bars_without_entering_ranking(self) -> None:
         app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+        index = (ROOT / "web/static/index.html").read_text(encoding="utf-8")
+        self.assertNotIn('"待核验"', app)
+        self.assertIn('/static/app.js?v=332', index)
         self.assertIn(
             "const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);",
             app,

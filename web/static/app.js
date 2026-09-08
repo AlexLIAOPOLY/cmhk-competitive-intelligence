@@ -8334,7 +8334,7 @@ document.addEventListener("keydown", (event) => {
 
   function formatValue(value, gapStatus = "") {
     if (value == null || value === "") {
-      return gapStatus === "public_not_found" ? "未见公开披露" : "待核验";
+      return "未见公开披露";
     }
     if (typeof value === "number") {
       return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(value);
@@ -8841,7 +8841,7 @@ document.addEventListener("keydown", (event) => {
           const height = available ? Math.max(8, Math.abs(numeric) / trendMaximum * 100) : 0;
           const pointValue = available
             ? `${formatMetricValue(numeric, item.unit)}${formatMetricUnit(numeric, item.unit)}`
-            : "待核验";
+            : "未见公开披露";
           return `<i class="spark-column ${available ? "is-available" : "is-missing"} ${pointIndex === latestAvailableIndex ? "is-latest" : ""}" style="--spark-height:${height.toFixed(2)}%" title="${safe(point.label)} · ${safe(pointValue)}"><b></b></i>`;
         }).join("");
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
