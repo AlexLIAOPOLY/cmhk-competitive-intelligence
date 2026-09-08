@@ -40,7 +40,7 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         )
         self.assertEqual(
             [focus["label"] for focus in domain["focuses"]],
-            ["营收", "净利润", "资本开支", "移动ARPU / ARPA"],
+            ["营收", "净利润", "资本开支", "移动ARPU"],
         )
         self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][0]["items"]))
         self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][1]["items"]))

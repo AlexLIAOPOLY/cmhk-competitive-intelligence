@@ -2367,9 +2367,9 @@ def _requested_international_domain(
         {"id": "capex", "label": "资本开支", "visual": "rows", "headline": "DOCOMO持续投入更厚",
          "metric": leader_metric(capex_items),
          "context": "各公司最新已核验年度；统一为美元", "insight": latest_comparison_insight("资本开支", capex_items, "持续投入规模反映网络和增长的资本军备强度", "投入转化效率不能由绝对金额判断。"), "items": capex_items},
-        {"id": "mobile_arpu", "label": "移动ARPU / ARPA", "visual": "rows", "headline": "DOCOMO客户价值更高",
+        {"id": "mobile_arpu", "label": "移动ARPU", "visual": "rows", "headline": "DOCOMO客户价值更高",
          "metric": leader_metric(arpu_items),
-         "context": "各公司最新已核验年度；统一为美元/月；Verizon为每账户ARPA", "insight": latest_comparison_insight("移动ARPU / ARPA", arpu_items, "ARPU / ARPA反映客户或账户价值量级", "每用户、每手机与每账户口径不直接等同。"), "items": arpu_items},
+         "context": "各公司最新已核验年度；统一为美元/月；Verizon为每账户ARPA", "insight": latest_comparison_insight("移动ARPU", arpu_items, "相关月均指标反映客户或账户价值量级", "每用户、每手机与每账户口径不直接等同。"), "items": arpu_items},
     ]
     # Reference records are deliberately separate from items: leaders and AI ranking
     # consume only the original four, while the UI and refresh use the same facts.
@@ -2411,10 +2411,10 @@ def _requested_international_domain(
     all_items += [item for focus in focuses for item in focus["reference_items"]]
     return {
         "id": "international", "index": "02", "title": "国际运营商",
-        "kicker": "营收、净利润、资本开支与移动ARPU / ARPA",
+        "kicker": "营收、净利润、资本开支与移动ARPU",
         "metric": {"value": 10, "unit": "年", "label": "FY2016–FY2025比较窗口"},
         "context": "NTT DOCOMO、SoftBank Corp.、SK Telecom、Singtel；有值即展示，官方来源数量在后台保留",
-        "insight": "金额统一为美元，ARPU / ARPA统一为美元/月；原币、分母口径、自然年平均汇率和财年截止日保留，缺口不估算。",
+        "insight": "金额统一为美元，相关月均指标统一为美元/月；原币、分母口径、自然年平均汇率和财年截止日保留，缺口不估算。",
         "entities": revenue_items, "focuses": focuses,
         "relations": [{"title": item["name"], "detail": "四项指标口径已校准", "kind": "官方来源已标注"} for item in revenue_items],
         "sources": _dedupe_sources(
