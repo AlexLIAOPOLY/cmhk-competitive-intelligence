@@ -8415,7 +8415,21 @@ document.addEventListener("keydown", (event) => {
   }
 
   function focusItems(domain, focus) {
-    if (Array.isArray(focus?.items)) return [...focus.items, ...(focus.reference_items || [])];
+    if (Array.isArray(focus?.items)) {
+      if (domain?.id !== "international") return [...focus.items, ...(focus.reference_items || [])];
+      const byValueDescending = (values) => values
+        .map((item, index) => ({ item, index, value: Number(item?.value) }))
+        .sort((left, right) => {
+          const leftValue = Number.isFinite(left.value) ? left.value : -Infinity;
+          const rightValue = Number.isFinite(right.value) ? right.value : -Infinity;
+          return rightValue - leftValue || left.index - right.index;
+        })
+        .map((entry) => entry.item);
+      return [
+        ...byValueDescending(focus.items),
+        ...byValueDescending(focus.reference_items || []),
+      ];
+    }
     return Array.isArray(domain?.entities) ? domain.entities : [];
   }
 
@@ -8933,8 +8947,10 @@ document.addEventListener("keydown", (event) => {
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
       if (item.ranking_eligible === false) {
-        const width = Math.max(2, Math.abs(Number(item.value) || 0) / maxValue * 100);
-        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
+        const numericValue = item.value == null ? NaN : Number(item.value);
+        const width = Number.isFinite(numericValue) ? Math.max(2, Math.abs(numericValue) / maxValue * 100) : 0;
+        const startsReferenceGroup = index === 0 || items[index - 1]?.ranking_eligible !== false;
+        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${startsReferenceGroup ? "is-reference-group-start" : ""} ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <span>${renderScrollingLabel(item.name)}</span>
             <i aria-label="${safe(item.period)}"><b style="--row-width:${width.toFixed(2)}%"></b></i>
             <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>

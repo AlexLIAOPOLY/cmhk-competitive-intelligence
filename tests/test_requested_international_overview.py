@@ -91,14 +91,22 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
 
     def test_reference_operators_render_comparison_bars_without_entering_ranking(self) -> None:
         app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        styles = (ROOT / "web/static/styles.css").read_text(encoding="utf-8")
         self.assertIn(
             "const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);",
             app,
         )
+        self.assertIn("...byValueDescending(focus.items)", app)
+        self.assertIn("...byValueDescending(focus.reference_items || [])", app)
         reference_branch = app.split('if (item.ranking_eligible === false) {', 1)[1].split("const periodPrefix", 1)[0]
         self.assertIn('class="intelligence-viz-entity intelligence-reference-row', reference_branch)
+        self.assertIn('is-reference-group-start', reference_branch)
+        self.assertIn("item.value == null ? NaN : Number(item.value)", reference_branch)
         self.assertIn('<i aria-label="${safe(item.period)}"><b style="--row-width:${width.toFixed(2)}%"></b></i>', reference_branch)
         self.assertNotIn('class="intelligence-reference-period"', reference_branch)
+        self.assertIn(".intelligence-viz-rows li.intelligence-reference-row {", styles)
+        self.assertIn("opacity: .38;", styles)
+        self.assertIn("filter: saturate(.58) brightness(.78);", styles)
 
     def test_xiaojing_retrieves_new_metric_pairs(self) -> None:
         cases = {

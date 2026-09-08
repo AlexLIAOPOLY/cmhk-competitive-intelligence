@@ -16727,10 +16727,19 @@ body.report-library-open::before {
   color: #fff;
 }
 
-/* Reference operators continue below the ranked sample without comparison bars. */
-.intelligence-reference-row .intelligence-reference-period {
-  color: #9db5c3;
-  font-size: 12px;
+/* Keep reference operators as a visually quieter second ranked group. */
+.intelligence-viz-rows li.intelligence-reference-row {
+  opacity: .38;
+}
+
+.intelligence-viz-rows li.intelligence-reference-row.is-reference-group-start {
+  margin-top: 4px;
+  border-top: 1px solid color-mix(in srgb, var(--domain-accent) 18%, transparent);
+  padding-top: 8px;
+}
+
+.intelligence-viz-rows li.intelligence-reference-row > i b {
+  filter: saturate(.58) brightness(.78);
 }
 
 @media (min-width: 981px) {
