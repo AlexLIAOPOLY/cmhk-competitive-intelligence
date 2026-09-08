@@ -1431,14 +1431,14 @@ select {
 .file-header,
 .file-row {
   display: grid;
-  grid-template-columns: minmax(240px, 1.45fr) minmax(190px, 1fr) 150px 90px;
+  grid-template-columns: minmax(240px, 1.45fr) minmax(190px, 1fr) 150px 114px;
   gap: 14px;
   align-items: center;
 }
 
 .file-header.with-select,
 .file-row.with-select {
-  grid-template-columns: 30px minmax(240px, 1.45fr) minmax(190px, 1fr) 150px 90px;
+  grid-template-columns: 30px minmax(240px, 1.45fr) minmax(190px, 1fr) 150px 114px;
 }
 
 .file-row.with-select {
@@ -1670,6 +1670,9 @@ select {
   justify-content: flex-end;
   gap: 6px;
   align-items: center;
+  min-width: 114px;
+  overflow: visible !important;
+  text-overflow: clip !important;
 }
 
 .select-cell {

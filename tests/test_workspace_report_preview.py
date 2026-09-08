@@ -43,6 +43,14 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
         self.assertNotIn('class="file-name-cell file-name-editable"', app)
         self.assertIn(".file-name-editable {\n  display: inline-flex;", style)
 
+    def test_all_four_report_row_actions_fit_without_clipping(self):
+        style = (ROOT / "web/static/styles.css").read_text(encoding="utf-8")
+
+        self.assertIn("150px 114px;", style)
+        self.assertIn("min-width: 114px;", style)
+        self.assertIn("overflow: visible !important;", style)
+        self.assertIn("text-overflow: clip !important;", style)
+
     def test_maximized_preview_overrides_the_report_panel_layout(self):
         style = (ROOT / "web/static/workspace-tabs.css").read_text(encoding="utf-8")
 
