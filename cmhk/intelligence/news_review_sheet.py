@@ -1481,6 +1481,20 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
     else:
         width = len(HEADERS)
     padded = (list(row) + [""] * width)[:width]
+    # Feishu returns typed date cells as serial numbers even with ToString.
+    # Normalize only the two date columns; leave other numbers and cells intact.
+    date_columns = (
+        (3, 9) if format_version == 9
+        else (SEARCH_DATE_COLUMN_INDEX, SOURCE_DATE_COLUMN_INDEX)
+    )
+    if format_version >= 9:
+        for column in date_columns:
+            value = padded[column]
+            if isinstance(value, (int, float)) and not isinstance(value, bool):
+                # Match the existing parser's supported 20xx publication dates.
+                epoch = date(1899, 12, 30)
+                if (date(2000, 1, 1) - epoch).days <= value < (date(2100, 1, 1) - epoch).days:
+                    padded[column] = (epoch + timedelta(days=int(value))).isoformat()
     if format_version <= 5:
         return padded
     expected_url_index = 8 if format_version == 6 else 9 if format_version == 7 else 10

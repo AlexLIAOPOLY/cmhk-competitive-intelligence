@@ -1868,6 +1868,33 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             context="测试表",
         )
 
+    def test_typed_feishu_date_cells_are_normalized_before_validation(self):
+        row = self._existing_row()
+        row[review_sheet.SEARCH_DATE_COLUMN_INDEX] = 46272
+        row[review_sheet.SOURCE_DATE_COLUMN_INDEX] = 46271.75
+        row[review_sheet.SUMMARY_COLUMN_INDEX] = 46271
+        with mock.patch.object(review_sheet, "_lark", return_value={
+            "data": {"values": [row], "revision": 56828},
+        }):
+            rows, revision = review_sheet._read_rows_with_revision("test-sheet")
+        review_sheet._validate_sheet_rows(rows, context="测试表")
+        parsed = review_sheet._row_dict(rows[0], 107)
+        self.assertEqual(parsed["search_date"], "2026-09-07")
+        self.assertEqual(parsed["source_date"], "2026-09-06")
+        self.assertEqual(rows[0][review_sheet.SUMMARY_COLUMN_INDEX], 46271)
+        self.assertEqual(revision, 56828)
+        self.assertEqual(row[review_sheet.SOURCE_DATE_COLUMN_INDEX], 46271.75)
+
+    def test_invalid_numeric_dates_still_block_sheet_writes(self):
+        for value in (True, 0, -1, 123456789, float("nan"), float("inf")):
+            with self.subTest(value=value):
+                row = self._existing_row()
+                row[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+                row[review_sheet.SOURCE_DATE_COLUMN_INDEX] = value
+                normalized = review_sheet._normalized_sheet_row(row)
+                with self.assertRaisesRegex(RuntimeError, "发布时间不在K列"):
+                    review_sheet._validate_sheet_rows([normalized], context="测试表")
+
     def test_system_only_separator_artifact_is_quarantined(self):
         artifact = [""] * len(review_sheet.HEADERS)
         artifact[review_sheet.SCREENER_COLUMN_INDEX] = "新闻自动初筛机器人"
