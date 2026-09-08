@@ -2381,7 +2381,7 @@ def _requested_international_domain(
             item = make_item(
                 operator, source_metric, latest_verified_year(operator, source_metric),
                 "美元/月" if metric == "mobile_arpu" else "百万美元",
-                "仅供参考，不参与排名；" + ("营业收入口径。" if source_metric != metric else "")
+                ("营业收入口径。" if source_metric != metric else "")
                 + "读取最新已核验披露，缺失同口径值不估算。",
                 trend=history(operator, source_metric),
             )

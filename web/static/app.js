@@ -8930,9 +8930,7 @@ document.addEventListener("keydown", (event) => {
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
       if (item.ranking_eligible === false) {
-        const firstReference = index === 0 || items[index - 1].ranking_eligible !== false;
-        return `${firstReference ? '<li class="intelligence-reference-heading">其他运营商 · 不参与排名</li>' : ''}
-          <li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
+        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <span>${renderScrollingLabel(item.name)}</span>
             <span class="intelligence-reference-period">${safe(item.period)}</span>
             <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
