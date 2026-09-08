@@ -11,7 +11,6 @@ import base64
 import shutil
 import subprocess
 import tempfile
-import uuid
 from pathlib import Path
 
 
@@ -46,15 +45,7 @@ def convert_docx_to_pdf_preview(
         except Exception as exc:
             errors.append(str(exc))
 
-    word_app = Path("/Applications/Microsoft Word.app")
-    if word_app.exists():
-        try:
-            _convert_with_microsoft_word(docx_path, target, timeout)
-            return target
-        except Exception as exc:
-            errors.append(str(exc))
-
-    raise RuntimeError("；".join(errors) or "未找到可用的 Word/PDF 转换器")
+    raise RuntimeError("；".join(errors) or "服务器未配置 PDF 转换器，请使用包含 libreoffice-writer 的部署镜像")
 
 
 def _convert_with_soffice(docx_path: Path, target: Path, soffice: str, timeout: int) -> None:
@@ -87,73 +78,3 @@ def _convert_with_soffice(docx_path: Path, target: Path, soffice: str, timeout: 
         pending = target.with_suffix(".pdf.tmp")
         shutil.copy2(converted, pending)
         pending.replace(target)
-
-
-def _convert_with_microsoft_word(docx_path: Path, target: Path, timeout: int) -> None:
-    """Use the installed Microsoft Word renderer when LibreOffice is absent."""
-    target.parent.mkdir(parents=True, exist_ok=True)
-    # Word's macOS sandbox can export to the user's Downloads container without
-    # showing an interactive grant dialog; publish to the app directory only
-    # after Word closes the temporary PDF.
-    downloads = Path.home() / "Downloads"
-    downloads.mkdir(exist_ok=True)
-    converted = downloads / f".cmhk-report-preview-{uuid.uuid4().hex}.pdf"
-    try:
-        subprocess.run(
-            ["open", "-gj", "-a", "Microsoft Word", str(docx_path)],
-            check=True,
-            capture_output=True,
-            text=True,
-            timeout=15,
-        )
-        script = """
-on run argv
-  set documentName to item 1 of argv
-  set outputPath to item 2 of argv
-  tell application "Microsoft Word"
-    repeat 100 times
-      if exists document documentName then exit repeat
-      delay 0.2
-    end repeat
-    if not (exists document documentName) then error "Word 未能打开报告"
-    set reportDocument to document documentName
-    save as reportDocument file name (POSIX file outputPath) file format format PDF
-  end tell
-end run
-"""
-        completed = subprocess.run(
-            ["osascript", "-", docx_path.name, str(converted)],
-            input=script,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-        )
-        if completed.returncode != 0 or not converted.exists():
-            detail = (completed.stderr or completed.stdout or "Word 未产出 PDF").strip()
-            raise RuntimeError(f"Microsoft Word PDF 转换失败：{detail}")
-        pending = target.with_suffix(".pdf.tmp")
-        shutil.copy2(converted, pending)
-        pending.replace(target)
-        # Word's current AppleScript dictionary exports reliably but does not
-        # expose a working document close command. Close only the just-active
-        # report window through the standard macOS shortcut; failure here is
-        # non-fatal because the PDF has already been written.
-        try:
-            subprocess.run(
-                [
-                    "osascript",
-                    "-e",
-                    'tell application "Microsoft Word" to activate',
-                    "-e",
-                    'tell application "System Events" to keystroke "w" using command down',
-                ],
-                check=False,
-                capture_output=True,
-                text=True,
-                timeout=10,
-            )
-        except (subprocess.SubprocessError, OSError):
-            pass
-    finally:
-        converted.unlink(missing_ok=True)

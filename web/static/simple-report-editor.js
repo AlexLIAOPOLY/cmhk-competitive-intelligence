@@ -69,15 +69,16 @@
 
   function render(message = '') {
     if (!current?.host?.isConnected) return;
+    const expanded = current.host.querySelector('[data-report-preview]')?.classList.contains('is-maximized');
     const scroll = current.host.querySelector('.simple-report-scroll')?.scrollTop || 0;
-    current.host.innerHTML = `<section class="workspace-panel report-preview simple-report-preview" data-report-preview>
-      <header class="report-preview-header"><div><strong title="${esc(current.payload.name)}">${esc(current.payload.name)}</strong><span class="simple-report-state" role="status" aria-live="polite">${esc(message || (editing ? '编辑中' : '报告正文'))}</span></div>
-        <div class="report-preview-actions">${editing ? '<button type="button" class="simple-report-action" data-body-cancel>取消</button>' : ''}<button type="button" class="simple-report-action ${editing ? 'primary' : ''}" data-body-toggle>${editing ? '保存正文' : '编辑正文'}</button></div>
-      </header><div class="simple-report-scroll"><article class="simple-report-paper ${editing ? 'is-editing' : ''}">${bodyMarkup(current.payload.document)}</article></div></section>`;
-    current.host.querySelector('.simple-report-scroll').scrollTop = scroll;
+    current.host.innerHTML = `<section class="workspace-panel report-preview simple-report-preview ${expanded ? 'is-maximized' : ''}" data-report-preview>
+      <header class="report-preview-header"><div><strong title="${esc(current.payload.name)}">${esc(current.payload.name)}</strong><span class="simple-report-state" role="status" aria-live="polite">${esc(message || (editing ? '编辑中' : 'PDF 预览'))}</span></div>
+        <div class="report-preview-actions">${editing ? '<button type="button" class="simple-report-action" data-body-cancel>取消</button>' : ''}<button type="button" class="simple-report-action ${editing ? 'primary' : ''}" data-body-toggle>${editing ? '保存正文' : '编辑正文'}</button><button type="button" data-report-preview-expand aria-label="${expanded ? '还原预览' : '放大预览'}" title="${expanded ? '还原预览' : '放大预览'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button></div>
+      </header>${editing ? `<div class="simple-report-scroll"><article class="simple-report-paper ${editing ? 'is-editing' : ''}">${bodyMarkup(current.payload.document)}</article></div>` : `<div class="report-preview-viewport">${current.payload.previewUrl ? `<iframe class="report-preview-pdf" src="${esc(current.payload.previewUrl)}#toolbar=0&navpanes=0&view=FitH" title="${esc(current.payload.name)} PDF 预览"></iframe>` : `<div class="simple-report-loading" role="status">${esc(current.payload.warning || '这份报告尚无 PDF 预览，可点击编辑正文。')}</div>`}</div>`}</section>`;
+    if (editing) current.host.querySelector('.simple-report-scroll').scrollTop = scroll;
     current.host.querySelector('[data-body-toggle]').addEventListener('click', () => editing ? save() : startEdit());
     current.host.querySelector('[data-body-cancel]')?.addEventListener('click', close);
-    current.host.querySelector('.simple-report-paper').addEventListener('input', () => {
+    current.host.querySelector('.simple-report-paper')?.addEventListener('input', () => {
       dirty = true;
       current.host.querySelector('.simple-report-state').textContent = '未保存';
     });
@@ -153,7 +154,7 @@
       session.payload = {...session.payload,...payload,name:payload.file?.name || session.payload.name,document:documentPayload};
       editing = false; dirty = false;
       window.dispatchEvent(new CustomEvent('cmhk-report-saved',{detail:{...payload,reportType:session.payload.reportType}}));
-      render('正文已保存');
+      render(payload.warning || '正文已保存 · PDF 预览');
       return true;
     } catch (error) {
       state.textContent = `保存失败：${error.message}`;

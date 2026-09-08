@@ -2282,9 +2282,12 @@ def load_report_editor_payload(path_str: str) -> dict:
     metadata = metadata if isinstance(metadata, dict) else {}
     preview_url = ""
     try:
-        from cmhk.reporting.pdf_preview import pdf_preview_path
+        from cmhk.reporting.pdf_preview import pdf_preview_path, convert_docx_to_pdf_preview
 
-        preview_path = pdf_preview_path(target, ROOT / "web" / "static" / "report-previews")
+        preview_dir = ROOT / "web" / "static" / "report-previews"
+        preview_path = pdf_preview_path(target, preview_dir)
+        if not preview_path.is_file() or preview_path.stat().st_mtime_ns < target.stat().st_mtime_ns:
+            preview_path = convert_docx_to_pdf_preview(target, preview_dir=preview_dir)
         if preview_path.is_file():
             preview_url = f"/static/report-previews/{quote(preview_path.name)}?v={preview_path.stat().st_mtime_ns}"
     except Exception:
@@ -2332,15 +2335,20 @@ def save_report_editor_payload(payload: dict, *, actor: dict | None = None) -> d
             history_name = f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-r{max(1, prior_revision)}.docx"
             shutil.copy2(source, history_dir / history_name)
 
-        saved = save_editor_document(source, target, document_payload)
+        saved = save_editor_document(source, target, document_payload, body_only=payload.get("bodyOnly") is True)
         delete_audio_for_report(target)
         preview_url = ""
         warning = ""
-        # Browser body editing must never launch a desktop document application.
-        # The on-page preview is rendered from the saved document, without PDF conversion.
-        from cmhk.reporting.pdf_preview import pdf_preview_path
-        stale_preview = pdf_preview_path(target, ROOT / "web" / "static" / "report-previews")
+        # Preview conversion must not open any desktop application.
+        from cmhk.reporting.pdf_preview import pdf_preview_path, convert_docx_to_pdf_preview
+        preview_dir = ROOT / "web" / "static" / "report-previews"
+        stale_preview = pdf_preview_path(target, preview_dir)
         stale_preview.unlink(missing_ok=True)
+        try:
+            preview = convert_docx_to_pdf_preview(target, preview_dir=preview_dir)
+            preview_url = f"/static/report-previews/{quote(preview.name)}?v={preview.stat().st_mtime_ns}"
+        except Exception:
+            warning = "正文已保存，PDF 预览生成失败，请稍后重新打开。"
 
         actor = actor if isinstance(actor, dict) else {}
         actor_name = str(actor.get("name") or actor.get("display_name") or actor.get("username") or "当前用户")[:120]

@@ -5,7 +5,6 @@ import unittest
 from unittest.mock import patch
 
 from cmhk.reporting.pdf_preview import (
-    _convert_with_microsoft_word,
     convert_docx_to_pdf_preview,
     pdf_preview_path,
 )
@@ -38,26 +37,20 @@ class ReportPdfPreviewTests(unittest.TestCase):
             self.assertEqual(result.read_bytes(), b"%PDF-test")
             self.assertFalse(result.with_suffix(".pdf.tmp").exists())
 
-    def test_word_close_timeout_does_not_discard_exported_pdf(self):
-        with tempfile.TemporaryDirectory() as temp_name:
-            root = Path(temp_name)
-            source = root / "sample.docx"
-            target = root / "previews" / "sample.pdf"
+    def test_missing_server_converter_never_opens_desktop_application(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / "sample.docx"
             source.write_bytes(b"word")
+            with (patch("cmhk.reporting.pdf_preview.shutil.which", return_value=None),
+                  patch("cmhk.reporting.pdf_preview.subprocess.run") as process):
+                with self.assertRaisesRegex(RuntimeError, "服务器未配置"):
+                    convert_docx_to_pdf_preview(source, preview_dir=Path(folder)/"pdf")
+                process.assert_not_called()
 
-            def fake_run(command, **_kwargs):
-                if command[:2] == ["osascript", "-"]:
-                    Path(command[-1]).write_bytes(b"%PDF-word")
-                    return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
-                if command[:2] == ["osascript", "-e"]:
-                    raise subprocess.TimeoutExpired(command, 10)
-                return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()
-
-            with patch("cmhk.reporting.pdf_preview.subprocess.run", side_effect=fake_run):
-                _convert_with_microsoft_word(source, target, timeout=120)
-
-            self.assertEqual(target.read_bytes(), b"%PDF-word")
-            self.assertFalse(target.with_suffix(".pdf.tmp").exists())
+    def test_server_deployment_includes_shared_headless_renderer(self):
+        root = Path(__file__).resolve().parents[1]
+        self.assertIn("libreoffice-writer", (root/"Dockerfile").read_text())
+        self.assertIn("runtime: docker", (root/"render.yaml").read_text())
 
 
 if __name__ == "__main__":

@@ -19,6 +19,48 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class ReportEditorRoundTripTests(unittest.TestCase):
+    def test_body_only_changes_text_and_preserves_original_layout_xml(self):
+        import zipfile
+        with tempfile.TemporaryDirectory() as folder:
+            source, target = Path(folder)/"原周报.docx", Path(folder)/"保存周报.docx"
+            doc = Document()
+            doc.sections[0].header.paragraphs[0].text = "保留页眉"
+            p = doc.add_paragraph()
+            p.paragraph_format.space_after = Pt(18)
+            p.add_run("开头原文").bold = True
+            p.add_run("中间文字末尾").italic = True
+            t = doc.add_table(rows=2, cols=3)
+            t.cell(0,0).merge(t.cell(0,2)).text = "合并标题"
+            t.cell(1,1).text = "100"
+            doc.save(source)
+            payload = load_docx_for_editor(source)
+            paragraph = payload["document"]["content"][0]
+            paragraph["content"][0]["text"] = "开头新文"
+            paragraph["content"][1]["text"] = "中间文字结束"
+            save_editor_document(source, target, payload["document"], body_only=True)
+            result = Document(target)
+            self.assertEqual(result.paragraphs[0].text, "开头新文中间文字结束")
+            self.assertEqual(doc.tables[0]._tbl.xml, result.tables[0]._tbl.xml)
+            self.assertEqual(doc.paragraphs[0]._p.pPr.xml, result.paragraphs[0]._p.pPr.xml)
+            self.assertTrue(result.paragraphs[0].runs[0].bold)
+            self.assertTrue(result.paragraphs[0].runs[1].italic)
+            with zipfile.ZipFile(source) as before, zipfile.ZipFile(target) as after:
+                for name in before.namelist():
+                    if name not in {"word/document.xml", "docProps/core.xml"}:
+                        self.assertEqual(before.read(name), after.read(name), name)
+
+    def test_headless_preview_failure_cannot_fall_back_to_word(self):
+        from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder)/"周报.docx"
+            Document().save(source)
+            with (mock.patch("cmhk.reporting.pdf_preview.shutil.which", return_value="/fake/soffice"),
+                  mock.patch("cmhk.reporting.pdf_preview._convert_with_soffice", side_effect=RuntimeError("转换失败")),
+                  mock.patch("cmhk.reporting.pdf_preview.subprocess.run") as process):
+                with self.assertRaises(RuntimeError):
+                    convert_docx_to_pdf_preview(source, preview_dir=Path(folder)/"pdf")
+                process.assert_not_called()
+
     def test_docx_round_trip_preserves_page_header_table_and_writes_edits(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -141,7 +183,7 @@ class ReportEditorServiceTests(unittest.TestCase):
             document.add_paragraph("正式生成内容")
             document.save(source)
 
-            def fake_preview(report_path):
+            def fake_preview(report_path, **kwargs):
                 from cmhk.reporting.pdf_preview import pdf_preview_path
 
                 preview = pdf_preview_path(report_path, root / "web" / "static" / "report-previews")
@@ -158,7 +200,7 @@ class ReportEditorServiceTests(unittest.TestCase):
                 mock.patch("cmhk.reporting.pdf_preview.convert_docx_to_pdf_preview", side_effect=fake_preview),
             ):
                 opened = web_app.load_report_editor_payload(source.name)
-                self.assertEqual(opened["previewUrl"], "")
+                self.assertIn("/static/report-previews/", opened["previewUrl"])
                 opened["document"]["content"][0]["content"][0]["text"] = "第一次页面编辑"
                 first = web_app.save_report_editor_payload({
                     "path": source.name,
@@ -167,7 +209,7 @@ class ReportEditorServiceTests(unittest.TestCase):
                     "document": opened["document"],
                 }, actor={"display_name": "测试编辑者"})
                 reopened = web_app.load_report_editor_payload(first["path"])
-                self.assertEqual(reopened["previewUrl"], "")
+                self.assertIn("/static/report-previews/", reopened["previewUrl"])
                 reopened["document"]["content"][0]["content"][0]["text"] = "第二次页面编辑"
                 second = web_app.save_report_editor_payload({
                     "path": first["path"],
@@ -205,7 +247,8 @@ class ReportEditorServiceTests(unittest.TestCase):
                     opened = web_app.load_report_editor_payload(name)
                     opened["document"]["content"][0]["content"][0]["text"] = "正文已修改"
                     result = web_app.save_report_editor_payload({**opened, "bodyOnly": True})
-                    convert.assert_not_called()
+                    self.assertTrue(convert.called)
+                    self.assertTrue(all(call.kwargs["preview_dir"] == root / "web/static/report-previews" for call in convert.call_args_list))
                     self.assertEqual(result["path"], name)
                     self.assertEqual(Document(source).paragraphs[0].text, "正文已修改")
                     history = list((root / "archives" / "report_edits").rglob("*.docx"))
@@ -219,7 +262,7 @@ class ReportEditorUiTests(unittest.TestCase):
     def test_body_editor_is_inline_and_has_no_word_ribbon(self):
         index = (ROOT / "web/static/index.html").read_text(encoding="utf-8")
         source = (ROOT / "web/static/simple-report-editor.js").read_text(encoding="utf-8")
-        self.assertIn("simple-report-editor.js?v=1", index)
+        self.assertIn("simple-report-editor.js?v=2", index)
         self.assertNotIn('id="reportEditorModal"', index)
         self.assertNotIn("tiptap-report-editor", index)
         self.assertIn('contenteditable="plaintext-only"', source)

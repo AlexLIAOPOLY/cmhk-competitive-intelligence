@@ -1,10 +1,9 @@
 services:
   - type: web
     name: cmhk-competitive-intelligence
-    runtime: python
+    runtime: docker
     plan: free
-    buildCommand: pip install -r requirements.txt && npm install --global @larksuite/cli@1.0.92
-    startCommand: ./scripts/bootstrap_feishu_server.sh && python web_app.py
+    dockerfilePath: ./Dockerfile
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.8

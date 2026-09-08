@@ -936,7 +936,92 @@ def _render_blocks(container: _Document | _Cell, content: list[dict[str, Any]], 
             _render_inline(paragraph, [node], source_drawings)
 
 
-def save_editor_document(source_path: Path, target_path: Path, document_payload: Any) -> dict[str, Any]:
+def _body_text(node: dict) -> str:
+    if node.get("type") == "text":
+        return str(node.get("text") or "")
+    if node.get("type") == "hardBreak":
+        return "\n"
+    return "".join(_body_text(child) for child in node.get("content", []))
+
+
+def _patch_paragraph_text(paragraph: Paragraph, next_text: str) -> None:
+    """Change text leaves only; retain paragraph/run properties and other OOXML."""
+    from difflib import SequenceMatcher
+
+    old_text = _body_text(_paragraph_node(paragraph))
+    if old_text == next_text:
+        return
+    leaves = [node for node in paragraph._p.iter() if node.tag in
+              {qn("w:t"), qn("w:instrText"), qn("w:tab"), qn("w:br"), qn("w:cr")}
+              and node.get(qn("w:type")) != "page"]
+    values = ["\t" if node.tag == qn("w:tab") else "\n" if node.tag in
+              {qn("w:br"), qn("w:cr")} else node.text or "" for node in leaves]
+    if "".join(values) != old_text or not leaves:
+        raise ValueError("此段落包含暂不支持的结构，未保存修改")
+    starts = []
+    position = 0
+    for value in values:
+        starts.append(position)
+        position += len(value)
+    for op, a, b, c, d in reversed(SequenceMatcher(None, old_text, next_text, autojunk=False).get_opcodes()):
+        if op == "equal":
+            continue
+        insertion = next((i for i in range(len(values)) if starts[i] <= a < starts[i] + len(values[i])), len(values)-1)
+        for i in range(len(values)):
+            start, end = starts[i], starts[i] + len(values[i])
+            # Later edits never affect offsets before this replacement.
+            left = max(0, a-start)
+            right = max(0, b-start)
+            if i == insertion:
+                values[i] = values[i][:left] + next_text[c:d] + values[i][right:]
+            elif start < b and end > a:
+                values[i] = values[i][:left] + values[i][right:]
+    for node, value in zip(leaves, values):
+        original = "\t" if node.tag == qn("w:tab") else "\n" if node.tag in {qn("w:br"), qn("w:cr")} else node.text or ""
+        if original == value:
+            continue
+        parent = node.getparent()
+        index = parent.index(node)
+        parent.remove(node)
+        for part in re.split(r"([\n\t])", value):
+            if not part:
+                continue
+            replacement = OxmlElement("w:br" if part == "\n" else "w:tab" if part == "\t" else "w:t")
+            if part not in {"\n", "\t"}:
+                replacement.text = part
+                replacement.set(qn("xml:space"), "preserve")
+            parent.insert(index, replacement)
+            index += 1
+
+
+def _patch_body_text(container: _Document | _Cell, nodes: list[dict], seen: dict) -> None:
+    blocks = list(_iter_blocks(container))
+    if len(blocks) != len(nodes):
+        raise ValueError("正文结构已改变，请重新打开报告")
+    for block, node in zip(blocks, nodes):
+        if isinstance(block, Paragraph):
+            if node.get("type") not in {"paragraph", "heading"}:
+                raise ValueError("正文结构已改变")
+            desired = _body_text(node)
+            if block._p in seen:
+                if seen[block._p] != desired:
+                    raise ValueError("合并单元格的文字修改不一致")
+                continue
+            seen[block._p] = desired
+            _patch_paragraph_text(block, desired)
+        else:
+            rows = node.get("content", [])
+            if node.get("type") != "table" or len(block.rows) != len(rows):
+                raise ValueError("表格结构已改变")
+            for row, row_node in zip(block.rows, rows):
+                cells = row_node.get("content", [])
+                if len(row.cells) != len(cells):
+                    raise ValueError("表格结构已改变")
+                for cell, cell_node in zip(row.cells, cells):
+                    _patch_body_text(cell, cell_node.get("content", []), seen)
+
+
+def save_editor_document(source_path: Path, target_path: Path, document_payload: Any, *, body_only: bool = False) -> dict[str, Any]:
     source_path = Path(source_path)
     target_path = Path(target_path)
     document_json = _validate_editor_document(document_payload)
@@ -944,18 +1029,21 @@ def save_editor_document(source_path: Path, target_path: Path, document_payload:
     shutil.copy2(source_path, pending)
     try:
         document = Document(pending)
-        source_drawings: dict[str, Any] = {}
-        for drawing in document._element.body.iter(qn("w:drawing")):
-            parent_run = _drawing_parent_run(drawing)
-            if parent_run is not None:
-                source_drawings[_drawing_id(drawing)] = deepcopy(parent_run)
-        body = document._element.body
-        for child in list(body):
-            if child.tag != qn("w:sectPr"):
-                body.remove(child)
-        _render_blocks(document, [item for item in document_json.get("content") or [] if isinstance(item, dict)], source_drawings)
-        if not document.paragraphs and not document.tables:
-            document.add_paragraph()
+        if body_only:
+            _patch_body_text(document, document_json.get("content", []), {})
+        else:
+            source_drawings: dict[str, Any] = {}
+            for drawing in document._element.body.iter(qn("w:drawing")):
+                parent_run = _drawing_parent_run(drawing)
+                if parent_run is not None:
+                    source_drawings[_drawing_id(drawing)] = deepcopy(parent_run)
+            body = document._element.body
+            for child in list(body):
+                if child.tag != qn("w:sectPr"):
+                    body.remove(child)
+            _render_blocks(document, [item for item in document_json.get("content") or [] if isinstance(item, dict)], source_drawings)
+            if not document.paragraphs and not document.tables:
+                document.add_paragraph()
         document.core_properties.modified = datetime.now()
         document.save(pending)
         pending.replace(target_path)

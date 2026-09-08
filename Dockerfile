@@ -17,6 +17,7 @@ RUN apt-get update \
         fonts-noto-cjk-extra \
         fonts-wqy-zenhei \
         libsndfile1 \
+        libreoffice-writer \
         nodejs \
         npm \
     && rm -rf /var/lib/apt/lists/*
