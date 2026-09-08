@@ -1,3 +1,4 @@
+import os
 import subprocess
 import tempfile
 import unittest
@@ -8,6 +9,52 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class QueuedWebReloadTests(unittest.TestCase):
+    def test_overlays_retain_prior_release_and_only_replace_selected_files(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            source, state, bins = root / "source", root / "state", root / "bin"
+            for directory in (source / "scripts", source / "Codex/agent/skills", bins):
+                directory.mkdir(parents=True)
+            (source / "scripts/queued_web_app_reload_worker.sh").write_text("#!/bin/bash\nexit 0\n")
+            (bins / "launchctl").write_text("#!/bin/bash\nexit 0\n")
+            (bins / "launchctl").chmod(0o755)
+            queue = (ROOT / "scripts/queue_web_app_reload.sh").read_text()
+            queue = queue.replace(f'SOURCE="{ROOT}"', f'SOURCE="{source}"')
+            queue = queue.replace('STATE_DIR="$HOME/Library/Application Support/CMHK"', f'STATE_DIR="{state}"')
+            queue = queue.replace('LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"', f'LOG_FILE="{root}/queue.log"')
+            queue = queue.replace('/Users/liaowang/Downloads/模板.docx', str(root / 'absent-template.docx'))
+            script = root / "queue.sh"
+            script.write_text(queue)
+            env = {**os.environ, "PATH": f"{bins}:{os.environ['PATH']}"}
+
+            def submit(*args):
+                result = subprocess.run(["bash", str(script), *args], env=env, capture_output=True, text=True)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                token = (state / "web-reload-requested").read_text().strip()
+                return state / "web-reload-releases" / token
+
+            (source / "date-fix.py").write_text("validated date fix")
+            (source / "page.css").write_text("original page")
+            full = submit()
+            (source / "date-fix.py").write_text("unselected work in progress")
+            (source / "page.css").write_text("updated page")
+            overlay = submit("--overlay-file", "page.css")
+            self.assertEqual((overlay / "date-fix.py").read_text(), "validated date fix")
+            self.assertEqual((overlay / "page.css").read_text(), "updated page")
+            self.assertEqual((full / "page.css").read_text(), "original page")
+            (source / "another.py").write_text("another fix")
+            chained = submit("--overlay-file", "another.py")
+            self.assertEqual((chained / "date-fix.py").read_text(), "validated date fix")
+            self.assertEqual((chained / "page.css").read_text(), "updated page")
+            self.assertEqual((chained / "another.py").read_text(), "another fix")
+
+            # Missing pending payloads must not silently become a partial release.
+            missing = "20260908T000000-1-1"
+            (state / "web-reload-requested").write_text(missing + "\n")
+            result = subprocess.run(["bash", str(script), "--overlay-file", "page.css"], env=env, capture_output=True, text=True)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual((state / "web-reload-requested").read_text().strip(), missing)
+
     def test_shell_scripts_are_valid(self):
         subprocess.run(
             [

@@ -132,6 +132,7 @@ prune_superseded_releases() {
 trap cleanup_queue_exit EXIT
 acquire_queue_lock
 
+previous_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
 request_token="$(date '+%Y%m%dT%H%M%S')-$$-${RANDOM}"
 release_dir="$STAGE_ROOT/$request_token"
 mkdir -p "$release_dir"
@@ -140,6 +141,17 @@ mkdir -p "$release_dir"
 # background LaunchAgent only reads this private staging directory, never the
 # live workspace, and the running Web process never sees a half-copied release.
 if (( ${#overlay_files[@]} > 0 )); then
+  # A narrow update must not discard an earlier queued full release or overlay.
+  # Copy its immutable payload first; only explicitly selected files win below.
+  if [[ -n "$previous_token" ]]; then
+    previous_release="$STAGE_ROOT/$previous_token"
+    if ! valid_release_token "$previous_token" \
+      || [[ ! -d "$previous_release" || -L "$previous_release" ]]; then
+      echo "Previous queued release is unavailable; preserving its request." >&2
+      exit 1
+    fi
+    rsync -a "$previous_release/" "$release_dir/"
+  fi
   for overlay_file in "${overlay_files[@]}"; do
     mkdir -p "$release_dir/$(dirname "$overlay_file")"
     if [[ -n "$overlay_commit" ]]; then
@@ -199,7 +211,6 @@ chmod 700 "$WORKER_COPY"
 xattr -c "$WORKER_COPY" 2>/dev/null || true
 
 temporary_request="$REQUEST_FILE.tmp.$$"
-previous_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
 printf '%s\n' "$request_token" > "$temporary_request"
 mv -f "$temporary_request" "$REQUEST_FILE"
 request_published=1
