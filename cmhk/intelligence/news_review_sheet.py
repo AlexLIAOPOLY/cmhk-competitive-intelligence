@@ -139,6 +139,44 @@ DASHBOARD_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages
 DASHBOARD_PUBLISH_LOG = DATA_DIR / "dashboard_pages_publish.log"
 
 
+def _scan_is_running() -> bool:
+    """Periodic review must yield to the scan that owns discovery and review."""
+    import fcntl
+
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    with (DATA_DIR / "monitor.lock").open("a+") as handle:
+        try:
+            fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError:
+            return True
+        fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
+    return False
+
+
+@contextmanager
+def _review_cycle_admission(*, force: bool, progress_callback=None):
+    """Avoid blocking periodic workers; keep foreground wait heartbeats alive."""
+    started = time.monotonic()
+    while True:
+        if _LOCK.acquire(blocking=False):
+            try:
+                with _review_process_lock(wait=False) as acquired:
+                    if acquired:
+                        yield True
+                        return
+            finally:
+                _LOCK.release()
+        if not force:
+            yield False
+            return
+        _progress(
+            progress_callback,
+            "等待已有审核完成",
+            f"已有审核正在处理同一候选池，已等待 {time.monotonic() - started:.0f} 秒；完成后自动接续。",
+        )
+        time.sleep(5)
+
+
 @contextmanager
 def _review_process_lock(*, wait: bool):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
@@ -4906,13 +4944,12 @@ def run_cycle(
     idempotency_key: str = "",
     progress_callback: ProgressCallback | None = None,
 ) -> dict[str, Any]:
+    if not force and _scan_is_running():
+        return {"status": "busy", "reason": "strategic_scan_owns_review"}
     lock_started = time.monotonic()
-    _progress(
-        progress_callback,
-        "审核进程锁",
-        f"正在等待审核进程锁；force={force}，幂等键={_text(idempotency_key, 120) or '无'}。",
-    )
-    with _LOCK, _review_process_lock(wait=force) as process_lock_acquired:
+    with _review_cycle_admission(
+        force=force, progress_callback=progress_callback
+    ) as process_lock_acquired:
         if not process_lock_acquired:
             return {
                 "status": "busy",
@@ -4920,8 +4957,8 @@ def run_cycle(
             }
         _progress(
             progress_callback,
-            "审核进程锁",
-            f"已取得锁，等待 {time.monotonic() - lock_started:.2f} 秒。",
+            "开始审核同步",
+            f"开始处理本轮候选；排队耗时 {time.monotonic() - lock_started:.2f} 秒。",
         )
         state = _read_json(STATE_PATH, {})
         now_epoch = time.time()
