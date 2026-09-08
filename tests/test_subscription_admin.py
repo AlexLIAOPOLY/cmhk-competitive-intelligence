@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=15', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=29', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=16', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=31', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -59,7 +59,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
         self.assertIn("data-subscriber-news-limit", SCRIPT)
         self.assertIn("newsItemLimit", SCRIPT)
-        self.assertIn(".subscriber-table table { min-width: 1120px; }", STYLE)
+        self.assertIn(".subscriber-table table { min-width: 1240px; }", STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)
@@ -159,6 +159,20 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('.compact-filter-panel', STYLE)
         self.assertIn('.filter-trigger.is-active', STYLE)
         self.assertNotIn('type="search" data-section-filter', SCRIPT)
+
+    def test_subscriber_reset_and_save_are_dedicated_right_side_columns(self):
+        subscriber_header = SCRIPT.split('<section class="surface subscriber-surface">', 1)[1].split('</thead>', 1)[0]
+        subscriber_row = SCRIPT.split('data-subscriber-filter-row', 1)[1].split('</tr>', 1)[0]
+        name_cell = subscriber_row.split('</td>', 1)[0]
+        self.assertIn('<th>恢复默认</th><th>保存</th><th>推送</th>', subscriber_header)
+        self.assertNotIn('data-reset-subscriber', name_cell)
+        self.assertNotIn('data-save-subscriber', name_cell)
+        self.assertIn('class="subscriber-action-cell"', subscriber_row)
+        self.assertIn('data-reset-subscriber', subscriber_row)
+        self.assertIn('data-save-subscriber', subscriber_row)
+        self.assertIn('data-manual-push-person', subscriber_row)
+        self.assertIn('colspan="9" class="empty">没有匹配的订阅者', SCRIPT)
+        self.assertIn('.subscriber-table th:nth-child(9)', STYLE)
 
     def test_weekly_report_picker_is_searchable_compact_and_server_synchronized(self):
         self.assertIn("data-weekly-picker-trigger", SCRIPT)
