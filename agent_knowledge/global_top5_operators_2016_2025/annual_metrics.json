@@ -6596,6 +6596,43 @@
       "period": "FY2025",
       "period_end": "2025-03-31",
       "grain": "annual",
+      "metric_key": "mobile_arpu",
+      "metric_zh": "移动ARPU",
+      "value": 245,
+      "official_value": 245,
+      "unit": "INR_per_user_month",
+      "comparator": "=",
+      "scope": "India mobile services ARPU; FY2025 year-end/exit-quarter disclosure, not consolidated group ARPU",
+      "basis": "year_end",
+      "verification_status": "official_single_source",
+      "verification_count": 1,
+      "distinct_source_document_count": 1,
+      "distinct_source_document_ids": [
+        "bharti_airtel_ar_2025"
+      ],
+      "distinct_official_source_document_count": 1,
+      "distinct_official_source_document_ids": [
+        "bharti_airtel_ar_2025"
+      ],
+      "triple_source_status": "below_three_source_threshold",
+      "primary_source_id": "bharti_airtel_ar_2025",
+      "primary_source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+      "verification_sources": [
+        "bharti_airtel_ar_2025"
+      ],
+      "candidate_sources": [
+        "bharti_airtel_ar_2025"
+      ],
+      "quality_note": "FY2025 is displayed from one direct official annual-report source under the user-approved one-source display rule; source count and India-mobile scope remain explicit."
+    },
+    {
+      "operator_id": "bharti_airtel",
+      "operator": "Bharti Airtel",
+      "legal_name": "Bharti Airtel Limited",
+      "year": 2025,
+      "period": "FY2025",
+      "period_end": "2025-03-31",
+      "grain": "annual",
       "metric_key": "net_debt",
       "metric_zh": "净债务",
       "value": 2038384,

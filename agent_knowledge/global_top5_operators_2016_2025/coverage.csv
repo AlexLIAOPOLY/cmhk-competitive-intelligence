@@ -344,6 +344,7 @@ bharti_airtel,Bharti Airtel,2016,revenue,available
 bharti_airtel,Bharti Airtel,2016,ebitda,available
 bharti_airtel,Bharti Airtel,2016,net_profit,available
 bharti_airtel,Bharti Airtel,2016,capex,available
+bharti_airtel,Bharti Airtel,2016,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2016,network_towers,available
 bharti_airtel,Bharti Airtel,2016,total_data_traffic,available
 bharti_airtel,Bharti Airtel,2017,total_customers,available
@@ -351,6 +352,7 @@ bharti_airtel,Bharti Airtel,2017,revenue,available
 bharti_airtel,Bharti Airtel,2017,ebitda,available
 bharti_airtel,Bharti Airtel,2017,net_profit,available
 bharti_airtel,Bharti Airtel,2017,capex,available
+bharti_airtel,Bharti Airtel,2017,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2017,network_towers,available
 bharti_airtel,Bharti Airtel,2017,total_data_traffic,available
 bharti_airtel,Bharti Airtel,2018,total_customers,available
@@ -358,6 +360,7 @@ bharti_airtel,Bharti Airtel,2018,revenue,available
 bharti_airtel,Bharti Airtel,2018,ebitda,available
 bharti_airtel,Bharti Airtel,2018,net_profit,available
 bharti_airtel,Bharti Airtel,2018,capex,available
+bharti_airtel,Bharti Airtel,2018,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2018,network_towers,available
 bharti_airtel,Bharti Airtel,2018,total_data_traffic,available
 bharti_airtel,Bharti Airtel,2019,total_customers,available
@@ -365,6 +368,7 @@ bharti_airtel,Bharti Airtel,2019,revenue,available
 bharti_airtel,Bharti Airtel,2019,ebitda,available
 bharti_airtel,Bharti Airtel,2019,net_profit,available
 bharti_airtel,Bharti Airtel,2019,capex,available
+bharti_airtel,Bharti Airtel,2019,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2019,network_towers,available
 bharti_airtel,Bharti Airtel,2019,total_data_traffic,available
 bharti_airtel,Bharti Airtel,2020,total_customers,available
@@ -372,6 +376,7 @@ bharti_airtel,Bharti Airtel,2020,revenue,available
 bharti_airtel,Bharti Airtel,2020,ebitda,available
 bharti_airtel,Bharti Airtel,2020,net_profit,available
 bharti_airtel,Bharti Airtel,2020,capex,available
+bharti_airtel,Bharti Airtel,2020,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2020,network_towers,available
 bharti_airtel,Bharti Airtel,2020,total_data_traffic,available
 bharti_airtel,Bharti Airtel,2021,total_customers,available
@@ -379,6 +384,7 @@ bharti_airtel,Bharti Airtel,2021,revenue,available
 bharti_airtel,Bharti Airtel,2021,ebitda,available
 bharti_airtel,Bharti Airtel,2021,net_profit,available
 bharti_airtel,Bharti Airtel,2021,capex,available
+bharti_airtel,Bharti Airtel,2021,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2021,network_towers,available
 bharti_airtel,Bharti Airtel,2021,total_data_traffic,not_collected
 bharti_airtel,Bharti Airtel,2022,total_customers,available
@@ -386,6 +392,7 @@ bharti_airtel,Bharti Airtel,2022,revenue,available
 bharti_airtel,Bharti Airtel,2022,ebitda,available
 bharti_airtel,Bharti Airtel,2022,net_profit,available
 bharti_airtel,Bharti Airtel,2022,capex,available
+bharti_airtel,Bharti Airtel,2022,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2022,network_towers,available
 bharti_airtel,Bharti Airtel,2022,total_data_traffic,not_collected
 bharti_airtel,Bharti Airtel,2023,total_customers,available
@@ -393,6 +400,7 @@ bharti_airtel,Bharti Airtel,2023,revenue,available
 bharti_airtel,Bharti Airtel,2023,ebitda,available
 bharti_airtel,Bharti Airtel,2023,net_profit,available
 bharti_airtel,Bharti Airtel,2023,capex,available
+bharti_airtel,Bharti Airtel,2023,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2023,network_towers,available
 bharti_airtel,Bharti Airtel,2023,total_data_traffic,not_collected
 bharti_airtel,Bharti Airtel,2024,total_customers,available
@@ -400,6 +408,7 @@ bharti_airtel,Bharti Airtel,2024,revenue,available
 bharti_airtel,Bharti Airtel,2024,ebitda,available
 bharti_airtel,Bharti Airtel,2024,net_profit,available
 bharti_airtel,Bharti Airtel,2024,capex,available
+bharti_airtel,Bharti Airtel,2024,mobile_arpu,not_collected
 bharti_airtel,Bharti Airtel,2024,network_towers,available
 bharti_airtel,Bharti Airtel,2024,total_data_traffic,not_collected
 bharti_airtel,Bharti Airtel,2025,total_customers,available
@@ -407,6 +416,7 @@ bharti_airtel,Bharti Airtel,2025,revenue,available
 bharti_airtel,Bharti Airtel,2025,ebitda,available
 bharti_airtel,Bharti Airtel,2025,net_profit,available
 bharti_airtel,Bharti Airtel,2025,capex,available
+bharti_airtel,Bharti Airtel,2025,mobile_arpu,available
 bharti_airtel,Bharti Airtel,2025,network_towers,available
 bharti_airtel,Bharti Airtel,2025,total_data_traffic,not_collected
 reliance_jio,Reliance Jio,2016,total_customers,not_applicable_precommercial

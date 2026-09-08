@@ -1140,6 +1140,11 @@
           "value": 1136719,
           "unit": "INR_million",
           "locator": "consolidated key ratios table; differs by INR1m from later IR packs"
+        },
+        "mobile_arpu": {
+          "value": 245,
+          "unit": "INR_per_user_month",
+          "locator": "India mobile services review; FY2025 industry-leading ARPU"
         }
       }
     },

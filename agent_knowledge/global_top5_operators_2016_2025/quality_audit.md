@@ -1,8 +1,8 @@
 # 全球重点十四家运营商数据库质量审计
 
 - 结论：`backlog_open`
-- 明细行：1034
-- 有值行：784
+- 明细行：1035
+- 有值行：785
 - 来源条目：473
 - 重复键：0
 - 无效来源引用：0
@@ -13,7 +13,7 @@
 - `official_derived_from_verified_quarters`: 10
 - `official_derived_from_verified_rows`: 6
 - `official_multi_source_verified`: 20
-- `official_single_source`: 127
+- `official_single_source`: 128
 - `official_three_distinct_sources_verified`: 596
 - `official_two_distinct_sources`: 25
 - `scope_not_comparable`: 20
@@ -39,7 +39,7 @@
 ## 缺口（含不适用）
 
 - AT&T: 7
-- Bharti Airtel: 5
+- Bharti Airtel: 14
 - Deutsche Telekom: 7
 - NTT Group: 7
 - Reliance Jio: 40

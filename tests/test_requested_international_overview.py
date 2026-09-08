@@ -40,7 +40,7 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         )
         self.assertEqual(
             [focus["label"] for focus in domain["focuses"]],
-            ["营收", "净利润", "资本开支", "移动ARPU"],
+            ["营收", "净利润", "资本开支", "移动ARPU / ARPA"],
         )
         self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][0]["items"]))
         self.assertTrue(all(item["unit"] == "百万美元" for item in domain["focuses"][1]["items"]))
@@ -62,7 +62,7 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertTrue(all(item["verification_count"] >= 1 for item in available))
         self.assertTrue(all(len(item["source_urls"]) >= 1 for item in available))
         self.assertNotIn("Bharti Airtel", {item["name"] for item in domain["entities"]})
-        self.assertNotIn("ARPA", json.dumps(domain, ensure_ascii=False))
+        self.assertIn("Verizon为每账户ARPA", domain["focuses"][3]["context"])
 
     def test_reference_operators_refresh_without_changing_ranking(self) -> None:
         from data_curation.research_plan import ASSIGNMENTS
@@ -86,8 +86,16 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertEqual(before["focuses"][0]["metric"], after["focuses"][0]["metric"])
         self.assertEqual(before["focuses"][0]["insight"], after["focuses"][0]["insight"])
         self.assertEqual(_analysis_evidence_snapshot([before]), _analysis_evidence_snapshot([after]))
-        missing = next(item for item in after["focuses"][3]["reference_items"] if item["name"] == "Verizon")
-        self.assertIsNone(missing["value"])  # ARPA must not be substituted for ARPU.
+        arpu_references = {item["name"]: item for item in after["focuses"][3]["reference_items"]}
+        self.assertEqual(arpu_references["Verizon"]["value"], 170.61)
+        self.assertEqual(arpu_references["Verizon"]["display_metric"], "后付费账户ARPA")
+        self.assertEqual(arpu_references["Verizon"]["components"][0]["label"], "后付费账户ARPA")
+        self.assertIn("每账户，不是每用户", arpu_references["Verizon"]["analysis"])
+        self.assertEqual(arpu_references["AT&T"]["value"], 56.7)
+        self.assertEqual(arpu_references["Deutsche Telekom"]["value"], 50.71)
+        self.assertEqual(arpu_references["Bharti Airtel"]["value"], 2.81)
+        self.assertEqual(arpu_references["Bharti Airtel"]["display_metric"], "移动ARPU")
+        self.assertEqual(arpu_references["Bharti Airtel"]["verification_count"], 1)
 
     def test_reference_operators_render_comparison_bars_without_entering_ranking(self) -> None:
         app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
