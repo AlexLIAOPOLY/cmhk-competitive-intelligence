@@ -1235,7 +1235,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int = 80) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.default_preferences,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -1286,6 +1286,24 @@ class SubscriptionService:
             latest_group_response_by_delivery.setdefault(str(response["delivery_open_id"]), response)
         for row in rows:
             services = sorted(filter(None, str(row["services"] or "").split(",")))
+            try:
+                default_preferences = json.loads(str(row["default_preferences"] or "{}"))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                default_preferences = {}
+            if not isinstance(default_preferences, dict):
+                default_preferences = {}
+            if default_preferences:
+                default_preferences = {
+                    "services": sorted(
+                        service for service in default_preferences.get("services", [])
+                        if service in VALID_SERVICES
+                    ),
+                    "news_categories": normalize_news_categories(default_preferences.get("news_categories")),
+                    "report_mode": str(default_preferences.get("report_mode") or "pdf"),
+                    "frequency": _normalize_news_frequency(str(default_preferences.get("frequency") or "once_daily")),
+                    "news_item_limit": int(default_preferences.get("news_item_limit") or 10),
+                    "status": str(default_preferences.get("status") or "active"),
+                }
             response_evidence = latest_group_response_by_delivery.get(str(row["open_id"]))
             is_group_card_submission = bool(
                 response_evidence
@@ -1299,6 +1317,7 @@ class SubscriptionService:
             subscribers.append({
                 **dict(row),
                 "services": services,
+                "default_preferences": default_preferences,
                 "news_categories": normalize_news_categories(row["news_categories"]),
                 "news_category_labels": [
                     NEWS_CATEGORY_LABELS[item]

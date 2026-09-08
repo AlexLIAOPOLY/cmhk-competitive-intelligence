@@ -86,6 +86,32 @@
     return categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
   }
 
+  function normalizedPreferenceSnapshot(item = {}) {
+    const list = (value) => Array.from(new Set(Array.isArray(value) ? value : [])).sort();
+    return {
+      services: list(item.services),
+      news_categories: list(item.news_categories),
+      report_mode: item.report_mode || "pdf",
+      frequency: item.news_frequency || item.frequency || "once_daily",
+      news_item_limit: Number(item.news_item_limit || 10),
+      status: item.status || "active",
+    };
+  }
+
+  function subscriberDiffersFromDefault(item) {
+    if (!item?.default_preferences || !Object.keys(item.default_preferences).length) return false;
+    return JSON.stringify(normalizedPreferenceSnapshot(item)) !== JSON.stringify(normalizedPreferenceSnapshot(item.default_preferences));
+  }
+
+  function syncResetButton(button, item) {
+    if (!button) return;
+    const differs = subscriberDiffersFromDefault(item);
+    button.classList.toggle("is-different", differs);
+    button.dataset.defaultDifferent = String(differs);
+    button.setAttribute("aria-label", differs ? `恢复 ${item.display_name} 的默认选项（当前设置与默认不同）` : `${item.display_name} 当前已是默认选项`);
+    button.title = differs ? "当前设置与默认订阅不同，点击恢复" : "当前设置与默认订阅一致";
+  }
+
   function subscriberRows() {
     const rows = state.data?.subscribers || [];
     if (!rows.length) return '<tr><td colspan="9" class="empty">尚无订阅者。先把测试卡片发给自己，确认后再发布到同事群。</td></tr>';
@@ -104,6 +130,7 @@
     const categoryLabels = new Map((state.data?.news_categories || []).map((category) => [category.key, category.label]));
     return rows.map((savedItem) => {
       const item = { ...savedItem, ...subscriberDrafts.get(savedItem.open_id) };
+      const differsFromDefault = subscriberDiffersFromDefault(item);
       const filterText = [
         item.display_name, item.open_id, ...(item.services || []).flatMap((service) => [service, serviceLabel(service)]),
         ...(item.news_categories || []).flatMap((category) => [category, categoryLabels.get(category)]),
@@ -117,7 +144,7 @@
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
       <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
-      <td class="subscriber-action-cell"><button class="icon-button" type="button" data-reset-subscriber aria-label="恢复 ${esc(item.display_name)} 的默认选项" title="恢复此人默认选项（本人重新提交卡片时更新）">${icon("refresh")}</button></td>
+      <td class="subscriber-action-cell"><button class="icon-button${differsFromDefault ? " is-different" : ""}" type="button" data-reset-subscriber data-default-different="${differsFromDefault}" aria-label="${differsFromDefault ? `恢复 ${esc(item.display_name)} 的默认选项（当前设置与默认不同）` : `${esc(item.display_name)} 当前已是默认选项`}" title="${differsFromDefault ? "当前设置与默认订阅不同，点击恢复" : "当前设置与默认订阅一致"}">${icon("refresh")}</button></td>
       <td class="subscriber-action-cell"><button class="button compact-save" type="button" data-save-subscriber>保存${subscriberDrafts.has(item.open_id) ? " *" : ""}</button></td>
       <td class="subscriber-action-cell"><button class="icon-button row-send" type="button" data-manual-push-person aria-label="手动推送给 ${esc(item.display_name)}" title="手动推送给 ${esc(item.display_name)}"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button></td></tr>`;
     }).join("") + '<tr data-subscriber-filter-empty hidden><td colspan="9" class="empty">没有匹配的订阅者</td></tr>';
@@ -857,14 +884,17 @@
   document.addEventListener("change", (event) => {
     const row = event.target.closest("[data-subscriber-row]");
     if (row) {
-      subscriberDrafts.set(row.dataset.subscriberRow, {
+      const draft = {
         services: Array.from(row.querySelectorAll('.service-check input:checked'), input => input.value),
         news_categories: Array.from(row.querySelectorAll('[data-news-category]:checked'), input => input.value),
         report_mode: row.querySelector('[data-subscriber-report-mode]').value,
         news_frequency: row.querySelector('[data-subscriber-news-frequency]').value,
         news_item_limit: Number(row.querySelector('[data-subscriber-news-limit]').value),
         status: row.querySelector('[data-subscriber-status]').value,
-      });
+      };
+      subscriberDrafts.set(row.dataset.subscriberRow, draft);
+      const savedItem = (state.data?.subscribers || []).find((item) => item.open_id === row.dataset.subscriberRow) || {};
+      syncResetButton(row.querySelector('[data-reset-subscriber]'), { ...savedItem, ...draft });
       row.querySelector('[data-save-subscriber]').textContent = "保存 *";
       return;
     }

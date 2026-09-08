@@ -492,6 +492,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         rows = {r["open_id"]: r for r in reloaded.list_summary()["subscribers"]}
         self.assertEqual(rows["ou_persona123"]["news_item_limit"], 20)
         self.assertEqual(rows["ou_persona123"]["status"], "paused")
+        self.assertEqual(rows["ou_persona123"]["default_preferences"]["services"], ["news"])
+        self.assertEqual(rows["ou_persona123"]["default_preferences"]["news_categories"], ["竞对动态"])
+        self.assertEqual(rows["ou_persona123"]["default_preferences"]["status"], "active")
         restored = reloaded.reset_subscriber("ou_persona123")
         self.assertEqual(restored["services"], ["news"])
         self.assertEqual(restored["news_categories"], ["竞对动态"])

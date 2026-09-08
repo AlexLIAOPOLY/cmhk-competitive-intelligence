@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=16', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=31', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=18', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=33', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -59,7 +59,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
         self.assertIn("data-subscriber-news-limit", SCRIPT)
         self.assertIn("newsItemLimit", SCRIPT)
-        self.assertIn(".subscriber-table table { min-width: 1240px; }", STYLE)
+        self.assertIn(".subscriber-table table { min-width: 1500px; table-layout: fixed; }", STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)
@@ -173,6 +173,19 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('data-manual-push-person', subscriber_row)
         self.assertIn('colspan="9" class="empty">没有匹配的订阅者', SCRIPT)
         self.assertIn('.subscriber-table th:nth-child(9)', STYLE)
+
+    def test_subscriber_reset_highlights_only_when_current_differs_from_default(self):
+        self.assertIn("function subscriberDiffersFromDefault(item)", SCRIPT)
+        self.assertIn('data-default-different="${differsFromDefault}"', SCRIPT)
+        self.assertIn('button.classList.toggle("is-different", differs)', SCRIPT)
+        self.assertIn("当前设置与默认订阅不同，点击恢复", SCRIPT)
+        self.assertIn('[data-reset-subscriber].is-different', STYLE)
+
+    def test_subscriber_selects_have_complete_horizontal_content_space(self):
+        self.assertIn('[data-subscriber-report-mode] { min-width: 160px; }', STYLE)
+        self.assertIn('[data-subscriber-news-frequency] { width: 110px; min-width: 108px; }', STYLE)
+        self.assertIn('[data-subscriber-news-limit] { width: 76px; min-width: 72px; }', STYLE)
+        self.assertIn('[data-subscriber-status] { min-width: 74px; }', STYLE)
 
     def test_weekly_report_picker_is_searchable_compact_and_server_synchronized(self):
         self.assertIn("data-weekly-picker-trigger", SCRIPT)
