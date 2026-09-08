@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-08T05:41:24+08:00",
+  "generated_at": "2026-09-08T13:47:28+08:00",
   "items": [
     {
       "id": "NEWS-1DAD2EC6821089",
@@ -9,6 +9,14 @@
       "category": "基础设施/网络/技术类",
       "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE90V3RoZ282M2x6Q2VUanBWZ2JtNUx3d0lZQWdnT0RJMFY4aHRja3JZb0JtQ3lzdTVQd1JKNHVqc3pVejAwWE1POUx6NTRfUjJMVXlIenlNTlV5OGRjUndna2RZUFlSbWFOeUUzaVQtaUIzVDNh?oc=5",
       "published_at": "2026-09-07T04:22:54+08:00"
+    },
+    {
+      "id": "NEWS-7F3CB458C53FD3",
+      "title": "滴滴出行拟在将军澳试无人驾驶车",
+      "summary": "立法会交通委员会参观滴滴出行，据悉滴滴拟在将军澳开展无人驾驶车测试。",
+      "category": "行业动态",
+      "source_url": "https://news.google.com/rss/articles/CBMipANBVV95cUxPTmtON1Rzd1RQbnNHNUhWOGlPV2V3eC03bkYwalpLX3VxWXZWZC1tYWlqQ0lKOW92U1c2TUJtMTVwdUpLai1oMkhEMHZ0U241RWxxUzg0U0EyMm9NVVNYNXhQZV92enhxZkh5N1p2N2lDLVB4T1c5WktialhmSnBheS1HOEY4QVdZYTg5MXB1ZElFbk9BWFlvc2FYakRkbnN4aWJUYTYzU3ZEd3d2VUQxZXlHQzA4TGlEMDNScUVwb3JnSW93VUotaTh4V2ZicFo5dWJhU2RQbkxYQm1EdFB4RWlUbmRkMjI2ZWlWUElHUm00c3lKTXh5MFV4YzllVFBZU2FhXzdQdnNEYmRWYmF6Vk5McG42enpydXliSGRnNnVlZC01NjNlU3JFdHhkZGgzNEFjbTg1MENjenk0WXNXQWdteTgxaHNVb182YU01ZnJQOXMwYmpvc3htRHFRamtsNDlRa01tbEpvT2VrS3U2ZnVOM3FWbW9nb1ZuRVY5YzNENWhKZDRrb1M3akcxNDI1Nm9qV05JWDJzdFFJRWZtS0hSWFQ?oc=5",
+      "published_at": "2026-09-06T23:33:46+08:00"
     },
     {
       "id": "NEWS-32DF2BE867CECB",
@@ -57,14 +65,6 @@
       "category": "行业动态",
       "source_url": "https://news.google.com/rss/articles/CBMiakFVX3lxTFBzRXBKMFJSZVhEMnZYSm1PMmFya1ZIWnpDYklKVHIxNTNEcmZuVDhON0RtcEdaZG5UN1ZwOXJITGQtb3JsY3haVUluN3RwQUdzc2FLYzU2MXFzRlJXN2ZMX0hyS1h3NHgwc3c?oc=5",
       "published_at": "2026-09-04T22:59:41+08:00"
-    },
-    {
-      "id": "NEWS-7110B55AB34CE1",
-      "title": "立法会交通事务委员会北京考察 了解自动驾驶立法及技术发展 (22:52) - 20260904",
-      "summary": "立法会交通事务委员会北京考察 了解自动驾驶立法及技术发展 (22:52) - 20260904 - 港闻 明报新闻网",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMi1ANBVV95cUxPZEFxVGtrOEVrYmxtX2ZVRlN4eFkwdHZpQjgwYjRoTTNwSlNCVlgwSjBBM19BaThLSDNKeUEtYWNybDdReTYxQjBJeUxjZEdXdy1POUhSa194TU5yYi1ndkIxdWV5ZWZLSGQwZFFFYVJSaW03bDJDaFpjZVFDUXBfclR6Z0NmZklTOE9tRDBEMGxUMS1sTWdZTlFRTHhtajlsbW1hUXlNdHFkUDJTMVRUMzh5aXlSaUdHZVVoaFc3MTd3TUE4YVJ5NkxtV1VKOTlIRWMtSG02TXkyWmdyVjU1bjhZanJVX2t3U2lBaFhTQ05CNG1GNmdBaTRablBoMy10a2l1c0UyUjU4VEVnRkZiUXZLWVNLcE1QbmY4QXRzT1pOZ2g0Rm9QVUo1THUxcTZvMmg4LUdrbmlRb1BWMmxEdThheEc0d0wzMmRlc0Q4MnFIaUNzbUxFb2hTUFl2bTgtSWdYWWZ5OUlzcFBrblU2TGY2X3hmd3o4V2RkVDduUEpYWjRXYXM2c243cDlIYkVtM3F4b2FZQTlhWVNNdnQtMDZ2aEozNm5aRkxmNldMRnlxMnlnQVNhX3hyWFpQUGsyRy0zLWFZT3VaTW52eElxYmJEZ3M?oc=5",
-      "published_at": "2026-09-04T22:52:30+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "6a4299767d11a69caccb26d3063e8b3a8eeea153cf506d0e84623361fcced57c"
+  "site_version": "fe8b11b7348091d2cdc48a210d09f1774aa02d2d3bac164679623fdbfca8a13d"
 }

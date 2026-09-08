@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-08T05:46:11+08:00",
+  "checked_at_hkt": "2026-09-08T13:48:05+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -38,36 +38,34 @@
   ],
   "strategic_monitor": {
     "enabled": true,
-    "status": "degraded",
+    "status": "running",
     "chat_name": "揭榜-竞争对手与行业情报监测AI应用",
     "sheet_url": "",
     "scan_times": [
       "07:30",
       "14:00"
     ],
-    "next_scan_at": "2026-09-08T07:30:00+08:00",
-    "next_group_check_at": "2026-09-08T06:00:00+08:00",
+    "next_scan_at": "2026-09-08T14:00:00+08:00",
+    "next_group_check_at": "2026-09-08T14:00:00+08:00",
     "last_scan_at": "2026-09-07T14:20:36+08:00",
-    "last_group_check_at": "2026-09-08T05:00:30+08:00",
-    "last_cycle_at": "2026-09-08T05:45:28+08:00",
+    "last_group_check_at": "2026-09-08T11:01:47+08:00",
+    "last_cycle_at": "2026-09-08T11:01:47+08:00",
     "latest_scan_slot": {
-      "slot": "2026-09-07@14:00",
-      "status": "completed",
-      "at": "2026-09-07T14:20:36+08:00",
-      "candidate_count": 11,
-      "message_id": "om_x100b66d135383080b36506e0ab7ae37",
-      "recovered_from_archive": true
+      "slot": "2026-09-08@07:30",
+      "status": "skipped",
+      "reason": "catchup_window_expired",
+      "at": "2026-09-08T11:01:47+08:00"
     },
     "last_candidate_count": 11,
     "feishu_identity": "bot",
-    "last_error": "2026-09-01@07:30 新闻自动初筛未完成：LangChain 多轮补判后仍遗漏 1 条候选：NEWS-17C9439F5E5826",
-    "active_task_kind": "",
-    "active_task_id": "",
-    "active_phase": "",
-    "active_progress": "",
-    "active_heartbeat_at": "",
-    "active_started_at": "",
-    "task_visible": false
+    "last_error": "战略快讯下游处理失败；飞书审核表：现有飞书审核表结构校验失败，已停止写入以保护飞书审核表：第107行发布时间不在K列；飞书审核表：流程状态不是ok（缺失）；飞书审核表：写入后逐格回读尚未确认",
+    "active_task_kind": "strategic-news",
+    "active_task_id": "20260908_085835_596113",
+    "active_phase": "AI紧凑补审",
+    "active_progress": "第 57/163 批对 4 条执行紧凑协议补审。",
+    "active_heartbeat_at": "2026-09-08T11:01:15+08:00",
+    "active_started_at": "2026-09-08T08:58:35+08:00",
+    "task_visible": true
   },
   "latest": {
     "main_crawl": {
@@ -3198,55 +3196,31 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260907_140029_062890",
+      "crawl_run_id": "20260908_085835_596113",
       "trigger": "战略新闻定时爬虫",
-      "scope": "午后扫描（2026-09-07@14:00）",
+      "scope": "晨间扫描（2026-09-08@07:30）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
-      "run_status": "completed",
-      "backend_pid": 38903,
+      "run_status": "running",
+      "backend_pid": 4450,
       "worker_pid": 0,
-      "phase": "已完成",
-      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 22 格，未重跑爬虫或重复发送群消息。",
-      "heartbeat_at_hkt": "2026-09-07T14:20:36+08:00",
-      "started_at_hkt": "2026-09-07T14:00:29+08:00",
-      "completed_at_hkt": "2026-09-07T14:20:36+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 1207647,
+      "phase": "AI紧凑补审",
+      "progress_detail": "第 57/163 批对 4 条执行紧凑协议补审。",
+      "heartbeat_at_hkt": "2026-09-08T11:01:15+08:00",
+      "started_at_hkt": "2026-09-08T08:58:35+08:00",
+      "completed_at_hkt": "",
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260907_140029_062890.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260908_085835_596113.jsonl"
       },
       "stream_log": {
-        "bytes": 18645,
-        "lines": 109
+        "bytes": 34940,
+        "lines": 198
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {},
-      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 22 格，未重跑爬虫或重复发送群消息。",
-      "failure_stage": "",
-      "operational_summary": {
-        "slot": "2026-09-07@14:00",
-        "crawl_stage_status": "completed",
-        "new_count": 11,
-        "readback_verified": true,
-        "selection_agent_status": "completed",
-        "notification_status": "sent",
-        "success_boundary": "feishu_readback",
-        "message_id": "om_x100b66d135383080b36506e0ab7ae37",
-        "message_ids": [
-          "om_x100b66d135383080b36506e0ab7ae37",
-          "om_x100b66d132c5f0b4b242048ca0301fd"
-        ],
-        "notification_destination_count": 2,
-        "selection_agent_changed": 22,
-        "selection_agent_recovered": true,
-        "selection_agent_recovery_task_run_id": "20260907_142051_709145",
-        "selection_agent_recovered_at": "2026-09-07T14:25:21+08:00"
-      },
-      "amended_at_hkt": "2026-09-07T14:25:21+08:00"
+      "metrics_refresh": {}
     },
     "four_database_refresh": {
       "crawl_run_id": "20260908_054202_216263",
@@ -3254,26 +3228,124 @@
       "scope": "Agent审核 research_20260908",
       "task_kind": "executive-intelligence-refresh",
       "parent_crawl_run_id": "",
-      "run_status": "running",
+      "run_status": "completed",
       "backend_pid": 31443,
-      "worker_pid": 31443,
-      "phase": "更新主页UI",
-      "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
-      "heartbeat_at_hkt": "2026-09-08T05:46:01+08:00",
+      "worker_pid": 0,
+      "phase": "已完成",
+      "progress_detail": "在线AI连续 1 次未通过后，已使用通过全部证据门禁的确定性回退；19项洞察（含4条顶部跨库研判）及公开页面回读完整。",
+      "heartbeat_at_hkt": "2026-09-08T05:48:31+08:00",
       "started_at_hkt": "2026-09-08T05:42:02+08:00",
-      "completed_at_hkt": "",
+      "completed_at_hkt": "2026-09-08T05:48:31+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 388878,
       "feishu": {},
       "local_files": {
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260908_054202_216263.jsonl"
       },
       "stream_log": {
-        "bytes": 1694,
-        "lines": 11
+        "bytes": 2488,
+        "lines": 15
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
-      "metrics_refresh": {}
+      "metrics_refresh": {},
+      "status_detail": "在线AI连续 1 次未通过后，已使用通过全部证据门禁的确定性回退；19项洞察（含4条顶部跨库研判）及公开页面回读完整。",
+      "failure_stage": "",
+      "operational_summary": {
+        "attempts": 1,
+        "agent_run_id": "research_20260908",
+        "failed_domains": [],
+        "status": "completed_with_fallback",
+        "notification_policy": "local_log_only",
+        "model_analysis": {
+          "ok": true,
+          "generated_at_hkt": "2026-09-08T05:45:04+08:00",
+          "model": "deterministic-evidence-fallback",
+          "domains": 4,
+          "focuses_expected": 15,
+          "focuses_passed": 15,
+          "discoveries_expected": 4,
+          "discoveries_passed": 4,
+          "insights_expected": 19,
+          "insights_passed": 19,
+          "reused": false,
+          "fallback_used": true,
+          "fallback_reason": "timed out",
+          "evidence_hash": "fd91e82be5f1f3eb8bc46ec5342ec1cbc95ff9bc69528d09b1c99a58d6cdc998",
+          "discovery_model": "DeepSeek-V4-Pro",
+          "discovery_evidence_repair_count": 0,
+          "discovery_fallback_used": false,
+          "discovery_fallback_reason": ""
+        },
+        "pages_publish": {
+          "ok": true,
+          "attempts": 1,
+          "status": "published",
+          "site_version": "6a4299767d11a69caccb26d3063e8b3a8eeea153cf506d0e84623361fcced57c",
+          "item_count": 8,
+          "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+          "commit": "333322d6562dd86715258521bd6caea6bb570f03",
+          "workbench_sha256": "756eab83480308999a47c168b96f73a75af355b173903e6cb37612e201b46fea",
+          "snapshot_source_url": ""
+        },
+        "feishu_detail_log": {
+          "ok": true,
+          "written": 631,
+          "skipped": 0,
+          "created": false,
+          "sheet_title": "四库爬虫明细日志",
+          "sheet_url": "",
+          "row_start": 91817,
+          "row_end": 92447,
+          "readback_verified": true,
+          "readback_reason": "live_full_event_id_readback",
+          "readback_scope": "all_live_event_ids",
+          "live_event_count": 92446,
+          "event_index_sha256": "2a74cbc2fe9761af15e7bff235e1a1959df39b77984412317360cc3dafeb80c9",
+          "write_recovered_by_readback": false
+        },
+        "failure_stage": "",
+        "overview_source_recrawl": {
+          "ok": true,
+          "skipped": true,
+          "reason": "official_pages_already_read_by_research_agents"
+        },
+        "ui_value_changes": {
+          "baseline_available": true,
+          "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+          "changed": 0,
+          "added": 0,
+          "removed": 0,
+          "domains": {
+            "local": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "international": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "mainland": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            },
+            "cloud": {
+              "baseline_available": true,
+              "changed": 0,
+              "added": 0,
+              "removed": 0
+            }
+          },
+          "items": []
+        }
+      }
     }
   },
   "pipeline": {

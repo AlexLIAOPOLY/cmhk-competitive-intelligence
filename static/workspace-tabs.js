@@ -1421,7 +1421,9 @@
         started_at_hkt: monitor.active_started_at || monitor.active_heartbeat_at || "",
       });
     }
-    const dates = [...new Set(visibleRuns.map(newsRunDate).filter(Boolean))].sort().reverse();
+    const researchDate = String(state.researchArchitecture?.run?.started_at || "").slice(0, 10);
+    const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Hong_Kong", year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date());
+    const dates = [...new Set([...visibleRuns.map(newsRunDate), researchDate, today].filter(Boolean))].sort().reverse();
     const params = new URLSearchParams(location.hash.replace(/^#/, ""));
     const pinnedDate = params.get("newsDate") || "";
     let selectedDate = state.newsSelectedDate || params.get("newsDate") || "";
@@ -2788,7 +2790,7 @@
       const reasonLabel = status === "excluded" ? "AI 排除原因" : status === "duplicate" ? "重复判定依据" : status === "deferred" ? "延期原因" : "处理依据";
       const runLabel = record.run ? `${newsRunTime(record.run)} · ${record.run.crawl_run_id}` : databaseHubNode ? "当天数据库写入" : databaseUiNode ? "当天UI发布" : "当天洞察发布";
       const evidenceUrls = record.evidenceUrls?.length ? record.evidenceUrls : record.officialFollowupUrls || [];
-      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span><time>${esc(runLabel)}</time></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.query ? `<div><dt>搜索词</dt><dd>${esc(record.query)}</dd></div>` : ""}${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>${esc(record.evidenceLinkLabel || "官方追证")}</dt><dd class="news-lineage-official-links">${evidenceUrls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">${esc(record.evidenceLinkLabel || "官方地址")} ${number(index + 1)}</a>`).join(" · ")}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div>${record.extra ? `<div><dt>输出明细</dt><dd class="is-preline">${esc(record.extra)}</dd></div>` : ""}</dl></article>`;
+      return `<article class="is-decision-${esc(status)}"><div><span>${esc(detailedRecordStatus(record))}</span></div><h4>${sourceUrl ? `<a href="${esc(safeUrl(sourceUrl))}" target="_blank" rel="noreferrer">${esc(title)}</a>` : esc(title)}</h4><p>${esc(record.aiSummary || record.sourceSummary || record.summary || "未保存内容摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(sourceName)}${record.publishedAt ? ` · ${esc(String(record.publishedAt).replace("T", " ").slice(0, 19))}` : ""}</dd></div>${record.query ? `<div><dt>搜索词</dt><dd>${esc(record.query)}</dd></div>` : ""}${record.matchedKeywords ? `<div><dt>命中词</dt><dd>${esc(record.matchedKeywords)}</dd></div>` : ""}${record.exclusionCode ? `<div><dt>排除代码</dt><dd>${esc(record.exclusionCode)}</dd></div>` : ""}${record.duplicateOf ? `<div><dt>重复对象</dt><dd>${esc(record.duplicateOf)}</dd></div>` : ""}${evidenceUrls.length ? `<div><dt>${esc(record.evidenceLinkLabel || "官方追证")}</dt><dd class="news-lineage-official-links">${evidenceUrls.map((url, index) => `<a href="${esc(safeUrl(url))}" target="_blank" rel="noreferrer">${esc(record.evidenceLinkLabel || "官方地址")} ${number(index + 1)}</a>`).join(" · ")}</dd></div>` : ""}<div><dt>${reasonLabel}</dt><dd>${esc(record.reason || "本轮归档没有保存该条理由。")}</dd></div></dl>${record.extra ? `<details class="news-lineage-technical"><summary>核验与归档详情</summary><p class="is-preline">${esc(record.extra)}</p></details>` : ""}</article>`;
     }).join("")}</div></section>`;
   }
 
@@ -2943,11 +2945,11 @@
     }).join("")}</section>`;
   }
 
-  function renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, records, events, incoming, outgoing) {
+  function renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, records, events, incoming, outgoing, concise = false) {
     const model = newsLineageFirstScreenModel(nodeKey, node, relatedRuns, records, events, incoming, outgoing);
     const previewRows = model.previews;
     const previewBody = previewRows.length ? previewRows.map((item) => `<article><span>${esc(item.tag || "实际对象")}</span><div><strong>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</strong>${item.meta ? `<small>${esc(item.meta)}</small>` : ""}</div><p>${esc(item.detail || "未保存对象说明")}</p></article>`).join("") : `<div class="news-lineage-first-empty"><strong>当前归档没有可展示的逐条对象</strong><p>上方仍按真实汇总说明本节点输入与输出；页面不会编造链接、关键词或数据。</p></div>`;
-    return `<section class="news-lineage-dialog-section is-first-screen"><header><h3>本节点实际输入、动作与输出</h3><span>打开即看真实对象</span></header><div class="news-lineage-io-flow"><article><span>01 · 实际输入</span><p>${esc(model.input)}</p></article><article><span>02 · 本节点动作</span><p>${esc(model.action)}</p></article><article><span>03 · 实际输出</span><p>${esc(model.output)}</p></article></div>${nodeKey === "news-search" ? renderNewsMonitoringKeywords(relatedRuns) : ""}<div class="news-lineage-first-preview"><header><strong>实际对象预览</strong><span>${number(previewRows.length)} 条可展示 · 上下滚动查看全部</span></header><div class="news-lineage-preview-scroll" role="region" aria-label="实际对象预览列表" tabindex="0">${previewBody}</div></div></section>`;
+    return `<section class="news-lineage-dialog-section is-first-screen"><header><h3>本节点实际输入、动作与输出</h3><span>打开即看真实对象</span></header><div class="news-lineage-io-flow"><article><span>01 · 实际输入</span><p>${esc(model.input)}</p></article><article><span>02 · 本节点动作</span><p>${esc(model.action)}</p></article><article><span>03 · 实际输出</span><p>${esc(model.output)}</p></article></div>${nodeKey === "news-search" ? renderNewsMonitoringKeywords(relatedRuns) : ""}${concise ? "" : `<div class="news-lineage-first-preview"><header><strong>实际对象预览</strong><span>${number(previewRows.length)} 条可展示 · 上下滚动查看全部</span></header><div class="news-lineage-preview-scroll" role="region" aria-label="实际对象预览列表" tabindex="0">${previewBody}</div></div>`}</section>`;
   }
 
   function companyAgentExecutionModel(relatedRuns) {
@@ -3026,15 +3028,27 @@
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
     if (nodeKey.startsWith("research-")) {
-      const response = await fetch(`/api/news-research?date=${encodeURIComponent(state.newsSelectedDate)}`, { cache: "no-store" });
-      if (!response.ok) throw new Error(`研究记录读取失败 ${response.status}`);
-      state.researchArchitecture = await response.json();
-      const lineage = globalSchedulerLineageModel([], []);
-      const node = lineage.nodes.find((item) => item.key === nodeKey);
+      const selectedDate = state.newsSelectedDate;
       const dialog = document.querySelector("#newsLineageDialog");
-      if (!node || !dialog) return;
-      document.querySelector("#newsLineageDialogBody").innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, state.newsSelectedDate);
+      const body = document.querySelector("#newsLineageDialogBody");
+      if (!dialog || !body) return;
+      const render = () => {
+        const node = globalSchedulerLineageModel([], []).nodes.find((item) => item.key === nodeKey);
+        if (node) body.innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, selectedDate);
+      };
+      if (state.researchArchitecture?.date === selectedDate) render();
+      else body.innerHTML = `<header><h3>正在读取该节点</h3><button type="button" onclick="this.closest('dialog').close()" aria-label="关闭节点详情">关闭</button></header><p role="status">正在读取 ${esc(selectedDate)} 的公司指标与搜索结果。</p>`;
       dialog.showModal();
+      try {
+        const response = await fetch(`/api/news-research?date=${encodeURIComponent(selectedDate)}`, { cache: "no-store", signal: AbortSignal.timeout(15000) });
+        if (!response.ok) throw new Error(`研究记录读取失败 ${response.status}`);
+        const payload = await response.json();
+        if (!dialog.open || state.newsSelectedDate !== selectedDate || state.newsSelectedStage !== nodeKey) return;
+        state.researchArchitecture = payload;
+        render();
+      } catch (error) {
+        if (dialog.open && state.newsSelectedStage === nodeKey && state.newsSelectedDate === selectedDate) throw error;
+      }
       return;
     }
     const relatedRuns = lineageRunsForNode(nodeKey);
@@ -3065,15 +3079,17 @@
     }) : [];
     const itemDetails = relatedItems.length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天具体内容</h3><span>${number(relatedItems.length)} 条已归档新闻</span></header><div class="news-lineage-detail-items">${relatedItems.map(({ run, item }) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(newsRunTime(run))} · ${esc(String(item.publishedAt || "").replace("T", " ").slice(0, 16) || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title)}</a>` : esc(item.title)}</h4><p>${esc(item.summary || "运行归档未保存摘要。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>AI 纳入理由</dt><dd>${esc(item.inclusionReason || "运行归档未记录纳入理由。")}</dd></div></dl></article>`).join("")}</div></section>` : "";
     const reviewItemDetails = (node.reviewRows || []).length ? `<section class="news-lineage-dialog-section is-item-details"><header><h3>当天选用明细</h3><span>${number(node.reviewRows.length)} 条审核表记录</span></header><div class="news-lineage-detail-items">${node.reviewRows.map((item) => `<article><div><span>${esc(item.category || "未分类")}</span><time>${esc(item.publishedAt || "未记录发布时间")}</time></div><h4>${item.url ? `<a href="${esc(safeUrl(item.url))}" target="_blank" rel="noreferrer">${esc(item.title || "未命名新闻")}</a>` : esc(item.title || "未命名新闻")}</h4><p>${esc(item.summary || "审核表未保存内容简介。")}</p><dl><div><dt>来源</dt><dd>${esc(item.source || "未记录")}</dd></div><div><dt>APP状态</dt><dd>${esc(item.rollingStatus || "未记录")} · ${esc(item.syncStatus || "未记录同步状态")}</dd></div><div><dt>周报状态</dt><dd>${esc(item.weeklyStatus || "未记录")}</dd></div><div><dt>入池理由</dt><dd>${esc(item.reason || "审核表未记录入池理由。")}</dd></div></dl></article>`).join("")}</div></section>` : "";
-    body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>只展示所选日期真实发生的处理事件，不展示通用逻辑原则。</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
-      <section class="news-lineage-dialog-summary"><div><span>当天结果</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><p>${esc(node.note || "")}</p></div><dl><div><dt>当天运行</dt><dd>${relatedRuns.length ? relatedRuns.map((run) => `${newsRunTime(run)} · ${run.crawl_run_id}`).join("、") : "未找到当天运行归档"}</dd></div><div><dt>上下游</dt><dd>${esc(`${incoming.join("、") || "无"} → ${outgoing.join("、") || "无"}`)}</dd></div><div><dt>数据日期</dt><dd>${esc(state.newsSelectedDate)}</dd></div></dl></section>
+    body.innerHTML = `<header><div><span>${esc(state.newsSelectedDate)} · 当天实际记录</span><h2>${esc(node.label)}</h2><p>${esc(node.purpose || "查看本节点当天处理的内容与结果")}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header><div class="news-lineage-dialog-content">
+      <section class="news-lineage-dialog-section"><header><h3>本节点结果</h3></header><p>${esc(node.value)} ${esc(node.unit || "")} · ${esc(node.note || "结果未记录")}</p></section>
+      ${renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, detailedRecords, events, incoming, outgoing, true)}
       ${itemDetails || reviewItemDetails || renderDetailedRecords(nodeKey, detailedRecords, relatedRuns)}
-      ${renderNewsLineageFirstScreen(nodeKey, node, relatedRuns, detailedRecords, events, incoming, outgoing)}
+      <details class="news-lineage-technical"><summary>运行日志、错误定位与技术详情</summary>
       ${nodeKey === "agent" ? renderCompanyAgentExecutionGraph(relatedRuns) : ""}
       ${renderNewsErrors(nodeKey, relatedRuns)}
       <section class="news-lineage-dialog-section is-process-flow"><header><h3>当天实际处理轨迹</h3><span>${number(events.length)} 条真实运行事件</span></header>${traceBody}</section>
       <section class="news-lineage-dialog-section is-node-notes"><header><h3>当天结果摘要</h3><span>来自当天归档</span></header><ul>${(node.details || []).map((item) => `<li>${esc(item)}</li>`).join("") || "<li>当天未留下结果摘要。</li>"}</ul></section>
       <section class="news-lineage-dialog-section is-node-evidence"><header><h3>当天归档摘要</h3><span>运行状态与交付记录</span></header><pre class="news-lineage-node-evidence">${esc(node.evidence || "当天归档未保存可展示的摘要。")}</pre></section>
+      </details>
     </div>`;
     bindCompanyAgentGraphInteractions(dialog);
     dialog.showModal();

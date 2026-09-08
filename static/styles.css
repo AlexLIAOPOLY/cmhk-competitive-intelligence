@@ -16723,3 +16723,21 @@ body.report-library-open::before {
   background: #3a9bb2;
   color: #fff;
 }
+
+/* Reference operators continue below the ranked sample without comparison bars. */
+.intelligence-reference-row .intelligence-reference-period {
+  color: #9db5c3;
+  font-size: 12px;
+}
+
+@media (min-width: 981px) {
+  .intelligence-domain-international .intelligence-viz-rows {
+    align-self: stretch;
+    align-content: start;
+    min-height: 0;
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+}

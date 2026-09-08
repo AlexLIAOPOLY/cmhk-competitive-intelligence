@@ -4853,6 +4853,906 @@
               }
             }
           ],
+          "reference_items": [
+            {
+              "name": "Verizon",
+              "value": 138191.0,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 138191 USD_million · 1 USD = 1 USD",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 138191.0,
+                  "unit": "USD_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 1.0,
+                  "unit": "USD/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                "https://www.verizon.com/about/investors/quarterly-reports/4q-2025-earnings-conference-call-webcast",
+                "https://www.verizon.com/about/sites/default/files/2026-02/vz_4q25_foi_013026r.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 125980.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000119312517050292/0001193125-17-050292-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 126034.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 130863.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 131868.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 128292.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 133613.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 136835.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 133974.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 134788.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                    "https://www.verizon.com/about/investors/quarterly-reports/4q-2024-earnings-business-update"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 138191.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                    "https://www.verizon.com/about/investors/quarterly-reports/4q-2025-earnings-conference-call-webcast",
+                    "https://www.verizon.com/about/sites/default/files/2026-02/vz_4q25_foi_013026r.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Deutsche Telekom",
+              "value": 134580.99,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 119.1 EUR_billion · 1 USD = 0.884968958 EUR",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 119.1,
+                  "unit": "EUR_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 0.88496895841236,
+                  "unit": "EUR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://report.telekom.com/annual-report-2025/",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://report.telekom.com/annual-report-2025/",
+                "https://www.telekom.com/en/investor-relations/publications/downloads"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 80914.62,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2018/",
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 84613.12,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2018/",
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 89398.26,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2018/",
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 90117.7,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/",
+                    "https://report.telekom.com/annual-report-2021/"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 114333.83,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2020/",
+                    "https://report.telekom.com/annual-report-2021/",
+                    "https://report.telekom.com/annual-report-2022/"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 127499.41,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2021/",
+                    "https://report.telekom.com/annual-report-2022/",
+                    "https://report.telekom.com/annual-report-2023/"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 120468.76,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2022/",
+                    "https://report.telekom.com/annual-report-2023/",
+                    "https://report.telekom.com/annual-report-2024/"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 121102.09,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2023/",
+                    "https://report.telekom.com/annual-report-2024/",
+                    "https://report.telekom.com/annual-report-2025/"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 125339.66,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2024/",
+                    "https://report.telekom.com/annual-report-2025/",
+                    "https://www.telekom.com/en/investor-relations/publications/downloads"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 134580.99,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2025/",
+                    "https://www.telekom.com/en/investor-relations/publications/downloads"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "AT&T",
+              "value": 125648.0,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 125648 USD_million · 1 USD = 1 USD",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 125648.0,
+                  "unit": "USD_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 1.0,
+                  "unit": "USD/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+                "https://investors.att.com/financial-reports/quarterly-earnings/2025",
+                "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2025/4Q-2025/4Q25_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 163786.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271717000021/0000732717-17-000021-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 160546.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 170756.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 181193.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 143050.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 134038.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 120741.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 122428.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 122336.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+                    "https://investors.att.com/financial-reports/quarterly-earnings/2024"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 125648.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+                    "https://investors.att.com/financial-reports/quarterly-earnings/2025",
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2025/4Q-2025/4Q25_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "NTT Group",
+              "value": 96280.23,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 14409.1 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 14409.1,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+                "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 104703.52,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 105041.5,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 107584.3,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 109159.13,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 111861.83,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 110760.1,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 99896.47,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 95198.91,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 90539.97,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                    "https://group.ntt/en/ir/library/results/2024/"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 96280.23,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                    "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+                    "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Bharti Airtel",
+              "value": 20825.41,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 1.81511e+06 INR_million · 1 USD = 87.158448351 INR",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 1815110.0,
+                  "unit": "INR_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 87.1584483507393,
+                  "unit": "INR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+              "verification_count": 5,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 14365.9,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2016-17/",
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 14473.02,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/Airtel-Integrated_Report_and_Annual_Financial_Statements_2021.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 12083.56,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/",
+                    "https://www.airtel.in/about-bharti/equity/results/annual-results"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 11471.15,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/",
+                    "https://www.airtel.in/about-bharti/equity/results/annual-results"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 11427.39,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/web/docs/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/BM-Outcome-October-31-2022-140123.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/quarterly-ir-pack-bharti-airtel-consolidated-07022023.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 13611.81,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 14827.0,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 18635.24,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 19644.52,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 20825.41,
+                  "gap_status": "",
+                  "verification_count": 5,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Reliance Jio",
+              "value": 15068.65,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 131336 INR_crore · 1 USD = 87.158448351 INR",
+              "analysis": "营业收入口径。读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 131336.0,
+                  "unit": "INR_crore",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 87.1584483507393,
+                  "unit": "INR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.ril.com/ar2024-25/digital-services.html",
+              "verification_count": 1,
+              "verification_status": "official_single_source",
+              "source_urls": [
+                "https://www.ril.com/ar2024-25/digital-services.html"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "value": 10368.51,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/sites/default/files/2023-08/RIL-Integrated-Annual-Report-2022-23.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 10829.15,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/sites/default/files/2023-08/RIL-Integrated-Annual-Report-2022-23.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 12344.05,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/ar2023-24/digital-services.html"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 13526.59,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/ar2024-25/digital-services.html"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 15068.65,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/ar2024-25/digital-services.html"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            }
+          ],
           "ai_summary": {
             "id": "revenue",
             "headline": "SoftBank资源底盘领先",
@@ -5549,6 +6449,880 @@
                   "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf"
                 ]
               }
+            }
+          ],
+          "reference_items": [
+            {
+              "name": "Verizon",
+              "value": 17174.0,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 17174 USD_million · 1 USD = 1 USD",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 17174.0,
+                  "unit": "USD_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 1.0,
+                  "unit": "USD/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                "https://www.verizon.com/about/investors/quarterly-reports/4q-2025-earnings-conference-call-webcast",
+                "https://www.verizon.com/about/sites/default/files/2026-02/vz_4q25_foi_013026r.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 13127.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000119312517050292/0001193125-17-050292-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 30101.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271218000009/0000732712-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 15528.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271219000012/0000732712-19-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 19265.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271220000014/0000732712-20-000014-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 17801.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271221000012/0000732712-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 22065.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271222000008/0000732712-22-000008-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 21256.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271223000012/0000732712-23-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 11614.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271224000010/0000732712-24-000010-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 17506.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271225000006/0000732712-25-000006-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                    "https://www.verizon.com/about/investors/quarterly-reports/4q-2024-earnings-business-update"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 17174.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html",
+                    "https://www.verizon.com/about/investors/quarterly-reports/4q-2025-earnings-conference-call-webcast",
+                    "https://www.verizon.com/about/sites/default/files/2026-02/vz_4q25_foi_013026r.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Deutsche Telekom",
+              "value": 10847.84,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 9.6 EUR_billion · 1 USD = 0.884968958 EUR",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 9.6,
+                  "unit": "EUR_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 0.88496895841236,
+                  "unit": "EUR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://report.telekom.com/annual-report-2025/",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://report.telekom.com/annual-report-2025/",
+                "https://www.telekom.com/en/investor-relations/publications/downloads"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 2988.64,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2018/",
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 3953.88,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2018/",
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 2598.1,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2018/",
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 4365.95,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2019/",
+                    "https://report.telekom.com/annual-report-2020/",
+                    "https://report.telekom.com/annual-report-2021/"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 4797.22,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2020/",
+                    "https://report.telekom.com/annual-report-2021/",
+                    "https://report.telekom.com/annual-report-2022/"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 4967.51,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2021/",
+                    "https://report.telekom.com/annual-report-2022/",
+                    "https://report.telekom.com/annual-report-2023/"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 8424.39,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2022/",
+                    "https://report.telekom.com/annual-report-2023/",
+                    "https://report.telekom.com/annual-report-2024/"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 19246.58,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2023/",
+                    "https://report.telekom.com/annual-report-2024/",
+                    "https://report.telekom.com/annual-report-2025/"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 12122.66,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2024/",
+                    "https://report.telekom.com/annual-report-2025/",
+                    "https://www.telekom.com/en/investor-relations/publications/downloads"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 10847.84,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://report.telekom.com/annual-report-2025/",
+                    "https://www.telekom.com/en/investor-relations/publications/downloads"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "AT&T",
+              "value": 21953.0,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 21953 USD_million · 1 USD = 1 USD",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 21953.0,
+                  "unit": "USD_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 1.0,
+                  "unit": "USD/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+                "https://investors.att.com/financial-reports/quarterly-earnings/2025",
+                "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2025/4Q-2025/4Q25_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 12976.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271717000021/0000732717-17-000021-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 29450.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271718000009/0000732717-18-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 19370.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000119312519045608/0001193125-19-045608-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 13903.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000156276220000064/0001562762-20-000064-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": -5176.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271721000012/0000732717-21-000012-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 20081.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271722000015/0000732717-22-000015-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": -8524.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271723000011/0000732717-23-000011-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 14400.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271724000009/0000732717-24-000009-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 10948.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271725000013/0000732717-25-000013-index.html",
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+                    "https://investors.att.com/financial-reports/quarterly-earnings/2024"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 21953.0,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html",
+                    "https://investors.att.com/financial-reports/quarterly-earnings/2025",
+                    "https://investors.att.com/~/media/Files/A/ATT-IR-V2/financial-reports/quarterly-earnings/2025/4Q-2025/4Q25_ATT_Financial_and_Operational_Schedules_and_Non_GAAP_Reconciliations.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "NTT Group",
+              "value": 6929.14,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 1037 JPY_billion · 1 USD = 149.657926891 JPY",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 1037.0,
+                  "unit": "JPY_billion",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+                "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 7354.34,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 8005.09,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 7739.32,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 7846.09,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_19.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 8580.69,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_20_p.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 10761.31,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_21e.pdf",
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 9225.23,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/annual/pdf/annual_report_22e.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 9107.34,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2023/pdf/39yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 6606.49,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                    "https://group.ntt/en/ir/library/results/2024/"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 6929.14,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                    "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+                    "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Bharti Airtel",
+              "value": 3871.57,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 337440 INR_million · 1 USD = 87.158448351 INR",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 337440.0,
+                  "unit": "INR_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 87.1584483507393,
+                  "unit": "INR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+              "verification_count": 5,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 904.33,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2016-17/",
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 583.48,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/Airtel-Integrated_Report_and_Annual_Financial_Statements_2021.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 160.7,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/",
+                    "https://www.airtel.in/about-bharti/equity/results/annual-results"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 58.15,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.airtel.in/airtel-annual-report-2018-19/",
+                    "https://www.airtel.in/airtel-annual-report-2019-20/",
+                    "https://www.airtel.in/about-bharti/equity/results/annual-results"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": -4343.24,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/web/docs/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/BM-Outcome-October-31-2022-140123.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/quarterly-ir-pack-bharti-airtel-consolidated-07022023.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": -2040.57,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 541.3,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 999.11,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 930.09,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 3871.57,
+                  "gap_status": "",
+                  "verification_count": 5,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Reliance Jio",
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
             }
           ],
           "ai_summary": {
@@ -6249,6 +8023,628 @@
                   "https://cdn2.singteldigital.com/content/dam/singtel/investorRelations/annualReports/2025/Singtel-AR25.pdf"
                 ]
               }
+            }
+          ],
+          "reference_items": [
+            {
+              "name": "Verizon",
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Deutsche Telekom",
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "AT&T",
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "NTT Group",
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Bharti Airtel",
+              "value": 4852.13,
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "原披露 422904 INR_million · 1 USD = 87.158448351 INR",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 422904.0,
+                  "unit": "INR_million",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 87.1584483507393,
+                  "unit": "INR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+              "verification_count": 4,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "value": 3064.48,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report_Q4FY16_888E9E8BA8B6D373CBB53F526F3F4357.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report_Q4FY17_v1_26E1845963512A6EA80F781D752B6F6A_1518159193004.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4FY18_E7BCAFF7FF854F1485F4E1BD1CEEE04F.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2017",
+                  "value": 3051.91,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report_Q4FY17_v1_26E1845963512A6EA80F781D752B6F6A_1518159193004.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4FY18_E7BCAFF7FF854F1485F4E1BD1CEEE04F.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4-FY19_2407E1EBDDC5228CFED54A15BF96772C.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2018",
+                  "value": 3921.31,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4FY18_E7BCAFF7FF854F1485F4E1BD1CEEE04F.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4-FY19_2407E1EBDDC5228CFED54A15BF96772C.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/pdf/Quarterly_IR_Pack_Bharti_Airtel_Consolidated2_19052020.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 4081.59,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/bsy/iportal/images/Quarterly-Report-Q4-FY19_2407E1EBDDC5228CFED54A15BF96772C.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/pdf/Quarterly_IR_Pack_Bharti_Airtel_Consolidated2_19052020.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/Quarterly_IR_Pack_Bharti_Airtel_Consolidated29072020.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "value": 3304.55,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/web/docs/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/BM-Outcome-October-31-2022-140123.pdf",
+                    "https://assets.airtel.in/teams/simplycms/web/docs/quarterly-ir-pack-bharti-airtel-consolidated-07022023.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2021",
+                  "value": 3269.64,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 3264.65,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Quarterly_IR_Pack_BA_Consolidated_june2023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/quarterly_ir_pack_consolidated_31102023.pdf",
+                    "https://assets.airtel.in/teams/simplycms/ADTECH/docs/Q3_FY24_Quarterly_IR_Pack_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2023_24/Q4/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 4626.49,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "value": 5847.64,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 4852.13,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q2/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/q3/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf",
+                    "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q4/Quarterly-IR-Pack-Bharti-Airtel-Consolidated.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Reliance Jio",
+              "unit": "百万美元",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
             }
           ],
           "ai_summary": {
@@ -6953,6 +9349,621 @@
               }
             }
           ],
+          "reference_items": [
+            {
+              "name": "Verizon",
+              "unit": "美元/月",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Deutsche Telekom",
+              "unit": "美元/月",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "AT&T",
+              "unit": "美元/月",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "NTT Group",
+              "value": 26.46,
+              "unit": "美元/月",
+              "period": "FY2025",
+              "detail": "原披露 3960 JPY_per_user_month · 1 USD = 149.657926891 JPY",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 3960.0,
+                  "unit": "JPY_per_user_month",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 149.657926890952,
+                  "unit": "JPY/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+                "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "value": 26.03,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2024/pdf/40yuho.pdf",
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                    "https://group.ntt/en/ir/library/results/2024/"
+                  ]
+                },
+                {
+                  "label": "FY2025",
+                  "value": 26.46,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf",
+                    "https://group.ntt/en/ir/library/results/2025/pdf/fy2025q4kessan0508e.pdf",
+                    "https://group.ntt/en/ir/library/presentation/2025/260508e.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Bharti Airtel",
+              "unit": "美元/月",
+              "period": "FY2025",
+              "detail": "FY2025 当前数据库未见同期间同口径直接披露 · 不估算、不写0",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "披露状态",
+                  "detail": "FY2025未见同口径直接值"
+                }
+              ],
+              "component_count": 1,
+              "source_url": "",
+              "verification_count": 0,
+              "verification_status": "source_gap_confirmed",
+              "source_urls": [],
+              "gap_status": "knowledge_pending",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2019",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2022",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2023",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                }
+              ],
+              "ranking_eligible": false
+            },
+            {
+              "name": "Reliance Jio",
+              "value": 2.37,
+              "unit": "美元/月",
+              "period": "FY2025",
+              "detail": "原披露 206.2 INR_per_user_month · 1 USD = 87.158448351 INR",
+              "analysis": "读取最新已核验披露，缺失同口径值不估算。",
+              "components": [
+                {
+                  "label": "原币披露",
+                  "value": 206.2,
+                  "unit": "INR_per_user_month",
+                  "detail": "FY2025"
+                },
+                {
+                  "label": "自然年平均汇率",
+                  "value": 87.1584483507393,
+                  "unit": "INR/USD",
+                  "detail": "指标年份2025"
+                }
+              ],
+              "component_count": 2,
+              "source_url": "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
+              "verification_count": 3,
+              "verification_status": "official_three_distinct_sources_verified",
+              "source_urls": [
+                "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
+                "https://www.ril.com/sites/default/files/2025-04/SE_Media_release.pdf",
+                "https://www.ril.com/sites/default/files/2025-09/Jio-Factsheet-2025.pdf"
+              ],
+              "gap_status": "",
+              "trend": [
+                {
+                  "label": "FY2016",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2017",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2018",
+                  "value": 2.0,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/ar2017-18/mda.html"
+                  ]
+                },
+                {
+                  "label": "FY2019",
+                  "value": 1.79,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/sites/default/files/2022-12/RIL-4Q-FY19-Analyst-Presentation-18Apr19.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2020",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2021",
+                  "value": 1.87,
+                  "gap_status": "",
+                  "verification_count": 1,
+                  "verification_status": "official_single_source",
+                  "source_urls": [
+                    "https://www.ril.com/sites/default/files/2022-12/RIL-4Q-FY21-Analyst-Presentation-30Apr21.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2022",
+                  "value": 2.13,
+                  "gap_status": "",
+                  "verification_count": 4,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.ril.com/ar2021-22/digital-services.html",
+                    "https://www.ril.com/sites/default/files/2023-01/Media-Release-RIL-Q4FY2021-22-06052022_0.pdf",
+                    "https://www.ril.com/sites/default/files/2023-08/RIL-4Q-FY23-Analyst-Presentation-21Apr23_Final.pdf",
+                    "https://rilstaticasset.akamaized.net/sites/default/files/2023-05/Media-Release-RIL-Q4-FY23-21042023-1.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2023",
+                  "value": 2.16,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.ril.com/sites/default/files/2023-08/RIL-Integrated-Annual-Report-2022-23.pdf",
+                    "https://www.ril.com/sites/default/files/2023-08/RIL-4Q-FY23-Analyst-Presentation-21Apr23_Final.pdf",
+                    "https://rilstaticasset.akamaized.net/sites/default/files/2023-05/Media-Release-RIL-Q4-FY23-21042023-1.pdf"
+                  ]
+                },
+                {
+                  "label": "FY2024",
+                  "gap_status": "knowledge_pending",
+                  "verification_count": 0,
+                  "verification_status": "",
+                  "source_urls": []
+                },
+                {
+                  "label": "FY2025",
+                  "value": 2.37,
+                  "gap_status": "",
+                  "verification_count": 3,
+                  "verification_status": "official_three_distinct_sources_verified",
+                  "source_urls": [
+                    "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf",
+                    "https://www.ril.com/sites/default/files/2025-04/SE_Media_release.pdf",
+                    "https://www.ril.com/sites/default/files/2025-09/Jio-Factsheet-2025.pdf"
+                  ]
+                }
+              ],
+              "ranking_eligible": false
+            }
+          ],
           "ai_summary": {
             "id": "mobile_arpu",
             "headline": "DOCOMO客户价值更高",
@@ -7074,6 +10085,38 @@
         {
           "label": "Singtel",
           "url": "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf"
+        },
+        {
+          "label": "Verizon",
+          "url": "https://www.sec.gov/Archives/edgar/data/732712/000073271226000007/0000732712-26-000007-index.html"
+        },
+        {
+          "label": "Deutsche Telekom",
+          "url": "https://report.telekom.com/annual-report-2025/"
+        },
+        {
+          "label": "AT&T",
+          "url": "https://www.sec.gov/Archives/edgar/data/732717/000073271726000120/0000732717-26-000120-index.html"
+        },
+        {
+          "label": "NTT Group",
+          "url": "https://group.ntt/en/ir/library/yuho/2025/pdf/41yuho.pdf"
+        },
+        {
+          "label": "Bharti Airtel",
+          "url": "https://assets.airtel.in/static-assets/cms/investor/docs/annual_results_2024_25/Integrated_Report_and_Annual_Financial_Statements.pdf"
+        },
+        {
+          "label": "Reliance Jio",
+          "url": "https://www.ril.com/ar2024-25/digital-services.html"
+        },
+        {
+          "label": "Bharti Airtel",
+          "url": "https://assets.airtel.in/static-assets/cms/investor/docs/quarterly_results/2025-26/Q1/Quarterly_IR_Pack_Bharti_Airtel_Consolidated.pdf"
+        },
+        {
+          "label": "Reliance Jio",
+          "url": "https://www.ril.com/sites/default/files/2025-04/RIL_4Q_FY25_Analyst_Presentation_25Apr25.pdf"
         },
         {
           "label": "世界银行 WDI 年度平均汇率",
@@ -14906,12 +17949,12 @@
     {
       "from": "international",
       "to": "mainland",
-      "title": "国际ARPU高于内地但客户规模远低于内地",
-      "detail": "NTT DOCOMO移动ARPU为26.46美元/月，中国移动移动客户数为10.05亿户，分化表明国际与内地运营商在客户价值与客户规模维度存在结构差异，并非同一市场阶段的效率可比。",
-      "kind": "AI综合研判",
+      "title": "内地与跨国规模经营形成市场分层",
+      "detail": "跨国运营商营收47031.9百万美元与内地运营商营收10501.9亿元的主体和币种范围不同；规模差异表明两域经营分层，并非同一竞争边界下的直接排名。",
+      "kind": "数据证据解读",
       "source_urls": [
-        "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
-        "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+        "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
+        "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
       ],
       "origin": "ai"
     },
@@ -14951,13 +17994,103 @@
   },
   "refresh": {
     "ok": false,
-    "status": "running",
+    "status": "completed_with_fallback",
     "started_at_hkt": "2026-09-08T05:42:02+08:00",
     "agent_run_id": "research_20260908",
     "dry_run": false,
     "task_run_id": "20260908_054202_216263",
     "attempt": 1,
-    "domains": {},
+    "domains": {
+      "local": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 161,
+          "path": "",
+          "latest_period": "",
+          "quality": "passed",
+          "verified_rows": 161,
+          "financial_reports": 5,
+          "latest_financial_period": "H1 2026",
+          "latest_financial_publication_date": "2026-08-27"
+        },
+        "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
+        "agent_fact_update": {
+          "facts": 36,
+          "changed": true,
+          "published": true
+        },
+        "database_changed": true
+      },
+      "international": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 3089,
+          "path": "",
+          "latest_period": "Jun '26 Jun 30, 2026",
+          "quality": "passed",
+          "verified_rows": 2703
+        },
+        "note": "本次仅验证现有数据库，未执行联网重建。",
+        "agent_fact_update": {
+          "facts": 24,
+          "changed": true,
+          "published": true
+        },
+        "database_changed": true
+      },
+      "cloud": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 430,
+          "path": "",
+          "latest_period": "2025",
+          "quality": "passed",
+          "verified_rows": 171
+        },
+        "note": "本次仅验证现有数据库，未执行联网重建。",
+        "agent_fact_update": {
+          "facts": 13,
+          "changed": false,
+          "published": false
+        },
+        "database_changed": false
+      },
+      "macro": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 7751,
+          "path": "",
+          "latest_period": "2026-07-31",
+          "quality": "passed",
+          "verified_rows": 7748
+        },
+        "note": "本次仅验证现有数据库，未执行联网重建。"
+      },
+      "mainland": {
+        "ok": true,
+        "changed": false,
+        "daily_main_database_promotion": {
+          "ok": true,
+          "changed": false,
+          "candidates": 0,
+          "added_rows": 0,
+          "upgraded_rows": 0,
+          "preserved_stronger_rows": 0,
+          "published_rows": 3089,
+          "dry_run": false
+        },
+        "agent_fact_update": {
+          "facts": 17,
+          "changed": false,
+          "published": false
+        },
+        "database_changed": false
+      }
+    },
     "ui_contract": {
       "domain_ids": [
         "local",
@@ -14967,7 +18100,183 @@
       ],
       "supporting_database_ids": [
         "macro"
-      ]
+      ],
+      "focuses_expected": 15,
+      "focuses_passed": 15,
+      "discoveries_expected": 4,
+      "discoveries_passed": 4,
+      "insights_expected": 19,
+      "insights_passed": 19,
+      "summary_domain_ids": [
+        "local",
+        "international",
+        "mainland",
+        "cloud"
+      ],
+      "aligned": true
+    },
+    "news_database_signals": {
+      "available": false,
+      "required": false,
+      "reason": "research_agents_search_in_current_run"
+    },
+    "ai_analysis": {
+      "ok": true,
+      "changed": true,
+      "domain_counts": {
+        "local": 1,
+        "international": 3,
+        "mainland": 0,
+        "cloud": 0,
+        "macro": 0
+      },
+      "path": ""
+    },
+    "domain_fact_sidecars": {
+      "local": {
+        "path": "",
+        "facts": 36,
+        "submitted_facts": 1,
+        "changed": true,
+        "published": true
+      },
+      "international": {
+        "path": "",
+        "facts": 24,
+        "submitted_facts": 3,
+        "changed": true,
+        "published": true
+      },
+      "mainland": {
+        "path": "",
+        "facts": 17,
+        "submitted_facts": 0,
+        "changed": false,
+        "published": false
+      },
+      "cloud": {
+        "path": "",
+        "facts": 13,
+        "submitted_facts": 0,
+        "changed": false,
+        "published": false
+      },
+      "macro": {
+        "path": "",
+        "facts": 0,
+        "changed": false,
+        "published": false,
+        "skipped": true
+      }
+    },
+    "daily_main_database_promotion": {
+      "ok": true,
+      "changed": false,
+      "candidates": 0,
+      "added_rows": 0,
+      "upgraded_rows": 0,
+      "preserved_stronger_rows": 0,
+      "published_rows": 3089,
+      "dry_run": false
+    },
+    "overview_source_recrawl": {
+      "ok": true,
+      "skipped": true,
+      "reason": "official_pages_already_read_by_research_agents"
+    },
+    "model_analysis": {
+      "ok": true,
+      "generated_at_hkt": "2026-09-08T05:45:04+08:00",
+      "model": "deterministic-evidence-fallback",
+      "domains": 4,
+      "focuses_expected": 15,
+      "focuses_passed": 15,
+      "discoveries_expected": 4,
+      "discoveries_passed": 4,
+      "insights_expected": 19,
+      "insights_passed": 19,
+      "reused": false,
+      "fallback_used": true,
+      "fallback_reason": "timed out",
+      "evidence_hash": "fd91e82be5f1f3eb8bc46ec5342ec1cbc95ff9bc69528d09b1c99a58d6cdc998",
+      "discovery_model": "DeepSeek-V4-Pro",
+      "discovery_evidence_repair_count": 0,
+      "discovery_fallback_used": false,
+      "discovery_fallback_reason": ""
+    },
+    "ui_value_changes": {
+      "baseline_available": true,
+      "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+      "changed": 0,
+      "added": 0,
+      "removed": 0,
+      "domains": {
+        "local": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "international": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "mainland": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "cloud": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        }
+      },
+      "items": []
+    },
+    "pages_publish": {
+      "ok": true,
+      "attempts": 1,
+      "status": "published",
+      "site_version": "6a4299767d11a69caccb26d3063e8b3a8eeea153cf506d0e84623361fcced57c",
+      "item_count": 8,
+      "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+      "commit": "333322d6562dd86715258521bd6caea6bb570f03",
+      "workbench_sha256": "756eab83480308999a47c168b96f73a75af355b173903e6cb37612e201b46fea",
+      "snapshot_source_url": ""
+    },
+    "failed_domains": [],
+    "completed_at_hkt": "2026-09-08T05:47:00+08:00",
+    "duration_ms": 298551,
+    "fallback_preserved": true,
+    "change_summary": {
+      "database_changed_domains": [
+        "local",
+        "international"
+      ],
+      "source_content_changed_domains": [],
+      "ui_numeric_changed_domains": [],
+      "ui_verified": true
+    },
+    "feishu_detail_log": {
+      "ok": true,
+      "written": 631,
+      "skipped": 0,
+      "created": false,
+      "sheet_title": "四库爬虫明细日志",
+      "sheet_url": "",
+      "row_start": 91817,
+      "row_end": 92447,
+      "readback_verified": true,
+      "readback_reason": "live_full_event_id_readback",
+      "readback_scope": "all_live_event_ids",
+      "live_event_count": 92446,
+      "event_index_sha256": "2a74cbc2fe9761af15e7bff235e1a1959df39b77984412317360cc3dafeb80c9",
+      "write_recovered_by_readback": false
     }
   },
   "ui_contract": {
@@ -14987,7 +18296,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-08T05:42:02+08:00"
+    "last_checked_at_hkt": "2026-09-08T05:47:00+08:00"
   },
   "ai": {
     "agent_run_id": "research_20260908",
@@ -15000,7 +18309,7 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-08T05:45:04+08:00",
+      "generated_at_hkt": "2026-09-08T09:01:02+08:00",
       "model": "deterministic-evidence-fallback",
       "summaries": [
         {
@@ -16095,12 +19404,12 @@
         {
           "from": "international",
           "to": "mainland",
-          "title": "国际ARPU高于内地但客户规模远低于内地",
-          "detail": "NTT DOCOMO移动ARPU为26.46美元/月，中国移动移动客户数为10.05亿户，分化表明国际与内地运营商在客户价值与客户规模维度存在结构差异，并非同一市场阶段的效率可比。",
-          "kind": "AI综合研判",
+          "title": "内地与跨国规模经营形成市场分层",
+          "detail": "跨国运营商营收47031.9百万美元与内地运营商营收10501.9亿元的主体和币种范围不同；规模差异表明两域经营分层，并非同一竞争边界下的直接排名。",
+          "kind": "数据证据解读",
           "source_urls": [
-            "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
-            "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+            "https://cdn1.singteldigital.com/content/dam/singtel/investorRelations/financialResults/2025/H2FY25/FY25-Group-MDA_Finalv2.pdf",
+            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
           ]
         },
         {
@@ -16126,12 +19435,36 @@
           ]
         }
       ],
-      "discovery_model": "DeepSeek-V4-Pro",
-      "discovery_generated_at_hkt": "2026-09-08T05:46:01+08:00",
+      "discovery_model": "evidence-rule-fallback",
+      "discovery_generated_at_hkt": "2026-09-08T09:01:02+08:00",
       "discovery_evidence_repair_count": 0,
       "evidence_hash": "fd91e82be5f1f3eb8bc46ec5342ec1cbc95ff9bc69528d09b1c99a58d6cdc998",
       "insight_format": "strategic_operating_judgement_v9",
-      "reused": false
+      "reused": false,
+      "manual_discovery_regeneration_counts": {
+        "international.mainland": 1
+      },
+      "manual_discovery_regeneration_history": {
+        "international.mainland": [
+          "国际ARPU高于内地但客户规模远低于内地NTTDOCOMO移动ARPU为26.46美元/月，中国移动移动客户数为10.05亿户，分化表明国际与内地运营商在客户价值与客户规模维度存在结构差异，并非同一市场阶段的效率可比。",
+          "内地与跨国规模经营形成市场分层跨国运营商营收47031.9百万美元与内地运营商营收10501.9亿元的主体和币种范围不同；规模差异表明两域经营分层，并非同一竞争边界下的直接排名。"
+        ]
+      },
+      "manual_discovery_regeneration_title_history": {
+        "international.mainland": [
+          "国际ARPU高于内地但客户规模远低于内地",
+          "内地与跨国规模经营形成市场分层"
+        ]
+      },
+      "manual_discovery_regeneration": {
+        "index": 1,
+        "from": "international",
+        "to": "mainland",
+        "generated_at_hkt": "2026-09-08T09:01:02+08:00",
+        "count": 1,
+        "fallback_used": true,
+        "fallback_reason": "AI跨库发现不够精炼"
+      }
     },
     "evidence_hash": "fd91e82be5f1f3eb8bc46ec5342ec1cbc95ff9bc69528d09b1c99a58d6cdc998",
     "model_analysis_fresh": true,

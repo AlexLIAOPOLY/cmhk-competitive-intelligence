@@ -1048,7 +1048,7 @@ function toolFriendlyName(toolName) {
     remember_agent_memory: "写入长期记忆",
     list_agent_memory: "查看长期记忆",
     forecast_quarterly_metric: "季度趋势预测",
-    list_database_lineage: "查看数据库血缘",
+    list_database_lineage: "查看数据来源和更新记录",
     list_report_outputs: "查看报告输出",
   };
   return labels[name] || name || "工具";
@@ -1630,13 +1630,13 @@ function renderInsights(status) {
     els.blockTotal.textContent = allCandidates ? `发布 ${publishRate}%` : "--";
     els.blockTotal.title = allCandidates
       ? `全部候选 ${allCandidates} 条：发布 ${accepted} 条，证据缺口 ${evidenceGaps} 条，质量拒绝 ${rejected} 条，待复核 ${review} 条`
-      : "暂无质量门禁数据";
+      : "暂无数据审核结果";
   }
   
   initOrUpdateChart('blockCanvas', {
     type: 'bar',
     data: {
-      labels: ['候选事实'],
+      labels: ['待审核字段数据'],
       datasets: [
         {
           label: '通过发布',
@@ -2389,12 +2389,12 @@ const TRACE_STEPS = {
 function traceFriendlyTool(tool) {
   const text = String(tool || "");
   if (!text) return "";
-  if (text.includes("DeepSeek")) return "DeepSeek 事实清洗模型";
+  if (text.includes("DeepSeek")) return "DeepSeek 字段数据清洗模型";
   if (text.includes("inspect_evidence_gaps")) return "证据缺口检查器";
   if (text.includes("schedule_targeted_recrawl")) return "定向补爬调度器";
   if (text.includes("publish_without_recrawl")) return "直接发布决策器";
   if (text.includes("fallback_clean_batch")) return "本地严格校验器";
-  if (text.includes("atomic_write")) return "事实发布与审计文件写入";
+  if (text.includes("atomic_write")) return "字段数据发布与审计文件写入";
   if (text.includes("run_data_curation")) return "LangGraph 多 Agent 工作流";
   if (text.includes("daily_crawl_and_write")) return "飞书日志同步器";
   if (text.includes("subprocess")) return "定向补爬器";
@@ -2407,13 +2407,13 @@ function traceFriendlyMessage(trace, phase) {
     "证据接收": "读取本轮爬取证据，并检查是否有可复用的历史高质量结果。",
     "来源分类": "按官网、政府、交易所、公共来源和商业数据源评估证据可信度。",
     "事实抽取": "从原始网页片段中提取公司、指标、数值、单位和依据。",
-    "主体校验": "确认每条事实确实属于对应公司和指标，避免串行、串公司。",
+    "主体校验": "确认每条字段数据确实属于对应公司和指标，避免串行、串公司。",
     "质量审计": "检查数值、单位、来源、置信度和网页噪声，决定发布、拦截或补爬。",
     "冲突仲裁": "比较同一公司同一指标的多个结果，保留证据更强的版本。",
     "缺口规划": "把没有足够证据的指标整理为补爬任务。",
     "编排决策": "Supervisor 正在读取缺口证据，并通过工具决定补爬还是发布。",
-    "定向补爬": "只重抓缺少关键事实的行，并重新进入整理流程。",
-    "发布": "写入可供页面、周报和业绩摘要使用的已验证事实。",
+    "定向补爬": "只重抓缺少关键字段数据的行，并重新进入整理流程。",
+    "发布": "写入可供页面、周报和业绩摘要使用的已验证字段数据。",
   };
   if (phase === "observe" && messages[node]) return messages[node];
   return humanizeAgentText(trace.message || messages[node] || "");
@@ -2421,6 +2421,18 @@ function traceFriendlyMessage(trace, phase) {
 
 function humanizeAgentText(value) {
   return String(value || "")
+    .replace(/事实抽取/g, "字段提取")
+    .replace(/事实层/g, "字段数据")
+    .replace(/事实/g, "字段数据")
+    .replace(/主体校验/g, "公司归属检查")
+    .replace(/冲突仲裁/g, "差异核对")
+    .replace(/缺口规划/g, "安排补查")
+    .replace(/编排决策/g, "后续任务安排")
+    .replace(/多 Agent 编排器/g, "任务调度")
+    .replace(/质量门禁|证据门禁|字段门禁|门禁/g, "数据审核")
+    .replace(/合规终态|终态/g, "处理结果")
+    .replace(/可信基线|数值基线/g, "已有数据")
+    .replace(/证据缺口/g, "缺少来源的数据")
     .replace(/#{1,6}\s*/g, "")
     .replace(/\*\*/g, "")
     .replace(/`/g, "")
@@ -2444,7 +2456,7 @@ function traceKeyMetrics(trace) {
     ["cache_reused", "复用"],
     ["pending", "待处理"],
     ["returned", "返回"],
-    ["candidates", "候选事实"],
+    ["candidates", "待审核字段数据"],
     ["accepted", "可发布"],
     ["review", "待复核"],
     ["rejected", "未发布"],
@@ -2456,7 +2468,7 @@ function traceKeyMetrics(trace) {
     ["conflicts", "冲突"],
     ["online_batches", "在线模型批次"],
     ["fallback_batches", "本地降级批次"],
-    ["preserved_previous_facts", "保留历史事实"],
+    ["preserved_previous_facts", "保留历史字段数据"],
     ["durationMs", "耗时"],
     ["duration_ms", "耗时"],
   ];
@@ -2481,34 +2493,34 @@ const TRACE_AUDIT_GUIDE = Object.freeze({
   },
   "来源分类": {
     audit: "区分官方来源、公开来源、商业来源和缺失来源，确认后续证据等级。",
-    next: "从证据原文中抽取公司、指标和具体事实。",
+    next: "从证据原文中抽取公司、指标和具体字段数据。",
   },
   "事实抽取": {
     audit: "逐条检查公司、指标和值是否能从原文直接提取，并保留支持依据。",
-    next: "校验事实是否归属于正确主体和指标。",
+    next: "校验字段数据是否归属于正确主体和指标。",
   },
   "主体校验": {
-    audit: "检查公司主体、指标口径和事实归属，拦截张冠李戴或指标错配。",
-    next: "进入质量门禁，决定可发布、待复核或拒绝。",
+    audit: "检查公司主体、指标口径和字段数据归属，拦截张冠李戴或指标错配。",
+    next: "进入数据审核，决定可发布、待复核或拒绝。",
   },
   "质量审计": {
     audit: "检查证据是否覆盖结论、字段是否完整、质量是否达到发布门槛。",
-    next: "检查同一事实是否存在来源冲突。",
+    next: "检查同一字段数据是否存在来源冲突。",
   },
   "冲突仲裁": {
-    audit: "比较同一主体和指标的多条事实，识别数值、期间或口径冲突。",
-    next: "通过联网与多来源多数口径进行复核。",
+    audit: "比较同一主体和指标的多条字段数据，识别数值、期间或口径冲突。",
+    next: "联网查找可信原文并核对数据。",
   },
   "搜索验证": {
-    audit: "对已通过的事实进行多来源验证，记录纠正、冲突和待复核项。",
-    next: "汇总仍缺少证据的事实并制定补爬计划。",
+    audit: "用可信原文核对已通过的字段数据，记录纠正、冲突和待复核项。",
+    next: "汇总仍缺少证据的字段数据并制定补爬计划。",
   },
   "缺口规划": {
     audit: "识别未覆盖字段和证据缺口，判断哪些行值得定向补爬。",
     next: "由编排器决定补爬或直接发布。",
   },
   "编排决策": {
-    audit: "综合质量门禁、证据缺口和补爬收益，决定下一步动作。",
+    audit: "综合数据审核、证据缺口和补爬收益，决定下一步动作。",
     next: "按决定执行定向补爬，或进入发布。",
   },
   "定向补爬": {
@@ -2534,7 +2546,7 @@ const TRACE_FIELD_LABELS = Object.freeze({
   deterministic_extracted: "规则抽取",
   pending: "待模型抽取",
   returned: "返回结果",
-  candidates: "候选事实",
+  candidates: "待审核字段数据",
   accepted: "可发布",
   review: "待复核",
   rejected: "未发布",
@@ -2593,7 +2605,7 @@ const TRACE_FIELD_LABELS = Object.freeze({
   workflow: "审核流程",
   limit: "读取上限",
   cache_schema: "缓存版本",
-  preserved_previous_facts: "保留历史事实",
+  preserved_previous_facts: "保留历史字段数据",
   best_accepted_count: "当前最佳通过数",
   completed_at: "完成时间",
   started_at: "开始时间",
@@ -2673,7 +2685,7 @@ function traceAuditSubject(events) {
     return "逐条核对公司、指标、提取值和原文依据" + suffix + "。";
   }
   if (node === "搜索验证" && tasks !== null) {
-    return "对 " + traceCountText(tasks) + " 条候选事实执行多来源多数口径核验。";
+    return "对 " + traceCountText(tasks) + " 条待审核字段数据执行搜索结果与原文核对。";
   }
   if (node === "定向补爬" && rows !== null) {
     return "重新抓取第 " + traceCountText(rows) + " 行，检查缺口字段能否补齐。";
@@ -2827,7 +2839,7 @@ function renderAgentRunSummary(summary) {
     </div>
     <ul>
       <li><b>${total}</b><span>原始证据</span></li>
-      <li><b>${accepted}</b><span>可发布事实</span></li>
+      <li><b>${accepted}</b><span>可发布字段数据</span></li>
       <li><b>${gaps}</b><span>待补爬缺口</span></li>
       <li><b>${rejected}</b><span>未发布总数</span></li>
     </ul>
@@ -3060,7 +3072,7 @@ function renderAgentQualityWorkspace(details, payload, nodeName) {
       + '<div><span>平均质量</span><strong>' + (average.percent == null ? "—" : average.percent + " 分") + "</strong></div>"
     + "</div>"
     + '<div class="agent-quality-context">'
-      + '<strong>' + agentQualityEscape(nodeName) + "逐条明细</strong>"
+      + '<strong>' + agentQualityEscape(humanizeAgentText(nodeName)) + "逐条明细</strong>"
       + "<span>默认把拒绝、待复核和字段异常排在最前；点击任意数据可查看依据、来源和处置建议。</span>"
     + "</div>"
     + '<div class="agent-quality-toolbar">'
@@ -3242,7 +3254,7 @@ function renderAgentTrace(trace, options = {}) {
   card.innerHTML =
     '<div class="agent-trace-title">'
       + '<span class="agent-trace-step">' + escapeHtml(stepText) + '</span>'
-      + '<strong>' + escapeHtml(nodeName) + '</strong>'
+      + '<strong>' + escapeHtml(humanizeAgentText(nodeName)) + '</strong>'
       + '<span class="agent-trace-badge audit-status-' + escapeHtml(status) + '">' + escapeHtml(statusText) + '</span>'
       + '<time>' + escapeHtml(time) + '</time>'
     + '</div>'
@@ -3385,7 +3397,7 @@ function renderCrawlRunArchive(data) {
     financeAudit.className = "financial-results-run-audit";
     financeAudit.innerHTML =
       '<header><div><span>现有定期爬虫 · 次日入库</span><strong>本地竞对财报检查</strong></div>'
-      + '<em class="' + (finance.ok ? "is-pass" : "is-fail") + '">' + (finance.ok ? "门禁通过" : "门禁失败") + '</em></header>'
+      + '<em class="' + (finance.ok ? "is-pass" : "is-fail") + '">' + (finance.ok ? "审核通过" : "审核未通过") + '</em></header>'
       + '<div class="financial-results-run-meta">'
         + '<span>检查 <b>' + escapeHtml(String(companies.length)) + '</b> 家</span>'
         + '<span>数据库 ' + (finance.databaseUpdated ? "已写入" : "未写入") + '</span>'
@@ -3415,7 +3427,7 @@ function renderCrawlRunArchive(data) {
   if (parsed.fourDomainRefresh) {
     const refresh = parsed.fourDomainRefresh;
     const domainLabels = { local: "香港运营商", international: "国际运营商", mainland: "内地运营商", cloud: "全球云厂商", macro: "香港市场与宏观政策" };
-    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "质量门禁", official_source_recrawl: "官方来源复查", "15_focus_analysis": "15项战略解读", "16_focus_analysis": "16项分析（旧记录）", "17_focus_analysis": "17项分析（旧记录）", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
+    const stageLabels = { database_refresh: "数据库刷新", quality_gate: "数据审核", official_source_recrawl: "官方来源复查", "15_focus_analysis": "15项战略解读", "16_focus_analysis": "16项分析（旧记录）", "17_focus_analysis": "17项分析（旧记录）", homepage_ui_refresh: "主页UI同步", public_frontend_publish: "公开前端发布" };
     const domains = (Array.isArray(refresh.domains) && refresh.domains.length ? refresh.domains : ["local", "international", "mainland", "cloud"])
       .map((item) => domainLabels[item] || item);
     const stages = (Array.isArray(refresh.stages) && refresh.stages.length ? refresh.stages : ["database_refresh", "quality_gate", "official_source_recrawl", "15_focus_analysis", "homepage_ui_refresh", "public_frontend_publish"])
@@ -8403,7 +8415,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function focusItems(domain, focus) {
-    if (Array.isArray(focus?.items)) return focus.items;
+    if (Array.isArray(focus?.items)) return [...focus.items, ...(focus.reference_items || [])];
     return Array.isArray(domain?.entities) ? domain.entities : [];
   }
 
@@ -8634,7 +8646,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderDomainVisual(domain, items, selectedIndex, focus) {
-    const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
+    const maxValue = Math.max(...items.filter((item) => item.ranking_eligible !== false).map((item) => Math.abs(Number(item.value) || 0)), 1);
     const visual = focus?.visual || "rows";
     const entityAttributes = (item, index) => `
       role="button" tabindex="0" data-intelligence-entity="${index}"
@@ -8917,6 +8929,13 @@ document.addEventListener("keydown", (event) => {
     `).join("")}</div>`;
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
+      if (item.ranking_eligible === false) {
+        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
+            <span>${renderScrollingLabel(item.name)}</span>
+            <span class="intelligence-reference-period">${safe(item.period)}</span>
+            <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
+          </li>`;
+      }
       const width = Math.max(2, Math.abs(Number(item.value) || 0) / maxValue * 100);
       const periodPrefix = item.name === "CMHK" && item.period === "2026首7月"
         ? '<small class="intelligence-period-prefix">2026首7月</small>'
@@ -8937,7 +8956,7 @@ document.addEventListener("keydown", (event) => {
     const entityIndex = selectedEntityIndex(domain, selectedFocus);
     const selectedEntity = items[entityIndex] || null;
     const focusMetric = selectedFocus.metric || domain.metric || {};
-    const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items);
+    const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items.filter((item) => item.ranking_eligible !== false));
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">
@@ -9410,6 +9429,7 @@ document.addEventListener("keydown", (event) => {
           discoveries: (data.relations || []).map((relation) => [relation.from, relation.to, relation.title, relation.detail]),
           metrics: (data.domains || []).map((domain) => [domain.id, domain.metric, domain.context]),
           financials: (data.domains || []).map((domain) => [domain.id, domain.latest_financial_results]),
+          references: (data.domains || []).map((domain) => [domain.id, (domain.focuses || []).map((focus) => [focus.id, focus.reference_items || []])]),
         });
         if (!initial && signature === payloadSignature) return;
         payloadSignature = signature;
