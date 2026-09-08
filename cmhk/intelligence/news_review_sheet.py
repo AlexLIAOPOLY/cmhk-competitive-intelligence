@@ -1490,10 +1490,16 @@ def _normalized_sheet_row(row: list[Any], format_version: int = FORMAT_VERSION) 
     if format_version >= 9:
         for column in date_columns:
             value = padded[column]
+            if isinstance(value, str) and re.fullmatch(r"\d{5}(?:\.\d+)?", value.strip()):
+                # CLI versions may stringify the same underlying serial value.
+                value = float(value.strip())
             if isinstance(value, (int, float)) and not isinstance(value, bool):
                 # Match the existing parser's supported 20xx publication dates.
                 epoch = date(1899, 12, 30)
-                if (date(2000, 1, 1) - epoch).days <= value < (date(2100, 1, 1) - epoch).days:
+                if (
+                    (date(2000, 1, 1) - epoch).days
+                    <= value < (date(2100, 1, 1) - epoch).days
+                ):
                     padded[column] = (epoch + timedelta(days=int(value))).isoformat()
     if format_version <= 5:
         return padded

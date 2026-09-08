@@ -1886,7 +1886,7 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
         self.assertEqual(row[review_sheet.SOURCE_DATE_COLUMN_INDEX], 46271.75)
 
     def test_invalid_numeric_dates_still_block_sheet_writes(self):
-        for value in (True, 0, -1, 123456789, float("nan"), float("inf")):
+        for value in (True, 0, -1, 123456789, float("nan"), float("inf"), "99999", "46271oops"):
             with self.subTest(value=value):
                 row = self._existing_row()
                 row[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
@@ -1894,6 +1894,42 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
                 normalized = review_sheet._normalized_sheet_row(row)
                 with self.assertRaisesRegex(RuntimeError, "发布时间不在K列"):
                     review_sheet._validate_sheet_rows([normalized], context="测试表")
+
+    def test_date_serial_variants_preserve_reviews_and_other_columns(self):
+        for version in (9, review_sheet.FORMAT_VERSION):
+            for value in (46271, 46271.999, "46271", " 46271.75 "):
+                with self.subTest(version=version, value=value):
+                    original = self._existing_row()
+                    original[review_sheet.APP_STATUS_COLUMN_INDEX] = "接受"
+                    original[review_sheet.WEEKLY_STATUS_COLUMN_INDEX] = "不接受"
+                    original[review_sheet.SOURCE_DATE_COLUMN_INDEX] = value
+                    expected = list(original)
+                    expected[review_sheet.SOURCE_DATE_COLUMN_INDEX] = "2026-09-06"
+                    if version == 9:
+                        raw = original[1:]
+                        expected[review_sheet.SCREENER_COLUMN_INDEX] = ""
+                    else:
+                        raw = original
+                    normalized = review_sheet._normalized_sheet_row(raw, version)
+                    self.assertEqual(normalized, expected)
+                    self.assertEqual(
+                        review_sheet._normalized_sheet_row(normalized), normalized,
+                    )
+                    review_sheet._validate_sheet_rows([normalized], context="测试表")
+
+    def test_text_dates_stay_unchanged_and_still_parse(self):
+        for value, expected in (
+            ("2026-09-06", "2026-09-06"),
+            ("2026/9/6", "2026-09-06"),
+            ("2026-09-06T23:00:00Z", "2026-09-07"),
+        ):
+            with self.subTest(value=value):
+                row = self._existing_row()
+                row[review_sheet.SOURCE_DATE_COLUMN_INDEX] = value
+                normalized = review_sheet._normalized_sheet_row(row)
+                self.assertEqual(normalized, row)
+                self.assertEqual(review_sheet._publication_date(normalized[10]), expected)
+                review_sheet._validate_sheet_rows([normalized], context="测试表")
 
     def test_system_only_separator_artifact_is_quarantined(self):
         artifact = [""] * len(review_sheet.HEADERS)
