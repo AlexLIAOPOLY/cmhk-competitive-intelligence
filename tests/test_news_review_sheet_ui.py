@@ -442,7 +442,7 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
 
         self.assertIn('id="openNewsReviewSheetButton"', html)
         self.assertIn('id="newsReviewWorkspace"', html)
-        self.assertIn('/static/news-review-sheet.js?v=11', html)
+        self.assertIn('/static/news-review-sheet.js?v=12', html)
         self.assertNotIn('id="newsReviewRefreshButton"', html)
         self.assertNotIn('id="newsReviewCopyButton"', html)
         self.assertNotIn('id="newsReviewExportButton"', html)
@@ -470,11 +470,9 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         self.assertNotIn("exportExcel", script)
         self.assertIn("position: sticky", css)
         self.assertIn(".news-review-status-select.status-accepted", css)
-        self.assertIn('reviewerAvatar(reviewer, "筛选人")', script)
-        self.assertIn(
-            "String(reviewer.name).trim() === value.trim()",
-            script,
-        )
+        self.assertIn('screeningAvatar(row.screening)', script)
+        self.assertIn('screeningFor(row).label', script)
+        self.assertNotIn('reviewer.avatarUrl', script)
         self.assertIn('screener: 0', script)
         self.assertIn('news-review-screener-cell', css)
         self.assertIn("CMHK_NEWS_REVIEW_SCREENER_POLL_SECONDS", web_app_source)
@@ -1094,6 +1092,10 @@ class NewsReviewActorTests(unittest.TestCase):
             with (
                 mock.patch.object(web_app, "AUTH", service),
                 mock.patch.object(web_app, "NEWS_REVIEW_AUDIT_STATE_PATH", state_path),
+                mock.patch.object(web_app, "_news_review_changeset_cell_evidence", return_value={
+                    (2, 1): {"is_ai_edit": False, "revision": 101,
+                             "create_time": datetime.fromtimestamp(1787638413).astimezone().isoformat()},
+                }),
                 mock.patch.object(web_app, "sheet_edit_events", return_value=[{
                     "event_id": "evt-1",
                     "create_time_ms": 1787638413000,
@@ -1124,7 +1126,7 @@ class NewsReviewActorTests(unittest.TestCase):
                 ignored = [{"rowNumber": 2, "columnIndex": 1, "before": "接受", "value": "不接受"}]
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("不接受"), ignored_changes=ignored), [])
 
-    def test_direct_feishu_decision_uses_human_before_later_unresolved_robot_event(self) -> None:
+    def test_direct_feishu_decision_does_not_borrow_human_from_mixed_workbook_events(self) -> None:
         def snapshot(status: str) -> dict:
             return {
                 "sheetId": "sheet-1",
@@ -1168,10 +1170,8 @@ class NewsReviewActorTests(unittest.TestCase):
                 self.assertEqual(web_app.sync_news_review_sheet_audit(snapshot("待审核")), [])
                 events = web_app.sync_news_review_sheet_audit(snapshot("接受"))
 
-            self.assertEqual(len(events), 1)
-            self.assertEqual(events[0]["actor_name"], "Alice Chen")
-            self.assertEqual(events[0]["details"]["feishu_event_id"], "human-event")
-            self.assertEqual(service._read(state_path, {})["last_feishu_event_ms"], 2000)
+            self.assertEqual(events, [])
+            self.assertEqual(service._read(state_path, {})["rows"]["2"]["decisions"][0], "待审核")
 
     def test_recent_editor_event_waits_for_sheet_snapshot_to_settle(self) -> None:
         def snapshot(status: str) -> dict:
@@ -1217,9 +1217,8 @@ class NewsReviewActorTests(unittest.TestCase):
                 )
                 events = web_app.sync_news_review_sheet_audit(snapshot("接受"))
 
-            self.assertEqual(len(events), 1)
-            self.assertEqual(events[0]["actor_name"], "Alice Chen")
-            self.assertEqual(service._read(state_path, {})["last_feishu_event_ms"], 1_000_000)
+            self.assertEqual(events, [])
+            self.assertEqual(service._read(state_path, {})["last_feishu_event_ms"], 0)
 
     def test_direct_feishu_decision_refuses_ambiguous_human_event_window(self) -> None:
         def snapshot(status: str) -> dict:

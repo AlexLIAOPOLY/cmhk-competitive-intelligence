@@ -170,19 +170,7 @@
     cell.title = row.readOnly ? `${value || "（空白）"} · APP 本地完整历史（只读）` : value;
     if (columnIndex === columns.screener) {
       cell.classList.add("news-review-screener-cell");
-      const reviewer = row.reviewer;
-      // Column A is the value read back from Feishu and is also what the
-      // filter menu uses.  Only decorate it with an audit avatar when both
-      // identities agree; a stale or ambiguous audit must never replace the
-      // visible Feishu screener.
-      if (value && reviewer?.name && String(reviewer.name).trim() === value.trim()) {
-        cell.innerHTML = `<span class="news-review-screener">${reviewerAvatar(reviewer, "筛选人")}<span class="news-review-screener-name">${escapeHtml(reviewer.name)}</span></span>`;
-      } else {
-        const text = document.createElement("span");
-        text.className = "news-review-cell-text";
-        text.textContent = value || "待筛选";
-        cell.appendChild(text);
-      }
+      cell.innerHTML = `<span class="news-review-screener">${screeningAvatar(row.screening)}<span class="news-review-screener-name">${escapeHtml(value)}</span></span>`;
     } else if (columnIndex === columns.appStatus || columnIndex === columns.weeklyStatus) {
       if (row.readOnly) {
         const chip = document.createElement("span");
@@ -237,22 +225,22 @@
     return cell;
   }
 
-  function reviewerAvatar(reviewer, label = "最后复核人") {
-    if (!reviewer?.name) return "";
-    const name = String(reviewer.name);
-    const title = `${name}最后复核${reviewer.reviewedAt ? ` · ${new Date(reviewer.reviewedAt).toLocaleString("zh-HK", { hour12: false })}` : ""}`;
-    let image = "";
-    try {
-      const raw = String(
-        reviewer.avatarUrl
-        || (String(reviewer.id || "") === "news-auto-screening-bot" ? "/static/assets/news-auto-screening-robot-avatar-v1.png" : "")
-      ).trim();
-      if (!raw) throw new Error("missing avatar URL");
-      const url = new URL(raw, location.origin);
-      if (!["http:", "https:"].includes(url.protocol)) throw new Error("unsupported avatar URL");
-      image = `<img src="${escapeHtml(url.href)}" alt="" />`;
-    } catch (_) { /* use initial */ }
-    return `<span class="news-review-reviewer" title="${escapeHtml(title)}" aria-label="${escapeHtml(label)}：${escapeHtml(name)}">${image || escapeHtml(name.slice(0, 1) || "用")}</span>`;
+  function screeningFor(row) {
+    const labels = { human: "人工筛选", machine: "机器筛选", unknown: "来源待核实", pending: "待筛选" };
+    const kind = Object.hasOwn(labels, row.screening?.kind) ? row.screening.kind
+      : [columns.appStatus, columns.weeklyStatus].every((index) => !row.values?.[index] || row.values[index] === "待审核") ? "pending" : "unknown";
+    return { kind, label: labels[kind] };
+  }
+
+  function screeningAvatar(screening) {
+    const kind = screening?.kind || "unknown";
+    const label = screening?.label || "来源待核实";
+    const icon = kind === "human"
+      ? '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4" fill="currentColor"/><path d="M4 22v-3a8 8 0 0 1 16 0v3Z" fill="currentColor"/></svg>'
+      : kind === "machine"
+        ? '<img src="/static/assets/news-auto-screening-robot-avatar-v1.png" alt="" />'
+        : '<span aria-hidden="true">?</span>';
+    return `<span class="news-review-reviewer screening-${kind}" aria-label="${escapeHtml(label)}">${icon}</span>`;
   }
 
   function renderHead() {
@@ -362,8 +350,9 @@
         rowNumber: Number(row.rowNumber),
         originalRowNumber: Number(row.originalRowNumber || row.rowNumber || 0),
         recordId: String(row.recordId || ""),
-        values: model.headers.map((_header, index) => String(row.values?.[index] || "")),
-        reviewer: row.reviewer && typeof row.reviewer === "object" ? row.reviewer : null,
+        values: model.headers.map((_header, index) => index === columns.screener
+          ? screeningFor(row).label : String(row.values?.[index] || "")),
+        screening: screeningFor(row),
         readOnly: row.readOnly === true,
         storageSource: String(row.storageSource || "feishu"),
         sourceSheetId: String(row.sourceSheetId || ""),

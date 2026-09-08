@@ -5191,7 +5191,7 @@ def _news_review_event_effective_at(event: dict) -> str:
         or str(event.get("actor_id") or "") == "news-auto-screening-bot"
     ):
         return str(details.get("agent_recorded_at") or "")
-    return str(event.get("at") or "")
+    return str(details.get("feishu_changeset_at") or event.get("at") or "")
 
 
 def _news_review_event_rank(event: dict, original_index: int) -> tuple[float, int, int]:
@@ -5617,12 +5617,13 @@ def attach_news_review_actors(
             or reviewers_by_row_title.get((row_number, title))
             or reviewers_by_title.get(title)
         )
+        row.pop("_screenerActor", None)
         if reviewer:
             row["reviewer"] = {
                 key: reviewer.get(key, "")
                 for key in ("id", "name", "avatarUrl", "role", "reviewedAt")
             }
-            if include_screener_actor:
+            if include_screener_actor and reviewer.get("role") != "UNKNOWN":
                 identity_key = (
                     str(reviewer.get("id") or ""),
                     str(reviewer.get("name") or ""),
@@ -5658,7 +5659,11 @@ def attach_news_review_actors(
                 }
         if field_reviewers:
             row["reviewers"] = field_reviewers
-    return snapshot
+    from cmhk.intelligence.news_review_provenance import attach_screening_methods
+
+    return attach_screening_methods(
+        snapshot, ranked_events, sheet_edit_events(path=NEWS_REVIEW_SHEET_EDIT_EVENT_PATH)
+    )
 
 
 def refresh_news_review_actor_overrides(*, force: bool = False) -> dict[str, dict[str, str]]:
@@ -6034,7 +6039,7 @@ def _news_review_changeset_cell_evidence(
                         if cell not in pending_cells:
                             continue
                         evidence.setdefault(cell, {
-                            "is_ai_edit": changeset.get("is_ai_edit") is True,
+                            "is_ai_edit": changeset.get("is_ai_edit"),
                             "is_self_edit": changeset.get("is_self_edit") is True,
                             "revision": revision,
                             "create_time": str(changeset.get("create_time") or ""),
@@ -6120,40 +6125,9 @@ def sync_news_review_sheet_audit(
             after_ms=previous_event_ms,
         )
         cursor_event = editor_events[-1] if editor_events else {}
-        # drive.file.edit_v1 is emitted for the whole workbook.  A screener
-        # write can therefore be followed by our own A-column mention write,
-        # or by activity in another sheet, before the next polling cycle.  Do
-        # not equate the final workbook event with the person who changed the
-        # review decision.  Scan the complete unread event window and accept
-        # it only when it resolves to one unique human identity.
-        resolved_editors: dict[str, tuple[dict[str, str], dict]] = {}
-        for candidate_event in editor_events:
-            for operator in candidate_event.get("operators") or []:
-                if not isinstance(operator, dict):
-                    continue
-                profile = AUTH.feishu_profile_by_open_id(
-                    str(operator.get("open_id") or ""),
-                    str(operator.get("union_id") or ""),
-                )
-                profile_name = str(profile.get("name") or "").strip()
-                if not profile_name:
-                    # Feishu application/bot operators are not directory
-                    # users and normally do not resolve here.  Ignoring them
-                    # prevents a later system write from hiding the human.
-                    continue
-                profile_key = str(profile.get("id") or profile.get("open_id") or profile_name)
-                resolved_editors[profile_key] = (profile, candidate_event)
-        actor = None
-        editor_event: dict = {}
-        if len(resolved_editors) == 1:
-            operator_profile, editor_event = next(iter(resolved_editors.values()))
-            actor = {
-                "id": str(operator_profile.get("id") or ""),
-                "name": str(operator_profile.get("name") or ""),
-                "avatarUrl": str(operator_profile.get("avatar_url") or ""),
-                "role": "EXTERNAL",
-                "feishuOpenId": str(operator_profile.get("open_id") or ""),
-            }
+        from cmhk.intelligence.news_review_provenance import EditorEvidence, timestamp
+
+        editor_evidence = EditorEvidence(editor_events)
         agent_decisions = _news_auto_screening_decisions()
         recorded_agent_keys = {
             str(details.get("automation_event_key") or "")
@@ -6180,8 +6154,7 @@ def sync_news_review_sheet_audit(
                     if before != after and (int(row_key), column_index, before, after) not in ignored:
                         pending_cells.add((int(row_key), column_index))
         revision_evidence_expected = bool(
-            previous_revision > 0
-            and current_revision > previous_revision
+            previous_revision > 0 and current_revision > previous_revision
         )
         changeset_evidence = _news_review_changeset_cell_evidence(
             sheet_id=sheet_id,
@@ -6229,10 +6202,41 @@ def sync_news_review_sheet_audit(
                         isinstance(cell_evidence, dict)
                         and cell_evidence.get("is_ai_edit") is False
                     )
+                    editor_event = editor_evidence.matching_event(cell_evidence)
+                    profile = {}
+                    if editor_event:
+                        operator = editor_event["operators"][0]
+                        profile = AUTH.feishu_profile_by_open_id(
+                            str(operator.get("open_id") or ""),
+                            str(operator.get("union_id") or ""),
+                        )
+                    verified_human = changeset_human_write and bool(profile.get("name"))
+                    # A later manual changeset must not inherit an old matching
+                    # machine decision merely because its before/after agree.
+                    if cell_evidence and agent_match and not changeset_ai_write:
+                        cell_at = timestamp(cell_evidence.get("create_time"))
+                        machine_at = timestamp(agent_match.get("recorded_at_iso"))
+                        if cell_at > machine_at:
+                            agent_match = None
+                        else:
+                            # A verified machine receipt also wins when a user
+                            # credential was used for the automated write.
+                            verified_human = False
                     if changeset_ai_write or agent_match:
                         cell_actor = NEWS_AUTO_SCREENING_ACTOR
-                    elif changeset_human_write or not revision_evidence_expected:
-                        cell_actor = actor
+                    elif verified_human:
+                        cell_actor = {
+                            "id": str(profile.get("id") or ""),
+                            "name": str(profile["name"]),
+                            "avatarUrl": str(profile.get("avatar_url") or ""),
+                            "role": "EXTERNAL",
+                            "feishuOpenId": str(editor_event["operators"][0].get("open_id") or ""),
+                        }
+                    elif cell_evidence:
+                        cell_actor = {
+                            "id": "news-screening-unverified",
+                            "name": "来源待核实", "role": "UNKNOWN",
+                        }
                     else:
                         cell_actor = None
                     if cell_actor is None:
@@ -6295,15 +6299,19 @@ def sync_news_review_sheet_audit(
                             })
                     else:
                         details.update({
-                            "identity_note": "该单元格由非 AI changeset 修改；操作者来自飞书 drive.file.edit_v1 事件并经组织通讯录解析",
-                            "feishu_event_id": str(editor_event.get("event_id") or ""),
+                            "identity_note": (
+                                "逐格 changeset 与两秒内唯一操作者事件匹配，并经通讯录解析"
+                                if cell_actor.get("role") == "EXTERNAL"
+                                else "存在单元格变更证据，但不能核实人工或机器来源"
+                            ),
+                            "feishu_event_id": str((editor_event or {}).get("event_id") or ""),
                         })
                         if cell_evidence:
                             details.update({
                                 "feishu_changeset_revision": int(cell_evidence.get("revision") or 0),
                                 "feishu_changeset_at": str(cell_evidence.get("create_time") or ""),
                                 "feishu_changeset_action": str(cell_evidence.get("action") or ""),
-                                "feishu_changeset_ai_edit": False,
+                                "feishu_changeset_ai_edit": cell_evidence.get("is_ai_edit"),
                             })
                     if not robot_write or automation_event_key not in recorded_agent_keys:
                         events.append(AUTH.record_operation(
