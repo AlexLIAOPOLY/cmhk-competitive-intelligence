@@ -10,18 +10,20 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
         script = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
 
         self.assertIn('选择一份报告预览', script)
-        self.assertIn('点击左侧报告行，在这里查看对应的 PDF 文件', script)
+        self.assertIn('点击左侧报告行，在这里阅读和编辑正文', script)
         self.assertNotIn('if (latest) showReportPreview(latest.path_str);', script)
         self.assertIn('previewRequest: { weekly: 0, performance: 0 }', script)
         self.assertIn('activeReportPreview: { weekly: "", performance: "" }', script)
         self.assertNotIn('function subscriptionPanel()', script)
         self.assertNotIn('function performancePanel()', script)
 
-    def test_pdf_preview_keeps_word_download_fallback(self):
+    def test_preview_opens_inline_body_and_preserves_library_on_rebuild(self):
         script = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
 
-        self.assertIn('class="report-preview-pdf"', script)
-        self.assertIn('下载原始 Word', script)
+        self.assertIn('CMHKReportEditor?.preview(path, side)', script)
+        function = script.split('function renderReports(kind)', 1)[1].split('function reportPreviewPlaceholder', 1)[0]
+        self.assertLess(function.index('outputBlock?.remove()'), function.index('panel.innerHTML'))
+        self.assertIn('appendChild(outputBlock)', function)
 
     def test_clicking_the_active_report_again_returns_to_the_preview_guide(self):
         script = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
@@ -36,7 +38,7 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
         app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
         style = (ROOT / "web/static/styles.css").read_text(encoding="utf-8")
 
-        self.assertIn('<span class="file-name-cell">${typeInfo.icon}<i class="report-file-new-dot"', app)
+        self.assertIn('<span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot"', app)
         self.assertIn('<span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span>', app)
         self.assertNotIn('class="file-name-cell file-name-editable"', app)
         self.assertIn(".file-name-editable {\n  display: inline-flex;", style)

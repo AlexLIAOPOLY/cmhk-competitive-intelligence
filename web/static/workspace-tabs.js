@@ -3499,11 +3499,14 @@
   function renderReports(kind) {
     const weekly = kind === "weekly";
     const panel = document.querySelector(`[data-workspace-panel="${kind}"]`);
+    const outputBlock = document.querySelector(weekly ? "#weeklyOutputBlock" : "#performanceOutputBlock");
+    if (outputBlock && panel.querySelector(`#workspaceReportHost-${kind}`)?.contains(outputBlock)) return;
+    outputBlock?.remove();
     panel.innerHTML = `<div class="workspace-module-inner">
       <div class="workspace-grid"><div class="workspace-report-host" id="workspaceReportHost-${kind}"></div>
       <aside class="workspace-report-side" id="workspaceReportSide-${kind}">${reportPreviewPlaceholder()}</aside></div></div>`;
     state.activeReportPreview[kind] = "";
-    const outputBlock = document.querySelector(weekly ? "#weeklyOutputBlock" : "#performanceOutputBlock");
+
     if (outputBlock) {
       outputBlock.hidden = false;
       outputBlock.classList.add("workspace-inline-report-block");
@@ -3515,7 +3518,7 @@
   }
 
   function reportPreviewPlaceholder() {
-    return `<section class="workspace-panel report-preview is-placeholder" data-report-preview aria-label="PDF 预览区">
+    return `<section class="workspace-panel report-preview is-placeholder" data-report-preview aria-label="报告正文预览区">
       <div class="report-preview-guide" role="status">
         <div class="report-preview-guide-icons" aria-hidden="true">
           <span><svg viewBox="0 0 48 48"><path d="M13 5h15l8 8v30H13z"/><path d="M28 5v9h8M19 23h12M19 29h12M19 35h8"/></svg></span>
@@ -3523,7 +3526,7 @@
           <span><svg viewBox="0 0 48 48"><rect x="7" y="8" width="34" height="32" rx="3"/><path d="M7 17h34M13 13h.01M18 13h.01M23 13h.01M15 24h18M15 30h14"/></svg></span>
         </div>
         <strong>选择一份报告预览</strong>
-        <p>点击左侧报告行，在这里查看对应的 PDF 文件</p>
+        <p>点击左侧报告行，在这里阅读和编辑正文</p>
       </div>
     </section>`;
   }
@@ -3539,7 +3542,7 @@
   function previewShell(item, body, { error = false } = {}) {
     return `<section class="workspace-panel report-preview${error ? " has-error" : ""}" data-report-preview>
       <header class="report-preview-header"><div><strong title="${esc(item.name)}">${esc(item.name)}</strong><span>PDF 预览</span></div><div class="report-preview-actions">
-        <button type="button" data-report-editor-path="${esc(item.path_str)}" aria-label="全屏编辑 ${esc(item.name)}" title="全屏编辑 Word 内容"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg></button>
+        <button type="button" data-report-editor-path="${esc(item.path_str)}" class="report-edit-text-button" aria-label="编辑正文 ${esc(item.name)}" title="编辑正文"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg><span>编辑正文</span></button>
         <button type="button" data-report-preview-expand aria-label="放大预览" title="放大预览"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg></button>
       </div></header><div class="report-preview-viewport">${body}</div></section>`;
   }
@@ -3577,6 +3580,7 @@
     const { item, kind } = resolved;
     const side = document.querySelector(`#workspaceReportSide-${kind}`);
     if (!side) return;
+    if (window.CMHKReportEditor && !(await window.CMHKReportEditor.close())) return;
     if (state.activeReportPreview[kind] === path) {
       clearReportPreview(kind);
       return;
@@ -3584,6 +3588,10 @@
     const requestId = ++state.previewRequest[kind];
     state.activeReportPreview[kind] = path;
     setReportPreviewRowState(kind, path);
+    if (window.CMHKReportEditor?.preview) {
+      await window.CMHKReportEditor?.preview(path, side);
+      return;
+    }
     side.innerHTML = previewShell(item, '<div class="report-preview-loading" role="status">正在读取 PDF 版式预览…</div>');
     try {
       const pdfUrl = reportPreviewPdfUrl(item);
@@ -4056,8 +4064,11 @@
   window.addEventListener("cmhk-report-saved", (event) => {
     if (!event.detail?.status) return;
     state.status = event.detail.status;
-    if (can("weekly")) renderReports("weekly");
-    if (can("performance")) renderReports("performance");
+    const resolved = reportKindForPath(event.detail.path);
+    if (resolved) {
+      state.activeReportPreview[resolved.kind] = event.detail.path;
+      setReportPreviewRowState(resolved.kind, event.detail.path);
+    }
   });
   if (document.body) reportRowObserver.observe(document.body, { childList: true, subtree: true });
   document.addEventListener("change", (event) => {

@@ -167,7 +167,7 @@ class ReportEditorServiceTests(unittest.TestCase):
                     "document": opened["document"],
                 }, actor={"display_name": "测试编辑者"})
                 reopened = web_app.load_report_editor_payload(first["path"])
-                self.assertIn("/static/report-previews/", reopened["previewUrl"])
+                self.assertEqual(reopened["previewUrl"], "")
                 reopened["document"]["content"][0]["content"][0]["text"] = "第二次页面编辑"
                 second = web_app.save_report_editor_payload({
                     "path": first["path"],
@@ -186,42 +186,45 @@ class ReportEditorServiceTests(unittest.TestCase):
             self.assertEqual(metadata[first["path"]]["sourcePath"], source.name)
             self.assertEqual(len(list((root / "archives" / "report_edits").rglob("*.docx"))), 1)
 
+    def test_body_save_updates_in_place_and_never_invokes_desktop_conversion(self):
+        for name in ("验收周报.docx", "验收业绩摘要.docx"):
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as folder:
+                root = Path(folder)
+                source = root / name
+                document = Document()
+                document.add_paragraph("原始正文")
+                document.save(source)
+                with (
+                    mock.patch.object(web_app, "ROOT", root),
+                    mock.patch.object(web_app, "REPORT_METADATA_PATH", root / "metadata.json"),
+                    mock.patch.object(web_app, "build_status", return_value={"outputs": []}),
+                    mock.patch.object(web_app, "delete_audio_for_report"),
+                    mock.patch.object(web_app, "report_audio_metadata", return_value={"exists": False}),
+                    mock.patch("cmhk.reporting.pdf_preview.convert_docx_to_pdf_preview") as convert,
+                ):
+                    opened = web_app.load_report_editor_payload(name)
+                    opened["document"]["content"][0]["content"][0]["text"] = "正文已修改"
+                    result = web_app.save_report_editor_payload({**opened, "bodyOnly": True})
+                    convert.assert_not_called()
+                    self.assertEqual(result["path"], name)
+                    self.assertEqual(Document(source).paragraphs[0].text, "正文已修改")
+                    history = list((root / "archives" / "report_edits").rglob("*.docx"))
+                    self.assertEqual(len(history), 1)
+                    self.assertEqual(Document(history[0]).paragraphs[0].text, "原始正文")
+                    with self.assertRaises(web_app.ReportEditConflict):
+                        web_app.save_report_editor_payload({**opened, "bodyOnly": True})
+
 
 class ReportEditorUiTests(unittest.TestCase):
-    def test_word_like_editor_is_local_full_screen_and_available_from_both_report_surfaces(self):
+    def test_body_editor_is_inline_and_has_no_word_ribbon(self):
         index = (ROOT / "web/static/index.html").read_text(encoding="utf-8")
-        app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
-        workspace = (ROOT / "web/static/workspace-tabs.js").read_text(encoding="utf-8")
-        source = (ROOT / "web/static/report-editor-source.js").read_text(encoding="utf-8")
-        style = (ROOT / "web/static/report-editor.css").read_text(encoding="utf-8")
-        bundle = ROOT / "web/static/vendor/tiptap-report-editor-3.30.5.min.js"
-        bundle_source = bundle.read_text(encoding="utf-8")
-
-        self.assertIn('id="reportEditorModal"', index)
-        self.assertIn('id="reportEditorRibbon"', index)
-        self.assertIn('id="reportEditorProofPane"', index)
-        self.assertIn('id="reportEditorProofToggle"', index)
-        self.assertIn('class="report-editor-modal"', index)
-        self.assertIn("position: fixed; inset: 0; z-index: 4000", style)
-        self.assertIn("EditorTable", source)
-        self.assertIn("replaceAll", source)
-        self.assertIn("cmhk-report-editor-draft", source)
-        self.assertEqual(source.count('data-custom-select="native"'), 4)
-        self.assertEqual(bundle_source.count('data-custom-select="native"'), 4)
-        self.assertNotIn("underline: false", source)
-        self.assertIn("preferredZoom", source)
-        self.assertIn("renderProof", source)
-        self.assertIn("右侧为最近保存版", source)
-        self.assertIn("report-editor-proof-pane", style)
-        self.assertIn('id="reportEditorZoom" type="range" min="35"', index)
-        self.assertIn('class="row-icon-button edit-report-button"', app)
-        self.assertIn("data-report-editor-path", workspace)
-        self.assertIn("/api/report-editor", source)
-        self.assertTrue(bundle.is_file())
-        self.assertGreater(bundle.stat().st_size, 300_000)
-        self.assertIn("tiptap-report-editor-3.30.5.min.js?v=4", index)
-        self.assertNotIn("cdn.jsdelivr", index)
-        self.assertNotIn("unpkg.com", index)
+        source = (ROOT / "web/static/simple-report-editor.js").read_text(encoding="utf-8")
+        self.assertIn("simple-report-editor.js?v=1", index)
+        self.assertNotIn('id="reportEditorModal"', index)
+        self.assertNotIn("tiptap-report-editor", index)
+        self.assertIn('contenteditable="plaintext-only"', source)
+        self.assertIn("保存正文", source)
+        self.assertIn("bodyOnly:true", source)
 
     def test_subscription_page_selects_weekly_version_and_shows_day_hour_countdown(self):
         script = (ROOT / "web/static/subscription-admin.js").read_text(encoding="utf-8")

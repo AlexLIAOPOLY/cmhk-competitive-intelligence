@@ -65,6 +65,8 @@ PUBLIC_VENDOR_FILES = (
     "cytoscape-3.34.0.min.js",
 )
 INTERNAL_ONLY_STATIC_FILES = (
+    "simple-report-editor.js",
+    "simple-report-editor.css",
     "report-editor.css",
     "vendor/tiptap-report-editor-3.30.5.min.js",
 )
@@ -919,12 +921,12 @@ def _build_site(
         html,
     )
     html = re.sub(
-        r'\s*<link rel="stylesheet" href="\./static/report-editor\.css\?v=[^"]+"\s*/>',
+        r'\s*<link rel="stylesheet" href="\./static/(?:report-editor|simple-report-editor)\.css\?v=[^"]+"\s*/>',
         '',
         html,
     )
     html = re.sub(
-        r'\s*<script defer src="\./static/vendor/tiptap-report-editor-[^"]+"></script>',
+        r'\s*<script defer src="\./static/(?:vendor/tiptap-report-editor-|simple-report-editor\.js\?v=)[^"]+"></script>',
         '',
         html,
     )

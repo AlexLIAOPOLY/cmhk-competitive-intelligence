@@ -2323,7 +2323,7 @@ def save_report_editor_payload(payload: dict, *, actor: dict | None = None) -> d
         source_meta = metadata.get(source_rel, {})
         source_meta = source_meta if isinstance(source_meta, dict) else {}
         source_is_edited = bool(source_meta.get("isEdited"))
-        target = source if source_is_edited and save_mode == "update" else _next_edited_report_path(source)
+        target = source if payload.get("bodyOnly") is True or (source_is_edited and save_mode == "update") else _next_edited_report_path(source)
 
         prior_revision = int(source_meta.get("editorRevision") or 0)
         if target == source:
@@ -2336,13 +2336,11 @@ def save_report_editor_payload(payload: dict, *, actor: dict | None = None) -> d
         delete_audio_for_report(target)
         preview_url = ""
         warning = ""
-        try:
-            from cmhk.reporting.pdf_preview import convert_docx_to_pdf_preview
-
-            preview_path = convert_docx_to_pdf_preview(target)
-            preview_url = f"/static/report-previews/{quote(preview_path.name)}?v={target.stat().st_mtime_ns}"
-        except Exception as exc:
-            warning = f"Word 已保存，PDF 预览稍后再生成：{exc}"
+        # Browser body editing must never launch a desktop document application.
+        # The on-page preview is rendered from the saved document, without PDF conversion.
+        from cmhk.reporting.pdf_preview import pdf_preview_path
+        stale_preview = pdf_preview_path(target, ROOT / "web" / "static" / "report-previews")
+        stale_preview.unlink(missing_ok=True)
 
         actor = actor if isinstance(actor, dict) else {}
         actor_name = str(actor.get("name") or actor.get("display_name") or actor.get("username") or "当前用户")[:120]
