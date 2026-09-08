@@ -155,61 +155,61 @@
         "completedAt": "2026-09-05T11:54:08+08:00"
       },
       "newsFunnel": {
-        "scope": "午后扫描（2026-09-07@14:00）",
-        "label": "9月7日 14:00",
-        "completedAt": "2026-09-07T14:20:36+08:00",
-        "historyDuplicates": 0,
+        "scope": "午后扫描（2026-09-08@14:00）",
+        "label": "9月8日 14:00",
+        "completedAt": "2026-09-08T14:28:03+08:00",
+        "historyDuplicates": 5,
         "summary": {
-          "discovered": 0,
-          "confirmed": 0,
-          "newCount": 11,
-          "sourceCount": 11
+          "discovered": 55,
+          "confirmed": 22,
+          "newCount": 17,
+          "sourceCount": 15
         },
         "categories": [
           {
-            "label": "行业动态",
-            "value": 5
+            "label": "宏观与国际",
+            "value": 7
           },
           {
             "label": "竞对动态",
-            "value": 2
+            "value": 4
           },
           {
             "label": "政策监管",
-            "value": 2
+            "value": 3
           },
           {
-            "label": "其他",
-            "value": 2
+            "label": "网络与技术",
+            "value": 3
           }
         ],
         "impacts": [
           {
-            "label": "供应韧性",
-            "value": 3
-          },
-          {
-            "label": "竞争格局",
-            "value": 2
+            "label": "收入与需求",
+            "value": 7
           },
           {
             "label": "网络与运营",
+            "value": 3
+          },
+          {
+            "label": "成本与效率",
             "value": 2
+          },
+          {
+            "label": "资本配置",
+            "value": 2
+          },
+          {
+            "label": "供应韧性",
+            "value": 1
           },
           {
             "label": "合规与牌照",
             "value": 1
           },
           {
-            "label": "成本与效率",
-            "value": 1
-          },
-          {
-            "label": "收入与需求",
-            "value": 1
-          },
-          {
-            "label": "资本配置",
+            "label": "客户与渠道",
             "value": 1
           }
         ],
@@ -217,38 +217,38 @@
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 0,
+            "value": 55,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 0 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 55 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 0,
-            "removed": 0,
-            "rate": 0,
-            "note": "等待审核",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 0 条，未确认 0 条。"
+            "value": 22,
+            "removed": 33,
+            "rate": 40,
+            "note": "保留 40%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 22 条，未确认 33 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 0,
-            "removed": 0,
-            "rate": 0,
-            "note": "排除 0 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 0 条重复事件，剩余 0 条。"
+            "value": 17,
+            "removed": 5,
+            "rate": 77,
+            "note": "排除 5 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 5 条重复事件，剩余 17 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 11,
+            "value": 17,
             "removed": 0,
-            "rate": 0,
+            "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 11 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 17 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
@@ -288,6 +288,12 @@
         }
       ],
       "outputs": [
+        {
+          "name": "8月30日周报 (3)（编辑稿 2）.docx",
+          "mtime": 1788854651.9999936,
+          "mtimeText": "2026-09-08 16:04:11",
+          "audio": false
+        },
         {
           "name": "9月3日运营商业绩摘要 (1).docx",
           "mtime": 1788402424.5366635,
@@ -329,12 +335,6 @@
           "mtime": 1788052258.0020952,
           "mtimeText": "2026-08-30 09:10:58",
           "audio": true
-        },
-        {
-          "name": "8月19日周报.docx",
-          "mtime": 1787123652.9412923,
-          "mtimeText": "2026-08-19 15:14:12",
-          "audio": true
         }
       ]
     },
@@ -350,6 +350,17 @@
     },
     "latestOutputText": "2026-09-05 08:17:01",
     "outputs": [
+      {
+        "name": "8月30日周报 (3)（编辑稿 2）.docx",
+        "path_str": "8月30日周报 (3)（编辑稿 2）.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1650128,
+        "mtime": 1788854651.9999936,
+        "mtimeText": "2026-09-08 16:04:11",
+        "url": "",
+        "audio": null
+      },
       {
         "name": "9月3日运营商业绩摘要 (1).docx",
         "path_str": "9月3日运营商业绩摘要 (1).docx",

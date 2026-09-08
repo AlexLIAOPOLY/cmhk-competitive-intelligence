@@ -1956,7 +1956,7 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
-          <button type="button" class="row-icon-button edit-report-button" data-path="${safePath}" title="全屏编辑 Word 内容" aria-label="全屏编辑 ${escapeHtml(file.name)}">${iconSvg("edit")}</button>
+          <button type="button" class="row-icon-button edit-report-button" data-path="${safePath}" title="编辑正文" aria-label="编辑正文 ${escapeHtml(file.name)}">${iconSvg("edit")}</button>
           ${audioAction}
           <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
           <a href="${file.url}" download class="row-icon-button download-icon-button" data-path="${safePath}" title="下载" aria-label="下载">${iconSvg("download")}</a>
@@ -8334,7 +8334,7 @@ document.addEventListener("keydown", (event) => {
 
   function formatValue(value, gapStatus = "") {
     if (value == null || value === "") {
-      return gapStatus === "public_not_found" ? "未见公开披露" : "待核验";
+      return "未见公开披露";
     }
     if (typeof value === "number") {
       return new Intl.NumberFormat("zh-HK", { maximumFractionDigits: 2 }).format(value);
@@ -8415,7 +8415,21 @@ document.addEventListener("keydown", (event) => {
   }
 
   function focusItems(domain, focus) {
-    if (Array.isArray(focus?.items)) return [...focus.items, ...(focus.reference_items || [])];
+    if (Array.isArray(focus?.items)) {
+      if (domain?.id !== "international") return [...focus.items, ...(focus.reference_items || [])];
+      const byValueDescending = (values) => values
+        .map((item, index) => ({ item, index, value: Number(item?.value) }))
+        .sort((left, right) => {
+          const leftValue = Number.isFinite(left.value) ? left.value : -Infinity;
+          const rightValue = Number.isFinite(right.value) ? right.value : -Infinity;
+          return rightValue - leftValue || left.index - right.index;
+        })
+        .map((entry) => entry.item);
+      return [
+        ...byValueDescending(focus.items),
+        ...byValueDescending(focus.reference_items || []),
+      ];
+    }
     return Array.isArray(domain?.entities) ? domain.entities : [];
   }
 
@@ -8646,7 +8660,10 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderDomainVisual(domain, items, selectedIndex, focus) {
-    const maxValue = Math.max(...items.filter((item) => item.ranking_eligible !== false).map((item) => Math.abs(Number(item.value) || 0)), 1);
+    // Size every visible row against the same scale. Reference operators remain
+    // excluded from ranking and AI evidence, but their bars must still be
+    // comparable with the ranked sample shown in this chart.
+    const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
     const visual = focus?.visual || "rows";
     const entityAttributes = (item, index) => `
       role="button" tabindex="0" data-intelligence-entity="${index}"
@@ -8824,7 +8841,7 @@ document.addEventListener("keydown", (event) => {
           const height = available ? Math.max(8, Math.abs(numeric) / trendMaximum * 100) : 0;
           const pointValue = available
             ? `${formatMetricValue(numeric, item.unit)}${formatMetricUnit(numeric, item.unit)}`
-            : "待核验";
+            : "未见公开披露";
           return `<i class="spark-column ${available ? "is-available" : "is-missing"} ${pointIndex === latestAvailableIndex ? "is-latest" : ""}" style="--spark-height:${height.toFixed(2)}%" title="${safe(point.label)} · ${safe(pointValue)}"><b></b></i>`;
         }).join("");
         return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
@@ -8930,9 +8947,12 @@ document.addEventListener("keydown", (event) => {
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
       if (item.ranking_eligible === false) {
-        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
+        const numericValue = item.value == null ? NaN : Number(item.value);
+        const width = Number.isFinite(numericValue) ? Math.max(2, Math.abs(numericValue) / maxValue * 100) : 0;
+        const startsReferenceGroup = index === 0 || items[index - 1]?.ranking_eligible !== false;
+        return `<li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${startsReferenceGroup ? "is-reference-group-start" : ""} ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
             <span>${renderScrollingLabel(item.name)}</span>
-            <span class="intelligence-reference-period">${safe(item.period)}</span>
+            <i aria-label="${safe(item.period)}"><b style="--row-width:${width.toFixed(2)}%"></b></i>
             <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
           </li>`;
       }

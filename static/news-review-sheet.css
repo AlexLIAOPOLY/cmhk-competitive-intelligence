@@ -373,6 +373,10 @@ body.news-review-open {
   box-shadow: 0 0 0 2px #fff;
 }
 
+.news-review-reviewer.screening-human { color: #d7e8ef; background: #527486; }
+.news-review-reviewer.screening-human svg { width: 20px; height: 20px; }
+.news-review-reviewer.screening-unknown, .news-review-reviewer.screening-pending { color: #e8d4a3; background: #655b43; }
+
 .news-review-reviewer img {
   width: 100%;
   height: 100%;
@@ -389,7 +393,7 @@ body.news-review-open {
 .news-review-screener-name {
   display: -webkit-box;
   overflow: hidden;
-  color: #174a78;
+  color: inherit;
   font-size: 12px;
   font-weight: 650;
   word-break: break-word;
