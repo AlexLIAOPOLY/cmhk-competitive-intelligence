@@ -8,6 +8,8 @@ serve it without adding a new route or reloading the process.
 from __future__ import annotations
 
 import base64
+import os
+import sys
 import shutil
 import subprocess
 import tempfile
@@ -64,12 +66,23 @@ def _convert_with_soffice(docx_path: Path, target: Path, soffice: str, timeout: 
             str(output_dir),
             str(docx_path),
         ]
+        environment = os.environ.copy()
+        if sys.platform == "darwin" and not environment.get("FONTCONFIG_FILE"):
+            # Recent headless builds use fontconfig rather than CoreText. Expose
+            # the host's existing fonts; do not install or modify user fonts.
+            from xml.sax.saxutils import escape
+            font_dirs = [Path("/System/Library/Fonts"), Path("/Library/Fonts"), Path.home()/"Library/Fonts"]
+            config = temp_dir / "fonts.conf"
+            config.write_text('<fontconfig>' + ''.join(f'<dir>{escape(str(path))}</dir>' for path in font_dirs if path.is_dir())
+                              + f'<cachedir>{escape(str(temp_dir / "font-cache"))}</cachedir></fontconfig>', encoding="utf-8")
+            environment["FONTCONFIG_FILE"] = str(config)
         completed = subprocess.run(
             command,
             check=False,
             capture_output=True,
             text=True,
             timeout=timeout,
+            env=environment,
         )
         converted = output_dir / f"{docx_path.stem}.pdf"
         if completed.returncode != 0 or not converted.exists():

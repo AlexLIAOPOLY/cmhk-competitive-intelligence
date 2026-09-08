@@ -25,6 +25,8 @@ class ReportPdfPreviewTests(unittest.TestCase):
             source.write_bytes(b"word")
 
             def fake_run(command, **_kwargs):
+                self.assertIn("--headless", command)
+                self.assertIn("env", _kwargs)
                 output_dir = Path(command[command.index("--outdir") + 1])
                 (output_dir / "sample.pdf").write_bytes(b"%PDF-test")
                 return type("Result", (), {"returncode": 0, "stdout": "", "stderr": ""})()

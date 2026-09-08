@@ -37,7 +37,7 @@
 .simple-report-preview .report-preview-header { flex-wrap:wrap; padding:10px 14px; }
 .simple-report-preview .report-preview-header > div:first-child { flex:1 1 180px; min-width:0; }
 .simple-report-preview .report-preview-actions { flex:0 0 auto; flex-wrap:nowrap; margin-left:auto; }
-.simple-report-preview .report-preview-actions button { flex-shrink:0; white-space:nowrap; }
+.simple-report-preview .report-preview-actions button { flex-shrink:0; white-space:nowrap; background:#102d3a; color:#cce2e7; border-color:#426879; }
 .simple-report-preview .report-preview-actions [data-report-preview-expand] { width:36px; height:36px; padding:8px; }
 .simple-report-preview .report-preview-actions svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; }
 .simple-report-preview .report-preview-viewport { flex:1; min-height:0; overflow:auto; }
