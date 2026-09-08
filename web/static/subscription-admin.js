@@ -86,6 +86,27 @@
     return categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
   }
 
+  function conditionalSetting(kind, enabled, content, emptyLabel) {
+    return `<div class="subscriber-dependent-setting" data-dependent-setting="${kind}"${enabled ? "" : " hidden"}>${content}</div><span class="subscriber-setting-empty" data-dependent-setting-empty="${kind}" aria-label="${esc(emptyLabel)}" title="${esc(emptyLabel)}"${enabled ? " hidden" : ""}>—</span>`;
+  }
+
+  function syncRowDependentSettings(row, services) {
+    const serviceSet = new Set(services || []);
+    const visibility = {
+      news: serviceSet.has("news"),
+      report: serviceSet.has("weekly") || serviceSet.has("performance"),
+    };
+    Object.entries(visibility).forEach(([kind, enabled]) => {
+      row.querySelectorAll(`[data-dependent-setting="${kind}"]`).forEach((container) => {
+        container.hidden = !enabled;
+        container.querySelectorAll("input, select, button").forEach((control) => { control.disabled = !enabled; });
+      });
+      row.querySelectorAll(`[data-dependent-setting-empty="${kind}"]`).forEach((placeholder) => { placeholder.hidden = enabled; });
+    });
+    row.dataset.filterServices = Array.from(serviceSet).join(" ");
+    row.dataset.filterFrequency = visibility.news ? row.querySelector("[data-subscriber-news-frequency]")?.value || "once_daily" : "";
+  }
+
   function normalizedPreferenceSnapshot(item = {}) {
     const list = (value) => Array.from(new Set(Array.isArray(value) ? value : [])).sort();
     return {
@@ -130,6 +151,8 @@
     const categoryLabels = new Map((state.data?.news_categories || []).map((category) => [category.key, category.label]));
     return rows.map((savedItem) => {
       const item = { ...savedItem, ...subscriberDrafts.get(savedItem.open_id) };
+      const hasNews = (item.services || []).includes("news");
+      const hasReport = (item.services || []).some((service) => ["weekly", "performance"].includes(service));
       const differsFromDefault = subscriberDiffersFromDefault(item);
       const filterText = [
         item.display_name, item.open_id, ...(item.services || []).flatMap((service) => [service, serviceLabel(service)]),
@@ -137,12 +160,12 @@
         item.report_mode, modeLabel(item.report_mode), item.news_frequency || item.frequency,
         item.status, item.status === "paused" ? "暂停" : "启用",
       ].filter(Boolean).join(" ");
-      return `<tr data-subscriber-row="${esc(item.open_id)}" data-subscriber-filter-row data-filter-services="${esc((item.services || []).join(" "))}" data-filter-status="${esc(item.status || "active")}" data-filter-frequency="${esc(item.news_frequency || item.frequency || "once_daily")}" data-filter-text="${esc(filterText)}">
+      return `<tr data-subscriber-row="${esc(item.open_id)}" data-subscriber-filter-row data-filter-services="${esc((item.services || []).join(" "))}" data-filter-status="${esc(item.status || "active")}" data-filter-frequency="${hasNews ? esc(item.news_frequency || item.frequency || "once_daily") : ""}" data-filter-text="${esc(filterText)}">
       <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
-      <td><div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div></td>
-      <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
-      <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
+      <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div>`, "未订阅新闻")}</td>
+      <td>${conditionalSetting("report", hasReport, `<select data-subscriber-report-mode${hasReport ? "" : " disabled"}>${reportModeOptions(item.report_mode)}</select>`, "未订阅报告")}</td>
+      <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-frequency${hasNews ? "" : " disabled"}>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数"${hasNews ? "" : " disabled"}>${newsItemLimitOptions(item.news_item_limit)}</select>`, "未订阅新闻")}</td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td class="subscriber-action-cell"><button class="icon-button${differsFromDefault ? " is-different" : ""}" type="button" data-reset-subscriber data-default-different="${differsFromDefault}" aria-label="${differsFromDefault ? `恢复 ${esc(item.display_name)} 的默认选项（当前设置与默认不同）` : `${esc(item.display_name)} 当前已是默认选项`}" title="${differsFromDefault ? "当前设置与默认订阅不同，点击恢复" : "当前设置与默认订阅一致"}">${icon("refresh")}</button></td>
       <td class="subscriber-action-cell"><button class="button compact-save" type="button" data-save-subscriber>保存${subscriberDrafts.has(item.open_id) ? " *" : ""}</button></td>
@@ -408,7 +431,7 @@
       <main class="three-block-layout">
         <div class="upper-grid">
           <section class="surface invite-surface"><header class="surface-header"><div><h2>邀请</h2><p>${number(inviteCount)} 人在待邀请名单${groupInviteCount ? ` · ${number(groupInviteCount)} 个群邀请` : ""}</p></div><div class="surface-actions">${compactFilter("invite")}<button class="icon-button" type="button" data-open-people aria-label="添加人员" title="添加人员">${icon("add")}</button><button class="button primary" type="button" data-send-invites>${icon("send")}<span>发送所选</span></button></div></header><div class="surface-body invite-list-main">${candidateRows()}</div></section>
-          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 逐人设置兴趣板块，最新新闻先筛选再分类</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>恢复默认</th><th>保存</th><th>推送</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
+          <section class="surface subscriber-surface"><header class="surface-header"><div><h2>订阅者</h2><p>${number((data.subscribers || []).length)} 人 · 仅显示已订阅内容的对应设置</p></div><div class="surface-actions">${compactFilter("subscriber")}<button class="icon-button" type="button" data-open-management aria-label="查看管理记录" title="邀请结果、订阅者与推送记录">${icon("history")}<span class="icon-badge">${number((data.deliveries || []).length)}</span></button><button class="icon-button primary" type="button" data-manual-push-all aria-label="一键推送当前选择给全部有效订阅者" title="一键推送"${manualPushBusy() ? " disabled" : ""}>${icon("send")}</button></div></header><div class="surface-body table-wrap subscriber-table"><table><thead><tr><th>姓名</th><th>订阅内容</th><th>新闻兴趣板块</th><th>报告方式</th><th>新闻频率</th><th>状态</th><th>恢复默认</th><th>保存</th><th>推送</th></tr></thead><tbody>${compactSubscriberRows()}</tbody></table></div></section>
         </div>
         <section class="surface version-surface"><header class="surface-header"><div><h2>推送版本</h2><p>分别选择周报和业绩摘要的推送版本；不选则自动使用最新正式版</p></div></header><div class="surface-body report-version-grid"><div>${weeklyReportPicker()}<p>${esc(weeklySelectionCopy())}</p></div><div>${performanceReportPicker()}<p>${esc(performanceSelectionCopy())}</p></div></div></section>
         <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading"><h3>战略新闻定时推送</h3><p>每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><form id="newsScheduleForm" class="news-schedule-form"><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；仅向已订阅战略新闻且状态启用的人员推送" : "已暂停；爬虫照常运行，但不会向订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>业绩摘要定时推送</h3><p>按排期推送上方选定的业绩摘要；未选时使用最新正式版</p></div><p class="report-schedule-countdown" data-performance-schedule-countdown title="${esc(scheduleSummary(performanceSchedule))}">${esc(countdownText(performanceSchedule))}</p></div><form id="performanceScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((performanceSchedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(performanceSchedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${performanceSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${performanceSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存业绩摘要排期</button></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><p class="report-schedule-countdown" data-report-schedule-countdown title="${esc(scheduleSummary(schedule))}">${esc(countdownText(schedule))}</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
@@ -416,6 +439,9 @@
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
     </div>`;
+    root.querySelectorAll("[data-subscriber-row]").forEach((row) => {
+      syncRowDependentSettings(row, Array.from(row.querySelectorAll('.service-check input:checked'), (input) => input.value));
+    });
     applySavedFilters();
     if (state.weeklyPickerOpen) applyWeeklyPickerFilter(state.weeklyPickerQuery);
     if (state.performancePickerOpen) applyPerformancePickerFilter(state.performancePickerQuery);
@@ -884,8 +910,10 @@
   document.addEventListener("change", (event) => {
     const row = event.target.closest("[data-subscriber-row]");
     if (row) {
+      const services = Array.from(row.querySelectorAll('.service-check input:checked'), input => input.value);
+      syncRowDependentSettings(row, services);
       const draft = {
-        services: Array.from(row.querySelectorAll('.service-check input:checked'), input => input.value),
+        services,
         news_categories: Array.from(row.querySelectorAll('[data-news-category]:checked'), input => input.value),
         report_mode: row.querySelector('[data-subscriber-report-mode]').value,
         news_frequency: row.querySelector('[data-subscriber-news-frequency]').value,

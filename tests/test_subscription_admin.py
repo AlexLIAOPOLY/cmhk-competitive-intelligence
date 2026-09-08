@@ -75,6 +75,16 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn(".news-interest-group", STYLE)
         self.assertIn(".news-interest-check", STYLE)
 
+    def test_subscriber_dependent_settings_follow_selected_services(self):
+        self.assertIn('conditionalSetting("news", hasNews', SCRIPT)
+        self.assertIn('conditionalSetting("report", hasReport', SCRIPT)
+        self.assertIn('syncRowDependentSettings(row, services)', SCRIPT)
+        self.assertIn('data-dependent-setting-empty="${kind}"', SCRIPT)
+        self.assertIn('未订阅新闻', SCRIPT)
+        self.assertIn('未订阅报告', SCRIPT)
+        self.assertIn('container.querySelectorAll("input, select, button")', SCRIPT)
+        self.assertIn('.subscriber-dependent-setting[hidden], .subscriber-setting-empty[hidden] { display: none; }', STYLE)
+
     def test_automatic_delivery_requires_subscription_and_saved_schedule(self):
         self.assertIn('id="newsScheduleForm"', SCRIPT)
         self.assertIn('action: "updateNewsSchedule"', SCRIPT)
@@ -186,6 +196,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('[data-subscriber-news-frequency] { width: 110px; min-width: 108px; }', STYLE)
         self.assertIn('[data-subscriber-news-limit] { width: 76px; min-width: 72px; }', STYLE)
         self.assertIn('[data-subscriber-status] { min-width: 74px; }', STYLE)
+        self.assertIn('grid-template-columns: minmax(108px, 1fr) minmax(72px, .65fr);', STYLE)
 
     def test_weekly_report_picker_is_searchable_compact_and_server_synchronized(self):
         self.assertIn("data-weekly-picker-trigger", SCRIPT)
