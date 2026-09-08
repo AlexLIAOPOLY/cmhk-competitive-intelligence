@@ -105,8 +105,8 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertIn('<i aria-label="${safe(item.period)}"><b style="--row-width:${width.toFixed(2)}%"></b></i>', reference_branch)
         self.assertNotIn('class="intelligence-reference-period"', reference_branch)
         self.assertIn(".intelligence-viz-rows li.intelligence-reference-row {", styles)
-        self.assertIn("opacity: .38;", styles)
-        self.assertIn("filter: saturate(.58) brightness(.78);", styles)
+        self.assertIn("opacity: .64;", styles)
+        self.assertIn("filter: saturate(.72) brightness(.9);", styles)
 
     def test_xiaojing_retrieves_new_metric_pairs(self) -> None:
         cases = {

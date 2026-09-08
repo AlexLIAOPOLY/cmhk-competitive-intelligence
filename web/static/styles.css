@@ -16729,7 +16729,7 @@ body.report-library-open::before {
 
 /* Keep reference operators as a visually quieter second ranked group. */
 .intelligence-viz-rows li.intelligence-reference-row {
-  opacity: .38;
+  opacity: .64;
 }
 
 .intelligence-viz-rows li.intelligence-reference-row.is-reference-group-start {
@@ -16739,7 +16739,7 @@ body.report-library-open::before {
 }
 
 .intelligence-viz-rows li.intelligence-reference-row > i b {
-  filter: saturate(.58) brightness(.78);
+  filter: saturate(.72) brightness(.9);
 }
 
 @media (min-width: 981px) {
