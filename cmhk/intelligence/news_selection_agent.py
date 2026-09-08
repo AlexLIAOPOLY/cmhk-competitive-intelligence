@@ -159,7 +159,7 @@ REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
     ),
 )
 VALID_STATUSES = {"接受", "不接受"}
-TRAINING_PROVENANCE_VERSION = "verified-human-final-actor-calibrated-v4"
+TRAINING_PROVENANCE_VERSION = "verified-human-final-actor-calibrated-v5"
 MACHINE_ACTOR_IDS = {
     "news-auto-screening-bot",
     "feishu-robot",
@@ -907,6 +907,13 @@ def _human_examples(
             }
         )
     stats["verified_human_row_count_before_limit"] = len(examples)
+    # Priors describe all verified history, not the bounded prompt sample.
+    for field in ("app", "weekly"):
+        for label, status in (("accept", "接受"), ("reject", "不接受")):
+            stats[f"source_{field}_{label}_count"] = sum(
+                field in item["verified_human_fields"] and item[f"{field}_status"] == status
+                for item in examples
+            )
     examples = examples[:MAX_HISTORY_EXAMPLES]
     stats["human_example_count"] = len(examples)
     stats["verified_human_field_count"] = sum(
@@ -1201,6 +1208,21 @@ def _model_routes() -> list[tuple[str, str]]:
     return list(dict.fromkeys(routes))
 
 
+class _IncompleteModelDecision(ValueError):
+    """Transient output for bounded repair, never a completed harness result."""
+
+    def __init__(self, payload: dict[str, Any], model: str):
+        super().__init__("模型决策尚未通过完整性校验")
+        self.payload, self.model = payload, model
+
+
+def _invoke_repairable(examples, targets):
+    try:
+        return _invoke_langchain(examples, targets)
+    except _IncompleteModelDecision as exc:
+        return exc.payload, exc.model
+
+
 def _invoke_langchain(
     examples: list[dict[str, Any]],
     targets: list[dict[str, Any]],
@@ -1209,7 +1231,12 @@ def _invoke_langchain(
         token = _HARNESS_RECOVERY.set(attempt)
         try:
             payload, model = _invoke_langchain_transport(examples, targets)
-            _normalized_decisions(payload, targets)
+            try:
+                _normalized_decisions(payload, targets)
+            except ValueError as exc:
+                if not isinstance(payload, dict) or not isinstance(payload.get("decisions"), list):
+                    raise
+                raise _IncompleteModelDecision(payload, model) from exc
             # The batch layer still applies distribution and write/readback
             # gates. Incomplete candidate sets must not become durable hits.
             return [payload, model]
@@ -1219,7 +1246,11 @@ def _invoke_langchain(
     public_config = load_ai_config(include_key=False)
     result = run_durable_agent(
         namespace="news-selection", directory=STATE_PATH.parent / "harness",
-        identity={"protocol": 1, "examples": examples, "targets": targets,
+        identity={"protocol": 2, "examples": examples, "targets": targets,
+                  "training_provenance_version": TRAINING_PROVENANCE_VERSION,
+                  "calibration": (_MODEL_SESSION.get() or {}).get("calibration"),
+                  "quality_feedback": (_MODEL_SESSION.get() or {}).get("quality_feedback"),
+                  "profile": (_MODEL_SESSION.get() or {}).get("profile"),
                   "preferences": (_MODEL_SESSION.get() or {}).get("preferences", False),
                   "model": public_config.get("model"), "base_url": public_config.get("base_url")},
         execute=execute,
@@ -1320,7 +1351,8 @@ def _invoke_langchain_transport(
             ),
             "human_examples": prompt_examples,
             "balanced_example_counts": _balanced_example_counts(prompt_examples),
-            "human_label_priors": {
+            "quality_feedback": (session or {}).get("quality_feedback"),
+            "human_label_priors": (session or {}).get("calibration") or {
                 field: {
                     "accept": sum(
                         1
@@ -1551,11 +1583,48 @@ def _invoke_langchain_batches(
         "calls": 0, "preferences": False,
         "request_callback": kwargs.pop("request_callback", None),
     }
+    training_stats = kwargs.pop("training_stats", None)
+    if training_stats is not None:
+        session["calibration"] = {
+            field: {label: int(training_stats.get(f"source_{field}_{label}_count") or 0)
+                    for label in ("accept", "reject")}
+            for field in ("app", "weekly")
+        }
     token = _MODEL_SESSION.set(session)
     try:
-        payload, model = _invoke_langchain_batches_impl(examples, targets, **kwargs)
-        payload["_model_request_count"] = session["calls"]
-        return payload, model
+        checkpoint = kwargs.get("checkpoint")
+        quality_key = "quality:" + _model_checkpoint_key(examples, targets)
+        review = (checkpoint or {}).get(quality_key, {})
+        if review.get("blocked"):
+            raise RuntimeError("新闻初筛质量复核仍未通过；相同输入已暂停模型重试，请人工审核或更新候选/人工基准。")
+        session["quality_feedback"] = review.get("feedback")
+        for review_round in range(int(review.get("round", 0)), 2):
+            payload, model = _invoke_langchain_batches_impl(examples, targets, **kwargs)
+            if training_stats is not None:
+                try:
+                    _validate_model_decision_distribution(
+                        _normalized_decisions(payload, targets), training_stats=training_stats,
+                    )
+                except RuntimeError as exc:
+                    feedback = (str(exc) + " 请基于新闻内容及未截断人工基准独立复核；"
+                                "不得为了满足比例强行改变接受/不接受，不必复用上一轮偏好。")
+                    session["quality_feedback"] = feedback
+                    session.pop("profile", None)
+                    session["preferences"] = False
+                    if checkpoint is not None:
+                        checkpoint[quality_key] = {"round": review_round + 1,
+                            "feedback": feedback, "blocked": review_round == 1}
+                        if kwargs.get("checkpoint_callback"):
+                            kwargs["checkpoint_callback"](0, 0, 0)
+                    if session.get("request_callback"):
+                        session["request_callback"]("质量检查未通过，隔离原决策；" +
+                            ("启动一次独立复核。" if review_round == 0 else "停止自动重判，保留待审核。"))
+                    if review_round == 1:
+                        raise
+                    continue
+            payload["_model_request_count"] = session["calls"]
+            return payload, model
+        raise RuntimeError("新闻初筛质量复核次数已耗尽；保留待审核。")
     finally:
         _MODEL_SESSION.reset(token)
 
@@ -1567,6 +1636,8 @@ def _model_checkpoint_key(
         json.dumps(
             {
                 "version": 2,
+                "calibration": (_MODEL_SESSION.get() or {}).get("calibration"),
+                "quality_feedback": (_MODEL_SESSION.get() or {}).get("quality_feedback"),
                 "training_provenance_version": TRAINING_PROVENANCE_VERSION,
                 "examples": [
                     {key: value for key, value in item.items() if key != "row_number"}
@@ -1621,7 +1692,7 @@ def _invoke_langchain_batches_impl(
         for attempt_index in range(max(1, attempts)):
             try:
                 retry_examples = examples if attempt_index == 0 else compact_examples
-                payload, model_name = _invoke_langchain(retry_examples, [target])
+                payload, model_name = _invoke_repairable(retry_examples, [target])
                 _normalized_decisions(payload, [target])
                 if checkpoint is not None:
                     checkpoint[_model_checkpoint_key(examples, [target])] = {
@@ -1703,7 +1774,7 @@ def _invoke_langchain_batches_impl(
             progress_callback(batch_index, total, len(batch))
         split_after_empty_output = 0
         try:
-            payload, model_name = _invoke_langchain(examples, batch)
+            payload, model_name = _invoke_repairable(examples, batch)
         except RuntimeError as exc:
             empty_output_markers = (
                 "没有最终输出",
@@ -1796,7 +1867,7 @@ def _invoke_langchain_batches_impl(
                 supplement_targets = missing_targets[
                     supplement_start : supplement_start + supplement_size
                 ]
-                supplement, supplement_model = _invoke_langchain(
+                supplement, supplement_model = _invoke_repairable(
                     examples, supplement_targets
                 )
                 supplement_ids = {item["news_id"] for item in supplement_targets}
@@ -2212,7 +2283,8 @@ def _run_news_selection_agent_locked(
             excluded_news_ids=excluded_example_ids,
         )
         model_examples, balance_stats = _balanced_human_examples(examples)
-        training_stats.update(balance_stats)
+        training_stats.update({key: value for key, value in balance_stats.items()
+                               if not key.startswith("source_")})
         targets = [
             row
             for row in candidate_rows_for_run
@@ -2393,19 +2465,21 @@ def _run_news_selection_agent_locked(
                     _progress(
                         crawl_run_id,
                         stream_log_path,
-                        "模型分批检查点保存",
-                        f"第 {batch}/{total} 批 {count} 条决策已校验并落盘；失败重试可直接复用。",
+                        "模型分批检查点保存" if total else "质量复核状态保存",
+                        (f"第 {batch}/{total} 批 {count} 条决策已通过结构校验并落盘；仍需整批质量检查。"
+                         if total else "异常决策已隔离；复核次数与暂停状态已持久化。"),
                     )
 
                 _progress(
                     crawl_run_id,
                     stream_log_path,
                     "LangChain 偏好学习",
-                    f"使用 {len(model_examples)} 条保留人工基准分布的校准样本分析 {len(targets)} 条当天新候选；APP 与双周报分开判断，只输出接受或不接受。",
+                    f"使用 {len(model_examples)} 条人工例证及未截断人工基准分析 {len(targets)} 条当天新候选；APP 与双周报分开判断，只输出接受或不接受。",
                 )
                 model_payload, model_name = _invoke_langchain_batches(
                     model_examples,
                     targets,
+                    training_stats=training_stats,
                     checkpoint=model_checkpoint["batches"] if idempotency_key else None,
                     checkpoint_callback=save_model_checkpoint,
                     request_callback=lambda detail: _progress(

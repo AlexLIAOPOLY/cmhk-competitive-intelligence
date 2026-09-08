@@ -298,6 +298,14 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
         examples, stats = agent._human_examples(rows, events)
 
+        with mock.patch.object(agent, "MAX_HISTORY_EXAMPLES", 1):
+            capped, full_stats = agent._human_examples(rows, events)
+        self.assertEqual(len(capped), 1)
+        for field in ("app", "weekly"):
+            for label in ("accept", "reject"):
+                self.assertEqual(full_stats[f"source_{field}_{label}_count"],
+                                 stats[f"source_{field}_{label}_count"])
+
         self.assertEqual(stats["human_correction_field_count"], 2)
         self.assertEqual(stats["machine_history_excluded_field_count"], 2)
         self.assertEqual({item["title"] for item in examples}, {"人工纠正", "纯人工"})
@@ -1824,6 +1832,89 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
 
 class ModelBatchCheckpointTests(unittest.TestCase):
+    def test_prompt_uses_untruncated_priors_and_prior_changes_invalidate_cache(self):
+        targets = self.targets()[:1]
+        checkpoint = {}
+        model = mock.Mock()
+        model.invoke.return_value = SimpleNamespace(content=json.dumps(self.invoke([], targets)[0]))
+        stats = {"source_app_accept_count": 11, "source_app_reject_count": 85,
+                 "source_weekly_accept_count": 12, "source_weekly_reject_count": 61}
+        with (mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+              mock.patch.object(agent, "_model_routes", return_value=[("test-model", "key")]),
+              mock.patch.object(agent, "ChatDeepSeek", return_value=model)):
+            agent._invoke_langchain_batches([], targets, training_stats=stats, checkpoint=checkpoint)
+            sent = json.loads(model.invoke.call_args.args[0][1].content)
+            self.assertEqual(sent["human_label_priors"]["app"], {"accept": 11, "reject": 85})
+            agent._invoke_langchain_batches([], targets, training_stats=stats, checkpoint=checkpoint)
+            self.assertEqual(model.invoke.call_count, 1)
+            agent._invoke_langchain_batches([], targets, training_stats={**stats, "source_app_reject_count": 86}, checkpoint=checkpoint)
+            self.assertEqual(model.invoke.call_count, 2)
+
+    def test_real_harness_partial_result_reaches_supplement_without_durable_hit(self):
+        targets = self.targets()[:5]
+        checkpoint = {}
+        def transport(examples, batch):
+            return self.invoke(examples, batch[:1] if len(batch) == 5 else batch)
+        with mock.patch.object(agent, "_invoke_langchain_transport", side_effect=transport) as invoke:
+            payload, _ = agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 2)
+            self.assertEqual(len(payload["decisions"]), 5)
+            agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 2)
+            # An incomplete original harness entry must execute again, not replay.
+            with self.assertRaises(agent._IncompleteModelDecision):
+                agent._invoke_langchain([], targets)
+            self.assertEqual(invoke.call_count, 3)
+
+    def test_real_harness_invalid_confidence_gets_singleton_repair(self):
+        targets = self.targets()[:5]
+        def transport(examples, batch):
+            payload, model = self.invoke(examples, batch)
+            if len(batch) > 1:
+                payload["decisions"][0]["app_confidence"] = 2
+            return payload, model
+        with mock.patch.object(agent, "_invoke_langchain_transport", side_effect=transport) as invoke:
+            payload, _ = agent._invoke_langchain_batches([], targets)
+        self.assertEqual(invoke.call_count, 2)
+        self.assertEqual(payload["decisions"][0]["app_confidence"], 0.9)
+
+    def test_quality_failure_uses_new_harness_identity_and_resumes_review(self):
+        targets = self.targets()[:5]
+        stats = {"source_app_accept_count": 11, "source_app_reject_count": 85,
+                 "source_weekly_accept_count": 12, "source_weekly_reject_count": 61}
+        checkpoint = {}
+        contexts = []
+        def transport(examples, batch):
+            contexts.append(dict(agent._MODEL_SESSION.get()))
+            payload, model = self.invoke(examples, batch)
+            if contexts[-1].get("quality_feedback"):
+                for index, decision in enumerate(payload["decisions"]):
+                    decision["app_status"] = decision["weekly_status"] = "接受" if index == 0 else "不接受"
+            return payload, model
+        with (mock.patch.object(agent, "ALL_REJECT_GATE_MIN_FIELDS", 5),
+              mock.patch.object(agent, "_invoke_langchain_transport", side_effect=transport) as invoke):
+            payload, _ = agent._invoke_langchain_batches([], targets, training_stats=stats, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 2)
+            self.assertEqual(contexts[0]["calibration"]["app"], {"accept": 11, "reject": 85})
+            self.assertTrue(contexts[1]["quality_feedback"])
+            resumed, _ = agent._invoke_langchain_batches([], targets, training_stats=stats, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 2)
+            self.assertEqual(payload["decisions"], resumed["decisions"])
+
+    def test_persistent_quality_failure_blocks_identical_retry_but_not_changed_input(self):
+        targets = self.targets()[:5]
+        checkpoint = {}
+        with (mock.patch.object(agent, "ALL_REJECT_GATE_MIN_FIELDS", 5),
+              mock.patch.object(agent, "_invoke_langchain_transport", side_effect=self.invoke) as invoke):
+            with self.assertRaisesRegex(RuntimeError, "质量门禁"):
+                agent._invoke_langchain_batches([], targets, training_stats={}, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 2)
+            with self.assertRaisesRegex(RuntimeError, "暂停模型重试"):
+                agent._invoke_langchain_batches([], targets, training_stats={}, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 2)
+            agent._invoke_langchain_batches([], targets[:1], training_stats={}, checkpoint=checkpoint)
+            self.assertEqual(invoke.call_count, 3)
+
     def setUp(self):
         directory = tempfile.TemporaryDirectory()
         self.addCleanup(directory.cleanup)
