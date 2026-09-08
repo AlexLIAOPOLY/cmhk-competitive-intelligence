@@ -2205,9 +2205,10 @@ def _reader_facing_copy(value: Any) -> Any:
 def _requested_international_domain(
     payload: dict[str, Any], source_registry: dict[str, str] | None = None
 ) -> dict[str, Any]:
-    """Build strategic-overview domain 02 from the four requested carriers."""
+    """Keep four ranked carriers and append the other database operators as references."""
     requested = ("NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel")
-    all_rows = [row for row in (payload.get("rows") or []) if row.get("operator") in requested]
+    references = ("Verizon", "Deutsche Telekom", "AT&T", "NTT Group", "Bharti Airtel", "Reliance Jio")
+    all_rows = [row for row in (payload.get("rows") or []) if row.get("operator") in requested + references]
     rows = [
         row for row in all_rows
         if str(row.get("verification_status") or "") in SAFE_VERIFICATION_STATUSES
@@ -2225,7 +2226,7 @@ def _requested_international_domain(
                      and row.get("metric_key") == metric and int(row.get("year") or 0) == year), None)
 
     def currency_from_unit(unit: str) -> str:
-        match = re.search(r"(?:^|_)(JPY|KRW|SGD)(?:_|$)", unit or "", re.I)
+        match = re.search(r"(?:^|_)(USD|EUR|INR|JPY|KRW|SGD)(?:_|$)", unit or "", re.I)
         return match.group(1).upper() if match else ""
 
     def translated_value(row: dict[str, Any] | None) -> tuple[float | None, str, float | None]:
@@ -2234,7 +2235,7 @@ def _requested_international_domain(
             return None, "", None
         unit = str(row.get("unit") or "")
         currency = currency_from_unit(unit)
-        rate = fx_rates.get((currency, int(row.get("year") or 0)))
+        rate = 1.0 if currency == "USD" else fx_rates.get((currency, int(row.get("year") or 0)))
         if not rate:
             return None, currency, None
         if "per_user_month" in unit:
@@ -2244,7 +2245,7 @@ def _requested_international_domain(
 
     def history(operator: str, metric: str) -> list[dict[str, Any]]:
         result: list[dict[str, Any]] = []
-        for year in range(2016, 2026):
+        for year in range(2016, max(2025, latest_verified_year(operator, metric)) + 1):
             row = row_for(operator, metric, year)
             value, _, _ = translated_value(row)
             result.append({
@@ -2293,7 +2294,9 @@ def _requested_international_domain(
 
     def latest_verified_year(operator: str, metric: str) -> int:
         """Use each operator's latest verified point; keep FY2025 as the gap horizon."""
-        for year in range(2025, 2015, -1):
+        years = sorted({int(row.get("year") or 0) for row in rows
+                        if row.get("operator") == operator and row.get("metric_key") == metric}, reverse=True)
+        for year in years:
             value, _, _ = translated_value(row_for(operator, metric, year))
             if value is not None:
                 return year
@@ -2368,7 +2371,24 @@ def _requested_international_domain(
          "metric": leader_metric(arpu_items),
          "context": "各公司最新已核验年度；统一为美元/月", "insight": latest_comparison_insight("移动ARPU", arpu_items, "ARPU反映客户价值量级", "各公司用户范围结构不同，不直接等同。"), "items": arpu_items},
     ]
+    # Reference records are deliberately separate from items: leaders and AI ranking
+    # consume only the original four, while the UI and refresh use the same facts.
+    for focus in focuses:
+        metric = focus["id"]
+        focus["reference_items"] = []
+        for operator in references:
+            source_metric = "revenue_from_operations" if operator == "Reliance Jio" and metric == "revenue" else metric
+            item = make_item(
+                operator, source_metric, latest_verified_year(operator, source_metric),
+                "美元/月" if metric == "mobile_arpu" else "百万美元",
+                "仅供参考，不参与排名；" + ("营业收入口径。" if source_metric != metric else "")
+                + "读取最新已核验披露，缺失同口径值不估算。",
+                trend=history(operator, source_metric),
+            )
+            item["ranking_eligible"] = False
+            focus["reference_items"].append(item)
     all_items = revenue_items + profit_items + capex_items + arpu_items
+    all_items += [item for focus in focuses for item in focus["reference_items"]]
     return {
         "id": "international", "index": "02", "title": "国际运营商",
         "kicker": "营收、净利润、资本开支与移动ARPU",
@@ -2491,7 +2511,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         financial_payload, _read_json(LOCAL_OPERATING_PATH), _read_json(LOCAL_OPERATING_SOURCES_PATH),
         _read_json_optional(LOCAL_FINANCIAL_PATH, {}),
     )
-    # 第二数据域沿用原有布局，固定比较用户指定的四家国际运营商。
+    # 第二数据域保留四家排名，其余国际运营商在下方参考列表随数据库更新。
     global_source_registry = {
         str(item.get("source_id") or item.get("id") or ""): str(item.get("url") or "")
         for item in (_read_json(GLOBAL_OPERATOR_SOURCES_PATH).get("sources") or [])

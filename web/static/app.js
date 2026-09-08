@@ -8415,7 +8415,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function focusItems(domain, focus) {
-    if (Array.isArray(focus?.items)) return focus.items;
+    if (Array.isArray(focus?.items)) return [...focus.items, ...(focus.reference_items || [])];
     return Array.isArray(domain?.entities) ? domain.entities : [];
   }
 
@@ -8646,7 +8646,7 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderDomainVisual(domain, items, selectedIndex, focus) {
-    const maxValue = Math.max(...items.map((item) => Math.abs(Number(item.value) || 0)), 1);
+    const maxValue = Math.max(...items.filter((item) => item.ranking_eligible !== false).map((item) => Math.abs(Number(item.value) || 0)), 1);
     const visual = focus?.visual || "rows";
     const entityAttributes = (item, index) => `
       role="button" tabindex="0" data-intelligence-entity="${index}"
@@ -8929,6 +8929,15 @@ document.addEventListener("keydown", (event) => {
     `).join("")}</div>`;
 
     return `<ul class="intelligence-viz intelligence-viz-rows" aria-label="${safe(focus.label)}排序比较">${items.map((item, index) => {
+      if (item.ranking_eligible === false) {
+        const firstReference = index === 0 || items[index - 1].ranking_eligible !== false;
+        return `${firstReference ? '<li class="intelligence-reference-heading">其他运营商 · 不参与排名</li>' : ''}
+          <li ${entityAttributes(item, index)} class="intelligence-viz-entity intelligence-reference-row ${item.value == null ? "is-missing" : ""} ${index === selectedIndex ? "is-selected" : ""}">
+            <span>${renderScrollingLabel(item.name)}</span>
+            <span class="intelligence-reference-period">${safe(item.period)}</span>
+            <strong>${formatItemValue(item)}<small>${formatMetricUnit(item.value, item.unit)}</small></strong>
+          </li>`;
+      }
       const width = Math.max(2, Math.abs(Number(item.value) || 0) / maxValue * 100);
       const periodPrefix = item.name === "CMHK" && item.period === "2026首7月"
         ? '<small class="intelligence-period-prefix">2026首7月</small>'
@@ -8949,7 +8958,7 @@ document.addEventListener("keydown", (event) => {
     const entityIndex = selectedEntityIndex(domain, selectedFocus);
     const selectedEntity = items[entityIndex] || null;
     const focusMetric = selectedFocus.metric || domain.metric || {};
-    const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items);
+    const periodLabel = focusPeriodLabel(domain, selectedFocus, focusMetric, items.filter((item) => item.ranking_eligible !== false));
     const visual = renderDomainVisual(domain, items, entityIndex, selectedFocus);
     return `
       <article class="intelligence-domain intelligence-domain-${safe(domain.id)}" data-intelligence-domain-id="${safe(domain.id)}" aria-label="${safe(domain.title)}分析">

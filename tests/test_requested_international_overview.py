@@ -57,12 +57,37 @@ class RequestedInternationalOverviewTests(unittest.TestCase):
         self.assertEqual(arpu["SoftBank Corp."]["value"], 24.86)
         self.assertEqual(arpu["SK Telecom"]["value"], 19.58)
         self.assertEqual(arpu["Singtel"]["value"], 18.36)
-        self.assertNotIn("NTT Group", json.dumps(domain, ensure_ascii=False))
+        self.assertNotIn("NTT Group", {item["name"] for item in domain["entities"]})
         available = [item for focus in domain["focuses"] for item in focus["items"] if item["value"] is not None]
         self.assertTrue(all(item["verification_count"] >= 1 for item in available))
         self.assertTrue(all(len(item["source_urls"]) >= 1 for item in available))
-        self.assertNotIn("Bharti Airtel", json.dumps(domain, ensure_ascii=False))
+        self.assertNotIn("Bharti Airtel", {item["name"] for item in domain["entities"]})
         self.assertNotIn("ARPA", json.dumps(domain, ensure_ascii=False))
+
+    def test_reference_operators_refresh_without_changing_ranking(self) -> None:
+        from data_curation.research_plan import ASSIGNMENTS
+        from cmhk.intelligence.executive import _analysis_evidence_snapshot
+        payload = json.loads((ROOT / "agent_knowledge/global_top5_operators_2016_2025/annual_metrics.json").read_text())
+        before = _requested_international_domain(payload)
+        expected = ["Verizon", "Deutsche Telekom", "AT&T", "NTT Group", "Bharti Airtel", "Reliance Jio"]
+        assigned = {company for task in ASSIGNMENTS for company in task.companies}
+        for company in expected:
+            self.assertIn("NTT" if company == "NTT Group" else company, assigned)
+        for focus in before["focuses"]:
+            self.assertEqual([item["name"] for item in focus["reference_items"]], expected)
+            self.assertTrue(all(item["ranking_eligible"] is False for item in focus["reference_items"]))
+        new_row = dict(next(row for row in payload["rows"] if row["operator"] == "Verizon" and row["metric_key"] == "revenue" and row["year"] == 2025))
+        new_row.update(year=2026, period="FY2026", value=999999, official_value=999999)
+        payload["rows"].append(new_row)
+        after = _requested_international_domain(payload)
+        reference = after["focuses"][0]["reference_items"][0]
+        self.assertEqual((reference["period"], reference["value"]), ("FY2026", 999999))
+        self.assertEqual(reference["trend"][-1]["label"], "FY2026")
+        self.assertEqual(before["focuses"][0]["metric"], after["focuses"][0]["metric"])
+        self.assertEqual(before["focuses"][0]["insight"], after["focuses"][0]["insight"])
+        self.assertEqual(_analysis_evidence_snapshot([before]), _analysis_evidence_snapshot([after]))
+        missing = next(item for item in after["focuses"][3]["reference_items"] if item["name"] == "Verizon")
+        self.assertIsNone(missing["value"])  # ARPA must not be substituted for ARPU.
 
     def test_xiaojing_retrieves_new_metric_pairs(self) -> None:
         cases = {
