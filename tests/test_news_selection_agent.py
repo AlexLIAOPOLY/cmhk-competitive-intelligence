@@ -1252,7 +1252,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
         fake_model.invoke.assert_called_once()
         options = model_factory.call_args.kwargs
         self.assertEqual(options["max_tokens"], agent.DEEPSEEK_V4_MIN_OUTPUT_TOKENS)
-        self.assertEqual(options["timeout"], 240)
+        self.assertEqual(options["timeout"], agent.MODEL_REQUEST_TIMEOUT)
 
     def test_missing_comma_repair_rejects_unescaped_string_content(self):
         with self.assertRaises(json.JSONDecodeError):
@@ -1878,6 +1878,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
 
         with httpx.Client(transport=httpx.MockTransport(respond)) as client:
             with (
+                mock.patch.object(agent, "MODEL_MAX_ROUNDS", 10),
                 mock.patch.object(
                     agent,
                     "load_ai_config",
@@ -1932,6 +1933,61 @@ class ModelBatchCheckpointTests(unittest.TestCase):
         self.assertIn("本次另输出learned_rules", messages[0][0].content)
         self.assertIn("本次仅输出decisions", messages[2][0].content)
         self.assertNotIn("private", str(messages))
+
+    def test_failed_keys_are_tried_once_and_successful_route_finishes_over_ten_requests(self):
+        import httpx
+        targets = [{"news_id": f"N-{i}", "app_before": "待审核", "weekly_before": "待审核"}
+                   for i in range(330)]
+        requests = []
+        notices = []
+        model_class = agent.ChatDeepSeek
+
+        def respond(request):
+            body = json.loads(request.content)
+            requests.append(body["model"])
+            if body["model"] != "working":
+                return httpx.Response(403, json={"error": {"message": "model access denied"}})
+            batch = json.loads(body["messages"][1]["content"])["current_candidates"]
+            payload, _ = self.invoke([], batch)
+            return httpx.Response(200, json={
+                "id": "test", "object": "chat.completion", "created": 0,
+                "model": "working", "choices": [{"index": 0, "finish_reason": "stop",
+                "message": {"role": "assistant", "content": json.dumps(payload)}}],
+            })
+
+        with (
+            httpx.Client(transport=httpx.MockTransport(respond)) as client,
+            mock.patch.object(agent, "MODEL_MAX_ROUNDS", 0),
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+            mock.patch.object(agent, "_model_routes", return_value=[(f"bad-{i}", "key") for i in range(3)] + [("working", "key")]),
+            mock.patch.object(agent, "ChatDeepSeek", side_effect=lambda **kw: model_class(**kw, http_client=client)),
+            mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+        ):
+            payload, _ = agent._invoke_langchain_batches([], targets, request_callback=notices.append)
+        self.assertEqual(len(payload["decisions"]), 330)
+        self.assertEqual(requests[:4], ["bad-0", "bad-1", "bad-2", "working"])
+        self.assertEqual(requests[4:], ["working"] * 10)
+        self.assertEqual(payload["_model_request_count"], 14)
+        self.assertTrue(any("HTTP 403" in notice for notice in notices))
+
+    def test_resume_prefers_checkpoint_model_without_retrying_failed_primary(self):
+        targets = self.targets()
+        cached, _ = self.invoke([], targets[:5])
+        checkpoint = {agent._model_checkpoint_key([], targets[:5]): {
+            "payload": cached, "model": "working",
+        }}
+        response, _ = self.invoke([], targets[5:])
+        model = mock.Mock()
+        model.invoke.return_value = SimpleNamespace(content=json.dumps(response))
+        with (
+            mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+            mock.patch.object(agent, "_model_routes", return_value=[("bad", "key-1"), ("working", "key-2")]),
+            mock.patch.object(agent, "ChatDeepSeek", return_value=model) as factory,
+        ):
+            payload, _ = agent._invoke_langchain_batches([], targets, checkpoint=checkpoint)
+        self.assertEqual(factory.call_count, 1)
+        self.assertEqual(factory.call_args.kwargs["model"], "working")
+        self.assertEqual(len(payload["decisions"]), len(targets))
 
     @staticmethod
     def invoke(_examples, targets):

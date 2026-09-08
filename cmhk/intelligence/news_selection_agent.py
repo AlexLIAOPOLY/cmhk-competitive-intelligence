@@ -24,6 +24,7 @@ except ImportError:  # pragma: no cover - deployment fallback
     OpenCC = None
 
 from ai_config import api_key_candidates, load_ai_config
+from ai_key_rotation import is_key_unavailable_error
 from ai_rate_limit import RateLimitedChatDeepSeek
 from ai_response_compat import deepseek_nonthinking_parameters
 from cmhk.intelligence.agent_harness import (
@@ -50,7 +51,8 @@ MAX_HISTORY_EXAMPLES = max(
 MODEL_BATCH_SIZE = max(
     5, min(30, int(os.environ.get("CMHK_NEWS_SELECTION_MODEL_BATCH_SIZE", "5")))
 )
-MODEL_MAX_ROUNDS = 10
+MODEL_MAX_ROUNDS = max(0, int(os.environ.get("CMHK_NEWS_SELECTION_MAX_REQUESTS", "0")))
+MODEL_REQUEST_TIMEOUT = max(10, int(os.environ.get("CMHK_NEWS_SELECTION_REQUEST_TIMEOUT", "90")))
 _MODEL_SESSION: ContextVar[dict[str, Any] | None] = ContextVar(
     "news_selection_model_session", default=None
 )
@@ -58,7 +60,7 @@ _HARNESS_RECOVERY: ContextVar[int] = ContextVar("selection_harness_recovery", de
 
 
 class ChatDeepSeek(RateLimitedChatDeepSeek):
-    """Route rotation is explicit here so hidden retries cannot exceed the cap."""
+    """Rotate explicitly so every request is observable and counted once."""
 
     def _keys(self) -> list[str]:
         return [self.openai_api_key.get_secret_value()]
@@ -71,12 +73,12 @@ class _ModelRoundLimit(RuntimeError):
 def _selection_model_invoke(model: Any, messages: list[Any]) -> Any:
     session = _MODEL_SESSION.get()
     if session is not None:
-        if session["calls"] >= MODEL_MAX_ROUNDS:
+        if MODEL_MAX_ROUNDS and session["calls"] >= MODEL_MAX_ROUNDS:
             raise _ModelRoundLimit(
-                "新闻初筛已达10轮模型请求上限；已保存检查点，未完成候选保持待审核"
+                f"新闻初筛已达{MODEL_MAX_ROUNDS}轮模型请求上限；已保存检查点，未完成候选保持待审核"
             )
         session["calls"] += 1
-        logging.info("新闻初筛模型请求 %s/%s", session["calls"], MODEL_MAX_ROUNDS)
+        logging.info("新闻初筛模型请求 %s，上限=%s", session["calls"], MODEL_MAX_ROUNDS or "无")
     started = time.monotonic()
     logging.info(
         "新闻初筛请求协议：model=%s，max_tokens=%s，input_chars=%s，cache=no-cache/no-store",
@@ -84,7 +86,19 @@ def _selection_model_invoke(model: Any, messages: list[Any]) -> Any:
         getattr(model, "max_tokens", None),
         sum(len(str(message.content)) for message in messages),
     )
-    response = model.invoke(messages)
+    callback = session.get("request_callback") if session else None
+    model_name = getattr(model, "model_name", "unknown")
+    if callback:
+        callback(f"第 {session['calls']} 次请求，模型 {model_name}。")
+    try:
+        response = model.invoke(messages)
+    except Exception as exc:
+        if callback:
+            callback(f"模型 {model_name} 请求失败，耗时 {time.monotonic() - started:.1f} 秒；"
+                     f"类型 {type(exc).__name__}，HTTP {getattr(exc, 'status_code', None) or '未知'}。")
+        raise
+    if callback:
+        callback(f"模型 {model_name} 已响应，耗时 {time.monotonic() - started:.1f} 秒，正在校验结果。")
     usage = getattr(response, "usage_metadata", {}) or {}
     metadata = getattr(response, "response_metadata", {}) or {}
     logging.info(
@@ -1328,7 +1342,13 @@ def _invoke_langchain_transport(
         ensure_ascii=False,
     )
     errors: list[str] = []
-    for model_name, api_key in _model_routes():
+    routes = _model_routes()
+    if session is not None:
+        routes = [route for route in routes if route not in session.get("failed_routes", set())]
+        preferred = session.get("preferred_route")
+        preferred_model = session.get("preferred_model")
+        routes.sort(key=lambda route: (route != preferred, route[0] != preferred_model))
+    for model_name, api_key in routes:
         is_deepseek = "deepseek" in model_name.lower()
         is_v4 = is_deepseek and "v4" in model_name.lower()
         cache_options = {"cache": {"no-cache": True, "no-store": True}}
@@ -1347,7 +1367,7 @@ def _invoke_langchain_transport(
             disable_streaming=True,
             include_response_headers=True,
             max_retries=0,
-            timeout=240 if is_v4 else 120,
+            timeout=MODEL_REQUEST_TIMEOUT,
             # Some V4-compatible routes currently ignore the documented
             # non-thinking switch. Reserve enough output budget for that hidden
             # reasoning so the final JSON is not truncated away.
@@ -1402,11 +1422,16 @@ def _invoke_langchain_transport(
                 )
                 response_content = _langchain_response_text(response)
             try:
-                return _json_object(response_content), model_name
+                parsed = _json_object(response_content)
+                if session is not None:
+                    session["preferred_route"] = (model_name, api_key)
+                return parsed, model_name
             except Exception as parse_exc:
                 try:
                     repaired = _repair_missing_json_commas(response_content)
                     repaired["_format_repaired"] = True
+                    if session is not None:
+                        session["preferred_route"] = (model_name, api_key)
                     return repaired, model_name
                 except Exception:
                     pass
@@ -1436,11 +1461,19 @@ def _invoke_langchain_transport(
                 except Exception:
                     repaired = _repair_missing_json_commas(repair_content)
                 repaired["_format_repaired"] = True
+                if session is not None:
+                    session["preferred_route"] = (model_name, api_key)
                 return repaired, model_name
         except (_ModelRoundLimit, TruncatedModelOutput):
             raise
         except Exception as exc:
             errors.append(f"{model_name}: {_text(exc, 180)}")
+            if session is not None and is_key_unavailable_error(exc):
+                session.setdefault("failed_routes", set()).add((model_name, api_key))
+            # Never log exception bodies: gateways may echo credentials. Preserve
+            # the failure category and status without hiding it behind a budget.
+            logging.warning("新闻初筛路由跳过：model=%s，error=%s，status=%s",
+                            model_name, type(exc).__name__, getattr(exc, "status_code", None))
     raise RuntimeError("LangChain 模型路由全部失败；" + "；".join(errors[:4]))
 
 
@@ -1514,7 +1547,10 @@ def _invoke_langchain_batches(
     targets: list[dict[str, Any]],
     **kwargs: Any,
 ) -> tuple[dict[str, Any], str]:
-    session: dict[str, Any] = {"calls": 0, "preferences": False}
+    session: dict[str, Any] = {
+        "calls": 0, "preferences": False,
+        "request_callback": kwargs.pop("request_callback", None),
+    }
     token = _MODEL_SESSION.set(session)
     try:
         payload, model = _invoke_langchain_batches_impl(examples, targets, **kwargs)
@@ -1640,12 +1676,14 @@ def _invoke_langchain_batches_impl(
         model_names.append(cached["model"])
         reused_ids.update(ids)
     remaining = [item for item in targets if item["news_id"] not in reused_ids]
-    batch_size = max(MODEL_BATCH_SIZE, math.ceil(len(targets) / MODEL_MAX_ROUNDS))
+    batch_size = max(MODEL_BATCH_SIZE, min(30, math.ceil(len(targets) / 10)))
     total = math.ceil(len(remaining) / batch_size)
     if reused_ids and reuse_callback:
         reuse_callback(0, total, len(reused_ids))
     session = _MODEL_SESSION.get()
     if session is not None:
+        if model_names:
+            session["preferred_model"] = model_names[-1]
         session["preferences"] = any("learned_rules" in item for item in payloads)
         profile = next((item for item in payloads if item.get("learned_rules")), None)
         if profile:
@@ -2370,11 +2408,14 @@ def _run_news_selection_agent_locked(
                     targets,
                     checkpoint=model_checkpoint["batches"] if idempotency_key else None,
                     checkpoint_callback=save_model_checkpoint,
+                    request_callback=lambda detail: _progress(
+                        crawl_run_id, stream_log_path, "模型请求", detail,
+                    ),
                     reuse_callback=lambda batch, total, count: _progress(
                         crawl_run_id,
                         stream_log_path,
                         "模型分批检查点恢复",
-                        f"合并复用 {count} 条已校验决策；剩余最多 {total} 批，模型请求含重试最多10轮。",
+                        f"合并复用 {count} 条已校验决策；剩余 {total} 批，优先复用成功模型路由。",
                     ),
                     progress_callback=lambda batch, total, count: _progress(
                         crawl_run_id,
@@ -2391,7 +2432,7 @@ def _run_news_selection_agent_locked(
                     crawl_run_id,
                     stream_log_path,
                     "模型请求完成",
-                    f"本次实际请求 {model_payload.get('_model_request_count', 0)}/10 轮（含重试与补判），全部候选已校验。",
+                    f"本次实际请求 {model_payload.get('_model_request_count', 0)} 轮（含重试与补判），全部候选已校验。",
                 )
                 invoked_model_name = model_name
                 if model_payload.get("_format_repaired") is True:
