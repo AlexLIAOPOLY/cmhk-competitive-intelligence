@@ -394,6 +394,8 @@ def update_weekly_report_preference(
         for item in (status.get("outputs") or [])
     ):
         raise ValueError("选中的周报不在当前报告库中，请刷新后重新选择")
+    if normalized:
+        service.validate_selected_report(normalized)
     service.update_weekly_report_preference(normalized)
     return weekly_report_preference_payload(service, status=status)
 
@@ -411,6 +413,8 @@ def update_performance_report_preference(
         for item in (status.get("outputs") or [])
     ):
         raise ValueError("选中的业绩摘要不在当前报告库中，请刷新后重新选择")
+    if normalized:
+        service.validate_selected_report(normalized)
     service.update_performance_report_preference(normalized)
     return performance_report_preference_payload(service, status=status)
 
@@ -2162,7 +2166,7 @@ def file_info(path: Path, url: str = None) -> dict:
         "path_str": rel_path,
         "note": str(metadata.get("note") or ""),
         "reportType": report_type,
-        "isEdited": bool(metadata.get("isEdited")),
+        "isEdited": bool(metadata.get("isEdited")) or "编辑稿" in path.stem,
         "editRevision": int(metadata.get("editorRevision") or 0),
         "editedAt": str(metadata.get("editedAt") or ""),
         "editedBy": str(metadata.get("editedBy") or ""),
@@ -3865,6 +3869,7 @@ def push_latest_subscription_content(
             target_open_id=target_open_id,
             confirm_bulk=confirm_bulk,
             allow_user_edited=service_key == "weekly" and bool(item.get("isEdited")),
+            manual_report_selection=bool(selected_weekly if service_key == "weekly" else selected_performance),
         )
         results.append(result)
         completed_steps += 1

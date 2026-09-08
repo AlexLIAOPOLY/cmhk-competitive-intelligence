@@ -85,6 +85,22 @@ class ImmediateThread:
 
 
 class LatestSubscriptionPushTests(unittest.TestCase):
+    def test_external_editor_copy_is_labeled_edited_without_editor_metadata(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            report = root / "8月30日周报 (3)（编辑稿）.docx"
+            report.write_bytes(b"metadata classification only")
+            with (
+                mock.patch.object(web_app, "ROOT", root),
+                mock.patch.object(web_app, "load_report_metadata", return_value={}),
+                mock.patch.object(web_app, "report_audio_metadata", return_value={"exists": False}),
+            ):
+                info = web_app.file_info(report)
+            self.assertTrue(info["isEdited"])
+            self.assertEqual(info["reportType"], "weekly")
+            self.assertEqual(info["editRevision"], 0)
+            self.assertEqual(info["sourcePath"], "")
+
     def test_manual_push_job_returns_immediately_and_persists_completion(self):
         service = WeeklyOnlySubscriptionService()
         with tempfile.TemporaryDirectory() as folder:
@@ -157,6 +173,7 @@ class LatestSubscriptionPushTests(unittest.TestCase):
         self.assertEqual(result["weekly_report_path"], weekly.name)
         self.assertEqual(result["weekly_report_selection"], "automatic")
         self.assertFalse(service.calls[0]["allow_user_edited"])
+        self.assertFalse(service.calls[0]["manual_report_selection"])
 
     def test_manual_weekly_selection_can_send_an_editor_copy(self):
         service = FakeSubscriptionService()
@@ -186,6 +203,7 @@ class LatestSubscriptionPushTests(unittest.TestCase):
         weekly_call = next(item for item in service.calls if item["service"] == "weekly")
         self.assertEqual(weekly_call["path"], edited.name)
         self.assertTrue(weekly_call["allow_user_edited"])
+        self.assertTrue(weekly_call["manual_report_selection"])
         self.assertEqual(result["weekly_report_selection"], "manual")
 
     def test_automatic_weekly_selection_ignores_newer_editor_copies(self):
@@ -251,6 +269,7 @@ class LatestSubscriptionPushTests(unittest.TestCase):
 
         performance_call = next(item for item in service.calls if item["service"] == "performance")
         self.assertEqual(performance_call["path"], "selected-performance-edit.docx")
+        self.assertTrue(performance_call["manual_report_selection"])
         self.assertEqual(result["performance_report_selection"], "manual")
 
     def test_missing_saved_weekly_preference_falls_back_to_latest_formal(self):
@@ -271,6 +290,7 @@ class LatestSubscriptionPushTests(unittest.TestCase):
 
         self.assertEqual(service.preferred_path, "")
         self.assertEqual(service.calls[0]["path"], "formal.docx")
+        self.assertFalse(service.calls[0]["manual_report_selection"])
         self.assertEqual(result["weekly_report_selection"], "automatic")
 
     def test_bulk_icon_requires_confirmation(self):

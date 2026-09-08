@@ -1650,6 +1650,21 @@ class SubscriptionService:
             "min_detail_sentences": min(int(item["detailSentences"]) for item in items),
         }
 
+    def validate_selected_report(self, path: str) -> dict[str, Any]:
+        """Validate the actual administrator-selected document, including legacy copies.
+
+        This is a file-readability check, not an independent editorial approval.
+        Automatic weekly publication continues to require its bound quality audit.
+        """
+        report_path, relative = self._resolve_report(path)
+        try:
+            report_text = self._report_text(report_path)
+        except (OSError, KeyError, ValueError, zipfile.BadZipFile, ElementTree.ParseError) as exc:
+            raise ValueError(f"所选文件无法读取：{report_path.name}，请重新上传有效的 Word 文档") from exc
+        if not report_text.strip():
+            raise ValueError(f"所选文件正文为空：{report_path.name}")
+        return {"path": relative, "validation": "manual_document", "report_sha256": hashlib.sha256(report_path.read_bytes()).hexdigest()}
+
     def _validate_user_edited_weekly_artifact(self, report_path: Path) -> dict[str, Any]:
         """Allow an explicitly selected editor copy only when its formal source is auditable."""
         metadata_path = self.runtime_root / "data" / "reporting" / "report_file_metadata.json"
@@ -3128,6 +3143,7 @@ class SubscriptionService:
         queue_failures: bool = False,
         batch_key: str = "",
         allow_user_edited: bool = False,
+        manual_report_selection: bool = False,
     ) -> dict[str, Any]:
         if service not in VALID_SERVICES or mode not in VALID_DELIVERY_MODES:
             raise ValueError("推送服务或交付方式无效")
@@ -3162,7 +3178,9 @@ class SubscriptionService:
         content_ref = ""
         if service in {"weekly", "performance"}:
             report_path, content_ref = self._resolve_report(path)
-            if service == "weekly":
+            if manual_report_selection:
+                self.validate_selected_report(path)
+            elif service == "weekly":
                 if allow_user_edited:
                     self._validate_user_edited_weekly_artifact(report_path)
                 else:

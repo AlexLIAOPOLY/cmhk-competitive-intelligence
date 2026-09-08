@@ -677,6 +677,38 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(result["verified_count"], 1)
         self.assertTrue(any("--file" in call for call in self.lark.calls))
 
+    def test_manual_selection_delivers_legacy_and_external_edits_without_generated_audit(self):
+        from cmhk.reporting.pdf_preview import pdf_preview_path
+
+        for name in ("历史周报 (2).docx", "8月30日周报 (3)（编辑稿）.docx"):
+            with self.subTest(name=name):
+                report = self.root / name
+                self._write_weekly_report(report)
+                preview = pdf_preview_path(report, self.root / "web" / "static" / "report-previews")
+                preview.parent.mkdir(parents=True, exist_ok=True)
+                preview.write_bytes(b"%PDF-1.7\n")
+                with self.assertRaisesRegex(RuntimeError, "质量审计"):
+                    self.service.push(service="weekly", mode="pdf", path=name, test_open_id="ou_test123")
+                result = self.service.push(
+                    service="weekly", mode="pdf", path=name, test_open_id="ou_test123",
+                    manual_report_selection=True,
+                )
+                self.assertEqual(result["verified_count"], 1)
+                self.assertFalse(Path(str(report) + ".quality.json").exists())
+
+    def test_manual_selection_rejects_broken_empty_and_escaping_documents(self):
+        broken = self.root / "损坏.docx"
+        broken.write_bytes(b"not a word document")
+        empty = self.root / "空白.docx"
+        Document().save(empty)
+        for path, reason in ((broken.name, "无法读取"), (empty.name, "正文为空"), ("../outside.docx", "路径无效")):
+            with self.subTest(path=path), self.assertRaisesRegex(ValueError, reason):
+                self.service.push(
+                    service="weekly", mode="pdf", path=path, test_open_id="ou_test123",
+                    manual_report_selection=True,
+                )
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
+
     def test_user_edited_weekly_flag_cannot_bypass_editor_provenance(self):
         report = self.root / "伪编辑稿.docx"
         self._write_weekly_report(report)
