@@ -87,7 +87,7 @@
   }
 
   function conditionalSetting(kind, enabled, content, emptyLabel) {
-    return `<div class="subscriber-dependent-setting" data-dependent-setting="${kind}"${enabled ? "" : " hidden"}>${content}</div><span class="subscriber-setting-empty" data-dependent-setting-empty="${kind}" aria-label="${esc(emptyLabel)}" title="${esc(emptyLabel)}"${enabled ? " hidden" : ""}>—</span>`;
+    return `<div class="subscriber-dependent-setting" data-dependent-setting="${kind}"${enabled ? "" : " hidden"}>${content}</div><select class="subscriber-setting-empty" data-dependent-setting-empty="${kind}" aria-label="${esc(emptyLabel)}" title="${esc(emptyLabel)}" disabled${enabled ? " hidden" : ""}><option value="not_applicable" selected>不适用</option></select>`;
   }
 
   function syncRowDependentSettings(row, services) {

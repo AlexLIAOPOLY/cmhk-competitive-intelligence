@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=18', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=33', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=19', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=34', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -82,6 +82,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('data-dependent-setting-empty="${kind}"', SCRIPT)
         self.assertIn('未订阅新闻', SCRIPT)
         self.assertIn('未订阅报告', SCRIPT)
+        self.assertIn('<option value="not_applicable" selected>不适用</option>', SCRIPT)
         self.assertIn('container.querySelectorAll("input, select, button")', SCRIPT)
         self.assertIn('.subscriber-dependent-setting[hidden], .subscriber-setting-empty[hidden] { display: none; }', STYLE)
 
