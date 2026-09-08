@@ -129,6 +129,8 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .news-interest-check:has(input:checked) { border-color: rgba(92,190,194,.5); color: #cce9e9; background: rgba(41,112,116,.22); }
 .news-interest-check input { width: 12px; height: 12px; margin: 0; padding: 0; accent-color: #58b4c7; }
 .subscriber-actions { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+.subscriber-actions [data-reset-subscriber] { width: 28px; height: 28px; flex-basis: 28px; }
+.subscriber-actions [data-reset-subscriber] svg { width: 14px; height: 14px; }
 .row-send { width: 28px; height: 28px; flex-basis: 28px; border-color: rgba(91,177,198,.28); background: rgba(18,55,68,.7); }
 .row-send svg { width: 14px; height: 14px; }
 .compact-save { min-height: 28px; padding: 0 9px; }
