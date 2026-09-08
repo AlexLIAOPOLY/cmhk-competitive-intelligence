@@ -812,7 +812,7 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(retries["afternoon-1"], 0)
 
     def test_same_non_strategic_task_scope_is_numbered_as_retry_chain(self) -> None:
-        slot = "爬虫后选材（2026-09-01@07:30）"
+        slot = "爬虫后选材（2026-09-01@06:30）"
         runs = [
             {
                 "crawl_run_id": "selection-2",

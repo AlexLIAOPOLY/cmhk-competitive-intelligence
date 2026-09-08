@@ -12,7 +12,7 @@ from cmhk.intelligence import news_review_sheet
 
 class WrittenScanCheckpointTests(unittest.TestCase):
     def setUp(self):
-        self.slot = "2026-09-03@07:30"
+        self.slot = "2026-09-03@06:30"
         self.now = datetime(2026, 9, 3, 10, tzinfo=briefing.HKT)
         self.receipt = {"status": "ok", "readback_verified": True,
                         "new_count": 148, "sheet_id": "sheet", "new_items": [{"news_id": "n1"}]}
