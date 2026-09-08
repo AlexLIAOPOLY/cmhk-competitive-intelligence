@@ -918,7 +918,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('strategicNewsRunRank(run)', SCRIPT)
         self.assertIn('run?.operational_summary?.readback_verified === true', SCRIPT)
         self.assertIn('const runs = authoritativeStrategicNewsRuns(attemptRuns);', SCRIPT)
-        self.assertIn('unit: newsRun.run_status === "running" ? "" : "次权威新闻任务"', SCRIPT)
+        self.assertIn('unit: newsRun.run_status === "running" ? "" : "次新闻任务"', SCRIPT)
         self.assertIn('`只负责触发 · ${attemptRuns.length} 次任务尝试`', SCRIPT)
         self.assertIn('data-health="${esc(node.health?.key || "unknown")}"', SCRIPT)
         self.assertIn('健康状态${esc(node.health?.label || "无记录")}', SCRIPT)
