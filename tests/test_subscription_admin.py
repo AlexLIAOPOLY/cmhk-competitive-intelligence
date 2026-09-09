@@ -11,7 +11,7 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=20', INDEX)
+        self.assertIn('/static/subscription-admin.html?v=21', INDEX)
         self.assertIn('/static/subscription-admin.js?v=38', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
@@ -220,9 +220,9 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_subscriber_selects_have_complete_horizontal_content_space(self):
         self.assertIn('[data-subscriber-report-mode] { min-width: 160px; }', STYLE)
         self.assertIn('[data-subscriber-news-frequency] { width: 110px; min-width: 108px; }', STYLE)
-        self.assertIn('[data-subscriber-news-limit] { width: 76px; min-width: 72px; }', STYLE)
+        self.assertIn('[data-subscriber-news-limit] { width: 92px; min-width: 88px; }', STYLE)
         self.assertIn('[data-subscriber-status] { min-width: 74px; }', STYLE)
-        self.assertIn('grid-template-columns: minmax(108px, 1fr) minmax(72px, .65fr);', STYLE)
+        self.assertIn('grid-template-columns: minmax(108px, 1fr) minmax(88px, .65fr);', STYLE)
 
     def test_weekly_report_picker_is_searchable_compact_and_server_synchronized(self):
         self.assertIn("data-weekly-picker-trigger", SCRIPT)

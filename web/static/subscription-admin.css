@@ -88,9 +88,9 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table td select { min-width: 0; padding-right: 28px; white-space: nowrap; }
 .subscriber-table [data-subscriber-report-mode] { min-width: 160px; }
 .subscriber-table [data-subscriber-news-frequency] { width: 110px; min-width: 108px; }
-.subscriber-table [data-subscriber-news-limit] { width: 76px; min-width: 72px; }
+.subscriber-table [data-subscriber-news-limit] { width: 92px; min-width: 88px; }
 .subscriber-table [data-subscriber-status] { min-width: 74px; }
-.subscriber-table .subscriber-dependent-setting:has([data-subscriber-news-frequency]) { display: grid; grid-template-columns: minmax(108px, 1fr) minmax(72px, .65fr); }
+.subscriber-table .subscriber-dependent-setting:has([data-subscriber-news-frequency]) { display: grid; grid-template-columns: minmax(108px, 1fr) minmax(88px, .65fr); }
 .manual-report-sendbar { display: grid; grid-template-columns: minmax(280px, .88fr) minmax(260px, 1.12fr); align-items: end; gap: 12px; padding: 9px 16px 10px; border-bottom: 1px solid rgba(92,158,178,.18); background: rgba(8,34,44,.58); }
 .manual-report-sendbar p { align-self: center; color: #708891; font-size: 9px; line-height: 1.5; }
 .version-surface:has(.weekly-report-picker.is-open) { z-index: 14; overflow: visible; }
