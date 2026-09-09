@@ -182,6 +182,10 @@ def _handle_card_action(data: Any) -> Any:
             return P2CardActionTriggerResponse(
                 {"toast": {"type": "error", "content": f"处理失败：{exc}"}}
             )
+        if result.get("status") == "subscription_rejected":
+            return P2CardActionTriggerResponse(
+                {"toast": {"type": "error", "content": str(result.get("error") or "订阅未保存，请修改后重试")}}
+            )
         if str(result.get("status") or "") != "ignored":
             return P2CardActionTriggerResponse(
                 {"toast": {"type": "success", "content": "操作已处理"}}

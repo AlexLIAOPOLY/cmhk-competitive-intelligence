@@ -184,7 +184,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（最多4个）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**"],
+            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（超过4个将自动随机保留4个）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
@@ -196,10 +196,10 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual({item["value"] for item in frequency["options"]}, {"once_daily", "twice_daily"})
         time_pickers = [item for item in form["elements"] if item["tag"] == "picker_time"]
         self.assertEqual([item["initial_time"] for item in time_pickers], ["08:00", "18:30"])
-        self.assertTrue(all(item["required"] for item in time_pickers))
+        self.assertTrue(all(not item["required"] for item in time_pickers))
         self.assertEqual({item["value"] for item in item_limit["options"]}, {"5", "10", "15", "20"})
         self.assertEqual(len(categories["options"]), 7)
-        self.assertTrue(categories["required"])
+        self.assertFalse(categories["required"])
         self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")
@@ -1122,23 +1122,47 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(len(summary["subscribers"][0]["news_categories"]), 4)
         self.assertEqual(len(summary["news_categories"]), 7)
 
-    def test_news_subscription_rejects_empty_interest_categories(self):
-        with self.assertRaisesRegex(ValueError, "兴趣板块"):
-            self.service.save_subscriptions(
-                "ou_delivery123", "测试用户", ["news"], news_categories=[]
-            )
+    def test_invalid_preferences_are_adjusted_and_saved(self):
+        saved = self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"], news_categories=[],
+            frequency="hourly", report_mode="voice_note", news_item_limit=12,
+            news_delivery_times=["07:30", "13:30"])
+        self.assertEqual(saved["frequency"], "once_daily")
+        self.assertEqual(saved["report_mode"], "pdf")
+        self.assertEqual(saved["news_item_limit"], 10)
+        self.assertEqual(len(saved["news_categories"]), 4)
+        self.assertEqual(saved["news_delivery_times"], ["08:00", "14:00"])
+        self.assertEqual(len(saved["adjustments"]), 6)
+        actual = self.service.list_summary()["subscribers"][0]
+        self.assertEqual(actual["news_delivery_times"], saved["news_delivery_times"])
 
-    def test_invalid_frequency_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "接收频率无效"):
-            self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="hourly")
+    def test_overselected_callback_saves_and_sends_receipt_with_consequences(self):
+        from cmhk.services.subscriptions import NEWS_CATEGORY_LABELS
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        event = {"type": "card.action.trigger", "action_tag": "button", "event_id": "correction-1",
+            "operator_id": "ou_callback123", "chat_id": "oc_test123", "message_id": "om_test123",
+            "form_value": json.dumps({"services": ["news", "weekly"], "news_categories": list(NEWS_CATEGORY_LABELS),
+                "news_frequency": "twice_daily", "news_item_limit": "20", "report_mode": "pdf_audio",
+                "news_delivery_time_morning": "07:59 +0800", "news_delivery_time_afternoon": "13:59 +0800"})}
+        saved = self.service.handle_card_event(event)
+        self.assertEqual(saved["status"], "subscription_saved")
+        self.assertEqual(len(saved["news_categories"]), 4)
+        self.assertIn("竞对动态", saved["news_categories"])
+        self.assertEqual(saved["news_delivery_times"], ["08:00", "14:00"])
+        sends = [c for c in self.lark.calls if "+messages-send" in c]
+        card = json.loads(sends[-1][sends[-1].index("--content")+1])
+        self.assertIn("已自动调整并保存", json.dumps(card, ensure_ascii=False))
+        self.assertIn("随机保留4个", json.dumps(card, ensure_ascii=False))
+        for category in saved["news_category_labels"]:
+            self.assertIn(category, json.dumps(card, ensure_ascii=False))
+        again = self.service.handle_card_event(event)
+        self.assertEqual(again["news_categories"], saved["news_categories"])
 
-    def test_invalid_report_mode_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "报告接收形式无效"):
-            self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], report_mode="voice_note")
-
-    def test_invalid_news_item_limit_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "新闻条数无效"):
-            self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], news_item_limit=12)
+    def test_invalid_times_use_defaults_and_valid_boundaries_stay(self):
+        for supplied, expected in [(["bad", ""], ["08:00", "18:30"]), (["20:00", "15:00"], ["08:00", "18:30"]), (["08:00", "14:00"], ["08:00", "14:00"])]:
+            with self.subTest(supplied=supplied):
+                saved = self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], news_delivery_times=supplied)
+                self.assertEqual(saved["news_delivery_times"], expected)
 
     def test_weekly_report_preference_persists_and_is_exposed_in_summary(self):
         saved = self.service.update_weekly_report_preference("reports/战略周报（编辑稿）.docx")

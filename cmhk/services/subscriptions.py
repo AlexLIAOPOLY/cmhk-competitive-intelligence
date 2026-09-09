@@ -118,12 +118,12 @@ def normalize_news_categories(value: Any, *, default_all: bool = True) -> list[s
     return [category for category in NEWS_CATEGORY_LABELS if category in selected]
 
 
-def _reduce_legacy_news_categories(categories: list[str]) -> list[str]:
+def _reduce_legacy_news_categories(categories: list[str], *, seed: str = "") -> list[str]:
     """Randomly reduce a saved legacy profile once; preserve competitor interest."""
     if len(categories) <= MAX_NEWS_CATEGORIES:
         return categories
     retained = ["竞对动态"] if "竞对动态" in categories else []
-    retained += random.sample([c for c in categories if c not in retained],
+    retained += (random.Random(seed) if seed else random).sample([c for c in categories if c not in retained],
                               MAX_NEWS_CATEGORIES - len(retained))
     return [c for c in NEWS_CATEGORY_LABELS if c in retained]
 
@@ -351,7 +351,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         {
                             "tag": "select_static",
                             "name": "report_mode",
-                            "required": True,
+                            "required": False,
                             "width": "fill",
                             "placeholder": {"tag": "plain_text", "content": "选择接收方式"},
                             "options": [
@@ -362,24 +362,24 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {"tag": "hr"},
                         {"tag": "markdown", "content": "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>"},
-                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（最多4个）**"},
+                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（超过4个将自动随机保留4个）**"},
                         {
                             "tag": "multi_select_static",
                             "name": "news_categories",
-                            "required": True,
+                            "required": False,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "请选择1至4个兴趣板块"},
+                            "placeholder": {"tag": "plain_text", "content": "请选择兴趣板块，超过4个自动调整"},
                             "options": [
                                 {"text": {"tag": "plain_text", "content": label}, "value": category}
                                 for category, label in NEWS_CATEGORY_LABELS.items()
                             ],
                         },
-                        {"tag": "markdown", "content": "<font color='grey'>优先覆盖所选板块；订阅竞对动态时优先安排。所选板块新闻不足，才从其他板块补足。</font>", "text_size": "notation"},
+                        {"tag": "markdown", "content": "<font color='grey'>超过4个将随机保留4个（已选竞对动态优先保留），不拦截提交；未选则使用默认4个。成功消息会列明生效板块。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**战略新闻频率**"},
                         {
                             "tag": "select_static",
                             "name": "news_frequency",
-                            "required": True,
+                            "required": False,
                             "width": "fill",
                             "placeholder": {"tag": "plain_text", "content": "选择战略新闻频率"},
                             "options": [
@@ -391,7 +391,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         {
                             "tag": "select_static",
                             "name": "news_item_limit",
-                            "required": True,
+                            "required": False,
                             "width": "fill",
                             "placeholder": {"tag": "plain_text", "content": "选择每次接收条数"},
                             "options": [
@@ -399,20 +399,20 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 for count in sorted(VALID_NEWS_ITEM_LIMITS)
                             ],
                         },
-                        {"tag": "markdown", "content": "**期待收到战略新闻的时间（香港）**"},
-                        {"tag": "markdown", "content": "第一次（每天一次使用此时间）"},
+                        {"tag": "markdown", "content": "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"},
+                        {"tag": "markdown", "content": "第一次：不早于08:00（每天一次使用此时间）"},
                         {
                             "tag": "picker_time",
                             "name": "news_delivery_time_morning",
-                            "required": True,
+                            "required": False,
                             "width": "fill",
                             "initial_time": NEWS_DELIVERY_TIMES_DEFAULT[0],
                         },
-                        {"tag": "markdown", "content": "第二次（仅每天两次使用）"},
+                        {"tag": "markdown", "content": "第二次：不早于14:00（仅每天两次使用）"},
                         {
                             "tag": "picker_time",
                             "name": "news_delivery_time_afternoon",
-                            "required": True,
+                            "required": False,
                             "width": "fill",
                             "initial_time": NEWS_DELIVERY_TIMES_DEFAULT[1],
                         },
@@ -465,6 +465,7 @@ def subscription_confirmation_card(
     category_labels: str,
     news_item_limit: int,
     news_delivery_times: Any = None,
+    adjustments: list[str] | None = None,
 ) -> dict[str, Any]:
     """Compact Card 2.0 receipt sent after a subscription is saved."""
     name = re.sub(r"\s+", " ", str(display_name or "").strip())[:80] or "您好"
@@ -507,6 +508,7 @@ def subscription_confirmation_card(
             "padding": "12px 12px 16px 12px",
             "vertical_spacing": "10px",
             "elements": [
+                *([{"tag": "markdown", "content": "**已自动调整并保存：**\n" + "\n".join(adjustments)}] if adjustments else []),
                 *(
                     [
                         {
@@ -1174,36 +1176,50 @@ class SubscriptionService:
         news_item_limit: int = 10,
         news_categories: Any = None,
         news_delivery_times: Any = None,
+        selection_seed: str = "",
     ) -> dict[str, Any]:
+        adjustments: list[str] = []
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
             raise ValueError("至少选择一个订阅服务")
         frequency = _normalize_news_frequency(frequency)
         if frequency not in VALID_FREQUENCIES:
-            raise ValueError("接收频率无效")
+            frequency = "once_daily"
+            adjustments.append("未选择有效新闻频率，已按每天一次保存。")
         if report_mode not in VALID_REPORT_MODES:
-            raise ValueError("报告接收形式无效")
+            report_mode = "pdf"
+            adjustments.append("未选择有效报告形式，已按仅PDF保存。")
         try:
             news_item_limit = int(news_item_limit)
-        except (TypeError, ValueError) as exc:
-            raise ValueError("每次战略新闻条数无效") from exc
+        except (TypeError, ValueError):
+            news_item_limit = 0
         if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
-            raise ValueError("每次战略新闻条数无效")
+            news_item_limit = 10
+            adjustments.append("未选择有效新闻条数，已按每次10条保存。")
         normalized_categories = normalize_news_categories(
-            DEFAULT_NEWS_CATEGORIES if news_categories is None else news_categories,
-            default_all=False,
-        )
+            DEFAULT_NEWS_CATEGORIES if news_categories is None else news_categories, default_all=False)
         if "news" in normalized and not normalized_categories:
-            raise ValueError("至少选择一个战略新闻兴趣板块")
-        if "news" in normalized and len(normalized_categories) > MAX_NEWS_CATEGORIES:
-            raise ValueError("战略新闻兴趣板块最多选择4个，请取消多余选项后保存")
+            normalized_categories = list(DEFAULT_NEWS_CATEGORIES)
+            adjustments.append("未选择有效兴趣板块，已使用默认4个板块。")
+        if len(normalized_categories) > MAX_NEWS_CATEGORIES:
+            normalized_categories = _reduce_legacy_news_categories(normalized_categories, seed=selection_seed)
+            adjustments.append("兴趣超过4个，已随机保留4个（已选竞对动态优先保留）；后续按下方生效板块推送。")
         categories_json = json.dumps(normalized_categories, ensure_ascii=False, separators=(",", ":"))
         delivery_times_supplied = news_delivery_times is not None
-        normalized_delivery_times = (
-            _validated_news_delivery_times(news_delivery_times)
-            if delivery_times_supplied
-            else list(NEWS_DELIVERY_TIMES_DEFAULT)
-        )
+        normalized_delivery_times = list(NEWS_DELIVERY_TIMES_DEFAULT)
+        if delivery_times_supplied:
+            raw_times = news_delivery_times if isinstance(news_delivery_times, (list, tuple)) else str(news_delivery_times).split(",")
+            for index, (label, minimum) in enumerate((("早间", "08:00"), ("下午", "14:00"))):
+                raw = str(raw_times[index] or "").strip() if index < len(raw_times) else ""
+                if not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw):
+                    adjustments.append(f"{label}时间无效，已使用{normalized_delivery_times[index]}。")
+                else:
+                    normalized_delivery_times[index] = max(raw, minimum)
+                    if raw < minimum:
+                        adjustments.append(f"{label}时间{raw}早于下限，已调整为{minimum}（香港时间）。")
+            if normalized_delivery_times[0] >= normalized_delivery_times[1]:
+                normalized_delivery_times = list(NEWS_DELIVERY_TIMES_DEFAULT)
+                adjustments.append("两次时间顺序不合适，已调整为08:00 / 18:30（香港时间）。")
         delivery_times_json = json.dumps(normalized_delivery_times, separators=(",", ":"))
         now = _now_hkt()
         with closing(self._connect()) as db, db:
@@ -1230,6 +1246,7 @@ class SubscriptionService:
                     (open_id, service, int(service in normalized), now),
                 )
         return {
+            "adjustments": adjustments,
             "open_id": open_id,
             "display_name": display_name,
             "services": normalized,
@@ -1360,6 +1377,45 @@ class SubscriptionService:
         return {"status": status, "source_profile": profile, "open_id": identity["open_id"],
                 "confirmation_message_id": sent, "preserve_source_card": True}
 
+    def subscription_validation_feedback(self, event: dict[str, Any], error: ValueError) -> dict[str, Any] | None:
+        """Acknowledge a rejected controlled form without changing subscriptions."""
+        if event.get("type") != "card.action.trigger" or event.get("action_tag") != "button":
+            return None
+        try:
+            form = json.loads(str(event.get("form_value") or "{}"))
+        except (ValueError, TypeError):
+            return None
+        if not isinstance(form, dict) or "services" not in form:
+            return None
+        open_id, message_id, chat_id, event_id = (
+            str(event.get(key) or "") for key in ("operator_id", "message_id", "chat_id", "event_id")
+        )
+        if not (OPEN_ID_RE.fullmatch(open_id) and MESSAGE_ID_RE.fullmatch(message_id)
+                and CHAT_ID_RE.fullmatch(chat_id) and event_id):
+            return None
+        with closing(self._connect()) as db:
+            origin = db.execute("SELECT * FROM subscription_entry_cards WHERE message_id=? AND chat_id=?",
+                                (message_id, chat_id)).fetchone()
+        if origin is None or (origin["target_type"] == "user" and origin["target_id"] != open_id):
+            return None
+        profile = str(origin["source_profile"] or self.entry_profile)
+        reason = str(error)[:300]
+        now = _now_hkt()
+        with closing(self._connect()) as db, db:
+            db.execute("""UPDATE subscription_invitations SET status='needs_correction', last_error=?,
+                       responded_at=?, updated_at=? WHERE message_id=? AND callback_open_id=?""",
+                       (reason, now, now, message_id, open_id))
+        card = {"schema": "2.0", "header": {"template": "orange", "title": {
+            "tag": "plain_text", "content": "订阅未保存，请修改后重试"}}, "body": {"elements": [
+                {"tag": "div", "text": {"tag": "plain_text", "content": reason}},
+                {"tag": "markdown", "content": "请回到刚才的订阅表单调整选项，再点击**确认订阅**。本次未改变已有订阅；保存成功后会收到订阅成功卡片。"},
+            ]}}
+        sent = self._send_interactive_card(open_id, card, profile=profile,
+            idempotency_key="subreject-" + hashlib.sha256(event_id.encode()).hexdigest()[:30])
+        self._verify_message(sent, profile=profile)
+        return {"status": "subscription_rejected", "source_profile": profile, "open_id": open_id,
+                "error": reason, "confirmation_message_id": sent, "preserve_source_card": True}
+
     def handle_card_event(self, event: dict[str, Any]) -> dict[str, Any] | None:
         if str(event.get("type") or "") != "card.action.trigger" or str(event.get("action_tag") or "") != "button":
             return None
@@ -1401,36 +1457,21 @@ class SubscriptionService:
                 DEFAULT_NEWS_CATEGORIES if selected_categories is None else selected_categories,
                 default_all=False,
             )
-            if "news" in services and not news_categories:
-                raise ValueError("请至少选择一个感兴趣的战略新闻板块")
-            if "news" in services and len(news_categories) > MAX_NEWS_CATEGORIES:
-                raise ValueError("战略新闻兴趣板块最多选择4个，请取消多余选项后提交")
             delivery_plan = _card_form_scalar(form.get("delivery_plan"))
             if delivery_plan:
                 plan_match = re.fullmatch(r"(immediate|daily|weekly|once_daily|twice_daily)_(pdf_audio|pdf|audio)", delivery_plan)
-                if not plan_match:
-                    raise ValueError("请选择有效的接收方式与频率")
-                frequency, report_mode = plan_match.groups()
+                frequency, report_mode = plan_match.groups() if plan_match else ("", "")
                 frequency = _normalize_news_frequency(frequency)
             else:
                 frequency = _normalize_news_frequency(
                     _card_form_scalar(form.get("news_frequency") or form.get("frequency"))
                 )
                 report_mode = _card_form_scalar(form.get("report_mode")) or "pdf"
-            try:
-                news_item_limit = int(_card_form_scalar(form.get("news_item_limit")) or 10)
-            except ValueError as exc:
-                raise ValueError("请选择有效的每次战略新闻条数") from exc
-            if frequency not in VALID_FREQUENCIES:
-                raise ValueError("请选择有效的接收频率")
-            if report_mode not in VALID_REPORT_MODES:
-                raise ValueError("请选择有效的报告接收形式")
-            if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
-                raise ValueError("请选择有效的每次战略新闻条数")
-            news_delivery_times = _validated_news_delivery_times([
-                _card_time_scalar(form.get("news_delivery_time_morning")) or NEWS_DELIVERY_TIMES_DEFAULT[0],
-                _card_time_scalar(form.get("news_delivery_time_afternoon")) or NEWS_DELIVERY_TIMES_DEFAULT[1],
-            ])
+            news_item_limit = _card_form_scalar(form.get("news_item_limit")) or 10
+            news_delivery_times = [
+                _card_time_scalar(form.get("news_delivery_time_morning")) if "news_delivery_time_morning" in form else NEWS_DELIVERY_TIMES_DEFAULT[0],
+                _card_time_scalar(form.get("news_delivery_time_afternoon")) if "news_delivery_time_afternoon" in form else NEWS_DELIVERY_TIMES_DEFAULT[1],
+            ]
         open_id = str(event.get("operator_id") or "")
         chat_id = str(event.get("chat_id") or "")
         message_id = str(event.get("message_id") or "")
@@ -1478,7 +1519,7 @@ class SubscriptionService:
                     return
                 updated = db.execute(
                     """UPDATE subscription_invitations
-                       SET status=?, responded_at=?, updated_at=?
+                       SET status=?, responded_at=?, updated_at=?, last_error=''
                        WHERE message_id=? AND callback_open_id=?""",
                     (status, now, now, message_id, identity["callback_open_id"]),
                 )
@@ -1534,6 +1575,7 @@ class SubscriptionService:
             news_item_limit=news_item_limit,
             news_categories=news_categories,
             news_delivery_times=news_delivery_times,
+            selection_seed=event_id,
         )
         # A person's latest submission is their restore point; admin edits never replace it.
         with closing(self._connect()) as db, db:
@@ -1567,6 +1609,7 @@ class SubscriptionService:
                 category_labels=category_labels,
                 news_item_limit=saved["news_item_limit"],
                 news_delivery_times=saved["news_delivery_times"],
+                adjustments=saved["adjustments"],
             ),
             idempotency_key=f"suback-{event_id}"[:50],
             profile=source_profile,

@@ -35,11 +35,14 @@ class InterestSelectionTests(unittest.TestCase):
         rows=[article('comp','竞对动态',20),article('chosen','行业动态',8)]
         self.assertEqual(filter_news_by_categories(rows,['行业动态'],limit=1)[0]['title'],'chosen')
 
-    def test_fifth_category_rejected_without_persisting(self):
+    def test_fifth_category_is_reduced_and_persisted(self):
         with tempfile.TemporaryDirectory() as directory:
             service=SubscriptionService(runtime_root=Path(directory))
-            with self.assertRaisesRegex(ValueError,'最多选择4个'):
-                service.save_subscriptions(open_id='ou_test123',display_name='测试',services=['news'],news_categories=list(NEWS_CATEGORY_LABELS)[:5])
+            saved = service.save_subscriptions(open_id='ou_test123',display_name='测试',services=['news'],news_categories=list(NEWS_CATEGORY_LABELS)[:5])
+            self.assertEqual(len(saved['news_categories']), 4)
+            self.assertIn('竞对动态', saved['news_categories'])
+            self.assertTrue(saved['adjustments'])
+            self.assertEqual(service.list_summary()['subscribers'][0]['news_categories'], saved['news_categories'])
 
     def test_overview_only_lead_bold_and_competitor_shown_first(self):
         card=strategic_news_card(title='测试',body=NEWS_DIGEST_PREFIX+json.dumps({'overview':'1. 供给变化：正文保持普通字重。','items':[article('policy','政策监管'),article('comp','竞对动态')]}))

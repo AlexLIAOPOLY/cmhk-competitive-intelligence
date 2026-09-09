@@ -778,9 +778,14 @@ class CardActionHandler:
     def handle_event(self, event: dict[str, Any]) -> dict[str, Any]:
         event_id = str(event.get("event_id") or "")
         processed = self.state.setdefault("processed_events", {})
-        if isinstance(processed.get(event_id), dict) and processed[event_id].get("status") in {"completed", "subscription_saved", "subscription_paused", "news_preferences_sent", "news_unsubscribe_confirmation_sent", "news_unsubscribed"}:
+        if isinstance(processed.get(event_id), dict) and processed[event_id].get("status") in {"completed", "subscription_saved", "subscription_paused", "subscription_rejected", "news_preferences_sent", "news_unsubscribe_confirmation_sent", "news_unsubscribed"}:
             return dict(processed[event_id])
-        subscription_result = self.subscription_service.handle_card_event(event)
+        try:
+            subscription_result = self.subscription_service.handle_card_event(event)
+        except ValueError as exc:
+            subscription_result = self.subscription_service.subscription_validation_feedback(event, exc)
+            if subscription_result is None:
+                raise
         if subscription_result is not None:
             source_profile = str(subscription_result.pop("source_profile", "") or "")
             status_card = None if subscription_result.get("preserve_source_card") else self._subscription_status_card(event, subscription_result)
