@@ -85,7 +85,7 @@
   function newsCategoryChecks(selected = []) {
     const categories = state.data?.news_categories || [];
     const selectedSet = new Set(selected || []);
-    return categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
+    return `<div class="muted" data-news-interest-hint>${selectedSet.size > 4 ? "当前超过4个，请重新选择" : "最多选择4个；竞对动态优先，所选不足才补充其他板块"}</div>` + categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
   }
 
   function conditionalSetting(kind, enabled, content, emptyLabel) {
@@ -985,6 +985,7 @@
       const services = Array.from(row.querySelectorAll('.service-check input[type="checkbox"]:checked')).map((input) => input.value);
       const newsCategories = Array.from(row.querySelectorAll('[data-news-category]:checked')).map((input) => input.value);
       if (services.includes("news") && !newsCategories.length) { state.notice = "订阅战略新闻时，请至少选择一个兴趣板块。"; state.noticeKind = "error"; render(); return; }
+      if (services.includes("news") && newsCategories.length > 4) { state.notice = "战略新闻兴趣板块最多选择4个，请取消多余选项。"; state.noticeKind = "error"; render(); return; }
       try { await post({ action: "update", openId: row.dataset.subscriberRow, services, newsCategories, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
@@ -1057,6 +1058,12 @@
     }
     const row = event.target.closest("[data-subscriber-row]");
     if (row) {
+      if (event.target.matches('[data-news-category]') && event.target.checked && row.querySelectorAll('[data-news-category]:checked').length > 4) {
+        event.target.checked = false;
+        const hint = row.querySelector('[data-news-interest-hint]');
+        if (hint) hint.textContent = "最多选择4个，请先取消其他板块。";
+        return;
+      }
       const services = Array.from(row.querySelectorAll('.service-check input:checked'), input => input.value);
       syncRowDependentSettings(row, services);
       const draft = {

@@ -46,6 +46,8 @@ NEWS_CATEGORY_LABELS = {
     "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观与国际",
 }
 VALID_NEWS_CATEGORIES = frozenset(NEWS_CATEGORY_LABELS)
+MAX_NEWS_CATEGORIES = 4
+DEFAULT_NEWS_CATEGORIES = ("公司动态", "竞对动态", "政策监管", "市场/产品类")
 LEGACY_FREQUENCY_MAP = {
     "immediate": "twice_daily",
     "daily": "once_daily",
@@ -120,21 +122,50 @@ def filter_news_by_categories(
     *,
     limit: int | None = None,
 ) -> list[dict[str, Any]]:
-    """Return the globally newest items matching one recipient's interest profile."""
-    normalized = normalize_news_categories(categories)
-    selected = set(normalized)
-    ordered = sorted(
-        (item for item in items if isinstance(item, dict)),
-        key=_news_sort_timestamp,
-        reverse=True,
-    )
-    # The legacy/all profile deliberately retains an occasional historical
-    # uncategorized row so existing subscribers do not lose content on upgrade.
-    if selected != VALID_NEWS_CATEGORIES:
-        ordered = [item for item in ordered if str(item.get("category") or "").strip() in selected]
+    """Cover preferred sections before filling gaps; competitor leads each round.
+
+    The input is the already reviewed news pool. Within each section, prefer
+    fresh reporting and avoid repeating an identical URL/title across sections.
+    """
+    selected = set(normalize_news_categories(categories))
+    ordered = sorted((item for item in items if isinstance(item, dict)),
+                     key=_news_sort_timestamp, reverse=True)
+    seen = set()
+    unique = []
+    for item in ordered:
+        identity = str(item.get("news_id") or item.get("source_url") or item.get("url") or item.get("title") or "").strip()
+        if identity and identity in seen:
+            continue
+        if identity:
+            seen.add(identity)
+        unique.append(item)
+    preferred = [item for item in unique if str(item.get("category") or "").strip() in selected]
     if limit is None:
-        return ordered
-    return ordered[:max(0, int(limit))]
+        return preferred
+    count = max(0, int(limit))
+    buckets: dict[str, list[dict[str, Any]]] = {}
+    for item in preferred:
+        buckets.setdefault(str(item.get("category") or "").strip(), []).append(item)
+    # Section order follows its freshest reviewed event, with subscribed
+    # competitor news guaranteed the first available slot, not the entire digest.
+    section_order = list(buckets)
+    if "竞对动态" in section_order:
+        section_order.remove("竞对动态")
+        section_order.insert(0, "竞对动态")
+    # Legacy profiles may still contain seven choices until resubmission.
+    # Preserve their saved preferences, but cover at most four sections per card.
+    section_order = section_order[:MAX_NEWS_CATEGORIES]
+    selected = set(section_order)
+    buckets = {section: buckets[section] for section in section_order}
+    chosen = []
+    while len(chosen) < count and any(buckets.values()):
+        for section in section_order:
+            if buckets[section] and len(chosen) < count:
+                chosen.append(buckets[section].pop(0))
+    if len(chosen) < count:
+        chosen.extend(item for item in unique if str(item.get("category") or "").strip() not in selected)
+    return [{**item, "subscription_preferred": str(item.get("category") or "").strip() in selected}
+            for item in chosen[:count]]
 
 
 def news_category_summary(categories: Any) -> str:
@@ -273,18 +304,19 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
                             ],
                         },
-                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（可多选）**"},
+                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（最多4个）**"},
                         {
                             "tag": "multi_select_static",
                             "name": "news_categories",
                             "required": True,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "选择一个或多个兴趣板块"},
+                            "placeholder": {"tag": "plain_text", "content": "请选择1至4个兴趣板块"},
                             "options": [
                                 {"text": {"tag": "plain_text", "content": label}, "value": category}
                                 for category, label in NEWS_CATEGORY_LABELS.items()
                             ],
                         },
+                        {"tag": "markdown", "content": "<font color='grey'>优先覆盖所选板块；订阅竞对动态时优先安排。所选板块新闻不足，才从其他板块补足。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**每次战略新闻条数**"},
                         {
                             "tag": "select_static",
@@ -293,7 +325,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                             "width": "fill",
                             "placeholder": {"tag": "plain_text", "content": "选择每次接收条数"},
                             "options": [
-                                {"text": {"tag": "plain_text", "content": f"最新 {count} 条"}, "value": str(count)}
+                                {"text": {"tag": "plain_text", "content": f"精选 {count} 条"}, "value": str(count)}
                                 for count in sorted(VALID_NEWS_ITEM_LIMITS)
                             ],
                         },
@@ -503,6 +535,8 @@ def strategic_news_card(
             if len(points) > 4:
                 points = points[:3] + ["".join(points[3:])]
             overview = "\n".join(f"{number}. {point}" for number, point in enumerate(points, 1))
+        # Emphasize only the short lead theme, never the whole numbered paragraph.
+        overview = re.sub(r"(?m)^(\d+\.\s+)([^*：\n]{1,24})：", r"\1**\2**：", overview)
         elements.append({
             "tag": "markdown", "content": "**今日核心看点**", "text_size": "heading-2",
         })
@@ -512,6 +546,10 @@ def strategic_news_card(
             grouped.setdefault(str(item.get("category") or "战略动态").strip() or "战略动态", []).append(item)
         ordered_categories = [category for category in NEWS_CATEGORY_LABELS if category in grouped]
         ordered_categories.extend(category for category in grouped if category not in NEWS_CATEGORY_LABELS)
+        if "竞对动态" in ordered_categories and any(item.get("subscription_preferred", True) for item in grouped["竞对动态"]):
+            ordered_categories.remove("竞对动态")
+            ordered_categories.insert(0, "竞对动态")
+        ordered_categories.sort(key=lambda category: not any(item.get("subscription_preferred", True) for item in grouped[category]))
         colors = {"公司动态": "blue", "竞对动态": "blue", "政策监管": "violet",
                   "行业动态": "blue", "市场/产品类": "purple", "基础设施/网络/技术类": "violet"}
         for group_category in ordered_categories:
@@ -541,6 +579,12 @@ def strategic_news_card(
                 source_link = f"[{source}]({url})" if url.startswith(("http://", "https://")) else source
                 group_elements.append({"tag": "markdown", "text_size": "notation",
                                        "content": f"{source_link} · <font color='grey'>{published_text}</font>"})
+                for evidence in item.get("supporting_sources", [])[:2]:
+                    evidence_url = str(evidence.get("url") or "")
+                    if evidence_url.startswith(("https://", "http://")):
+                        label = str(evidence.get("label") or "补充来源")
+                        group_elements.append({"tag": "markdown", "text_size": "notation",
+                                               "content": f"[{label}]({evidence_url})"})
             elements.append({"tag": "column_set", "flex_mode": "none", "columns": [{
                 "tag": "column", "width": "weighted", "weight": 1,
                 "background_style": f"{color}-50", "padding": "12px", "vertical_spacing": "8px",
@@ -1000,11 +1044,13 @@ class SubscriptionService:
         if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
             raise ValueError("每次战略新闻条数无效")
         normalized_categories = normalize_news_categories(
-            news_categories,
-            default_all=news_categories is None,
+            DEFAULT_NEWS_CATEGORIES if news_categories is None else news_categories,
+            default_all=False,
         )
         if "news" in normalized and not normalized_categories:
             raise ValueError("至少选择一个战略新闻兴趣板块")
+        if "news" in normalized and len(normalized_categories) > MAX_NEWS_CATEGORIES:
+            raise ValueError("战略新闻兴趣板块最多选择4个，请取消多余选项后保存")
         categories_json = json.dumps(normalized_categories, ensure_ascii=False, separators=(",", ":"))
         now = _now_hkt()
         with closing(self._connect()) as db, db:
@@ -1077,11 +1123,13 @@ class SubscriptionService:
             if isinstance(selected_categories, str):
                 selected_categories = [item for item in selected_categories.split(",") if item]
             news_categories = normalize_news_categories(
-                selected_categories,
-                default_all=selected_categories is None,
+                DEFAULT_NEWS_CATEGORIES if selected_categories is None else selected_categories,
+                default_all=False,
             )
             if "news" in services and not news_categories:
                 raise ValueError("请至少选择一个感兴趣的战略新闻板块")
+            if "news" in services and len(news_categories) > MAX_NEWS_CATEGORIES:
+                raise ValueError("战略新闻兴趣板块最多选择4个，请取消多余选项后提交")
             delivery_plan = _card_form_scalar(form.get("delivery_plan"))
             if delivery_plan:
                 plan_match = re.fullmatch(r"(immediate|daily|weekly|once_daily|twice_daily)_(pdf_audio|pdf|audio)", delivery_plan)

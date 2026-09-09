@@ -183,7 +183,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**", "**感兴趣的战略新闻板块（可多选）**", "**每次战略新闻条数**"],
+            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**", "**感兴趣的战略新闻板块（最多4个）**", "**每次战略新闻条数**"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
@@ -1045,14 +1045,14 @@ class SubscriptionServiceTests(unittest.TestCase):
             )
 
         delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
-        self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
+        self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对", "最新行业"])
         self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略下午茶订阅｜2099年01月04日")
         self.assertEqual(result["results"][0]["news_categories"], ["竞对动态", "政策监管"])
 
-    def test_existing_subscribers_migrate_to_all_news_categories(self):
+    def test_new_subscribers_default_to_four_news_categories(self):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])
         summary = self.service.list_summary()
-        self.assertEqual(len(summary["subscribers"][0]["news_categories"]), 7)
+        self.assertEqual(len(summary["subscribers"][0]["news_categories"]), 4)
         self.assertEqual(len(summary["news_categories"]), 7)
 
     def test_news_subscription_rejects_empty_interest_categories(self):
