@@ -71,6 +71,10 @@ class FakeLark:
 
 class SubscriptionServiceTests(unittest.TestCase):
     def setUp(self):
+        editor = mock.patch("cmhk.services.news_digest_editor.prepare_digest",
+                            side_effect=lambda items, root: {"items": items, "overview": "测试新闻综述。"})
+        editor.start()
+        self.addCleanup(editor.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
         (self.root / "config").mkdir()
@@ -575,9 +579,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(send_call[send_call.index("--profile") + 1], "org_test")
         self.assertEqual(send_call[send_call.index("--user-id") + 1], "ou_delivery123")
         card = json.loads(send_call[send_call.index("--content") + 1])
-        self.assertNotIn("schema", card)
+        self.assertEqual(card["schema"], "2.0")
         self.assertEqual(card["header"]["title"]["content"], "真实新闻")
-        self.assertIn("经审核的新闻正文", card["elements"][0]["content"])
+        self.assertIn("经审核的新闻正文", card["body"]["elements"][0]["content"])
 
     def test_delivery_summary_returns_complete_history_by_default(self):
         with closing(self.service._connect()) as db, db:
@@ -609,31 +613,40 @@ class SubscriptionServiceTests(unittest.TestCase):
             image_key="img_v3_morning_tea_v2",
         )
         self.assertEqual(card["header"]["subtitle"]["content"], "截至 2026-08-19 10:00 · 香港时间")
-        self.assertEqual(card["elements"][0]["img_key"], "img_v3_morning_tea_v2")
-        text = "\n".join(str(item.get("content") or "") for item in card["elements"])
-        self.assertIn("**今日关键信号**", text)
-        self.assertIn("**▌ 竞对动态 · 6 条**", text)
-        self.assertIn("**01｜竞对动态 · 香港本地**", text)
-        self.assertIn("**06｜竞对动态 · 香港本地**", text)
+        self.assertEqual(card["schema"], "2.0")
+        self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_morning_tea_v2")
+        text = json.dumps(card, ensure_ascii=False)
+        self.assertIn("今日核心看点", text)
+        self.assertNotIn("今日关键信号", text)
+        self.assertNotIn("重点涉及", text)
+        self.assertNotIn("01｜", text)
+        self.assertNotIn("06｜", text)
+        self.assertIn("新闻 6", text)
         self.assertNotIn("###", text)
-        self.assertNotIn("已完整列出", json.dumps(card, ensure_ascii=False))
+        self.assertIn("新闻简介：", text)
+        self.assertIn("AI解读：", text)
+        group = next(e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set")
+        self.assertEqual(sum(e["tag"] == "hr" for e in group["elements"]), 5)
+        self.assertEqual(sum(e.get("text_size") == "heading-3" for e in group["elements"]), 6)
+        overview = card["body"]["elements"][2]["content"]
+        self.assertTrue(overview.startswith("1. "))
+        self.assertIn("\n2. ", overview)
 
-    def test_strategic_news_card_separates_each_category_on_both_sides(self):
+    def test_strategic_news_card_groups_categories_with_distinct_backgrounds(self):
         card = strategic_news_card(
             title="CMHK战略下午茶订阅｜2026年08月22日",
             body=encode_strategic_news_digest([
                 {"title": "竞对新闻", "category": "竞对动态", "region": "香港本地"},
                 {"title": "政策新闻", "category": "政策监管", "region": "香港本地"},
+                {"title": "产品新闻", "category": "市场/产品类", "region": "国际/行业"},
             ]),
         )
-        category_indexes = [
-            index for index, element in enumerate(card["elements"])
-            if element.get("tag") == "markdown" and "**▌ " in str(element.get("content") or "")
-        ]
-        self.assertEqual(len(category_indexes), 2)
-        for index in category_indexes:
-            self.assertEqual(card["elements"][index - 1]["tag"], "hr")
-            self.assertEqual(card["elements"][index + 1]["tag"], "hr")
+        groups = [e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set"]
+        self.assertEqual(len(groups), 3)
+        self.assertEqual(len({g["background_style"] for g in groups}), 3)
+        self.assertIn("市场与产品", json.dumps(groups, ensure_ascii=False))
+        self.assertNotIn("国际/行业", json.dumps(groups, ensure_ascii=False))
+        self.assertNotIn('"tag": "hr"', json.dumps(card))
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
         from cmhk.reporting.pdf_preview import pdf_preview_path
@@ -953,7 +966,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(len(sends), 1)
         card = json.loads(sends[0][sends[0].index("--content") + 1])
         self.assertEqual(card["header"]["title"]["content"], "CMHK战略下午茶订阅｜2099年01月01日")
-        self.assertEqual(card["elements"][0]["img_key"], "img_v3_afternoon_tea_v2")
+        self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_afternoon_tea_v2")
 
     def test_twice_daily_dispatch_honors_legacy_exact_slot_claim(self):
         import sqlite3

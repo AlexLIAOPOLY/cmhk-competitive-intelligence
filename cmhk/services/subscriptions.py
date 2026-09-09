@@ -483,7 +483,7 @@ def strategic_news_card(
             "tag": "img",
             "img_key": image_key,
             "alt": {"tag": "plain_text", "content": f"{clean_title}配图"},
-            "mode": "fit_horizontal",
+            "scale_type": "fit_horizontal",
             "preview": False,
         })
     if str(body).startswith(NEWS_DIGEST_PREFIX):
@@ -491,61 +491,75 @@ def strategic_news_card(
             parsed = json.loads(str(body)[len(NEWS_DIGEST_PREFIX):])
         except (ValueError, TypeError, json.JSONDecodeError):
             parsed = []
-        items = [item for item in parsed if isinstance(item, dict)] if isinstance(parsed, list) else []
-        top_titles = "；".join(str(item.get("title") or "").strip()[:42] for item in items[:3] if item.get("title"))
+        digest = parsed if isinstance(parsed, dict) else {}
+        raw_items = digest.get("items", []) if digest else parsed
+        items = [item for item in raw_items if isinstance(item, dict)] if isinstance(raw_items, list) else []
+        overview = str(digest.get("overview") or "").strip()
+        if not overview:
+            overview = " ".join(str(item.get("summary") or "").strip().rstrip("。") + "。"
+                                for item in items[:3] if item.get("summary"))
+        if overview and not re.match(r"1\.\s", overview):
+            points = [part.strip() + "。" for part in overview.split("。") if part.strip()]
+            if len(points) > 4:
+                points = points[:3] + ["".join(points[3:])]
+            overview = "\n".join(f"{number}. {point}" for number, point in enumerate(points, 1))
         elements.append({
-            "tag": "markdown",
-            "content": f"**今日关键信号**\n重点涉及：{top_titles}。" if top_titles else "**本轮结果**  暂无可展示新闻。",
+            "tag": "markdown", "content": "**今日核心看点**", "text_size": "heading-2",
         })
+        elements.append({"tag": "markdown", "content": overview or "暂无可展示的新闻综述。"})
         grouped: dict[str, list[dict[str, Any]]] = {}
         for item in items:
             grouped.setdefault(str(item.get("category") or "战略动态").strip() or "战略动态", []).append(item)
         ordered_categories = [category for category in NEWS_CATEGORY_LABELS if category in grouped]
         ordered_categories.extend(category for category in grouped if category not in NEWS_CATEGORY_LABELS)
-        index = 0
+        colors = {"公司动态": "blue", "竞对动态": "blue", "政策监管": "violet",
+                  "行业动态": "blue", "市场/产品类": "purple", "基础设施/网络/技术类": "violet"}
         for group_category in ordered_categories:
             category_items = grouped[group_category]
             category_label = NEWS_CATEGORY_LABELS.get(group_category, group_category)
-            elements.extend([
-                {"tag": "hr"},
-                {
-                    "tag": "markdown",
-                    "content": f"<font color='blue'>**▌ {category_label} · {len(category_items)} 条**</font>",
-                },
-            ])
-            for item in category_items:
-                index += 1
+            color = colors.get(group_category, "purple")
+            group_elements = [{"tag": "markdown", "content": f"<font color='{color}'>**{category_label} · {len(category_items)} 条**</font>"}]
+            for item_index, item in enumerate(category_items):
+                if item_index:
+                    group_elements.append({"tag": "hr"})
                 item_title = re.sub(r"\s+", " ", str(item.get("title") or "未命名动态")).strip()[:180]
-                summary = str(item.get("summary") or "").strip()[:260]
-                category = str(item.get("category") or "战略动态").strip()[:80]
-                region = str(item.get("region") or "未分类").strip()[:40]
+                summary = str(item.get("digest_summary") or item.get("summary") or "").strip()[:500]
                 source = str(item.get("source") or "来源待核").strip()[:100]
                 published = str(item.get("published_at") or item.get("source_date") or "").strip()
                 try:
-                    published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone().strftime("%m月%d日 %H:%M")
+                    published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone(HKT).strftime("%m月%d日 %H:%M")
                 except ValueError:
                     published_text = published[:16] or "时间待核"
                 url = str(item.get("source_url") or item.get("url") or "").strip()
-                linked_title = f"[**{item_title}**]({url})" if url.startswith(("http://", "https://")) else f"**{item_title}**"
-                lines = [f"**{index:02d}｜{category} · {region}**", linked_title]
-                if summary:
-                    lines.append(summary)
-                lines.append(f"**业务影响：** {_news_business_impact(item)}")
-                lines.append(f"<font color='grey'>{source} · {published_text}</font>")
-                elements.extend([{"tag": "hr"}, {"tag": "markdown", "content": "\n".join(lines)}])
+                group_elements.append({"tag": "markdown", "text_size": "heading-3",
+                                       "content": f"<font color='blue'>**{item_title}**</font>"})
+                group_elements.append({"tag": "markdown",
+                                       "content": f"**新闻简介：** {summary or '现有材料暂无详细简介。'}"})
+                interpretation = str(item.get("digest_analysis") or item.get("inclusion_reason") or "").strip()
+                group_elements.append({"tag": "markdown",
+                                       "content": f"**AI解读：** {interpretation[:400] or '现有资料不足以判断具体业务影响。'}"})
+                source_link = f"[{source}]({url})" if url.startswith(("http://", "https://")) else source
+                group_elements.append({"tag": "markdown", "text_size": "notation",
+                                       "content": f"{source_link} · <font color='grey'>{published_text}</font>"})
+            elements.append({"tag": "column_set", "flex_mode": "none", "columns": [{
+                "tag": "column", "width": "weighted", "weight": 1,
+                "background_style": f"{color}-50", "padding": "12px", "vertical_spacing": "8px",
+                "elements": group_elements,
+            }]})
     else:
         clean_body = str(body or "").strip()
         if len(clean_body) > 12000:
             clean_body = clean_body[:11997].rstrip() + "…"
         elements.append({"tag": "markdown", "content": clean_body})
     return {
-        "config": {"wide_screen_mode": True, "enable_forward": True},
+        "schema": "2.0",
+        "config": {"width_mode": "default", "enable_forward": True},
         "header": {
             "template": "blue",
             "title": {"tag": "plain_text", "content": clean_title},
             "subtitle": {"tag": "plain_text", "content": f"截至 {date_label} · 香港时间"},
         },
-        "elements": elements,
+        "body": {"direction": "vertical", "padding": "12px", "vertical_spacing": "12px", "elements": elements},
     }
 
 
@@ -2826,6 +2840,10 @@ class SubscriptionService:
                 news_image_keys = subscriptions.get("news_image_keys") if isinstance(subscriptions.get("news_image_keys"), dict) else {}
                 period_key = "afternoon" if "下午茶" in title else "morning" if "早茶" in title else ""
                 image_key = str(news_image_keys.get(period_key) or "") if period_key else ""
+                if body.startswith(NEWS_DIGEST_PREFIX):
+                    from cmhk.services.news_digest_editor import prepare_digest
+                    prepared = prepare_digest(json.loads(body[len(NEWS_DIGEST_PREFIX):]), self.runtime_root)
+                    body = NEWS_DIGEST_PREFIX + json.dumps(prepared, ensure_ascii=False)
                 message_ids.append(self._send_interactive_card(
                     open_id,
                     strategic_news_card(title=title, body=body, image_key=image_key),
