@@ -219,7 +219,7 @@ class CrawlRunReconciliationTests(unittest.TestCase):
             "worker_pid": 0,
         }
         with (
-            mock.patch.object(crawl_run_registry, "load_index", return_value=[record]),
+            mock.patch.object(crawl_run_registry, "load_run_history", return_value=[record]),
             mock.patch.object(
                 crawl_run_registry,
                 "_pid_alive",
@@ -234,6 +234,37 @@ class CrawlRunReconciliationTests(unittest.TestCase):
 
         self.assertEqual(updated, [])
         mark_interrupted.assert_not_called()
+
+    def test_interrupted_reconciliation_scans_authoritative_run_history(self) -> None:
+        stale_record = {
+            "crawl_run_id": "crawl-outside-lightweight-index",
+            "run_status": "running",
+            "backend_pid": 43210,
+            "worker_pid": 0,
+        }
+        finalized = {**stale_record, "run_status": "failed", "interrupted": True}
+        with (
+            mock.patch.object(
+                crawl_run_registry,
+                "load_run_history",
+                return_value=[stale_record],
+            ) as load_history,
+            mock.patch.object(crawl_run_registry, "_pid_alive", return_value=False),
+            mock.patch.object(
+                crawl_run_registry,
+                "mark_crawl_run_interrupted",
+                return_value=finalized,
+            ) as mark_interrupted,
+        ):
+            updated = crawl_run_registry.reconcile_interrupted_crawl_runs()
+
+        load_history.assert_called_once_with()
+        mark_interrupted.assert_called_once_with(
+            "crawl-outside-lightweight-index",
+            "后台服务已重新启动，原爬虫进程已不存在",
+            use_last_activity_time=True,
+        )
+        self.assertEqual(updated, [finalized])
 
     def test_run_cmd_retries_eof_without_enabling_proxy(self) -> None:
         failed = subprocess.CompletedProcess(

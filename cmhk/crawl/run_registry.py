@@ -611,7 +611,11 @@ def mark_crawl_run_interrupted(
 def reconcile_interrupted_crawl_runs() -> list[dict[str, Any]]:
     """Mark running records whose backend and worker processes are both gone."""
     updated: list[dict[str, Any]] = []
-    for item in reversed(load_index()):
+    # The lightweight index is capped, while the task log and /api/status can
+    # surface a much larger history.  Scan the authoritative per-run archive so
+    # an older orphan cannot remain ``running`` forever and keep the navigation
+    # activity indicator flashing after its processes have exited.
+    for item in reversed(load_run_history()):
         if not isinstance(item, dict) or item.get("run_status") != "running":
             continue
         backend_pid = int(item.get("backend_pid") or 0)
