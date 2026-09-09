@@ -83,10 +83,15 @@
     return [5, 10, 15, 20].map((count) => `<option value="${count}"${Number(selected) === count ? " selected" : ""}>${count} 条</option>`).join("");
   }
 
-  function newsCategoryChecks(selected = []) {
+  function newsCategoryChecks(selected = [], original = []) {
     const categories = state.data?.news_categories || [];
     const selectedSet = new Set(selected || []);
-    return `<div class="muted" data-news-interest-hint>超过4个自动随机保留4个（已选竞对优先保留）；未选使用默认4个</div>` + categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
+    const originalSet = new Set(original || []);
+    const adjusted = [...originalSet].some(key => !selectedSet.has(key));
+    return `<div class="muted" data-news-interest-hint>超过4个自动随机保留4个（已选竞对优先保留）；未选使用默认4个${adjusted ? '<span class="original-interest-legend">实色勾选：当前生效 · 浅色虚线：原选未生效</span>' : ''}</div>` + categories.map((item) => {
+      const wasSelected = originalSet.has(item.key);
+      return `<label class="news-interest-check${wasSelected ? ' original-choice' : ''}"${wasSelected ? ' title="原始选择；勾选表示当前生效，浅色虚线表示当前未生效"' : ''}><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span>${wasSelected ? '<small class="original-interest-tag">原选</small>' : ''}</label>`;
+    }).join("");
   }
 
   function conditionalSetting(kind, enabled, content, emptyLabel) {
@@ -169,7 +174,7 @@
       <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
       <td>${conditionalSetting("report", hasReport, `<select data-subscriber-report-mode${hasReport ? "" : " disabled"}>${reportModeOptions(item.report_mode)}</select>`, "未订阅报告")}</td>
-      <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div>`, "未订阅新闻")}</td>
+      <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories, item.original_news_categories)}</div>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-frequency${hasNews ? "" : " disabled"}>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-limit aria-label="每次新闻条数"${hasNews ? "" : " disabled"}>${newsItemLimitOptions(item.news_item_limit)}</select>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<div class="news-delivery-times" aria-label="${esc(item.display_name)}的个人期待收到信息时间"><input data-subscriber-news-time="0" type="time" title="香港时间，不早于08:00" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[0])}" aria-label="第一次期待收到时间"${hasNews ? "" : " disabled"}><input data-subscriber-news-time="1" type="time" title="香港时间，不早于14:00" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[1])}" aria-label="第二次期待收到时间"${hasNews ? "" : " disabled"}></div>`, "未订阅新闻")}</td>

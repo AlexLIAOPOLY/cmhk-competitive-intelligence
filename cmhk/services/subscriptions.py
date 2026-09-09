@@ -974,6 +974,10 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_item_limit INTEGER NOT NULL DEFAULT 10")
             if "news_categories" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_categories TEXT NOT NULL DEFAULT '[]'")
+            if "original_news_categories" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN original_news_categories TEXT NOT NULL DEFAULT '[]'")
+            if "original_news_categories_source" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN original_news_categories_source TEXT NOT NULL DEFAULT ''")
             if "news_delivery_times" not in columns:
                 db.execute(
                     "ALTER TABLE subscribers ADD COLUMN news_delivery_times TEXT NOT NULL DEFAULT '[\"08:00\",\"18:30\"]'"
@@ -992,6 +996,11 @@ class SubscriptionService:
             all_categories_json = json.dumps(list(NEWS_CATEGORY_LABELS), ensure_ascii=False, separators=(",", ":"))
             for row in db.execute("SELECT open_id, news_categories, default_preferences FROM subscribers").fetchall():
                 original_categories = normalize_news_categories(row["news_categories"])
+                if len(original_categories) > MAX_NEWS_CATEGORIES:
+                    db.execute("""UPDATE subscribers SET original_news_categories=?,
+                               original_news_categories_source='legacy_before_reduction'
+                               WHERE open_id=? AND original_news_categories_source=''""",
+                               (json.dumps(original_categories, ensure_ascii=False), row["open_id"]))
                 categories = _reduce_legacy_news_categories(original_categories)
                 defaults = json.loads(row["default_preferences"] or "{}")
                 original_defaults = normalize_news_categories(defaults.get("news_categories"))
@@ -1177,6 +1186,7 @@ class SubscriptionService:
         news_categories: Any = None,
         news_delivery_times: Any = None,
         selection_seed: str = "",
+        record_original_categories: bool = True,
     ) -> dict[str, Any]:
         adjustments: list[str] = []
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
@@ -1239,6 +1249,10 @@ class SubscriptionService:
                     int(delivery_times_supplied),
                 ),
             )
+            if record_original_categories and news_categories is not None:
+                db.execute("""UPDATE subscribers SET original_news_categories=?,
+                           original_news_categories_source='submitted' WHERE open_id=?""",
+                           (json.dumps(normalize_news_categories(news_categories, default_all=False), ensure_ascii=False), open_id))
             for service in VALID_SERVICES:
                 db.execute(
                     """INSERT INTO subscriptions(open_id, service, active, updated_at) VALUES(?, ?, ?, ?)
@@ -1621,7 +1635,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int | None = None) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.news_delivery_times, s.default_preferences,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.original_news_categories, s.original_news_categories_source, s.news_delivery_times, s.default_preferences,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -1709,6 +1723,7 @@ class SubscriptionService:
                 "services": services,
                 "default_preferences": default_preferences,
                 "news_categories": normalize_news_categories(row["news_categories"]),
+                "original_news_categories": normalize_news_categories(row["original_news_categories"], default_all=False),
                 "news_category_labels": [
                     NEWS_CATEGORY_LABELS[item]
                     for item in normalize_news_categories(row["news_categories"])
@@ -2876,6 +2891,7 @@ class SubscriptionService:
             frequency=frequency,
             report_mode=report_mode,
             news_item_limit=news_item_limit,
+            record_original_categories=False,
             news_categories=(
                 news_categories
                 if news_categories is not None
