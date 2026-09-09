@@ -332,7 +332,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                     "direction": "vertical",
                     "vertical_spacing": "8px",
                     "elements": [
-                        {"tag": "markdown", "content": "**订阅内容**"},
+                        {"tag": "markdown", "content": "**01 · 选择订阅内容**"},
                         {
                             "tag": "multi_select_static",
                             "name": "services",
@@ -345,6 +345,8 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "战略新闻"}, "value": "news"},
                             ],
                         },
+                        {"tag": "hr"},
+                        {"tag": "markdown", "content": "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>"},
                         {"tag": "markdown", "content": "**报告接收方式**"},
                         {
                             "tag": "select_static",
@@ -358,6 +360,21 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "仅语音"}, "value": "audio"},
                             ],
                         },
+                        {"tag": "hr"},
+                        {"tag": "markdown", "content": "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>"},
+                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（最多4个）**"},
+                        {
+                            "tag": "multi_select_static",
+                            "name": "news_categories",
+                            "required": True,
+                            "width": "fill",
+                            "placeholder": {"tag": "plain_text", "content": "请选择1至4个兴趣板块"},
+                            "options": [
+                                {"text": {"tag": "plain_text", "content": label}, "value": category}
+                                for category, label in NEWS_CATEGORY_LABELS.items()
+                            ],
+                        },
+                        {"tag": "markdown", "content": "<font color='grey'>优先覆盖所选板块；订阅竞对动态时优先安排。所选板块新闻不足，才从其他板块补足。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**战略新闻频率**"},
                         {
                             "tag": "select_static",
@@ -368,6 +385,18 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                             "options": [
                                 {"text": {"tag": "plain_text", "content": "每天两次"}, "value": "twice_daily"},
                                 {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
+                            ],
+                        },
+                        {"tag": "markdown", "content": "**每次战略新闻条数**"},
+                        {
+                            "tag": "select_static",
+                            "name": "news_item_limit",
+                            "required": True,
+                            "width": "fill",
+                            "placeholder": {"tag": "plain_text", "content": "选择每次接收条数"},
+                            "options": [
+                                {"text": {"tag": "plain_text", "content": f"精选 {count} 条"}, "value": str(count)}
+                                for count in sorted(VALID_NEWS_ITEM_LIMITS)
                             ],
                         },
                         {"tag": "markdown", "content": "**期待收到战略新闻的时间（香港）**"},
@@ -392,31 +421,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                             "content": "<font color='grey'>每天一次只使用第一个时间；每天两次使用两个时间。</font>",
                             "text_size": "notation",
                         },
-                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（最多4个）**"},
-                        {
-                            "tag": "multi_select_static",
-                            "name": "news_categories",
-                            "required": True,
-                            "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "请选择1至4个兴趣板块"},
-                            "options": [
-                                {"text": {"tag": "plain_text", "content": label}, "value": category}
-                                for category, label in NEWS_CATEGORY_LABELS.items()
-                            ],
-                        },
-                        {"tag": "markdown", "content": "<font color='grey'>优先覆盖所选板块；订阅竞对动态时优先安排。所选板块新闻不足，才从其他板块补足。</font>", "text_size": "notation"},
-                        {"tag": "markdown", "content": "**每次战略新闻条数**"},
-                        {
-                            "tag": "select_static",
-                            "name": "news_item_limit",
-                            "required": True,
-                            "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "选择每次接收条数"},
-                            "options": [
-                                {"text": {"tag": "plain_text", "content": f"精选 {count} 条"}, "value": str(count)}
-                                for count in sorted(VALID_NEWS_ITEM_LIMITS)
-                            ],
-                        },
+                        {"tag": "hr"},
                         {
                             "tag": "markdown",
                             "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日 05:00、13:00 扫描，个人默认 08:00、18:30 推送。只有对应爬虫完成审核后才会发送；每天一次仅接收当日首轮结果。</font>",
