@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-09T14:27:42+08:00",
+  "generated_at": "2026-09-09T14:32:49+08:00",
   "items": [
     {
       "id": "NEWS-E83ED0FBB8AA6A",
@@ -27,14 +27,6 @@
       "published_at": "2026-09-08T19:55:00+08:00"
     },
     {
-      "id": "NEWS-1864E29FE3970A",
-      "title": "平安数字银行伙3香港推开户及上台买机优惠",
-      "summary": "平安数字银行与3香港及3SUPREME合作推出开户及上台买机优惠。",
-      "category": "竞对动态",
-      "source_url": "https://news.google.com/rss/articles/CBMi0gNBVV95cUxQQ3FlVURKeHBMVkVJRkZqU3Jxa19uSXp6QS05QUtIci1XaGExaWQ4ZmNwakkzQkE0SHYwMEZHeU9VdE85VEhwVVotckFkVVFRcmg1eDAtbk9iMjZycWVJc2dTaFo2cHZPZ3hLemJVOTUzcV85LXNSOEdZc2pBdDN2SVhDMzVCVWpjRVF2ZUprWU9aNzFhY3J2Rmt3TlZqZEVQLUZmdUpKSFB1SVJlRnNON0l6N0NobEY2UXhVY0twLXp2akQ1NWRIdXVJSHhNcWNIQkx4MUpjd1ZCZnJSTURZMVZmQ1pXRC1QanJzNzdwb00tUUY2WWpwNmlBOW1YNVRvVkxLR3NQc3FTWXJmY3FkM3lFYnhMSE1QQmstRDFEODJPXzM0ZFh1aXZ2ZjVSSndKV3Y5UHhBZF94d2JrZ1ZiQmFEQngtelphbXRWRW44RVlBQ0dWMFY5X0QtTE1jcTJVR0I1WDhmMkdVdzZHRlRMd0JNS0t6V3F4YkFxM3oxZTk2QnNXNjJZUkJVV2lzVzlmV2hpM1J2YXd6TXFYOS1pVVdxOTc4MUtUeFVrcVZUUFUyeGF3b3o4cC0tMzlxZEd2dlVibTBxUnkxQi14SXg1S2FB?oc=5",
-      "published_at": "2026-09-08T17:24:16+08:00"
-    },
-    {
       "id": "NEWS-33B266E9B8B2B1",
       "title": "中国最高法院发布AI新规划定深度伪造与隐私红线",
       "summary": "中国最高法院发布新指南，为隐私泄露、色情内容、欺诈及消费者保护等AI相关问题提供更广泛法律框架。",
@@ -59,12 +51,20 @@
       "published_at": "2026-09-06T23:33:46+08:00"
     },
     {
-      "id": "NEWS-32DF2BE867CECB",
-      "title": "香港创科排名升至全球第五 超越台星印",
-      "summary": "香港创科实力排名跃升至全球第五，在亚洲领先并超越台湾、新加坡和印度。",
+      "id": "NEWS-D75852A0ED91A1",
+      "title": "李家超：香港人口需升至1000万，「扩容」政策如何平衡旺市与物价",
+      "summary": "李家超提出香港人口目标需升至1000万，并探讨扩容政策如何在促进市场繁荣的同时避免推高物价。",
+      "category": "政策监管",
+      "source_url": "https://news.google.com/rss/articles/CBMi2AJBVV95cUxNOXRlLUYzQXFkemI2X1p4YW90eWw5OXBzVFpjZlN3UDJGWmdHWUZpTWQ2cmZUZjZxeU1BY1VkVU56ZWdfdTNpVnk1NWlVemNHZ1V4MFR4bExsTmZSZnJWX2ZUY0dCUXNITlVpNzBLNnZ3NTMyS0Q4WGlZUE14bGRCQjhfWnFuNk0zQU9sRE9oNFg4aEVnZllhNDl2aXBfbW1DMEYtSGYxR3huemgtVFlGWGZvUVFFQ0h2QjJ1ZlZwSi1XYkRoQmxaR2NiR3lGSDdHcWo2VDJaYXFBdG9ZQmJWNWhhWkdHVzl3alhVRzFDbFJHQ2xDY1BZenJPWVNnV09oZ3pLLThMSFJOR0Jkb01DSnByUXlwaDg3M0FsbkZKZDhXeFBJYWtIYUV3NzRlNVlVaDdWcE53LWxHdjVHM0FocEFkQm4xTHFrSE5UVW1id3MxT3lpMnR2eA?oc=5",
+      "published_at": "2026-09-06T20:09:00+08:00"
+    },
+    {
+      "id": "NEWS-FE4A65254BD495",
+      "title": "Tesla Cybercab无人出租车亚洲路演首站选香港",
+      "summary": "Tesla Cybercab无人出租车正式开放乘坐，亚洲路演首站选址香港。",
       "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMivwJBVV95cUxQOU5McnNwX1YwenFsNzlEei0xTVlxbjQ0T0hENlFNV1dQYWI4SUcwWWJZdTJoTThEUVJVM3NuVVhLNEU0RS1BN3J3STh2TE1oY3hPWDN3aEtVQXJlV2ZQUmdmb0dvUFJEaFN4UDhiUzJrRHl6UURYMUlsY0hHQmJfQ3AzMHRia2s5VGdVMUo5LVByUUVPSE9wM0RXSE51YW53UFJVcFhzcnhDUkRPak10WTFmZ2hNbmdrN0VjUW92U3cxMThPZ201WVZTVGtjb3ZxaXBqTzRVVXFsa0JrOXdEbzlJb1FqMF8wdHRVRmZwZS1YMHJCWXNET0NVYlRBMkJnRDJPdzRXWURTLWUzQW1qNl9yUkNwN0tlX1ZCVHpUT2FGLXplV2t5M09xMzZrU2ZrbWlsX2VFbWlRNHNCTjZR0gGKAUFVX3lxTE5uczh6a29vNkcwd0JUNS1iaGhNVkt1T2VpV2xITHlTVTVIaVktcm9QY0xJVXlIZXE1RGRIZzlvamNhcC1wNzd4b19wU2Y3eFFpSXJpRW5wbXZxXzh4UUdtQ2hIMWJlNWhaVjZRenM1bUJtZXZWWkwta2ZYcTM4eGRadjJkNDBVdjRGZw?oc=5",
-      "published_at": "2026-09-06T23:01:41+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNWEhWT0c0ME5zbEFiRTFzVy0xN0VPaHptTzhYWVo1TVJoSjN3SkV4WlFFX0VDU21Edjk1OU1BOGdZaGNuckR6X2l2NG5PUGpFSElDX0tOMkZUblUzMkVYZWZ5Z3NVUllDblJ0cTBQX2labWN3VTNrbjQyem9SeV9rU2hR?oc=5",
+      "published_at": "2026-09-05T00:59:44+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "7583369692f23755da4d40b6e5a7b2eb9b25955f0a6fb6467c4e2f6d1154a669"
+  "site_version": "3087095657d2a150b9b8619966bf6b009d4face30dc5fb4c6ffd3ca0457f4025"
 }
