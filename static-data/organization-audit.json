@@ -3,7 +3,7 @@
   "events": [
     {
       "id": "event-001",
-      "at": "2026-09-09T16:04:26+00:00",
+      "at": "2026-09-09T23:43:02+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -17,6 +17,20 @@
     },
     {
       "id": "event-002",
+      "at": "2026-09-09T16:04:26+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-003",
       "at": "2026-09-09T09:17:34+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -30,7 +44,7 @@
       "details": {}
     },
     {
-      "id": "event-003",
+      "id": "event-004",
       "at": "2026-09-09T09:17:30+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -44,7 +58,7 @@
       "details": {}
     },
     {
-      "id": "event-004",
+      "id": "event-005",
       "at": "2026-09-09T09:14:20+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -58,7 +72,7 @@
       "details": {}
     },
     {
-      "id": "event-005",
+      "id": "event-006",
       "at": "2026-09-09T09:14:08+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -72,7 +86,7 @@
       "details": {}
     },
     {
-      "id": "event-006",
+      "id": "event-007",
       "at": "2026-09-09T08:36:38+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -86,7 +100,7 @@
       "details": {}
     },
     {
-      "id": "event-007",
+      "id": "event-008",
       "at": "2026-09-09T08:36:20+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -100,7 +114,7 @@
       "details": {}
     },
     {
-      "id": "event-008",
+      "id": "event-009",
       "at": "2026-09-09T08:29:28+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -114,7 +128,7 @@
       "details": {}
     },
     {
-      "id": "event-009",
+      "id": "event-010",
       "at": "2026-09-09T08:28:55+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -128,7 +142,7 @@
       "details": {}
     },
     {
-      "id": "event-010",
+      "id": "event-011",
       "at": "2026-09-09T08:19:58+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -142,27 +156,13 @@
       "details": {}
     },
     {
-      "id": "event-011",
+      "id": "event-012",
       "at": "2026-09-09T06:32:52+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
       "action": "auth.dev_login",
       "target": "local-admin",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
-      "id": "event-012",
-      "at": "2026-09-09T06:32:39+00:00",
-      "actor_id": "",
-      "actor_name": "来源待核实",
-      "actor_role": "UNKNOWN",
-      "action": "news_review.update",
-      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -185,7 +185,7 @@
     },
     {
       "id": "event-014",
-      "at": "2026-09-09T06:32:38+00:00",
+      "at": "2026-09-09T06:32:39+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -227,7 +227,7 @@
     },
     {
       "id": "event-017",
-      "at": "2026-09-09T06:31:31+00:00",
+      "at": "2026-09-09T06:32:38+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -255,7 +255,7 @@
     },
     {
       "id": "event-019",
-      "at": "2026-09-09T06:30:24+00:00",
+      "at": "2026-09-09T06:31:31+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -283,7 +283,7 @@
     },
     {
       "id": "event-021",
-      "at": "2026-09-09T06:30:23+00:00",
+      "at": "2026-09-09T06:30:24+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -311,7 +311,7 @@
     },
     {
       "id": "event-023",
-      "at": "2026-09-09T06:30:22+00:00",
+      "at": "2026-09-09T06:30:23+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -353,7 +353,7 @@
     },
     {
       "id": "event-026",
-      "at": "2026-09-09T06:27:53+00:00",
+      "at": "2026-09-09T06:30:22+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -409,7 +409,7 @@
     },
     {
       "id": "event-030",
-      "at": "2026-09-09T06:27:52+00:00",
+      "at": "2026-09-09T06:27:53+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -493,12 +493,12 @@
     },
     {
       "id": "event-036",
-      "at": "2026-09-09T06:27:45+00:00",
-      "actor_id": "member-001",
-      "actor_name": "本地管理员",
-      "actor_role": "ADMIN",
-      "action": "auth.dev_login",
-      "target": "local-admin",
+      "at": "2026-09-09T06:27:52+00:00",
+      "actor_id": "",
+      "actor_name": "来源待核实",
+      "actor_role": "UNKNOWN",
+      "action": "news_review.update",
+      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -507,12 +507,12 @@
     },
     {
       "id": "event-037",
-      "at": "2026-09-09T06:27:04+00:00",
-      "actor_id": "",
-      "actor_name": "来源待核实",
-      "actor_role": "UNKNOWN",
-      "action": "news_review.update",
-      "target": "BYK3u",
+      "at": "2026-09-09T06:27:45+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -675,7 +675,7 @@
     },
     {
       "id": "event-049",
-      "at": "2026-09-09T06:27:03+00:00",
+      "at": "2026-09-09T06:27:04+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -717,7 +717,7 @@
     },
     {
       "id": "event-052",
-      "at": "2026-09-09T06:25:56+00:00",
+      "at": "2026-09-09T06:27:03+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -787,7 +787,7 @@
     },
     {
       "id": "event-057",
-      "at": "2026-09-09T06:25:55+00:00",
+      "at": "2026-09-09T06:25:56+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -857,7 +857,7 @@
     },
     {
       "id": "event-062",
-      "at": "2026-09-09T06:25:54+00:00",
+      "at": "2026-09-09T06:25:55+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -927,7 +927,7 @@
     },
     {
       "id": "event-067",
-      "at": "2026-09-09T06:25:53+00:00",
+      "at": "2026-09-09T06:25:54+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -955,7 +955,7 @@
     },
     {
       "id": "event-069",
-      "at": "2026-09-09T06:24:46+00:00",
+      "at": "2026-09-09T06:25:53+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -1011,7 +1011,7 @@
     },
     {
       "id": "event-073",
-      "at": "2026-09-09T06:24:45+00:00",
+      "at": "2026-09-09T06:24:46+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -1053,7 +1053,7 @@
     },
     {
       "id": "event-076",
-      "at": "2026-09-09T06:23:38+00:00",
+      "at": "2026-09-09T06:24:45+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -1067,7 +1067,7 @@
     },
     {
       "id": "event-077",
-      "at": "2026-09-09T06:23:37+00:00",
+      "at": "2026-09-09T06:23:38+00:00",
       "actor_id": "",
       "actor_name": "来源待核实",
       "actor_role": "UNKNOWN",
@@ -1081,10 +1081,10 @@
     },
     {
       "id": "event-078",
-      "at": "2026-09-09T05:41:14+00:00",
+      "at": "2026-09-09T06:23:37+00:00",
       "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
+      "actor_name": "来源待核实",
+      "actor_role": "UNKNOWN",
       "action": "news_review.update",
       "target": "BYK3u",
       "target_type": "record",
@@ -1837,6 +1837,20 @@
     },
     {
       "id": "event-132",
+      "at": "2026-09-09T05:41:14+00:00",
+      "actor_id": "",
+      "actor_name": "新闻自动初筛机器人",
+      "actor_role": "SYSTEM",
+      "action": "news_review.update",
+      "target": "BYK3u",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-133",
       "at": "2026-09-09T03:49:58+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -1850,7 +1864,7 @@
       "details": {}
     },
     {
-      "id": "event-133",
+      "id": "event-134",
       "at": "2026-09-09T03:20:17+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
@@ -1864,27 +1878,13 @@
       "details": {}
     },
     {
-      "id": "event-134",
+      "id": "event-135",
       "at": "2026-09-09T03:20:05+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "ADMIN",
       "action": "subscription.candidate_add",
       "target": "subscription-invite-candidates",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
-      "id": "event-135",
-      "at": "2026-09-09T01:06:55+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -2523,7 +2523,7 @@
     },
     {
       "id": "event-181",
-      "at": "2026-09-09T01:06:36+00:00",
+      "at": "2026-09-09T01:06:55+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
