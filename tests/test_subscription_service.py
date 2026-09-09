@@ -646,12 +646,12 @@ class SubscriptionServiceTests(unittest.TestCase):
                 {"title": "产品新闻", "category": "市场/产品类", "region": "国际/行业"},
             ]),
         )
-        groups = [e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set"]
+        groups = [e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set" and "background_style" in e["columns"][0]]
         self.assertEqual(len(groups), 3)
         self.assertEqual(len({g["background_style"] for g in groups}), 3)
         self.assertIn("市场与产品", json.dumps(groups, ensure_ascii=False))
         self.assertNotIn("国际/行业", json.dumps(groups, ensure_ascii=False))
-        self.assertNotIn('"tag": "hr"', json.dumps(card))
+        self.assertEqual(sum(e["tag"] == "hr" for e in card["body"]["elements"]), 1)
 
     def test_report_test_push_sends_pdf_and_reads_it_back(self):
         from cmhk.reporting.pdf_preview import pdf_preview_path

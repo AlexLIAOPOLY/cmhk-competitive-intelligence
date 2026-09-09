@@ -36,3 +36,13 @@ class NewsDigestEditorTests(unittest.TestCase):
         model = Mock()
         self.assertEqual(prepare_digest([], Path('/unused'), model_call=model)['items'], [])
         model.assert_not_called()
+
+    def test_editorial_commentary_is_rejected_before_caching(self):
+        output = {'overview': '1. 企业服务：运营商计划推出工业园区专网试点，服务制造企业，具体商业化进展取决于后续试点安排与付费合同。',
+                  'items': [{'id': '0', 'summary': '某团体提出创科教育倡议，应分开看既有预算与本次建议，不能写成已经获政府采纳。',
+                             'analysis': '若倡议转为学校的常态课程，可能出现持续服务需求，但采购与预算安排仍是关键约束，需观察试点合同。'}]}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with self.assertRaisesRegex(ValueError, '编辑提醒'):
+                prepare_digest([{'title': '创科教育倡议'}], root, model_call=Mock(return_value=output))
+            self.assertFalse((root / 'var/subscriptions/news-editor').exists())

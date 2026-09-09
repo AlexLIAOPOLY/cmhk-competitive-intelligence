@@ -675,6 +675,19 @@ def strategic_news_card(
         if len(clean_body) > 12000:
             clean_body = clean_body[:11997].rstrip() + "…"
         elements.append({"tag": "markdown", "content": clean_body})
+    elements.extend([
+        {"tag": "hr"},
+        {"tag": "column_set", "flex_mode": "none", "columns": [
+            {"tag": "column", "width": "weighted", "weight": 1, "elements": [
+                {"tag": "button", "type": "primary_text",
+                 "text": {"tag": "plain_text", "content": label},
+                 "behaviors": [{"type": "callback", "value": {"action": action}}]}
+            ]} for label, action in [
+                ("修改兴趣偏好", "cmhk_news_preferences_v1"),
+                ("取消订阅", "cmhk_news_unsubscribe_v1"),
+            ]
+        ]},
+    ])
     return {
         "schema": "2.0",
         "config": {"width_mode": "default", "enable_forward": True},
@@ -749,6 +762,10 @@ class SubscriptionService:
         with closing(self._connect()) as db, db:
             db.executescript(
                 """
+                CREATE TABLE IF NOT EXISTS news_control_cards (
+                    message_id TEXT PRIMARY KEY, chat_id TEXT NOT NULL,
+                    open_id TEXT NOT NULL, profile TEXT NOT NULL, purpose TEXT NOT NULL
+                );
                 CREATE TABLE IF NOT EXISTS subscribers (
                     open_id TEXT PRIMARY KEY,
                     callback_open_id TEXT NOT NULL DEFAULT '',
@@ -1208,6 +1225,71 @@ class SubscriptionService:
             "updated_at": now,
         }
 
+    def _handle_news_control(self, event: dict[str, Any], action: str) -> dict[str, Any]:
+        open_id, message_id, chat_id, event_id = (
+            str(event.get(key) or "") for key in ("operator_id", "message_id", "chat_id", "event_id")
+        )
+        if not (OPEN_ID_RE.fullmatch(open_id) and MESSAGE_ID_RE.fullmatch(message_id)
+                and CHAT_ID_RE.fullmatch(chat_id) and event_id):
+            raise ValueError("新闻设置回调缺少有效身份")
+        with closing(self._connect()) as db:
+            origin = db.execute("SELECT * FROM news_control_cards WHERE message_id=? AND chat_id=?",
+                                (message_id, chat_id)).fetchone()
+            if origin is None or origin["open_id"] != open_id:
+                raise ValueError("只能管理本人收到的新闻卡片订阅")
+            expected = "confirm" if action == "cmhk_news_unsubscribe_confirm_v1" else "news"
+            if origin["purpose"] != expected:
+                raise ValueError("请使用对应的新闻设置入口")
+        profile = str(origin["profile"])
+        identity = self.resolve_user(open_id, source_profile=profile)
+        with closing(self._connect()) as db:
+            subscriber = db.execute("SELECT * FROM subscribers WHERE open_id=?", (identity["open_id"],)).fetchone()
+            services = [row[0] for row in db.execute(
+                "SELECT service FROM subscriptions WHERE open_id=? AND active=1", (identity["open_id"],))]
+        if subscriber is None:
+            raise ValueError("未找到你的订阅设置")
+        if action == "cmhk_news_preferences_v1":
+            card = subscription_entry_card(recipient_name=identity["display_name"])
+            card["header"]["title"]["content"] = "修改兴趣偏好"
+            values = {"services": services, "news_categories": normalize_news_categories(subscriber["news_categories"]),
+                      "report_mode": subscriber["report_mode"], "news_frequency": subscriber["frequency"],
+                      "news_item_limit": str(subscriber["news_item_limit"])}
+            times = _normalize_news_delivery_times(subscriber["news_delivery_times"])
+            def fill(node):
+                if isinstance(node, dict):
+                    name = node.get("name")
+                    if name in values:
+                        node["selected_values" if node.get("tag") == "multi_select_static" else "initial_option"] = values[name]
+                    if name in {"news_delivery_time_morning", "news_delivery_time_afternoon"}:
+                        node["initial_time"] = times[0 if name.endswith("morning") else 1]
+                    for value in node.values():
+                        fill(value)
+                elif isinstance(node, list):
+                    for value in node:
+                        fill(value)
+            fill(card)
+            status = "news_preferences_sent"
+        elif action == "cmhk_news_unsubscribe_v1":
+            card = {"schema": "2.0", "header": {"template": "blue", "title": {"tag": "plain_text", "content": "取消战略新闻订阅"}},
+                    "body": {"elements": [
+                        {"tag": "markdown", "content": "确认后将停止战略新闻推送，其他报告订阅不受影响。"},
+                        {"tag": "button", "type": "danger", "text": {"tag": "plain_text", "content": "确认取消战略新闻订阅"},
+                         "behaviors": [{"type": "callback", "value": {"action": "cmhk_news_unsubscribe_confirm_v1"}}]},
+                    ]}}
+            status = "news_unsubscribe_confirmation_sent"
+        else:
+            with closing(self._connect()) as db, db:
+                db.execute("UPDATE subscriptions SET active=0 WHERE open_id=? AND service='news'", (identity["open_id"],))
+            card = {"schema": "2.0", "body": {"elements": [
+                {"tag": "markdown", "content": "**战略新闻订阅已取消**\n\n其他报告订阅保持不变。"}
+            ]}}
+            status = "news_unsubscribed"
+        sent = self._send_interactive_card(open_id, card,
+                    idempotency_key="news-control-" + hashlib.sha256(event_id.encode()).hexdigest()[:30], profile=profile)
+        self._verify_message(sent, profile=profile)
+        return {"status": status, "source_profile": profile, "open_id": identity["open_id"],
+                "confirmation_message_id": sent, "preserve_source_card": True}
+
     def handle_card_event(self, event: dict[str, Any]) -> dict[str, Any] | None:
         if str(event.get("type") or "") != "card.action.trigger" or str(event.get("action_tag") or "") != "button":
             return None
@@ -1216,6 +1298,9 @@ class SubscriptionService:
         except (ValueError, TypeError, json.JSONDecodeError):
             action = {}
         action_name = str(action.get("action") or "") if isinstance(action, dict) else ""
+        if action_name in {"cmhk_news_preferences_v1", "cmhk_news_unsubscribe_v1",
+                           "cmhk_news_unsubscribe_confirm_v1"}:
+            return self._handle_news_control(event, action_name)
         is_pause = action_name == "cmhk_subscription_pause_all_v1"
         form_raw = str(event.get("form_value") or "")
         if not form_raw and not is_pause and action_name != "cmhk_subscription_save_v1":
@@ -2821,7 +2906,37 @@ class SubscriptionService:
             "--idempotency-key", idempotency_key[:50], "--as", "bot",
             "--profile", profile or self.delivery_profile, "--format", "json",
         ])
-        return self._message_id(payload)
+        message_id = self._message_id(payload)
+        actions = set()
+        form_names = set()
+        def inspect(node):
+            if isinstance(node, dict):
+                if node.get("tag") == "button":
+                    for behavior in node.get("behaviors", []):
+                        if behavior.get("type") == "callback":
+                            actions.add(str((behavior.get("value") or {}).get("action") or ""))
+                if node.get("tag") == "form":
+                    form_names.add(node.get("name"))
+                for value in node.values():
+                    inspect(value)
+            elif isinstance(node, list):
+                for value in node:
+                    inspect(value)
+        inspect(card)
+        chat_id = str((payload.get("data") or {}).get("chat_id") or "")
+        source_profile = profile or self.delivery_profile
+        purpose = "confirm" if 'cmhk_news_unsubscribe_confirm_v1' in actions else "news" if 'cmhk_news_preferences_v1' in actions else ""
+        if purpose or 'subscriptionForm' in form_names:
+            if not CHAT_ID_RE.fullmatch(chat_id):
+                raise RuntimeError("设置卡片发送后缺少会话身份")
+            with closing(self._connect()) as db, db:
+                if purpose:
+                    db.execute("INSERT OR REPLACE INTO news_control_cards VALUES(?,?,?,?,?)",
+                               (message_id, chat_id, open_id, source_profile, purpose))
+                else:
+                    db.execute("INSERT OR REPLACE INTO subscription_entry_cards(message_id,target_type,target_id,target_name,chat_id,source_profile,created_at) VALUES(?,?,?,?,?,?,?)",
+                               (message_id, "user", open_id, "", chat_id, source_profile, _now_hkt()))
+        return message_id
 
     def _send_audio(self, open_id: str, audio_path: Path, *, idempotency_key: str, profile: str = "") -> str:
         relative = audio_path.relative_to(self.runtime_root)

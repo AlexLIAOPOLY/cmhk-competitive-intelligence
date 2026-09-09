@@ -229,6 +229,12 @@ while [[ -f "$REQUEST_FILE" ]]; do
     sleep 1
   done
 
+  # Card callbacks import SubscriptionService once; reload after the same idle gate.
+  card_actions_label="com.liaowang.cmhk-project-monitor-card-actions"
+  if /bin/launchctl print "$DOMAIN/$card_actions_label" >/dev/null 2>&1; then
+    /bin/launchctl kickstart -k "$DOMAIN/$card_actions_label" >> "$LOG_FILE" 2>&1
+  fi
+
   # scheduler.py is a long-lived process, so copying a new file is not enough.
   # Restart it only after all production crawl/audit workers are idle.
   if /bin/launchctl print "$DOMAIN/$SCHEDULER_LABEL" >/dev/null 2>&1; then
