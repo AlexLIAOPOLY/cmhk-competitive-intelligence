@@ -76,7 +76,8 @@ def research_snapshot(root: Path, date: str = "") -> dict:
                                for url, page in report.get("pages", {}).items()}
         payload["agents"].append(agent)
     try:
-        payload["final_reviewer"] = json.loads((directory / "final-review.json").read_text(encoding="utf-8"))
+        from .review_store import load_review
+        payload["final_reviewer"] = load_review(directory, evidence=False)
         for report in payload["final_reviewer"].get("reports", []):
             report["pages"] = {url: {k: v for k, v in page.items() if k != "text"}
                                for url, page in report.get("pages", {}).items()}
