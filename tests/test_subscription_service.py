@@ -296,6 +296,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["header"]["title"]["content"], "订阅已生效")
         self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_confirmation_test")
         self.assertIn("每天两次 · 最新 15 条", json.dumps(card, ensure_ascii=False))
+        self.assertNotIn("**", json.dumps(card, ensure_ascii=False))
 
     def test_news_delivery_uses_per_subscriber_schedule_without_global_pause(self):
         self.assertTrue(self.service.strategic_news_schedule_snapshot()["enabled"])
@@ -439,6 +440,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(send_call[send_call.index("--chat-id") + 1], "oc_strategy123")
         card = json.loads(send_call[send_call.index("--content") + 1])
         self.assertTrue(card["config"]["update_multi"])
+        self.assertNotIn("**", json.dumps(card, ensure_ascii=False))
         group_invitation = self.service.list_summary()["group_invitations"][0]
         self.assertEqual(group_invitation["target_name"], "战略情报群")
         self.assertEqual(group_invitation["status"], "verified")

@@ -45,6 +45,7 @@ from cmhk.integrations.feishu_sheet_rollover import (
     timestamped_part_title,
 )
 from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
+from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 
 try:
     from opencc import OpenCC
@@ -3179,7 +3180,8 @@ class ProjectMonitor:
         }
 
     def render_alert(self, incident: dict[str, Any]) -> str:
-        return json.dumps(self.render_alert_card(incident), ensure_ascii=False, separators=(",", ":"))
+        card = without_markdown_bold_markers(self.render_alert_card(incident))
+        return json.dumps(card, ensure_ascii=False, separators=(",", ":"))
 
     def _resolution_reason_text(self, incident: dict[str, Any]) -> str:
         reason = str(incident.get("resolution_reason") or "")
