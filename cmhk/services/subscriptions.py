@@ -3500,11 +3500,13 @@ class SubscriptionService:
                 else f"once_daily:{crawl_date}"
             )
             now = _now_hkt()
+            batch_id = hashlib.sha256(f"news-crawl:{crawl_slot}:{open_id}".encode()).hexdigest()[:24]
             with closing(self._connect()) as db:
-                # Serialize the legacy-row check and canonical claim. Older
-                # releases keyed twice-daily sends by the exact clock time, so
-                # a same-day schedule change (for example 13:30 -> 14:00)
-                # could otherwise send the same afternoon digest twice.
+                # Claim the daily window and create its durable outbox row in
+                # one transaction. A process exit must never leave a claimed
+                # day/window without the message that still needs delivery.
+                # Older releases keyed twice-daily sends by the exact clock
+                # time, so keep the legacy-window check inside the same lock.
                 db.execute("BEGIN IMMEDIATE")
                 legacy_claimed = False
                 if frequency == "twice_daily":
@@ -3530,6 +3532,25 @@ class SubscriptionService:
                     ),
                 )
                 claimed = cursor.rowcount == 1
+                if claimed:
+                    cursor = db.execute(
+                        """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
+                           VALUES(?, ?, 'news', 'text', ?, 'queued', '[]', '', ?)""",
+                        (batch_id, open_id, content_ref, now),
+                    )
+                    delivery_id = int(cursor.lastrowid)
+                    db.execute(
+                        """UPDATE news_crawl_dispatches SET delivery_id=?, updated_at=?
+                           WHERE open_id=? AND dispatch_key=?""",
+                        (delivery_id, now, open_id, dispatch_key),
+                    )
+                    db.execute(
+                        """INSERT INTO pending_subscription_deliveries(
+                               delivery_id, open_id, service, mode, content_ref, title, body,
+                               frequency, due_at, status, created_at
+                           ) VALUES(?, ?, 'news', 'text', ?, ?, ?, 'scheduled_after_crawl', ?, 'queued', ?)""",
+                        (delivery_id, open_id, content_ref, title, body, due_at, now),
+                    )
                 db.commit()
             if not claimed:
                 results.append({
@@ -3540,27 +3561,6 @@ class SubscriptionService:
                     "message_ids": [],
                 })
                 continue
-            batch_id = hashlib.sha256(f"news-crawl:{crawl_slot}:{open_id}".encode()).hexdigest()[:24]
-            with closing(self._connect()) as db, db:
-                cursor = db.execute(
-                    """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
-                       VALUES(?, ?, 'news', 'text', ?, 'queued', '[]', '', ?)""",
-                    (batch_id, open_id, content_ref, now),
-                )
-                delivery_id = int(cursor.lastrowid)
-                db.execute(
-                    """UPDATE news_crawl_dispatches SET delivery_id=?, updated_at=?
-                       WHERE open_id=? AND dispatch_key=?""",
-                    (delivery_id, now, open_id, dispatch_key),
-                )
-            with closing(self._connect()) as db, db:
-                db.execute(
-                    """INSERT INTO pending_subscription_deliveries(
-                           delivery_id, open_id, service, mode, content_ref, title, body,
-                           frequency, due_at, status, created_at
-                       ) VALUES(?, ?, 'news', 'text', ?, ?, ?, 'scheduled_after_crawl', ?, 'queued', ?)""",
-                    (delivery_id, open_id, content_ref, title, body, due_at, _now_hkt()),
-                )
             results.append({
                 "open_id": open_id,
                 "frequency": frequency,

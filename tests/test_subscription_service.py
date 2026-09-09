@@ -976,6 +976,87 @@ class SubscriptionServiceTests(unittest.TestCase):
         )
         self.assertEqual(at_completion["verified_count"], 1)
 
+    def test_personal_news_keeps_original_crawl_day_when_completion_crosses_midnight(self):
+        self.service.save_subscriptions(
+            "ou_delivery123",
+            "测试用户",
+            ["news"],
+            frequency="once_daily",
+            news_delivery_times=["08:00", "18:30"],
+        )
+        delayed = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@05:00",
+            slot_label="晨间扫描",
+            items=[{"title": "1月1日迟到新闻"}],
+            completed_at="2099-01-02T00:07:00+08:00",
+        )
+
+        self.assertEqual(delayed["queued_count"], 1)
+        self.assertEqual(delayed["results"][0]["due_at"], "2099-01-02T00:07:00+08:00")
+        sent = self.service.flush_due(
+            now=datetime.fromisoformat("2099-01-02T00:07:00+08:00")
+        )
+        self.assertEqual(sent["verified_count"], 1)
+        send = next(call for call in self.lark.calls if "+messages-send" in call)
+        card = json.loads(send[send.index("--content") + 1])
+        self.assertEqual(card["header"]["title"]["content"], "CMHK战略早茶订阅｜2099年01月01日")
+
+        next_day = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-02@05:00",
+            slot_label="晨间扫描",
+            items=[{"title": "1月2日新闻"}],
+            completed_at="2099-01-02T07:00:00+08:00",
+        )
+        self.assertEqual(next_day["queued_count"], 1)
+        self.assertEqual(next_day["results"][0]["due_at"], "2099-01-02T08:00:00+08:00")
+
+    def test_news_claim_and_pending_outbox_are_created_atomically(self):
+        import sqlite3
+
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"], frequency="once_daily"
+        )
+        original_connect = self.service._connect
+        injected = False
+
+        class FailingConnection:
+            def __init__(self, connection):
+                self.connection = connection
+
+            def __getattr__(self, name):
+                return getattr(self.connection, name)
+
+            def execute(self, sql, parameters=()):
+                nonlocal injected
+                if not injected and "INSERT INTO pending_subscription_deliveries" in sql:
+                    injected = True
+                    raise sqlite3.OperationalError("simulated process failure before outbox")
+                return self.connection.execute(sql, parameters)
+
+            def close(self):
+                self.connection.close()
+
+        self.service._connect = lambda: FailingConnection(original_connect())
+        with self.assertRaisesRegex(sqlite3.OperationalError, "simulated process failure"):
+            self.service.dispatch_news_after_crawl(
+                crawl_slot="2099-01-01@05:00",
+                slot_label="晨间扫描",
+                items=[{"title": "原子入队新闻"}],
+            )
+        self.service._connect = original_connect
+
+        with sqlite3.connect(self.service.db_path) as db:
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM news_crawl_dispatches").fetchone()[0], 0)
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM deliveries").fetchone()[0], 0)
+            self.assertEqual(db.execute("SELECT COUNT(*) FROM pending_subscription_deliveries").fetchone()[0], 0)
+
+        recovered = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@05:00",
+            slot_label="晨间扫描",
+            items=[{"title": "原子入队新闻"}],
+        )
+        self.assertEqual(recovered["queued_count"], 1)
+
     def test_two_people_keep_independent_personal_news_times(self):
         self.service.save_subscriptions(
             "ou_delivery123", "甲", ["news"], frequency="twice_daily",
