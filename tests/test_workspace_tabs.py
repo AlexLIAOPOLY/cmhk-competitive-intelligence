@@ -232,7 +232,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('announceDeliveredMessage(payload.action, evidence)', SUBSCRIPTION_SCRIPT)
         self.assertIn("strategic_news_schedule", SUBSCRIPTION_SCRIPT)
         self.assertIn("新闻接收时间（香港时间）", SUBSCRIPTION_SCRIPT)
-        self.assertIn("05:00 / 13:00", SUBSCRIPTION_SCRIPT)
+        self.assertIn("04:00 / 14:00", SUBSCRIPTION_SCRIPT)
         self.assertIn("推送记录", SUBSCRIPTION_SCRIPT)
         self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)
         self.assertIn("@media (max-width: 560px)", SUBSCRIPTION_STYLE)
@@ -578,7 +578,7 @@ class WorkspaceTabsTests(unittest.TestCase):
 
     def test_news_module_exposes_clickable_live_lineage_with_detailed_dialog(self):
         for label in (
-            "05:00 / 13:00 定时启动器",
+            "04:00 / 14:00 定时启动器",
             "按关键词搜索公开网页",
             "AI 新闻相关性审核",
             "历史新闻重复检查",
@@ -673,7 +673,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
         self.assertIn('fetch("/api/executive-intelligence"', SCRIPT)
         for label in (
-            "05:00 / 13:00 定时启动器",
+            "04:00 / 14:00 定时启动器",
             "按关键词搜索公开网页",
             "AI 新闻相关性审核",
             "历史新闻重复检查",
@@ -822,7 +822,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("核验查询：", SCRIPT)
         self.assertIn("该节点有汇总结果，但当前运行未读取到逐条归档", SCRIPT)
         self.assertIn("飞书独立子表记录查询、URL抓取、HTTP结果、入库决定与拒绝原因", SCRIPT)
-        self.assertIn('"合并前一天05:00/13:00两次战略新闻任务内容作参考"', SCRIPT)
+        self.assertIn('"合并前一天04:00/14:00两次战略新闻任务内容作参考"', SCRIPT)
         self.assertIn('key: "previous-news", label: "前一日两轮新闻合并参考"', SCRIPT)
         self.assertIn('["previous-news", "news-db-signal", "新闻补缺", "amber"]', SCRIPT)
         self.assertIn('unit: "条待追证链接"', SCRIPT)

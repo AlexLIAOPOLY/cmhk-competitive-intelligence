@@ -46,7 +46,7 @@
     },
     {
       "id": "strategic-news",
-      "name": "05:00/13:00战略新闻爬虫",
+      "name": "04:00/14:00战略新闻爬虫",
       "stale_after_seconds": 4200
     },
     {
@@ -93,8 +93,8 @@
     "four_database_feishu_log"
   ],
   "strategic_scan_times": [
-    "05:00",
-    "13:00"
+    "04:00",
+    "14:00"
   ],
   "strategic_daily_cutoff": "00:00",
   "strategic_start_grace_minutes": 15,

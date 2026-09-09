@@ -66,7 +66,7 @@ REPORT_SCHEDULE_DEFAULT_TIME = "09:00"
 WEEKLY_DELIVERY_MIN_ITEMS = 4
 WEEKLY_DELIVERY_MIN_DETAIL_CHARS = 90
 WEEKLY_DELIVERY_MIN_DETAIL_SENTENCES = 2
-STRATEGIC_SCAN_TIMES_DEFAULT = ("05:00", "13:00")
+STRATEGIC_SCAN_TIMES_DEFAULT = ("04:00", "14:00")
 NEWS_DELIVERY_TIMES_DEFAULT = ("08:00", "18:30")
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
@@ -280,7 +280,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 05:00 和 13:00 执行，"
+        "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 04:00 和 14:00 执行，"
         "个人默认在 08:00 和 18:30 推送，但只有对应爬虫完成审核后才会发送。"
         "感谢您的配合！"
     )
@@ -293,7 +293,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
             # callback operator_id and acknowledged in that user's DM.
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": "订阅战略情报 · 新闻每日 05:00 / 13:00 扫描"},
+            "summary": {"content": "订阅战略情报 · 新闻每日 04:00 / 14:00 扫描"},
         },
         "header": {
             "title": {"tag": "plain_text", "content": "订阅战略情报"},
@@ -421,7 +421,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         {"tag": "hr"},
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日 05:00、13:00 扫描，个人默认 08:00、18:30 推送。只有对应爬虫完成审核后才会发送；每天一次仅接收当日首轮结果。</font>",
+                            "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日 04:00、14:00 扫描，个人默认 08:00、18:30 推送。只有对应爬虫完成审核后才会发送；每天一次仅接收当日首轮结果。</font>",
                             "text_size": "notation",
                         },
                         {

@@ -573,7 +573,7 @@
     const groupInviteCount = currentGroupInvitations().length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const performanceSchedule = data.performance_schedule || { days: [15, 30], time: "09:00", enabled: false };
-    const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "05:00 / 13:00", delivery_times: ["08:00", "18:30"], delivery_times_text: "08:00 / 18:30", timezone_label: "香港时间", dispatch_rule: "个人推送必须等对应爬虫完成；群内仍在爬完后立即发送" };
+    const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "04:00 / 14:00", delivery_times: ["08:00", "18:30"], delivery_times_text: "08:00 / 18:30", timezone_label: "香港时间", dispatch_rule: "个人推送必须等对应爬虫完成；群内仍在爬完后立即发送" };
     root.innerHTML = `<div class="admin">
       ${state.notice ? `<p class="notice ${esc(state.noticeKind)}" role="status" aria-live="polite">${esc(state.notice)}</p>` : ""}
       <main class="three-block-layout">

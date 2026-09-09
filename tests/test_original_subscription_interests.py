@@ -51,7 +51,7 @@ class OriginalInterestTests(unittest.TestCase):
         samples = set()
         with mock.patch.object(self.service, '_deliver_one', return_value=['om_test123']) as deliver:
             for day in range(1, 5):
-                for time, label, due in [('06:30', '晨间扫描', '08:00'), ('14:00', '午后扫描', '18:30')]:
+                for time, label, due in [('04:00', '晨间扫描', '08:00'), ('14:00', '午后扫描', '18:30')]:
                     slot = f'2099-01-{day:02}@{time}'
                     result = self.service.dispatch_news_after_crawl(crawl_slot=slot, slot_label=label, items=items)
                     selected = result['results'][0]['push_news_categories']

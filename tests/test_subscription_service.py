@@ -80,7 +80,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         (self.root / "config").mkdir()
         (self.root / "config" / "project_monitor.json").write_text(json.dumps({
-            "strategic_scan_times": ["05:00", "13:00"],
+            "strategic_scan_times": ["04:00", "14:00"],
             "bot": {"profile": "cli_test"},
             "subscriptions": {
                 "entry_profile": "cli_test",
@@ -176,7 +176,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 05:00 和 13:00 执行，"
+            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 04:00 和 14:00 执行，"
             "个人默认在 08:00 和 18:30 推送，但只有对应爬虫完成审核后才会发送。"
             "感谢您的配合！",
         )
@@ -229,8 +229,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             {
                 "service": "news",
                 "enabled": True,
-                "times": ["05:00", "13:00"],
-                "times_text": "05:00 / 13:00",
+                "times": ["04:00", "14:00"],
+                "times_text": "04:00 / 14:00",
                 "timezone": "Asia/Hong_Kong",
                 "timezone_label": "香港时间",
                 "dispatch_rule": "个人按本人设定时间推送，且必须等对应爬虫完成",
@@ -958,7 +958,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             news_delivery_times=["08:00", "18:30"],
         )
         queued = self.service.dispatch_news_after_crawl(
-            crawl_slot="2099-01-01@05:00",
+            crawl_slot="2099-01-01@04:00",
             slot_label="晨间扫描",
             items=[{"title": "迟完成新闻"}],
             completed_at="2099-01-01T09:17:00+08:00",
@@ -985,7 +985,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             news_delivery_times=["08:00", "18:30"],
         )
         delayed = self.service.dispatch_news_after_crawl(
-            crawl_slot="2099-01-01@05:00",
+            crawl_slot="2099-01-01@04:00",
             slot_label="晨间扫描",
             items=[{"title": "1月1日迟到新闻"}],
             completed_at="2099-01-02T00:07:00+08:00",
@@ -1002,7 +1002,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["header"]["title"]["content"], "CMHK战略早茶订阅｜2099年01月01日")
 
         next_day = self.service.dispatch_news_after_crawl(
-            crawl_slot="2099-01-02@05:00",
+            crawl_slot="2099-01-02@04:00",
             slot_label="晨间扫描",
             items=[{"title": "1月2日新闻"}],
             completed_at="2099-01-02T07:00:00+08:00",
@@ -1039,7 +1039,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.service._connect = lambda: FailingConnection(original_connect())
         with self.assertRaisesRegex(sqlite3.OperationalError, "simulated process failure"):
             self.service.dispatch_news_after_crawl(
-                crawl_slot="2099-01-01@05:00",
+                crawl_slot="2099-01-01@04:00",
                 slot_label="晨间扫描",
                 items=[{"title": "原子入队新闻"}],
             )
@@ -1051,7 +1051,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.assertEqual(db.execute("SELECT COUNT(*) FROM pending_subscription_deliveries").fetchone()[0], 0)
 
         recovered = self.service.dispatch_news_after_crawl(
-            crawl_slot="2099-01-01@05:00",
+            crawl_slot="2099-01-01@04:00",
             slot_label="晨间扫描",
             items=[{"title": "原子入队新闻"}],
         )
@@ -1068,7 +1068,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         )
 
         queued = self.service.dispatch_news_after_crawl(
-            crawl_slot="2099-01-02@05:00",
+            crawl_slot="2099-01-02@04:00",
             slot_label="晨间扫描",
             items=[{"title": "分时新闻"}],
             completed_at="2099-01-02T06:00:00+08:00",
