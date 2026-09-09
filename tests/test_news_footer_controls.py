@@ -20,12 +20,12 @@ class NewsFooterTests(unittest.TestCase):
                 'message_id': 'om_test123', 'chat_id': 'oc_test123', 'event_id': action,
                 'action_value': json.dumps({'action': action})}
 
-    def test_two_independent_text_links(self):
+    def test_two_independent_subtle_buttons(self):
         card = self.send_news()
         columns = card['body']['elements'][-1]['columns']
         buttons = [c['elements'][0] for c in columns]
         self.assertEqual([b['text']['content'] for b in buttons], ['修改兴趣偏好', '取消订阅'])
-        self.assertTrue(all(b['type'] == 'primary_text' for b in buttons))
+        self.assertTrue(all(b['type'] == 'default' and b['size'] == 'small' and b['width'] == 'fill' for b in buttons))
 
     def test_preferences_arrive_as_new_prefilled_card(self):
         self.send_news()

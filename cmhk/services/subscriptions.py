@@ -679,7 +679,7 @@ def strategic_news_card(
         {"tag": "hr"},
         {"tag": "column_set", "flex_mode": "none", "columns": [
             {"tag": "column", "width": "weighted", "weight": 1, "elements": [
-                {"tag": "button", "type": "primary_text",
+                {"tag": "button", "type": "default", "size": "small", "width": "fill",
                  "text": {"tag": "plain_text", "content": label},
                  "behaviors": [{"type": "callback", "value": {"action": action}}]}
             ]} for label, action in [
