@@ -145,7 +145,8 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .delivery-recipient strong, .delivery-recipient small { display: block; white-space: nowrap; }
 .delivery-recipient strong { color: #edf5f7; font-size: 9px; font-weight: 600; }
 .delivery-recipient small { margin-top: 3px; color: #66848e; font-size: 7px; font-weight: 400; }
-.service-group { display: flex; gap: 4px; white-space: nowrap; }
+.service-group { display: flex; flex-wrap: wrap; gap: 8px 10px; min-width: 0; }
+.service-group .service-check { flex: 0 0 auto; white-space: nowrap; }
 .news-interest-group { display: flex; flex-wrap: wrap; gap: 5px; }
 .news-interest-check { display: inline-flex; min-height: 24px; align-items: center; gap: 4px; padding: 3px 6px; border: 1px solid rgba(91,157,177,.24); border-radius: 999px; color: #8faab3; background: rgba(7,28,38,.58); white-space: nowrap; }
 .news-interest-check:has(input:checked) { border-color: rgba(92,190,194,.5); color: #cce9e9; background: rgba(41,112,116,.22); }
