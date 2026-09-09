@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=29', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=51', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=30', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=52', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('/static/subscription-admin.css?v=41', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
@@ -152,6 +152,8 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("成员按人去重累计", SCRIPT)
         self.assertIn("groupResponseProfile", SCRIPT)
         self.assertIn('item.latest_invitation?.status || "pending"', SCRIPT)
+        self.assertIn("openGroupTargets", SCRIPT)
+        self.assertIn('.group-invite-record[open] [data-invite-group-candidate]', SCRIPT)
         self.assertIn("group-response-list", SCRIPT)
         self.assertIn("window.setInterval", SCRIPT)
         self.assertIn(".group-invite-row", STYLE)
@@ -164,6 +166,8 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("invitation-history-responses", SCRIPT)
         self.assertIn("群聊 · ${item.target_name", SCRIPT)
         self.assertIn(".invitation-history-group summary", STYLE)
+        self.assertIn("openInvitationHistoryGroups", SCRIPT)
+        self.assertIn('data-history-group="${esc(groupKey)}"', SCRIPT)
 
     def test_invite_list_keeps_groups_first_and_orders_people_by_response_status(self):
         candidate_rows = SCRIPT.split("function candidateRows()", 1)[1].split("function activeFilterCount", 1)[0]

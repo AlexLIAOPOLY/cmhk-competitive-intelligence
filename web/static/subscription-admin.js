@@ -403,7 +403,7 @@
       const responseDetails = responses.length
         ? `<div class="invitation-history-responses">${responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at || "-")}</small></span></span>`; }).join("")}</div>`
         : '<p class="invitation-history-empty">暂无群成员提交</p>';
-      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-person="${esc(groupKey)}" data-filter-status="${filterStatuses}" data-filter-text="${esc(filterText)}"><td class="name"><details class="invitation-history-group"><summary><span class="history-group-badge">群</span><span>${esc(item.target_name || "飞书群聊")}</span></summary>${responseDetails}</details></td><td>${esc(item.created_at || "-")}</td><td><span class="status ${status}">${statusText}</span></td><td class="muted">${esc(latestMessageId || "-")}${Number(item.message_count || 0) > 1 ? `<small>共 ${number(item.message_count)} 次群邀请</small>` : ""}</td></tr>`;
+      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-person="${esc(groupKey)}" data-filter-status="${filterStatuses}" data-filter-text="${esc(filterText)}"><td class="name"><details class="invitation-history-group" data-history-group="${esc(groupKey)}"><summary><span class="history-group-badge">群</span><span>${esc(item.target_name || "飞书群聊")}</span></summary>${responseDetails}</details></td><td>${esc(item.created_at || "-")}</td><td><span class="status ${status}">${statusText}</span></td><td class="muted">${esc(latestMessageId || "-")}${Number(item.message_count || 0) > 1 ? `<small>共 ${number(item.message_count)} 次群邀请</small>` : ""}</td></tr>`;
     });
     return [...groups, ...people].join("") + '<tr data-invitation-filter-empty hidden><td colspan="4" class="empty">没有匹配的邀请结果</td></tr>';
   }
@@ -611,6 +611,14 @@
       const container = root.querySelector(selector);
       if (container) scrollPositions.set(selector, { top: container.scrollTop, left: container.scrollLeft });
     });
+    const openGroupTargets = new Set(Array.from(
+      root.querySelectorAll(".group-invite-record[open] [data-invite-group-candidate]"),
+      (input) => input.value,
+    ));
+    const openInvitationHistoryGroups = new Set(Array.from(
+      root.querySelectorAll(".invitation-history-group[open]"),
+      (details) => details.dataset.historyGroup,
+    ));
     const inviteCount = (data.invite_candidates || []).length;
     const groupInviteCount = currentGroupInvitations().length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
@@ -631,6 +639,13 @@
     </div>`;
     root.querySelectorAll("[data-subscriber-row]").forEach((row) => {
       syncRowDependentSettings(row, Array.from(row.querySelectorAll('.service-check input:checked'), (input) => input.value));
+    });
+    root.querySelectorAll(".group-invite-record").forEach((details) => {
+      const targetId = details.querySelector("[data-invite-group-candidate]")?.value || "";
+      details.open = openGroupTargets.has(targetId);
+    });
+    root.querySelectorAll(".invitation-history-group").forEach((details) => {
+      details.open = openInvitationHistoryGroups.has(details.dataset.historyGroup);
     });
     applySavedFilters();
     if (state.weeklyPickerOpen) applyWeeklyPickerFilter(state.weeklyPickerQuery);
