@@ -171,6 +171,33 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("新增更新候选 12 项", task["progress_detail"])
         self.assertEqual(detail["content"], "研究仍在运行\n")
 
+    def test_orphan_research_with_stale_running_manifest_is_failed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = root / "curation_data/research_runs/research_20260908_rerun_074509"
+            run.mkdir(parents=True)
+            (run / "process.json").write_text(json.dumps({
+                "pid": 2468,
+                "launched_at": "2026-09-08T07:45:09+08:00",
+            }), encoding="utf-8")
+            (run / "manifest.json").write_text(json.dumps({
+                "run_id": run.name,
+                "started_at": "2026-09-08T07:45:09+08:00",
+                "completed_at": "2026-09-08T11:40:16+08:00",
+                "status": "partial",
+                "accepted": 31,
+                "review": 380,
+                "final_review": {"status": "running"},
+            }), encoding="utf-8")
+            with mock.patch.object(web_app, "ROOT", root), \
+                 mock.patch.object(web_app, "_research_process_alive", return_value=False):
+                task = web_app._orphan_research_tasks()[0]
+
+        self.assertEqual(task["run_status"], "failed")
+        self.assertEqual(task["phase"], "研究进程已停止")
+        self.assertEqual(task["worker_pid"], 0)
+        self.assertEqual(task["completed_at_hkt"], "2026-09-08T11:40:16+08:00")
+
     def test_research_diagram_distinguishes_task_completion_from_failed_items(self) -> None:
         diagram = (web_app.ROOT / "web/static/research-diagram.js").read_text(encoding="utf-8")
         self.assertIn('partial: { key: "warning", label: "部分完成" }', diagram)

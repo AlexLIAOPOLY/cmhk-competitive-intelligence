@@ -5104,12 +5104,14 @@ def _orphan_research_tasks() -> list[dict]:
             run_status, phase = "completed", "已完成"
         elif publication_status in {"error", "failed"}:
             run_status, phase = "failed", "四库写入或页面发布失败"
-        elif publication_status == "running":
-            run_status, phase = "running", "四库写入与页面发布"
-        elif str(final_review.get("status") or "") == "running":
-            run_status, phase = "running", "最终审核 Agent 联网核对"
         elif process_alive:
-            run_status, phase = "running", "六 Agent 研究中"
+            run_status = "running"
+            if publication_status == "running":
+                phase = "四库写入与页面发布"
+            elif str(final_review.get("status") or "") == "running":
+                phase = "最终审核 Agent 联网核对"
+            else:
+                phase = "六 Agent 研究中"
         else:
             run_status, phase = "failed", "研究进程已停止"
         accepted = int(manifest.get("accepted") or 0)
