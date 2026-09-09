@@ -5,6 +5,7 @@ import subprocess
 import tempfile
 import unittest
 from contextlib import closing
+from datetime import datetime
 from pathlib import Path
 from unittest import mock
 
@@ -79,7 +80,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         (self.root / "config").mkdir()
         (self.root / "config" / "project_monitor.json").write_text(json.dumps({
-            "strategic_scan_times": ["06:30", "14:00"],
+            "strategic_scan_times": ["05:00", "13:00"],
             "bot": {"profile": "cli_test"},
             "subscriptions": {
                 "entry_profile": "cli_test",
@@ -175,15 +176,15 @@ class SubscriptionServiceTests(unittest.TestCase):
             intro["content"],
             "尊敬的 Alex LIAO Wang，您好！我是战略竞对中心管家小竞。"
             "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 06:30 和 14:00 执行，"
-            "完成审核后推送，您可以选择每天一次或每天两次。"
+            "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 05:00 和 13:00 执行，"
+            "个人默认在 08:00 和 18:30 推送，但只有对应爬虫完成审核后才会发送。"
             "感谢您的配合！",
         )
 
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**", "**感兴趣的战略新闻板块（最多4个）**", "**每次战略新闻条数**"],
+            ["**订阅内容**", "**报告接收方式**", "**战略新闻频率**", "**期待收到战略新闻的时间（香港）**", "**感兴趣的战略新闻板块（最多4个）**", "**每次战略新闻条数**"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
@@ -193,6 +194,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         categories = next(item for item in form["elements"] if item.get("name") == "news_categories")
         self.assertEqual({item["value"] for item in report_mode["options"]}, {"pdf", "pdf_audio", "audio"})
         self.assertEqual({item["value"] for item in frequency["options"]}, {"once_daily", "twice_daily"})
+        time_pickers = [item for item in form["elements"] if item["tag"] == "picker_time"]
+        self.assertEqual([item["initial_time"] for item in time_pickers], ["08:00", "18:30"])
+        self.assertTrue(all(item["required"] for item in time_pickers))
         self.assertEqual({item["value"] for item in item_limit["options"]}, {"5", "10", "15", "20"})
         self.assertEqual(len(categories["options"]), 7)
         self.assertTrue(categories["required"])
@@ -224,12 +228,12 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.service.strategic_news_schedule_snapshot(),
             {
                 "service": "news",
-                "enabled": False,
-                "times": ["06:30", "14:00"],
-                "times_text": "06:30 / 14:00",
+                "enabled": True,
+                "times": ["05:00", "13:00"],
+                "times_text": "05:00 / 13:00",
                 "timezone": "Asia/Hong_Kong",
                 "timezone_label": "香港时间",
-                "dispatch_rule": "爬虫完成审核后推送",
+                "dispatch_rule": "个人按本人设定时间推送，且必须等对应爬虫完成",
                 "updated_at": self.service.strategic_news_schedule_snapshot()["updated_at"],
             },
         )
@@ -283,10 +287,10 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_confirmation_test")
         self.assertIn("每天两次 · 最新 15 条", json.dumps(card, ensure_ascii=False))
 
-    def test_news_schedule_is_paused_by_default_and_can_be_enabled(self):
-        self.assertFalse(self.service.strategic_news_schedule_snapshot()["enabled"])
-        saved = self.service.update_news_schedule(enabled=True)
-        self.assertTrue(saved["enabled"])
+    def test_news_delivery_uses_per_subscriber_schedule_without_global_pause(self):
+        self.assertTrue(self.service.strategic_news_schedule_snapshot()["enabled"])
+        self.service.update_news_schedule(enabled=False)
+        self.assertTrue(self.service.automatic_delivery_enabled("news"))
 
     def test_form_callback_persists_identity_and_replaces_services(self):
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
@@ -297,7 +301,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             "operator_id": "ou_callback123",
             "chat_id": "oc_test123",
             "message_id": "om_test123",
-            "form_value": json.dumps({"services": ["weekly", "news"], "report_mode": "pdf_audio", "news_frequency": "daily", "news_item_limit": "15", "news_categories": ["竞对动态", "政策监管"]}),
+            "form_value": json.dumps({"services": ["weekly", "news"], "report_mode": "pdf_audio", "news_frequency": "daily", "news_item_limit": "15", "news_categories": ["竞对动态", "政策监管"], "news_delivery_time_morning": "08:15 +0800", "news_delivery_time_afternoon": "18:45 +0800"}),
         })
         self.assertEqual(first["status"], "subscription_saved")
         self.assertEqual(first["services"], ["news", "weekly"])
@@ -307,6 +311,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(first["report_mode"], "pdf_audio")
         self.assertEqual(first["news_item_limit"], 15)
         self.assertEqual(first["news_categories"], ["竞对动态", "政策监管"])
+        self.assertEqual(first["news_delivery_times"], ["08:15", "18:45"])
         self.service.handle_card_event({
             "type": "card.action.trigger",
             "action_tag": "button",
@@ -926,7 +931,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             slot_label="午后扫描",
             items=[item],
         )
-        self.assertEqual(morning["verified_count"], 1)
+        self.assertEqual(morning["queued_count"], 1)
         self.assertEqual(afternoon["skipped_count"], 1)
         self.service.save_subscriptions(
             "ou_delivery123", "测试用户", ["news"], frequency="twice_daily"
@@ -937,10 +942,69 @@ class SubscriptionServiceTests(unittest.TestCase):
         next_afternoon = self.service.dispatch_news_after_crawl(
             crawl_slot="2099-01-02@15:00", slot_label="午后扫描", items=[item]
         )
-        self.assertEqual(next_morning["verified_count"], 1)
-        self.assertEqual(next_afternoon["verified_count"], 1)
+        self.assertEqual(next_morning["queued_count"], 1)
+        self.assertEqual(next_afternoon["queued_count"], 1)
+        flushed = self.service.flush_due(now=datetime.fromisoformat("2099-01-02T19:00:00+08:00"))
+        self.assertEqual(flushed["verified_count"], 3)
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 3)
+
+    def test_personal_news_waits_for_late_crawl_completion(self):
+        self.service.save_subscriptions(
+            "ou_delivery123",
+            "测试用户",
+            ["news"],
+            frequency="twice_daily",
+            news_delivery_times=["08:00", "18:30"],
+        )
+        queued = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@05:00",
+            slot_label="晨间扫描",
+            items=[{"title": "迟完成新闻"}],
+            completed_at="2099-01-01T09:17:00+08:00",
+        )
+
+        self.assertEqual(queued["queued_count"], 1)
+        self.assertEqual(queued["results"][0]["due_at"], "2099-01-01T09:17:00+08:00")
+        before = self.service.flush_due(
+            now=datetime.fromisoformat("2099-01-01T09:16:59+08:00")
+        )
+        self.assertEqual(before["processed_count"], 0)
+        self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
+        at_completion = self.service.flush_due(
+            now=datetime.fromisoformat("2099-01-01T09:17:00+08:00")
+        )
+        self.assertEqual(at_completion["verified_count"], 1)
+
+    def test_two_people_keep_independent_personal_news_times(self):
+        self.service.save_subscriptions(
+            "ou_delivery123", "甲", ["news"], frequency="twice_daily",
+            news_delivery_times=["08:15", "18:30"],
+        )
+        self.service.save_subscriptions(
+            "ou_second123", "乙", ["news"], frequency="twice_daily",
+            news_delivery_times=["09:05", "19:10"],
+        )
+
+        queued = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-02@05:00",
+            slot_label="晨间扫描",
+            items=[{"title": "分时新闻"}],
+            completed_at="2099-01-02T06:00:00+08:00",
+        )
+
+        self.assertEqual(queued["queued_count"], 2)
+        by_person = {item["open_id"]: item["due_at"] for item in queued["results"]}
+        self.assertEqual(by_person["ou_delivery123"], "2099-01-02T08:15:00+08:00")
+        self.assertEqual(by_person["ou_second123"], "2099-01-02T09:05:00+08:00")
+        first = self.service.flush_due(
+            now=datetime.fromisoformat("2099-01-02T08:15:00+08:00")
+        )
+        self.assertEqual(first["verified_count"], 1)
+        second = self.service.flush_due(
+            now=datetime.fromisoformat("2099-01-02T09:05:00+08:00")
+        )
+        self.assertEqual(second["verified_count"], 1)
 
     def test_twice_daily_dispatch_blocks_same_window_after_schedule_change(self):
         self.service.save_subscriptions(
@@ -960,8 +1024,9 @@ class SubscriptionServiceTests(unittest.TestCase):
             items=[item],
         )
 
-        self.assertEqual(first["verified_count"], 1)
+        self.assertEqual(first["queued_count"], 1)
         self.assertEqual(shifted["skipped_count"], 1)
+        self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 1)
         card = json.loads(sends[0][sends[0].index("--content") + 1])
@@ -1017,6 +1082,7 @@ class SubscriptionServiceTests(unittest.TestCase):
                 slot_label="晨间扫描",
                 items=items,
             )
+            self.service.flush_due(now=datetime.fromisoformat("2099-01-03T08:00:00+08:00"))
 
         body = deliver.call_args.kwargs["body"]
         delivered = json.loads(body.removeprefix("CMHK_NEWS_DIGEST_V1\n"))
@@ -1043,6 +1109,7 @@ class SubscriptionServiceTests(unittest.TestCase):
                 slot_label="午后扫描",
                 items=items,
             )
+            self.service.flush_due(now=datetime.fromisoformat("2099-01-04T18:30:00+08:00"))
 
         delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对", "最新行业"])
@@ -1355,14 +1422,12 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertIn("本轮新生成", result["error"])
         self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
 
-    def test_news_dispatch_requires_both_schedule_and_active_subscription(self):
+    def test_news_dispatch_requires_active_subscription(self):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"], frequency="once_daily")
-        paused = self.service.dispatch_news_after_crawl(
-            crawl_slot="2099-01-01@07:00", slot_label="晨间扫描", items=[{"title": "不会发送"}]
+        queued = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-01@07:00", slot_label="晨间扫描", items=[{"title": "待发送"}]
         )
-        self.assertEqual(paused["skipped"], "schedule_disabled")
-        self.assertEqual(paused["recipient_count"], 0)
-        self.service.update_news_schedule(enabled=True)
+        self.assertEqual(queued["queued_count"], 1)
         self.service.update_subscriber(
             "ou_delivery123", services=["news"], status="paused", frequency="once_daily", report_mode="pdf"
         )
@@ -1388,7 +1453,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             slot_label="晨间扫描",
             items=[{"title": "重试新闻"}],
         )
-        self.assertEqual(queued["retrying_count"], 1)
+        self.assertEqual(queued["queued_count"], 1)
         first = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
         second = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T20:00:00+08:00"))
         self.assertEqual(first["retrying_count"], 1)

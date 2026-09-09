@@ -464,6 +464,7 @@ def subscription_operation_audit_payload(
             "news_categories": [str(item)[:40] for item in (payload.get("newsCategories") or [])[:20]],
             "news_frequency": str(payload.get("newsFrequency") or "")[:40],
             "news_item_limit": payload.get("newsItemLimit"),
+            "news_delivery_times": [str(item)[:20] for item in (payload.get("newsDeliveryTimes") or [])[:2]],
             "report_mode": str(payload.get("reportMode") or "")[:40],
             "status": str(payload.get("status") or "")[:40],
         })
@@ -3345,7 +3346,7 @@ def start_scheduler_with_backend() -> None:
 
         # News discovery runs inside strategic_briefing._run_scan so discovery,
         # review-sheet synchronization and group reporting form one ordered task.
-        # A second 06:30/14:00 worker would race the Feishu write and report stale counts.
+        # A second 05:00/13:00 worker would race the Feishu write and report stale counts.
         print("Strategic briefing monitor started with APP backend", flush=True)
 
 
@@ -8024,6 +8025,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         report_mode=str(payload.get("reportMode") or "pdf"),
                         news_item_limit=int(payload.get("newsItemLimit") or 10),
                         news_categories=payload.get("newsCategories"),
+                        news_delivery_times=payload.get("newsDeliveryTimes"),
                     )
                 elif action == "resetSubscriber":
                     result = service.reset_subscriber(str(payload.get("openId") or ""))

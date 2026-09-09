@@ -65,7 +65,8 @@ REPORT_SCHEDULE_DEFAULT_TIME = "09:00"
 WEEKLY_DELIVERY_MIN_ITEMS = 4
 WEEKLY_DELIVERY_MIN_DETAIL_CHARS = 90
 WEEKLY_DELIVERY_MIN_DETAIL_SENTENCES = 2
-STRATEGIC_SCAN_TIMES_DEFAULT = ("06:30", "14:00")
+STRATEGIC_SCAN_TIMES_DEFAULT = ("05:00", "13:00")
+NEWS_DELIVERY_TIMES_DEFAULT = ("08:00", "18:30")
 OPEN_ID_RE = re.compile(r"^ou_[A-Za-z0-9]+$")
 CHAT_ID_RE = re.compile(r"^oc_[A-Za-z0-9]+$")
 MESSAGE_ID_RE = re.compile(r"^om_[A-Za-z0-9]+$")
@@ -184,6 +185,11 @@ def _card_form_scalar(value: Any) -> str:
     return str(value or "").strip()
 
 
+def _card_time_scalar(value: Any) -> str:
+    match = re.search(r"(?:^|\s)((?:[01]\d|2[0-3]):[0-5]\d)(?:\s|$)", _card_form_scalar(value))
+    return match.group(1) if match else ""
+
+
 def _normalize_strategic_scan_times(value: Any) -> list[str]:
     values = value if isinstance(value, (list, tuple)) else str(value or "").split(",")
     normalized: list[str] = []
@@ -194,6 +200,55 @@ def _normalize_strategic_scan_times(value: Any) -> list[str]:
         if raw not in normalized:
             normalized.append(raw)
     return sorted(normalized) or list(STRATEGIC_SCAN_TIMES_DEFAULT)
+
+
+def _normalize_news_delivery_times(value: Any) -> list[str]:
+    values = value
+    if isinstance(value, str) and value.strip().startswith("["):
+        try:
+            values = json.loads(value)
+        except (ValueError, TypeError, json.JSONDecodeError):
+            values = []
+    if not isinstance(values, (list, tuple)):
+        values = str(value or "").split(",")
+    normalized: list[str] = []
+    for item in values:
+        raw = str(item or "").strip()
+        if re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw) and raw not in normalized:
+            normalized.append(raw)
+    normalized.sort()
+    return normalized if len(normalized) == 2 else list(NEWS_DELIVERY_TIMES_DEFAULT)
+
+
+def _validated_news_delivery_times(value: Any) -> list[str]:
+    values = value
+    if isinstance(value, str) and value.strip().startswith("["):
+        try:
+            values = json.loads(value)
+        except (ValueError, TypeError, json.JSONDecodeError):
+            values = []
+    if not isinstance(values, (list, tuple)):
+        values = str(value or "").split(",")
+    raw_values = [str(item or "").strip() for item in values]
+    if (
+        len(raw_values) != 2
+        or any(not re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", item) for item in raw_values)
+        or len(set(raw_values)) != 2
+    ):
+        raise ValueError("每日个人推送时间必须是两个不同的有效时间")
+    return sorted(raw_values)
+
+
+def _news_delivery_due_at(*, crawl_date: str, delivery_time: str, completed_at: str) -> str:
+    scheduled = datetime.fromisoformat(f"{crawl_date}T{delivery_time}:00").replace(tzinfo=HKT)
+    try:
+        completed = datetime.fromisoformat(str(completed_at or "").replace("Z", "+00:00"))
+        if completed.tzinfo is None:
+            completed = completed.replace(tzinfo=HKT)
+        completed = completed.astimezone(HKT)
+    except ValueError:
+        completed = datetime.now(HKT)
+    return max(scheduled, completed).isoformat(timespec="seconds")
 
 
 def _command_env(environ: dict[str, str] | None = None) -> dict[str, str]:
@@ -217,8 +272,8 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
     introduction = (
         f"{salutation}我是战略竞对中心管家小竞。"
         "为帮助战略部宣传和推广战略情报产品，您可以按需选择战略双周报、运营商业绩摘要或战略新闻，"
-        "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 06:30 和 14:00 执行，"
-        "完成审核后推送，您可以选择每天一次或每天两次。"
+        "报告按后台设定的月度排期自动生成并推送；战略新闻爬虫每日香港时间 05:00 和 13:00 执行，"
+        "个人默认在 08:00 和 18:30 推送，但只有对应爬虫完成审核后才会发送。"
         "感谢您的配合！"
     )
     return {
@@ -230,7 +285,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
             # callback operator_id and acknowledged in that user's DM.
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": "订阅战略情报 · 新闻每日 06:30 / 14:00 扫描"},
+            "summary": {"content": "订阅战略情报 · 新闻每日 05:00 / 13:00 扫描"},
         },
         "header": {
             "title": {"tag": "plain_text", "content": "订阅战略情报"},
@@ -304,6 +359,28 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                                 {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
                             ],
                         },
+                        {"tag": "markdown", "content": "**期待收到战略新闻的时间（香港）**"},
+                        {"tag": "markdown", "content": "第一次（每天一次使用此时间）"},
+                        {
+                            "tag": "picker_time",
+                            "name": "news_delivery_time_morning",
+                            "required": True,
+                            "width": "fill",
+                            "initial_time": NEWS_DELIVERY_TIMES_DEFAULT[0],
+                        },
+                        {"tag": "markdown", "content": "第二次（仅每天两次使用）"},
+                        {
+                            "tag": "picker_time",
+                            "name": "news_delivery_time_afternoon",
+                            "required": True,
+                            "width": "fill",
+                            "initial_time": NEWS_DELIVERY_TIMES_DEFAULT[1],
+                        },
+                        {
+                            "tag": "markdown",
+                            "content": "<font color='grey'>每天一次只使用第一个时间；每天两次使用两个时间。</font>",
+                            "text_size": "notation",
+                        },
                         {"tag": "markdown", "content": "**感兴趣的战略新闻板块（最多4个）**"},
                         {
                             "tag": "multi_select_static",
@@ -331,7 +408,7 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日香港时间 06:30、14:00 扫描，爬虫完成审核后推送。每天一次仅接收当日首轮结果，新闻始终以文字消息发送。</font>",
+                            "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日 05:00、13:00 扫描，个人默认 08:00、18:30 推送。只有对应爬虫完成审核后才会发送；每天一次仅接收当日首轮结果。</font>",
                             "text_size": "notation",
                         },
                         {
@@ -371,6 +448,7 @@ def subscription_confirmation_card(
     frequency_label: str,
     category_labels: str,
     news_item_limit: int,
+    news_delivery_times: Any = None,
 ) -> dict[str, Any]:
     """Compact Card 2.0 receipt sent after a subscription is saved."""
     name = re.sub(r"\s+", " ", str(display_name or "").strip())[:80] or "您好"
@@ -382,6 +460,7 @@ def subscription_confirmation_card(
         item_limit = int(news_item_limit)
     except (TypeError, ValueError):
         item_limit = 10
+    delivery_times = _normalize_news_delivery_times(news_delivery_times)
     return {
         "schema": "2.0",
         "config": {
@@ -463,6 +542,7 @@ def subscription_confirmation_card(
                                     ],
                                 },
                                 {"tag": "markdown", "content": f"**兴趣板块**\n{categories}"},
+                                {"tag": "markdown", "content": f"**期待收到时间（香港）**\n{' / '.join(delivery_times)}"},
                             ],
                         }
                     ],
@@ -679,6 +759,7 @@ class SubscriptionService:
                     report_mode TEXT NOT NULL DEFAULT 'pdf',
                     news_item_limit INTEGER NOT NULL DEFAULT 10,
                     news_categories TEXT NOT NULL DEFAULT '[]',
+                    news_delivery_times TEXT NOT NULL DEFAULT '["08:00","18:30"]',
                     source_chat_id TEXT NOT NULL DEFAULT '',
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
@@ -858,12 +939,20 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_item_limit INTEGER NOT NULL DEFAULT 10")
             if "news_categories" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_categories TEXT NOT NULL DEFAULT '[]'")
+            if "news_delivery_times" not in columns:
+                db.execute(
+                    "ALTER TABLE subscribers ADD COLUMN news_delivery_times TEXT NOT NULL DEFAULT '[\"08:00\",\"18:30\"]'"
+                )
             if "default_preferences" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN default_preferences TEXT NOT NULL DEFAULT '{}'")
             for row in db.execute("SELECT * FROM subscribers WHERE default_preferences='{}'").fetchall():
                 services = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (row["open_id"],))]
                 defaults = {key: row[key] for key in ("status", "frequency", "report_mode", "news_item_limit")}
-                defaults.update(services=services, news_categories=normalize_news_categories(row["news_categories"]))
+                defaults.update(
+                    services=services,
+                    news_categories=normalize_news_categories(row["news_categories"]),
+                    news_delivery_times=_normalize_news_delivery_times(row["news_delivery_times"]),
+                )
                 db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
             all_categories_json = json.dumps(list(NEWS_CATEGORY_LABELS), ensure_ascii=False, separators=(",", ":"))
             for row in db.execute("SELECT open_id, news_categories FROM subscribers").fetchall():
@@ -873,6 +962,16 @@ class SubscriptionService:
                     db.execute(
                         "UPDATE subscribers SET news_categories=? WHERE open_id=?",
                         (serialized or all_categories_json, str(row["open_id"])),
+                    )
+            for row in db.execute("SELECT open_id, news_delivery_times FROM subscribers").fetchall():
+                times_json = json.dumps(
+                    _normalize_news_delivery_times(row["news_delivery_times"]),
+                    separators=(",", ":"),
+                )
+                if times_json != str(row["news_delivery_times"] or ""):
+                    db.execute(
+                        "UPDATE subscribers SET news_delivery_times=? WHERE open_id=?",
+                        (times_json, str(row["open_id"])),
                     )
             db.execute(
                 "UPDATE subscribers SET news_item_limit=10 WHERE news_item_limit NOT IN (5,10,15,20)"
@@ -891,7 +990,9 @@ class SubscriptionService:
             legacy_pending_ids = [
                 int(row[0])
                 for row in db.execute(
-                    "SELECT delivery_id FROM pending_subscription_deliveries WHERE service='news' AND status='queued'"
+                    """SELECT delivery_id FROM pending_subscription_deliveries
+                       WHERE service='news' AND status='queued'
+                         AND frequency NOT IN ('scheduled_after_crawl', 'crawl_retry')"""
                 ).fetchall()
             ]
             if legacy_pending_ids:
@@ -901,7 +1002,10 @@ class SubscriptionService:
                     legacy_pending_ids,
                 )
                 db.execute(
-                    "UPDATE pending_subscription_deliveries SET status='superseded', last_error='已改为战略爬虫完成后推送' WHERE service='news' AND status='queued'"
+                    """UPDATE pending_subscription_deliveries
+                       SET status='superseded', last_error='已改为战略爬虫完成后推送'
+                       WHERE service='news' AND status='queued'
+                         AND frequency NOT IN ('scheduled_after_crawl', 'crawl_retry')"""
                 )
             pending_columns = {
                 str(row[1])
@@ -1028,6 +1132,7 @@ class SubscriptionService:
         report_mode: str = "pdf",
         news_item_limit: int = 10,
         news_categories: Any = None,
+        news_delivery_times: Any = None,
     ) -> dict[str, Any]:
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
@@ -1052,18 +1157,30 @@ class SubscriptionService:
         if "news" in normalized and len(normalized_categories) > MAX_NEWS_CATEGORIES:
             raise ValueError("战略新闻兴趣板块最多选择4个，请取消多余选项后保存")
         categories_json = json.dumps(normalized_categories, ensure_ascii=False, separators=(",", ":"))
+        delivery_times_supplied = news_delivery_times is not None
+        normalized_delivery_times = (
+            _validated_news_delivery_times(news_delivery_times)
+            if delivery_times_supplied
+            else list(NEWS_DELIVERY_TIMES_DEFAULT)
+        )
+        delivery_times_json = json.dumps(normalized_delivery_times, separators=(",", ":"))
         now = _now_hkt()
         with closing(self._connect()) as db, db:
             db.execute(
-                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, news_item_limit, news_categories, source_chat_id, created_at, updated_at)
-                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?)
+                """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, news_item_limit, news_categories, news_delivery_times, source_chat_id, created_at, updated_at)
+                   VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?, ?)
                    ON CONFLICT(open_id) DO UPDATE SET display_name=excluded.display_name,
                    callback_open_id=excluded.callback_open_id, union_id=excluded.union_id,
                    status='active', frequency=excluded.frequency, report_mode=excluded.report_mode,
                    news_item_limit=excluded.news_item_limit, news_categories=excluded.news_categories,
+                   news_delivery_times=CASE WHEN ?=1 THEN excluded.news_delivery_times ELSE subscribers.news_delivery_times END,
                    source_chat_id=excluded.source_chat_id,
                    updated_at=excluded.updated_at""",
-                (open_id, callback_open_id, union_id, display_name, frequency, report_mode, news_item_limit, categories_json, source_chat_id, now, now),
+                (
+                    open_id, callback_open_id, union_id, display_name, frequency, report_mode,
+                    news_item_limit, categories_json, delivery_times_json, source_chat_id, now, now,
+                    int(delivery_times_supplied),
+                ),
             )
             for service in VALID_SERVICES:
                 db.execute(
@@ -1082,6 +1199,8 @@ class SubscriptionService:
             "news_item_limit": news_item_limit,
             "news_categories": normalized_categories,
             "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in normalized_categories],
+            "news_delivery_times": normalized_delivery_times,
+            "news_delivery_times_text": " / ".join(normalized_delivery_times),
             "report_cadence": "biweekly_on_publish",
             "report_cadence_label": REPORT_CADENCE_LABEL,
             "report_mode": report_mode,
@@ -1106,6 +1225,7 @@ class SubscriptionService:
         report_mode = "pdf"
         news_item_limit = 10
         news_categories = list(NEWS_CATEGORY_LABELS)
+        news_delivery_times = list(NEWS_DELIVERY_TIMES_DEFAULT)
         if not is_pause:
             try:
                 form = json.loads(form_raw or "{}")
@@ -1152,6 +1272,10 @@ class SubscriptionService:
                 raise ValueError("请选择有效的报告接收形式")
             if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
                 raise ValueError("请选择有效的每次战略新闻条数")
+            news_delivery_times = _validated_news_delivery_times([
+                _card_time_scalar(form.get("news_delivery_time_morning")) or NEWS_DELIVERY_TIMES_DEFAULT[0],
+                _card_time_scalar(form.get("news_delivery_time_afternoon")) or NEWS_DELIVERY_TIMES_DEFAULT[1],
+            ])
         open_id = str(event.get("operator_id") or "")
         chat_id = str(event.get("chat_id") or "")
         message_id = str(event.get("message_id") or "")
@@ -1254,10 +1378,11 @@ class SubscriptionService:
             report_mode=report_mode,
             news_item_limit=news_item_limit,
             news_categories=news_categories,
+            news_delivery_times=news_delivery_times,
         )
         # A person's latest submission is their restore point; admin edits never replace it.
         with closing(self._connect()) as db, db:
-            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories")}
+            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories", "news_delivery_times")}
             defaults["status"] = "active"
             db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), identity["open_id"]))
         record_invitation_response("accepted")
@@ -1286,6 +1411,7 @@ class SubscriptionService:
                 frequency_label=saved["frequency_label"],
                 category_labels=category_labels,
                 news_item_limit=saved["news_item_limit"],
+                news_delivery_times=saved["news_delivery_times"],
             ),
             idempotency_key=f"suback-{event_id}"[:50],
             profile=source_profile,
@@ -1297,7 +1423,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int | None = None) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.default_preferences,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.news_delivery_times, s.default_preferences,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -1367,6 +1493,7 @@ class SubscriptionService:
                     "report_mode": str(default_preferences.get("report_mode") or "pdf"),
                     "frequency": _normalize_news_frequency(str(default_preferences.get("frequency") or "once_daily")),
                     "news_item_limit": int(default_preferences.get("news_item_limit") or 10),
+                    "news_delivery_times": _normalize_news_delivery_times(default_preferences.get("news_delivery_times")),
                     "status": str(default_preferences.get("status") or "active"),
                 }
             response_evidence = latest_group_response_by_delivery.get(str(row["open_id"]))
@@ -1388,6 +1515,8 @@ class SubscriptionService:
                     NEWS_CATEGORY_LABELS[item]
                     for item in normalize_news_categories(row["news_categories"])
                 ],
+                "news_delivery_times": _normalize_news_delivery_times(row["news_delivery_times"]),
+                "news_delivery_times_text": " / ".join(_normalize_news_delivery_times(row["news_delivery_times"])),
                 "news_frequency": str(row["frequency"]),
                 "news_frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
                 "frequency_label": FREQUENCY_LABELS.get(str(row["frequency"]), str(row["frequency"])),
@@ -1472,12 +1601,12 @@ class SubscriptionService:
             ).fetchone()
         return {
             "service": "news",
-            "enabled": bool(row["enabled"]) if row else False,
+            "enabled": True,
             "times": times,
             "times_text": " / ".join(times),
             "timezone": "Asia/Hong_Kong",
             "timezone_label": "香港时间",
-            "dispatch_rule": "爬虫完成审核后推送",
+            "dispatch_rule": "个人按本人设定时间推送，且必须等对应爬虫完成",
             "updated_at": str(row["updated_at"] or "") if row else "",
         }
 
@@ -1542,6 +1671,8 @@ class SubscriptionService:
     def automatic_delivery_enabled(self, service: str) -> bool:
         if service not in {"news", "weekly", "performance"}:
             return False
+        if service == "news":
+            return True
         with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT enabled FROM report_automation_schedule WHERE service=?",
@@ -2518,12 +2649,13 @@ class SubscriptionService:
         report_mode: str = "pdf",
         news_item_limit: int = 10,
         news_categories: Any = None,
+        news_delivery_times: Any = None,
     ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
             raise ValueError("订阅者状态只能是 active 或 paused")
         with closing(self._connect()) as db, db:
             row = db.execute(
-                "SELECT display_name, source_chat_id, callback_open_id, union_id, news_categories FROM subscribers WHERE open_id=?",
+                "SELECT display_name, source_chat_id, callback_open_id, union_id, news_categories, news_delivery_times FROM subscribers WHERE open_id=?",
                 (open_id,),
             ).fetchone()
         if row is None:
@@ -2534,6 +2666,7 @@ class SubscriptionService:
                 defaults = {key: current[key] for key in ("status", "frequency", "report_mode", "news_item_limit")}
                 defaults["services"] = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (open_id,))]
                 defaults["news_categories"] = normalize_news_categories(current["news_categories"])
+                defaults["news_delivery_times"] = _normalize_news_delivery_times(current["news_delivery_times"])
                 db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), open_id))
         result = self.save_subscriptions(
             open_id,
@@ -2549,6 +2682,11 @@ class SubscriptionService:
                 news_categories
                 if news_categories is not None
                 else normalize_news_categories(row["news_categories"])
+            ),
+            news_delivery_times=(
+                news_delivery_times
+                if news_delivery_times is not None
+                else _normalize_news_delivery_times(row["news_delivery_times"])
             ),
         )
         with closing(self._connect()) as db, db:
@@ -3061,7 +3199,7 @@ class SubscriptionService:
         items: list[dict[str, Any]],
         completed_at: str = "",
     ) -> dict[str, Any]:
-        """Push one crawler-completion digest using each subscriber's daily count."""
+        """Queue a personal digest only after its crawler round is complete."""
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}@\d{2}:\d{2}", str(crawl_slot or "")):
             raise ValueError("战略爬虫轮次标识无效")
         if not self.automatic_delivery_enabled("news"):
@@ -3084,11 +3222,12 @@ class SubscriptionService:
         crawl_date = crawl_slot[:10]
         crawl_time = crawl_slot[11:]
         delivery_window = "morning" if crawl_time < "12:00" else "afternoon"
+        effective_completed_at = completed_at or _now_hkt()
         content_ref = f"{NEWS_CRAWL_REF_PREFIX}{crawl_slot}"
         period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
         with closing(self._connect()) as db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_categories FROM subscribers s
+                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_categories, s.news_delivery_times FROM subscribers s
                    JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service='news' AND x.active=1
                    ORDER BY s.open_id"""
@@ -3099,10 +3238,26 @@ class SubscriptionService:
             frequency = _normalize_news_frequency(str(row["frequency"] or "once_daily"))
             if frequency not in VALID_FREQUENCIES:
                 frequency = "once_daily"
+            if frequency == "once_daily" and delivery_window == "afternoon":
+                results.append({
+                    "open_id": open_id,
+                    "frequency": frequency,
+                    "status": "skipped",
+                    "reason": "once_daily_morning_only",
+                    "message_ids": [],
+                })
+                continue
             news_item_limit = int(row["news_item_limit"] or 10)
             if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
                 news_item_limit = 10
             news_categories = normalize_news_categories(row["news_categories"])
+            delivery_times = _normalize_news_delivery_times(row["news_delivery_times"])
+            delivery_time = delivery_times[0] if delivery_window == "morning" else delivery_times[1]
+            due_at = _news_delivery_due_at(
+                crawl_date=crawl_date,
+                delivery_time=delivery_time,
+                completed_at=effective_completed_at,
+            )
             recipient_items = filter_news_by_categories(
                 clean_items,
                 news_categories,
@@ -3139,7 +3294,7 @@ class SubscriptionService:
                     """INSERT OR IGNORE INTO news_crawl_dispatches(
                            open_id, dispatch_key, crawl_slot, crawl_date, frequency,
                            status, created_at, updated_at
-                       ) SELECT ?, ?, ?, ?, ?, 'sending', ?, ?
+                       ) SELECT ?, ?, ?, ?, ?, 'queued', ?, ?
                          WHERE ?=0""",
                     (
                         open_id, dispatch_key, crawl_slot, crawl_date, frequency,
@@ -3161,7 +3316,7 @@ class SubscriptionService:
             with closing(self._connect()) as db, db:
                 cursor = db.execute(
                     """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
-                       VALUES(?, ?, 'news', 'text', ?, 'sending', '[]', '', ?)""",
+                       VALUES(?, ?, 'news', 'text', ?, 'queued', '[]', '', ?)""",
                     (batch_id, open_id, content_ref, now),
                 )
                 delivery_id = int(cursor.lastrowid)
@@ -3170,60 +3325,35 @@ class SubscriptionService:
                        WHERE open_id=? AND dispatch_key=?""",
                     (delivery_id, now, open_id, dispatch_key),
                 )
-            message_ids: list[str] = []
-            status = "verified"
-            error = ""
-            try:
-                message_ids = self._deliver_one(
-                    open_id=open_id,
-                    service="news",
-                    mode="text",
-                    content_ref=content_ref,
-                    title=title,
-                    body=body,
-                    batch_id=batch_id,
-                    profile=self.delivery_profile,
-                )
-            except Exception as exc:
-                status = "retrying"
-                error = str(exc)[:900]
             with closing(self._connect()) as db, db:
                 db.execute(
-                    "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
-                    (status, json.dumps(message_ids), error, delivery_id),
+                    """INSERT INTO pending_subscription_deliveries(
+                           delivery_id, open_id, service, mode, content_ref, title, body,
+                           frequency, due_at, status, created_at
+                       ) VALUES(?, ?, 'news', 'text', ?, ?, ?, 'scheduled_after_crawl', ?, 'queued', ?)""",
+                    (delivery_id, open_id, content_ref, title, body, due_at, _now_hkt()),
                 )
-                db.execute(
-                    """UPDATE news_crawl_dispatches
-                       SET status=?, message_ids=?, last_error=?, updated_at=?
-                       WHERE open_id=? AND dispatch_key=?""",
-                    (status, json.dumps(message_ids), error, _now_hkt(), open_id, dispatch_key),
-                )
-                if status == "retrying":
-                    retry_at = (datetime.now().astimezone() + timedelta(minutes=15)).isoformat(timespec="seconds")
-                    db.execute(
-                        """INSERT INTO pending_subscription_deliveries(
-                               delivery_id, open_id, service, mode, content_ref, title, body,
-                               frequency, due_at, status, created_at
-                           ) VALUES(?, ?, 'news', 'text', ?, ?, ?, 'crawl_retry', ?, 'queued', ?)""",
-                        (delivery_id, open_id, content_ref, title, body, retry_at, _now_hkt()),
-                    )
             results.append({
                 "open_id": open_id,
                 "frequency": frequency,
                 "news_item_limit": news_item_limit,
                 "news_categories": news_categories,
                 "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in news_categories],
-                "status": status,
-                "message_ids": message_ids,
-                "error": error,
+                "news_delivery_times": delivery_times,
+                "delivery_time": delivery_time,
+                "status": "queued",
+                "due_at": due_at,
+                "message_ids": [],
+                "error": "",
             })
         return {
             "crawl_slot": crawl_slot,
-            "completed_at": completed_at or _now_hkt(),
+            "completed_at": effective_completed_at,
             "schedule_enabled": True,
             "recipient_count": len(results),
             "verified_count": sum(1 for item in results if item["status"] == "verified"),
             "retrying_count": sum(1 for item in results if item["status"] == "retrying"),
+            "queued_count": sum(1 for item in results if item["status"] == "queued"),
             "skipped_count": sum(1 for item in results if item["status"] == "skipped"),
             "results": results,
         }

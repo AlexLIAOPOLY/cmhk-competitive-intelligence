@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=22', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=39', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=23', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=40', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -59,7 +59,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
         self.assertIn("data-subscriber-news-limit", SCRIPT)
         self.assertIn("newsItemLimit", SCRIPT)
-        self.assertIn(".subscriber-table table { min-width: 1500px; table-layout: fixed; }", STYLE)
+        self.assertIn(".subscriber-table table { min-width: 1720px; table-layout: fixed; }", STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)
@@ -87,8 +87,10 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('.subscriber-dependent-setting[hidden], .subscriber-setting-empty[hidden] { display: none; }', STYLE)
 
     def test_automatic_delivery_requires_subscription_and_saved_schedule(self):
-        self.assertIn('id="newsScheduleForm"', SCRIPT)
-        self.assertIn('action: "updateNewsSchedule"', SCRIPT)
+        self.assertIn("个人期待收到信息的时间", SCRIPT)
+        self.assertIn("data-subscriber-news-time", SCRIPT)
+        self.assertIn("newsDeliveryTimes", SCRIPT)
+        self.assertIn('.news-schedule-heading, #newsScheduleForm, #newsScheduleForm + .push-divider { display: none; }', STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertIn("执行日先生成当天最新周报", SCRIPT)
 
@@ -133,7 +135,7 @@ class SubscriptionAdminTests(unittest.TestCase):
 
     def test_admin_shows_group_invitation_delivery_and_live_response_count(self):
         self.assertIn("group_invitations", SCRIPT)
-        self.assertIn("已发送并回读", SCRIPT)
+        self.assertIn("已确认发送", SCRIPT)
         self.assertIn("已选择 ${number(responseCount)} 人", SCRIPT)
         self.assertIn("group-response-list", SCRIPT)
         self.assertIn("window.setInterval", SCRIPT)
@@ -207,8 +209,8 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('data-reset-subscriber', subscriber_row)
         self.assertIn('data-save-subscriber', subscriber_row)
         self.assertIn('data-manual-push-person', subscriber_row)
-        self.assertIn('colspan="9" class="empty">没有匹配的订阅者', SCRIPT)
-        self.assertIn('.subscriber-table th:nth-child(9)', STYLE)
+        self.assertIn('colspan="10" class="empty">没有匹配的订阅者', SCRIPT)
+        self.assertIn('.subscriber-table th:nth-child(10)', STYLE)
 
     def test_subscriber_reset_highlights_only_when_current_differs_from_default(self):
         self.assertIn("function subscriberDiffersFromDefault(item)", SCRIPT)

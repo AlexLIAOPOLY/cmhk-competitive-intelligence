@@ -98,7 +98,7 @@ def discovery_rows(payload: dict[str, Any], *, plans: list[dict[str, Any]] | Non
         ))
     for index, reference in enumerate(payload.get("previous_day_references") or [], start=1):
         rows.append(_row(
-            run_id=run_id, stage="前一日09:00／14:00新闻参考", subject=_text(reference.get("title")), action="新闻参考",
+            run_id=run_id, stage="前一日05:00／13:00新闻参考", subject=_text(reference.get("title")), action="新闻参考",
             url=_text(reference.get("url") or reference.get("source_url")), result="仅作线索",
             value=_text(reference.get("summary") or reference.get("snippet")), reason=_text(reference.get("reference_run")),
             handoff="03:00若命中四库字段则追官方原文", timestamp=timestamp, discriminator=f"news-{index}",
