@@ -14,6 +14,7 @@
     manualWeeklyPath: "", weeklyPickerOpen: false, weeklyPickerQuery: "", weeklyPickerBusy: false,
     manualPerformancePath: "", performancePickerOpen: false, performancePickerQuery: "", performancePickerBusy: false,
     manualPushJob: null,
+    selectedInviteUsers: new Set(), selectedInviteGroups: new Set(),
   };
   const subscriberDrafts = new Map();
   let noticeTimer = 0;
@@ -260,15 +261,26 @@
     return `${people ? `<div class="result-section-label">人员 · ${number(state.searchResults.length)}</div>${people}` : ""}${chats ? `<div class="result-section-label">群聊 · ${number(state.chatSearchResults.length)}</div>${chats}` : ""}`;
   }
 
+  function currentGroupInvitations() {
+    const seen = new Set();
+    return (state.data?.group_invitations || []).filter((item) => {
+      const key = item.target_id || item.message_id;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }
+
   function candidateRows() {
     const rows = state.data?.invite_candidates || [];
-    const groups = state.data?.group_invitations || [];
+    const groups = currentGroupInvitations();
     if (!rows.length && !groups.length) return '<p class="empty compact">尚无待邀请人员或已发送的群邀请</p>';
     const groupRows = groups.map((item) => {
       const responses = item.responses || [];
       const responseCount = Number(item.response_count || responses.length || 0);
       const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已选择" : "已确认发送", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
       return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${responseCount ? "accepted" : "verified"}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
+        <input type="checkbox" value="${esc(item.target_id)}" data-invite-group-candidate data-invite-group-name="${esc(item.target_name)}" aria-label="选择群聊 ${esc(item.target_name)}"${state.selectedInviteGroups.has(item.target_id) ? " checked" : ""}>
         <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · ${esc(item.message_id)}</small></span>
         <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已确认发送"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
       </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
@@ -278,7 +290,7 @@
       const rawStatus = item.latest_invitation?.status || "pending";
       const filterStatus = ["accepted", "responded"].includes(rawStatus) ? "accepted" : rawStatus === "verified" ? "verified" : ["failed", "paused"].includes(rawStatus) ? "issue" : "pending";
       return `<label class="invite-row" data-invite-filter-row data-filter-kind="person" data-filter-status="${filterStatus}" data-filter-text="${esc(filterText)}">
-      <input type="checkbox" value="${esc(item.callback_open_id)}" data-invite-candidate>
+      <input type="checkbox" value="${esc(item.callback_open_id)}" data-invite-candidate${state.selectedInviteUsers.has(item.callback_open_id) ? " checked" : ""}>
       ${avatar(item)}<span class="person-copy"><strong>${esc(item.display_name)}</strong><small>${esc((item.department_names || []).join(" / ") || item.job_title || "已验证飞书用户")}</small></span>
       <span class="invite-meta"><span class="status ${esc(item.latest_invitation?.status || "pending")}">${esc(invitationStatus(item.latest_invitation?.status || "未邀请"))}</span><small>${esc(item.latest_invitation?.sent_at || "未发送")}</small></span>
     </label>`;
@@ -546,7 +558,7 @@
       ? { top: previousTable.scrollTop, left: previousTable.scrollLeft }
       : null;
     const inviteCount = (data.invite_candidates || []).length;
-    const groupInviteCount = (data.group_invitations || []).length;
+    const groupInviteCount = currentGroupInvitations().length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const performanceSchedule = data.performance_schedule || { days: [15, 30], time: "09:00", enabled: false };
     const newsSchedule = data.strategic_news_schedule || { enabled: false, times_text: "05:00 / 13:00", delivery_times: ["08:00", "18:30"], delivery_times_text: "08:00 / 18:30", timezone_label: "香港时间", dispatch_rule: "个人推送必须等对应爬虫完成；群内仍在爬完后立即发送" };
@@ -728,14 +740,19 @@
     }, location.origin);
   }
 
+  async function requestSubscription(payload) {
+    const response = await fetch("/api/subscriptions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+    const result = await response.json();
+    if (!response.ok || !result.ok) throw new Error(result.error || `HTTP ${response.status}`);
+    return result;
+  }
+
   async function post(payload, pendingText) {
     state.notice = pendingText;
     state.noticeKind = "";
     render();
     document.querySelectorAll("button").forEach((button) => { button.disabled = true; });
-    const response = await fetch("/api/subscriptions", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
-    const result = await response.json();
-    if (!response.ok || !result.ok) throw new Error(result.error || `HTTP ${response.status}`);
+    const result = await requestSubscription(payload);
     if (["update", "resetSubscriber"].includes(payload.action)) subscriberDrafts.delete(payload.openId);
     const evidence = result.result?.message_id || result.result?.batch_id || "已完成";
     state.notice = `操作成功：${evidence}`;
@@ -968,11 +985,46 @@
     }
     if (event.target.closest("[data-send-invites]")) {
       const ids = Array.from(document.querySelectorAll("[data-invite-candidate]:checked")).map((item) => item.value);
-      if (!ids.length) { state.notice = "请先勾选要邀请的人员。"; state.noticeKind = "error"; render(); return; }
-      const confirmed = await window.CMHKDialog.confirm({ title: `向选中的 ${ids.length} 人发送邀请？`, message: `系统将只向当前选中的 ${ids.length} 人发送订阅邀请。`, detail: "发送后将逐人回读消息状态，未选中的成员不会收到邀请。", confirmLabel: `发送给 ${ids.length} 人` });
+      const groups = Array.from(document.querySelectorAll("[data-invite-group-candidate]:checked"), (item) => ({ id: item.value, name: item.dataset.inviteGroupName || "飞书群聊" }));
+      if (!ids.length && !groups.length) { state.notice = "请先勾选要邀请的人员或群聊。"; state.noticeKind = "error"; render(); return; }
+      const targetSummary = [ids.length ? `${ids.length} 人` : "", groups.length ? `${groups.length} 个群` : ""].filter(Boolean).join("、");
+      const confirmed = await window.CMHKDialog.confirm({ title: `向选中的${targetSummary}发送邀请？`, message: `系统将向当前选中的${targetSummary}发送订阅邀请卡片。`, detail: "群内每个人将各自填写订阅偏好；发送后逐项回读，未选中的对象不会收到邀请。", confirmLabel: `发送给${targetSummary}` });
       if (!confirmed) return;
-      try { await post({ action: "invite", callbackOpenIds: ids, confirmInvite: true }, "正在逐人发送邀请并回读消息…"); }
-      catch (error) { state.notice = `邀请发送失败：${error.message}`; state.noticeKind = "error"; render(); }
+      state.notice = `正在向选中的${targetSummary}发送邀请并回读…`;
+      state.noticeKind = "";
+      render();
+      document.querySelectorAll("button").forEach((button) => { button.disabled = true; });
+      let sentPeople = 0;
+      let sentGroups = 0;
+      const failures = [];
+      if (ids.length) {
+        try {
+          const payload = await requestSubscription({ action: "invite", callbackOpenIds: ids, confirmInvite: true });
+          const result = payload.result || {};
+          sentPeople = Number(result.sent_count || 0);
+          (result.results || []).forEach((item) => {
+            if (item.status === "failed") failures.push(`${item.display_name || "人员"}：${item.error || "发送失败"}`);
+            else state.selectedInviteUsers.delete(item.callback_open_id);
+          });
+        } catch (error) { failures.push(`人员邀请：${error.message}`); }
+      }
+      for (const group of groups) {
+        try {
+          await requestSubscription({ action: "inviteTarget", targetId: group.id, targetType: "chat", confirmInvite: true });
+          sentGroups += 1;
+          state.selectedInviteGroups.delete(group.id);
+        } catch (error) { failures.push(`${group.name}：${error.message}`); }
+      }
+      const sentSummary = [sentPeople ? `${sentPeople} 人` : "", sentGroups ? `${sentGroups} 个群` : ""].filter(Boolean).join("、") || "0 个对象";
+      state.notice = failures.length ? `已发送 ${sentSummary}；${failures.length} 项失败，可保留勾选后重试` : `集体邀请已发送：${sentSummary}`;
+      state.noticeKind = failures.length ? "error" : "success";
+      try { await loadData({ keepNotice: true }); }
+      catch (error) {
+        state.notice = `${state.notice}；列表刷新失败：${error.message}`;
+        state.noticeKind = "error";
+        render();
+      }
+      if (sentPeople || sentGroups) announceDeliveredMessage("invite", sentSummary);
       return;
     }
     const reset = event.target.closest("[data-reset-subscriber]");
@@ -1048,6 +1100,18 @@
   });
 
   document.addEventListener("change", (event) => {
+    const inviteUser = event.target.closest("[data-invite-candidate]");
+    if (inviteUser) {
+      if (inviteUser.checked) state.selectedInviteUsers.add(inviteUser.value);
+      else state.selectedInviteUsers.delete(inviteUser.value);
+      return;
+    }
+    const inviteGroup = event.target.closest("[data-invite-group-candidate]");
+    if (inviteGroup) {
+      if (inviteGroup.checked) state.selectedInviteGroups.add(inviteGroup.value);
+      else state.selectedInviteGroups.delete(inviteGroup.value);
+      return;
+    }
     const deliveryFilter = event.target.closest("[data-delivery-filter]");
     if (deliveryFilter) {
       state.deliveryFilters[deliveryFilter.dataset.deliveryFilter] = deliveryFilter.value;

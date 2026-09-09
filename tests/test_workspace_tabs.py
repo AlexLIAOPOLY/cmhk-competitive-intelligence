@@ -220,7 +220,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn(":not(.workspace-ai-active) .workspace-panel", STYLE)
         self.assertIn("background-color: rgba(7, 29, 41, .56) !important", STYLE)
         self.assertIn("backdrop-filter: blur(7px) saturate(120%)", STYLE)
-        self.assertIn('/static/subscription-admin.css?v=35', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=38', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
 
     def test_subscription_management_uses_server_and_feishu_delivery(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
@@ -231,7 +231,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn('action: "pushLatestAsync"', SUBSCRIPTION_SCRIPT)
         self.assertIn('announceDeliveredMessage(payload.action, evidence)', SUBSCRIPTION_SCRIPT)
         self.assertIn("strategic_news_schedule", SUBSCRIPTION_SCRIPT)
-        self.assertIn("个人期待收到信息的时间", SUBSCRIPTION_SCRIPT)
+        self.assertIn("新闻接收时间（香港时间）", SUBSCRIPTION_SCRIPT)
         self.assertIn("05:00 / 13:00", SUBSCRIPTION_SCRIPT)
         self.assertIn("推送记录", SUBSCRIPTION_SCRIPT)
         self.assertIn("confirmBulk", SUBSCRIPTION_SCRIPT)

@@ -214,7 +214,7 @@ select:focus, input:focus, textarea:focus { border-color: #55aabd; box-shadow: 0
 .group-invite-record { min-width: 0; }
 .group-invite-record > summary { list-style: none; cursor: pointer; }
 .group-invite-record > summary::-webkit-details-marker { display: none; }
-.group-invite-row { grid-template-columns: auto minmax(0,1fr) auto; }
+.group-invite-row { grid-template-columns: auto auto minmax(0,1fr) auto; }
 .group-response-list { display: grid; gap: 7px; padding: 8px 12px 10px 47px; border-bottom: 1px solid rgba(41,73,86,.72); background: rgba(7,28,38,.44); }
 .group-response-list > span { display: flex; min-width: 0; align-items: center; gap: 8px; }
 .group-response-list .avatar, .group-response-list .avatar-stack { width: 24px; height: 24px; flex-basis: 24px; }
@@ -319,8 +319,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .invite-list-main { padding: 4px 10px 14px; }
   .form-row { grid-template-columns: 1fr; }
   .invite-row { grid-template-columns: auto auto minmax(0,1fr); }
-  .group-invite-row { grid-template-columns: auto minmax(0,1fr); }
-  .group-invite-row .invite-meta { grid-column: 2; }
+  .group-invite-row { grid-template-columns: auto auto minmax(0,1fr); }
+  .group-invite-row .invite-meta { grid-column: 3; }
   .group-response-list { padding-left: 46px; }
   .invite-meta { grid-column: 3; justify-items: start; }
   .push-workbench { padding: 0 14px; }

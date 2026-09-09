@@ -12,7 +12,7 @@ class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=23', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=40', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.js?v=43', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -135,6 +135,12 @@ class SubscriptionAdminTests(unittest.TestCase):
 
     def test_admin_shows_group_invitation_delivery_and_live_response_count(self):
         self.assertIn("group_invitations", SCRIPT)
+        self.assertIn("data-invite-group-candidate", SCRIPT)
+        self.assertIn("selectedInviteGroups", SCRIPT)
+        self.assertIn("currentGroupInvitations", SCRIPT)
+        self.assertIn("请先勾选要邀请的人员或群聊", SCRIPT)
+        self.assertIn('targetType: "chat"', SCRIPT)
+        self.assertIn("群内每个人将各自填写订阅偏好", SCRIPT)
         self.assertIn("已确认发送", SCRIPT)
         self.assertIn("已选择 ${number(responseCount)} 人", SCRIPT)
         self.assertIn("group-response-list", SCRIPT)
