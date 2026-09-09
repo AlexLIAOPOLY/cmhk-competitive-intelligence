@@ -2024,11 +2024,32 @@ def standalone_research_process_running() -> bool:
 
 def run_cycle(*, dry_run: bool = False) -> dict[str, object]:
     """Dispatch the six-agent daily workflow without the old URL/recrawl chain."""
-    from data_curation.daily_research import dispatch
+    from data_curation.daily_research import active_dispatch, dispatch
     now = datetime.now(HKT)
-    busy = not dry_run and (crawl_process_running() or agent_audit_process_running() or standalone_research_process_running())
-    research = ({"ok": True, "skipped": "existing_crawl_or_audit_running"} if busy
-                else dispatch(ROOT, now, dry_run=dry_run))
+    crawl_or_audit_busy = not dry_run and (crawl_process_running() or agent_audit_process_running())
+    standalone_busy = not dry_run and standalone_research_process_running()
+    active_research = active_dispatch(ROOT, now) if standalone_busy else {}
+    busy = crawl_or_audit_busy or standalone_busy
+    research = (
+        active_research
+        if active_research
+        else {"ok": True, "skipped": "existing_crawl_or_audit_running"}
+        if busy
+        else dispatch(ROOT, now, dry_run=dry_run)
+    )
+    if _SCHEDULER_HEARTBEAT is not None:
+        if research.get("status") == "running":
+            _SCHEDULER_HEARTBEAT.update(
+                status="running",
+                stage="four_database_research",
+                crawl_run_id=str(research.get("task_run_id") or research.get("run_id") or ""),
+                research_run_id=str(research.get("run_id") or ""),
+                worker_pid=int(research.get("pid") or 0),
+            )
+        elif not crawl_or_audit_busy:
+            _SCHEDULER_HEARTBEAT.update(
+                status="idle", stage="polling", crawl_run_id="", research_run_id="", worker_pid=0,
+            )
     reports_busy = busy or research.get("status") == "running"
     return {
         "checked_at_hkt": now.isoformat(timespec="seconds"),

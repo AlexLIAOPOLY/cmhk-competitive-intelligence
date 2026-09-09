@@ -5019,6 +5019,7 @@ def _normalize_crawl_task(run: dict) -> dict:
         "strategic-news": "新闻爬虫",
         "news-selection-agent": "新闻自动初筛",
         "four-database-source-discovery": "01:00四库资料搜索",
+        "four-database-research": "03:00四库研究",
         "executive-intelligence-refresh": "四库刷新",
         "quarterly-data-release": "季度数据发布",
         "crawl": "爬虫",
@@ -5061,6 +5062,91 @@ def _normalize_crawl_task(run: dict) -> dict:
         "pages_publish_error": str(pages_publish.get("error") or ""),
         "source": "crawl-archive",
     }
+
+
+def _research_process_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _orphan_research_tasks() -> list[dict]:
+    """Expose pre-registry 03:00 runs so an active task can never disappear."""
+    records: list[dict] = []
+    run_root = ROOT / "curation_data" / "research_runs"
+    for directory in run_root.glob("research_*"):
+        if not directory.is_dir():
+            continue
+        try:
+            launch = json.loads((directory / "process.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            launch = {}
+        if str(launch.get("task_run_id") or ""):
+            continue
+        try:
+            manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            manifest = {}
+        if not launch and not manifest:
+            continue
+        publication = manifest.get("publication") if isinstance(manifest.get("publication"), dict) else {}
+        final_review = manifest.get("final_review") if isinstance(manifest.get("final_review"), dict) else {}
+        process_alive = _research_process_alive(int(launch.get("pid") or 0))
+        publication_status = str(publication.get("status") or "")
+        if publication_status == "completed":
+            run_status, phase = "completed", "已完成"
+        elif publication_status in {"error", "failed"}:
+            run_status, phase = "failed", "四库写入或页面发布失败"
+        elif publication_status == "running":
+            run_status, phase = "running", "四库写入与页面发布"
+        elif str(final_review.get("status") or "") == "running":
+            run_status, phase = "running", "最终审核 Agent 联网核对"
+        elif process_alive:
+            run_status, phase = "running", "六 Agent 研究中"
+        else:
+            run_status, phase = "failed", "研究进程已停止"
+        accepted = int(manifest.get("accepted") or 0)
+        review = int(manifest.get("review") or 0)
+        detail = (
+            f"研究编号 {manifest.get('run_id') or directory.name}；新增更新候选 {accepted} 项；"
+            f"仍需审核或失败 {review} 项；当前阶段：{phase}。"
+        )
+        process_log = directory / "process.log"
+        try:
+            raw = process_log.read_bytes()
+            lines, size = len(raw.splitlines()), len(raw)
+        except OSError:
+            lines, size = 0, 0
+        started_at = str(manifest.get("started_at") or launch.get("launched_at") or "")
+        completed_at = str(publication.get("completed_at") or (manifest.get("completed_at") if run_status != "running" else "") or "")
+        records.append({
+            "task_id": "research:" + directory.name,
+            "task_run_id": directory.name,
+            "kind": "four-database-research",
+            "kind_label": "03:00四库研究",
+            "title": "03:00 四库资料研究与更新",
+            "scope": f"六 Agent 最新资料研究（{started_at[:10] or directory.name}）",
+            "run_status": run_status,
+            "started_at_hkt": started_at,
+            "completed_at_hkt": completed_at,
+            "duration_ms": 0,
+            "lines": lines,
+            "bytes": size,
+            "status_detail": detail if run_status != "running" else "",
+            "backend_pid": 0,
+            "worker_pid": int(launch.get("pid") or 0) if process_alive else 0,
+            "phase": phase,
+            "progress_detail": detail,
+            "heartbeat_at_hkt": str(final_review.get("started_at") or manifest.get("completed_at") or started_at),
+            "source": "research-run-archive",
+        })
+    return records
 
 
 def _annotate_task_retries(tasks: list[dict]) -> None:
@@ -6818,6 +6904,7 @@ def load_unified_task_index(limit: int = 50) -> list[dict]:
         for item in load_crawl_run_index()
         if isinstance(item, dict) and item.get("crawl_run_id")
     )
+    tasks.extend(_orphan_research_tasks())
     _annotate_task_retries(tasks)
     _annotate_task_incidents(tasks)
     tasks.sort(
@@ -6829,6 +6916,32 @@ def load_unified_task_index(limit: int = 50) -> list[dict]:
 
 def load_unified_task_log(task_id: str) -> dict:
     task_id = str(task_id or "").strip()
+    if task_id.startswith("research:"):
+        run_id = task_id.removeprefix("research:")
+        if not re.fullmatch(r"research_\d{8}(?:_rerun_\d{6})?", run_id):
+            return {"ok": False, "error": "无效的研究任务编号。"}
+        task = next((item for item in _orphan_research_tasks()
+                     if str(item.get("task_id") or "") == task_id), None)
+        if not task:
+            return {"ok": False, "error": "未找到该研究任务记录。"}
+        log_path = ROOT / "curation_data" / "research_runs" / run_id / "process.log"
+        try:
+            content = log_path.read_text(encoding="utf-8", errors="replace") if log_path.exists() else ""
+        except OSError as exc:
+            return {"ok": False, "error": "研究任务日志读取失败：" + str(exc)}
+        return {
+            "ok": True,
+            "task": task,
+            "run": {
+                "run_status": task.get("run_status"),
+                "started_at_hkt": task.get("started_at_hkt"),
+                "completed_at_hkt": task.get("completed_at_hkt"),
+                "duration_ms": task.get("duration_ms"),
+            },
+            "content": content,
+            "lines": int(task.get("lines") or 0),
+            "bytes": int(task.get("bytes") or 0),
+        }
     if task_id.startswith("crawl:"):
         crawl_id = task_id.removeprefix("crawl:")
         result = load_crawl_run_log(crawl_id)

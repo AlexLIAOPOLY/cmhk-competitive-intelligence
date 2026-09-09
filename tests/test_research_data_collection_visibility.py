@@ -34,7 +34,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         result = self.render(publication={'status': 'completed', 'database_updated': False, 'insights': 0, 'result_status': 'no_new_disclosures'})
         node = next(n for n in result['nodes'] if n['key'] == 'research-asia')
         self.assertEqual(node['value'], 0)
-        self.assertEqual(node['health'], {'key': 'warning', 'label': '执行失败'})
+        self.assertEqual(node['health'], {'key': 'warning', 'label': '已完成·含失败项'})
         self.assertIn('执行失败 1 项', node['note'])
         self.assertIn('无新增·沿用页面', str(result['nodes']))
         self.assertNotIn('历史核对通过', result['detail'])
@@ -63,7 +63,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertLess(result['detail'].index('本节点逐条明细'), result['detail'].index('这个节点如何处理'))
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=16', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=17', (ROOT / 'web/static/index.html').read_text())
 
 
 if __name__ == '__main__':

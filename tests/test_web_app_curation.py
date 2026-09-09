@@ -143,6 +143,40 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("更新失败", app)
         self.assertIn("预警发送失败", app)
 
+    def test_orphan_daily_research_is_visible_while_final_review_runs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = root / "curation_data/research_runs/research_20260909"
+            run.mkdir(parents=True)
+            (run / "process.json").write_text(json.dumps({
+                "pid": 2468,
+                "launched_at": "2026-09-09T03:00:12+08:00",
+            }), encoding="utf-8")
+            (run / "manifest.json").write_text(json.dumps({
+                "run_id": run.name,
+                "started_at": "2026-09-09T03:00:12+08:00",
+                "status": "partial",
+                "accepted": 12,
+                "review": 449,
+                "final_review": {"status": "running", "started_at": "2026-09-09T05:26:05+08:00"},
+            }), encoding="utf-8")
+            (run / "process.log").write_text("研究仍在运行\n", encoding="utf-8")
+            with mock.patch.object(web_app, "ROOT", root), \
+                 mock.patch.object(web_app, "_research_process_alive", return_value=True):
+                task = web_app._orphan_research_tasks()[0]
+                detail = web_app.load_unified_task_log(task["task_id"])
+
+        self.assertEqual(task["run_status"], "running")
+        self.assertEqual(task["phase"], "最终审核 Agent 联网核对")
+        self.assertIn("新增更新候选 12 项", task["progress_detail"])
+        self.assertEqual(detail["content"], "研究仍在运行\n")
+
+    def test_research_diagram_distinguishes_task_completion_from_failed_items(self) -> None:
+        diagram = (web_app.ROOT / "web/static/research-diagram.js").read_text(encoding="utf-8")
+        self.assertIn('partial: { key: "warning", label: "部分完成" }', diagram)
+        self.assertIn('label: needsReview ? "已完成·含失败项" : "已完成"', diagram)
+        self.assertIn('status(run ? "completed" : "pending")', diagram)
+
     def test_quarterly_release_is_visible_as_an_independent_task(self) -> None:
         task = web_app._normalize_crawl_task(
             {

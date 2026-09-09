@@ -1202,6 +1202,36 @@ class SchedulerHeartbeatTests(unittest.TestCase):
         self.assertEqual(payload["crawl_run_id"], "run-1")
         self.assertTrue(payload["updated_at_hkt"])
 
+    def test_cycle_reports_active_research_worker_in_heartbeat(self) -> None:
+        heartbeat = mock.Mock()
+        active = {
+            "ok": True,
+            "status": "running",
+            "run_id": "research_20260909",
+            "task_run_id": "task-9",
+            "pid": 2468,
+        }
+        with (
+            mock.patch.object(scheduler, "_SCHEDULER_HEARTBEAT", heartbeat),
+            mock.patch.object(scheduler, "crawl_process_running", return_value=False),
+            mock.patch.object(scheduler, "agent_audit_process_running", return_value=False),
+            mock.patch.object(scheduler, "standalone_research_process_running", return_value=True),
+            mock.patch("data_curation.daily_research.active_dispatch", return_value=active),
+            mock.patch.object(scheduler, "dispatch_subscription_queue", return_value={}),
+            mock.patch.object(scheduler, "dispatch_scheduled_weekly_report", return_value={}),
+            mock.patch.object(scheduler, "dispatch_scheduled_performance_report", return_value={}),
+        ):
+            result = scheduler.run_cycle()
+
+        self.assertEqual(result["research"]["run_id"], "research_20260909")
+        heartbeat.update.assert_called_once_with(
+            status="running",
+            stage="four_database_research",
+            crawl_run_id="task-9",
+            research_run_id="research_20260909",
+            worker_pid=2468,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

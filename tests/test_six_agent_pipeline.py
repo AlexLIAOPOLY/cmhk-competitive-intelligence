@@ -3,10 +3,12 @@ import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import scheduler
 import executive_intelligence_pipeline as pipeline
+import data_curation.daily_research as daily
 from data_curation.daily_research import dispatch, HKT
 from data_curation.research_plan import ARCHITECTURE_VERSION, research_plan
 from data_curation.research_readback import research_snapshot
@@ -38,6 +40,20 @@ class SixAgentPipelineTests(unittest.TestCase):
             self.assertEqual(len(result["plan"]), 6)
             self.assertEqual(list(root.iterdir()), [])
             self.assertFalse(dispatch(root, datetime(2026, 9, 5, 2, tzinfo=HKT))["due"])
+
+    def test_daily_dispatch_registers_task_before_worker_starts(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with patch.object(daily, "worker_python", return_value="/python"), \
+                 patch.object(daily, "_start_research_task", return_value={"crawl_run_id": "task-1"}), \
+                 patch.object(daily, "_task_heartbeat") as heartbeat, \
+                 patch.object(daily.subprocess, "Popen", return_value=SimpleNamespace(pid=2468)):
+                result = daily.dispatch(root, datetime(2026, 9, 5, 3, 1, tzinfo=HKT))
+
+            launch = json.loads((root / "curation_data/research_runs/research_20260905/process.json").read_text())
+            self.assertEqual(result["task_run_id"], "task-1")
+            self.assertEqual(launch["task_run_id"], "task-1")
+            heartbeat.assert_called_once()
 
     def test_snapshot_is_date_scoped_and_does_not_send_page_bodies(self):
         with tempfile.TemporaryDirectory() as directory:
