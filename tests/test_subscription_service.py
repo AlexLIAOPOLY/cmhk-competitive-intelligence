@@ -414,6 +414,24 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(added["added_count"], 1)
         self.assertEqual(added["candidates"][0]["display_name"], "测试用户")
 
+    def test_group_only_subscriber_inherits_directory_avatar_across_app_ids(self):
+        self.service.refresh_people_directory()
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        self.service.handle_card_event({
+            "type": "card.action.trigger", "action_tag": "button",
+            "event_id": "avatar-group", "operator_id": "ou_callback123",
+            "chat_id": "oc_test123", "message_id": "om_test123",
+            "form_value": json.dumps({"services": ["news"]}),
+        })
+        with closing(self.service._connect()) as db, db:
+            db.execute("UPDATE subscription_directory_people SET avatar_url='https://s3-imfile.feishucdn.com/avatar.png'")
+            db.execute("UPDATE subscription_group_responses SET avatar_url=''")
+        person = self.service.list_invite_candidates()[0]
+        self.assertEqual(person["directory_open_id"], "ou_delivery123")
+        self.assertEqual(person["department_names"], ["战略部"])
+        self.assertEqual(person["avatar_url"], "https://s3-imfile.feishucdn.com/avatar.png")
+        self.assertEqual(self.service.avatar_source_url("ou_callback123"), person["avatar_url"])
+
     def test_directory_refresh_does_not_infer_position_from_org_relationship(self):
         self.service.command_runner = FakeLark(job_title="", leader_open_id="ou_delivery123")
         self.service.refresh_people_directory()

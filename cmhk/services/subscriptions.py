@@ -2750,14 +2750,18 @@ class SubscriptionService:
         with closing(self._connect()) as db:
             row = db.execute(
                 """SELECT avatar_url FROM subscription_directory_people
-                   WHERE directory_open_id=? AND active=1""",
-                (open_id,),
+                   WHERE active=1 AND avatar_url<>'' AND (directory_open_id=? OR (union_id<>'' AND union_id IN (
+                       SELECT union_id FROM subscribers WHERE open_id=? OR callback_open_id=?
+                       UNION SELECT union_id FROM subscription_invite_candidates
+                       WHERE callback_open_id=? OR delivery_open_id=?
+                   ))) ORDER BY synced_at DESC LIMIT 1""",
+                (open_id, open_id, open_id, open_id, open_id),
             ).fetchone()
             url = str(row["avatar_url"] or "") if row else ""
             if not url:
                 row = db.execute(
                     """SELECT avatar_url FROM subscription_invite_candidates
-                       WHERE callback_open_id=? OR delivery_open_id=?
+                       WHERE avatar_url<>'' AND (callback_open_id=? OR delivery_open_id=?)
                        ORDER BY updated_at DESC LIMIT 1""",
                     (open_id, open_id),
                 ).fetchone()
@@ -2765,7 +2769,7 @@ class SubscriptionService:
             if not url:
                 row = db.execute(
                     """SELECT avatar_url FROM subscription_group_responses
-                       WHERE callback_open_id=? OR delivery_open_id=?
+                       WHERE avatar_url<>'' AND (callback_open_id=? OR delivery_open_id=?)
                        ORDER BY updated_at DESC LIMIT 1""",
                     (open_id, open_id),
                 ).fetchone()
@@ -2858,6 +2862,27 @@ class SubscriptionService:
         merged = {str(item["callback_open_id"]): item for item in deduplicated.values()}
         with closing(self._connect()) as db:
             for candidate in merged.values():
+                directory = db.execute(
+                    """SELECT directory_open_id, avatar_url, department_names, job_title
+                       FROM subscription_directory_people
+                       WHERE active=1 AND (directory_open_id=? OR (union_id<>'' AND union_id=?))
+                       ORDER BY synced_at DESC LIMIT 1""",
+                    (candidate["callback_open_id"], str(candidate.get("union_id") or "")),
+                ).fetchone()
+                if directory:
+                    candidate["directory_open_id"] = str(directory["directory_open_id"])
+                    candidate["avatar_url"] = str(directory["avatar_url"] or candidate.get("avatar_url") or "")
+                    candidate["department_names"] = json.loads(directory["department_names"] or "[]")
+                    candidate["job_title"] = str(directory["job_title"] or candidate.get("job_title") or "")
+                if not candidate.get("avatar_url"):
+                    response = db.execute(
+                        """SELECT avatar_url FROM subscription_group_responses
+                           WHERE avatar_url<>'' AND (callback_open_id=? OR delivery_open_id=?)
+                           ORDER BY updated_at DESC LIMIT 1""",
+                        (candidate["callback_open_id"], candidate.get("delivery_open_id", "")),
+                    ).fetchone()
+                    if response:
+                        candidate["avatar_url"] = str(response["avatar_url"])
                 personal = db.execute(
                     """SELECT status, sent_at, responded_at, updated_at, message_id, last_error,
                               'personal' AS response_source
