@@ -2198,3 +2198,16 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .news-lineage-technical pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 .research-search-results li { margin: 12px 0; }
 .research-outcome > p { padding: 0 16px; line-height: 1.7; }
+.research-open-task-log {
+  margin: 0 16px 16px;
+  padding: 8px 12px;
+  border: 1px solid rgba(91, 216, 231, .45);
+  border-radius: 6px;
+  background: rgba(23, 111, 129, .28);
+  color: #b9f5ff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+.research-open-task-log:hover,
+.research-open-task-log:focus-visible { background: rgba(31, 145, 165, .42); }

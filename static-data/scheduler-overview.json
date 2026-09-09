@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-09T14:33:03+08:00",
+  "checked_at_hkt": "2026-09-10T00:04:35+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -42,21 +42,20 @@
     "chat_name": "揭榜-竞争对手与行业情报监测AI应用",
     "sheet_url": "",
     "scan_times": [
-      "05:00",
-      "13:00"
+      "04:00",
+      "14:00"
     ],
-    "next_scan_at": "2026-09-10T05:00:00+08:00",
-    "next_group_check_at": "2026-09-09T15:00:00+08:00",
+    "next_scan_at": "2026-09-10T04:00:00+08:00",
+    "next_group_check_at": "2026-09-10T01:00:00+08:00",
     "last_scan_at": "2026-09-09T13:38:28+08:00",
-    "last_group_check_at": "2026-09-09T14:00:37+08:00",
-    "last_cycle_at": "2026-09-09T14:32:48+08:00",
+    "last_group_check_at": "2026-09-10T00:00:15+08:00",
+    "last_cycle_at": "2026-09-10T00:04:18+08:00",
     "latest_scan_slot": {
-      "slot": "2026-09-09@13:00",
-      "status": "completed",
-      "at": "2026-09-09T13:38:28+08:00",
-      "candidate_count": 27,
-      "message_id": "om_x100b653b43972080b3e2651234f9c3d",
-      "recovered_from_archive": true
+      "slot": "2026-09-09@14:00",
+      "status": "skipped",
+      "reason": "delivery_window_already_completed",
+      "at": "2026-09-09T23:59:12+08:00",
+      "completed_slot": "2026-09-09@13:00"
     },
     "last_candidate_count": 27,
     "feishu_identity": "bot",

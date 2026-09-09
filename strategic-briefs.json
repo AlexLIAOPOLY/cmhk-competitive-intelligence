@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "generated_at": "2026-09-09T14:32:49+08:00",
+  "generated_at": "2026-09-10T00:04:20+08:00",
   "items": [
     {
       "id": "NEWS-E83ED0FBB8AA6A",
@@ -70,10 +70,10 @@
   "monitor": {
     "status": "snapshot",
     "scan_times": [
-      "05:00",
-      "13:00"
+      "04:00",
+      "14:00"
     ],
     "last_error": ""
   },
-  "site_version": "3087095657d2a150b9b8619966bf6b009d4face30dc5fb4c6ffd3ca0457f4025"
+  "site_version": "79234e0b265902f8ec1c14c80f084e6598a0a4a6d635eeb30c51e776faf075b7"
 }

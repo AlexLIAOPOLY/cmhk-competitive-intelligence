@@ -4,6 +4,7 @@
   const status = (value) => ({
     completed: { key: "healthy", label: "已完成" }, running: { key: "running", label: "运行中" },
     partial: { key: "warning", label: "部分完成" }, error: { key: "critical", label: "执行失败" },
+    cancelled: { key: "warning", label: "已中止" },
     pending: { key: "unknown", label: "待执行" },
   })[value] || { key: "unknown", label: "无记录" };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -220,12 +221,14 @@
     const field = (name, value) => `<div><dt>${esc(name)}</dt><dd>${value}</dd></div>`;
     const records = agents.flatMap((a) => (a.reports || []).map((report) => ({ a, report })));
     const coverage = reportsCoverage(records.map(({ report }) => report));
-    const resultLabel = !run ? "尚无本次结果" : run.status === "running"
+    const resultLabel = !run ? "尚无本次结果" : run.display_status === "cancelled"
+      ? `本轮已由用户中止；已保存 ${records.reduce((count, { report }) => count + (report.items || []).length, 0)} 项指标记录，未继续写入四库或生成页面分析`
+      : run.status === "running"
       ? `研究仍在进行，已保存 ${records.reduce((count, { report }) => count + (report.items || []).length, 0)} 项指标记录；最终通过数量待汇总校验`
       : isIncremental(run) ? resultCounts((snapshot.agents || []).flatMap((a) => a.reports || [])) : `已核对 ${run.accepted ?? "未提供"} 项，待核对或缺失 ${run.review ?? "未提供"} 项（历史运行未区分新增与重复数据）`;
     return `<header><div><span>${esc(date)} · ${run && !isIncremental(run) ? "历史运行（新增数据未统计）" : "查找最新数据并更新四库"} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(plainText(node.purpose))}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
-      <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || "AI 结果未记录"}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `新增更新 ${run?.accepted ?? "未记录"} 项；页面指标数值变化 ${run?.publication?.changes?.baseline_available === true ? run.publication.changes.changed : "未记录"} 项。${run?.publication?.database_updated ? "已保存字段数据。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p></section>
+      <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || (run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : "AI 结果未记录")}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `新增更新 ${run?.accepted ?? "未记录"} 项；页面指标数值变化 ${run?.publication?.changes?.baseline_available === true ? run.publication.changes.changed : "未记录"} 项。${run?.publication?.database_updated ? "已保存字段数据。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
       ${actualList(node, snapshot, date)}
       ${searchHistory(node, agents, events)}
       <details class="news-lineage-technical"><summary>运行日志与详细依据</summary>
