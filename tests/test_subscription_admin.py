@@ -151,6 +151,18 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("preference_message_id", SCRIPT)
         self.assertIn(".preference-source", STYLE)
 
+    def test_invite_list_keeps_groups_first_and_orders_people_by_response_status(self):
+        candidate_rows = SCRIPT.split("function candidateRows()", 1)[1].split("function activeFilterCount", 1)[0]
+
+        self.assertIn("return groupRows + personRows", candidate_rows)
+        self.assertIn("invitationSortRank(left.item) - invitationSortRank(right.item)", candidate_rows)
+        self.assertIn('["accepted", "responded"]', SCRIPT)
+        self.assertIn('["pending", "verified"]', SCRIPT)
+        self.assertIn('unsubscribed: "已退订"', SCRIPT)
+        self.assertIn('rejected: "已拒绝"', SCRIPT)
+        self.assertLess(SCRIPT.index('if (["accepted", "responded"]'), SCRIPT.index('if (["pending", "verified"]'))
+        self.assertLess(SCRIPT.index('if (["pending", "verified"]'), SCRIPT.index('if (!status) return 2'))
+
     def test_admin_keeps_three_primary_blocks_and_moves_secondary_views_to_icons(self):
         self.assertIn('class="three-block-layout"', SCRIPT)
         self.assertIn('class="surface invite-surface"', SCRIPT)

@@ -42,7 +42,7 @@
   };
   const serviceLabel = (value) => ({ weekly: "战略双周报", performance: "运营商业绩摘要", news: "战略新闻" }[value] || value);
   const modeLabel = (value) => ({ text: "文字", pdf: "PDF 文件", pdf_audio: "PDF + 独立语音", audio: "语音", both: "文字 + 语音" }[value] || value);
-  const invitationStatus = (value) => ({ pending: "等待选择", needs_correction: "待修改选项", accepted: "已接受", paused: "已暂停", failed: "发送失败", verified: "已确认发送", responded: "已有人选择" }[value] || value);
+  const invitationStatus = (value) => ({ pending: "等待选择", needs_correction: "待修改选项", accepted: "已接受", paused: "已暂停", unsubscribed: "已退订", rejected: "已拒绝", declined: "已拒绝", failed: "发送失败", verified: "已确认发送", responded: "已有人选择" }[value] || value);
   const icon = (name) => ({
     add: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>',
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>',
@@ -271,6 +271,14 @@
     });
   }
 
+  function invitationSortRank(item) {
+    const status = item?.latest_invitation?.status || "";
+    if (["accepted", "responded"].includes(status)) return 0;
+    if (["pending", "verified"].includes(status)) return 1;
+    if (!status) return 2;
+    return 3;
+  }
+
   function candidateRows() {
     const rows = state.data?.invite_candidates || [];
     const groups = currentGroupInvitations();
@@ -285,10 +293,13 @@
         <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已确认发送"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
       </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
     }).join("");
-    const personRows = rows.map((item) => {
+    const sortedRows = rows.map((item, index) => ({ item, index }))
+      .sort((left, right) => invitationSortRank(left.item) - invitationSortRank(right.item) || left.index - right.index)
+      .map(({ item }) => item);
+    const personRows = sortedRows.map((item) => {
       const filterText = [item.display_name, item.en_name, ...(item.department_names || []), item.job_title, invitationStatus(item.latest_invitation?.status || "未邀请")].filter(Boolean).join(" ");
       const rawStatus = item.latest_invitation?.status || "pending";
-      const filterStatus = ["accepted", "responded"].includes(rawStatus) ? "accepted" : rawStatus === "verified" ? "verified" : ["failed", "paused", "needs_correction"].includes(rawStatus) ? "issue" : "pending";
+      const filterStatus = ["accepted", "responded"].includes(rawStatus) ? "accepted" : rawStatus === "verified" ? "verified" : ["failed", "paused", "unsubscribed", "rejected", "declined", "needs_correction"].includes(rawStatus) ? "issue" : "pending";
       return `<label class="invite-row" data-invite-filter-row data-filter-kind="person" data-filter-status="${filterStatus}" data-filter-text="${esc(filterText)}">
       <input type="checkbox" value="${esc(item.callback_open_id)}" data-invite-candidate${state.selectedInviteUsers.has(item.callback_open_id) ? " checked" : ""}>
       ${avatar(item)}<span class="person-copy"><strong>${esc(item.display_name)}</strong><small>${esc((item.department_names || []).join(" / ") || item.job_title || "已验证飞书用户")}</small>${item.latest_invitation?.last_error ? `<small>${esc(item.latest_invitation.last_error)}</small>` : ""}</span>
