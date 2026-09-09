@@ -86,7 +86,7 @@
   function newsCategoryChecks(selected = []) {
     const categories = state.data?.news_categories || [];
     const selectedSet = new Set(selected || []);
-    return `<div class="muted" data-news-interest-hint>所选全部保存；超过4个时，每次推送随机抽取4个，下次重新抽取</div>` + categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
+    return categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
   }
 
   function conditionalSetting(kind, enabled, content, emptyLabel) {
