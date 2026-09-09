@@ -59,7 +59,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("data-subscriber-news-frequency", SCRIPT)
         self.assertIn("data-subscriber-news-limit", SCRIPT)
         self.assertIn("newsItemLimit", SCRIPT)
-        self.assertIn(".subscriber-table table { min-width: 1720px; table-layout: fixed; }", STYLE)
+        self.assertIn(".subscriber-table table { min-width: 1860px; table-layout: fixed; }", STYLE)
         self.assertIn("仅当接收人已订阅对应内容且自动排期已启用时推送", SCRIPT)
         self.assertNotIn("data-subscriber-frequency", SCRIPT)
         self.assertIn("每天一次", SCRIPT)
@@ -220,6 +220,11 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('[data-reset-subscriber].is-different', STYLE)
 
     def test_subscriber_selects_have_complete_horizontal_content_space(self):
+        self.assertIn('.subscriber-table th:nth-child(5) { width: 13%; }', STYLE)
+        self.assertIn('.subscriber-table th:nth-child(6) { width: 14%; }', STYLE)
+        self.assertIn('@media (max-width: 560px)', STYLE)
+        self.assertEqual(STYLE.count('.subscriber-table table { min-width: 1860px;'), 2)
+        self.assertNotIn('.subscriber-table table { min-width: 1480px; }', STYLE)
         self.assertIn('[data-subscriber-report-mode] { min-width: 160px; }', STYLE)
         self.assertIn('[data-subscriber-news-frequency] { width: 110px; min-width: 108px; }', STYLE)
         self.assertIn('[data-subscriber-news-limit] { width: 92px; min-width: 88px; }', STYLE)

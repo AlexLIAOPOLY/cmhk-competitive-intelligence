@@ -75,17 +75,17 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .invite-surface, .subscriber-surface { min-height: 410px; }
 .invite-surface .invite-list-main { flex: 1; max-height: 350px; padding: 4px 12px 12px; }
 .subscriber-table { max-height: 350px; flex: 1; border: 0; border-radius: 0; }
-.subscriber-table table { min-width: 1720px; table-layout: fixed; }
+.subscriber-table table { min-width: 1860px; table-layout: fixed; }
 .subscriber-table th:nth-child(1) { width: 12%; }
-.subscriber-table th:nth-child(2) { width: 11%; }
-.subscriber-table th:nth-child(3) { width: 20%; }
-.subscriber-table th:nth-child(4) { width: 12%; }
-.subscriber-table th:nth-child(5) { width: 11%; }
+.subscriber-table th:nth-child(2) { width: 10%; }
+.subscriber-table th:nth-child(3) { width: 18%; }
+.subscriber-table th:nth-child(4) { width: 11%; }
+.subscriber-table th:nth-child(5) { width: 13%; }
 .subscriber-table th:nth-child(6) { width: 14%; }
 .subscriber-table th:nth-child(7) { width: 6%; }
 .subscriber-table th:nth-child(8) { width: 5%; }
-.subscriber-table th:nth-child(9) { width: 4%; }
-.subscriber-table th:nth-child(10) { width: 5%; }
+.subscriber-table th:nth-child(9) { width: 5%; }
+.subscriber-table th:nth-child(10) { width: 6%; }
 .subscriber-table td select { min-width: 0; padding-right: 28px; white-space: nowrap; }
 .subscriber-table [data-subscriber-report-mode] { min-width: 160px; }
 .subscriber-table [data-subscriber-news-frequency] { width: 110px; min-width: 108px; }
@@ -298,7 +298,7 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .surface-actions { width: auto; margin-left: auto; }
   .compact-filter-panel { position: fixed; top: 76px; right: 12px; width: min(286px, calc(100vw - 24px)); }
   .invite-surface, .subscriber-surface { min-height: 0; }
-  .subscriber-table table { min-width: 1480px; }
+  .subscriber-table table { min-width: 1860px; }
   .subscriber-table td select { min-width: 88px; }
   .surface-actions .button span { display: none; }
   .push-surface .surface-body { padding: 12px; }
