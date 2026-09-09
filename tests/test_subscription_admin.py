@@ -13,6 +13,7 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
         self.assertIn('/static/subscription-admin.html?v=29', INDEX)
         self.assertIn('/static/subscription-admin.js?v=51', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=41', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -157,6 +158,12 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("群卡本人提交", SCRIPT)
         self.assertIn("preference_message_id", SCRIPT)
         self.assertIn(".preference-source", STYLE)
+        self.assertIn("群聊邀请 ${number(groupInvitations.length)} 个", SCRIPT)
+        self.assertIn("群成员已接受 ${number(groupAcceptances)} 人", SCRIPT)
+        self.assertIn('class="invitation-history-group"', SCRIPT)
+        self.assertIn("invitation-history-responses", SCRIPT)
+        self.assertIn("群聊 · ${item.target_name", SCRIPT)
+        self.assertIn(".invitation-history-group summary", STYLE)
 
     def test_invite_list_keeps_groups_first_and_orders_people_by_response_status(self):
         candidate_rows = SCRIPT.split("function candidateRows()", 1)[1].split("function activeFilterCount", 1)[0]

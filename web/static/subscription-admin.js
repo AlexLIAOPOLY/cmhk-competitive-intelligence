@@ -391,7 +391,8 @@
       const responses = item.responses || [];
       const acceptedCount = Number(item.accepted_count || 0);
       const correctionCount = responses.filter((response) => response.status === "needs_correction").length;
-      const status = acceptedCount ? "accepted" : correctionCount ? "needs_correction" : "verified";
+      const status = correctionCount ? "needs_correction" : acceptedCount ? "accepted" : "verified";
+      const filterStatuses = [acceptedCount ? "accepted" : "", correctionCount ? "needs_correction" : "", !acceptedCount && !correctionCount ? "verified" : ""].filter(Boolean).join(" ");
       const statusText = acceptedCount
         ? `${number(acceptedCount)}人已接受${correctionCount ? ` · ${number(correctionCount)}人待修正` : ""}`
         : correctionCount ? `${number(correctionCount)}人待修正` : "已确认发送";
@@ -400,9 +401,9 @@
       const filterText = [item.target_name, "群聊", item.created_at, statusText, latestMessageId,
         ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status), response.last_error])].filter(Boolean).join(" ");
       const responseDetails = responses.length
-        ? `<div class="invitation-history-responses">${responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at || "-")}</small></span></span>`).join("")}</div>`
+        ? `<div class="invitation-history-responses">${responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at || "-")}</small></span></span>`; }).join("")}</div>`
         : '<p class="invitation-history-empty">暂无群成员提交</p>';
-      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-person="${esc(groupKey)}" data-filter-status="${status}" data-filter-text="${esc(filterText)}"><td class="name"><details class="invitation-history-group"><summary><span class="history-group-badge">群</span><span>${esc(item.target_name || "飞书群聊")}</span></summary>${responseDetails}</details></td><td>${esc(item.created_at || "-")}</td><td><span class="status ${status}">${statusText}</span></td><td class="muted">${esc(latestMessageId || "-")}${Number(item.message_count || 0) > 1 ? `<small>共 ${number(item.message_count)} 次群邀请</small>` : ""}</td></tr>`;
+      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-person="${esc(groupKey)}" data-filter-status="${filterStatuses}" data-filter-text="${esc(filterText)}"><td class="name"><details class="invitation-history-group"><summary><span class="history-group-badge">群</span><span>${esc(item.target_name || "飞书群聊")}</span></summary>${responseDetails}</details></td><td>${esc(item.created_at || "-")}</td><td><span class="status ${status}">${statusText}</span></td><td class="muted">${esc(latestMessageId || "-")}${Number(item.message_count || 0) > 1 ? `<small>共 ${number(item.message_count)} 次群邀请</small>` : ""}</td></tr>`;
     });
     return [...groups, ...people].join("") + '<tr data-invitation-filter-empty hidden><td colspan="4" class="empty">没有匹配的邀请结果</td></tr>';
   }
@@ -451,7 +452,7 @@
         && (!filters.from || date >= filters.from)
         && (!filters.to || date <= filters.to)
         && (filters.person === "all" || row.dataset.filterPerson === filters.person)
-        && (filters.status === "all" || row.dataset.filterStatus === filters.status);
+        && (filters.status === "all" || String(row.dataset.filterStatus || "").split(" ").includes(filters.status));
       row.hidden = !visible;
       if (visible) visibleCount += 1;
     });

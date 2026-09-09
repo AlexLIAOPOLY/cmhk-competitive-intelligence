@@ -270,6 +270,17 @@ td select { min-width: 84px; }
 .status.retrying, .status.paused, .status.cancelled { color: #e1bd70; background: rgba(148,108,38,.17); }
 .status.needs_correction { color: #ffd27d; background: rgba(160,105,28,.2); }
 .status.failed { color: #dfa1a7; background: rgba(160,70,78,.16); }
+.invitation-history-group summary { display: flex; align-items: center; gap: 7px; cursor: pointer; list-style: none; }
+.invitation-history-group summary::-webkit-details-marker { display: none; }
+.invitation-history-group summary::after { margin-left: auto; color: #6f909a; content: "›"; transition: transform .16s ease; }
+.invitation-history-group[open] summary::after { transform: rotate(90deg); }
+.history-group-badge { display: inline-grid; width: 20px; height: 20px; flex: 0 0 20px; place-items: center; border: 1px solid rgba(88,174,194,.34); border-radius: 6px; color: #9ed9e2; background: rgba(42,109,124,.22); font-size: 9px; }
+.invitation-history-responses { display: grid; gap: 6px; margin-top: 8px; padding: 8px; border: 1px solid rgba(54,101,115,.38); border-radius: 7px; background: rgba(4,23,31,.58); }
+.invitation-history-responses > span { display: flex; min-width: 230px; align-items: center; gap: 7px; }
+.invitation-history-responses .avatar-stack, .invitation-history-responses .avatar { width: 22px; height: 22px; }
+.invitation-history-responses strong, .invitation-history-responses small, .invitation-history-empty, td.muted small { display: block; }
+.invitation-history-responses strong { color: #dcebed; font-size: 10px; }
+.invitation-history-responses small, .invitation-history-empty, td.muted small { margin-top: 2px; color: #6f8d97; font-size: 9px; font-weight: 400; }
 /* Readability scale: retain the compact admin layout while avoiding tiny text. */
 h1 { font-size: 20px; }
 .surface-header h2, .workbench-heading h2 { font-size: 15px; }
