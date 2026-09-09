@@ -2,12 +2,103 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 from datetime import date as calendar_date
 from pathlib import Path
 
 from .research_plan import ARCHITECTURE_VERSION, research_plan
 from .six_agent_research import now
+
+
+def _process_alive(pid: int) -> bool:
+    if pid <= 0:
+        return False
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+    return True
+
+
+def _task_for_run(root: Path, directory: Path, manifest: dict) -> dict | None:
+    try:
+        launch = json.loads((directory / "process.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        launch = {}
+    task_run_id = str(launch.get("task_run_id") or "")
+    research_id = str(manifest.get("run_id") or "")
+    try:
+        index = json.loads((root / "agent_knowledge/crawl_run_logs/index.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        index = []
+    records = index if isinstance(index, list) else index.get("runs", index.get("items", []))
+    for record in records if isinstance(records, list) else []:
+        if not isinstance(record, dict):
+            continue
+        summary = record.get("operational_summary") if isinstance(record.get("operational_summary"), dict) else {}
+        matches_task = bool(
+            task_run_id
+            and str(record.get("crawl_run_id") or "") == task_run_id
+        )
+        matches_research = bool(
+            research_id
+            and str(summary.get("agent_run_id") or "") == research_id
+        )
+        if matches_task or matches_research:
+            failure_stage = str(record.get("failure_stage") or "")
+            cancelled = failure_stage == "user_cancelled" or bool(
+                summary.get("cancelled_by_user")
+            )
+            return {
+                "task_id": "crawl:" + str(record.get("crawl_run_id") or task_run_id),
+                "run_status": (
+                    "cancelled"
+                    if cancelled
+                    else str(record.get("run_status") or "")
+                ),
+                "failure_stage": failure_stage,
+                "status_detail": str(record.get("status_detail") or ""),
+                "started_at_hkt": str(record.get("started_at_hkt") or ""),
+                "completed_at_hkt": str(record.get("completed_at_hkt") or ""),
+            }
+    if launch or manifest:
+        return {
+            "task_id": "research:" + directory.name,
+            "run_status": "running" if _process_alive(int(launch.get("pid") or 0)) else "failed",
+            "failure_stage": "",
+            "status_detail": "任务归档索引缺失，已从研究运行目录恢复。",
+            "started_at_hkt": str(manifest.get("started_at") or launch.get("launched_at") or ""),
+            "completed_at_hkt": str(manifest.get("completed_at") or ""),
+        }
+    return None
+
+
+def _reconcile_run_status(root: Path, directory: Path, manifest: dict) -> tuple[dict, dict | None]:
+    task = _task_for_run(root, directory, manifest)
+    publication = manifest.get("publication") if isinstance(manifest.get("publication"), dict) else {}
+    final_review = manifest.get("final_review") if isinstance(manifest.get("final_review"), dict) else {}
+    cancelled = bool(publication.get("cancelled_by_user")) or str((task or {}).get("failure_stage") or "") == "user_cancelled"
+    terminal_task = str((task or {}).get("run_status") or "") in {"completed", "failed", "error", "cutoff", "cancelled"}
+    terminal_publication = str(publication.get("status") or "") in {"completed", "failed", "error", "cancelled"}
+    if str(final_review.get("status") or "") == "running" and (terminal_task or terminal_publication):
+        final_review = dict(final_review)
+        final_review["recorded_status"] = "running"
+        final_review["status"] = "cancelled" if cancelled else "error"
+        final_review["completed_at"] = str(publication.get("completed_at") or (task or {}).get("completed_at_hkt") or manifest.get("completed_at") or "")
+        manifest["final_review"] = final_review
+    if cancelled:
+        if task:
+            task = dict(task)
+            task["run_status"] = "cancelled"
+        manifest["display_status"] = "cancelled"
+        publication = dict(publication)
+        publication["recorded_status"] = str(publication.get("status") or "")
+        publication["status"] = "cancelled"
+        manifest["publication"] = publication
+    return manifest, task
 
 
 def _display_results(payload):
@@ -40,7 +131,9 @@ def research_snapshot(root: Path, date: str = "") -> dict:
     if not runs:
         return _display_results(payload)
     manifest, directory = runs[0]
+    manifest, task = _reconcile_run_status(root, directory, manifest)
     payload["run"] = manifest
+    payload["task"] = task
     # Historical details must use the assignments that actually executed.
     payload["plan"] = manifest.get("plan") or payload["plan"]
     for key, filename in (("accepted_items", "verified_facts.jsonl"), ("result_items", "candidate_facts.jsonl")):

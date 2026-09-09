@@ -3555,6 +3555,7 @@ function taskLifecycleCompact(task) {
 function crawlRunStatusLabel(run) {
   if (run.run_status === "running") return "运行中";
   if (run.run_status === "cutoff") return "已截止";
+  if (run.run_status === "cancelled") return "已中止";
   if (run.run_status === "failed" || Number(run.crawl_return_code || 0) !== 0) return "失败";
   return "已完成";
 }
@@ -8070,6 +8071,15 @@ function ensureAiWorkspaceData() {
 
 window.addEventListener("workspace-tab-change", (event) => {
   if (event.detail?.tab === "ai") ensureAiWorkspaceData();
+});
+
+document.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-research-task-log]");
+  if (!button) return;
+  const taskId = String(button.dataset.researchTaskLog || "");
+  document.querySelector("#newsLineageDialog")?.close();
+  document.querySelector('[data-workspace-tab="log"]')?.click();
+  loadCrawlRuns({ selectRunId: taskId });
 });
 
 window.CMHKAuth?.ready.then(() => {

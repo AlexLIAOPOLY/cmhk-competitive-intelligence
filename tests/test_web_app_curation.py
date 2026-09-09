@@ -198,11 +198,41 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertEqual(task["worker_pid"], 0)
         self.assertEqual(task["completed_at_hkt"], "2026-09-08T11:40:16+08:00")
 
+    def test_research_with_missing_registry_entry_remains_visible(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = root / "curation_data/research_runs/research_20260909"
+            run.mkdir(parents=True)
+            (root / "agent_knowledge/crawl_run_logs").mkdir(parents=True)
+            (root / "agent_knowledge/crawl_run_logs/index.json").write_text("[]")
+            (run / "process.json").write_text(json.dumps({
+                "pid": 2468,
+                "task_run_id": "missing-registry-task",
+                "launched_at": "2026-09-09T03:00:12+08:00",
+            }), encoding="utf-8")
+            (run / "manifest.json").write_text(json.dumps({
+                "run_id": run.name,
+                "started_at": "2026-09-09T03:00:12+08:00",
+                "status": "partial",
+                "publication": {"status": "error", "cancelled_by_user": True},
+            }), encoding="utf-8")
+            with mock.patch.object(web_app, "ROOT", root), \
+                 mock.patch.object(web_app, "_research_process_alive", return_value=False):
+                task = web_app._orphan_research_tasks()[0]
+
+        self.assertEqual(task["task_id"], "research:research_20260909")
+        self.assertEqual(task["run_status"], "cancelled")
+        self.assertEqual(task["phase"], "用户已中止")
+
     def test_research_diagram_distinguishes_task_completion_from_failed_items(self) -> None:
         diagram = (web_app.ROOT / "web/static/research-diagram.js").read_text(encoding="utf-8")
         self.assertIn('partial: { key: "warning", label: "部分完成" }', diagram)
         self.assertIn('label: needsReview ? "已完成·含失败项" : "已完成"', diagram)
         self.assertIn('status(run ? "completed" : "pending")', diagram)
+        self.assertIn('cancelled: { key: "warning", label: "已中止" }', diagram)
+        self.assertIn('data-research-task-log=', diagram)
+        app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
+        self.assertIn('[data-research-task-log]', app)
 
     def test_quarterly_release_is_visible_as_an_independent_task(self) -> None:
         task = web_app._normalize_crawl_task(

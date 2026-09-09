@@ -5026,6 +5026,9 @@ def _normalize_crawl_task(run: dict) -> dict:
         "crawl": "爬虫",
     }
     operational_summary = run.get("operational_summary") if isinstance(run.get("operational_summary"), dict) else {}
+    run_status = str(run.get("run_status") or "completed")
+    if str(run.get("failure_stage") or "") == "user_cancelled" or bool(operational_summary.get("cancelled_by_user")):
+        run_status = "cancelled"
     model_analysis = operational_summary.get("model_analysis") if isinstance(operational_summary.get("model_analysis"), dict) else {}
     pages_publish = operational_summary.get("pages_publish") if isinstance(operational_summary.get("pages_publish"), dict) else {}
     return {
@@ -5039,7 +5042,7 @@ def _normalize_crawl_task(run: dict) -> dict:
             else str(run.get("trigger") or "爬虫任务")
         ),
         "scope": str(run.get("scope") or "未记录范围"),
-        "run_status": str(run.get("run_status") or "completed"),
+        "run_status": run_status,
         "started_at_hkt": str(run.get("started_at_hkt") or ""),
         "completed_at_hkt": str(run.get("completed_at_hkt") or ""),
         "duration_ms": int(run.get("duration_ms") or 0),
@@ -5080,6 +5083,27 @@ def _research_process_alive(pid: int) -> bool:
 def _orphan_research_tasks() -> list[dict]:
     """Expose pre-registry 03:00 runs so an active task can never disappear."""
     records: list[dict] = []
+    try:
+        registered = json.loads(
+            (ROOT / "agent_knowledge/crawl_run_logs/index.json").read_text(encoding="utf-8")
+        )
+    except (OSError, ValueError):
+        registered = []
+    if isinstance(registered, dict):
+        registered = registered.get("runs", registered.get("items", []))
+    if not isinstance(registered, list):
+        registered = []
+    registered_task_ids = {
+        str(item.get("crawl_run_id") or "")
+        for item in registered
+        if isinstance(item, dict)
+    }
+    registered_research_ids = {
+        str(summary.get("agent_run_id") or "")
+        for item in registered
+        if isinstance(item, dict)
+        for summary in [item.get("operational_summary") if isinstance(item.get("operational_summary"), dict) else {}]
+    }
     run_root = ROOT / "curation_data" / "research_runs"
     for directory in run_root.glob("research_*"):
         if not directory.is_dir():
@@ -5088,13 +5112,15 @@ def _orphan_research_tasks() -> list[dict]:
             launch = json.loads((directory / "process.json").read_text(encoding="utf-8"))
         except (OSError, ValueError):
             launch = {}
-        if str(launch.get("task_run_id") or ""):
-            continue
         try:
             manifest = json.loads((directory / "manifest.json").read_text(encoding="utf-8"))
         except (OSError, ValueError):
             manifest = {}
         if not launch and not manifest:
+            continue
+        launch_task_id = str(launch.get("task_run_id") or "")
+        research_id = str(manifest.get("run_id") or directory.name)
+        if launch_task_id in registered_task_ids or research_id in registered_research_ids:
             continue
         publication = manifest.get("publication") if isinstance(manifest.get("publication"), dict) else {}
         final_review = manifest.get("final_review") if isinstance(manifest.get("final_review"), dict) else {}
@@ -5102,6 +5128,8 @@ def _orphan_research_tasks() -> list[dict]:
         publication_status = str(publication.get("status") or "")
         if publication_status == "completed":
             run_status, phase = "completed", "已完成"
+        elif bool(publication.get("cancelled_by_user")):
+            run_status, phase = "cancelled", "用户已中止"
         elif publication_status in {"error", "failed"}:
             run_status, phase = "failed", "四库写入或页面发布失败"
         elif process_alive:

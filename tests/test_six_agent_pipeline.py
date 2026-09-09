@@ -73,6 +73,45 @@ class SixAgentPipelineTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 research_snapshot(root, "../../secrets")
 
+    def test_snapshot_reconciles_stale_running_review_with_cancelled_task(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run = root / "curation_data/research_runs/research_20260909"
+            run.mkdir(parents=True)
+            (run / "process.json").write_text(json.dumps({
+                "pid": 999999,
+                "task_run_id": "task-cancelled",
+                "launched_at": "2026-09-09T03:00:00+08:00",
+            }))
+            (run / "manifest.json").write_text(json.dumps({
+                "architecture": ARCHITECTURE_VERSION,
+                "run_id": run.name,
+                "started_at": "2026-09-09T03:00:00+08:00",
+                "completed_at": "2026-09-09T05:26:00+08:00",
+                "status": "partial",
+                "final_review": {"status": "running"},
+                "publication": {
+                    "status": "error",
+                    "cancelled_by_user": True,
+                    "completed_at": "2026-09-09T10:53:52+08:00",
+                },
+            }))
+            index = root / "agent_knowledge/crawl_run_logs/index.json"
+            index.parent.mkdir(parents=True)
+            index.write_text(json.dumps([{
+                "crawl_run_id": "task-cancelled",
+                "run_status": "failed",
+                "failure_stage": "user_cancelled",
+                "completed_at_hkt": "2026-09-09T10:53:52+08:00",
+            }]))
+
+            snapshot = research_snapshot(root, "2026-09-09")
+
+        self.assertEqual(snapshot["run"]["display_status"], "cancelled")
+        self.assertEqual(snapshot["run"]["final_review"]["status"], "cancelled")
+        self.assertEqual(snapshot["run"]["publication"]["status"], "cancelled")
+        self.assertEqual(snapshot["task"]["task_id"], "crawl:task-cancelled")
+
     def test_detail_objects_use_archived_decisions_and_matching_insight_run(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
