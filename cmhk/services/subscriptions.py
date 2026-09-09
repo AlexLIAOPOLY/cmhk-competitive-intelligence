@@ -247,6 +247,75 @@ def filter_news_by_categories(
             for item in chosen[:count]]
 
 
+PREFERENCE_FIELD_LABELS = {
+    "services": "订阅内容",
+    "report_mode": "报告接收方式",
+    "news_categories": "新闻兴趣板块",
+    "frequency": "新闻推送频率",
+    "news_item_limit": "每次新闻条数",
+    "news_delivery_times": "新闻接收时间",
+    "status": "订阅状态",
+}
+
+
+def _preference_snapshot(
+    *,
+    services: Any,
+    report_mode: Any,
+    news_categories: Any,
+    frequency: Any,
+    news_item_limit: Any,
+    news_delivery_times: Any,
+    status: Any = "active",
+) -> dict[str, Any]:
+    return {
+        "services": sorted(str(item) for item in (services or []) if str(item) in VALID_SERVICES),
+        "report_mode": str(report_mode or "pdf"),
+        "news_categories": normalize_news_categories(news_categories, default_all=False),
+        "frequency": _normalize_news_frequency(str(frequency or "once_daily")),
+        "news_item_limit": int(news_item_limit or 10),
+        "news_delivery_times": _normalize_news_delivery_times(news_delivery_times),
+        "status": str(status or "active"),
+    }
+
+
+def _preference_value_text(field: str, value: Any) -> str:
+    if field == "services":
+        return "、".join(SERVICE_LABELS.get(str(item), str(item)) for item in (value or [])) or "无"
+    if field == "report_mode":
+        return REPORT_MODE_LABELS.get(str(value), str(value))
+    if field == "news_categories":
+        return "、".join(NEWS_CATEGORY_LABELS.get(str(item), str(item)) for item in (value or [])) or "无"
+    if field == "frequency":
+        return FREQUENCY_LABELS.get(str(value), str(value))
+    if field == "news_item_limit":
+        return f"{int(value or 0)} 条"
+    if field == "news_delivery_times":
+        return " / ".join(str(item) for item in (value or [])) or "无"
+    if field == "status":
+        return {"active": "启用", "paused": "暂停"}.get(str(value), str(value))
+    return str(value or "")
+
+
+def _preference_changes(
+    before: dict[str, Any] | None,
+    after: dict[str, Any],
+) -> list[dict[str, str]]:
+    if before is None:
+        return []
+    changes: list[dict[str, str]] = []
+    for field, label in PREFERENCE_FIELD_LABELS.items():
+        if before.get(field) == after.get(field):
+            continue
+        changes.append({
+            "field": field,
+            "label": label,
+            "before": _preference_value_text(field, before.get(field)),
+            "after": _preference_value_text(field, after.get(field)),
+        })
+    return changes
+
+
 def news_category_summary(categories: Any) -> str:
     normalized = normalize_news_categories(categories)
     if set(normalized) == VALID_NEWS_CATEGORIES:
@@ -931,6 +1000,23 @@ class SubscriptionService:
                     updated_at TEXT NOT NULL,
                     PRIMARY KEY (message_id, callback_open_id)
                 );
+                CREATE TABLE IF NOT EXISTS subscription_preference_submissions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    event_id TEXT NOT NULL UNIQUE,
+                    message_id TEXT NOT NULL,
+                    chat_id TEXT NOT NULL,
+                    target_type TEXT NOT NULL,
+                    callback_open_id TEXT NOT NULL,
+                    delivery_open_id TEXT NOT NULL,
+                    union_id TEXT NOT NULL DEFAULT '',
+                    display_name TEXT NOT NULL,
+                    preferences TEXT NOT NULL,
+                    changes TEXT NOT NULL DEFAULT '[]',
+                    is_initial INTEGER NOT NULL DEFAULT 0,
+                    submitted_at TEXT NOT NULL
+                );
+                CREATE INDEX IF NOT EXISTS subscription_preference_submissions_person_idx
+                    ON subscription_preference_submissions(delivery_open_id, submitted_at DESC);
                 CREATE TABLE IF NOT EXISTS subscription_invite_candidates (
                     callback_open_id TEXT PRIMARY KEY,
                     delivery_open_id TEXT NOT NULL,
@@ -1286,6 +1372,7 @@ class SubscriptionService:
         news_categories: Any = None,
         news_delivery_times: Any = None,
         record_original_categories: bool = True,
+        submission_context: dict[str, str] | None = None,
     ) -> dict[str, Any]:
         adjustments: list[str] = []
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
@@ -1328,7 +1415,40 @@ class SubscriptionService:
                 adjustments.append("两次时间顺序不合适，已调整为08:00 / 18:30（香港时间）。")
         delivery_times_json = json.dumps(normalized_delivery_times, separators=(",", ":"))
         now = _now_hkt()
+        final_snapshot = _preference_snapshot(
+            services=normalized,
+            report_mode=report_mode,
+            news_categories=normalized_categories,
+            frequency=frequency,
+            news_item_limit=news_item_limit,
+            news_delivery_times=normalized_delivery_times,
+            status="active",
+        )
+        submission_changes: list[dict[str, str]] = []
+        submission_initial = False
         with closing(self._connect()) as db, db:
+            existing = db.execute(
+                "SELECT * FROM subscribers WHERE open_id=?",
+                (open_id,),
+            ).fetchone()
+            before_snapshot: dict[str, Any] | None = None
+            if existing is not None:
+                before_services = [
+                    str(row[0])
+                    for row in db.execute(
+                        "SELECT service FROM subscriptions WHERE open_id=? AND active=1 ORDER BY service",
+                        (open_id,),
+                    ).fetchall()
+                ]
+                before_snapshot = _preference_snapshot(
+                    services=before_services,
+                    report_mode=existing["report_mode"],
+                    news_categories=existing["news_categories"],
+                    frequency=existing["frequency"],
+                    news_item_limit=existing["news_item_limit"],
+                    news_delivery_times=existing["news_delivery_times"],
+                    status=existing["status"],
+                )
             db.execute(
                 """INSERT INTO subscribers(open_id, callback_open_id, union_id, display_name, status, frequency, report_mode, news_item_limit, news_categories, news_delivery_times, source_chat_id, created_at, updated_at)
                    VALUES(?, ?, ?, ?, 'active', ?, ?, ?, ?, ?, ?, ?, ?)
@@ -1355,6 +1475,30 @@ class SubscriptionService:
                        ON CONFLICT(open_id, service) DO UPDATE SET active=excluded.active, updated_at=excluded.updated_at""",
                     (open_id, service, int(service in normalized), now),
                 )
+            if submission_context:
+                submission_changes = _preference_changes(before_snapshot, final_snapshot)
+                submission_initial = before_snapshot is None
+                db.execute(
+                    """INSERT OR IGNORE INTO subscription_preference_submissions(
+                           event_id, message_id, chat_id, target_type,
+                           callback_open_id, delivery_open_id, union_id, display_name,
+                           preferences, changes, is_initial, submitted_at
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        str(submission_context.get("event_id") or ""),
+                        str(submission_context.get("message_id") or ""),
+                        str(submission_context.get("chat_id") or ""),
+                        str(submission_context.get("target_type") or "user"),
+                        str(submission_context.get("callback_open_id") or callback_open_id or open_id),
+                        open_id,
+                        str(submission_context.get("union_id") or union_id),
+                        display_name,
+                        json.dumps(final_snapshot, ensure_ascii=False, separators=(",", ":")),
+                        json.dumps(submission_changes, ensure_ascii=False, separators=(",", ":")),
+                        int(submission_initial),
+                        now,
+                    ),
+                )
         return {
             "adjustments": adjustments,
             "open_id": open_id,
@@ -1373,6 +1517,8 @@ class SubscriptionService:
             "report_cadence_label": REPORT_CADENCE_LABEL,
             "report_mode": report_mode,
             "report_mode_label": REPORT_MODE_LABELS[report_mode],
+            "preference_changes": submission_changes,
+            "preference_submission_initial": submission_initial,
             "updated_at": now,
         }
 
@@ -1738,6 +1884,14 @@ class SubscriptionService:
             news_item_limit=news_item_limit,
             news_categories=news_categories,
             news_delivery_times=news_delivery_times,
+            submission_context={
+                "event_id": event_id,
+                "message_id": message_id,
+                "chat_id": chat_id,
+                "target_type": str(published["target_type"] or "user"),
+                "callback_open_id": identity["callback_open_id"],
+                "union_id": identity["union_id"],
+            },
         )
         # A person's latest submission is their restore point; admin edits never replace it.
         with closing(self._connect()) as db, db:
@@ -1821,6 +1975,10 @@ class SubscriptionService:
                    JOIN subscription_entry_cards c ON c.message_id=r.message_id
                    WHERE c.target_type='chat'
                    ORDER BY r.updated_at DESC"""
+            ).fetchall()
+            preference_submissions = db.execute(
+                """SELECT * FROM subscription_preference_submissions
+                   ORDER BY submitted_at DESC, id DESC"""
             ).fetchall()
             directory_people = db.execute(
                 """SELECT directory_open_id, union_id, display_name, en_name, avatar_url,
@@ -1908,6 +2066,33 @@ class SubscriptionService:
             delivery["recipient_open_id"] = str(delivery.get("open_id") or "")
             delivery["message_ids"] = json.loads(delivery.get("message_ids") or "[]")
             delivery_items.append(delivery)
+        submission_items: list[dict[str, Any]] = []
+        submissions_by_message_person: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for row in preference_submissions:
+            submission = dict(row)
+            try:
+                preferences = json.loads(str(submission.get("preferences") or "{}"))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                preferences = {}
+            try:
+                changes = json.loads(str(submission.get("changes") or "[]"))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                changes = []
+            submission["preferences"] = preferences if isinstance(preferences, dict) else {}
+            submission["changes"] = changes if isinstance(changes, list) else []
+            submission["is_initial"] = bool(submission.get("is_initial"))
+            submission_items.append(submission)
+            key = (str(submission.get("message_id") or ""), str(submission.get("delivery_open_id") or ""))
+            submissions_by_message_person.setdefault(key, []).append(submission)
+
+        invitation_items: list[dict[str, Any]] = []
+        for row in invitations:
+            invitation = dict(row)
+            invitation["submissions"] = submissions_by_message_person.get(
+                (str(invitation.get("message_id") or ""), str(invitation.get("delivery_open_id") or "")),
+                [],
+            )
+            invitation_items.append(invitation)
         subscriber_identity_by_delivery = {
             str(row["open_id"]): {
                 "union_id": str(row["union_id"] or ""),
@@ -1976,6 +2161,10 @@ class SubscriptionService:
                 or candidate.get("job_title")
                 or ""
             )
+            response["submissions"] = submissions_by_message_person.get(
+                (str(response.get("message_id") or ""), str(response.get("delivery_open_id") or "")),
+                [],
+            )
             responses_by_message.setdefault(str(response["message_id"]), []).append(response)
 
         group_invitation_by_target: dict[str, dict[str, Any]] = {}
@@ -1997,7 +2186,18 @@ class SubscriptionService:
                     or response.get("delivery_open_id")
                     or response.get("callback_open_id")
                 )
-                group["responses_by_person"].setdefault(person_key, response)
+                existing_response = group["responses_by_person"].get(person_key)
+                if existing_response is None:
+                    group["responses_by_person"][person_key] = response
+                else:
+                    known_events = {
+                        str(item.get("event_id") or "")
+                        for item in existing_response.get("submissions", [])
+                    }
+                    existing_response.setdefault("submissions", []).extend(
+                        item for item in response.get("submissions", [])
+                        if str(item.get("event_id") or "") not in known_events
+                    )
 
         group_invitation_items = []
         for group in list(group_invitation_by_target.values())[:30]:
@@ -2029,7 +2229,8 @@ class SubscriptionService:
             },
             "invite_candidates": self.list_invite_candidates(),
             "group_invitations": group_invitation_items,
-            "invitations": [dict(item) for item in invitations],
+            "invitations": invitation_items,
+            "preference_submissions": submission_items,
             "invitation_history": {
                 "total": len(invitations),
                 "newest_at": str(invitations[0]["sent_at"] or "") if invitations else "",

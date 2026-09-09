@@ -525,6 +525,74 @@ class SubscriptionServiceTests(unittest.TestCase):
         reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
         self.assertEqual(reloaded.list_summary()["group_invitations"][0]["response_count"], 2)
 
+    def test_user_preference_changes_are_kept_in_submission_history(self):
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+
+        def identity(open_id, *, source_profile=""):
+            return {
+                "display_name": "测试用户",
+                "callback_open_id": open_id,
+                "union_id": "on_persona123",
+                "open_id": open_id,
+                "source_profile": source_profile,
+                "avatar_url": "",
+                "job_title": "",
+            }
+
+        forms = (
+            {
+                "services": ["news"],
+                "news_frequency": "once_daily",
+                "report_mode": "pdf",
+                "news_item_limit": "5",
+                "news_categories": ["竞对动态"],
+                "news_delivery_time_morning": "08:00",
+                "news_delivery_time_afternoon": "18:30",
+            },
+            {
+                "services": ["weekly", "news"],
+                "news_frequency": "twice_daily",
+                "report_mode": "pdf_audio",
+                "news_item_limit": "20",
+                "news_categories": ["政策监管"],
+                "news_delivery_time_morning": "09:00",
+                "news_delivery_time_afternoon": "19:00",
+            },
+        )
+        with mock.patch.object(self.service, "resolve_user", side_effect=identity):
+            for index, form in enumerate(forms, start=1):
+                self.service.handle_card_event({
+                    "type": "card.action.trigger",
+                    "action_tag": "button",
+                    "event_id": f"event-preference-{index}",
+                    "operator_id": "ou_persona123",
+                    "chat_id": "oc_test123",
+                    "message_id": "om_test123",
+                    "form_value": json.dumps(form),
+                })
+
+        summary = self.service.list_summary()
+        response = summary["group_invitations"][0]["responses"][0]
+        submissions = response["submissions"]
+        self.assertEqual(len(submissions), 2)
+        self.assertTrue(submissions[1]["is_initial"])
+        self.assertEqual(submissions[1]["changes"], [])
+        self.assertFalse(submissions[0]["is_initial"])
+        changes = {item["field"]: item for item in submissions[0]["changes"]}
+        self.assertEqual(changes["frequency"]["before"], "每天一次")
+        self.assertEqual(changes["frequency"]["after"], "每天两次")
+        self.assertEqual(changes["news_item_limit"]["before"], "5 条")
+        self.assertEqual(changes["news_item_limit"]["after"], "20 条")
+        self.assertEqual(changes["news_categories"]["before"], "竞对动态")
+        self.assertEqual(changes["news_categories"]["after"], "政策监管")
+        self.assertEqual(len(summary["preference_submissions"]), 2)
+
+        self.service.update_subscriber(
+            "ou_persona123", services=["weekly"], report_mode="audio",
+            news_item_limit=10, news_categories=["公司动态"],
+        )
+        self.assertEqual(len(self.service.list_summary()["preference_submissions"]), 2)
+
     def test_repeated_group_cards_accumulate_unique_people_and_complete_profiles(self):
         self.service.refresh_people_directory()
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")

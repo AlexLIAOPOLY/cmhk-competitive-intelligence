@@ -11,9 +11,9 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=31', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=53', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
-        self.assertIn('/static/subscription-admin.css?v=41', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=32', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=54', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.css?v=42', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -168,6 +168,18 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn(".invitation-history-group summary", STYLE)
         self.assertIn("openInvitationHistoryGroups", SCRIPT)
         self.assertIn('data-history-group="${esc(groupKey)}"', SCRIPT)
+
+    def test_invitation_results_show_append_only_preference_changes(self):
+        self.assertIn("preferenceSubmissionHistory", SCRIPT)
+        self.assertIn("用户提交记录", SCRIPT)
+        self.assertIn("首次提交", SCRIPT)
+        self.assertIn("修改 ${number(changes.length)} 项", SCRIPT)
+        self.assertIn("本次设置与上次一致", SCRIPT)
+        self.assertIn("preferenceSubmissionSearchText", SCRIPT)
+        self.assertIn("response.submissions", SCRIPT)
+        self.assertIn("item.submissions", SCRIPT)
+        self.assertIn(".preference-submission-list", STYLE)
+        self.assertIn(".preference-change-list", STYLE)
 
     def test_invite_list_keeps_groups_first_and_orders_people_by_response_status(self):
         candidate_rows = SCRIPT.split("function candidateRows()", 1)[1].split("function activeFilterCount", 1)[0]

@@ -278,6 +278,51 @@
     };
   }
 
+  function preferenceValueText(field, value) {
+    const serviceLabels = { weekly: "双周战略报告", performance: "经营数据", news: "战略新闻" };
+    const reportModeLabels = { pdf: "仅 PDF", pdf_audio: "PDF + 单独语音", audio: "仅语音" };
+    const frequencyLabels = { once_daily: "每天一次", twice_daily: "每天两次" };
+    if (field === "services") return (value || []).map((item) => serviceLabels[item] || item).join("、") || "无";
+    if (field === "report_mode") return reportModeLabels[value] || value || "-";
+    if (field === "news_categories") {
+      const labels = new Map((state.data?.news_categories || []).map((item) => [item.key, item.label]));
+      return (value || []).map((item) => labels.get(item) || item).join("、") || "无";
+    }
+    if (field === "frequency") return frequencyLabels[value] || value || "-";
+    if (field === "news_item_limit") return `${number(value || 0)} 条`;
+    if (field === "news_delivery_times") return (value || []).join(" / ") || "无";
+    if (field === "status") return value === "active" ? "启用" : value === "paused" ? "暂停" : value || "-";
+    return String(value ?? "-");
+  }
+
+  function preferenceSubmissionSearchText(submissions) {
+    return (submissions || []).flatMap((submission) => [
+      submission.submitted_at,
+      submission.is_initial ? "首次提交" : "修改偏好",
+      ...(submission.changes || []).flatMap((change) => [change.label, change.before, change.after]),
+      ...Object.entries(submission.preferences || {}).flatMap(([field, value]) => preferenceValueText(field, value)),
+    ]).filter(Boolean).join(" ");
+  }
+
+  function preferenceSubmissionHistory(submissions) {
+    const rows = submissions || [];
+    if (!rows.length) return "";
+    const fieldLabels = {
+      services: "订阅内容", report_mode: "报告接收方式", news_categories: "新闻兴趣板块",
+      frequency: "新闻推送频率", news_item_limit: "每次新闻条数", news_delivery_times: "新闻接收时间", status: "订阅状态",
+    };
+    return `<div class="preference-submission-list"><div class="preference-submission-title">用户提交记录 · ${number(rows.length)} 次</div>${rows.map((submission) => {
+      const changes = submission.changes || [];
+      const badge = submission.is_initial ? "首次提交" : changes.length ? `修改 ${number(changes.length)} 项` : "确认原设置";
+      const details = submission.is_initial
+        ? Object.entries(submission.preferences || {}).map(([field, value]) => `<li><strong>${esc(fieldLabels[field] || field)}</strong><span>${esc(preferenceValueText(field, value))}</span></li>`).join("")
+        : changes.length
+          ? changes.map((change) => `<li><strong>${esc(change.label)}</strong><span class="preference-before">${esc(change.before)}</span><b aria-label="改为">→</b><span class="preference-after">${esc(change.after)}</span></li>`).join("")
+          : '<li class="preference-no-change">本次设置与上次一致</li>';
+      return `<section class="preference-submission"><div class="preference-submission-head"><span>${esc(badge)}</span><time>${esc(submission.submitted_at || "-")}</time></div><ul class="preference-change-list">${details}</ul></section>`;
+    }).join("")}</div>`;
+  }
+
   function invitationSortRank(item) {
     const status = item?.latest_invitation?.status || "";
     if (["accepted", "responded"].includes(status)) return 0;
@@ -299,12 +344,12 @@
         ? `${number(acceptedCount)}人已接受${correctionCount ? ` · ${number(correctionCount)}人待修正` : ""}`
         : correctionCount ? `${number(correctionCount)}人待修正` : "已确认发送";
       const groupStatus = acceptedCount ? "accepted" : correctionCount ? "needs_correction" : "verified";
-      const filterText = [item.target_name, "群邀请", responseSummary, ...responses.flatMap((response) => [response.display_name, response.en_name, ...(response.department_names || []), response.job_title, invitationStatus(response.status), response.last_error])].filter(Boolean).join(" ");
+      const filterText = [item.target_name, "群邀请", responseSummary, ...responses.flatMap((response) => [response.display_name, response.en_name, ...(response.department_names || []), response.job_title, invitationStatus(response.status), response.last_error, preferenceSubmissionSearchText(response.submissions)])].filter(Boolean).join(" ");
       return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${groupStatus}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
         <input type="checkbox" value="${esc(item.target_id)}" data-invite-group-candidate data-invite-group-name="${esc(item.target_name)}" aria-label="选择群聊 ${esc(item.target_name)}"${state.selectedInviteGroups.has(item.target_id) ? " checked" : ""}>
         <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · 已发送 ${number(messageCount)} 次 · 成员按人去重累计</small></span>
         <span class="invite-meta"><span class="status ${groupStatus}">${responseSummary}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
-      </summary><div class="group-response-list">${responses.length ? responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at)}</small></span></span>`; }).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
+      </summary><div class="group-response-list">${responses.length ? responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span class="group-response-copy"><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at)}</small>${preferenceSubmissionHistory(response.submissions)}</span></span>`; }).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
     }).join("");
     const sortedRows = rows.map((item, index) => ({ item, index }))
       .sort((left, right) => invitationSortRank(left.item) - invitationSortRank(right.item) || left.index - right.index)
@@ -384,8 +429,8 @@
     if (!personRows.length && !groupRows.length) return '<tr><td colspan="4" class="empty">尚无邀请记录</td></tr>';
     const people = personRows.map((item) => {
       const personKey = item.callback_open_id || item.delivery_open_id || item.display_name || "";
-      const filterText = [item.display_name, item.callback_open_id, item.delivery_open_id, item.sent_at, invitationStatus(item.status), item.message_id, item.last_error].filter(Boolean).join(" ");
-      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.sent_at || "").slice(0, 10))}" data-filter-person="${esc(personKey)}" data-filter-status="${esc(item.status || "")}" data-filter-text="${esc(filterText)}"><td class="name">${esc(item.display_name)}</td><td>${esc(item.sent_at || "-")}</td><td><span class="status ${esc(item.status)}">${esc(invitationStatus(item.status))}</span>${item.last_error ? `<small>${esc(item.last_error)}</small>` : ""}</td><td class="muted">${esc(item.message_id || "-")}</td></tr>`;
+      const filterText = [item.display_name, item.callback_open_id, item.delivery_open_id, item.sent_at, invitationStatus(item.status), item.message_id, item.last_error, preferenceSubmissionSearchText(item.submissions)].filter(Boolean).join(" ");
+      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.sent_at || "").slice(0, 10))}" data-filter-person="${esc(personKey)}" data-filter-status="${esc(item.status || "")}" data-filter-text="${esc(filterText)}"><td class="name"><div class="invitation-person-name">${esc(item.display_name)}</div>${preferenceSubmissionHistory(item.submissions)}</td><td>${esc(item.sent_at || "-")}</td><td><span class="status ${esc(item.status)}">${esc(invitationStatus(item.status))}</span>${item.last_error ? `<small>${esc(item.last_error)}</small>` : ""}</td><td class="muted">${esc(item.message_id || "-")}</td></tr>`;
     });
     const groups = groupRows.map((item) => {
       const responses = item.responses || [];
@@ -399,9 +444,9 @@
       const groupKey = `group:${item.target_id || item.chat_id || item.target_name || ""}`;
       const latestMessageId = item.message_id || (item.message_ids || [])[0] || "";
       const filterText = [item.target_name, "群聊", item.created_at, statusText, latestMessageId,
-        ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status), response.last_error])].filter(Boolean).join(" ");
+        ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status), response.last_error, preferenceSubmissionSearchText(response.submissions)])].filter(Boolean).join(" ");
       const responseDetails = responses.length
-        ? `<div class="invitation-history-responses">${responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at || "-")}</small></span></span>`; }).join("")}</div>`
+        ? `<div class="invitation-history-responses">${responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span class="group-response-copy"><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at || "-")}</small>${preferenceSubmissionHistory(response.submissions)}</span></span>`; }).join("")}</div>`
         : '<p class="invitation-history-empty">暂无群成员提交</p>';
       return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-person="${esc(groupKey)}" data-filter-status="${filterStatuses}" data-filter-text="${esc(filterText)}"><td class="name"><details class="invitation-history-group" data-history-group="${esc(groupKey)}"><summary><span class="history-group-badge">群</span><span>${esc(item.target_name || "飞书群聊")}</span></summary>${responseDetails}</details></td><td>${esc(item.created_at || "-")}</td><td><span class="status ${status}">${statusText}</span></td><td class="muted">${esc(latestMessageId || "-")}${Number(item.message_count || 0) > 1 ? `<small>共 ${number(item.message_count)} 次群邀请</small>` : ""}</td></tr>`;
     });

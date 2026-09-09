@@ -281,6 +281,21 @@ td select { min-width: 84px; }
 .invitation-history-responses strong, .invitation-history-responses small, .invitation-history-empty, td.muted small { display: block; }
 .invitation-history-responses strong { color: #dcebed; font-size: 10px; }
 .invitation-history-responses small, .invitation-history-empty, td.muted small { margin-top: 2px; color: #6f8d97; font-size: 9px; font-weight: 400; }
+.group-response-copy { display: block; min-width: 0; flex: 1; }
+.invitation-person-name { margin-bottom: 7px; }
+.preference-submission-list { display: grid; width: min(100%, 590px); gap: 6px; margin-top: 8px; font-weight: 400; }
+.preference-submission-title { color: #83b8c3; font-size: 9px; font-weight: 650; }
+.preference-submission { min-width: 0; padding: 7px 8px; border: 1px solid rgba(80,143,158,.32); border-radius: 7px; background: rgba(9,39,49,.64); }
+.preference-submission-head { display: flex; align-items: center; justify-content: space-between; gap: 9px; }
+.preference-submission-head > span { color: #9edbd2; font-size: 9px; font-weight: 650; }
+.preference-submission-head time { color: #66858f; font-size: 8px; font-weight: 400; white-space: nowrap; }
+.preference-change-list { display: grid; gap: 4px; margin: 6px 0 0; padding: 0; list-style: none; }
+.preference-change-list li { display: grid; grid-template-columns: minmax(92px,.8fr) minmax(92px,1fr) auto minmax(92px,1fr); align-items: baseline; gap: 6px; min-width: 0; color: #a9bec4; font-size: 9px; line-height: 1.4; }
+.preference-change-list li strong { color: #7797a0; font-size: 9px; font-weight: 550; }
+.preference-change-list li span { min-width: 0; overflow-wrap: anywhere; }
+.preference-change-list li b { color: #69b8c6; font-weight: 500; }
+.preference-change-list li:not(:has(b)) { grid-template-columns: minmax(92px,.8fr) minmax(0,2fr); }
+.preference-change-list .preference-no-change { display: block; color: #78949d; }
 /* Readability scale: retain the compact admin layout while avoiding tiny text. */
 h1 { font-size: 20px; }
 .surface-header h2, .workbench-heading h2 { font-size: 15px; }
@@ -334,6 +349,14 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   .group-invite-row { grid-template-columns: auto auto minmax(0,1fr); }
   .group-invite-row .invite-meta { grid-column: 3; }
   .group-response-list { padding-left: 46px; }
+  .preference-submission-head { align-items: flex-start; flex-direction: column; gap: 2px; }
+  .preference-change-list li { grid-template-columns: 1fr; gap: 2px; padding-top: 4px; border-top: 1px solid rgba(73,127,140,.2); }
+  .preference-change-list li:first-child { padding-top: 0; border-top: 0; }
+  .preference-change-list li:not(:has(b)) { grid-template-columns: 1fr; }
+  .preference-change-list li b { display: none; }
+  .preference-change-list .preference-before::before { color: #66858f; content: "原："; }
+  .preference-change-list .preference-after { color: #c0d7da; }
+  .preference-change-list .preference-after::before { color: #69b8c6; content: "新："; }
   .invite-meta { grid-column: 3; justify-items: start; }
   .push-workbench { padding: 0 14px; }
   .push-actions { align-items: stretch; flex-direction: column; }
