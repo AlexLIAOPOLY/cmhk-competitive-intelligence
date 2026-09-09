@@ -160,6 +160,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         card = subscription_entry_card(
             image_key="img_v3_subscription_poster",
             recipient_name="Alex LIAO Wang",
+            report_schedule={"enabled": True, "days_text": "5、20 日", "time": "08:45"},
+            performance_schedule={"enabled": True, "days_text": "10、25 日", "time": "09:30"},
         )
         self.assertEqual(card["schema"], "2.0")
         self.assertTrue(card["config"]["update_multi"])
@@ -184,7 +186,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
+            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**定期推送日期（后台设置）**\n**战略双周报：**每月 5、20 日 08:45（香港时间）\n**运营商业绩摘要：**每月 10、25 日 09:30（香港时间）", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
@@ -200,6 +202,13 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual({item["value"] for item in item_limit["options"]}, {"5", "10", "15", "20"})
         self.assertEqual(len(categories["options"]), 7)
         self.assertFalse(categories["required"])
+        schedule_copy = next(
+            item["content"] for item in form["elements"]
+            if item.get("tag") == "markdown" and "定期推送日期" in item.get("content", "")
+        )
+        self.assertIn("战略双周报：**每月 5、20 日 08:45（香港时间）", schedule_copy)
+        self.assertIn("运营商业绩摘要：**每月 10、25 日 09:30（香港时间）", schedule_copy)
+        self.assertNotIn("周报按后台月度排期自动生成并推送", json.dumps(card, ensure_ascii=False))
         self.assertNotIn("frequency", {item.get("name") for item in form["elements"]})
         button = next(item for item in form["elements"] if item["tag"] == "button")
         self.assertEqual(button["form_action_type"], "submit")

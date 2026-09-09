@@ -286,11 +286,11 @@
     const groupRows = groups.map((item) => {
       const responses = item.responses || [];
       const responseCount = Number(item.response_count || responses.length || 0);
-      const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已选择" : "已确认发送", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
+      const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已接受" : "已确认发送", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
       return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${responseCount ? "accepted" : "verified"}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
         <input type="checkbox" value="${esc(item.target_id)}" data-invite-group-candidate data-invite-group-name="${esc(item.target_name)}" aria-label="选择群聊 ${esc(item.target_name)}"${state.selectedInviteGroups.has(item.target_id) ? " checked" : ""}>
         <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · ${esc(item.message_id)}</small></span>
-        <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `已选择 ${number(responseCount)} 人` : "已确认发送"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
+        <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `${number(responseCount)}人已接受` : "已确认发送"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
       </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
     }).join("");
     const sortedRows = rows.map((item, index) => ({ item, index }))

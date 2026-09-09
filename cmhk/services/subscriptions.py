@@ -274,7 +274,23 @@ def _json_payload(process: subprocess.CompletedProcess[str]) -> dict[str, Any]:
     return payload
 
 
-def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") -> dict[str, Any]:
+def _report_schedule_card_line(label: str, schedule: dict[str, Any] | None) -> str:
+    current = schedule or {
+        "enabled": False,
+        "days_text": "、".join(str(day) for day in REPORT_SCHEDULE_DEFAULT_DAYS) + " 日",
+        "time": REPORT_SCHEDULE_DEFAULT_TIME,
+    }
+    state = "" if current.get("enabled") else "（已暂停）"
+    return f"**{label}：**每月 {current.get('days_text') or '未设置'} {current.get('time') or '未设置'}（香港时间）{state}"
+
+
+def subscription_entry_card(
+    *,
+    image_key: str = "",
+    recipient_name: str = "",
+    report_schedule: dict[str, Any] | None = None,
+    performance_schedule: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     """Card 2.0 form used as the colleague-facing self-service entry point."""
     salutation = f"尊敬的 {recipient_name.strip()}，您好！" if recipient_name.strip() else "您好！"
     introduction = (
@@ -344,6 +360,13 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {"tag": "hr"},
                         {"tag": "markdown", "content": "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>"},
+                        {
+                            "tag": "markdown",
+                            "content": "**定期推送日期（后台设置）**\n"
+                            + _report_schedule_card_line("战略双周报", report_schedule)
+                            + "\n"
+                            + _report_schedule_card_line("运营商业绩摘要", performance_schedule),
+                        },
                         {"tag": "markdown", "content": "**报告接收方式**"},
                         {
                             "tag": "select_static",
@@ -419,11 +442,6 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                             "text_size": "notation",
                         },
                         {"tag": "hr"},
-                        {
-                            "tag": "markdown",
-                            "content": "<font color='grey'>周报按后台月度排期自动生成并推送，业绩摘要随正式报告发布；战略新闻每日 04:00、14:00 扫描，个人默认 08:00、18:30 推送。只有对应爬虫完成审核后才会发送；每天一次仅接收当日首轮结果。</font>",
-                            "text_size": "notation",
-                        },
                         {
                             "tag": "button",
                             "name": "saveSubscriptions",
@@ -1276,7 +1294,11 @@ class SubscriptionService:
         if subscriber is None:
             raise ValueError("未找到你的订阅设置")
         if action == "cmhk_news_preferences_v1":
-            card = subscription_entry_card(recipient_name=identity["display_name"])
+            card = subscription_entry_card(
+                recipient_name=identity["display_name"],
+                report_schedule=self.report_schedule_snapshot(),
+                performance_schedule=self.performance_schedule_snapshot(),
+            )
             card["header"]["title"]["content"] = "修改兴趣偏好"
             values = {"services": services, "news_categories": normalize_news_categories(subscriber["news_categories"]),
                       "report_mode": subscriber["report_mode"], "news_frequency": subscriber["frequency"],
@@ -2949,7 +2971,12 @@ class SubscriptionService:
         subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
         poster_keys = subscriptions.get("poster_image_keys") if isinstance(subscriptions.get("poster_image_keys"), dict) else {}
         image_key = str(poster_keys.get(source_profile) or poster_keys.get("default") or "")
-        card = subscription_entry_card(image_key=image_key, recipient_name=recipient_name)
+        card = subscription_entry_card(
+            image_key=image_key,
+            recipient_name=recipient_name,
+            report_schedule=self.report_schedule_snapshot(),
+            performance_schedule=self.performance_schedule_snapshot(),
+        )
         card_version = hashlib.sha256(
             json.dumps(card, ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()[:12]
