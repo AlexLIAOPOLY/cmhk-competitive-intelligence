@@ -536,6 +536,11 @@
   function render() {
     const data = state.data;
     if (!data) return;
+    // Polling replaces the table node; keep the reader's position on both axes.
+    const previousTable = root.querySelector(".subscriber-table");
+    const tableScroll = previousTable
+      ? { top: previousTable.scrollTop, left: previousTable.scrollLeft }
+      : null;
     const inviteCount = (data.invite_candidates || []).length;
     const groupInviteCount = (data.group_invitations || []).length;
     const schedule = data.report_schedule || { days: [15, 30], time: "09:00", enabled: false };
@@ -562,6 +567,11 @@
     if (state.performancePickerOpen) applyPerformancePickerFilter(state.performancePickerQuery);
     updateScheduleCountdown();
     scheduleNoticeDismissal();
+    const currentTable = root.querySelector(".subscriber-table");
+    if (tableScroll && currentTable) {
+      currentTable.scrollTop = tableScroll.top;
+      currentTable.scrollLeft = tableScroll.left;
+    }
   }
 
   function scheduleNoticeDismissal() {
