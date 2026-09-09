@@ -3,7 +3,7 @@
   "use strict";
   const status = (value) => ({
     completed: { key: "healthy", label: "已完成" }, running: { key: "running", label: "运行中" },
-    partial: { key: "warning", label: "执行失败" }, error: { key: "critical", label: "执行失败" },
+    partial: { key: "warning", label: "部分完成" }, error: { key: "critical", label: "执行失败" },
     pending: { key: "unknown", label: "待执行" },
   })[value] || { key: "unknown", label: "无记录" };
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -63,7 +63,7 @@
     if (reports.some((report) => report.status === "error" || (report.items || []).some((item) => item.status === "error"))) return status("error");
     if (isIncremental(run)) {
       const needsReview = reports.some((report) => (report.items || []).some((item) => !["verified", "no_update"].includes(item.status)));
-      return { key: needsReview ? "warning" : "healthy", label: needsReview ? "执行失败" : "已完成" };
+      return { key: needsReview ? "warning" : "healthy", label: needsReview ? "已完成·含失败项" : "已完成" };
     }
     return { key: "healthy", label: "历史核对记录" };
   };
@@ -102,7 +102,7 @@
       "输入：公司、指标、库内最新期间与当前日期；输出：六份最新数据搜索任务",
       "每天03:00启动；各 Agent 的网页搜索与原文读取在同一轮内完成",
       "使用 Deep Agents 0.7.13；六组研究任务同时执行",
-    ], status(run?.status === "running" ? "completed" : run?.status), { note: "每日分配六组公司研究任务" });
+    ], status(run ? "completed" : "pending"), { note: run ? "六组公司研究任务已成功分配" : "每日分配六组公司研究任务" });
     plan.forEach((task, index) => {
       const actual = agents.find((agent) => agent.key === task.key);
       const reports = actual?.reports || [];
@@ -155,7 +155,7 @@
         node.health = { key: "healthy", label: node.key === "research-update" ? "无新增·保留原库" : "无新增·沿用页面" };
         node.note = "本次未发现可写入的新数据，保留现有数据库和页面，不重复生成分析";
       } else if (incremental && ["research-update", "research-publish"].includes(node.key) && run.publication?.result_status === "needs_review") {
-        node.health = { key: "warning", label: "执行失败" };
+        node.health = { key: "warning", label: "未更新·含失败项" };
         node.note = "本次未形成可写入的新数据；执行失败原因见结果明细";
       }
     });
