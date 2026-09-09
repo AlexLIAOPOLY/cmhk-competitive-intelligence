@@ -204,6 +204,31 @@ class AgenticNewsSearchTests(unittest.TestCase):
         )
         uuids = [call.kwargs["data"]["uuid"] for call in lark_api.call_args_list]
         self.assertEqual(len(set(uuids)), 2)
+        for call in lark_api.call_args_list:
+            sent_card = json.loads(call.kwargs["data"]["content"])
+            self.assertEqual(
+                sent_card["header"]["title"]["content"],
+                "晨间通报",
+            )
+
+    def test_digest_delivery_preserves_markdown_bold_emphasis(self):
+        with mock.patch.object(
+            strategic_briefing,
+            "_lark_api",
+            return_value={"data": {"message_id": "om_primary"}, "_identity": "bot"},
+        ) as lark_api:
+            digest._send_card({
+                "elements": [{
+                    "tag": "div",
+                    "text": {"tag": "lark_md", "content": "**命中：** 5G"},
+                }],
+            })
+
+        sent_card = json.loads(lark_api.call_args_list[0].kwargs["data"]["content"])
+        self.assertEqual(
+            sent_card["elements"][0]["text"]["content"],
+            "**命中：** 5G",
+        )
 
     def test_agentic_planner_has_room_and_retries_for_complete_json(self):
         spec = {

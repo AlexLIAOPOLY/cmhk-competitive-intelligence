@@ -1,6 +1,7 @@
 import hashlib
 import json
 import os
+import sqlite3
 import subprocess
 import tempfile
 import unittest
@@ -13,6 +14,7 @@ from docx import Document
 
 from cmhk.services.subscriptions import (
     NEWS_CATEGORY_LABELS,
+    NEWS_DIGEST_PREFIX,
     SubscriptionService,
     encode_strategic_news_digest,
     strategic_news_card,
@@ -739,6 +741,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertNotIn("###", text)
         self.assertIn("新闻简介：", text)
         self.assertIn("AI解读：", text)
+        self.assertIn("**新闻简介：**", text)
+        self.assertIn("**AI解读：**", text)
         group = next(e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set")
         self.assertEqual(sum(e["tag"] == "hr" for e in group["elements"]), 5)
         self.assertEqual(sum(e.get("text_size") == "heading-3" for e in group["elements"]), 6)
@@ -1096,7 +1100,11 @@ class SubscriptionServiceTests(unittest.TestCase):
         delayed = self.service.dispatch_news_after_crawl(
             crawl_slot="2099-01-01@04:00",
             slot_label="晨间扫描",
-            items=[{"title": "1月1日迟到新闻"}],
+            items=[{
+                "title": "1月1日迟到新闻",
+                "summary": "跨日完成但仍属于原爬虫日。",
+                "category": "公司动态",
+            }],
             completed_at="2099-01-02T00:07:00+08:00",
         )
 
@@ -1109,6 +1117,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         send = next(call for call in self.lark.calls if "+messages-send" in call)
         card = json.loads(send[send.index("--content") + 1])
         self.assertEqual(card["header"]["title"]["content"], "CMHK战略早茶订阅｜2099年01月01日")
+        sent_text = json.dumps(card, ensure_ascii=False)
+        self.assertIn("**新闻简介：**", sent_text)
+        self.assertIn("**AI解读：**", sent_text)
 
         next_day = self.service.dispatch_news_after_crawl(
             crawl_slot="2099-01-02@04:00",
@@ -1306,6 +1317,91 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
         self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略下午茶订阅｜2099年01月04日")
         self.assertEqual(result["results"][0]["news_categories"], ["竞对动态", "政策监管"])
+
+    def test_afternoon_news_never_repeats_for_recipient_and_backfills_from_morning_pool(self):
+        self.service.save_subscriptions(
+            "ou_delivery123", "测试用户", ["news"],
+            frequency="twice_daily", news_item_limit=5,
+            news_categories=["公司动态"],
+        )
+        self.service.update_news_schedule(enabled=True)
+        morning_items = [
+            {
+                "news_id": f"morning-{index}",
+                "title": f"上午新闻{index}",
+                "category": "公司动态",
+                "published_at": f"2099-01-05T{12-index:02d}:00:00+08:00",
+                "source_url": f"https://example.test/morning/{index}",
+            }
+            for index in range(1, 7)
+        ]
+        self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-05@04:00",
+            slot_label="晨间扫描",
+            items=morning_items,
+        )
+        afternoon = self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-05@14:00",
+            slot_label="午后扫描",
+            items=[
+                {**morning_items[0], "source_url": morning_items[0]["source_url"] + "?utm_source=repeat#top"},
+                {
+                    "news_id": "afternoon-new",
+                    "title": "下午新增",
+                    "category": "公司动态",
+                    "published_at": "2099-01-05T14:00:00+08:00",
+                    "source_url": "https://example.test/afternoon/new",
+                },
+            ],
+        )
+
+        self.assertEqual(afternoon["queued_count"], 1)
+        with sqlite3.connect(self.service.db_path) as db:
+            rows = db.execute(
+                """SELECT body FROM pending_subscription_deliveries
+                   WHERE open_id='ou_delivery123' ORDER BY id"""
+            ).fetchall()
+        morning_sent = json.loads(rows[0][0].removeprefix(NEWS_DIGEST_PREFIX))
+        afternoon_sent = json.loads(rows[1][0].removeprefix(NEWS_DIGEST_PREFIX))
+        morning_ids = {item["news_id"] for item in morning_sent}
+        afternoon_ids = {item["news_id"] for item in afternoon_sent}
+        self.assertTrue(morning_ids.isdisjoint(afternoon_ids))
+        self.assertEqual([item["news_id"] for item in afternoon_sent], ["afternoon-new", "morning-6"])
+
+    def test_daily_news_history_is_isolated_per_recipient(self):
+        self.service.save_subscriptions(
+            "ou_delivery123", "甲", ["news"], frequency="twice_daily",
+            news_item_limit=5, news_categories=["公司动态"],
+        )
+        self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-06@04:00",
+            slot_label="晨间扫描",
+            items=[{"news_id": "shared", "title": "共同新闻", "category": "公司动态"}],
+        )
+        self.service.save_subscriptions(
+            "ou_second123", "乙", ["news"], frequency="twice_daily",
+            news_item_limit=5, news_categories=["公司动态"],
+        )
+        self.service.dispatch_news_after_crawl(
+            crawl_slot="2099-01-06@14:00",
+            slot_label="午后扫描",
+            items=[
+                {"news_id": "shared", "title": "共同新闻", "category": "公司动态"},
+                {"news_id": "new", "title": "新增新闻", "category": "公司动态"},
+            ],
+        )
+
+        with sqlite3.connect(self.service.db_path) as db:
+            rows = db.execute(
+                """SELECT open_id, body FROM pending_subscription_deliveries
+                   WHERE content_ref='strategic-crawl:2099-01-06@14:00' ORDER BY open_id"""
+            ).fetchall()
+        delivered = {
+            open_id: [item["news_id"] for item in json.loads(body.removeprefix(NEWS_DIGEST_PREFIX))]
+            for open_id, body in rows
+        }
+        self.assertEqual(delivered["ou_delivery123"], ["new"])
+        self.assertEqual(delivered["ou_second123"], ["shared", "new"])
 
     def test_new_subscribers_default_to_four_news_categories(self):
         self.service.save_subscriptions("ou_delivery123", "测试用户", ["news"])

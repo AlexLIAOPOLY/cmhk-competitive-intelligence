@@ -15,6 +15,7 @@ from contextlib import closing
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
@@ -97,6 +98,74 @@ def _news_sort_timestamp(item: dict[str, Any]) -> float:
     if parsed.tzinfo is None:
         parsed = parsed.replace(tzinfo=HKT)
     return parsed.timestamp()
+
+
+def _news_identity_keys(item: dict[str, Any]) -> set[str]:
+    """Return stable aliases used to prevent repeat delivery to one recipient."""
+    keys: set[str] = set()
+    news_id = str(item.get("news_id") or item.get("record_id") or item.get("recordId") or "").strip().casefold()
+    if news_id:
+        keys.add(f"id:{news_id}")
+    raw_url = str(item.get("source_url") or item.get("url") or "").strip()
+    if raw_url:
+        try:
+            parts = urlsplit(raw_url)
+            query = urlencode([
+                (key, value)
+                for key, value in parse_qsl(parts.query, keep_blank_values=True)
+                if not key.casefold().startswith("utm_")
+                and key.casefold() not in {"fbclid", "gclid", "mc_cid", "mc_eid"}
+            ])
+            normalized_url = urlunsplit((parts.scheme.casefold(), parts.netloc.casefold(), parts.path.rstrip("/") or "/", query, ""))
+        except ValueError:
+            normalized_url = raw_url
+        keys.add(f"url:{normalized_url}")
+    title = re.sub(r"[^0-9a-z\u3400-\u9fff]+", "", str(item.get("title") or "").casefold())
+    if title:
+        keys.add(f"title:{title}")
+    return keys
+
+
+def _news_primary_key(item: dict[str, Any]) -> str:
+    keys = _news_identity_keys(item)
+    for prefix in ("url:", "id:", "title:"):
+        match = next((key for key in sorted(keys) if key.startswith(prefix)), "")
+        if match:
+            return match
+    return "payload:" + hashlib.sha256(
+        json.dumps(item, ensure_ascii=False, sort_keys=True).encode()
+    ).hexdigest()
+
+
+def _deduplicate_news_items(
+    items: list[dict[str, Any]],
+    *,
+    excluded_keys: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    seen = set(excluded_keys or ())
+    unique: list[dict[str, Any]] = []
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        keys = _news_identity_keys(item)
+        if keys and keys & seen:
+            continue
+        seen.update(keys)
+        unique.append(item)
+    return unique
+
+
+def _decode_strategic_news_digest(body: Any) -> list[dict[str, Any]]:
+    text = str(body or "")
+    if not text.startswith(NEWS_DIGEST_PREFIX):
+        return []
+    try:
+        payload = json.loads(text[len(NEWS_DIGEST_PREFIX):])
+    except (TypeError, ValueError, json.JSONDecodeError):
+        return []
+    if isinstance(payload, dict):
+        payload = payload.get("items") or []
+    return [item for item in payload if isinstance(item, dict)] if isinstance(payload, list) else []
 
 
 def normalize_news_categories(value: Any, *, default_all: bool = True) -> list[str]:
@@ -944,6 +1013,30 @@ class SubscriptionService:
                 );
                 CREATE INDEX IF NOT EXISTS news_crawl_dispatches_slot_idx
                     ON news_crawl_dispatches(crawl_slot, status);
+                CREATE TABLE IF NOT EXISTS news_crawl_item_pool (
+                    crawl_slot TEXT NOT NULL,
+                    crawl_date TEXT NOT NULL,
+                    delivery_window TEXT NOT NULL,
+                    item_key TEXT NOT NULL,
+                    item_json TEXT NOT NULL,
+                    sort_timestamp REAL NOT NULL,
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY (crawl_slot, item_key)
+                );
+                CREATE INDEX IF NOT EXISTS news_crawl_item_pool_date_idx
+                    ON news_crawl_item_pool(crawl_date, delivery_window, sort_timestamp DESC);
+                CREATE TABLE IF NOT EXISTS news_recipient_item_history (
+                    open_id TEXT NOT NULL,
+                    crawl_date TEXT NOT NULL,
+                    item_key TEXT NOT NULL,
+                    dispatch_key TEXT NOT NULL,
+                    crawl_slot TEXT NOT NULL,
+                    delivery_id INTEGER NOT NULL REFERENCES deliveries(id) ON DELETE CASCADE,
+                    created_at TEXT NOT NULL,
+                    PRIMARY KEY (open_id, crawl_date, item_key)
+                );
+                CREATE INDEX IF NOT EXISTS news_recipient_item_history_dispatch_idx
+                    ON news_recipient_item_history(open_id, dispatch_key);
                 CREATE TABLE IF NOT EXISTS report_automation_schedule (
                     service TEXT PRIMARY KEY,
                     enabled INTEGER NOT NULL DEFAULT 0,
@@ -3255,8 +3348,10 @@ class SubscriptionService:
         *,
         idempotency_key: str,
         profile: str = "",
+        preserve_markdown_bold: bool = False,
     ) -> str:
-        card = without_markdown_bold_markers(card)
+        if not preserve_markdown_bold:
+            card = without_markdown_bold_markers(card)
         payload = self._lark([
             "lark-cli", "im", "+messages-send", "--user-id", open_id,
             "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False),
@@ -3507,6 +3602,7 @@ class SubscriptionService:
                     strategic_news_card(title=title, body=body, image_key=image_key),
                     idempotency_key=f"{batch_id}-n-{open_id[-6:]}",
                     profile=profile,
+                    preserve_markdown_bold=True,
                 ))
             else:
                 for index, chunk in enumerate(text_chunks, start=1):
@@ -3697,6 +3793,25 @@ class SubscriptionService:
         effective_completed_at = completed_at or _now_hkt()
         content_ref = f"{NEWS_CRAWL_REF_PREFIX}{crawl_slot}"
         period_name = "CMHK战略早茶" if "晨间" in slot_label else "CMHK战略下午茶"
+        pool_created_at = _now_hkt()
+        with closing(self._connect()) as db:
+            for item in _deduplicate_news_items(clean_items):
+                db.execute(
+                    """INSERT OR REPLACE INTO news_crawl_item_pool(
+                           crawl_slot, crawl_date, delivery_window, item_key,
+                           item_json, sort_timestamp, created_at
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?)""",
+                    (
+                        crawl_slot,
+                        crawl_date,
+                        delivery_window,
+                        _news_primary_key(item),
+                        json.dumps(item, ensure_ascii=False, separators=(",", ":")),
+                        _news_sort_timestamp(item),
+                        pool_created_at,
+                    ),
+                )
+            db.commit()
         with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_categories, s.news_delivery_times FROM subscribers s
@@ -3732,14 +3847,8 @@ class SubscriptionService:
                 delivery_time=delivery_time,
                 completed_at=effective_completed_at,
             )
-            recipient_items = filter_news_by_categories(
-                clean_items,
-                push_news_categories,
-                limit=news_item_limit,
-            )
             year, month, day = crawl_date.split("-")
             title = f"{period_name}订阅｜{year}年{month}月{day}日"
-            body = encode_strategic_news_digest(recipient_items)
             dispatch_key = (
                 f"twice_daily:{crawl_date}:{delivery_window}"
                 if frequency == "twice_daily"
@@ -3779,12 +3888,92 @@ class SubscriptionService:
                 )
                 claimed = cursor.rowcount == 1
                 if claimed:
+                    seen_keys = {
+                        str(item[0])
+                        for item in db.execute(
+                            """SELECT h.item_key
+                               FROM news_recipient_item_history h
+                               JOIN news_crawl_dispatches d
+                                 ON d.open_id=h.open_id AND d.dispatch_key=h.dispatch_key
+                               WHERE h.open_id=? AND h.crawl_date=? AND d.status<>'cancelled'""",
+                            (open_id, crawl_date),
+                        ).fetchall()
+                    }
+                    # Compatibility with cards queued before the item-history
+                    # ledger existed: their durable outbox bodies remain authoritative.
+                    legacy_rows = db.execute(
+                        """SELECT p.body
+                           FROM pending_subscription_deliveries p
+                           JOIN news_crawl_dispatches d ON d.delivery_id=p.delivery_id
+                           WHERE p.open_id=? AND d.crawl_date=? AND d.status<>'cancelled'""",
+                        (open_id, crawl_date),
+                    ).fetchall()
+                    for legacy_row in legacy_rows:
+                        for legacy_item in _decode_strategic_news_digest(legacy_row[0]):
+                            seen_keys.update(_news_identity_keys(legacy_item))
+
+                    current_candidates = _deduplicate_news_items(clean_items, excluded_keys=seen_keys)
+                    recipient_items = filter_news_by_categories(
+                        current_candidates,
+                        push_news_categories,
+                        limit=news_item_limit,
+                    )
+                    selected_keys = set().union(
+                        *(_news_identity_keys(item) for item in recipient_items),
+                    ) if recipient_items else set()
+                    if delivery_window == "afternoon" and len(recipient_items) < news_item_limit:
+                        morning_items: list[dict[str, Any]] = []
+                        for pool_row in db.execute(
+                            """SELECT item_json FROM news_crawl_item_pool
+                               WHERE crawl_date=? AND delivery_window='morning'
+                               ORDER BY sort_timestamp DESC, crawl_slot DESC""",
+                            (crawl_date,),
+                        ).fetchall():
+                            try:
+                                pool_item = json.loads(str(pool_row[0] or ""))
+                            except (TypeError, ValueError, json.JSONDecodeError):
+                                continue
+                            if isinstance(pool_item, dict):
+                                morning_items.append(pool_item)
+                        # Reconstruct the best available morning pool during a
+                        # same-day upgrade from already queued personal cards.
+                        for legacy_pool_row in db.execute(
+                            """SELECT p.body
+                               FROM pending_subscription_deliveries p
+                               JOIN news_crawl_dispatches d ON d.delivery_id=p.delivery_id
+                               WHERE d.crawl_date=? AND substr(d.crawl_slot, 12, 5)<'12:00'
+                                 AND d.status<>'cancelled'""",
+                            (crawl_date,),
+                        ).fetchall():
+                            morning_items.extend(_decode_strategic_news_digest(legacy_pool_row[0]))
+                        fallback_candidates = _deduplicate_news_items(
+                            morning_items,
+                            excluded_keys=seen_keys | selected_keys,
+                        )
+                        recipient_items.extend(filter_news_by_categories(
+                            fallback_candidates,
+                            push_news_categories,
+                            limit=news_item_limit - len(recipient_items),
+                        ))
+                    body = encode_strategic_news_digest(recipient_items)
                     cursor = db.execute(
                         """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
                            VALUES(?, ?, 'news', 'text', ?, 'queued', '[]', '', ?)""",
                         (batch_id, open_id, content_ref, now),
                     )
                     delivery_id = int(cursor.lastrowid)
+                    for item in recipient_items:
+                        for item_key in _news_identity_keys(item) or {_news_primary_key(item)}:
+                            db.execute(
+                                """INSERT OR REPLACE INTO news_recipient_item_history(
+                                       open_id, crawl_date, item_key, dispatch_key,
+                                       crawl_slot, delivery_id, created_at
+                                   ) VALUES(?, ?, ?, ?, ?, ?, ?)""",
+                                (
+                                    open_id, crawl_date, item_key, dispatch_key,
+                                    crawl_slot, delivery_id, now,
+                                ),
+                            )
                     db.execute(
                         """UPDATE news_crawl_dispatches SET delivery_id=?, updated_at=?
                            WHERE open_id=? AND dispatch_key=?""",

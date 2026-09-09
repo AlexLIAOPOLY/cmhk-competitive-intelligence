@@ -42,7 +42,6 @@ from cmhk.intelligence.scheduled_news_bridge import (
     load_pending_signals,
 )
 from cmhk.integrations.feishu_runtime import resolve_lark_cli
-from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 
 
 ROOT = Path(__file__).resolve().parent
@@ -2125,7 +2124,6 @@ def _send_scan_card_once(chat_id: str, card: dict[str, Any], idempotency_key: st
         if receipt.get("chat_id") == chat_id and receipt.get("message_id"):
             return {"data": {"message_id": receipt["message_id"]},
                     "_identity": receipt.get("identity") or "", "reused_delivery": True}
-        card = without_markdown_bold_markers(card)
         payload = _lark_api(
             "POST", "/open-apis/im/v1/messages",
             params={"receive_id_type": "chat_id"},

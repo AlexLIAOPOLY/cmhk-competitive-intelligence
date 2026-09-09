@@ -22,7 +22,6 @@ from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
 
 import strategic_briefing
-from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 from cmhk.intelligence.local_competitor_keywords import (
     canonical_competitors_for_text,
     mandatory_search_groups,
@@ -1735,7 +1734,6 @@ def _window(now: datetime, morning: bool) -> tuple[datetime, datetime]:
 
 
 def _send_card(card: dict[str, Any]) -> list[str]:
-    card = without_markdown_bold_markers(card)
     content = json.dumps(card, ensure_ascii=False)
     content_hash = hashlib.sha256(content.encode("utf-8")).hexdigest()
     message_ids: list[str] = []
