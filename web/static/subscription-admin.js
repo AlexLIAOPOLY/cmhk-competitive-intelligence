@@ -315,7 +315,7 @@
       const filterStatus = ["accepted", "responded"].includes(rawStatus) ? "accepted" : rawStatus === "verified" ? "verified" : ["failed", "paused", "unsubscribed", "rejected", "declined", "needs_correction"].includes(rawStatus) ? "issue" : "pending";
       return `<label class="invite-row" data-invite-filter-row data-filter-kind="person" data-filter-status="${filterStatus}" data-filter-text="${esc(filterText)}">
       <input type="checkbox" value="${esc(item.callback_open_id)}" data-invite-candidate${state.selectedInviteUsers.has(item.callback_open_id) ? " checked" : ""}>
-      ${avatar(item)}<span class="person-copy"><strong>${esc(item.display_name)}</strong><small>${esc((item.department_names || []).join(" / ") || item.job_title || "已验证飞书用户")}</small>${item.latest_invitation?.last_error ? `<small>${esc(item.latest_invitation.last_error)}</small>` : ""}</span>
+      ${avatar(item)}<span class="person-copy"><strong>${esc(item.display_name)}</strong><small>${esc([(item.department_names || []).join(" / "), item.job_title].filter(Boolean).join(" · ") || "已验证飞书用户")}</small>${item.latest_invitation?.last_error ? `<small>${esc(item.latest_invitation.last_error)}</small>` : ""}</span>
       <span class="invite-meta"><span class="status ${esc(item.latest_invitation?.status || "pending")}">${esc(invitationStatus(item.latest_invitation?.status || "未邀请"))}</span><small>${esc(item.latest_invitation?.sent_at || "未发送")}</small></span>
     </label>`;
     }).join("");
