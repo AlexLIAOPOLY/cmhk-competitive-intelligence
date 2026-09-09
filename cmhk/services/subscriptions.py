@@ -1294,18 +1294,64 @@ class SubscriptionService:
             fill(card)
             status = "news_preferences_sent"
         elif action == "cmhk_news_unsubscribe_v1":
-            card = {"schema": "2.0", "header": {"template": "blue", "title": {"tag": "plain_text", "content": "取消战略新闻订阅"}},
-                    "body": {"elements": [
-                        {"tag": "markdown", "content": "确认后将停止战略新闻推送，其他报告订阅不受影响。"},
-                        {"tag": "button", "type": "danger", "text": {"tag": "plain_text", "content": "确认取消战略新闻订阅"},
-                         "behaviors": [{"type": "callback", "value": {"action": "cmhk_news_unsubscribe_confirm_v1"}}]},
-                    ]}}
+            elements = [{"tag": "markdown", "content": "请选择要取消的订阅（可多选），未选择的订阅继续保留。"}]
+            if services:
+                elements.extend([
+                    {"tag": "form", "name": "unsubscribeForm", "elements": [
+                        {"tag": "multi_select_static", "name": "cancel_services", "required": True,
+                         "width": "fill", "placeholder": {"tag": "plain_text", "content": "选择要取消的订阅"},
+                         "options": [{"text": {"tag": "plain_text", "content": label}, "value": service}
+                                     for service, label in SERVICE_LABELS.items() if service in services]},
+                        {"tag": "button", "name": "confirmUnsubscribe", "type": "danger",
+                         "form_action_type": "submit", "text": {"tag": "plain_text", "content": "确认取消所选订阅"},
+                         "behaviors": [{"type": "callback", "value": {
+                             "action": "cmhk_news_unsubscribe_confirm_v1", "scope": "selected"}}]},
+                    ]},
+                    {"tag": "hr"},
+                    {"tag": "button", "type": "danger", "text": {"tag": "plain_text", "content": "全部取消"},
+                     "confirm": {"title": {"tag": "plain_text", "content": "取消全部订阅？"},
+                                 "text": {"tag": "plain_text", "content": "将停止战略新闻、战略双周报和运营商业绩摘要的后续推送。"}},
+                     "behaviors": [{"type": "callback", "value": {
+                         "action": "cmhk_news_unsubscribe_confirm_v1", "scope": "all"}}]},
+                ])
+            else:
+                elements = [{"tag": "markdown", "content": "你目前没有生效中的订阅，无需取消。"}]
+            card = {"schema": "2.0", "header": {"template": "blue", "title": {
+                "tag": "plain_text", "content": "取消订阅"}}, "body": {"elements": elements}}
             status = "news_unsubscribe_confirmation_sent"
         else:
+            value = json.loads(str(event.get("action_value") or "{}"))
+            # Previously delivered confirmation cards cancel news only.
+            scope = value.get("scope", "news")
+            if scope == "all":
+                selected = list(SERVICE_LABELS)
+            elif scope == "news":
+                selected = ["news"]
+            elif scope == "selected":
+                try:
+                    form = json.loads(str(event.get("form_value") or "{}"))
+                except (ValueError, TypeError) as exc:
+                    raise ValueError("取消订阅表单无效，请重新选择") from exc
+                selected = form.get("cancel_services") if isinstance(form, dict) else None
+                if isinstance(selected, str):
+                    selected = [item for item in selected.split(",") if item]
+                if (not isinstance(selected, list) or not selected
+                        or any(not isinstance(item, str) or item not in VALID_SERVICES for item in selected)):
+                    raise ValueError("请至少选择一个有效的订阅内容")
+            else:
+                raise ValueError("取消订阅范围无效")
             with closing(self._connect()) as db, db:
-                db.execute("UPDATE subscriptions SET active=0 WHERE open_id=? AND service='news'", (identity["open_id"],))
-            card = {"schema": "2.0", "body": {"elements": [
-                {"tag": "markdown", "content": "**战略新闻订阅已取消**\n\n其他报告订阅保持不变。"}
+                db.executemany("UPDATE subscriptions SET active=0, updated_at=? WHERE open_id=? AND service=?",
+                               [(_now_hkt(), identity["open_id"], service) for service in set(selected)])
+                remaining = {row[0] for row in db.execute(
+                    "SELECT service FROM subscriptions WHERE open_id=? AND active=1", (identity["open_id"],))}
+            cancelled_text = "、".join(label for service, label in SERVICE_LABELS.items() if service in selected)
+            remaining_text = "、".join(label for service, label in SERVICE_LABELS.items() if service in remaining) or "无"
+            card = {"schema": "2.0", "header": {"template": "green", "title": {
+                "tag": "plain_text", "content": "✓ 取消订阅成功"}}, "body": {"elements": [
+                {"tag": "markdown", "content": f"**已取消：**{cancelled_text}\n\n**仍保留：**{remaining_text}"},
+                {"tag": "hr"},
+                {"tag": "markdown", "content": "后续将停止已取消内容的推送。你可以随时通过订阅入口重新订阅。"},
             ]}}
             status = "news_unsubscribed"
         sent = self._send_interactive_card(open_id, card,
