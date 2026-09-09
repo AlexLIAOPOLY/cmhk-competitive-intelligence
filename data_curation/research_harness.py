@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import json
 import re
+import time
 import uuid
 from typing import Callable, Literal
 
@@ -20,6 +21,7 @@ from langchain.agents.middleware.model_call_limit import ModelCallLimitExceededE
 from langchain_core.tools import tool
 from langchain_core.messages import HumanMessage
 from cmhk.intelligence.agent_harness import TruncatedModelOutput, assert_complete
+from .research_efficiency import index_passages, pack_context
 
 
 # ChatDeepSeek identifies itself as deepseek even when using an internal gateway.
@@ -157,12 +159,15 @@ class ResearchHarness:
                     f"输出恢复请求，第{self.current['truncation_retries']}次：上次响应未形成合格的工具提交，未保存任何记录。"
                     "停止扩大分析，只用当前已有证据提交这一项。优先提交原文片段编号，不抄写长引文；"
                     "证据不足就提交missing并说明缺口，不要重新查找或输出长篇总结。"))])
+            started = time.monotonic()
             response = handler(request)
+            elapsed_ms = round((time.monotonic() - started) * 1000)
             for message in response.result:
                 metadata = getattr(message, "response_metadata", {}) or {}
                 self.emit("model_response", "模型响应完整性检查", {
                     "company": self.current.get("company"), "metric": self.current.get("metric"),
                     "requested_max_tokens": allowance,
+                    "elapsed_ms": elapsed_ms,
                     "finish_reason": metadata.get("finish_reason"),
                     "usage": getattr(message, "usage_metadata", None),
                     "invalid_tool_calls": len(getattr(message, "invalid_tool_calls", []) or [])})
@@ -183,7 +188,9 @@ class ResearchHarness:
         self.agent = create_deep_agent(
             model=model, tools=[find_evidence, read_evidence, submit_metric], subagents=[], backend=backend,
             name=task["key"],
-            system_prompt=(f"你是{task['title']}。{task['purpose']}。不创建子Agent。"
+            system_prompt=("证据输入格式v2：基线表格的rows按columns解读，每行合并common字段；"
+                "preview_same_as_source_url表示与指定来源的预览逐字相同，来源URL仍各自独立。"
+                f"你是{task['title']}。{task['purpose']}。不创建子Agent。"
                 "每次只处理用户指定的一个指标；按需读取提供的官方页面，最后调用submit_metric提交一项。"
                 "优先用find_evidence定位原文，提交passage_id及必要的context_passage_id，由程序复制引文；"
                 "不需要自己抄写长quote。最多四轮查阅、六轮决策，找不到就提交missing。"
@@ -215,22 +222,36 @@ class ResearchHarness:
         from . import workflow as w
         self.current = {"company": company, "metric": metric, "pages": pages,
                         "save": save, "submitted": None, "passages": {}, "baseline": baseline}
+        previous_passages = getattr(self, "_page_passages", {})
+        prepared = {}
         for url, page in pages.items():
             if not page.get("opened") or not page.get("official"):
                 continue
-            body = re.sub(r"\s+", " ", str(page.get("text") or "")).strip()
-            self.current["passages"][url] = {
-                f"p{index}": {"text": match.group(), "offset": match.start()}
-                for index, match in enumerate(re.finditer(r".{1,1100}(?:\s|$)", body))}
+            text = str(page.get("text") or "")
+            cached = previous_passages.get(url)
+            if cached is not None and cached[0] == text:
+                passages = cached[1]
+            else:
+                body = re.sub(r"\s+", " ", text).strip()
+                passages = index_passages(body)
+            prepared[url] = (text, passages)
+            self.current["passages"][url] = passages
+        # Reuse parsing only, with exact text equality; retain at most the current
+        # company's pages. Changed/unopened/untrusted pages invalidate the index.
+        self._page_passages = prepared
         catalog = [{"source_url": url, "characters": len(str(page.get("text") or "")),
                     "preview": str(page.get("text") or "")[:1800]}
                    for url, page in pages.items() if page.get("opened") and page.get("official")]
         relevant = []
         aliases = w._company_research_profile(company)["aliases"]
+        metric_terms = w._metric_evidence_terms(metric)
         for url, passages in self.current["passages"].items():
             for key, passage in passages.items():
                 text = passage["text"]
-                matches = w._evidence_mentions_metric(metric, text) or (
+                # Same matcher as workflow._evidence_mentions_metric, with the
+                # metric's terms computed once instead of once per paragraph.
+                normalized = w.clean_text(text, 1800)
+                matches = any(w._metric_term_position(normalized, term) >= 0 for term in metric_terms) or (
                     metric == "云收入" and re.search(r"sales|revenue|收入", text, re.I)
                     and any(w._company_alias_mentions_text(alias, text) for alias in aliases))
                 if matches:
@@ -248,12 +269,20 @@ class ResearchHarness:
         excerpts = [{"source_url": url, "passage_id": key, "text": text}
                     for _, url, key, text in relevant[:5]]
         self.current["relevant_passages"] = excerpts
+        payload = {
+            "company": company, "metric": metric, "official_sources": catalog,
+            "trusted_database_baseline": (baseline or {}).get(metric, []),
+            "research_objective": "查找比库内最新期间更新的披露或库内尚未收录的新指标。已有数据库默认正确，不重审已有值。如果只找到同期间或旧期间，直接提交no_update并说明库内已有，无需摘录和核验旧数据。优先最新公告和最新报告期；旧数据不能充当更新成果。未找到新披露说明本轮未发现更新，不声称库内缺失。" if baseline is not None else "按原文提取指标",
+            "relevant_passages": excerpts, "instruction": "已提供相关原文片段；证据充分可直接提交片段编号，无需重复读取。"}
+        content = pack_context(payload)
+        self.emit("model_context", "去除重复字段与完全相同预览；完整原文及指标范围保留", {
+            "company": company, "metric": metric,
+            "original_characters": len(json.dumps(payload, ensure_ascii=False)),
+            "packed_characters": len(content), "official_sources": len(catalog),
+            "baseline_rows": len(payload["trusted_database_baseline"]),
+        })
         try:
-            self.agent.invoke({"messages": [{"role": "user", "content": json.dumps({
-                "company": company, "metric": metric, "official_sources": catalog,
-                "trusted_database_baseline": (baseline or {}).get(metric, []),
-                "research_objective": "查找比库内最新期间更新的披露或库内尚未收录的新指标。已有数据库默认正确，不重审已有值。如果只找到同期间或旧期间，直接提交no_update并说明库内已有，无需摘录和核验旧数据。优先最新公告和最新报告期；旧数据不能充当更新成果。未找到新披露说明本轮未发现更新，不声称库内缺失。" if baseline is not None else "按原文提取指标",
-                "relevant_passages": excerpts, "instruction": "已提供相关原文片段；证据充分可直接提交片段编号，无需重复读取。"}, ensure_ascii=False)}]},
+            self.agent.invoke({"messages": [{"role": "user", "content": content}]},
                 config={"recursion_limit": 48})
         except ModelCallLimitExceededError:
             if self.current["submitted"] is None:

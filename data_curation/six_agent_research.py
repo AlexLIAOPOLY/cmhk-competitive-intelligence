@@ -12,6 +12,7 @@ import hashlib
 import json
 import re
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections import Counter
 from datetime import datetime
@@ -22,6 +23,7 @@ from zoneinfo import ZoneInfo
 
 from .research_plan import ARCHITECTURE_VERSION, research_plan
 from .storage import atomic_write_json, atomic_write_jsonl
+from .research_efficiency import ordered_network_map
 
 
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -196,7 +198,7 @@ def disclosure_recency(row: dict, year: int) -> int:
 
 def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: dict | None = None) -> tuple[dict, list[dict]]:
     from . import workflow as w
-    from .schemas import CandidateFact
+    started = time.monotonic()
     profile = w._company_research_profile(company)
     year = datetime.now(HKT).year
     searches, ranked = [], {}
@@ -208,12 +210,33 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
     queries += [("官方最新业绩", f'site:{host} {search_subject} {year} financial results earnings')
                 for host in profile["official_hosts"][:2]]
     queries += [(metric, f'"{search_subject}" {year} {" ".join(w._metric_evidence_terms(metric)[:2]) or metric} results') for metric in metrics]
-    for metric, query in queries:
+    def search(entry):
+        metric, query = entry
+        started = time.monotonic()
         results, provider = w._public_web_search(query, limit=5, timeout=12.0)
-        record = {"company": company, "metric": metric, "query": query, "provider": provider, "results": results}
+        return {"company": company, "metric": metric, "query": query, "provider": provider,
+                "results": results, "elapsed_ms": round((time.monotonic() - started) * 1000)}
+    # Synonymous metrics can produce exactly the same query. Reuse only a
+    # successful result from this collection, never a previous run or a failure.
+    unique_queries = {}
+    for metric, query in queries:
+        unique_queries.setdefault(query, (metric, query))
+    query_results = iter(ordered_network_map(search, unique_queries.values()))
+    searched = {}
+    for metric, query in queries:
+        if query not in searched:
+            searched[query] = next(query_results)
+            record = dict(searched[query])
+        elif searched[query]["results"]:
+            record = {**searched[query], "metric": metric, "query_reused": True, "elapsed_ms": 0}
+        else:
+            # Keep the existing retry opportunity when a duplicate query's
+            # first attempt returned nothing; an empty search is not evidence.
+            record = list(ordered_network_map(search, [(metric, query)]))[0]
+            searched[query] = record
         searches.append(record)
-        emit("search", f"{company}：查找最新披露 · {metric}", record)
-        for result in results:
+        emit("search", f"{company}：查找最新披露 · {record['metric']}", record)
+        for result in record["results"]:
             url = str(result.get("url") or "")
             if w._host_matches_governed_official(url, profile["official_hosts"]):
                 ranked.setdefault(url, result)
@@ -229,21 +252,39 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
     pages, discovered = {}, {}
     def read(row):
         url = row["url"]
-        if url in pages:
-            return
+        started = time.monotonic()
         page = w._read_source_page(url, timeout=15.0)
         page = {**page, "discovery_title": row.get("title", ""), "official": w._host_matches_governed_official(
-            str(page.get("final_url") or url), profile["official_hosts"])}
+            str(page.get("final_url") or url), profile["official_hosts"]),
+            "elapsed_ms": round((time.monotonic() - started) * 1000)}
+        return url, page
+    def accept(result):
+        url, page = result
         pages[url] = page
         emit("read", f"{company}：读取最新披露原文", {"company": company, **{k: v for k, v in page.items() if k != "text"}})
         if page.get("opened") and page.get("official"):
             for child in page.get("disclosure_links", []):
                 if child.get("url") not in pages and w._host_matches_governed_official(child.get("url", ""), profile["official_hosts"]):
                     discovered.setdefault(child["url"], child)
+    # First occurrence wins, exactly as the serial reader did. Rank linked
+    # reports only after every parent has been processed in the original order.
+    unique = {}
     for row in initial:
-        read(row)
-    for row in sorted(discovered.values(), key=recency, reverse=True)[:6]:
-        read(row)
+        unique.setdefault(row["url"], row)
+    for result in ordered_network_map(read, unique.values()):
+        accept(result)
+    linked = [row for row in sorted(discovered.values(), key=recency, reverse=True)[:6]
+              if row["url"] not in pages]
+    for result in ordered_network_map(read, linked):
+        accept(result)
+    emit("source_collection_metrics", f"{company}：搜索与原文读取耗时统计", {
+        "company": company, "elapsed_ms": round((time.monotonic() - started) * 1000),
+        "search_records": len(searches),
+        "reused_queries": sum(bool(row.get("query_reused")) for row in searches),
+        "pages": len(pages), "cached_pages": sum(bool(page.get("cache_hit")) for page in pages.values()),
+        "request_elapsed_ms_sum": sum(row["elapsed_ms"] for row in searches)
+            + sum(page["elapsed_ms"] for page in pages.values()),
+    })
     return pages, searches
 
 
