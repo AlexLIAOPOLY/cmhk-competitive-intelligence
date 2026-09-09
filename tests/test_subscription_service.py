@@ -184,7 +184,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（超过4个将自动随机保留4个）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
+            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
@@ -1152,6 +1152,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         items = [
             {
                 "title": f"新闻{hour}",
+                "category": "公司动态",
                 "published_at": f"2099-01-03T{hour:02d}:00:00+08:00",
                 "source_url": f"https://example.test/{hour}",
             }
@@ -1193,7 +1194,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.service.flush_due(now=datetime.fromisoformat("2099-01-04T18:30:00+08:00"))
 
         delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
-        self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对", "最新行业"])
+        self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
         self.assertEqual(deliver.call_args.kwargs["title"], "CMHK战略下午茶订阅｜2099年01月04日")
         self.assertEqual(result["results"][0]["news_categories"], ["竞对动态", "政策监管"])
 
@@ -1227,13 +1228,13 @@ class SubscriptionServiceTests(unittest.TestCase):
                 "news_delivery_time_morning": "07:59 +0800", "news_delivery_time_afternoon": "13:59 +0800"})}
         saved = self.service.handle_card_event(event)
         self.assertEqual(saved["status"], "subscription_saved")
-        self.assertEqual(len(saved["news_categories"]), 4)
+        self.assertEqual(len(saved["news_categories"]), 7)
         self.assertIn("竞对动态", saved["news_categories"])
         self.assertEqual(saved["news_delivery_times"], ["08:00", "14:00"])
         sends = [c for c in self.lark.calls if "+messages-send" in c]
         card = json.loads(sends[-1][sends[-1].index("--content")+1])
         self.assertIn("已自动调整并保存", json.dumps(card, ensure_ascii=False))
-        self.assertIn("随机保留4个", json.dumps(card, ensure_ascii=False))
+        self.assertIn("每次新闻推送随机抽取4个", json.dumps(card, ensure_ascii=False))
         for category in saved["news_category_labels"]:
             self.assertIn(category, json.dumps(card, ensure_ascii=False))
         again = self.service.handle_card_event(event)

@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=23', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=43', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=26', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=47', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -71,7 +71,8 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn("data-news-category", SCRIPT)
         self.assertIn("newsCategories", SCRIPT)
         self.assertIn("新闻兴趣板块", SCRIPT)
-        self.assertIn("至少选择一个兴趣板块", SCRIPT)
+        self.assertIn("所选全部保存；超过4个时，每次推送随机抽取4个，下次重新抽取", SCRIPT)
+        self.assertNotIn("最多选择4个", SCRIPT)
         self.assertIn(".news-interest-group", STYLE)
         self.assertIn(".news-interest-check", STYLE)
 

@@ -47,7 +47,7 @@ NEWS_CATEGORY_LABELS = {
     "宏观经济&国际形势&地缘政治&其他国际性质关注词汇": "宏观与国际",
 }
 VALID_NEWS_CATEGORIES = frozenset(NEWS_CATEGORY_LABELS)
-MAX_NEWS_CATEGORIES = 4
+NEWS_CATEGORIES_PER_PUSH = 4
 DEFAULT_NEWS_CATEGORIES = ("公司动态", "竞对动态", "政策监管", "市场/产品类")
 LEGACY_FREQUENCY_MAP = {
     "immediate": "twice_daily",
@@ -118,14 +118,12 @@ def normalize_news_categories(value: Any, *, default_all: bool = True) -> list[s
     return [category for category in NEWS_CATEGORY_LABELS if category in selected]
 
 
-def _reduce_legacy_news_categories(categories: list[str], *, seed: str = "") -> list[str]:
-    """Randomly reduce a saved legacy profile once; preserve competitor interest."""
-    if len(categories) <= MAX_NEWS_CATEGORIES:
-        return categories
-    retained = ["竞对动态"] if "竞对动态" in categories else []
-    retained += (random.Random(seed) if seed else random).sample([c for c in categories if c not in retained],
-                              MAX_NEWS_CATEGORIES - len(retained))
-    return [c for c in NEWS_CATEGORY_LABELS if c in retained]
+def _news_categories_for_push(categories: list[str], *, seed: str = "") -> list[str]:
+    """Draw per delivery, leaving the complete saved preferences intact."""
+    if len(categories) <= NEWS_CATEGORIES_PER_PUSH:
+        return list(categories)
+    selected = (random.Random(seed) if seed else random).sample(categories, NEWS_CATEGORIES_PER_PUSH)
+    return [category for category in NEWS_CATEGORY_LABELS if category in selected]
 
 
 def filter_news_by_categories(
@@ -133,13 +131,15 @@ def filter_news_by_categories(
     categories: Any,
     *,
     limit: int | None = None,
+    selection_seed: str = "",
 ) -> list[dict[str, Any]]:
-    """Cover preferred sections before filling gaps; competitor leads each round.
+    """Sample at most four subscribed sections; competitor leads when sampled.
 
     The input is the already reviewed news pool. Within each section, prefer
     fresh reporting and avoid repeating an identical URL/title across sections.
     """
-    selected = set(normalize_news_categories(categories))
+    requested = normalize_news_categories(categories)
+    selected = set(_news_categories_for_push(requested, seed=selection_seed))
     ordered = sorted((item for item in items if isinstance(item, dict)),
                      key=_news_sort_timestamp, reverse=True)
     seen = set()
@@ -164,9 +164,8 @@ def filter_news_by_categories(
     if "竞对动态" in section_order:
         section_order.remove("竞对动态")
         section_order.insert(0, "竞对动态")
-    # Legacy profiles may still contain seven choices until resubmission.
-    # Preserve their saved preferences, but cover at most four sections per card.
-    section_order = section_order[:MAX_NEWS_CATEGORIES]
+    # Rank within this delivery's selection; never modify saved preferences.
+    section_order = section_order[:NEWS_CATEGORIES_PER_PUSH]
     selected = set(section_order)
     buckets = {section: buckets[section] for section in section_order}
     chosen = []
@@ -174,8 +173,6 @@ def filter_news_by_categories(
         for section in section_order:
             if buckets[section] and len(chosen) < count:
                 chosen.append(buckets[section].pop(0))
-    if len(chosen) < count:
-        chosen.extend(item for item in unique if str(item.get("category") or "").strip() not in selected)
     return [{**item, "subscription_preferred": str(item.get("category") or "").strip() in selected}
             for item in chosen[:count]]
 
@@ -362,19 +359,19 @@ def subscription_entry_card(*, image_key: str = "", recipient_name: str = "") ->
                         },
                         {"tag": "hr"},
                         {"tag": "markdown", "content": "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>"},
-                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（超过4个将自动随机保留4个）**"},
+                        {"tag": "markdown", "content": "**感兴趣的战略新闻板块（可多选）**"},
                         {
                             "tag": "multi_select_static",
                             "name": "news_categories",
                             "required": False,
                             "width": "fill",
-                            "placeholder": {"tag": "plain_text", "content": "请选择兴趣板块，超过4个自动调整"},
+                            "placeholder": {"tag": "plain_text", "content": "请选择感兴趣的板块，可全部选择"},
                             "options": [
                                 {"text": {"tag": "plain_text", "content": label}, "value": category}
                                 for category, label in NEWS_CATEGORY_LABELS.items()
                             ],
                         },
-                        {"tag": "markdown", "content": "<font color='grey'>超过4个将随机保留4个（已选竞对动态优先保留），不拦截提交；未选则使用默认4个。成功消息会列明生效板块。</font>", "text_size": "notation"},
+                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。超过4个时，每次新闻推送从中随机抽取4个，下次重新抽取；4个及以下按所选推送。抽中的竞对动态优先展示；缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**战略新闻频率**"},
                         {
                             "tag": "select_static",
@@ -559,7 +556,8 @@ def subscription_confirmation_card(
                                         },
                                     ],
                                 },
-                                {"tag": "markdown", "content": f"**兴趣板块**\n{categories}"},
+                                {"tag": "markdown", "content": f"**已订阅兴趣板块**\n{categories}"},
+                                {"tag": "markdown", "content": "所选板块全部保留；超过4个时，每次新闻推送随机抽取4个，下次重新抽取。4个及以下按所选推送；抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
                                 {"tag": "markdown", "content": f"**期待收到时间（香港）**\n{' / '.join(delivery_times)}"},
                             ],
                         }
@@ -993,28 +991,6 @@ class SubscriptionService:
                     news_delivery_times=_normalize_news_delivery_times(row["news_delivery_times"]),
                 )
                 db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
-            all_categories_json = json.dumps(list(NEWS_CATEGORY_LABELS), ensure_ascii=False, separators=(",", ":"))
-            for row in db.execute("SELECT open_id, news_categories, default_preferences FROM subscribers").fetchall():
-                original_categories = normalize_news_categories(row["news_categories"])
-                if len(original_categories) > MAX_NEWS_CATEGORIES:
-                    db.execute("""UPDATE subscribers SET original_news_categories=?,
-                               original_news_categories_source='legacy_before_reduction'
-                               WHERE open_id=? AND original_news_categories_source=''""",
-                               (json.dumps(original_categories, ensure_ascii=False), row["open_id"]))
-                categories = _reduce_legacy_news_categories(original_categories)
-                defaults = json.loads(row["default_preferences"] or "{}")
-                original_defaults = normalize_news_categories(defaults.get("news_categories"))
-                if len(original_defaults) > MAX_NEWS_CATEGORIES:
-                    defaults["news_categories"] = (categories if original_defaults == original_categories
-                                                    else _reduce_legacy_news_categories(original_defaults))
-                    db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?",
-                               (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
-                serialized = json.dumps(categories, ensure_ascii=False, separators=(",", ":"))
-                if serialized != str(row["news_categories"] or ""):
-                    db.execute(
-                        "UPDATE subscribers SET news_categories=? WHERE open_id=?",
-                        (serialized or all_categories_json, str(row["open_id"])),
-                    )
             for row in db.execute("SELECT open_id, news_delivery_times FROM subscribers").fetchall():
                 times_json = json.dumps(
                     _normalize_news_delivery_times(row["news_delivery_times"]),
@@ -1185,7 +1161,6 @@ class SubscriptionService:
         news_item_limit: int = 10,
         news_categories: Any = None,
         news_delivery_times: Any = None,
-        selection_seed: str = "",
         record_original_categories: bool = True,
     ) -> dict[str, Any]:
         adjustments: list[str] = []
@@ -1211,9 +1186,6 @@ class SubscriptionService:
         if "news" in normalized and not normalized_categories:
             normalized_categories = list(DEFAULT_NEWS_CATEGORIES)
             adjustments.append("未选择有效兴趣板块，已使用默认4个板块。")
-        if len(normalized_categories) > MAX_NEWS_CATEGORIES:
-            normalized_categories = _reduce_legacy_news_categories(normalized_categories, seed=selection_seed)
-            adjustments.append("兴趣超过4个，已随机保留4个（已选竞对动态优先保留）；后续按下方生效板块推送。")
         categories_json = json.dumps(normalized_categories, ensure_ascii=False, separators=(",", ":"))
         delivery_times_supplied = news_delivery_times is not None
         normalized_delivery_times = list(NEWS_DELIVERY_TIMES_DEFAULT)
@@ -1589,7 +1561,6 @@ class SubscriptionService:
             news_item_limit=news_item_limit,
             news_categories=news_categories,
             news_delivery_times=news_delivery_times,
-            selection_seed=event_id,
         )
         # A person's latest submission is their restore point; admin edits never replace it.
         with closing(self._connect()) as db, db:
@@ -3495,6 +3466,8 @@ class SubscriptionService:
             if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
                 news_item_limit = 10
             news_categories = normalize_news_categories(row["news_categories"])
+            push_news_categories = _news_categories_for_push(
+                news_categories, seed=f"{open_id}:{crawl_date}:{delivery_window}")
             delivery_times = _normalize_news_delivery_times(row["news_delivery_times"])
             delivery_time = delivery_times[0] if delivery_window == "morning" else delivery_times[1]
             due_at = _news_delivery_due_at(
@@ -3504,7 +3477,7 @@ class SubscriptionService:
             )
             recipient_items = filter_news_by_categories(
                 clean_items,
-                news_categories,
+                push_news_categories,
                 limit=news_item_limit,
             )
             year, month, day = crawl_date.split("-")
@@ -3582,6 +3555,7 @@ class SubscriptionService:
                 "frequency": frequency,
                 "news_item_limit": news_item_limit,
                 "news_categories": news_categories,
+                "push_news_categories": push_news_categories,
                 "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in news_categories],
                 "news_delivery_times": delivery_times,
                 "delivery_time": delivery_time,
