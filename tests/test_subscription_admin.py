@@ -164,6 +164,15 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertNotIn('class="people-invite-grid"', SCRIPT)
         self.assertIn('.upper-grid', STYLE)
 
+    def test_automatic_refresh_preserves_invite_and_subscriber_scroll_positions(self):
+        render = SCRIPT.split("function render()", 1)[1].split("function scheduleNoticeDismissal()", 1)[0]
+
+        self.assertIn('[".invite-list-main", ".subscriber-table"]', render)
+        self.assertLess(render.index("container.scrollTop"), render.index("root.innerHTML ="))
+        self.assertGreater(render.rindex("container.scrollTop = position.top"), render.index("root.innerHTML ="))
+        self.assertIn("container.scrollLeft = position.left", render)
+        self.assertIn("loadData({ keepNotice: true })", SCRIPT)
+
     def test_invite_and_subscriber_surfaces_have_non_destructive_filters(self):
         self.assertIn('data-filter-trigger="${section}"', SCRIPT)
         self.assertIn('compactFilter("invite")', SCRIPT)
