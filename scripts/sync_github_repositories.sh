@@ -226,14 +226,17 @@ This snapshot includes project source, documents, current structured data, evide
 SNAPSHOT_FILE_MANIFEST.tsv records the copied source bytes before Git line-ending normalization.
 EOF
 
-MANIFEST="$TMP_DIR/SNAPSHOT_FILE_MANIFEST.tsv"
-printf 'path\tbytes\tsha256\n' > "$MANIFEST"
-while IFS= read -r -d '' file; do
-  relative="${file#"$TMP_DIR/"}"
-  bytes="$(wc -c < "$file" | tr -d ' ')"
-  digest="$(shasum -a 256 "$file" | awk '{print $1}')"
-  printf '%s\t%s\t%s\n' "$relative" "$bytes" "$digest" >> "$MANIFEST"
-done < <(find "$TMP_DIR" -type f ! -path "$TMP_DIR/.git/*" ! -path "$MANIFEST" -print0 | sort -z)
+if [[ -f "$ROOT/ai_config.json" ]]; then
+  INTERNAL_KEY="$(jq -er '[.. | objects | .apiKey? // empty] | map(select(type == "string" and length > 0)) | first // empty' "$ROOT/ai_config.json" 2>/dev/null || true)"
+  if [[ -n "$INTERNAL_KEY" ]] && rg -F --quiet --hidden --glob '!.git/**' "$INTERNAL_KEY" "$TMP_DIR"; then
+    echo "Refusing to push: the internal API key was found in snapshot content." >&2
+    exit 1
+  fi
+  unset INTERNAL_KEY
+fi
+
+# Scan plaintext before compression; archive only isolated snapshot research output.
+python3 "$ROOT/scripts/archive_large_snapshot_json.py" "$TMP_DIR"
 
 # Fail before creating or pushing a snapshot commit if any future operational
 # artifact escapes the explicit exclusions above and exceeds GitHub's hard
@@ -245,14 +248,6 @@ while IFS= read -r -d '' oversized_file; do
   exit 1
 done < <(find "$TMP_DIR" -type f ! -path "$TMP_DIR/.git/*" -size +95M -print0)
 
-if [[ -f "$ROOT/ai_config.json" ]]; then
-  INTERNAL_KEY="$(jq -er '[.. | objects | .apiKey? // empty] | map(select(type == "string" and length > 0)) | first // empty' "$ROOT/ai_config.json" 2>/dev/null || true)"
-  if [[ -n "$INTERNAL_KEY" ]] && rg -F --quiet --hidden --glob '!.git/**' "$INTERNAL_KEY" "$TMP_DIR"; then
-    echo "Refusing to push: the internal API key was found in snapshot content." >&2
-    exit 1
-  fi
-  unset INTERNAL_KEY
-fi
 
 git -C "$TMP_DIR" add -f -A
 TREE="$(git -C "$TMP_DIR" write-tree)"
