@@ -35,6 +35,7 @@ from project_monitor import (
 )
 from cmhk.auth.service import AuthService
 from cmhk.integrations.feishu_sheet_edit_events import sheet_edit_events
+from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 from cmhk.services.subscriptions import SubscriptionService
 
 
@@ -745,6 +746,7 @@ class CardActionHandler:
             raise RuntimeError("卡片回调缺少延迟更新token")
         bot = self.config.get("bot") if isinstance(self.config.get("bot"), dict) else {}
         profile = profile or str(bot.get("profile") or "")
+        card = without_markdown_bold_markers(card)
         body = json.dumps({"token": token, "card": card}, ensure_ascii=False)
         last_error: Exception | None = None
         for attempt in range(2):
@@ -978,6 +980,7 @@ class CardActionHandler:
                             self.state["listener_ready_at_hkt"] = _iso(self.now())
                             _atomic_json(self.action_state_path, self.state)
                         continue
+                    event: dict[str, Any] = {}
                     try:
                         event = json.loads(line)
                         if not isinstance(event, dict):
@@ -993,6 +996,11 @@ class CardActionHandler:
                             {
                                 "type": "card_action_failed_local_only",
                                 "at_hkt": _iso(self.now()),
+                                "source_profile": event_profile,
+                                "event_id": str(event.get("event_id") or ""),
+                                "operator_id": str(event.get("operator_id") or ""),
+                                "message_id": str(event.get("message_id") or ""),
+                                "chat_id": str(event.get("chat_id") or ""),
                                 "error": error,
                             },
                         )

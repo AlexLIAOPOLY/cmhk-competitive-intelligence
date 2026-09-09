@@ -268,6 +268,7 @@ td select { min-width: 84px; }
 .status.verified, .status.accepted { color: #79d1ad; background: rgba(43,139,105,.15); }
 .status.queued, .status.pending { color: #86c1e7; background: rgba(51,112,154,.17); }
 .status.retrying, .status.paused, .status.cancelled { color: #e1bd70; background: rgba(148,108,38,.17); }
+.status.needs_correction { color: #ffd27d; background: rgba(160,105,28,.2); }
 .status.failed { color: #dfa1a7; background: rgba(160,70,78,.16); }
 /* Readability scale: retain the compact admin layout while avoiding tiny text. */
 h1 { font-size: 20px; }

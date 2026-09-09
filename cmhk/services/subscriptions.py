@@ -19,6 +19,7 @@ from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
 from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
+from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 from cmhk.reporting.weekly_quality import weekly_text_has_navigation_noise
 
 
@@ -849,9 +850,14 @@ class SubscriptionService:
                     chat_id TEXT NOT NULL,
                     callback_open_id TEXT NOT NULL,
                     delivery_open_id TEXT NOT NULL,
+                    union_id TEXT NOT NULL DEFAULT '',
                     display_name TEXT NOT NULL,
                     avatar_url TEXT NOT NULL DEFAULT '',
+                    source_profile TEXT NOT NULL DEFAULT '',
+                    department_names TEXT NOT NULL DEFAULT '[]',
+                    job_title TEXT NOT NULL DEFAULT '',
                     status TEXT NOT NULL,
+                    last_error TEXT NOT NULL DEFAULT '',
                     responded_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL,
                     PRIMARY KEY (message_id, callback_open_id)
@@ -1075,6 +1081,13 @@ class SubscriptionService:
                 "subscription_invitations": {
                     "source_profile": "TEXT NOT NULL DEFAULT ''",
                     "avatar_url": "TEXT NOT NULL DEFAULT ''",
+                },
+                "subscription_group_responses": {
+                    "union_id": "TEXT NOT NULL DEFAULT ''",
+                    "source_profile": "TEXT NOT NULL DEFAULT ''",
+                    "department_names": "TEXT NOT NULL DEFAULT '[]'",
+                    "job_title": "TEXT NOT NULL DEFAULT ''",
+                    "last_error": "TEXT NOT NULL DEFAULT ''",
                 },
                 "subscription_directory_people": {
                     "enterprise_email": "TEXT NOT NULL DEFAULT ''",
@@ -1407,21 +1420,50 @@ class SubscriptionService:
         if origin is None or (origin["target_type"] == "user" and origin["target_id"] != open_id):
             return None
         profile = str(origin["source_profile"] or self.entry_profile)
+        identity = self.resolve_user(open_id, source_profile=profile)
         reason = str(error)[:300]
         now = _now_hkt()
         with closing(self._connect()) as db, db:
-            db.execute("""UPDATE subscription_invitations SET status='needs_correction', last_error=?,
-                       responded_at=?, updated_at=? WHERE message_id=? AND callback_open_id=?""",
-                       (reason, now, now, message_id, open_id))
+            if str(origin["target_type"] or "") == "chat":
+                db.execute(
+                    """INSERT INTO subscription_group_responses(
+                           message_id, chat_id, callback_open_id, delivery_open_id,
+                           union_id, display_name, avatar_url, source_profile,
+                           department_names, job_title, status, last_error, responded_at, updated_at
+                       ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'needs_correction', ?, ?, ?)
+                       ON CONFLICT(message_id, callback_open_id) DO UPDATE SET
+                           delivery_open_id=excluded.delivery_open_id,
+                           union_id=excluded.union_id,
+                           display_name=excluded.display_name,
+                           avatar_url=excluded.avatar_url,
+                           source_profile=excluded.source_profile,
+                           department_names=excluded.department_names,
+                           job_title=excluded.job_title,
+                           status=excluded.status,
+                           last_error=excluded.last_error,
+                           responded_at=excluded.responded_at,
+                           updated_at=excluded.updated_at""",
+                    (
+                        message_id, chat_id, identity["callback_open_id"], identity["open_id"],
+                        identity["union_id"], identity["display_name"], identity.get("avatar_url", ""),
+                        profile, json.dumps(identity.get("department_names") or [], ensure_ascii=False),
+                        identity.get("job_title", ""), reason, now, now,
+                    ),
+                )
+            else:
+                db.execute("""UPDATE subscription_invitations SET status='needs_correction', last_error=?,
+                           responded_at=?, updated_at=? WHERE message_id=? AND callback_open_id=?""",
+                           (reason, now, now, message_id, identity["callback_open_id"]))
         card = {"schema": "2.0", "header": {"template": "orange", "title": {
             "tag": "plain_text", "content": "订阅未保存，请修改后重试"}}, "body": {"elements": [
                 {"tag": "div", "text": {"tag": "plain_text", "content": reason}},
                 {"tag": "markdown", "content": "请回到刚才的订阅表单调整选项，再点击**确认订阅**。本次未改变已有订阅；保存成功后会收到订阅成功卡片。"},
             ]}}
-        sent = self._send_interactive_card(open_id, card, profile=profile,
+        sent = self._send_interactive_card(identity["callback_open_id"], card, profile=profile,
             idempotency_key="subreject-" + hashlib.sha256(event_id.encode()).hexdigest()[:30])
         self._verify_message(sent, profile=profile)
-        return {"status": "subscription_rejected", "source_profile": profile, "open_id": open_id,
+        return {"status": "subscription_rejected", "source_profile": profile,
+                "open_id": identity["open_id"], "display_name": identity["display_name"],
                 "error": reason, "confirmation_message_id": sent, "preserve_source_card": True}
 
     def handle_card_event(self, event: dict[str, Any]) -> dict[str, Any] | None:
@@ -1507,21 +1549,41 @@ class SubscriptionService:
             now = _now_hkt()
             with closing(self._connect()) as db, db:
                 if str(published["target_type"] or "") == "chat":
+                    directory = db.execute(
+                        """SELECT display_name, avatar_url, department_names, job_title
+                           FROM subscription_directory_people
+                           WHERE union_id=? AND active=1
+                           ORDER BY synced_at DESC LIMIT 1""",
+                        (identity["union_id"],),
+                    ).fetchone()
+                    display_name = str(directory["display_name"] or "") if directory else ""
+                    avatar_url = str(directory["avatar_url"] or "") if directory else ""
+                    department_names = str(directory["department_names"] or "[]") if directory else "[]"
+                    job_title = str(directory["job_title"] or "") if directory else ""
                     db.execute(
                         """INSERT INTO subscription_group_responses(
-                               message_id, chat_id, callback_open_id, delivery_open_id,
-                               display_name, avatar_url, status, responded_at, updated_at
-                           ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+                               message_id, chat_id, callback_open_id, delivery_open_id, union_id,
+                               display_name, avatar_url, source_profile, department_names, job_title,
+                               status, last_error, responded_at, updated_at
+                           ) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, '', ?, ?)
                            ON CONFLICT(message_id, callback_open_id) DO UPDATE SET
                                delivery_open_id=excluded.delivery_open_id,
+                               union_id=excluded.union_id,
                                display_name=excluded.display_name,
                                avatar_url=excluded.avatar_url,
+                               source_profile=excluded.source_profile,
+                               department_names=excluded.department_names,
+                               job_title=excluded.job_title,
                                status=excluded.status,
+                               last_error='',
                                responded_at=excluded.responded_at,
                                updated_at=excluded.updated_at""",
                         (
                             message_id, chat_id, identity["callback_open_id"], identity["open_id"],
-                            identity["display_name"], identity.get("avatar_url", ""), status, now, now,
+                            identity["union_id"], display_name or identity["display_name"],
+                            avatar_url or identity.get("avatar_url", ""), source_profile,
+                            department_names, job_title or identity.get("job_title", ""),
+                            status, now, now,
                         ),
                     )
                     return
@@ -1657,22 +1719,26 @@ class SubscriptionService:
                 "SELECT * FROM subscription_invitations ORDER BY id DESC"
             ).fetchall()
             group_cards = db.execute(
-                """SELECT c.*,
-                          COUNT(r.callback_open_id) AS response_count,
-                          SUM(CASE WHEN r.status='accepted' THEN 1 ELSE 0 END) AS accepted_count,
-                          SUM(CASE WHEN r.status='paused' THEN 1 ELSE 0 END) AS paused_count,
-                          MAX(r.updated_at) AS latest_response_at
-                   FROM subscription_entry_cards c
-                   LEFT JOIN subscription_group_responses r ON r.message_id=c.message_id
+                """SELECT c.* FROM subscription_entry_cards c
                    WHERE c.target_type='chat'
-                   GROUP BY c.message_id
-                   ORDER BY c.created_at DESC LIMIT 30"""
+                   ORDER BY c.created_at DESC"""
             ).fetchall()
             group_responses = db.execute(
                 """SELECT r.* FROM subscription_group_responses r
                    JOIN subscription_entry_cards c ON c.message_id=r.message_id
                    WHERE c.target_type='chat'
-                   ORDER BY r.updated_at DESC LIMIT 300"""
+                   ORDER BY r.updated_at DESC"""
+            ).fetchall()
+            directory_people = db.execute(
+                """SELECT directory_open_id, union_id, display_name, en_name, avatar_url,
+                          job_title, department_names, source_profile
+                   FROM subscription_directory_people WHERE active=1
+                   ORDER BY synced_at DESC"""
+            ).fetchall()
+            invite_candidates = db.execute(
+                """SELECT callback_open_id, delivery_open_id, union_id, display_name, avatar_url,
+                          job_title, department_names, source_profile
+                   FROM subscription_invite_candidates ORDER BY updated_at DESC"""
             ).fetchall()
         subscribers = []
         counts = {key: 0 for key in VALID_SERVICES}
@@ -1749,17 +1815,111 @@ class SubscriptionService:
             delivery["recipient_open_id"] = str(delivery.get("open_id") or "")
             delivery["message_ids"] = json.loads(delivery.get("message_ids") or "[]")
             delivery_items.append(delivery)
+        subscriber_identity_by_delivery = {
+            str(row["open_id"]): {
+                "union_id": str(row["union_id"] or ""),
+                "callback_open_id": str(row["callback_open_id"] or ""),
+            }
+            for row in rows
+        }
+        directory_by_union: dict[str, dict[str, Any]] = {}
+        for row in directory_people:
+            profile = dict(row)
+            union_id = str(profile.get("union_id") or "")
+            if union_id:
+                directory_by_union.setdefault(union_id, profile)
+        candidates_by_identity: dict[str, dict[str, Any]] = {}
+        for row in invite_candidates:
+            profile = dict(row)
+            for key in (
+                str(profile.get("union_id") or ""),
+                str(profile.get("callback_open_id") or ""),
+                str(profile.get("delivery_open_id") or ""),
+            ):
+                if key:
+                    candidates_by_identity.setdefault(key, profile)
+
         responses_by_message: dict[str, list[dict[str, Any]]] = {}
         for row in group_responses:
             response = dict(row)
+            subscriber_identity = subscriber_identity_by_delivery.get(
+                str(response.get("delivery_open_id") or ""), {}
+            )
+            union_id = str(response.get("union_id") or subscriber_identity.get("union_id") or "")
+            candidate = (
+                candidates_by_identity.get(union_id)
+                or candidates_by_identity.get(str(response.get("callback_open_id") or ""))
+                or candidates_by_identity.get(str(response.get("delivery_open_id") or ""))
+                or {}
+            )
+            directory = directory_by_union.get(union_id, {})
+            profile = directory or candidate
+            response["union_id"] = union_id
+            response["display_name"] = str(
+                profile.get("display_name") or response.get("display_name") or "飞书用户"
+            )
+            response["en_name"] = str(directory.get("en_name") or "")
+            response["avatar_url"] = str(
+                directory.get("avatar_url")
+                or candidate.get("avatar_url")
+                or response.get("avatar_url")
+                or ""
+            )
+            response["directory_open_id"] = str(directory.get("directory_open_id") or "")
+            raw_departments = (
+                directory.get("department_names")
+                or response.get("department_names")
+                or candidate.get("department_names")
+                or "[]"
+            )
+            try:
+                department_names = json.loads(raw_departments) if isinstance(raw_departments, str) else raw_departments
+            except (TypeError, ValueError, json.JSONDecodeError):
+                department_names = []
+            response["department_names"] = department_names if isinstance(department_names, list) else []
+            response["job_title"] = str(
+                directory.get("job_title")
+                or response.get("job_title")
+                or candidate.get("job_title")
+                or ""
+            )
             responses_by_message.setdefault(str(response["message_id"]), []).append(response)
-        group_invitation_items = []
+
+        group_invitation_by_target: dict[str, dict[str, Any]] = {}
         for row in group_cards:
             item = dict(row)
-            item["target_name"] = str(item.get("target_name") or item.get("target_id") or "飞书群聊")
-            item["status"] = "responded" if int(item.get("response_count") or 0) else "verified"
-            item["responses"] = responses_by_message.get(str(item["message_id"]), [])
-            group_invitation_items.append(item)
+            target_id = str(item.get("target_id") or item.get("chat_id") or item.get("message_id"))
+            group = group_invitation_by_target.get(target_id)
+            if group is None:
+                group = item | {
+                    "target_name": str(item.get("target_name") or target_id or "飞书群聊"),
+                    "message_ids": [],
+                    "responses_by_person": {},
+                }
+                group_invitation_by_target[target_id] = group
+            group["message_ids"].append(str(item["message_id"]))
+            for response in responses_by_message.get(str(item["message_id"]), []):
+                person_key = str(
+                    response.get("union_id")
+                    or response.get("delivery_open_id")
+                    or response.get("callback_open_id")
+                )
+                group["responses_by_person"].setdefault(person_key, response)
+
+        group_invitation_items = []
+        for group in list(group_invitation_by_target.values())[:30]:
+            responses = list(group.pop("responses_by_person").values())
+            group["responses"] = responses
+            group["message_count"] = len(group["message_ids"])
+            group["response_count"] = len(responses)
+            group["accepted_count"] = sum(1 for response in responses if response.get("status") == "accepted")
+            group["paused_count"] = sum(1 for response in responses if response.get("status") == "paused")
+            group["latest_response_at"] = max(
+                (str(response.get("updated_at") or "") for response in responses),
+                default="",
+            )
+            group["status"] = "responded" if responses else "verified"
+            group_invitation_items.append(group)
         return {
             "services": [{"key": key, "label": SERVICE_LABELS[key], "subscriber_count": counts[key]} for key in ("weekly", "performance", "news")],
             "news_categories": [
@@ -2593,12 +2753,23 @@ class SubscriptionService:
                    WHERE directory_open_id=? AND active=1""",
                 (open_id,),
             ).fetchone()
-            if row is None:
+            url = str(row["avatar_url"] or "") if row else ""
+            if not url:
                 row = db.execute(
-                    "SELECT avatar_url FROM subscription_invite_candidates WHERE callback_open_id=?",
-                    (open_id,),
+                    """SELECT avatar_url FROM subscription_invite_candidates
+                       WHERE callback_open_id=? OR delivery_open_id=?
+                       ORDER BY updated_at DESC LIMIT 1""",
+                    (open_id, open_id),
                 ).fetchone()
-        url = str(row["avatar_url"] or "") if row else ""
+                url = str(row["avatar_url"] or "") if row else ""
+            if not url:
+                row = db.execute(
+                    """SELECT avatar_url FROM subscription_group_responses
+                       WHERE callback_open_id=? OR delivery_open_id=?
+                       ORDER BY updated_at DESC LIMIT 1""",
+                    (open_id, open_id),
+                ).fetchone()
+                url = str(row["avatar_url"] or "") if row else ""
         if not url.startswith("https://") or "feishucdn.com/" not in url:
             raise ValueError("该人员没有可用的飞书头像")
         return url
@@ -2687,12 +2858,44 @@ class SubscriptionService:
         merged = {str(item["callback_open_id"]): item for item in deduplicated.values()}
         with closing(self._connect()) as db:
             for candidate in merged.values():
-                latest = db.execute(
-                    """SELECT status, sent_at, responded_at, message_id FROM subscription_invitations
+                personal = db.execute(
+                    """SELECT status, sent_at, responded_at, updated_at, message_id, last_error,
+                              'personal' AS response_source
+                       FROM subscription_invitations
                        WHERE callback_open_id=? ORDER BY id DESC LIMIT 1""",
                     (candidate["callback_open_id"],),
                 ).fetchone()
-                candidate["latest_invitation"] = dict(latest) if latest else None
+                group_response = db.execute(
+                    """SELECT r.status, c.created_at AS sent_at, r.responded_at, r.updated_at,
+                              r.message_id, r.last_error, 'group' AS response_source,
+                              c.target_id AS source_chat_id, c.target_name AS source_chat_name
+                       FROM subscription_group_responses r
+                       JOIN subscription_entry_cards c ON c.message_id=r.message_id
+                       LEFT JOIN subscribers s ON s.open_id=r.delivery_open_id
+                       WHERE c.target_type='chat' AND (
+                           r.callback_open_id=? OR r.delivery_open_id=?
+                           OR (?<>'' AND COALESCE(NULLIF(r.union_id, ''), s.union_id)=?)
+                       )
+                       ORDER BY r.updated_at DESC LIMIT 1""",
+                    (
+                        str(candidate.get("callback_open_id") or ""),
+                        str(candidate.get("delivery_open_id") or ""),
+                        str(candidate.get("union_id") or ""),
+                        str(candidate.get("union_id") or ""),
+                    ),
+                ).fetchone()
+                response_candidates = [
+                    dict(row) for row in (personal, group_response)
+                    if row is not None and str(row["responded_at"] or "")
+                ]
+                if response_candidates:
+                    latest = max(
+                        response_candidates,
+                        key=lambda item: str(item.get("updated_at") or item.get("responded_at") or ""),
+                    )
+                else:
+                    latest = dict(personal) if personal else None
+                candidate["latest_invitation"] = latest
         return sorted(merged.values(), key=lambda item: (str(item["display_name"]).casefold(), str(item["callback_open_id"])))
 
     def register_invite_candidate(self, callback_open_id: str) -> dict[str, Any]:
@@ -2977,6 +3180,7 @@ class SubscriptionService:
             report_schedule=self.report_schedule_snapshot(),
             performance_schedule=self.performance_schedule_snapshot(),
         )
+        card = without_markdown_bold_markers(card)
         card_version = hashlib.sha256(
             json.dumps(card, ensure_ascii=False, sort_keys=True).encode()
         ).hexdigest()[:12]
@@ -3027,6 +3231,7 @@ class SubscriptionService:
         idempotency_key: str,
         profile: str = "",
     ) -> str:
+        card = without_markdown_bold_markers(card)
         payload = self._lark([
             "lark-cli", "im", "+messages-send", "--user-id", open_id,
             "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False),

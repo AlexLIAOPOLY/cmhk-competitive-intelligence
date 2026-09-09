@@ -11,8 +11,8 @@ STYLE = (ROOT / "web" / "static" / "subscription-admin.css").read_text(encoding=
 class SubscriptionAdminTests(unittest.TestCase):
     def test_workspace_has_real_subscription_admin_tab(self):
         self.assertIn('id="workspace-tab-subscriptions"', INDEX)
-        self.assertIn('/static/subscription-admin.html?v=28', INDEX)
-        self.assertIn('/static/subscription-admin.js?v=50', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
+        self.assertIn('/static/subscription-admin.html?v=29', INDEX)
+        self.assertIn('/static/subscription-admin.js?v=51', (ROOT / "web" / "static" / "subscription-admin.html").read_text(encoding="utf-8"))
         self.assertIn('fetch("/api/subscriptions"', SCRIPT)
         self.assertNotIn("订阅服务 UI DEMO", SCRIPT)
 
@@ -143,7 +143,14 @@ class SubscriptionAdminTests(unittest.TestCase):
         self.assertIn('targetType: "chat"', SCRIPT)
         self.assertIn("群内每个人将各自填写订阅偏好", SCRIPT)
         self.assertIn("已确认发送", SCRIPT)
-        self.assertIn("${number(responseCount)}人已接受", SCRIPT)
+        self.assertIn("${number(acceptedCount)}人已接受", SCRIPT)
+        self.assertIn("${number(correctionCount)}人待修正", SCRIPT)
+        self.assertIn("response.last_error", SCRIPT)
+        self.assertIn(".status.needs_correction", STYLE)
+        self.assertIn("已发送 ${number(messageCount)} 次", SCRIPT)
+        self.assertIn("成员按人去重累计", SCRIPT)
+        self.assertIn("groupResponseProfile", SCRIPT)
+        self.assertIn('item.latest_invitation?.status || "pending"', SCRIPT)
         self.assertIn("group-response-list", SCRIPT)
         self.assertIn("window.setInterval", SCRIPT)
         self.assertIn(".group-invite-row", STYLE)

@@ -12,6 +12,7 @@ from unittest import mock
 from docx import Document
 
 from cmhk.services.subscriptions import (
+    NEWS_CATEGORY_LABELS,
     SubscriptionService,
     encode_strategic_news_digest,
     strategic_news_card,
@@ -501,6 +502,85 @@ class SubscriptionServiceTests(unittest.TestCase):
             db.commit()
         reloaded = SubscriptionService(runtime_root=self.root, command_runner=self.lark)
         self.assertEqual(reloaded.list_summary()["group_invitations"][0]["response_count"], 2)
+
+    def test_repeated_group_cards_accumulate_unique_people_and_complete_profiles(self):
+        self.service.refresh_people_directory()
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        self.service.handle_card_event({
+            "type": "card.action.trigger",
+            "action_tag": "button",
+            "event_id": "event-group-first",
+            "operator_id": "ou_callback123",
+            "chat_id": "oc_test123",
+            "message_id": "om_test123",
+            "form_value": json.dumps({"services": ["news"]}),
+        })
+        with closing(self.service._connect()) as db, db:
+            db.execute(
+                """INSERT INTO subscription_entry_cards(
+                       message_id, target_type, target_id, target_name, chat_id, source_profile, created_at
+                   ) VALUES('om_second123', 'chat', 'oc_test123', '项目群', 'oc_test123', 'cli_test',
+                            '2026-09-09T18:00:00+08:00')"""
+            )
+            db.execute(
+                """INSERT INTO subscription_directory_people(
+                       directory_open_id, union_id, display_name, en_name, avatar_url, job_title,
+                       department_names, source_profile, active, synced_at
+                   ) VALUES('ou_directory456', 'on_other456', '朱子旭', 'Red ZHU Zixu',
+                            'https://example.test/other.png', '高级经理', '["战略部"]',
+                            'org_test', 1, '2026-09-09T18:01:00+08:00')"""
+            )
+            for values in (
+                (
+                    "ou_callback123", "ou_delivery123", "on_test123", "测试用户",
+                    "2026-09-09T18:02:00+08:00",
+                ),
+                (
+                    "ou_callback456", "ou_delivery456", "on_other456", "朱子旭",
+                    "2026-09-09T18:03:00+08:00",
+                ),
+            ):
+                db.execute(
+                    """INSERT INTO subscription_group_responses(
+                           message_id, chat_id, callback_open_id, delivery_open_id, union_id,
+                           display_name, avatar_url, source_profile, department_names, job_title,
+                           status, responded_at, updated_at
+                       ) VALUES('om_second123', 'oc_test123', ?, ?, ?, ?, '', 'cli_test',
+                                '[]', '', 'accepted', ?, ?)""",
+                    (*values, values[-1]),
+                )
+            db.execute(
+                """INSERT INTO subscription_invitations(
+                       callback_open_id, delivery_open_id, union_id, display_name,
+                       source_profile, avatar_url, message_id, chat_id, status,
+                       invited_by, sent_at, updated_at
+                   ) VALUES('ou_callback123', 'ou_delivery123', 'on_test123', '测试用户',
+                            'cli_test', '', 'om_personal_pending123', 'oc_test123', 'pending',
+                            'local_admin', '2026-09-09T18:04:00+08:00',
+                            '2026-09-09T18:04:00+08:00')"""
+            )
+
+        groups = self.service.list_summary()["group_invitations"]
+        self.assertEqual(len(groups), 1)
+        group = groups[0]
+        self.assertEqual(group["message_count"], 2)
+        self.assertEqual(group["response_count"], 2)
+        self.assertEqual(group["accepted_count"], 2)
+        people = {item["union_id"]: item for item in group["responses"]}
+        self.assertEqual(people["on_test123"]["department_names"], ["战略部"])
+        self.assertEqual(people["on_test123"]["job_title"], "经理")
+        self.assertEqual(people["on_other456"]["en_name"], "Red ZHU Zixu")
+        self.assertEqual(people["on_other456"]["department_names"], ["战略部"])
+        self.assertEqual(
+            sum(item["callback_open_id"] == "ou_callback123" for item in group["responses"]),
+            1,
+        )
+        candidate = next(
+            item for item in self.service.list_invite_candidates()
+            if item["union_id"] == "on_test123"
+        )
+        self.assertEqual(candidate["latest_invitation"]["status"], "accepted")
+        self.assertEqual(candidate["latest_invitation"]["response_source"], "group")
 
     def test_admin_edit_survives_reload_and_reset_restores_only_target(self):
         self.service.save_subscriptions("ou_persona123", "甲", ["news"], news_categories=["竞对动态"], news_item_limit=5)
@@ -1228,7 +1308,6 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(actual["news_delivery_times"], saved["news_delivery_times"])
 
     def test_overselected_callback_saves_and_sends_receipt_with_consequences(self):
-        from cmhk.services.subscriptions import NEWS_CATEGORY_LABELS
         self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
         event = {"type": "card.action.trigger", "action_tag": "button", "event_id": "correction-1",
             "operator_id": "ou_callback123", "chat_id": "oc_test123", "message_id": "om_test123",
@@ -1248,6 +1327,41 @@ class SubscriptionServiceTests(unittest.TestCase):
             self.assertIn(category, json.dumps(card, ensure_ascii=False))
         again = self.service.handle_card_event(event)
         self.assertEqual(again["news_categories"], saved["news_categories"])
+
+    def test_rejected_group_submission_is_visible_and_a_retry_clears_the_error(self):
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        event = {
+            "type": "card.action.trigger",
+            "action_tag": "button",
+            "event_id": "group-needs-correction",
+            "operator_id": "ou_callback123",
+            "chat_id": "oc_test123",
+            "message_id": "om_test123",
+            "form_value": json.dumps({"services": []}),
+        }
+        with self.assertRaisesRegex(ValueError, "至少选择") as caught:
+            self.service.handle_card_event(event)
+        feedback = self.service.subscription_validation_feedback(event, caught.exception)
+        self.assertEqual(feedback["status"], "subscription_rejected")
+        self.assertEqual(feedback["display_name"], "测试用户")
+        summary = self.service.list_summary()
+        group = summary["group_invitations"][0]
+        self.assertEqual(group["response_count"], 1)
+        self.assertEqual(group["accepted_count"], 0)
+        self.assertEqual(group["responses"][0]["status"], "needs_correction")
+        self.assertIn("至少选择", group["responses"][0]["last_error"])
+
+        event["event_id"] = "group-corrected"
+        event["form_value"] = json.dumps({
+            "services": ["news"],
+            "news_categories": list(NEWS_CATEGORY_LABELS),
+        })
+        saved = self.service.handle_card_event(event)
+        self.assertEqual(len(saved["news_categories"]), 7)
+        group = self.service.list_summary()["group_invitations"][0]
+        self.assertEqual(group["accepted_count"], 1)
+        self.assertEqual(group["responses"][0]["status"], "accepted")
+        self.assertEqual(group["responses"][0]["last_error"], "")
 
     def test_invalid_times_use_defaults_and_valid_boundaries_stay(self):
         for supplied, expected in [(["bad", ""], ["08:00", "18:30"]), (["20:00", "15:00"], ["08:00", "18:30"]), (["08:00", "14:00"], ["08:00", "14:00"])]:

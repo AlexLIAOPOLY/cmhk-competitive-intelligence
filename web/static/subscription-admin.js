@@ -262,13 +262,20 @@
   }
 
   function currentGroupInvitations() {
-    const seen = new Set();
-    return (state.data?.group_invitations || []).filter((item) => {
-      const key = item.target_id || item.message_id;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    });
+    return state.data?.group_invitations || [];
+  }
+
+  function groupResponseProfile(response) {
+    const departments = (response.department_names || []).filter(Boolean).join(" / ");
+    const jobTitle = String(response.job_title || "").trim();
+    const enName = String(response.en_name || "").trim();
+    const displayName = String(response.display_name || "").trim();
+    return {
+      name: enName && !displayName.toLocaleLowerCase().includes(enName.toLocaleLowerCase())
+        ? `${displayName} ${enName}`
+        : displayName,
+      details: [departments, jobTitle].filter(Boolean).join(" · ") || "已验证飞书用户",
+    };
   }
 
   function invitationSortRank(item) {
@@ -285,13 +292,19 @@
     if (!rows.length && !groups.length) return '<p class="empty compact">尚无待邀请人员或已发送的群邀请</p>';
     const groupRows = groups.map((item) => {
       const responses = item.responses || [];
-      const responseCount = Number(item.response_count || responses.length || 0);
-      const filterText = [item.target_name, item.message_id, "群邀请", responseCount ? "已接受" : "已确认发送", ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status)])].filter(Boolean).join(" ");
-      return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${responseCount ? "accepted" : "verified"}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
+      const acceptedCount = Number(item.accepted_count || 0);
+      const correctionCount = responses.filter((response) => response.status === "needs_correction").length;
+      const messageCount = Number(item.message_count || 1);
+      const responseSummary = acceptedCount
+        ? `${number(acceptedCount)}人已接受${correctionCount ? ` · ${number(correctionCount)}人待修正` : ""}`
+        : correctionCount ? `${number(correctionCount)}人待修正` : "已确认发送";
+      const groupStatus = acceptedCount ? "accepted" : correctionCount ? "needs_correction" : "verified";
+      const filterText = [item.target_name, "群邀请", responseSummary, ...responses.flatMap((response) => [response.display_name, response.en_name, ...(response.department_names || []), response.job_title, invitationStatus(response.status), response.last_error])].filter(Boolean).join(" ");
+      return `<details class="group-invite-record" data-invite-filter-row data-filter-kind="group" data-filter-status="${groupStatus}" data-filter-text="${esc(filterText)}"><summary class="invite-row group-invite-row">
         <input type="checkbox" value="${esc(item.target_id)}" data-invite-group-candidate data-invite-group-name="${esc(item.target_name)}" aria-label="选择群聊 ${esc(item.target_name)}"${state.selectedInviteGroups.has(item.target_id) ? " checked" : ""}>
-        <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · ${esc(item.message_id)}</small></span>
-        <span class="invite-meta"><span class="status ${responseCount ? "accepted" : "verified"}">${responseCount ? `${number(responseCount)}人已接受` : "已确认发送"}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
-      </summary><div class="group-response-list">${responses.length ? responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))} · ${esc(response.responded_at)}</small></span></span>`).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
+        <span class="avatar avatar-fallback chat-avatar" aria-hidden="true">群</span><span class="person-copy"><strong>${esc(item.target_name)}</strong><small>群邀请 · 已发送 ${number(messageCount)} 次 · 成员按人去重累计</small></span>
+        <span class="invite-meta"><span class="status ${groupStatus}">${responseSummary}</span><small>${esc(item.latest_response_at || item.created_at || "-")}</small></span>
+      </summary><div class="group-response-list">${responses.length ? responses.map((response) => { const profile = groupResponseProfile(response); return `<span>${avatar(response)}<span><strong>${esc(profile.name)}</strong><small>${esc(profile.details)} · ${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at)}</small></span></span>`; }).join("") : "<p>等待群成员提交选择</p>"}</div></details>`;
     }).join("");
     const sortedRows = rows.map((item, index) => ({ item, index }))
       .sort((left, right) => invitationSortRank(left.item) - invitationSortRank(right.item) || left.index - right.index)
@@ -366,13 +379,32 @@
   }
 
   function invitationRows() {
-    const rows = state.data?.invitations || [];
-    if (!rows.length) return '<tr><td colspan="4" class="empty">尚无邀请记录</td></tr>';
-    return rows.map((item) => {
+    const personRows = state.data?.invitations || [];
+    const groupRows = state.data?.group_invitations || [];
+    if (!personRows.length && !groupRows.length) return '<tr><td colspan="4" class="empty">尚无邀请记录</td></tr>';
+    const people = personRows.map((item) => {
       const personKey = item.callback_open_id || item.delivery_open_id || item.display_name || "";
       const filterText = [item.display_name, item.callback_open_id, item.delivery_open_id, item.sent_at, invitationStatus(item.status), item.message_id, item.last_error].filter(Boolean).join(" ");
       return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.sent_at || "").slice(0, 10))}" data-filter-person="${esc(personKey)}" data-filter-status="${esc(item.status || "")}" data-filter-text="${esc(filterText)}"><td class="name">${esc(item.display_name)}</td><td>${esc(item.sent_at || "-")}</td><td><span class="status ${esc(item.status)}">${esc(invitationStatus(item.status))}</span>${item.last_error ? `<small>${esc(item.last_error)}</small>` : ""}</td><td class="muted">${esc(item.message_id || "-")}</td></tr>`;
-    }).join("") + '<tr data-invitation-filter-empty hidden><td colspan="4" class="empty">没有匹配的邀请结果</td></tr>';
+    });
+    const groups = groupRows.map((item) => {
+      const responses = item.responses || [];
+      const acceptedCount = Number(item.accepted_count || 0);
+      const correctionCount = responses.filter((response) => response.status === "needs_correction").length;
+      const status = acceptedCount ? "accepted" : correctionCount ? "needs_correction" : "verified";
+      const statusText = acceptedCount
+        ? `${number(acceptedCount)}人已接受${correctionCount ? ` · ${number(correctionCount)}人待修正` : ""}`
+        : correctionCount ? `${number(correctionCount)}人待修正` : "已确认发送";
+      const groupKey = `group:${item.target_id || item.chat_id || item.target_name || ""}`;
+      const latestMessageId = item.message_id || (item.message_ids || [])[0] || "";
+      const filterText = [item.target_name, "群聊", item.created_at, statusText, latestMessageId,
+        ...responses.flatMap((response) => [response.display_name, invitationStatus(response.status), response.last_error])].filter(Boolean).join(" ");
+      const responseDetails = responses.length
+        ? `<div class="invitation-history-responses">${responses.map((response) => `<span>${avatar(response)}<span><strong>${esc(response.display_name)}</strong><small>${esc(invitationStatus(response.status))}${response.last_error ? ` · ${esc(response.last_error)}` : ""} · ${esc(response.responded_at || "-")}</small></span></span>`).join("")}</div>`
+        : '<p class="invitation-history-empty">暂无群成员提交</p>';
+      return `<tr data-invitation-filter-row data-filter-date="${esc(String(item.created_at || "").slice(0, 10))}" data-filter-person="${esc(groupKey)}" data-filter-status="${status}" data-filter-text="${esc(filterText)}"><td class="name"><details class="invitation-history-group"><summary><span class="history-group-badge">群</span><span>${esc(item.target_name || "飞书群聊")}</span></summary>${responseDetails}</details></td><td>${esc(item.created_at || "-")}</td><td><span class="status ${status}">${statusText}</span></td><td class="muted">${esc(latestMessageId || "-")}${Number(item.message_count || 0) > 1 ? `<small>共 ${number(item.message_count)} 次群邀请</small>` : ""}</td></tr>`;
+    });
+    return [...groups, ...people].join("") + '<tr data-invitation-filter-empty hidden><td colspan="4" class="empty">没有匹配的邀请结果</td></tr>';
   }
 
   function invitationPersonOptions() {
@@ -381,15 +413,22 @@
       const key = item.callback_open_id || item.delivery_open_id || item.display_name || "";
       if (key) people.set(key, item.display_name || key);
     });
+    (state.data?.group_invitations || []).forEach((item) => {
+      const key = `group:${item.target_id || item.chat_id || item.target_name || ""}`;
+      if (key !== "group:") people.set(key, `群聊 · ${item.target_name || "飞书群聊"}`);
+    });
     return Array.from(people.entries()).sort((left, right) => left[1].localeCompare(right[1], "zh-CN"))
       .map(([value, label]) => `<option value="${esc(value)}"${state.invitationFilters.person === value ? " selected" : ""}>${esc(label)}</option>`).join("");
   }
 
   function invitationFilterToolbar() {
     const filters = state.invitationFilters;
-    const history = state.data?.invitation_history || {};
-    const oldest = String(history.oldest_at || "").slice(0, 10);
-    const newest = String(history.newest_at || "").slice(0, 10);
+    const dates = [
+      ...(state.data?.invitations || []).map((item) => item.sent_at),
+      ...(state.data?.group_invitations || []).map((item) => item.created_at),
+    ].filter(Boolean).sort();
+    const oldest = String(dates[0] || "").slice(0, 10);
+    const newest = String(dates.at(-1) || "").slice(0, 10);
     return `<div class="invitation-filter-toolbar" aria-label="筛选邀请结果">
       <label class="delivery-search"><span class="sr-only">搜索邀请结果</span><input type="search" value="${esc(filters.query)}" data-invitation-filter="query" placeholder="搜索姓名、消息 ID 或错误" autocomplete="off"></label>
       <label><span>从</span><input type="date" value="${esc(filters.from)}" min="${esc(oldest)}" max="${esc(newest)}" data-invitation-filter="from"></label>
@@ -416,10 +455,10 @@
       row.hidden = !visible;
       if (visible) visibleCount += 1;
     });
-    const history = state.data?.invitation_history || {};
-    const total = Number(history.total ?? rows.length);
-    const oldest = String(history.oldest_at || "").slice(0, 10);
-    const newest = String(history.newest_at || "").slice(0, 10);
+    const total = rows.length;
+    const dates = rows.map((row) => row.dataset.filterDate).filter(Boolean).sort();
+    const oldest = dates[0] || "";
+    const newest = dates.at(-1) || "";
     const summary = root.querySelector("[data-invitation-filter-summary]");
     if (summary) summary.textContent = `显示 ${number(visibleCount)} / ${number(total)} 条邀请结果${oldest && newest ? ` · 完整范围 ${oldest} 至 ${newest}` : ""}`;
     const empty = root.querySelector("[data-invitation-filter-empty]");
@@ -431,7 +470,9 @@
     if (state.drawerTab === "deliveries") {
       return `${deliveryFilterToolbar()}<div class="table-wrap delivery-table"><table><thead><tr><th>时间</th><th>服务</th><th>方式</th><th>内容</th><th>推送给</th><th>状态</th><th>证据 / 错误</th></tr></thead><tbody>${deliveryRows()}</tbody></table></div>`;
     }
-    return `<p class="drawer-summary">待选择 ${number(data.invitation_counts?.pending)} · 已接受 ${number(data.invitation_counts?.accepted)} · 失败 ${number(data.invitation_counts?.failed)}</p>${invitationFilterToolbar()}<div class="table-wrap"><table><thead><tr><th>人员</th><th>发送时间</th><th>状态</th><th>消息 ID</th></tr></thead><tbody>${invitationRows()}</tbody></table></div>`;
+    const groupInvitations = data.group_invitations || [];
+    const groupAcceptances = groupInvitations.reduce((sum, item) => sum + Number(item.accepted_count || 0), 0);
+    return `<p class="drawer-summary">人员邀请 ${number((data.invitations || []).length)} 条 · 群聊邀请 ${number(groupInvitations.length)} 个 · 群成员已接受 ${number(groupAcceptances)} 人</p>${invitationFilterToolbar()}<div class="table-wrap"><table><thead><tr><th>邀请对象</th><th>发送时间</th><th>状态</th><th>消息 ID</th></tr></thead><tbody>${invitationRows()}</tbody></table></div>`;
   }
 
   function scheduleSummary(schedule) {
