@@ -85,7 +85,7 @@
   function newsCategoryChecks(selected = []) {
     const categories = state.data?.news_categories || [];
     const selectedSet = new Set(selected || []);
-    return `<div class="muted" data-news-interest-hint>${selectedSet.size > 4 ? "当前超过4个，请重新选择" : "最多选择4个；竞对动态优先，所选不足才补充其他板块"}</div>` + categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
+    return `<div class="muted" data-news-interest-hint>最多选择4个；竞对动态优先，所选不足才补充其他板块</div>` + categories.map((item) => `<label class="news-interest-check"><input type="checkbox" value="${esc(item.key)}" data-news-category${selectedSet.has(item.key) ? " checked" : ""}><span>${esc(item.label)}</span></label>`).join("");
   }
 
   function conditionalSetting(kind, enabled, content, emptyLabel) {

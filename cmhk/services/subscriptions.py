@@ -4,6 +4,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import random
 import re
 import shutil
 import sqlite3
@@ -115,6 +116,16 @@ def normalize_news_categories(value: Any, *, default_all: bool = True) -> list[s
     if not selected and default_all:
         selected = set(VALID_NEWS_CATEGORIES)
     return [category for category in NEWS_CATEGORY_LABELS if category in selected]
+
+
+def _reduce_legacy_news_categories(categories: list[str]) -> list[str]:
+    """Randomly reduce a saved legacy profile once; preserve competitor interest."""
+    if len(categories) <= MAX_NEWS_CATEGORIES:
+        return categories
+    retained = ["竞对动态"] if "竞对动态" in categories else []
+    retained += random.sample([c for c in categories if c not in retained],
+                              MAX_NEWS_CATEGORIES - len(retained))
+    return [c for c in NEWS_CATEGORY_LABELS if c in retained]
 
 
 def filter_news_by_categories(
@@ -972,8 +983,16 @@ class SubscriptionService:
                 )
                 db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
             all_categories_json = json.dumps(list(NEWS_CATEGORY_LABELS), ensure_ascii=False, separators=(",", ":"))
-            for row in db.execute("SELECT open_id, news_categories FROM subscribers").fetchall():
-                categories = normalize_news_categories(row["news_categories"])
+            for row in db.execute("SELECT open_id, news_categories, default_preferences FROM subscribers").fetchall():
+                original_categories = normalize_news_categories(row["news_categories"])
+                categories = _reduce_legacy_news_categories(original_categories)
+                defaults = json.loads(row["default_preferences"] or "{}")
+                original_defaults = normalize_news_categories(defaults.get("news_categories"))
+                if len(original_defaults) > MAX_NEWS_CATEGORIES:
+                    defaults["news_categories"] = (categories if original_defaults == original_categories
+                                                    else _reduce_legacy_news_categories(original_defaults))
+                    db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?",
+                               (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
                 serialized = json.dumps(categories, ensure_ascii=False, separators=(",", ":"))
                 if serialized != str(row["news_categories"] or ""):
                     db.execute(
