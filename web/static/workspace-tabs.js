@@ -3487,7 +3487,7 @@
   function startNewsLiveRefresh() {
     if (state.newsLivePollTimer || !can("news")) return;
     state.newsLiveSignature = newsLiveRenderSignature();
-    state.newsLivePollTimer = window.setInterval(refreshNewsLiveData, 3000);
+    state.newsLivePollTimer = window.setInterval(refreshNewsLiveData, 1000);
     window.addEventListener("workspace-tab-change", (event) => {
       if (event.detail?.tab === "news") refreshNewsLiveData();
     });

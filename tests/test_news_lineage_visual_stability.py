@@ -114,7 +114,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_news_lineage_live_refresh_is_fast_quiet_and_preserves_view(self):
         self.assertIn("function refreshNewsLiveData()", SCRIPT)
-        self.assertIn("window.setInterval(refreshNewsLiveData, 3000)", SCRIPT)
+        self.assertIn("window.setInterval(refreshNewsLiveData, 1000)", SCRIPT)
         self.assertIn('activeWorkspaceModule() !== "news"', SCRIPT)
         self.assertIn("loadNewsRuns(selectedRunIds, { force: true, quiet: true })", SCRIPT)
         self.assertIn("function newsLiveRenderSignature()", SCRIPT)

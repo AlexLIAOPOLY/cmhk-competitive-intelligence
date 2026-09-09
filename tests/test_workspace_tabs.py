@@ -667,7 +667,7 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("selectionNodeValue", SCRIPT)
         self.assertIn("selectionLiveHeartbeat", SCRIPT)
         self.assertIn("newsLiveSelectionTerminalSignature", SCRIPT)
-        self.assertIn("window.setInterval(refreshNewsLiveData, 3000)", SCRIPT)
+        self.assertIn("window.setInterval(refreshNewsLiveData, 1000)", SCRIPT)
 
     def test_news_module_maps_all_periodic_crawlers_into_four_database_updates(self):
         self.assertIn('fetch("/api/scheduler-overview"', SCRIPT)
