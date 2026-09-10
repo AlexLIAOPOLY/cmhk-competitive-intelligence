@@ -377,6 +377,17 @@ def assess_field(pack: dict, result: dict, field: str, validator):
     matched = [r for r in pack["web_research"]["results"] if r["field"] == field and r["url"] in sources]
     evidence = {"database": pack["evidence"][field] if field not in pack['missing'] else '', "pages": [{"title": r["title"], "text": r["text"], "publishedAt": r["publishedAt"]} for r in matched]}
     valid, text, reason = validator(field, candidate, evidence)
+    if (not valid and matched and field in {'dividend', 'capex'}
+            and reason.startswith('出现事实包之外的数字')):
+        # A supported primary amount must not disappear because a later sentence
+        # invents a total or an announcement date. Keep only a complete first
+        # sentence, and run the unchanged evidence checks on it again.
+        first = str(candidate).split('。', 1)[0]
+        if '。' in str(candidate):
+            shortened = first + f'。（来源：{pack["company"]}官方披露）'
+            ok, retained, _ = validator(field, shortened, evidence)
+            if ok:
+                valid, text, reason = True, retained, '保留有原文依据的首句，去除未核实的附加说明'
     if valid and field in pack['missing'] and field in {'revenue', 'profit'}:
         metric = r'收入|收益|revenue' if field == 'revenue' else r'EBITDA|净利|淨利|溢利|亏损|虧損'
         if not re.search(metric, text, re.I) or not re.search(r'\d[\d,.]*\s*(?:[百千万亿]+)?(?:港元|美元|元|HKD|RMB|CNY|USD)', text, re.I):
@@ -397,6 +408,10 @@ def compact_table_value(text: str, field: str) -> str:
     text = re.sub(r'(20\d{2})财年', r'FY\1', text)
     text = re.sub(r'20\d{2}/(20\d{2})(?:年度|财年)', r'FY\1', text)
     text = re.sub(r'(?<![\dA-Za-z])(H[12]|Q[1-4])\s*(20\d{2})(?![\d.])', r'\2\1', text)
+    text = re.sub(r'(?<![\dA-Za-z])([12])H\s*(20\d{2})(?!\d)', r'\2H\1', text)
+    text = re.sub(r'RMB\s*([\d,]+(?:\.\d+)?)\s*million\b', r'\1百万元人民币', text, flags=re.I)
+    text = re.sub(r'RMB\s*([\d,]+(?:\.\d+)?)\s*per share\b', r'每股\1元人民币', text, flags=re.I)
+    text = re.sub(r'\binterim\b', '中期', text, flags=re.I)
     text = text.replace('（负值表示流出）', '')
     if len(text) > 70 and field in {'capex', 'dividend'}:
         period = re.search(r'FY20\d{2}|20\d{2}[HQ][1-4]|20\d{2}(?:/\d{2,4})?年?(?:中期|全年|财年|半年度)', text)

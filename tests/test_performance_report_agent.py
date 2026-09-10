@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt, compact_table_value
+from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt, compact_table_value, assess_field
 from generate_carrier_performance_report import valid_ai_performance_field
 
 NOW = datetime(2026, 9, 10, tzinfo=ZoneInfo('Asia/Hong_Kong'))
@@ -106,9 +106,24 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertLessEqual(len(text), 160)
         self.assertTrue(text.endswith('。（来源：公开评级页面）'))
 
+    def test_verified_dividend_survives_an_unsupported_later_total(self):
+        url = 'https://www.hkt.com/results.pdf'
+        pack = {'company': 'HKT', 'missing': ['dividend'], 'evidence': {'dividend': ''},
+                'web_research': {'results': [{'field': 'dividend', 'url': url, 'title': 'HKT 2026 interim report',
+                    'text': '2026 Interim dividend per share 34.80 HK cents', 'publishedAt': ''}]}}
+        draft = {'fields': {'dividend': '2026年中期股息每股34.80港仙。股息总额999亿元。'}, 'sources': {'dividend': [url]}}
+        ok, text, reason, _ = assess_field(pack, draft, 'dividend', valid_ai_performance_field)
+        self.assertTrue(ok)
+        self.assertIn('34.80港仙', text)
+        self.assertNotIn('999', text)
+        draft['fields']['dividend'] = '2026年中期股息每股999港仙。'
+        self.assertFalse(assess_field(pack, draft, 'dividend', valid_ai_performance_field)[0])
+
     def test_table_uses_per_share_dividend_and_keeps_cash_flow_sign(self):
         self.assertEqual(compact_table_value('2026H1 2013.64亿元人民币', 'revenue'), '2026H1 2013.64亿元人民币')
         self.assertEqual(compact_table_value('H1 2026 2013.64亿元人民币', 'revenue'), '2026H1 2013.64亿元人民币')
+        self.assertEqual(compact_table_value('1H 2026: RMB48,693 million', 'revenue'), '2026H1: 48,693百万元人民币')
+        self.assertEqual(compact_table_value('1H 2026 interim: RMB0.19122 per share', 'dividend'), '2026H1 中期: 每股0.19122元人民币')
         text = '2026年中期董事会决定分配股息146.96亿元，总股本91,507,138,699股，每股派发0.1606元人民币；' + '继续保持稳健的股东回报政策。' * 5
         self.assertEqual(compact_table_value(text, 'dividend'), '2026年中期 每股0.1606元人民币')
         flow = '2026H1资本开支现金流为人民币-324亿元；' + '公司持续推进基础设施建设与资本配置。' * 6
