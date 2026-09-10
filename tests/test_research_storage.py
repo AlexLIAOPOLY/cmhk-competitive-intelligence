@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from data_curation.research_storage import DOMAIN_PATHS, MAIN_PATH, audit_storage, merge_domain, project_fact
 from cmhk.data.daily_financial_promotion import _exact_money, _incremental_rows, promote_daily_financial_facts
+from data_curation.research_kpi import write_formal_facts
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -42,10 +43,17 @@ class ResearchStorageTests(unittest.TestCase):
             self.assertEqual(analysis["domains"]["local"][0]["analysis"], 0)
             self.assertEqual(analysis["domain_counts"]["local"], 2)
             pipeline.publish_domain_fact_sidecars(analysis, output_paths={key: root / path for key, path in DOMAIN_PATHS.items()})
+            self.assertFalse(research_snapshot(root, "2026-09-10")["run"]["publication"]["database_updated"])
+            main = root / MAIN_PATH
+            main.parent.mkdir(parents=True, exist_ok=True)
+            main.write_text('{"rows":[]}')
+            write_formal_facts(root, facts)
             before = research_snapshot(root, "2026-09-10")
             self.assertTrue(before["run"]["publication"]["database_updated"])
             self.assertEqual(before["storage_readback"]["confirmed"], 2)
             (root / DOMAIN_PATHS["local"]).write_text('{"facts":[]}')
+            self.assertTrue(research_snapshot(root, "2026-09-10")["run"]["publication"]["database_updated"])
+            main.write_text('{"rows":[]}')
             after = research_snapshot(root, "2026-09-10")
             self.assertFalse(after["run"]["publication"]["database_updated"])
             self.assertTrue(after["run"]["publication"]["recorded_database_updated"])
@@ -90,9 +98,16 @@ class ResearchStorageTests(unittest.TestCase):
             path = root / DOMAIN_PATHS["local"]
             raw = fact(metric="用户数", value=0, unit="人")
             self.merge(path, [raw])
+            self.assertFalse(audit_storage(root, [raw])["ok"])
+            main = root / MAIN_PATH
+            main.parent.mkdir(parents=True, exist_ok=True)
+            main.write_text('{"rows":[]}')
+            write_formal_facts(root, [raw])
             self.assertTrue(audit_storage(root, [raw])["ok"])
             self.assertFalse(audit_storage(root, [raw], expected=2)["ok"])
             path.write_text('{"facts": []}')
+            self.assertTrue(audit_storage(root, [raw])["ok"])
+            main.write_text('{"rows":[]}')
             readback = audit_storage(root, [raw])
             self.assertEqual(readback["missing"], 1)
             self.assertFalse(readback["ok"])

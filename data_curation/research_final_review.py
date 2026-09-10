@@ -36,8 +36,8 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
     task = {"key": "final-review", "title": "最终审核 Agent", "purpose": f"{workers}路独立公司审核并行补查；逐项核验后统一汇总，一个可信原文即可，不要求三个来源"}
     results = [json.loads((directory / f"{t['key']}.json").read_text()) for t in summary["plan"]]
     companies = [r["company"] for agent in results for r in agent["reports"]]
-    baseline_path = directory / "baseline.json"
-    baseline = json.loads(baseline_path.read_text()).get("companies", {}) if baseline_path.exists() else {}
+    from .research_freshness import load_baseline
+    baseline = load_baseline(directory.parent.parent.parent).get("companies", {})
     store = ReviewStore(directory, task, summary["run_id"], companies, workers)
     trace_lock = threading.Lock()
 
@@ -70,7 +70,7 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
         report.setdefault("reviewed_metrics", [])
         report.setdefault("pages", {})
         report.setdefault("searches", [])
-        report.setdefault("baseline", baseline.get(company, {}))
+        report["baseline"] = baseline.get(company, {})
         report.setdefault("incremental", True)
         for position, item in enumerate(report["items"]):
             if item.get("status") == "no_update" and not report["baseline"].get(metric_key(item.get("metric"))):
@@ -129,21 +129,11 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
     for agent in results:
         agent["status"] = "completed" if all(r["status"] == "completed" for r in agent["reports"]) else "partial"
     facts = merge_results(results, summary["run_id"])
-    for agent in results:
-        atomic_write_json(directory / f"{agent['key']}.json", agent)
-    atomic_write_jsonl(directory / "candidate_facts.jsonl", facts)
-    accepted = [f for f in facts if f["decision"] == "accepted"]
-    atomic_write_jsonl(directory / "verified_facts.jsonl", accepted)
-    counts = Counter(f["research_status"] for f in facts)
-    failures = sum(count for state, count in counts.items() if state not in {"verified", "no_update"})
+    from .research_kpi import prepare_facts, persist_preflight
+    facts, write_preflight = prepare_facts(directory.parent.parent.parent, facts, summary["run_id"])
+    persist_preflight(directory, results, facts, write_preflight, summary, store=store)
     store.complete()
-    summary.update(accepted=len(accepted), review=failures, unchanged=counts["no_update"],
-                   agents=[{k: v for k, v in agent.items() if k != "reports"} for agent in results],
-                   business_status="updates_available" if accepted else "needs_review" if failures else "no_new_disclosures",
-                   tasks=len(facts), metric_status_counts=dict(counts),
-                   outcome_counts={"existing": counts["no_update"], "updated": len(accepted), "failed": failures},
-                   status="partial" if failures else "completed", completed_at=now(),
-                   completed_companies=sum(r["status"] == "completed" for a in results for r in a["reports"]))
+    summary["completed_at"] = now()
     summary["final_review"].update(status="completed", completed_at=now())
     atomic_write_json(directory / "manifest.json", summary)
     return summary

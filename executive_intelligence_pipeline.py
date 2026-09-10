@@ -5137,15 +5137,19 @@ def run_pipeline(
                     DOMAIN_LABELS[domain],
                     f"仅校验现有数据库通过，共 {int(validation.get('rows') or 0)} 条记录。",
                 )
-        if refresh_builders:
+        if refresh_builders or six_agent_run:
             try:
-                promotion = promote_daily_financial_facts(
-                    database_path=INTERNATIONAL_PATH,
-                    local_financial_path=LOCAL_FINANCIAL_PATH,
-                    verified_facts_path=facts_path,
-                    dry_run=dry_run,
-                    incremental_only=incremental_run,
-                )
+                if six_agent_run:
+                    from data_curation.research_kpi import write_formal_facts
+                    promotion = write_formal_facts(ROOT, [json.loads(line) for line in facts_path.read_text(encoding="utf-8").splitlines() if line.strip()], dry_run=dry_run)
+                else:
+                    promotion = promote_daily_financial_facts(
+                        database_path=INTERNATIONAL_PATH,
+                        local_financial_path=LOCAL_FINANCIAL_PATH,
+                        verified_facts_path=facts_path,
+                        dry_run=dry_run,
+                        incremental_only=incremental_run,
+                    )
                 state["daily_main_database_promotion"] = promotion
                 mainland_state = state["domains"].setdefault("mainland", {"ok": True, "changed": False})
                 mainland_state["daily_main_database_promotion"] = promotion
@@ -5154,7 +5158,9 @@ def run_pipeline(
                 international_state["validation"] = validate_database("international", INTERNATIONAL_PATH)
                 _task_event(
                     task_run_id,
-                    "每日官方财报晋升主库",
+                    "正式指标写入",
+                    (f"本轮提交 {int(promotion.get('candidates') or 0)} 项；已入库 {int(promotion.get('written') or 0)} 项，"
+                     f"未入库 {int(promotion.get('not_written') or 0)} 项；本次新增行 {int(promotion.get('added_rows') or 0)}。") if six_agent_run else
                     f"已处理 {int(promotion.get('candidates') or 0)} 条合格候选；"
                     f"主库新增 {int(promotion.get('added_rows') or 0)} 条、"
                     f"升级 {int(promotion.get('upgraded_rows') or 0)} 条，"

@@ -120,7 +120,7 @@ def merge_domain(path: Path, items: list[dict], *, domain: str, run_id: str,
 
 def audit_storage(root: Path, facts: list[dict], *, expected: int | None = None) -> dict:
     """No writes. Re-read current domain files and formal KPI rows on every call."""
-    from cmhk.data.daily_financial_promotion import _incremental_rows
+    from .research_kpi import POLICY, CARRIER_PATH, CLOUD_PATH, normalize_fact, formal_indexes, row_key, row_matches
     from .six_agent_research import now
     errors, stores = [], {}
     for domain, relative in DOMAIN_PATHS.items():
@@ -133,13 +133,10 @@ def audit_storage(root: Path, facts: list[dict], *, expected: int | None = None)
             errors.append(f"{domain}: {type(exc).__name__}")
             stores[domain] = []
     try:
-        main_rows = read_object(root / MAIN_PATH, missing_ok=True).get("rows", [])
-        if not isinstance(main_rows, list) or not all(isinstance(row, dict) for row in main_rows):
-            raise ValueError("Invalid main table")
+        indexes = formal_indexes(root)
     except (OSError, ValueError) as exc:
         errors.append(f"main_table: {type(exc).__name__}")
-        main_rows = []
-    main_index = {(row.get("subject"), row.get("period"), row.get("metric_key")): row for row in main_rows}
+        indexes = {CARRIER_PATH: {}, CLOUD_PATH: {}}
     items = []
     for raw in facts:
         fact = project_fact(raw)
@@ -147,28 +144,32 @@ def audit_storage(root: Path, facts: list[dict], *, expected: int | None = None)
         found = next((old for old in stores.get(domain, []) if equivalent(fact, old)), None)
         row = {"id": fact_id(fact), "company": fact.get("company"), "metric": fact.get("metric"),
                "period": fact.get("period"), "domain": domain, "destination": DOMAIN_LABELS.get(domain, "未识别资料库"),
-               "path": DOMAIN_PATHS.get(domain, ""), "status": "saved" if found is not None else "missing",
-               "readback_verified": found is not None,
-               "matched_metric": found.get("metric") if found is not None else None}
-        candidates = _incremental_rows([json.dumps(raw, ensure_ascii=False)])
-        if candidates:
-            candidate = candidates[0]
-            key = (candidate["subject"], candidate["period"], candidate["metric_key"])
-            current = main_index.get(key)
-            same = bool(current and current.get("daily_evidence_hash") == candidate.get("daily_evidence_hash")
-                        and current.get("value") == candidate["value"] and current.get("unit") == candidate["unit"])
-            row["main_table"] = {"status": "saved" if same else "existing_preserved" if current else "missing",
-                "reason": "正式主表已回读确认" if same else "正式主表已有记录，保留原值" if current else "符合主表条件但未找到记录",
-                "subject": key[0], "period": key[1], "metric_key": key[2], "path": MAIN_PATH,
+               "evidence_path": DOMAIN_PATHS.get(domain, ""), "evidence_saved": found is not None,
+               "value": raw.get("value"), "unit": raw.get("unit")}
+        candidate, destination, error = normalize_fact(raw)
+        if candidate:
+            key = row_key(candidate, destination)
+            current = indexes[destination].get(key)
+            same = row_matches(current, candidate)
+            reason = "正式表中的数值、单位和来源证据已回读确认" if same else "正式表出现同期间其他记录，需退回Agent核对" if current else "正式表未找到本次提交的指标记录"
+            row["main_table"] = {"status": "written" if same else "not_written", "reason": reason,
+                "subject": key[0], "period": key[1], "period_end": candidate.get("period_end"),
+                "metric_key": key[2], "metric_zh": candidate.get("metric_zh"), "path": destination,
                 "current_value": current.get("value") if current else None,
-                "candidate_value": candidate["value"], "unit": candidate["unit"]}
+                "candidate_value": candidate["value"], "unit": candidate["unit"],
+                "currency": candidate.get("currency"), "source_url": candidate.get("official_source_url"),
+                "row_key": dict(zip(("vendor", "fiscal_year", "metric_key") if destination == CLOUD_PATH else ("subject", "period", "metric_key"), key))}
         else:
-            row["main_table"] = {"status": "source_fact_only", "reason": "保存在资料库；指标定义、原生财年或数值单位不满足当前正式主表转换规则"}
+            row["main_table"] = {"status": "not_written", "reason": error, "path": destination}
+        row.update(status=row["main_table"]["status"], readback_verified=row["main_table"]["status"] == "written",
+                   path=destination, destination=DOMAIN_LABELS.get(domain, "未知数据库").replace("资料库", "正式指标表"),
+                   reason=row["main_table"]["reason"])
         items.append(row)
     confirmed = sum(row["readback_verified"] for row in items)
-    missing_main = sum(row["main_table"]["status"] == "missing" for row in items)
+    missing_main = sum(row["status"] == "not_written" for row in items)
     expected = len(facts) if expected is None else expected
-    return {"schema_version": 1, "checked_at": now(), "accepted": expected,
+    return {"schema_version": 2, "policy": POLICY, "checked_at": now(), "accepted": expected,
+            "written": confirmed, "not_written": max(0, expected - confirmed),
             "records_read": len(facts), "confirmed": confirmed, "missing": max(0, expected - confirmed),
             "main_missing": missing_main, "ok": not errors and len(facts) == expected and confirmed == expected and not missing_main,
             "errors": errors, "items": items,

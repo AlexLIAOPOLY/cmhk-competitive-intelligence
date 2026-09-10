@@ -57,7 +57,7 @@ def period_key(value):
 
 
 def load_baseline(root: Path) -> dict:
-    """Read the four existing databases and their published fact layers, without gating old rows."""
+    """Trust formal/published tables, never archived research source-fact sidecars."""
     base = root / "agent_knowledge"
     paths = [base / name for name in (
         "hk_competitor_product_tariffs/local_financial_results.json",
@@ -67,11 +67,7 @@ def load_baseline(root: Path) -> dict:
         "local_hk_operator_operating_metrics_2016_2025/annual_metrics.json",
         "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json",
         "requested_overview_010304_2016_2025/annual_facts.json",
-        "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json",
-        "hk_competitor_product_tariffs/agent_verified_facts.json",
-        "quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
-        "global_top5_operators_2016_2025/agent_verified_facts.json",
-        "cloud_vendor_metrics_2026-06-17/agent_verified_facts.json")]
+        "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json")]
     index = {}
     aliases = {"3HK / Hutchison": "3HK", "HKT / csl / 1O1O": "HKT",
                "NTT DOCOMO": "NTT Docomo", "NTT Group": "NTT", "SoftBank Corp.": "SoftBank"}

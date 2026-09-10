@@ -107,7 +107,7 @@ def _display_results(payload):
         for report in agent.get("reports", []):
             for item in report.get("items", []):
                 baseline = item.get("baseline") or report.get("baseline", {}).get(metric_key(item.get("metric")), [])
-                if baseline:
+                if baseline and not item.get("latest_baseline"):
                     item["latest_baseline"] = max(baseline, key=lambda row: period_key(row.get("period")) or (0, 0, ""))
     return payload
 
