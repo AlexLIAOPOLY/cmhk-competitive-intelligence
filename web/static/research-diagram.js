@@ -150,7 +150,7 @@
       edges.push(["research-dispatch", `research-${task.key}`, "", "research-fan", {}]);
       edges.push([`research-${task.key}`, "research-merge", "", "research-join", {}]);
     });
-    add("research-merge", "最终审核 Agent · 联网核对", [20, 820], run?.tasks ?? "—", "项指标结果", "核对各公司最新指标；对未找到或失败的项目继续联网补查，一个可信原文即可", [
+    add("research-merge", "最终审核 Agent · 联网核对", [20, 820], incremental && run ? run.accepted ?? "—" : "—", incremental ? "项新增更新" : "新增数据未统计", "核对各公司最新指标；对未找到或失败的项目继续联网补查，一个可信原文即可", [
       "比较六个研究 Agent 的新数据与库内已有数据，排除同期间已有数据和更旧的数据",
       "检查每家公司、每个指标是否有结果，并核对数值、报告期、单位和原文",
       "有可信原文支持的新数据进入更新批次；库内已有则保留，无法核实则记执行失败并说明原因",

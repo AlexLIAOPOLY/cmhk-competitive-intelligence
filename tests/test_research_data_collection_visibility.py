@@ -9,10 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @unittest.skipUnless(shutil.which('node'), 'Node.js required for diagram behavior tests')
 class ResearchDataCollectionVisibilityTests(unittest.TestCase):
-    def render(self, incremental=True, state='completed', items=None, publication=None):
+    def render(self, incremental=True, state='completed', items=None, publication=None, accepted=None):
         items = items if items is not None else [{'metric': 'Revenue', 'status': 'missing'}]
+        accepted = sum(item.get('status') == 'verified' for item in items) if accepted is None else accepted
         snapshot = {'date': '2026-09-07', 'plan': [{'key': 'asia', 'title': '亚太运营商研究 Agent', 'companies': ['Singtel'], 'purpose': '任务'}],
-                    'run': {'status': state, 'tasks': len(items), 'accepted': 0, 'publication': publication or {}},
+                    'run': {'status': state, 'tasks': len(items), 'accepted': accepted, 'publication': publication or {}},
                     'agents': [{'key': 'asia', 'status': state, 'reports': [{'company': 'Singtel', 'status': state, 'metrics': ['Revenue'], 'items': items}]}]}
         if incremental:
             snapshot['run']['research_policy'] = 'latest_disclosure_incremental_v1'
@@ -75,6 +76,12 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertIn('审核', update['note'])
         self.assertIn('主表实际新增 4 行', update['note'])
         self.assertIn('页面指标数值变化 0 项', update['note'])
+
+    def test_final_review_card_leads_with_new_update_count(self):
+        result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}])
+        review = next(n for n in result['nodes'] if n['key'] == 'research-merge')
+        self.assertEqual(review['value'], 1)
+        self.assertEqual(review['unit'], '项新增更新')
 
     def test_research_asset_cache_version_is_bumped(self):
         self.assertIn('/static/research-diagram.js?v=20', (ROOT / 'web/static/index.html').read_text())
