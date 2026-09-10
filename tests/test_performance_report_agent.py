@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date
+from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source
 from generate_carrier_performance_report import valid_ai_performance_field
 
 NOW = datetime(2026, 9, 10, tzinfo=ZoneInfo('Asia/Hong_Kong'))
@@ -18,6 +18,12 @@ class PerformanceAgentTests(unittest.TestCase):
             'official_hosts': ['hkt.com'], 'seed_urls': []})
         profile.start()
         self.addCleanup(profile.stop)
+
+    def test_financial_sources_are_official_and_views_use_identifiable_publishers(self):
+        self.assertTrue(trusted_source("HKT", "https://www.hkt.com/report", "capex"))
+        self.assertFalse(trusted_source("HKT", "https://www.bilibili.com/video/x", "capex"))
+        self.assertFalse(trusted_source("HKT", "https://finance.yahoo.com/story", "capex"))
+        self.assertTrue(trusted_source("HKT", "https://finance.yahoo.com/story", "broker"))
 
     def test_database_first_and_no_unrelated_writes(self):
         baseline = {'sources': ['formal.json'], 'companies': {'HKT': {
