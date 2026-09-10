@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-10T11:16:53+08:00",
+  "checked_at_hkt": "2026-09-11T00:03:24+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -38,29 +38,29 @@
   ],
   "strategic_monitor": {
     "enabled": true,
-    "status": "degraded",
+    "status": "active",
     "chat_name": "揭榜-竞争对手与行业情报监测AI应用",
     "sheet_url": "",
     "scan_times": [
       "03:00",
       "14:00"
     ],
-    "next_scan_at": "2026-09-10T14:00:00+08:00",
-    "next_group_check_at": "2026-09-10T12:00:00+08:00",
-    "last_scan_at": "2026-09-10T08:02:00+08:00",
-    "last_group_check_at": "2026-09-10T11:00:34+08:00",
-    "last_cycle_at": "2026-09-10T11:09:31+08:00",
+    "next_scan_at": "2026-09-11T03:00:00+08:00",
+    "next_group_check_at": "2026-09-11T01:00:00+08:00",
+    "last_scan_at": "2026-09-10T14:36:32+08:00",
+    "last_group_check_at": "2026-09-11T00:00:01+08:00",
+    "last_cycle_at": "2026-09-11T00:03:05+08:00",
     "latest_scan_slot": {
-      "slot": "2026-09-10@04:00",
+      "slot": "2026-09-10@14:00",
       "status": "completed",
-      "at": "2026-09-10T08:02:00+08:00",
-      "candidate_count": 190,
-      "message_id": "om_x100b652b796dd0a4b1f842eb231568f",
+      "at": "2026-09-10T14:36:32+08:00",
+      "candidate_count": 41,
+      "message_id": "om_x100b6510b1e00900b04ae4f8c6dc3f2",
       "recovered_from_archive": true
     },
-    "last_candidate_count": 190,
+    "last_candidate_count": 41,
     "feishu_identity": "bot",
-    "last_error": "2026-09-08@07:30 新闻自动初筛未完成：新闻初筛质量复核仍未通过；相同输入已暂停模型重试，请人工审核或更新候选/人工基准。",
+    "last_error": "",
     "active_task_kind": "",
     "active_task_id": "",
     "active_phase": "",
@@ -3198,57 +3198,56 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260910_040034_549366",
+      "crawl_run_id": "20260910_140056_191951",
       "trigger": "战略新闻定时爬虫",
-      "scope": "晨间扫描（2026-09-10@04:00）",
+      "scope": "午后扫描（2026-09-10@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 49307,
+      "backend_pid": 20344,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "原新闻采集已完成；按用户要求修正选材并完成重筛，380格回读一致，未重复推送。",
-      "heartbeat_at_hkt": "2026-09-10T08:10:59+08:00",
-      "started_at_hkt": "2026-09-10T04:00:34+08:00",
-      "completed_at_hkt": "2026-09-10T08:10:59+08:00",
+      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 82 格，未重跑爬虫或重复发送群消息。",
+      "heartbeat_at_hkt": "2026-09-10T14:43:05+08:00",
+      "started_at_hkt": "2026-09-10T14:00:56+08:00",
+      "completed_at_hkt": "2026-09-10T14:43:05+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 15025231,
+      "duration_ms": 2529588,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260910_040034_549366.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260910_140056_191951.jsonl"
       },
       "stream_log": {
-        "bytes": 96250,
-        "lines": 541
+        "bytes": 30667,
+        "lines": 173
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "原新闻采集已完成；按用户要求修正选材并完成重筛，380格回读一致，未重复推送。",
+      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；后置选材已自动恢复，验证 82 格，未重跑爬虫或重复发送群消息。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-09-10@04:00",
-        "discovered": 635,
-        "ai_retained": 254,
-        "history_duplicates": 64,
-        "new_count": 190,
+        "slot": "2026-09-10@14:00",
+        "discovered": 131,
+        "ai_retained": 52,
+        "history_duplicates": 11,
+        "new_count": 41,
         "readback_verified": true,
         "notification_status": "sent",
-        "message_id": "om_x100b652b796dd0a4b1f842eb231568f",
+        "message_id": "om_x100b6510b1e00900b04ae4f8c6dc3f2",
         "message_ids": [
-          "om_x100b652b796dd0a4b1f842eb231568f",
-          "om_x100b652b79617ca8b20f6f210ad89e5"
+          "om_x100b6510b1e00900b04ae4f8c6dc3f2",
+          "om_x100b6510b18ca0b8b1f872060c90b0b"
         ],
         "notification_destination_count": 2,
         "selection_agent_status": "completed",
-        "selection_agent_changed": 380,
+        "selection_agent_changed": 82,
         "selection_agent_recovered": true,
-        "selection_agent_recovery_task_run_id": "20260910_105147_379649",
-        "app_accepted_count": 8,
-        "weekly_accepted_count": 4
+        "selection_agent_recovery_task_run_id": "20260910_153038_307048",
+        "selection_agent_recovered_at": "2026-09-10T15:33:47+08:00"
       },
-      "amended_at_hkt": "2026-09-10T10:52:19+08:00"
+      "amended_at_hkt": "2026-09-10T15:33:47+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260910_073905_947611",

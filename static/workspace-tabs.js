@@ -1818,6 +1818,10 @@
         || { key: "unknown", label: "无记录" };
     };
     const strategicHealth = combinedRunHealth(runs);
+    const strategicTriggered = attemptRuns.length > 0;
+    const strategicTriggerHealth = strategicTriggered
+      ? { key: "healthy", label: "已启动" }
+      : { key: "unknown", label: "无记录" };
     const mainHealth = runHealth(mainRun);
     const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
     const selectionRunHealth = combinedRunHealth(selectionRuns);
@@ -2010,7 +2014,7 @@
       || previousReferenceLegacyCapped;
     const previousReferenceRunCount = Number((sourceDiscoverySummary.previous_day_news_runs || []).length);
     const nodes = [
-      { key: "strategic", label: "03:00 / 14:00 定时启动器", value: newsRun.run_status === "running" ? "运行中" : number(runs.length), unit: newsRun.run_status === "running" ? "" : "次新闻任务", note: currentStrategicStage ? `已触发 · 当前执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}` : runs.length ? `只负责触发 · ${attemptRuns.length} 次任务尝试` : "当天没有触发成功的任务归档", health: strategicHealth, variant: "crawler", position: [18, 52], details: ["这个节点只负责到点启动后续新闻任务，本身不搜索网页、不审核新闻，也不保存新闻", "同一时段重试只由最终权威批次参与统计；所有任务尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻任务"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻任务归档" },
+      { key: "strategic", label: "03:00 / 14:00 定时启动器", value: strategicTriggered ? "已启动" : "—", unit: "", note: currentStrategicStage ? `启动已完成 · 后续执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}` : strategicTriggered ? `启动已完成 · ${attemptRuns.length} 次任务尝试` : "当天没有触发成功的任务归档", health: strategicTriggerHealth, variant: "crawler", position: [18, 52], details: ["这个节点只负责到点启动后续新闻任务，本身不搜索网页、不审核新闻，也不保存新闻", "启动成功后即显示绿色“已启动”；下游任务的运行或异常状态由对应节点单独显示", "同一时段重试只由最终权威批次参与统计；所有任务尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻任务"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻任务归档" },
       { key: "news-search", label: "按关键词搜索公开网页", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条候选新闻链接", note: preciseStrategicNote("news-search", `监控关键词＋固定页面 · ${runs.length} 个权威批次`), health: preciseStrategicHealth("news-search", strategicSearchHealth), variant: "source", position: [295, 52], details: [`按监控关键词搜索公开网页，并补充读取固定页面来源`, `实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条新闻线索`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下新闻线索发现日志" },
       { key: "news-ai", label: "AI 新闻相关性审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条相关新闻通过审核", note: preciseStrategicNote("news-ai", `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`), health: preciseStrategicHealth("news-ai", strategicAiHealth), variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条新闻`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条新闻`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下新闻 AI 审核日志" },
       { key: "news-dedupe", label: "历史新闻重复检查", value: number(strategicDedupe.lost), unit: "条历史重复新闻", note: preciseStrategicNote("news-dedupe", `去重后留下 ${number(strategicDedupe.value)} 条新闻`), health: preciseStrategicHealth("news-dedupe", strategicDedupeHealth), variant: "gate", position: [849, 52], details: [`当天确认 ${number(strategicDedupe.lost)} 条重复新闻`, `当天去重后保留 ${number(strategicDedupe.value)} 条新闻`], evidence: strategicDedupe.evidence || "当天未留下新闻历史去重日志" },
@@ -3042,7 +3046,12 @@
       if (!dialog || !body) return;
       const render = () => {
         const node = globalSchedulerLineageModel([], []).nodes.find((item) => item.key === nodeKey);
-        if (node) body.innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, selectedDate);
+        if (node) {
+          const scrollTop = body.querySelector(".research-node-detail")?.scrollTop || 0;
+          body.innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, selectedDate);
+          window.CmhkResearchDiagram.mount(body);
+          body.querySelector(".research-node-detail").scrollTop = scrollTop;
+        }
       };
       if (state.researchArchitecture?.date === selectedDate) render();
       else body.innerHTML = `<header><h3>正在读取该节点</h3><button type="button" onclick="this.closest('dialog').close()" aria-label="关闭节点详情">关闭</button></header><p role="status">正在读取 ${esc(selectedDate)} 的公司指标与搜索结果。</p>`;
@@ -3532,7 +3541,12 @@
   }
 
   function reportKindForPath(path) {
-    const item = (state.status?.outputs || []).find((output) => output.path_str === path);
+    // A freshly generated report can reach the list before the workspace poll.
+    const row = [...document.querySelectorAll('.workspace-report-host .file-row[data-path]')].find(node => node.dataset.path === path);
+    const item = (state.status?.outputs || []).find((output) => output.path_str === path) || (row?.dataset.reportType ? {
+      path_str: path, name: row.dataset.reportName, reportType: row.dataset.reportType,
+      url: row.querySelector('a[download]')?.getAttribute('href') || '',
+    } : null);
     if (!item) return null;
     if (item.reportType === "weekly") return { item, kind: "weekly" };
     if (item.reportType === "carrier-performance") return { item, kind: "performance" };
@@ -3990,7 +4004,7 @@
       try { newsDatePicker.showPicker(); } catch (_error) { /* Native input remains keyboard-operable. */ }
     }
     const row = event.target.closest(".workspace-report-host .file-row[data-path]");
-    if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input, .file-name-editable")) showReportPreview(row.dataset.path);
+    if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input")) showReportPreview(row.dataset.path);
     const editPreview = event.target.closest("[data-report-editor-path]");
     if (editPreview) window.CMHKReportEditor?.open(editPreview.dataset.reportEditorPath);
     const expandPreview = event.target.closest("[data-report-preview-expand]");

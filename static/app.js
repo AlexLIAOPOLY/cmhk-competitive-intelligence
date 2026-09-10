@@ -325,12 +325,10 @@ function setBusy(value, label = "运行中", action = "all") {
       : "";
   const performanceReason = performanceBusy
     ? "业绩摘要正在生成，系统已阻止重复启动。"
-    : crawlBusy
-      ? "爬虫正在运行。业绩摘要需等待本轮爬取完成，以免读取正在改写的半成品数据。"
-      : "";
+    : "";
   const crawlReason = crawlBusy
     ? "爬虫正在运行，系统已阻止重复启动。"
-    : reportBusy
+    : weeklyBusy
       ? "报告正在生成。为保证报告使用稳定数据，报告完成前不能启动爬虫。"
       : "";
 
@@ -1950,9 +1948,9 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" ${pushDataAttribute}="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : `设为下次推送的${reportLabel}`}"${preferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
       : "";
     html += `
-      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
+      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}" data-report-name="${escapeHtml(file.name)}" data-report-type="${escapeHtml(file.reportType)}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
+        <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="单击预览，双击编辑文件名与备注">${escapeHtml(file.name)}</span></span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
@@ -1985,7 +1983,7 @@ function bindOutputTableEvents(target) {
     button.addEventListener("click", () => window.CMHKReportEditor?.open(button.dataset.path));
   });
   target.querySelectorAll(".file-name-editable").forEach((cell) => {
-    cell.addEventListener("click", () => openFileEditor(cell.dataset.path));
+    cell.addEventListener("dblclick", () => openFileEditor(cell.dataset.path));
   });
   target.querySelectorAll(".delete-file-button").forEach((button) => {
     button.addEventListener("click", () => deleteFiles([button.dataset.path]));
@@ -4276,7 +4274,7 @@ function updateProgressFill() {
   const max = parseFloat(bar.max) || 100;
   const val = parseFloat(bar.value) || 0;
   const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
-  bar.style.background = `linear-gradient(to right, var(--blue) ${pct}%, #dde3ea ${pct}%)`;
+  bar.style.background = `linear-gradient(to right, #67d1df ${pct}%, #294b59 ${pct}%)`;
 }
 
 function stopAudioAnimation() {
@@ -8476,14 +8474,14 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const isFinancialFocus = focus.id === "financials";
-      const aiAnalysis = focus.ai_summary?.analysis || focus.insight || domain.ai_summary?.analysis;
+      const aiAnalysis = focus.ai_summary?.analysis;
       const hasFreshAi = Boolean(
         payload?.ai?.model_analysis_fresh
         && aiAnalysis
         && focus.ai_summary?.origin !== "evidence_rule"
       );
-      const interpretationLabel = hasFreshAi ? "AI 战略解读" : "数据战略解读";
-      const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
+      const interpretationLabel = "AI 战略解读";
+      const aiHeadline = hasFreshAi ? focus.ai_summary.headline : "AI 分析待生成";
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
       const hasRefreshError = refreshState?.status === "error";
@@ -8498,7 +8496,7 @@ document.addEventListener("keydown", (event) => {
           : `<span class="intelligence-ai-paragraph-skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sr-only">${safe(refreshState.message || "正在生成新的数据判断")}</span>`
         : hasRefreshError
           ? `<span class="intelligence-ai-refresh-error">${safe(refreshState.message || "本次未生成新内容，请点击重试")}</span>`
-          : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
+          : safe(hasFreshAi ? aiAnalysis : "当前数据尚无通过校验的 AI 分析，可点击上方重新生成。数据图表仍正常展示。");
       const headlineContent = isGenerating
         ? `<span class="intelligence-ai-headline-skeleton" aria-hidden="true"><i></i><i></i></span>`
         : safe(aiHeadline);
@@ -8646,6 +8644,10 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderRail(relations) {
+    if (!relations.length) {
+      patchElementList(rail, `<div class="intelligence-relation"><em>AI</em><strong>跨库 AI 分析待生成</strong><small>尚无通过校验的模型分析</small></div>`);
+      return;
+    }
     const relationRefreshPending = Array.from(relationRefreshState.values()).some((state) => state?.status === "loading");
     const markup = relations.slice(0, 4).map((relation, index) => `
       <div class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"

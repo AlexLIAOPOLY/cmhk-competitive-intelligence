@@ -1,7 +1,15 @@
 {
   "ok": true,
-  "generated_at": "2026-09-10T11:16:44+08:00",
+  "generated_at": "2026-09-11T00:03:07+08:00",
   "items": [
+    {
+      "id": "NEWS-FE3194F29B2623",
+      "title": "苹果发布iPhone Handoff，T-Mobile与德国电信首批支持",
+      "summary": "苹果推出iPhone Handoff功能，允许两部iPhone共用同一号码，首批由美国T-Mobile与德国电信支持，Verizon和EE计划2026年内加入。",
+      "category": "竞对动态",
+      "source_url": "https://www.donews.com/news/detail/5/6704044.html",
+      "published_at": "2026-09-10T02:46:00+08:00"
+    },
     {
       "id": "NEWS-9191359B5C89D4",
       "title": "中国移动香港推全球通5.5G服务 享马场VIP礼遇",
@@ -57,14 +65,6 @@
       "category": "竞对动态",
       "source_url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9KYm5nZWRva09KTV9RQlFyU3JyVHBERmhuM1htQXZmbTJwb2l5SzlIcFBwZVBOd2tHbWd3cVItcGpaeVlWM2JITjZaT05LbUJkM1hNTXZobURZNmx1ZDFmUXZNMHdQMDct?oc=5",
       "published_at": "2026-09-09T11:02:25+08:00"
-    },
-    {
-      "id": "NEWS-35516725BB2A2D",
-      "title": "AT&T Business将Amazon Leo卫星服务纳入管理连接产品线",
-      "summary": "AT&T Business成为美国首家采用Amazon Leo卫星宽带服务的主要电信运营商，将其纳入管理连接产品组合。",
-      "category": "竞对动态",
-      "source_url": "https://www.telecompaper.com/news/att-business-adds-amazon-leo-to-managed-connectivity-range--1582143",
-      "published_at": "2026-09-09T07:52:00+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "d515c694188fdbd440b0bacc22182824dd7a3afac66f3cc1303a8a8c49d227ab"
+  "site_version": "df4b94a48f3e17b4a1a0e958d56a4b2879390d74c884d937b03f14a476ea9928"
 }
