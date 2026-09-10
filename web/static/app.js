@@ -325,12 +325,10 @@ function setBusy(value, label = "运行中", action = "all") {
       : "";
   const performanceReason = performanceBusy
     ? "业绩摘要正在生成，系统已阻止重复启动。"
-    : crawlBusy
-      ? "爬虫正在运行。业绩摘要需等待本轮爬取完成，以免读取正在改写的半成品数据。"
-      : "";
+    : "";
   const crawlReason = crawlBusy
     ? "爬虫正在运行，系统已阻止重复启动。"
-    : reportBusy
+    : weeklyBusy
       ? "报告正在生成。为保证报告使用稳定数据，报告完成前不能启动爬虫。"
       : "";
 

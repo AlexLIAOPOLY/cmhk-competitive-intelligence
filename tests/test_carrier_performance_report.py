@@ -259,18 +259,16 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
         for forbidden in report.PERFORMANCE_FORBIDDEN_REPORT_PHRASES:
             self.assertNotIn(forbidden, report_text)
 
-    def test_source_config_failure_returns_fallback_model_instead_of_raising(self) -> None:
-        messages = []
+    def test_generation_uses_independent_agent_without_shared_refresh(self) -> None:
         with (
-            mock.patch.object(report, "refresh_feishu_mirror", return_value=None),
-            mock.patch.object(report, "load_source_config", side_effect=ValueError("broken config")),
+            mock.patch.object(report, "refresh_feishu_mirror") as feishu,
+            mock.patch.object(report, "crawl_carrier_sources") as crawl,
+            mock.patch("cmhk.reporting.performance_agent.build_model", return_value={"sentinel": True}) as agent,
         ):
-            model = report.build_dynamic_model(progress=messages.append)
-
-        self.assertEqual(model["generationMode"], "limited")
-        self.assertEqual(len(model["sections"]), len(report.DEFAULT_PERFORMANCE_COMPANIES))
-        self.assertEqual(model["generationLimitations"][0]["stage"], "source_config")
-        self.assertTrue(any("[业绩摘要局限][source_config]" in message for message in messages))
+            self.assertEqual(report.build_dynamic_model(), {"sentinel": True})
+        agent.assert_called_once()
+        feishu.assert_not_called()
+        crawl.assert_not_called()
 
 
 if __name__ == "__main__":
