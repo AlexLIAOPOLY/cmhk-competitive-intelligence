@@ -120,7 +120,8 @@ class ResearchEfficiencyTests(unittest.TestCase):
             def read(url, **kwargs):
                 reads.append(url)
                 return pages[url]
-            with patch("data_curation.workflow._company_research_profile", return_value=profile), \
+            with patch("data_curation.research_plan.frontend_metric_plan", return_value={"local": ["收入", "营业收入"]}), \
+                 patch("data_curation.workflow._company_research_profile", return_value=profile), \
                  patch("data_curation.workflow._metric_evidence_terms", return_value=["revenue"]), \
                  patch("data_curation.workflow._public_web_search", side_effect=search), \
                  patch("data_curation.workflow._read_source_page", side_effect=read):

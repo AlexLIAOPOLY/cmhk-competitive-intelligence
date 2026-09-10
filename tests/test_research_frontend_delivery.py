@@ -99,13 +99,13 @@ class FrontendDeliveryTests(unittest.TestCase):
             self.assertIn("移动客户数", data["中国移动"])
             self.assertIn("后付费用户数", data["HKT"])
 
-    def test_incremental_assignment_adds_ui_metrics_but_resume_keeps_saved_contract(self):
+    def test_assignment_and_resume_use_only_homepage_metrics(self):
         from data_curation.six_agent_research import run_assignment
         task = {"key": "asia-pacific", "title": "亚太", "purpose": "研究", "companies": ["Singtel"]}
         collector = lambda *args: ({"https://example.test": {"opened": True, "official": True, "text": ""}}, [])
         with patch("data_curation.research_harness.ResearchHarness"), patch("data_curation.workflow._company_expected_metrics", return_value=["AI"]):
             new = run_assignment(task, lambda *args: None, model_factory=lambda: object(), collector=collector, baseline={})
-            self.assertTrue({"AI", "收入", "净利润", "资本开支", "ARPU"} <= set(new["reports"][0]["metrics"]))
+            self.assertEqual(set(new["reports"][0]["metrics"]), {"收入", "净利润", "资本开支", "ARPU"})
             old = {"reports": [{"company": "Singtel", "status": "partial", "metrics": ["AI"], "items": []}]}
             resumed = run_assignment(task, lambda *args: None, checkpoint=old, model_factory=lambda: object(), collector=collector, baseline={})
-            self.assertEqual(resumed["reports"][0]["metrics"], ["AI"])
+            self.assertEqual(resumed["reports"][0]["metrics"], new["reports"][0]["metrics"])

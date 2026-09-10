@@ -93,7 +93,7 @@ class ResearchHarnessTests(unittest.TestCase):
         def collector(*args):
             return {"https://www.hkt.com": {"opened": True, "official": True, "text": "HKT revenue and EBITDA"}}, []
         responses = [submission(), AIMessage(content="no tool"), AIMessage(content="no tool"), AIMessage(content="no tool")]
-        with patch("data_curation.workflow._company_expected_metrics", return_value=["收入", "EBITDA"]):
+        with patch("data_curation.research_plan.frontend_metric_plan", return_value={"local": ["收入", "EBITDA"]}):
             report = run_assignment(TASK, emit, model_factory=lambda: ToolModel(responses=responses), collector=collector)
             self.assertEqual([item["status"] for item in report["reports"][0]["items"]], ["missing", "error"])
             self.assertEqual(checkpoints[0]["reports"][0]["pages"]["https://www.hkt.com"]["text"], "HKT revenue and EBITDA")

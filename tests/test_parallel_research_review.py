@@ -32,7 +32,7 @@ class ParallelReviewTests(unittest.TestCase):
     def test_process_exit_after_metric_save_resumes_only_the_remaining_metric(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            fixture(directory, ["HKT"])
+            fixture(directory, ["Vodafone"])
             script = f'''
 import os
 from pathlib import Path
@@ -65,7 +65,7 @@ review_run(Path({str(directory)!r}), model_factory=lambda:None, collector=collec
         for workers in [1, 3]:
             with tempfile.TemporaryDirectory() as temp:
                 directory = Path(temp)
-                fixture(directory, ["HKT", "SmarTone", "SK Telecom", "KDDI", "Telstra", "NTT"])
+                fixture(directory, ["Vodafone", "Orange", "SK Telecom", "KDDI", "Telstra", "NTT"])
                 lock = threading.Lock()
                 active = peak = 0
                 class Harness:
@@ -104,25 +104,25 @@ review_run(Path({str(directory)!r}), model_factory=lambda:None, collector=collec
     def test_metric_save_does_not_rewrite_evidence_and_resume_restores_it(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            store = ReviewStore(directory, {"key": "final-review"}, "test", ["HKT"], 3)
-            report = {"company": "HKT", "status": "running", "items": [], "pages": collector("HKT")[0]}
+            store = ReviewStore(directory, {"key": "final-review"}, "test", ["Vodafone"], 3)
+            report = {"company": "Vodafone", "status": "running", "items": [], "pages": collector("Vodafone")[0]}
             store.save(report, evidence_changed=True)
-            evidence = company_directory(directory, "HKT") / "pages.json"
+            evidence = company_directory(directory, "Vodafone") / "pages.json"
             initial_mtime = evidence.stat().st_mtime_ns
             report["items"] = [{"metric": "收入", "status": "missing"}]
             store.save(report)
             self.assertEqual(initial_mtime, evidence.stat().st_mtime_ns)
-            self.assertEqual(load_company(directory, "HKT", evidence=True), report)
+            self.assertEqual(load_company(directory, "Vodafone", evidence=True), report)
             self.assertLess((directory / "final-review.json").stat().st_size, 1000)
             with self.assertRaises(RuntimeError): store.complete()
 
     def test_resume_after_partial_metric_commit_never_repeats_saved_metric_or_search(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            reports = fixture(directory, ["HKT"])
-            store = ReviewStore(directory, {"key": "final-review"}, "test", ["HKT"], 3)
+            reports = fixture(directory, ["Vodafone"])
+            store = ReviewStore(directory, {"key": "final-review"}, "test", ["Vodafone"], 3)
             report = reports[0]
-            report.update(pages=collector("HKT")[0], review_search_completed=True, reviewed_metrics=["收入"])
+            report.update(pages=collector("Vodafone")[0], review_search_completed=True, reviewed_metrics=["收入"])
             store.save(report, evidence_changed=True)
             calls = []
             class Harness:
@@ -137,30 +137,30 @@ review_run(Path({str(directory)!r}), model_factory=lambda:None, collector=collec
     def test_legacy_completed_company_migrates_without_model_and_root_write_failure_recovers(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            reports = fixture(directory, ["HKT"])
-            reports[0].update(review_completed=True, status="partial", pages=collector("HKT")[0])
+            reports = fixture(directory, ["Vodafone"])
+            reports[0].update(review_completed=True, status="partial", pages=collector("Vodafone")[0])
             (directory / "final-review.json").write_text(json.dumps({"reports": reports}))
-            store = ReviewStore(directory, {"key": "final-review"}, "test", ["HKT"], 3)
-            self.assertEqual(load_company(directory, "HKT", evidence=True), reports[0])
+            store = ReviewStore(directory, {"key": "final-review"}, "test", ["Vodafone"], 3)
+            self.assertEqual(load_company(directory, "Vodafone", evidence=True), reports[0])
             reports[0]["note"] = "saved before root index failed"
             with patch.object(store, "_write_index", side_effect=OSError("injected")):
                 with self.assertRaises(OSError): store.save(reports[0])
-            restored = ReviewStore(directory, {"key": "final-review"}, "test", ["HKT"], 3)
-            self.assertEqual(load_company(directory, "HKT", evidence=True)["note"], reports[0]["note"])
+            restored = ReviewStore(directory, {"key": "final-review"}, "test", ["Vodafone"], 3)
+            self.assertEqual(load_company(directory, "Vodafone", evidence=True)["note"], reports[0]["note"])
             result = review_run(directory, model_factory=lambda: self.fail("model replay"))
             self.assertEqual(result["final_review"]["status"], "completed")
 
     def test_process_lock_and_changed_contract_fail_closed(self):
         with tempfile.TemporaryDirectory() as temp:
             directory = Path(temp)
-            fixture(directory, ["HKT"])
+            fixture(directory, ["Vodafone"])
             with (directory / "final-review.lock").open("a") as lock:
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
                 with self.assertRaises(BlockingIOError): review_run(directory)
-            ReviewStore(directory, {}, "test", ["HKT"], 3)
-            with self.assertRaises(ValueError): ReviewStore(directory, {}, "other", ["HKT"], 3)
+            ReviewStore(directory, {}, "test", ["Vodafone"], 3)
+            with self.assertRaises(ValueError): ReviewStore(directory, {}, "other", ["Vodafone"], 3)
             with self.assertRaises(ValueError): ReviewStore(directory, {}, "test", ["KDDI"], 3)
-            store = ReviewStore(directory, {}, "test", ["HKT"], 3)
-            store.save({"company": "HKT", "pages": {}}, evidence_changed=True)
+            store = ReviewStore(directory, {}, "test", ["Vodafone"], 3)
+            store.save({"company": "Vodafone", "pages": {}}, evidence_changed=True)
             (directory / "final-review.json").unlink()
-            with self.assertRaises(ValueError): ReviewStore(directory, {}, "other", ["HKT"], 3)
+            with self.assertRaises(ValueError): ReviewStore(directory, {}, "other", ["Vodafone"], 3)

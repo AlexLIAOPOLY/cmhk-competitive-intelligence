@@ -21,7 +21,7 @@ from typing import Any, Callable
 from uuid import uuid4
 from zoneinfo import ZoneInfo
 
-from .research_plan import ARCHITECTURE_VERSION, research_plan
+from .research_plan import ARCHITECTURE_VERSION, research_plan, company_metric_plan, restrict_report_metrics
 from .storage import atomic_write_json, atomic_write_jsonl
 from .research_efficiency import ordered_network_map
 
@@ -199,6 +199,10 @@ def disclosure_recency(row: dict, year: int) -> int:
 def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: dict | None = None) -> tuple[dict, list[dict]]:
     from . import workflow as w
     from .research_freshness import metric_key
+    allowed = company_metric_plan(company)
+    metrics = list(dict.fromkeys(metric for metric in metrics if metric in allowed))
+    if not metrics:
+        return {}, []
     started = time.monotonic()
     profile = w._company_research_profile(company)
     year = datetime.now(HKT).year
@@ -207,16 +211,14 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
                       "Alibaba Cloud": "Alibaba", "Tencent Cloud": "Tencent", "Oracle Cloud": "Oracle"}.get(company, company)
     # Find the latest disclosure first. Old stored values never enter a search query.
     queries = [("最新披露", f'"{search_subject}" {year} latest financial results earnings')]
-    # Financial metrics use investor sources; product/service metrics need
-    # their own queries and cannot be squeezed out by newer financial PDFs.
+    # Only homepage financial/operating metrics may reach external search.
     queries += [("官方最新业绩", f'site:{host} {search_subject} {year} financial results earnings')
                 for host in profile["official_hosts"][:2]]
-    product_metrics = {metric for metric in metrics if re.search(r"套餐|资费|合约|规格|专线|增值|漫游|促销", metric)}
     for metric in metrics:
         terms = w._metric_evidence_terms(metric)
         english = next((term for term in terms if re.search(r"[a-z]", term)), "")
         terms = list(dict.fromkeys([metric_key(metric), english]))
-        qualifiers = "" if metric in product_metrics else f"{year}"
+        qualifiers = f"{year}"
         queries.append((metric, f'"{search_subject}" {qualifiers} {" ".join(filter(None, terms))}'.strip()))
     def search(entry):
         metric, query = entry
@@ -324,11 +326,12 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     from .research_harness import ResearchHarness
     from .research_freshness import compare_candidate
     from .research_plan import frontend_metric_plan
-    ui_metrics = frontend_metric_plan() if baseline is not None else {}
+    ui_metrics = frontend_metric_plan()
     factory = model_factory or (lambda: w._build_supervisor_model(max_tokens=4096, max_retries=0))
     harness = ResearchHarness(task, factory(), emit, validate_fact)
     reports = list((checkpoint or {}).get("reports") or [])
     for report in reports:
+        restrict_report_metrics(report, company_metric_plan(report["company"], ui_metrics))
         retry = [item for item in report.get("items", [])
                  if item.get("status") == "missing" and item.get("reason") in {NO_METRIC_EVIDENCE, LEGACY_NO_METRIC_EVIDENCE}
                  and page_mentions_metric(item["metric"], report.get("pages", {}))]
@@ -343,11 +346,7 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
         if company in completed:
             continue
         previous = next((report for report in reports if report["company"] == company), {})
-        # Resume keeps the saved contract; new incremental tasks follow today's UI.
-        metrics = previous.get("metrics") or list(dict.fromkeys([
-            *w._company_expected_metrics(company, []),
-            *ui_metrics.get(w._company_agent_group(company), []),
-        ]))
+        metrics = company_metric_plan(company, ui_metrics)
         company_baseline = (baseline or {}).get(company, {})
         report = {"company": company, "status": "running", "metrics": metrics, "baseline": company_baseline, "incremental": baseline is not None,
                   "items": [item for item in previous.get("items", []) if item.get("status") != "error"],
@@ -466,7 +465,8 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
     manifest_path = output_dir / "manifest.json"
     if manifest_path.exists():
         previous = json.loads(manifest_path.read_text())
-        if not resume or previous.get("run_id") != run_id or previous.get("plan") != plan:
+        ownership = lambda tasks: [(task["key"], list(task["companies"])) for task in tasks]
+        if not resume or previous.get("run_id") != run_id or ownership(previous.get("plan", [])) != ownership(plan):
             raise ValueError("已有研究记录；只能显式恢复相同运行编号和任务分配")
         if previous.get("status") == "completed":
             return previous
@@ -511,7 +511,7 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
                 from . import workflow as w
                 reports = []
                 for company in task["companies"]:
-                    metrics = w._company_expected_metrics(company, [])
+                    metrics = company_metric_plan(company)
                     reports.append({"company": company, "status": "error", "metrics": metrics, "items": [
                         {"company": company, "metric": metric, "status": "error", "value": "", "reason": compact(exc)[:500]}
                         for metric in metrics]})

@@ -20,7 +20,7 @@ class ResearchAssignment:
 
 
 ASSIGNMENTS = (
-    ResearchAssignment("hong-kong", "香港运营商研究 Agent", "研究香港运营商经营业绩、用户、网络及产品资费", (
+    ResearchAssignment("hong-kong", "香港运营商研究 Agent", "仅研究主页香港运营商指标", (
         "CMHK", "HKT", "SmarTone", "3HK", "HKBN", "HGC", "i-CABLE")),
     ResearchAssignment("mainland", "内地运营商研究 Agent", "研究内地运营商及铁塔公司的经营指标和最新披露", (
         "中国移动", "中国电信", "中国联通", "中国铁塔", "中国广电")),
@@ -30,7 +30,7 @@ ASSIGNMENTS = (
         "Vodafone", "Deutsche Telekom", "Orange", "Telefonica", "BT", "TIM")),
     ResearchAssignment("americas-middle-east", "美洲与中东运营商研究 Agent", "研究美国与中东运营商的最新业绩及经营变化", (
         "Verizon", "AT&T", "T-Mobile US", "e&", "stc")),
-    ResearchAssignment("cloud", "全球云厂商研究 Agent", "研究云收入、增长、利润、订单和资本开支，保留分部口径", (
+    ResearchAssignment("cloud", "全球云厂商研究 Agent", "仅研究主页云收入、经营利润和资本开支，保留分部口径", (
         "AWS", "Microsoft Azure", "Google Cloud", "Alibaba Cloud", "Tencent Cloud", "Huawei Cloud", "Oracle Cloud", "China Mobile Cloud")),
 )
 
@@ -55,3 +55,22 @@ def frontend_metric_plan() -> dict[str, list[str]]:
         for domain in build_executive_intelligence_snapshot()["domains"]
         if domain["id"] in {"local", "international", "mainland", "cloud"}
     }
+
+
+def company_metric_plan(company: str, plan: dict | None = None) -> list[str]:
+    """Homepage focuses are the exclusive research allowlist; fail closed."""
+    task = next((task for task in ASSIGNMENTS if company in task.companies), None)
+    if task is None:
+        return []
+    domain = {"hong-kong": "local", "mainland": "mainland", "cloud": "cloud"}.get(task.key, "international")
+    return list((frontend_metric_plan() if plan is None else plan).get(domain, []))
+
+
+def restrict_report_metrics(report: dict, allowed: list[str], *, reopen_missing: bool = True) -> None:
+    """Old checkpoints cannot reintroduce removed topics into active work."""
+    report["metrics"] = allowed
+    report["items"] = [item for item in report.get("items", []) if item.get("metric") in allowed]
+    if "reviewed_metrics" in report:
+        report["reviewed_metrics"] = [m for m in report["reviewed_metrics"] if m in allowed]
+    if reopen_missing and set(allowed) - {item.get("metric") for item in report["items"]}:
+        report["status"] = "running"

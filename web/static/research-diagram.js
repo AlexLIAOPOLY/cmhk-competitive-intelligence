@@ -348,7 +348,7 @@
           const reason = item.write_preflight?.reason || item.reason || (item.reasons || []).join("；") || raw.reason || "未保存判断依据";
           return `<p>${esc(metricValue(item))} · ${esc(item.period || "报告期未取得")}</p><p>${esc(businessReason(reason))}</p><p>${(item.sources || raw.sources || [item.source_url || raw.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>") || "尚未取得可用来源"}</p>`;
         }).join("") : '<p>该指标在本轮检索清单内，尚未保存处理结果；不能视为库内已有或已完成。</p>';
-        return `<td><button type="button" class="research-matrix-cell is-${cell.key}" data-matrix-company="${esc(cell.company)}" data-matrix-metric="${esc(cell.metric)}" data-matrix-target-metric="${esc(cell.targetMetric)}" aria-label="${esc(`${cell.company} · ${cell.metric} · ${cell.label}，点击查看明细`)}" title="${esc(`${cell.company} · ${cell.metric}：${cell.label}`)}">${esc(cell.label)}</button><template><h4>${esc(cell.company)} · ${esc(cell.metric)} <span>${esc(cell.label)}</span></h4>${details}${cell.receipts.map((receipt) => `<p>正式表回读：${esc(receipt.main_table?.reason || receipt.reason || "未保存回读说明")} · 当前值 ${esc(receipt.main_table?.current_value ?? "未确认")}</p>`).join("")}</template></td>`;
+        return `<td><button type="button" class="research-matrix-cell is-${cell.key}" aria-pressed="false" data-matrix-company="${esc(cell.company)}" data-matrix-metric="${esc(cell.metric)}" data-matrix-target-metric="${esc(cell.targetMetric)}" aria-label="${esc(`${cell.company} · ${cell.metric} · ${cell.label}，点击查看明细`)}" title="${esc(`${cell.company} · ${cell.metric}：${cell.label}`)}">${esc(cell.label)}</button><template><h4>${esc(cell.company)} · ${esc(cell.metric)} <span>${esc(cell.label)}</span></h4>${details}${cell.receipts.map((receipt) => `<p>正式表回读：${esc(receipt.main_table?.reason || receipt.reason || "未保存回读说明")} · 当前值 ${esc(receipt.main_table?.current_value ?? "未确认")}</p>`).join("")}</template></td>`;
       }).join("")}</tr>`).join("")}</tbody></table></div></section>`).join("") || '<p class="research-matrix-note">本节点尚无对应的公司与指标项目。</p>'}
       <p class="research-matrix-note">“—”表示不在该公司的检索清单；标有“合并”的提交可跳到主指标依据。较宽的矩阵可左右滚动。</p>
     </section><section class="news-lineage-dialog-section research-matrix-selection" data-matrix-selection tabindex="-1" hidden></section>`;
@@ -370,10 +370,33 @@
       target.focus({ preventScroll: true });
       target.scrollIntoView({ block: "start", behavior: "instant" });
     };
-    matrix.querySelectorAll("[data-matrix-company]").forEach((button) => button.addEventListener("click", () => {
+    let restoreSelection = null;
+    const cells = [...matrix.querySelectorAll("[data-matrix-company]")];
+    cells.forEach((button) => button.addEventListener("click", () => {
+      const wasSelected = button.classList.contains("is-selected");
+      if (restoreSelection) { restoreSelection(); restoreSelection = null; }
+      cells.forEach((cell) => {
+        const selected = !wasSelected && cell === button;
+        cell.classList.toggle("is-selected", selected);
+        cell.setAttribute("aria-pressed", String(selected));
+      });
+      if (wasSelected) return;
       const company = button.dataset.matrixCompany, metric = button.dataset.matrixMetric;
-      matrix.querySelectorAll("[data-matrix-company]").forEach((cell) => cell.classList.toggle("is-selected", cell === button));
       const section = root.querySelector(".research-decisions");
+      const content = root.querySelector(".research-node-detail");
+      const scrollTop = content?.scrollTop || 0;
+      const originalView = section ? { ...decisionViews.get(section.dataset.researchView) } : null;
+      const openedDetails = [];
+      const openDetail = (detail) => { if (detail && !detail.open) { openedDetails.push(detail); detail.open = true; } };
+      restoreSelection = () => {
+        selection.hidden = true;
+        openedDetails.forEach((detail) => { detail.open = false; });
+        if (section && originalView) {
+          Object.assign(decisionViews.get(section.dataset.researchView), originalView);
+          section.dispatchEvent(new Event("research-decision-restore"));
+        }
+        if (content) content.scrollTop = scrollTop;
+      };
       const row = [...root.querySelectorAll("[data-research-row]")].find((item) => item.dataset.company === company
         && (item.dataset.metric === metric || JSON.parse(item.dataset.mergedMetrics || "[]").includes(metric)));
       if (section && row) {
@@ -386,7 +409,7 @@
         metricSelect.dispatchEvent(new Event("change"));
         // Keep the matching row below the sticky filtering toolbar.
         row.style.scrollMarginTop = `${section.querySelector(".research-decision-controls").offsetHeight + 16}px`;
-        if (row.dataset.metric !== metric) row.querySelector(".research-record-source").open = true;
+        if (row.dataset.metric !== metric) openDetail(row.querySelector(".research-record-source"));
         jump(row);
         return;
       }
@@ -394,7 +417,7 @@
       if (storedRow) {
         selection.hidden = true;
         for (let parent = storedRow.parentElement; parent && parent !== root; parent = parent.parentElement) {
-          if (parent.tagName === "DETAILS") parent.open = true;
+          if (parent.tagName === "DETAILS") openDetail(parent);
         }
         jump(storedRow);
         return;
@@ -481,6 +504,9 @@
       clear.disabled = !view.company && !view.metric;
       decisionViews.set(key, view);
     };
+    section.addEventListener("research-decision-restore", () => {
+      company.value = view.company; metric.value = view.metric; render();
+    });
     const resetScroll = () => section.scrollIntoView({ block: "start", behavior: "instant" });
     buttons.forEach((button) => button.addEventListener("click", () => { view.category = button.dataset.researchFilter; view.page = 0; render(); resetScroll(); }));
     section.querySelectorAll("[data-research-page]").forEach((button) => button.addEventListener("click", () => { view.page += Number(button.dataset.researchPage); render(); resetScroll(); }));

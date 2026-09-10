@@ -11,6 +11,7 @@ from pathlib import Path
 from .storage import atomic_write_json, atomic_write_jsonl
 from .six_agent_research import collect_sources, merge_results, now, validate_fact, page_mentions_metric
 from .research_freshness import compare_candidate, metric_key, period_key
+from .research_plan import company_metric_plan, frontend_metric_plan, restrict_report_metrics
 from .review_store import ReviewStore, load_company
 
 
@@ -40,6 +41,7 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
     baseline = load_baseline(directory.parent.parent.parent).get("companies", {})
     store = ReviewStore(directory, task, summary["run_id"], companies, workers)
     trace_lock = threading.Lock()
+    metric_plan = frontend_metric_plan()
 
     def emit(phase, message, data):
         event = {"ts": now(), "run_id": summary["run_id"], "agent_id": task["key"], "node": task["title"],
@@ -65,7 +67,9 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             report = json.loads(json.dumps(initial))
             report["reviewed_metrics"] = []
             store.save(report, evidence_changed=True)
+        restrict_report_metrics(report, company_metric_plan(company, metric_plan), reopen_missing=False)
         if report.get("review_completed"):
+            store.save(report)
             return report
         report.setdefault("reviewed_metrics", [])
         report.setdefault("pages", {})

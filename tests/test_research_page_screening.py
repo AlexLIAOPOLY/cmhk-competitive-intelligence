@@ -21,7 +21,7 @@ class PageScreeningTests(unittest.TestCase):
         ]}]}
         def extract(company, metric, pages, save, **kwargs):
             save({'company': company, 'metric': metric, 'status': 'no_update', 'value': '', 'reason': 'Checked full disclosure'})
-        with patch('data_curation.research_harness.ResearchHarness') as harness, patch('data_curation.research_plan.frontend_metric_plan', return_value={}), patch('data_curation.six_agent_research.collect_sources') as collect:
+        with patch('data_curation.research_harness.ResearchHarness') as harness, patch('data_curation.research_plan.frontend_metric_plan', return_value={"international": ["收入", "净利润", "ARPU"]}), patch('data_curation.six_agent_research.collect_sources') as collect:
             harness.return_value.extract.side_effect = extract
             result = run_assignment(task, lambda *args: None, checkpoint=checkpoint, model_factory=lambda: object(), baseline={})
             self.assertEqual(harness.return_value.extract.call_count, 1)

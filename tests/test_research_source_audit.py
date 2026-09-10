@@ -61,7 +61,7 @@ class SourceAuditTests(unittest.TestCase):
         for metric, text in (("合约期", "contract term"), ("数据中心", "data centre"), ("网络API", "Open Gateway")):
             self.assertTrue(page_mentions_metric(metric, {"p": {"opened": True, "official": True, "text": text}}))
 
-    def test_product_search_reads_its_result_even_after_eight_financial_results(self):
+    def test_removed_product_topic_never_searches_or_reads(self):
         product = "https://official.test/products/private-line"
         queries, reads = [], []
         def search(query, **kwargs):
@@ -76,11 +76,8 @@ class SourceAuditTests(unittest.TestCase):
              patch("data_curation.workflow._public_web_search", side_effect=search), \
              patch("data_curation.workflow._read_source_page", side_effect=read):
             collect_sources("HKT", ["企业专线"], lambda *args: None)
-        self.assertIn(product, reads)
-        query = next(q for q in queries if "企业专线" in q)
-        self.assertNotIn("results", query)
-        self.assertNotIn("2026", query)
-        self.assertIn("leased line", query)
+        self.assertEqual(queries, [])
+        self.assertEqual(reads, [])
 
     def test_verified_hkt_service_hosts_are_in_governed_profile(self):
         self.assertIn("hkt-enterprise.com", _company_research_profile("HKT")["official_hosts"])
