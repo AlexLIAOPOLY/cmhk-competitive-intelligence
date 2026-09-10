@@ -27,7 +27,7 @@ METRICS = {"dividend": ["派息", "股息"], "capex": ["资本开支"],
 ALIASES = {"HKT / csl / 1O1O": "HKT", "3HK / Hutchison": "3HK"}
 SEARCH_NAMES = {"HKT / csl / 1O1O": "香港電訊 HKT", "3HK / Hutchison": "和記電訊香港 3HK",
                 "SmarTone": "數碼通 SmarTone", "HKBN": "香港寬頻 HKBN",
-                "HGC": "環球全域電訊 HGC", "i-CABLE": "有線寬頻 i-CABLE"}
+                "HGC": "環球全域電訊 HGC", "i-CABLE": "周大福媒體娛樂 i-CABLE"}
 TERMS = {"dividend": "interim final dividend per share 股息 派息",
          "capex": "interim results capital expenditure 资本开支",
          "strategy": "interim results business outlook 战略 业绩",
@@ -244,6 +244,8 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
             subject = SEARCH_NAMES.get(pack["company"], pack["company"]).split()[0]
             query = (f'{subject} {today.year} {terms}' if fields == ['broker']
                      else f'"{subject}" {today.year} {terms} after:{start.isoformat()} before:{(today + timedelta(days=1)).isoformat()}')
+            if pack['company'] == 'HGC' and fields == ['broker']:
+                query = f'HGC 環電 {today.year} AI 分析 評論'
             requests.append({"id": f"{pack['company']}:{','.join(fields)}", "company": pack["company"], "fields": fields, "query": query})
     progress(f"[业绩摘要 Agent] 缺项按公司合并为 {len(requests)} 次搜索，近期观点单独查询。")
     collected = {}
@@ -393,8 +395,9 @@ def compact_table_value(text: str, field: str) -> str:
     text = re.split(r'来源[：:]', text)[0]
     text = re.sub(r'(20\d{2})年上半年', r'\1H1', text)
     text = re.sub(r'(20\d{2})财年', r'FY\1', text)
-    text = re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', text)
-    text = text.replace('百万元人民币', '百万元').replace('（负值表示流出）', '')
+    text = re.sub(r'20\d{2}/(20\d{2})(?:年度|财年)', r'FY\1', text)
+    text = re.sub(r'(?<![\dA-Za-z])(H[12]|Q[1-4])\s*(20\d{2})(?![\d.])', r'\2\1', text)
+    text = text.replace('（负值表示流出）', '')
     if len(text) > 70 and field in {'capex', 'dividend'}:
         period = re.search(r'FY20\d{2}|20\d{2}[HQ][1-4]|20\d{2}(?:/\d{2,4})?年?(?:中期|全年|财年|半年度)', text)
         prefix = (period.group() + ' ') if period else ''
@@ -409,6 +412,9 @@ def compact_table_value(text: str, field: str) -> str:
             value = re.search(r'资本(?:开支|支出)[^\d。；+-]{0,16}?(' + amount + r')', text)
             if value:
                 return prefix + ('现金流 ' if '现金流' in text else '') + value.group(1)
+            change = re.search(r'资本(?:开支|支出)[^。；]*?(?:下降|减少|低)(\d+(?:\.\d+)?)%', text)
+            if change:
+                return prefix + '同比下降' + change.group(1) + '%'
     if field == 'revenue':
         text = text.replace('收入 ', '')
     if field == 'capex':
@@ -494,6 +500,12 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
         save_json(run_dir / "drafts.json", returned)
         save_json(run_dir / "errors.json", {"errors": errors})
     save_json(run_dir / "drafts.json", returned)
+    return finalize_model(packs, returned, errors, searches=searches, baseline=baseline,
+                          clock=clock, run_dir=run_dir, validator=validator, progress=progress)
+
+
+def finalize_model(packs, returned, errors, *, searches, baseline, clock, run_dir, validator, progress=print):
+    """Apply the same evidence checks to a saved run without repeating research."""
     sections, table, audit = [], [["主体", "最新披露", "收益", "EBITDA / 利润", "资本开支", "派息"]], []
     for pack in packs:
         company = pack["company"]

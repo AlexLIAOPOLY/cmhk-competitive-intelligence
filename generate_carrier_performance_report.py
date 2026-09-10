@@ -930,7 +930,7 @@ def equivalent_scaled_numbers(candidate: str, evidence: object) -> set[str]:
     def values(text):
         return [(Decimal(n.replace(',', '')), Decimal(n.replace(',', '')) * Decimal(scales[unit.lower()]))
                 for n, unit in re.findall(pattern, str(text), re.I)]
-    supported = {scaled for _, scaled in values(evidence)}
+    supported = {scaled for _, scaled in values(evidence)} | {Decimal(n) for n in extract_numeric_tokens(evidence)}
     return {format(number.normalize(), 'f') for number, scaled in values(candidate) if scaled in supported}
 
 
@@ -970,11 +970,11 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         "请在不改变十家公司、五个字段和Word结构的前提下，把每家公司整理为派息、资本开支、战略升级、券商观点、市场反应五项。"
         "只能使用evidence或web_research.results中已读取原文text直接支持的事实；每条页面带field或fields限定，只能用于指定字段。数据库优先；联网只补缺项与近期观点。"
         "每项补充必须在sources的对应字段列出使用的完整URL，并在正文注明来源机构及日期。券商观点可采用财经媒体、市场数据平台或其他公开评论，但说清发布者、是机构评级还是公开评论。优先最新记录；较早观点保留原日期，不称为本期新观点。不能新增或推算公司、日期、数字、比例、金额、单位、评级、因果或结论。"
-        "严格保留原文数字写法和单位，例如34.80 HK cents写34.80港仙，不换算为0.348港元；22,000不改成2.2万。不要把报告期间末日写成公告发布日期，动态行情日期不代表券商评级日期。"
+        "严格保留原文数字写法和单位，例如34.80 HK cents写34.80港仙，不换算为0.348港元；22,000不改成2.2万。不要把报告期间末日写成公告发布日期，动态行情日期不代表券商评级日期。publishedAt为空的官方报告只注明报告年份和期间，不猜发布日期。"
         "输出必须为简体中文，删除重复、产品目录、资费套餐、导航文字和反复的缺口提示；优先保留最新业绩、同比变化、资本配置、"
         "战略重点、券商分歧和股价反应。strategy控制在90至240字，其他字段控制在25至140字，每个字段一至三句。"
         "如果证据没有相关信息，该字段只写短横线-，不得反复写未找到或未披露。不得写来源编号、抓取过程、AI过程或对CMHK的套话。strategy必须是业务战略或进展，不能只抄收入利润；不是上市主体不能编造其股价。"
-        "若含revisionFeedback，只修正其中未通过项：使用原文直接支持的数字与原单位、提供准确对应URL；其余字段保持已有结果。"
+        "若含revisionFeedback，只修正其中未通过项：每项缩短为原文明确支持的一至两句，删除未获支持的额外数字和发布日期，不能因一句多余说明未通过而放弃该项已明确的主要事实；sources复制输入对应字段的完整URL；其余字段保持已有结果。"
         "另外输出revenue（收入）和profit（EBITDA及净利润）用于汇总表，保留原始期间和币种。每字段只能写其evidence或相同field原文支持的内容，不得跨字段挪用数字。"
         "revenue和profit只能填该主体合并口径的收入、EBITDA或净利润金额。只有业务增速、客户数、毛利或分部数字时填-，不能拿它们代替集团收入利润。行情按页面注明的时间表述，不擅自称为收盘价。"
         "另输出tableFields，含revenue、profit、capex、dividend四个精简表格值，各8至45字，仅保留期间、数值和单位，不放长句或来源。不能改变fields中的数值口径。只返回合法JSON，不要Markdown。"

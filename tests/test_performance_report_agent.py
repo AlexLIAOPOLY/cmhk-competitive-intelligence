@@ -93,6 +93,7 @@ class PerformanceAgentTests(unittest.TestCase):
             ('broker', '瑞银2026年7月29日维持买入，目标价13.40港元。', '2026.07.29 UBS Buy $13.40'),
             ('dividend', '2025年末期股息每股人民币0.1329元。', '2025 final dividend RMB0.1329 per share'),
             ('market', '2026年9月10日16:08，股价报4.605港元。', 'Sep 10, 2026 at 4:08PM HKT HKD 4.605'),
+            ('strategy', '超过26万座数字塔为行业客户提供数智化服务。', 'over 260,000 digital towers serving industry customers'),
             ('strategy', '新项目合约额超过22亿港元，推进人工智能转型。', 'new contract value exceeding HK$2.2 billion AI transformation')]
         for field, text, source in cases:
             self.assertTrue(valid_ai_performance_field(field, text, source)[0])
@@ -106,6 +107,8 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertTrue(text.endswith('。（来源：公开评级页面）'))
 
     def test_table_uses_per_share_dividend_and_keeps_cash_flow_sign(self):
+        self.assertEqual(compact_table_value('2026H1 2013.64亿元人民币', 'revenue'), '2026H1 2013.64亿元人民币')
+        self.assertEqual(compact_table_value('H1 2026 2013.64亿元人民币', 'revenue'), '2026H1 2013.64亿元人民币')
         text = '2026年中期董事会决定分配股息146.96亿元，总股本91,507,138,699股，每股派发0.1606元人民币；' + '继续保持稳健的股东回报政策。' * 5
         self.assertEqual(compact_table_value(text, 'dividend'), '2026年中期 每股0.1606元人民币')
         flow = '2026H1资本开支现金流为人民币-324亿元；' + '公司持续推进基础设施建设与资本配置。' * 6
