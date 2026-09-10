@@ -303,8 +303,9 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
         for field in ['revenue', 'profit', 'capex', 'dividend']:
             if field in pack['missing']:
                 continue
-            dates = [publication_date({'url': r.get('source_url', '')}, {}) for r in pack['database'][field]]
-            if not dates or any(date is None for date in dates):
+            dates = [date for r in pack['database'][field]
+                     if (date := publication_date({'url': r.get('source_url', '')}, {}))]
+            if not dates:
                 continue
             newer = [r for r in filings.values() if pages.get(r['url'], {}).get('opened')
                      and (date := publication_date(r, pages[r['url']])) and max(dates) < date <= today]
@@ -394,6 +395,20 @@ def compact_table_value(text: str, field: str) -> str:
     text = re.sub(r'(20\d{2})财年', r'FY\1', text)
     text = re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', text)
     text = text.replace('百万元人民币', '百万元').replace('（负值表示流出）', '')
+    if len(text) > 70 and field in {'capex', 'dividend'}:
+        period = re.search(r'FY20\d{2}|20\d{2}[HQ][1-4]|20\d{2}(?:/\d{2,4})?年?(?:中期|全年|财年|半年度)', text)
+        prefix = (period.group() + ' ') if period else ''
+        amount = r'(?:人民币|HK\$|RMB\s*)?[-+]?\d+(?:,\d{3})*(?:\.\d+)?\s*(?:百万|亿|万)?(?:港仙|港元|美元|元|HKD|CNY|RMB)(?:人民币)?'
+        if field == 'dividend':
+            if re.search(r'(?:未宣派|不派发|不宣派)中期股息', text):
+                return prefix + '不派中期股息'
+            value = re.search(r'每股[^\d。；+-]{0,16}?(' + amount + r')', text)
+            if value:
+                return prefix + '每股' + value.group(1)
+        else:
+            value = re.search(r'资本(?:开支|支出)[^\d。；+-]{0,16}?(' + amount + r')', text)
+            if value:
+                return prefix + ('现金流 ' if '现金流' in text else '') + value.group(1)
     if field == 'revenue':
         text = text.replace('收入 ', '')
     if field == 'capex':
@@ -468,6 +483,8 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
                         if assess_field(pack, revised, field, validator)[0]:
                             draft.setdefault("fields", {})[field] = revised["fields"][field]
                             draft.setdefault("sources", {})[field] = revised.get("sources", {}).get(field, [])
+                            if field in (revised.get('tableFields') or {}):
+                                draft.setdefault('tableFields', {})[field] = revised['tableFields'][field]
                     returned[pack["company"]] = draft
                 except Exception as exc:
                     errors.append({"stage": "report_revision", "reason": str(exc)[:200], "companies": [pack["company"]]})

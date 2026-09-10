@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt
+from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt, compact_table_value
 from generate_carrier_performance_report import valid_ai_performance_field
 
 NOW = datetime(2026, 9, 10, tzinfo=ZoneInfo('Asia/Hong_Kong'))
@@ -33,7 +33,8 @@ class PerformanceAgentTests(unittest.TestCase):
     def test_new_annual_filing_supersedes_a_recent_but_older_database_source(self):
         old = {'period': 'H1 2026', 'value': 100, 'unit': 'millions HKD',
                'source_url': 'https://www.hkt.com/2026/02/2026_02_24.pdf'}
-        baseline = {'sources': [], 'companies': {'HKT': {m: [old] for m in ['收入', '净利润', 'EBITDA', '资本开支', '派息']}}}
+        undated_copy = {**old, 'source_url': 'https://www.hkt.com/interim2026.pdf'}
+        baseline = {'sources': [], 'companies': {'HKT': {m: [old, undated_copy] for m in ['收入', '净利润', 'EBITDA', '资本开支', '派息']}}}
         url = 'https://www.hkt.com/2026/09/2026_09_03.pdf'
         def search(query, limit):
             return {'results': [{'url': url, 'title': 'HKT Trust 2026 Annual Results Announcement'}]}
@@ -103,6 +104,12 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertTrue(ok)
         self.assertLessEqual(len(text), 160)
         self.assertTrue(text.endswith('。（来源：公开评级页面）'))
+
+    def test_table_uses_per_share_dividend_and_keeps_cash_flow_sign(self):
+        text = '2026年中期董事会决定分配股息146.96亿元，总股本91,507,138,699股，每股派发0.1606元人民币；' + '继续保持稳健的股东回报政策。' * 5
+        self.assertEqual(compact_table_value(text, 'dividend'), '2026年中期 每股0.1606元人民币')
+        flow = '2026H1资本开支现金流为人民币-324亿元；' + '公司持续推进基础设施建设与资本配置。' * 6
+        self.assertEqual(compact_table_value(flow, 'capex'), '2026H1 现金流 人民币-324亿元')
 
     def test_database_display_deduplicates_and_excludes_processing_notes(self):
         rows = [{'period': 'H1 2026', 'metric': '收入', 'value': 2846, 'unit': 'millions HKD',

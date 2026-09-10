@@ -982,7 +982,8 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
     user_prompt = (
         "返回结构：{\"companies\":[{\"company\":\"输入公司名\",\"fields\":{"
         "\"dividend\":\"...\",\"capex\":\"...\",\"strategy\":\"...\","
-        "\"broker\":\"...\",\"market\":\"...\",\"revenue\":\"...\",\"profit\":\"...\"},\"sources\":{\"broker\":[\"https://...\"]}}]}。\n"
+        "\"broker\":\"...\",\"market\":\"...\",\"revenue\":\"...\",\"profit\":\"...\"},\"sources\":{\"broker\":[\"https://...\"]},"
+        "\"tableFields\":{\"revenue\":\"期间及金额\",\"profit\":\"期间及金额\",\"capex\":\"期间及金额\",\"dividend\":\"期间及每股派息\"}}]}。\n"
         f"事实包（含实时联网结果及URL）：{json.dumps(fact_packs, ensure_ascii=False)}"
     )
     if provider == "openai":
@@ -1639,6 +1640,11 @@ def render_body_sections(doc: Document, sections: list[dict]) -> None:
 
 def sanitize_performance_model(model: dict, *, progress=print) -> dict:
     """Remove any operational diagnostics before rendering report content."""
+    from cmhk.reporting.performance_agent import compact_table_value
+    for row in (model.get('table') or [])[1:]:
+        for index, field in enumerate(['revenue', 'profit', 'capex', 'dividend'], 2):
+            if index < len(row):
+                row[index] = compact_table_value(str(row[index]), field)
     limitations = model.setdefault("generationLimitations", [])
     for section in model.get("sections") or []:
         sanitized_items = []
@@ -1655,7 +1661,7 @@ def sanitize_performance_model(model: dict, *, progress=print) -> dict:
                     action="保留字段标签并替换为公开披露状态说明",
                     progress=progress,
                 )
-                text = f"{label or '信息'}：公开资料未单独披露该项口径。"
+                text = f"{label or '信息'}：-"
             sanitized_items.append(text)
         section["items"] = sanitized_items
     model["generationMode"] = "limited" if limitations or model.get("researchAudit", {}).get("unresolved") else "normal"
@@ -1696,8 +1702,8 @@ def render_emergency_performance_docx(model: dict, path: Path) -> None:
     doc.save(str(path))
 
 
-def render_report(*, output_path: Path | None = None, archive: bool = True) -> Path:
-    data = sanitize_performance_model(build_dynamic_model())
+def render_report(*, output_path: Path | None = None, archive: bool = True, model: dict | None = None) -> Path:
+    data = sanitize_performance_model(deepcopy(model) if model is not None else build_dynamic_model())
     output_path = output_path or dated_output_path()
     output_path.parent.mkdir(parents=True, exist_ok=True)
     try:
