@@ -1238,7 +1238,12 @@ def _invoke_langchain(
     def execute(attempt: int) -> list[Any]:
         token = _HARNESS_RECOVERY.set(attempt)
         try:
-            payload, model = _invoke_langchain_transport(examples, targets)
+            # Preserve membership and validation order while changing the
+            # candidate prefix on recovery; some gateways replay truncations
+            # despite fresh nonces, request headers and larger output budgets.
+            offset = attempt % len(targets) if targets else 0
+            request_targets = targets[offset:] + targets[:offset]
+            payload, model = _invoke_langchain_transport(examples, request_targets)
             try:
                 if (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None:
                     _normalized_acceptance_review(
@@ -1435,12 +1440,12 @@ def _invoke_langchain_transport(
             disable_streaming=True,
             include_response_headers=True,
             max_retries=0,
-            timeout=max(MODEL_REQUEST_TIMEOUT, 180) if acceptance_review is not None else MODEL_REQUEST_TIMEOUT,
+            timeout=max(MODEL_REQUEST_TIMEOUT, 240) if acceptance_review is not None else MODEL_REQUEST_TIMEOUT,
             # Some V4-compatible routes currently ignore the documented
             # non-thinking switch. Reserve enough output budget for that hidden
             # reasoning so the final JSON is not truncated away.
             max_tokens=max(
-                DEEPSEEK_V4_MIN_OUTPUT_TOKENS if is_v4 else 1500,
+                DEEPSEEK_V4_MIN_OUTPUT_TOKENS * (2 if acceptance_review is not None else 1) if is_v4 else 1500,
                 min(32000, 300 + (500 if acceptance_review is not None else 180) * len(targets)),
             ),
         )

@@ -148,6 +148,27 @@ class AcceptanceReviewTests(unittest.TestCase):
         self.assertEqual([call.kwargs["model"] for call in factory.call_args_list],
                          ["DeepSeek-V4-Pro"] * 3 + ["fallback"])
 
+    def test_review_truncation_changes_candidate_prefix_without_changing_membership(self):
+        model = mock.Mock()
+        model.invoke.side_effect = [
+            SimpleNamespace(content="", response_metadata={"finish_reason": "length"}),
+            SimpleNamespace(content=json.dumps(self.review_payload()), response_metadata={"finish_reason": "stop"}),
+        ]
+        with (mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+              mock.patch.object(agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret")]),
+              mock.patch.object(agent, "ChatDeepSeek", return_value=model) as factory):
+            token = agent._MODEL_SESSION.set({"calls": 0, "acceptance_review": self.primary})
+            try:
+                payload, _ = agent._invoke_langchain([], self.targets)
+            finally:
+                agent._MODEL_SESSION.reset(token)
+        first, second = [json.loads(call.args[0][1].content)["required_candidate_ids"] for call in model.invoke.call_args_list]
+        self.assertNotEqual(first[0], second[0])
+        self.assertEqual(set(first), set(second))
+        self.assertEqual(sum(item["app_status"] == "接受" for item in payload["decisions"]), 1)
+        self.assertGreaterEqual(factory.call_args_list[0].kwargs["max_tokens"], 24000)
+        self.assertGreaterEqual(factory.call_args_list[0].kwargs["timeout"], 240)
+
     def test_empty_reasoning_truncation_uses_bounded_larger_budget(self):
         responses = [
             SimpleNamespace(content="", additional_kwargs={"reasoning_content": "private reasoning"},
