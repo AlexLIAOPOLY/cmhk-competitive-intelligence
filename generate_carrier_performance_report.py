@@ -1130,6 +1130,7 @@ def valid_ai_performance_field(field_key: str, candidate: object, evidence: obje
             if len(shortened + part + source) > maximum - 1:
                 break
             shortened += part
+        shortened = re.sub(r'(^|[。；，])(?:同时|此外|另外|其中|另|并且|以及)[。；，]?$', r'\1', shortened)
         if shortened:
             text = shortened.rstrip('，；。') + '。' + source
     if len(text) < 8 or len(text) > maximum:

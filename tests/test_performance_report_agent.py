@@ -105,6 +105,10 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertTrue(ok)
         self.assertLessEqual(len(text), 160)
         self.assertTrue(text.endswith('。（来源：公开评级页面）'))
+        body = '公司推进网络升级和人工智能服务。' * 8 + '同时，' + '企业持续扩大服务覆盖和优化营运效率' * 12
+        ok, text, _ = valid_ai_performance_field('strategy', body, body)
+        self.assertTrue(ok)
+        self.assertNotRegex(text, r'(同时|此外|另外)[。；，]?$')
 
     def test_verified_dividend_survives_an_unsupported_later_total(self):
         url = 'https://www.hkt.com/results.pdf'
