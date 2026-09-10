@@ -360,7 +360,7 @@
       ${node.key === "research-update" ? storageDetails(run) : ["research-dispatch", "research-publish"].includes(node.key) ? actualList(node, snapshot, date) : decisionGroups(node, snapshot, date)}
       <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || (run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : "AI 结果未记录")}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `${updateSummary(run)}。${run?.publication?.database_updated ? "四库写入已完成。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
       ${node.key === "research-publish" && fallbackNote(run?.publication) ? '<section class="news-lineage-dialog-section"><header><h3>程序整理是什么意思</h3></header><p>部分 AI 生成失败或未通过校验，系统改用固定规则汇总已有资料。这些内容不是新的 AI 分析，也不表示数据库回滚。资料保存和 AI 生成是两个独立步骤。</p></section>' : ""}
-      ${searchHistory(node, agents, events)}
+      ${node.assignment ? `<details class="news-lineage-technical research-search-disclosure"><summary>查看检索过程与搜索结果</summary>${searchHistory(node, agents, events)}</details>` : ""}
       <details class="news-lineage-technical"><summary>运行日志与详细依据</summary>
       ${companyCoverageOverview(node, run)}
       <section class="news-lineage-dialog-section"><header><h3>这个节点如何处理</h3></header><ol>${node.details.map((text) => `<li>${esc(text)}</li>`).join("")}</ol></section>
