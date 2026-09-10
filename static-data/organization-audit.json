@@ -3,7 +3,7 @@
   "events": [
     {
       "id": "event-001",
-      "at": "2026-09-10T21:48:26+00:00",
+      "at": "2026-09-10T21:58:31+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -17,7 +17,7 @@
     },
     {
       "id": "event-002",
-      "at": "2026-09-10T21:43:08+00:00",
+      "at": "2026-09-10T21:48:26+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -31,7 +31,7 @@
     },
     {
       "id": "event-003",
-      "at": "2026-09-10T21:39:07+00:00",
+      "at": "2026-09-10T21:43:08+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -45,12 +45,12 @@
     },
     {
       "id": "event-004",
-      "at": "2026-09-10T21:34:45+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
+      "at": "2026-09-10T21:39:07+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -73,7 +73,7 @@
     },
     {
       "id": "event-006",
-      "at": "2026-09-10T21:34:17+00:00",
+      "at": "2026-09-10T21:34:45+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -101,6 +101,20 @@
     },
     {
       "id": "event-008",
+      "at": "2026-09-10T21:34:17+00:00",
+      "actor_id": "",
+      "actor_name": "新闻自动初筛机器人",
+      "actor_role": "SYSTEM",
+      "action": "news_review.update",
+      "target": "BYK3u",
+      "target_type": "record",
+      "target_label": "操作记录",
+      "target_member_id": "",
+      "result": "success",
+      "details": {}
+    },
+    {
+      "id": "event-009",
       "at": "2026-09-10T21:32:51+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -114,7 +128,7 @@
       "details": {}
     },
     {
-      "id": "event-009",
+      "id": "event-010",
       "at": "2026-09-10T16:03:14+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
@@ -128,27 +142,13 @@
       "details": {}
     },
     {
-      "id": "event-010",
+      "id": "event-011",
       "at": "2026-09-10T08:29:05+00:00",
       "actor_id": "member-006",
       "actor_name": "廖望 Alex LIAO Wang",
       "actor_role": "ADMIN",
       "action": "auth.login",
       "target": "fs-76b4f5e7ee939e57",
-      "target_type": "record",
-      "target_label": "操作记录",
-      "target_member_id": "",
-      "result": "success",
-      "details": {}
-    },
-    {
-      "id": "event-011",
-      "at": "2026-09-10T08:18:01+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -1291,7 +1291,7 @@
     },
     {
       "id": "event-093",
-      "at": "2026-09-10T07:33:46+00:00",
+      "at": "2026-09-10T08:18:01+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -2439,7 +2439,7 @@
     },
     {
       "id": "event-175",
-      "at": "2026-09-10T07:33:38+00:00",
+      "at": "2026-09-10T07:33:46+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
