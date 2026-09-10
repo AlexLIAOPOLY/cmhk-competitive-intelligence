@@ -6,7 +6,7 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source
+from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt
 from generate_carrier_performance_report import valid_ai_performance_field
 
 NOW = datetime(2026, 9, 10, tzinfo=ZoneInfo('Asia/Hong_Kong'))
@@ -18,6 +18,9 @@ class PerformanceAgentTests(unittest.TestCase):
             'official_hosts': ['hkt.com'], 'seed_urls': []})
         profile.start()
         self.addCleanup(profile.stop)
+        market = patch('cmhk.reporting.performance_agent.market_source_urls', return_value=[])
+        market.start()
+        self.addCleanup(market.stop)
 
     def test_financial_sources_are_official_and_views_use_identifiable_publishers(self):
         self.assertTrue(trusted_source("HKT", "https://www.hkt.com/report", "capex"))
@@ -28,7 +31,7 @@ class PerformanceAgentTests(unittest.TestCase):
     def test_database_first_and_no_unrelated_writes(self):
         baseline = {'sources': ['formal.json'], 'companies': {'HKT': {
             m: [{'period': 'H1 2026', 'value': 100, 'unit': 'HKD million'}]
-            for m in ['收入', '资本开支', '净利润', 'EBITDA', '派息']}}}
+            for m in ['收入', '资本开支', '净利润', 'EBITDA', '派息', '战略升级']}}}
         queries = []
         def search(query, limit):
             queries.append(query)
@@ -45,9 +48,20 @@ class PerformanceAgentTests(unittest.TestCase):
             self.assertEqual(db.read_bytes(), before)
             self.assertEqual(len(queries), 2)  # Only missing opinions and market reaction.
             self.assertTrue(all('评级' in q or '股价' in q for q in queries))
-            self.assertIn('H1 2026', model['table'][1][2])
+            self.assertIn('2026年上半年', model['table'][1][2])
             self.assertEqual(model['researchAudit']['trigger'], 'report_generation_only')
             self.assertEqual({p.name for p in root.iterdir()}, {'formal.json', 'var'})
+
+    def test_financial_excerpt_reads_late_notes_and_uses_url_publication_date(self):
+        text = 'Annual report ' + ('contents ' * 4000) + 'interim dividend 34.80 HK cents'
+        self.assertIn('34.80', field_excerpt(text, 'dividend'))
+        self.assertEqual(publication_date({'url': 'https://www.hkexnews.hk/2026081300218.pdf'},
+            {'text': 'For six months ended 2026-06-30'}).isoformat(), '2026-08-13')
+
+    def test_database_display_deduplicates_and_excludes_processing_notes(self):
+        rows = [{'period': 'H1 2026', 'metric': '收入', 'value': 2846, 'unit': 'millions HKD',
+                 'scope': 'official_source_count_below_three_displayed'}] * 2
+        self.assertEqual(field_text(rows), '2026年上半年 收入 2846 百万港元')
 
     def test_stale_database_and_future_or_undated_pages_are_not_current(self):
         self.assertFalse(fresh_rows([{'period': 'FY2025'}], 'revenue', NOW.date()))

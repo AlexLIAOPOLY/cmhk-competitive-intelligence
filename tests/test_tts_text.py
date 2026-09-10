@@ -4,6 +4,10 @@ from tts_service import normalize_for_speech, prepare_tts_text
 
 
 class PrepareTtsTextTests(unittest.TestCase):
+    def test_spoken_script_has_no_written_headings_or_html_entities(self):
+        self.assertEqual(normalize_for_speech('结论：香港电讯业务增长。\n摘要：&#x4E2D;国移动推进转型。'),
+                         '香港电讯业务增长。 中国移动推进转型')
+
     def test_decimal_percentage_is_spoken_in_chinese_order(self):
         self.assertEqual(prepare_tts_text("增长8.3%"), "增长百分之八点三")
 

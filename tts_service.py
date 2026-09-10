@@ -520,7 +520,10 @@ def _source_text(report_path: Path) -> str:
 
 
 def normalize_for_speech(value: str) -> str:
-    text = re.sub(r"\s+", " ", value).strip()
+    from html import unescape
+    text = unescape(value)
+    text = re.sub(r"(?m)^\s*(?:\*\*)?(?:结论|核心结论|摘要|要点|总结|风险提示)(?:\*\*)?\s*[：:]\s*", "", text)
+    text = re.sub(r"\s+", " ", text).strip()
     replacements = {
         "PCPD/AI": "私隐专员公署人工智能",
         "GDPR/DSA": "欧盟通用数据保护条例和数字服务法",
@@ -595,9 +598,10 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
     system_prompt = (
         "你是中国移动战略部门的资深分析师和正式播音员。"
         + report_instruction
-        + "要求结论先行、事实准确、语气正式克制，保留重要公司、数字和业务变化，不得编造；"
+        + "开头自然说出本期最值得关注的变化，然后用连贯的完整句子展开，像向同事口头介绍。事实准确、语气专业自然，保留重要公司、数字和业务变化，不得编造；"
         "不得使用脱口秀、夸张、网络流行语、闲聊、寒暄或主观揣测。"
-        "直接输出可播报正文，不要标题、项目符号或解释。"
+        "直接输出可播报正文，不要标题、项目符号或解释。严禁读出‘结论：’‘摘要：’‘要点：’‘风险提示：’等书面标签。"
+        "跳过用短横线表示的缺项，不朗读编号、网址、数据处理标记或反复的未找到信息提示。观点必须说清是谁的判断，不把观点当成已发生的事实。"
     )
     user_prompt = f"{report_label}全文如下：\n{text[:12000]}"
 

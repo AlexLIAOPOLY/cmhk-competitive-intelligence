@@ -1948,9 +1948,9 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" ${pushDataAttribute}="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : `设为下次推送的${reportLabel}`}"${preferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
       : "";
     html += `
-      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}">
+      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}" data-report-name="${escapeHtml(file.name)}" data-report-type="${escapeHtml(file.reportType)}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
-        <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span></span>
+        <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="单击预览，双击编辑文件名与备注">${escapeHtml(file.name)}</span></span>
         <span>${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
@@ -1983,7 +1983,7 @@ function bindOutputTableEvents(target) {
     button.addEventListener("click", () => window.CMHKReportEditor?.open(button.dataset.path));
   });
   target.querySelectorAll(".file-name-editable").forEach((cell) => {
-    cell.addEventListener("click", () => openFileEditor(cell.dataset.path));
+    cell.addEventListener("dblclick", () => openFileEditor(cell.dataset.path));
   });
   target.querySelectorAll(".delete-file-button").forEach((button) => {
     button.addEventListener("click", () => deleteFiles([button.dataset.path]));

@@ -218,46 +218,24 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
         self.assertEqual(len(calls), 2)
         self.assertEqual(researched["测试运营商"]["provider"], "unit")
 
-    def test_template_failure_still_creates_business_only_report_and_audit(self) -> None:
-        model = report.fallback_performance_model([])
-        model["generationLimitations"] = [
-            report.performance_limitation_entry(
-                "web_research",
-                "offline",
-                impact="没有新网页证据",
-                action="保留确定性字段",
-            )
-        ]
-        model["generationMode"] = "limited"
+    def test_missing_template_never_switches_to_a_different_format(self) -> None:
+        model = report.fallback_performance_model()
         with TemporaryDirectory() as temp_dir:
-            temp_path = Path(temp_dir)
-            output_path = temp_path / "业绩摘要.docx"
+            temp = Path(temp_dir)
+            output = temp / "业绩摘要.docx"
             with (
-                mock.patch.object(report, "ROOT", temp_path),
-                mock.patch.object(report, "TEMPLATE_PATH", temp_path / "missing-template.docx"),
+                mock.patch.object(report, "TEMPLATE_PATH", temp / "missing-template.docx"),
                 mock.patch.object(report, "build_dynamic_model", return_value=model),
-                mock.patch.object(report, "dated_output_path", return_value=output_path),
+                mock.patch.object(report, "render_emergency_performance_docx") as emergency,
             ):
-                rendered_path = report.render_report()
+                with self.assertRaisesRegex(RuntimeError, "保持原版式"):
+                    report.render_report(output_path=output, archive=False)
+                self.assertFalse(output.exists())
+                emergency.assert_not_called()
 
-            self.assertEqual(rendered_path, output_path)
-            self.assertTrue(output_path.exists())
-            sidecar = report.performance_quality_sidecar_path(output_path)
-            self.assertTrue(sidecar.exists())
-            audit = json.loads(sidecar.read_text(encoding="utf-8"))
-            document = Document(output_path)
-            report_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
-            report_text += "\n" + "\n".join(
-                cell.text
-                for table in document.tables
-                for row in table.rows
-                for cell in row.cells
-            )
-
-        self.assertEqual(audit["generationMode"], "limited")
-        self.assertTrue(any(item["stage"] == "template_render" for item in audit["limitations"]))
-        for forbidden in report.PERFORMANCE_FORBIDDEN_REPORT_PHRASES:
-            self.assertNotIn(forbidden, report_text)
+    def test_unresolved_sources_keep_report_marked_limited(self) -> None:
+        model = {"sections": [], "generationLimitations": [], "researchAudit": {"unresolved": [{"field": "broker"}]}}
+        self.assertEqual(report.sanitize_performance_model(model)["generationMode"], "limited")
 
     def test_generation_uses_independent_agent_without_shared_refresh(self) -> None:
         with (

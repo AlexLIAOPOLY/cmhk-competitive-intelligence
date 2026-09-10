@@ -21,7 +21,7 @@ from data_curation.research_freshness import load_baseline, period_key
 FIELDS = {"dividend": "派息", "capex": "资本开支", "strategy": "战略升级",
           "broker": "券商观点", "market": "市场反应", "revenue": "收入", "profit": "EBITDA / 利润"}
 METRICS = {"dividend": ["派息", "股息"], "capex": ["资本开支"],
-           "strategy": ["收入", "净利润", "后付费用户数", "移动客户数"],
+           "strategy": ["战略升级"],
            "broker": ["券商观点"], "market": ["市场反应"],
            "revenue": ["收入"], "profit": ["EBITDA", "净利润"]}
 ALIASES = {"HKT / csl / 1O1O": "HKT", "3HK / Hutchison": "3HK"}
@@ -35,7 +35,38 @@ TERMS = {"dividend": "interim final dividend per share 股息 派息",
          "market": "stock price market reaction 股价 市场反应",
          "revenue": "interim results revenue 收入",
          "profit": "interim results EBITDA net profit 净利润"}
-UNCONFIRMED = "截至本次检索，未取得可核实的该项最新信息。"
+UNCONFIRMED = "-"
+TICKERS = {"中国移动": "0941", "中国电信": "0728", "中国联通": "0762", "中国铁塔": "0788",
+           "HKT / csl / 1O1O": "6823", "HKT": "6823", "3HK / Hutchison": "0215",
+           "SmarTone": "0315", "HKBN": "1310", "i-CABLE": "1097"}
+FIELD_PATTERNS = {
+    "dividend": r"dividend|distribution|股息|派息|分红|分紅|分派",
+    "capex": r"capex|capital expend|capital invest|资本开支|資本開支|资本支出|資本支出",
+    "strategy": r"strategy|strategic|outlook|artificial intelligence|data centre|business review|战略|戰略|人工智能|算力|展望|转型|轉型",
+    "broker": r"analyst|rating|price target|forecast|大行|券商|评级|評級|目标价|目標價|观点|觀點|分析",
+    "market": r"price|stock|share|market|股价|股價|市场|市場|成交|收市",
+    "revenue": r"revenue|turnover|收入|收益",
+    "profit": r"EBITDA|profit|earnings|净利|淨利|溢利|亏损|虧損",
+}
+
+
+def market_source_urls(company: str, field: str) -> list[str]:
+    ticker = TICKERS.get(company)
+    if not ticker or field not in {"broker", "market"}:
+        return []
+    return [f"https://stockanalysis.com/quote/hkg/{ticker}/" + ("forecast/" if field == "broker" else "")]
+
+
+def field_excerpt(text: str, field: str, limit: int = 4200) -> str:
+    """Read relevant passages throughout a filing, including late dividend notes."""
+    passages = [text[:500]]
+    for match in re.finditer(FIELD_PATTERNS[field], text, re.I):
+        passage = text[max(0, match.start() - 160):match.end() + 800]
+        if not any(passage in existing for existing in passages):
+            passages.append(passage)
+        if sum(map(len, passages)) >= limit:
+            break
+    return "\n…\n".join(passages)[:limit]
 
 
 def report_search(query: str, limit: int = 3) -> dict:
@@ -89,7 +120,7 @@ def read_public_page(url: str) -> dict:
     response.raise_for_status()
     if "pdf" in response.headers.get("content-type", "").lower() or url.split("?")[0].endswith(".pdf"):
         from pypdf import PdfReader
-        text = " ".join(page.extract_text() or "" for page in PdfReader(BytesIO(response.content)).pages)
+        text = "\n".join(page.extract_text() or "" for page in PdfReader(BytesIO(response.content)).pages)
         return {"opened": True, "text": text}
     soup = BeautifulSoup(response.text, "html.parser")
     date_tag = soup.select_one('meta[property="article:published_time"], meta[name="date"], time[datetime]')
@@ -98,7 +129,8 @@ def read_public_page(url: str) -> dict:
         tag.decompose()
     links = [{"url": urljoin(str(response.url), a.get("href", "")), "title": a.get_text(" ", strip=True)}
              for a in soup.select("a[href]") if re.search(r"20\d{2}|interim|中期|半年|results|业绩|業績", a.get_text(" ", strip=True) + a.get("href", ""), re.I)]
-    return {"opened": True, "text": soup.get_text(" ", strip=True), "publication_date": published, "disclosure_links": links}
+    return {"opened": True, "text": soup.get_text(" ", strip=True), "publication_date": published,
+            "title": soup.title.get_text(" ", strip=True) if soup.title else "", "disclosure_links": links}
 
 
 @lru_cache(maxsize=20)
@@ -111,25 +143,40 @@ def trusted_source(company: str, url: str, field: str) -> bool:
     host = urlparse(url).hostname or ""
     domains = company_profile(company)["official_hosts"] + ["hkexnews.hk", "cninfo.com.cn"]
     if field in {"broker", "market"}:
-        domains += ["aastocks.com", "finance.yahoo.com", "finance.sina.com.cn", "reuters.com",
-                    "bloomberg.com", "hket.com", "hk01.com", "cnstock.com", "10jqka.com.cn",
-                    "jrj.com.cn", "stcn.com", "eastmoney.com", "marketscreener.com", "stockanalysis.com"]
+        # Public commentary can be used with explicit publisher/date attribution.
+        # Company identity, readable original text and date are checked below.
+        import ipaddress
+        try:
+            ipaddress.ip_address(host)
+            return False
+        except ValueError:
+            return urlparse(url).scheme in {"http", "https"} and "." in host and not host.endswith((".local", ".localhost"))
     return any(host == domain or host.endswith("." + domain) for domain in domains)
 
 
 def company_matches(company: str, text: str) -> bool:
     from opencc import OpenCC
     normal = OpenCC("t2s").convert(text).casefold()
-    terms = {"HKT / csl / 1O1O": ["香港电讯", "hkt trust", "hkt limited"],
+    terms = {"中国移动": ["中国移动", "china mobile"], "中国电信": ["中国电信", "china telecom"],
+             "中国联通": ["中国联通", "china unicom"], "中国铁塔": ["中国铁塔", "china tower"],
+             "HKT / csl / 1O1O": ["香港电讯", "hkt trust", "hkt limited"],
              "HKT": ["香港电讯", "hkt trust", "hkt limited"],
              "3HK / Hutchison": ["和记电讯", "3hk", "hutchison telecommunications"],
              "HGC": ["环球全域电讯", "hgc", "hutchison global"],
              "HKBN": ["香港宽频", "hkbn"], "SmarTone": ["数码通", "smartone"],
-             "i-CABLE": ["有线宽频", "i-cable", "i cable"]}.get(company, [company.casefold()])
+             "i-CABLE": ["有线宽频", "i-cable", "i cable", "ctf services", "ctf enterprises"]}.get(company, [company.casefold()])
     return any(term in normal for term in terms)
 
 
 def publication_date(result: dict, page: dict):
+    # Dated URL/metadata precede report-period dates embedded in the body.
+    dated_url = re.sub(r"(?<!\d)(20\d{2})(\d{2})(\d{2})(?=\d|\.)", r"\1-\2-\3 ", str(result.get("url", "")))
+    explicit = " ".join(str(v or "") for v in [page.get("publication_date"), page.get("published_at"), result.get("published_date"), dated_url])
+    for match in re.finditer(r"(20\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})", explicit):
+        try:
+            return datetime(*map(int, match.groups())).date()
+        except ValueError:
+            pass
     text = " ".join(str(v or "") for v in [page.get("publication_date"), page.get("published_at"),
                          result.get("published_date"), result.get("title"), result.get("snippet"),
                          result.get("url"), str(page.get("text", ""))[:1200]])
@@ -157,7 +204,7 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
         groups = ([financial] if financial else []) + [[f] for f in ["broker", "market"] if f in pack["missing"]]
         for fields in groups:
             recent = fields[0] in {"broker", "market"}
-            start = today - timedelta(days=30 if recent else 210)
+            start = today - timedelta(days=180 if recent else 370)
             terms = TERMS[fields[0]] if len(fields) == 1 else "interim results financial report dividend capex 中期业绩 股息 资本开支"
             subject = SEARCH_NAMES.get(pack["company"], pack["company"]).split()[0]
             requests.append({"id": f"{pack['company']}:{','.join(fields)}", "company": pack["company"], "fields": fields,
@@ -181,15 +228,18 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
         row["results"] = [r for r in candidates if r not in row["discardedSearchResults"]]
     for row in rows:
         if row["field"] not in {"broker", "market"}:
-            for url in company_profile(row["company"])["seed_urls"][:2]:
+            for url in company_profile(row["company"])["seed_urls"][:4]:
                 row["results"].append({"url": url, "title": row["company"] + " 官方业绩披露入口", "snippet": ""})
+        else:
+            for url in market_source_urls(row["company"], row["field"]):
+                row["results"].append({"url": url, "title": row["company"] + " 公开市场资料", "snippet": ""})
         row["results"] = [r for r in row["results"] if trusted_source(row["company"], r["url"], row["field"])]
     urls = list(dict.fromkeys(str(r["url"]) for row in rows for r in row.get("results", [])))
     progress(f"[业绩摘要 Agent] 已筛除无关公司，读取 {len(urls)} 篇原文并检查日期。")
     def read(url):
         try:
             page = page_reader(url)
-            return url, {**page, "text": str(page.get("text", ""))[:24000]}
+            return url, {**page, "text": str(page.get("text", ""))[:500000]}
         except Exception as exc:
             return url, {"opened": False, "error": str(exc)[:180]}
     with ThreadPoolExecutor(max_workers=3) as pool:
@@ -200,7 +250,9 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
             continue
         links = [link for result in row["results"] for link in pages.get(result["url"], {}).get("disclosure_links", [])
                  if trusted_source(row["company"], link["url"], row["field"]) and str(today.year) in str(link)]
-        for link in links[:2]:
+        links = sorted({link["url"]: link for link in links}.values(), key=lambda link: (
+            "pdf" in link["url"].lower(), bool(re.search(r"interim|中期|半年|results", str(link), re.I))), reverse=True)
+        for link in links[:4]:
             row["results"].append(link)
             if link["url"] not in pages:
                 children[link["url"]] = link
@@ -216,25 +268,62 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
                 reason = "来源未对应目标公司"
             elif not page.get("opened") or not page.get("text"):
                 reason = "原文未能读取"
-            elif not date:
+            elif not date and (row["field"] in {"broker", "market"} or str(today.year) not in page.get("text", "")):
                 reason = "未确认来源发布日期"
-            elif date > today:
+            elif date and date > today:
                 reason = "发布日期晚于报告截止日"
-            elif (today - date).days > (30 if row["field"] in {"broker", "market"} else 210):
+            elif date and (today - date).days > (180 if row["field"] in {"broker", "market"} else 370):
                 reason = "来源已超出本次检索时效范围"
-            entry = {**result, "publishedAt": date.isoformat() if date else "", "checkedAt": today.isoformat(),
-                     "text": page.get("text", "")[:10000], "field": row["field"]}
+            entry = {**result, "title": page.get("title") or result.get("title", ""),
+                     "publishedAt": date.isoformat() if date else "", "checkedAt": today.isoformat(),
+                     "text": field_excerpt(page.get("text", ""), row["field"]), "field": row["field"]}
             if reason:
                 rejected.append({**entry, "reason": reason})
             else:
                 accepted.append(entry)
-        row["results"], row["rejected"] = accepted, rejected
+        row["results"], row["rejected"] = sorted({r["url"]: r for r in accepted}.values(),
+            key=lambda r: (r["publishedAt"], len(r["text"])), reverse=True)[:3], rejected
     progress(f"[业绩摘要 Agent] 原文核验通过 {sum(bool(r['results']) for r in rows)}/{len(rows)} 个待补字段。")
     return rows
 
 
 def field_text(rows: list[dict]) -> str:
-    return "；".join(dict.fromkeys(f"{r.get('period', '')} {r['metric']} {r['value']} {r.get('unit', '')} {r.get('scope', '')}".strip() for r in rows))
+    from decimal import Decimal, InvalidOperation
+    selected = {}
+    for row in rows:
+        key = (row.get("period", ""), row["metric"])
+        # Prefer the numeric row when two stores contain the same disclosed value.
+        if key not in selected or isinstance(row["value"], (int, float)):
+            selected[key] = row
+    values = []
+    for row in selected.values():
+        unit = str(row.get("unit", ""))
+        for old, new in {"millions HKD": "百万港元", "HKD million": "百万港元", "millions CNY": "百万元人民币", "CNY million": "百万元人民币", "millions USD": "百万美元"}.items():
+            unit = unit.replace(old, new)
+        period = re.sub(r"H1\s*(20\d{2})", r"\1年上半年", str(row.get("period", "")))
+        period = re.sub(r"FY\s*(20\d{2})", r"\1财年", period)
+        label = row["metric"]
+        try:
+            if label == "资本开支" and Decimal(str(row['value']).replace(',', '')) < 0:
+                label = "资本开支现金流（负值表示流出）"
+        except InvalidOperation:
+            pass
+        values.append(f"{period} {label} {row['value']} {unit}".strip())
+    return "；".join(values)
+
+
+def assess_field(pack: dict, result: dict, field: str, validator):
+    candidate = (result.get("fields") or {}).get(field, "")
+    supplied = (result.get("sources") or {}).get(field, [])
+    sources = supplied if isinstance(supplied, list) else []
+    matched = [r for r in pack["web_research"]["results"] if r["field"] == field and r["url"] in sources]
+    evidence = {"database": pack["evidence"][field], "pages": [{"title": r["title"], "text": r["text"], "publishedAt": r["publishedAt"]} for r in matched]}
+    valid, text, reason = validator(field, candidate, evidence)
+    if field in pack["missing"] and not matched:
+        valid, reason = False, "补查内容未引用对应公司的原文"
+    if field in {"revenue", "profit", "capex", "dividend"} and field not in pack["missing"]:
+        valid, text, reason = True, pack["evidence"][field], "采用数据库原值"
+    return valid, text, reason, matched
 
 
 def build_model(root: Path, companies: list[str], *, ai_client, validator, progress=print,
@@ -262,23 +351,45 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
             pack["evidence"][field] = ""
     save_json(run_dir / "inputs.json", {"companies": packs})
     returned, errors = {}, []
-    # One report Agent, bounded company batches, independent of six daily Agents.
-    for start in range(0, len(packs), 2):
-        batch = packs[start:start + 2]
-        progress(f"[业绩摘要 Agent] 整理 {start + 1}–{min(start + 2, len(packs))}/{len(packs)} 家公司并核对来源。")
+    # One report Agent; each company has a bounded input and at most one repair.
+    for start, pack in enumerate(packs):
+        batch = [pack]
+        progress(f"[业绩摘要 Agent] 整理 {start + 1}/{len(packs)}：{pack['company']}，核对来源。")
         try:
             editor_batch = []
             for pack in batch:
                 documents = {}
                 for page in pack["web_research"]["results"]:
-                    document = documents.setdefault(page["url"], {**page, "fields": []})
+                    document = documents.setdefault(page["url"], {**page, "fields": [], "excerpts": {}})
                     if page["field"] not in document["fields"]:
                         document["fields"].append(page["field"])
+                    document["excerpts"][page["field"]] = page["text"]
+                for document in documents.values():
+                    document["text"] = "\n".join(f"{field}: {value}" for field, value in document.pop("excerpts").items())[:14000]
                 editor_batch.append({"company": pack["company"], "asOf": pack["asOf"],
                     "evidence": pack["evidence"], "missing": pack["missing"],
                     "web_research": {"results": list(documents.values())}})
             response, _model = ai_client(editor_batch)
             returned.update({item["company"]: item for item in response.get("companies", [])})
+            draft = returned.get(pack["company"], {})
+            feedback = {}
+            for field in FIELDS:
+                valid, _text, reason, _matched = assess_field(pack, draft, field, validator)
+                if not valid and any(page["field"] == field for page in pack["web_research"]["results"]):
+                    feedback[field] = reason
+            if feedback:
+                progress(f"[业绩摘要 Agent] 复核 {pack['company']} 的 {len(feedback)} 个字段，按原文修正。")
+                retry_pack = {**editor_batch[0], "previousDraft": draft, "revisionFeedback": feedback}
+                try:
+                    response, _model = ai_client([retry_pack])
+                    revised = next((item for item in response.get("companies", []) if item.get("company") == pack["company"]), {})
+                    for field in feedback:
+                        if assess_field(pack, revised, field, validator)[0]:
+                            draft.setdefault("fields", {})[field] = revised["fields"][field]
+                            draft.setdefault("sources", {})[field] = revised.get("sources", {}).get(field, [])
+                    returned[pack["company"]] = draft
+                except Exception as exc:
+                    errors.append({"stage": "report_revision", "reason": str(exc)[:200], "companies": [pack["company"]]})
         except Exception as exc:
             progress("[业绩摘要局限][report_agent] 该批整理暂未完成，保留已核实的数据与缺项状态。")
             errors.append({"stage": "report_agent", "reason": str(exc)[:200], "companies": [p["company"] for p in batch]})
@@ -288,18 +399,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
         result = returned.get(company, {})
         fields, states = {}, {}
         for field in FIELDS:
-            candidate = (result.get("fields") or {}).get(field, "")
-            supplied = (result.get("sources") or {}).get(field, [])
-            sources = supplied if isinstance(supplied, list) else []
-            matched = [r for r in pack["web_research"]["results"] if r["field"] == field and r["url"] in sources]
-            evidence = {"database": pack["evidence"][field], "pages": [{"title": r["title"], "text": r["text"], "publishedAt": r["publishedAt"]} for r in matched]}
-            valid, text, reason = validator(field, candidate, evidence)
-            # New facts require a cited page for that exact company/field.
-            if field in pack["missing"] and not matched:
-                valid, reason = False, "缺项补查未获得可追溯的近期原文"
-            if field in {"revenue", "profit", "capex", "dividend"} and field not in pack["missing"]:
-                # Database amounts, signs, currencies and periods are locked.
-                valid, text, reason = True, pack["evidence"][field], "采用数据库原值"
+            valid, text, reason, matched = assess_field(pack, result, field, validator)
             fields[field] = text if valid else pack["evidence"][field] or UNCONFIRMED
             states[field] = {"accepted": valid, "reason": reason, "sources": [r["url"] for r in matched],
                              "databaseRows": pack["database"][field], "needsResearch": field in pack["missing"]}
@@ -318,7 +418,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
     save_json(run_dir / "audit.json", proof)
     progress(f"[业绩摘要 Agent] 核验完成；{len(unresolved)} 项未取得可确认的新信息，按真实状态保留。")
     model = {"title": "内地运营商及香港主要竞对关键业绩摘要", "subtitle": "战略部（智库）对标分析简报",
-             "intro": f"本摘要截至{clock.year}年{clock.month}月{clock.day}日，汇总正式数据库的最近已保存业绩，并补查缺项及近期券商观点。各项保留原报告期间、币种与主体口径；未取得可核实信息的项目明确标注。",
+             "intro": f"本摘要截至{clock.year}年{clock.month}月{clock.day}日，汇总内地运营商及香港主要竞对最近已披露业绩、资本配置与公开市场观点。各项保留原报告期间、币种与主体口径；观点注明原来源及日期，缺项以“-”表示。",
              "table_caption": "表：内地运营商及香港主要竞对最新关键业绩数据汇总", "table": table, "sections": sections,
              "generationMode": "limited" if unresolved or errors else "normal", "generationLimitations": errors,
              "researchAudit": proof}

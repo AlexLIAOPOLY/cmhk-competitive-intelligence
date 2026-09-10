@@ -3541,7 +3541,12 @@
   }
 
   function reportKindForPath(path) {
-    const item = (state.status?.outputs || []).find((output) => output.path_str === path);
+    // A freshly generated report can reach the list before the workspace poll.
+    const row = [...document.querySelectorAll('.workspace-report-host .file-row[data-path]')].find(node => node.dataset.path === path);
+    const item = (state.status?.outputs || []).find((output) => output.path_str === path) || (row?.dataset.reportType ? {
+      path_str: path, name: row.dataset.reportName, reportType: row.dataset.reportType,
+      url: row.querySelector('a[download]')?.getAttribute('href') || '',
+    } : null);
     if (!item) return null;
     if (item.reportType === "weekly") return { item, kind: "weekly" };
     if (item.reportType === "carrier-performance") return { item, kind: "performance" };
@@ -3999,7 +4004,7 @@
       try { newsDatePicker.showPicker(); } catch (_error) { /* Native input remains keyboard-operable. */ }
     }
     const row = event.target.closest(".workspace-report-host .file-row[data-path]");
-    if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input, .file-name-editable")) showReportPreview(row.dataset.path);
+    if (row && !row.classList.contains("with-select") && !event.target.closest("button, a, input")) showReportPreview(row.dataset.path);
     const editPreview = event.target.closest("[data-report-editor-path]");
     if (editPreview) window.CMHKReportEditor?.open(editPreview.dataset.reportEditorPath);
     const expandPreview = event.target.closest("[data-report-preview-expand]");
