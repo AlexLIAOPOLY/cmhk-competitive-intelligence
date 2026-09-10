@@ -254,6 +254,142 @@
     const groups = finalReviewGroups(items);
     return `可入库 ${groups.ready.length} 项 · 库内已有 ${groups.existing.length} 项 · 不可入库 ${groups.rejected.length} 项`;
   }
+  function matrixModel(node, snapshot, date) {
+    const data = snapshot?.date === date ? snapshot : {};
+    const run = data.run;
+    const allReports = (data.agents || []).flatMap((agent) => agent.reports || []);
+    const rawItems = allReports.flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company })));
+    const finalItems = data.result_items || [];
+    const receipts = run?.publication?.storage_readback?.items || [];
+    const identity = (item) => JSON.stringify([item.company, item.metric]);
+    const index = (items) => {
+      const map = new Map();
+      items.forEach((item) => { const key = identity(item); if (!map.has(key)) map.set(key, []); map.get(key).push(item); });
+      return map;
+    };
+    const rawIndex = index(rawItems), finalIndex = index(finalItems), receiptIndex = index(receipts);
+    const byId = new Map(finalItems.filter((item) => item.id).map((item) => [item.id, item]));
+    const finished = run && ["completed", "partial", "error", "cancelled"].includes(run.display_status || run.status);
+    const outcome = (item) => {
+      if (!item) return { key: "pending", label: finished ? "未取得结果" : "待检索" };
+      const state = item.write_preflight?.status;
+      if (state === "duplicate") {
+        const primary = byId.get(item.write_preflight.represented_by);
+        if (primary && primary.company === item.company && primary.write_preflight?.status !== "duplicate") {
+          const result = outcome(primary);
+          return { ...result, label: `${result.label}·合并` };
+        }
+        return { key: "rejected", label: "合并待核对" };
+      }
+      if (state === "existing" || (!state && (item.research_status || item.status) === "no_update")) return { key: "existing", label: "库内已有" };
+      if (state === "rejected") return { key: "rejected", label: "不可入库" };
+      if (state === "ready") {
+        const saved = receiptIndex.get(identity(item)) || [];
+        if (saved.length && saved.every((receipt) => ["written", "saved"].includes(receipt.main_table?.status))) return { key: "written", label: "已入库" };
+        if (saved.length) return { key: "rejected", label: "未入库" };
+        return { key: "ready", label: "可入库" };
+      }
+      if (state === "pending") return { key: "pending", label: "待核对" };
+      const researchState = item.research_status || item.status;
+      if (researchState === "not_applicable") return { key: "na", label: "不适用" };
+      if (["running", "pending"].includes(researchState)) return { key: "pending", label: finished ? "未取得结果" : "检索中" };
+      if (researchState === "verified" || item.decision === "accepted") return { key: "ready", label: "研究通过" };
+      return { key: "rejected", label: "不可入库" };
+    };
+    const plan = data.plan || run?.plan || [];
+    const scoped = node.assignment?.key && node.key !== "research-merge"
+      ? plan.filter((task) => task.key === node.assignment.key) : plan;
+    return scoped.map((task) => {
+      const companies = [...new Set([...(task.companies || []), ...(data.agents || []).filter((agent) => agent.key === task.key).flatMap((agent) => (agent.reports || []).map((report) => report.company))])];
+      const rows = companies.map((company) => {
+        const reports = allReports.filter((report) => report.company === company);
+        const metrics = [...new Set(reports.flatMap((report) => [...(report.metrics || []), ...(report.items || []).map((item) => item.metric)]).filter(Boolean))];
+        // Archived contracts win; never infer old tasks from today's metric catalog.
+        return { company, cells: metrics.map((metric) => {
+          const key = identity({ company, metric });
+          const raw = rawIndex.get(key) || [];
+          const final = finalIndex.get(key) || [];
+          const items = final.length ? final : raw;
+          const outcomes = items.length ? items.map(outcome) : [outcome(null)];
+          const result = outcomes.every((current) => current.key === outcomes[0].key && current.label === outcomes[0].label)
+            ? outcomes[0] : { key: "mixed", label: "结果不一" };
+          const representative = items[0]?.write_preflight?.status === "duplicate" ? byId.get(items[0].write_preflight.represented_by) : null;
+          const targetMetric = representative?.company === company ? representative.metric : metric;
+          return { company, metric, targetMetric, ...result, items, raw, receipts: receiptIndex.get(identity({ company, metric: targetMetric })) || [] };
+        }) };
+      });
+      return { key: task.key, title: childTitle(task.title), rows, metrics: [...new Set(rows.flatMap((row) => row.cells.map((cell) => cell.metric)))] };
+    });
+  }
+  function researchMatrix(node, snapshot, date) {
+    const groups = matrixModel(node, snapshot, date);
+    const count = groups.reduce((total, group) => total + group.rows.reduce((sum, row) => sum + row.cells.length, 0), 0);
+    const companyCount = groups.reduce((total, group) => total + group.rows.length, 0);
+    return `<section class="news-lineage-dialog-section research-matrix"><header><h3>公司 × 指标检索矩阵</h3><span>${companyCount} 家公司 · ${count} 项已明确指标</span></header>
+      <p class="research-matrix-note">按本轮保存的任务列出应检索指标，颜色表示目前最后确认的结果。点击格子跳到对应明细；研究通过、可入库与已入库分别标示。</p>
+      <div class="research-matrix-legend" aria-label="矩阵结果图例">${[["written", "已入库"], ["ready", "研究通过 / 可入库"], ["existing", "库内已有"], ["rejected", "不可入库 / 未入库"], ["pending", "待检索 / 待核对 / 未取得结果"], ["na", "不适用"]].map(([key, label]) => `<span class="is-${key}"><i aria-hidden="true"></i>${label}</span>`).join("")}</div>
+      ${groups.length > 1 ? `<div class="research-matrix-groups" role="group" aria-label="选择研究组">${groups.map((group, index) => `<button type="button" data-matrix-group="${esc(group.key)}" aria-pressed="${index === 0}">${esc(group.title.replace(/研究子 Agent$/, ""))}</button>`).join("")}</div>` : ""}
+      ${groups.map((group, index) => `<section data-matrix-panel="${esc(group.key)}" aria-label="${esc(group.title)}检索矩阵"${index ? " hidden" : ""}><div class="research-matrix-scroll" role="region" aria-label="公司指标矩阵，可横向滚动" tabindex="0"><table><thead><tr><th scope="col">公司 / 对象</th>${group.metrics.map((metric) => `<th scope="col">${esc(metric)}</th>`).join("") || '<th scope="col">检索指标</th>'}</tr></thead><tbody>${group.rows.map((row) => `<tr><th scope="row">${esc(row.company)}</th>${!row.cells.length ? `<td colspan="${group.metrics.length || 1}" class="research-matrix-unassigned">本轮尚未保存该公司的指标清单</td>` : group.metrics.map((metric) => {
+        const cell = row.cells.find((item) => item.metric === metric);
+        if (!cell) return '<td class="research-matrix-outside" aria-label="不在该公司的检索清单">—</td>';
+        const details = cell.items.length ? cell.items.map((item) => {
+          const raw = cell.raw.find((record) => record.metric === item.metric) || {};
+          const reason = item.write_preflight?.reason || item.reason || (item.reasons || []).join("；") || raw.reason || "未保存判断依据";
+          return `<p>${esc(metricValue(item))} · ${esc(item.period || "报告期未取得")}</p><p>${esc(businessReason(reason))}</p><p>${(item.sources || raw.sources || [item.source_url || raw.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>") || "尚未取得可用来源"}</p>`;
+        }).join("") : '<p>该指标在本轮检索清单内，尚未保存处理结果；不能视为库内已有或已完成。</p>';
+        return `<td><button type="button" class="research-matrix-cell is-${cell.key}" data-matrix-company="${esc(cell.company)}" data-matrix-metric="${esc(cell.metric)}" data-matrix-target-metric="${esc(cell.targetMetric)}" aria-label="${esc(`${cell.company} · ${cell.metric} · ${cell.label}，点击查看明细`)}" title="${esc(`${cell.company} · ${cell.metric}：${cell.label}`)}">${esc(cell.label)}</button><template><h4>${esc(cell.company)} · ${esc(cell.metric)} <span>${esc(cell.label)}</span></h4>${details}${cell.receipts.map((receipt) => `<p>正式表回读：${esc(receipt.main_table?.reason || receipt.reason || "未保存回读说明")} · 当前值 ${esc(receipt.main_table?.current_value ?? "未确认")}</p>`).join("")}</template></td>`;
+      }).join("")}</tr>`).join("")}</tbody></table></div></section>`).join("") || '<p class="research-matrix-note">所选日期尚无可读取的公司与指标清单。</p>'}
+      <p class="research-matrix-note">“—”表示不在该公司的检索清单；标有“合并”的提交可跳到主指标依据。较宽的矩阵可左右滚动。</p>
+    </section><section class="news-lineage-dialog-section research-matrix-selection" data-matrix-selection tabindex="-1" hidden></section>`;
+  }
+  function mountMatrix(root) {
+    const matrix = root.querySelector(".research-matrix");
+    if (!matrix || matrix.dataset.mounted) return;
+    matrix.dataset.mounted = "true";
+    const selection = root.querySelector("[data-matrix-selection]");
+    matrix.querySelectorAll("[data-matrix-group]").forEach((button) => button.addEventListener("click", () => {
+      matrix.querySelectorAll("[data-matrix-group]").forEach((tab) => tab.setAttribute("aria-pressed", String(tab === button)));
+      matrix.querySelectorAll("[data-matrix-panel]").forEach((panel) => { panel.hidden = panel.dataset.matrixPanel !== button.dataset.matrixGroup; });
+    }));
+    const jump = (target) => {
+      target.tabIndex = -1;
+      target.focus({ preventScroll: true });
+      target.scrollIntoView({ block: "start", behavior: "instant" });
+    };
+    matrix.querySelectorAll("[data-matrix-company]").forEach((button) => button.addEventListener("click", () => {
+      const company = button.dataset.matrixCompany, metric = button.dataset.matrixMetric;
+      matrix.querySelectorAll("[data-matrix-company]").forEach((cell) => cell.classList.toggle("is-selected", cell === button));
+      const section = root.querySelector(".research-decisions");
+      const row = [...root.querySelectorAll("[data-research-row]")].find((item) => item.dataset.company === company
+        && (item.dataset.metric === metric || JSON.parse(item.dataset.mergedMetrics || "[]").includes(metric)));
+      if (section && row) {
+        selection.hidden = true;
+        const category = row.closest("[data-research-panel]").dataset.researchPanel;
+        [...section.querySelectorAll("[data-research-filter]")].find((tab) => tab.dataset.researchFilter === category).click();
+        section.querySelector("[data-research-company]").value = company;
+        const metricSelect = section.querySelector("[data-research-metric]");
+        metricSelect.value = row.dataset.metric;
+        metricSelect.dispatchEvent(new Event("change"));
+        // Keep the matching row below the sticky filtering toolbar.
+        row.style.scrollMarginTop = `${section.querySelector(".research-decision-controls").offsetHeight + 16}px`;
+        if (row.dataset.metric !== metric) row.querySelector(".research-record-source").open = true;
+        jump(row);
+        return;
+      }
+      const storedRow = [...root.querySelectorAll("[data-research-storage-row]")].find((item) => item.dataset.company === company && item.dataset.metric === button.dataset.matrixTargetMetric);
+      if (storedRow) {
+        selection.hidden = true;
+        for (let parent = storedRow.parentElement; parent && parent !== root; parent = parent.parentElement) {
+          if (parent.tagName === "DETAILS") parent.open = true;
+        }
+        jump(storedRow);
+        return;
+      }
+      selection.innerHTML = button.nextElementSibling.innerHTML;
+      selection.hidden = false;
+      jump(selection);
+    }));
+  }
   function decisionGroups(node, snapshot, date) {
     const data = snapshot?.date === date ? snapshot : {};
     const reports = (node.agent ? [node.agent] : data.agents || []).flatMap((a) => (a.reports || []).flatMap((r) => (r.items || []).map((i) => ({ ...i, company: r.company }))));
@@ -272,58 +408,74 @@
     const categories = Object.entries(groups).filter(([key]) => key !== "pending" || groups.pending.length);
     const shortLabels = { ...labels, existing: "库内已有", duplicate: "本轮重复" };
     const displayCount = categories.reduce((count, [, rows]) => count + rows.length, 0);
+    const filterItems = categories.flatMap(([, rows]) => rows);
+    const filterOptions = (field) => [...new Set(filterItems.map((item) => String(item[field] ?? "")).filter(Boolean))]
+      .sort((a, b) => a.localeCompare(b, "zh-Hans-CN", { numeric: true }))
+      .map((value) => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
     return `<section class="news-lineage-dialog-section research-decisions" data-research-view="${esc(`${date}/${node.key}`)}"><header><h3>${final ? "终审入库判断" : "本Agent指标与判断"}</h3><span>共 ${displayCount} 项${final ? "指标 · 同指标提交已合并" : " · 按判断分类"}</span></header>
-      <div class="research-decision-controls"><div class="research-decision-toolbar"><div class="research-decision-switcher" role="group" aria-label="按入库判断筛选">${categories.map(([key, rows], index) => `<button type="button" data-research-filter="${key}" aria-pressed="${index === 0}" title="${labels[key]}"><span>${shortLabels[key]}</span><b>${rows.length}</b></button>`).join("")}</div><label class="research-decision-search"><span>搜索指标</span><input type="search" data-research-search placeholder="公司、指标或原因" aria-label="搜索公司、指标或原因" autocomplete="off"></label></div><div class="research-decision-meta"><p data-research-description>${descriptions.ready}</p><div class="research-decision-pagination"><span data-research-page-status role="status" aria-live="polite"></span><button type="button" data-research-page="-1" aria-label="上一页指标">上一页</button><button type="button" data-research-page="1" aria-label="下一页指标">下一页</button></div></div></div>
+      <div class="research-decision-controls"><div class="research-decision-toolbar"><div class="research-decision-switcher" role="group" aria-label="按入库判断筛选">${categories.map(([key, rows], index) => `<button type="button" data-research-filter="${key}" aria-pressed="${index === 0}" title="${labels[key]}"><span>${shortLabels[key]}</span><b>${rows.length}</b></button>`).join("")}</div><div class="research-decision-filters" role="group" aria-label="筛选指标"><label><span>公司/对象</span><select data-custom-select="native" data-research-company aria-label="筛选公司或对象"><option value="">全部公司/对象</option>${filterOptions("company")}</select></label><label><span>指标</span><select data-custom-select="native" data-research-metric aria-label="筛选指标"><option value="">全部指标</option>${filterOptions("metric")}</select></label><button type="button" data-research-clear disabled>清除</button></div></div><div class="research-decision-meta"><p data-research-description>${descriptions.ready}</p><div class="research-decision-pagination"><span data-research-page-status role="status" aria-live="polite"></span><button type="button" data-research-page="-1" aria-label="上一页指标">上一页</button><button type="button" data-research-page="1" aria-label="下一页指标">下一页</button></div></div></div>
       ${categories.map(([key, rows], index) => `<section class="research-decision-panel is-${key}" data-research-panel="${key}" data-description="${esc(descriptions[key])}" aria-label="${labels[key]}指标明细"${index ? " hidden" : ""}><table class="research-decision-table"><thead><tr><th scope="col">公司／具体指标</th><th scope="col">数值／报告期</th><th scope="col">判断原因与依据</th></tr></thead><tbody>${rows.map((raw) => {
       const old = raw.latest_baseline;
       const item = key === "existing" && old ? { ...raw, ...old } : raw;
       const target = raw.write_preflight || {};
       const reason = target.reason || raw.reason || (raw.reasons || []).join("；") || "未保存判断依据，不能据此确认可入库";
-      const search = [raw.company, raw.metric, metricValue(item), item.period, businessReason(reason), target.field].join(" ").toLocaleLowerCase();
-      return `<tr data-research-row data-search="${esc(search)}"><th scope="row"><strong>${esc(raw.company)}</strong><span>${esc(raw.metric)}</span>${target.field ? `<code>${esc(target.field)}</code>` : ""}</th><td class="research-decision-value"><strong>${esc(metricValue(item))}</strong><span>${esc(item.period || "报告期未取得")}</span>${target.field ? `<small>标准值 ${esc(target.value)} ${esc(target.unit)} · ${esc(target.period)}</small>` : ""}</td><td><p>${esc(businessReason(reason))}</p>${key === "existing" && target.previous_value != null ? `<p>正式表已有值：${esc(target.previous_value)} ${esc(target.unit)}</p>` : ""}<details class="research-record-source"><summary>查看来源与原文依据</summary><p>${(item.sources || [item.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>") || "本条未取得可用来源"}</p><p>${esc(raw.quote || raw.basis || "未保存可用原文摘录")}</p><p>原始判断记录：${esc(reason)}</p>${raw.mergedSubmissions?.length ? `<h4>同指标合并记录</h4><p>以下提交已并入当前指标，不单独计数或再次写入。</p><ul>${raw.mergedSubmissions.map((merged) => `<li><strong>${esc(merged.company)} · ${esc(merged.metric)}</strong><p>${esc(metricValue(merged))} · ${esc(merged.period)}</p><p>${esc(merged.write_preflight?.reason || "同指标合并")}</p><p>${(merged.sources || [merged.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>")}</p></li>`).join("")}</ul>` : ""}</details></td></tr>`;
+      return `<tr data-research-row data-company="${esc(raw.company)}" data-metric="${esc(raw.metric)}" data-merged-metrics="${esc(JSON.stringify((raw.mergedSubmissions || []).map((item) => item.metric)))}"><th scope="row"><strong>${esc(raw.company)}</strong><span>${esc(raw.metric)}</span>${target.field ? `<code>${esc(target.field)}</code>` : ""}</th><td class="research-decision-value"><strong>${esc(metricValue(item))}</strong><span>${esc(item.period || "报告期未取得")}</span>${target.field ? `<small>标准值 ${esc(target.value)} ${esc(target.unit)} · ${esc(target.period)}</small>` : ""}</td><td><p>${esc(businessReason(reason))}</p>${key === "existing" && target.previous_value != null ? `<p>正式表已有值：${esc(target.previous_value)} ${esc(target.unit)}</p>` : ""}<details class="research-record-source"><summary>查看来源与原文依据</summary><p>${(item.sources || [item.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>") || "本条未取得可用来源"}</p><p>${esc(raw.quote || raw.basis || "未保存可用原文摘录")}</p><p>原始判断记录：${esc(reason)}</p>${raw.mergedSubmissions?.length ? `<h4>同指标合并记录</h4><p>以下提交已并入当前指标，不单独计数或再次写入。</p><ul>${raw.mergedSubmissions.map((merged) => `<li><strong>${esc(merged.company)} · ${esc(merged.metric)}</strong><p>${esc(metricValue(merged))} · ${esc(merged.period)}</p><p>${esc(merged.write_preflight?.reason || "同指标合并")}</p><p>${(merged.sources || [merged.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>")}</p></li>`).join("")}</ul>` : ""}</details></td></tr>`;
     }).join("")}</tbody></table><p class="research-empty" data-research-empty hidden>本类暂无记录</p></section>`).join("")}</section>`;
   }
   const decisionViews = new Map();
-  function decisionPage(rows, query, page, size = 20) {
-    const matched = rows.filter((row) => (row.dataset.search || "").includes(query.trim().toLocaleLowerCase()));
+  function decisionPage(rows, filters, page, size = 20) {
+    const matched = rows.filter((row) => (!filters.company || row.dataset.company === filters.company)
+      && (!filters.metric || row.dataset.metric === filters.metric));
     const pages = Math.max(1, Math.ceil(matched.length / size));
     const current = Math.max(0, Math.min(page, pages - 1));
     return { matched, pages, current, visible: matched.slice(current * size, (current + 1) * size) };
   }
   function mount(root) {
+    mountMatrix(root);
     const section = root.querySelector(".research-decisions");
     if (!section || section.dataset.mounted) return;
     section.dataset.mounted = "true";
     const buttons = [...section.querySelectorAll("[data-research-filter]")];
     const panels = [...section.querySelectorAll("[data-research-panel]")];
-    const search = section.querySelector("[data-research-search]");
+    const company = section.querySelector("[data-research-company]");
+    const metric = section.querySelector("[data-research-metric]");
+    const clear = section.querySelector("[data-research-clear]");
     const key = section.dataset.researchView;
-    const view = decisionViews.get(key) || { category: buttons[0].dataset.researchFilter, query: "", page: 0 };
+    const view = decisionViews.get(key) || { category: buttons[0].dataset.researchFilter, company: "", metric: "", page: 0 };
     if (!panels.some((panel) => panel.dataset.researchPanel === view.category)) view.category = buttons[0].dataset.researchFilter;
-    search.value = view.query;
+    [[company, "company"], [metric, "metric"]].forEach(([select, field]) => {
+      if (![...select.options].some((option) => option.value === view[field])) { view[field] = ""; view.page = 0; }
+      select.value = view[field];
+    });
     const render = () => {
       buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.researchFilter === view.category)));
       panels.forEach((panel) => { panel.hidden = panel.dataset.researchPanel !== view.category; });
       const panel = panels.find((item) => !item.hidden);
       const rows = [...panel.querySelectorAll("[data-research-row]")];
-      const result = decisionPage(rows, view.query, view.page);
+      const result = decisionPage(rows, view, view.page);
       view.page = result.current;
       const visible = new Set(result.visible);
       rows.forEach((row) => { row.hidden = !visible.has(row); });
       panel.querySelector("table").hidden = !result.matched.length;
       const empty = panel.querySelector("[data-research-empty]");
       empty.hidden = !!result.matched.length;
-      empty.textContent = rows.length ? "本类没有匹配的公司、指标或原因，请修改搜索词。" : "本类暂无记录。";
+      empty.textContent = rows.length ? "本类没有符合筛选条件的记录，请调整或清除筛选。" : "本类暂无记录。";
       section.querySelector("[data-research-description]").textContent = panel.dataset.description;
       section.querySelector("[data-research-page-status]").textContent = `${result.matched.length} 项 · ${result.current + 1} / ${result.pages} 页`;
       section.querySelector('[data-research-page="-1"]').disabled = result.current === 0;
       section.querySelector('[data-research-page="1"]').disabled = result.current + 1 === result.pages;
+      clear.disabled = !view.company && !view.metric;
       decisionViews.set(key, view);
     };
-    const resetScroll = () => { const content = section.closest(".research-node-detail"); if (content) content.scrollTop = 0; };
+    const resetScroll = () => section.scrollIntoView({ block: "start", behavior: "instant" });
     buttons.forEach((button) => button.addEventListener("click", () => { view.category = button.dataset.researchFilter; view.page = 0; render(); resetScroll(); }));
     section.querySelectorAll("[data-research-page]").forEach((button) => button.addEventListener("click", () => { view.page += Number(button.dataset.researchPage); render(); resetScroll(); }));
-    search.addEventListener("input", () => { view.query = search.value; view.page = 0; render(); resetScroll(); });
+    [company, metric].forEach((select) => select.addEventListener("change", () => {
+      view.company = company.value; view.metric = metric.value; view.page = 0; render(); resetScroll();
+    }));
+    clear.addEventListener("click", () => {
+      view.company = company.value = ""; view.metric = metric.value = ""; view.page = 0; render(); resetScroll();
+    });
     render();
   }
   function actualList(node, snapshot, date) {
@@ -394,6 +546,7 @@
       : isIncremental(run) ? resultCounts((snapshot.agents || []).flatMap((a) => a.reports || [])) : `已核对 ${run.accepted ?? "未提供"} 项，待核对或缺失 ${run.review ?? "未提供"} 项（历史运行未区分新增与重复数据）`;
     return `<header><div><span>${esc(date)} · ${run && !isIncremental(run) ? "历史运行（新增数据未统计）" : "查找最新数据并更新四库"} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(plainText(node.purpose))}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
+      ${researchMatrix(node, snapshot, date)}
       ${node.key === "research-update" ? storageDetails(run) : ["research-dispatch", "research-publish"].includes(node.key) ? actualList(node, snapshot, date) : decisionGroups(node, snapshot, date)}
       <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.key === "research-merge" ? finalReviewSummary(snapshot?.date === date ? snapshot : {}) : node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : aiNote(run?.publication)}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `${updateSummary(run)}。${run?.publication?.database_updated ? "四库写入已完成。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
       ${node.key === "research-publish" && fallbackNote(run?.publication) ? '<section class="news-lineage-dialog-section"><header><h3>AI 未生成原因</h3></header><p>原批次存在模型调用失败或校验未通过，未生成部分不计作 AI 成果。规则结果不再作为 AI 分析展示或发布；原始失败记录保留在运行日志中，数据库已入库结果不受影响。</p></section>' : ""}
@@ -421,8 +574,8 @@
       const tables = new Map();
       rows.forEach((item) => { const path = item.main_table?.path || item.path || "未记录"; if (!tables.has(path)) tables.set(path, []); tables.get(path).push(item); });
       const count = success ? written : Math.max(0, check.accepted - written);
-      return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url, "官方来源") : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
+      return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr data-research-storage-row data-company="${esc(item.company)}" data-metric="${esc(item.metric)}"><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url, "官方来源") : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
     }).join("")}</section>`;
   }
-  window.CmhkResearchDiagram = { build, detail, mount, decisionPage, finalReviewGroups };
+  window.CmhkResearchDiagram = { build, detail, mount, decisionPage, finalReviewGroups, matrixModel };
 })();
