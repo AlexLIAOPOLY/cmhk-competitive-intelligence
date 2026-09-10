@@ -48,7 +48,7 @@ class PerformanceAgentTests(unittest.TestCase):
             self.assertEqual(db.read_bytes(), before)
             self.assertEqual(len(queries), 2)  # Only missing opinions and market reaction.
             self.assertTrue(all('评级' in q or '股价' in q for q in queries))
-            self.assertIn('2026年上半年', model['table'][1][2])
+            self.assertIn('2026H1', model['table'][1][2])
             self.assertEqual(model['researchAudit']['trigger'], 'report_generation_only')
             self.assertEqual({p.name for p in root.iterdir()}, {'formal.json', 'var'})
 
@@ -57,6 +57,15 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertIn('34.80', field_excerpt(text, 'dividend'))
         self.assertEqual(publication_date({'url': 'https://www.hkexnews.hk/2026081300218.pdf'},
             {'text': 'For six months ended 2026-06-30'}).isoformat(), '2026-08-13')
+
+    def test_publication_dates_and_exact_amounts_survive_chinese_editing(self):
+        cases = [
+            ('dividend', '2026年7月29日公告，派发中期股息34.80港仙。', '2026-07-29 interim distribution 34.80 HK cents'),
+            ('broker', '瑞银2026年7月29日维持买入，目标价13.40港元。', 'UBS Buy $13.40 Jul 29, 2026'),
+            ('strategy', '新项目合约额超过22亿港元，推进人工智能转型。', 'new contract value exceeding HK$2.2 billion AI transformation')]
+        for field, text, source in cases:
+            self.assertTrue(valid_ai_performance_field(field, text, source)[0])
+        self.assertFalse(valid_ai_performance_field('broker', '瑞银目标价提高至99港元。', 'UBS target HK$13.40')[0])
 
     def test_database_display_deduplicates_and_excludes_processing_notes(self):
         rows = [{'period': 'H1 2026', 'metric': '收入', 'value': 2846, 'unit': 'millions HKD',

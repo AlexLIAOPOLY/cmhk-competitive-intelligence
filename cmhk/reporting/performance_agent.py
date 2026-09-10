@@ -59,14 +59,16 @@ def market_source_urls(company: str, field: str) -> list[str]:
 
 def field_excerpt(text: str, field: str, limit: int = 4200) -> str:
     """Read relevant passages throughout a filing, including late dividend notes."""
-    passages = [text[:500]]
+    intervals = [(0, min(500, len(text)))]
     for match in re.finditer(FIELD_PATTERNS[field], text, re.I):
-        passage = text[max(0, match.start() - 160):match.end() + 800]
-        if not any(passage in existing for existing in passages):
-            passages.append(passage)
-        if sum(map(len, passages)) >= limit:
+        start, end = max(0, match.start() - 160), min(len(text), match.end() + 800)
+        if start <= intervals[-1][1]:
+            intervals[-1] = (intervals[-1][0], max(end, intervals[-1][1]))
+        else:
+            intervals.append((start, end))
+        if sum(b - a for a, b in intervals) >= limit:
             break
-    return "\n…\n".join(passages)[:limit]
+    return "\n…\n".join(text[a:b] for a, b in intervals)[:limit]
 
 
 def report_search(query: str, limit: int = 3) -> dict:
@@ -136,7 +138,11 @@ def read_public_page(url: str) -> dict:
 @lru_cache(maxsize=20)
 def company_profile(company: str) -> dict:
     from data_curation.workflow import _company_research_profile
-    return _company_research_profile(ALIASES.get(company, company))
+    profile = _company_research_profile(ALIASES.get(company, company))
+    if company == 'HGC':
+        return {**profile, 'official_hosts': list(dict.fromkeys([*profile['official_hosts'], 'hgc.com.hk'])),
+                'seed_urls': ['https://www.hgc.com.hk/cn/', 'https://www.hgc.com.hk/press-releases', *profile['seed_urls']]}
+    return profile
 
 
 def trusted_source(company: str, url: str, field: str) -> bool:
@@ -326,6 +332,21 @@ def assess_field(pack: dict, result: dict, field: str, validator):
     return valid, text, reason, matched
 
 
+def compact_table_value(text: str, field: str) -> str:
+    if not text or text == '-':
+        return '-'
+    text = re.sub(r'[（(]来源[：:].*?[）)]', '', text)
+    text = re.split(r'来源[：:]', text)[0]
+    text = re.sub(r'(20\d{2})年上半年', r'\1H1', text)
+    text = re.sub(r'(20\d{2})财年', r'FY\1', text)
+    text = text.replace('百万元人民币', '百万元').replace('（负值表示流出）', '')
+    if field == 'revenue':
+        text = text.replace('收入 ', '')
+    if field == 'capex':
+        text = text.replace('资本开支现金流', '投资现金流').replace('资本开支 ', '')
+    return text.strip().rstrip('。；')
+
+
 def build_model(root: Path, companies: list[str], *, ai_client, validator, progress=print,
                 search_client=report_search, page_reader=read_public_page, baseline_loader=load_baseline,
                 now=None, run_dir: Path | None = None) -> dict:
@@ -393,6 +414,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
         except Exception as exc:
             progress("[业绩摘要局限][report_agent] 该批整理暂未完成，保留已核实的数据与缺项状态。")
             errors.append({"stage": "report_agent", "reason": str(exc)[:200], "companies": [p["company"] for p in batch]})
+    save_json(run_dir / "drafts.json", returned)
     sections, table, audit = [], [["主体", "最新披露", "收益", "EBITDA / 利润", "资本开支", "派息"]], []
     for pack in packs:
         company = pack["company"]
@@ -405,7 +427,15 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
                              "databaseRows": pack["database"][field], "needsResearch": field in pack["missing"]}
         periods = list(dict.fromkeys(r["period"] for f in ["revenue", "profit", "capex"] for r in pack["database"][f]))
         # Keep the actual period on each numeric field; avoid declaring all fields current.
-        table.append([company, "；".join(periods) or "见各项披露", *[fields[f] for f in ["revenue", "profit", "capex", "dividend"]]])
+        cells = []
+        for field in ['revenue', 'profit', 'capex', 'dividend']:
+            compact = (result.get('tableFields') or {}).get(field, '')
+            # A compact cell is a second presentation of the already accepted fact.
+            ok = (states[field]['accepted'] and 0 < len(compact) <= 70
+                  and validator(field, compact, fields[field])[0])
+            cells.append(compact_table_value(compact if ok else fields[field], field))
+        period_label = re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', '；'.join(periods))
+        table.append([company, period_label or "见正文", *cells])
         sections.append({"company": company, "title": f"{company}关键摘要",
                          "items": [f"{label}：{fields[f]}" for f, label in list(FIELDS.items())[:5]]})
         audit.append({"company": company, "fields": states})

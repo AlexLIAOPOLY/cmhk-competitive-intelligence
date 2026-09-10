@@ -233,11 +233,12 @@ def split_item(item: str) -> tuple[str, str]:
     return label.strip(), content.strip()
 
 
-def clean_text(value: object, limit: int | None = None) -> str:
+def clean_text(value: object, limit: int | None = None, *, preserve_units: bool = False) -> str:
     from html import unescape
     text = re.sub(r"\s+", " ", unescape(str(value or ""))).strip()
     text = text.replace("SOURCE:", "来源：")
-    text = normalize_hkd_units(text)
+    if not preserve_units:
+        text = normalize_hkd_units(text)
     if limit and len(text) > limit:
         return text[: limit - 1].rstrip("，。；,. ") + "…"
     return text
@@ -910,10 +911,24 @@ def enrich_field_with_confirmed_facts(base: str, field_key: str, facts: list[dic
 
 def extract_numeric_tokens(value: object) -> set[str]:
     tokens = set()
-    for raw in re.findall(r"(?<![A-Za-z])\d+(?:[,.]\d+)*(?:\.\d+)?", str(value or "")):
-        normalized = raw.replace(",", "").lstrip("0")
-        tokens.add(normalized or "0")
+    text = str(value or "")
+    for index, month in enumerate(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 1):
+        text = re.sub(rf'\b{month}[a-z]*\s+(\d{{1,2}}),?\s+(20\d{{2}})', rf'\2-{index}-\1', text, flags=re.I)
+        text = re.sub(rf'\b(\d{{1,2}})\s+{month}[a-z]*\s+(20\d{{2}})', rf'\2-{index}-\1', text, flags=re.I)
+    for raw in re.findall(r"(?<![A-Za-z])\d+(?:[,.]\d+)*(?:\.\d+)?", text):
+        tokens.add(format(Decimal(raw.replace(',', '')).normalize(), 'f'))
     return tokens
+
+
+def equivalent_scaled_numbers(candidate: str, evidence: object) -> set[str]:
+    scales = {'trillion': '1000000000000', 'billion': '1000000000', 'million': '1000000',
+              '亿': '100000000', '百万': '1000000', '万': '10000', '千': '1000'}
+    pattern = r'(\d+(?:[,.]\d+)*)\s*(trillion|billion|million|百万|亿|万|千)'
+    def values(text):
+        return [(Decimal(n.replace(',', '')), Decimal(n.replace(',', '')) * Decimal(scales[unit.lower()]))
+                for n, unit in re.findall(pattern, str(text), re.I)]
+    supported = {scaled for _, scaled in values(evidence)}
+    return {format(number.normalize(), 'f') for number, scaled in values(candidate) if scaled in supported}
 
 
 def extract_json_payload(value: object) -> dict:
@@ -957,7 +972,8 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         "战略重点、券商分歧和股价反应。strategy控制在90至240字，其他字段控制在25至140字，每个字段一至三句。"
         "如果证据没有相关信息，该字段只写短横线-，不得反复写未找到或未披露。不得写来源编号、抓取过程、AI过程或对CMHK的套话。strategy必须是业务战略或进展，不能只抄收入利润；不是上市主体不能编造其股价。"
         "若含revisionFeedback，只修正其中未通过项：使用原文直接支持的数字与原单位、提供准确对应URL；其余字段保持已有结果。"
-        "另外输出revenue（收入）和profit（EBITDA及净利润）用于汇总表，保留原始期间和币种。每字段只能写其evidence或相同field原文支持的内容，不得跨字段挪用数字。只返回合法JSON，不要Markdown。"
+        "另外输出revenue（收入）和profit（EBITDA及净利润）用于汇总表，保留原始期间和币种。每字段只能写其evidence或相同field原文支持的内容，不得跨字段挪用数字。"
+        "另输出tableFields，含revenue、profit、capex、dividend四个精简表格值，各8至45字，仅保留期间、数值和单位，不放长句或来源。不能改变fields中的数值口径。只返回合法JSON，不要Markdown。"
     )
     user_prompt = (
         "返回结构：{\"companies\":[{\"company\":\"输入公司名\",\"fields\":{"
@@ -1091,13 +1107,13 @@ def call_performance_editor_batches(
 
 
 def valid_ai_performance_field(field_key: str, candidate: object, evidence: object) -> tuple[bool, str, str]:
-    text = _SIMPLIFIED_CHINESE_CONVERTER.convert(clean_text(candidate))
+    text = _SIMPLIFIED_CHINESE_CONVERTER.convert(clean_text(candidate, preserve_units=True))
     maximum = 260 if field_key == "strategy" else 160
     if len(text) < 8 or len(text) > maximum:
         return False, text, f"长度不在8至{maximum}字"
     if not is_publishable_field(text):
         return False, text, "未通过可发布文本门禁"
-    invented_numbers = extract_numeric_tokens(text) - extract_numeric_tokens(evidence)
+    invented_numbers = extract_numeric_tokens(text) - extract_numeric_tokens(evidence) - equivalent_scaled_numbers(text, evidence)
     if invented_numbers:
         return False, text, "出现事实包之外的数字：" + ", ".join(sorted(invented_numbers))
     return True, text, ""
@@ -1605,7 +1621,7 @@ def sanitize_performance_model(model: dict, *, progress=print) -> dict:
     for section in model.get("sections") or []:
         sanitized_items = []
         for item in section.get("items") or []:
-            text = clean_text(item, 500)
+            text = clean_text(item, 500, preserve_units=True)
             found = [phrase for phrase in PERFORMANCE_FORBIDDEN_REPORT_PHRASES if phrase in text]
             if found:
                 label, _content = split_item(text)
