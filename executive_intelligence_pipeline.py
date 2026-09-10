@@ -29,6 +29,7 @@ from cmhk.data_releases import default_release_root, publish_quarterly_release_t
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
 from ai_key_rotation import open_llm_request
+from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY, model_generated_only
 
 
 ROOT = Path(__file__).resolve().parent
@@ -1368,43 +1369,8 @@ def _repair_focus_conciseness(raw: Any, evidence: dict[str, Any]) -> Any:
 
 
 def _repair_model_summaries(raw: Any, evidence: dict[str, Any]) -> Any:
-    repaired = _repair_focus_conciseness(
-        _repair_entity_evidence_labels(
-            _repair_focus_business_implications(
-                _repair_focus_numeric_anchors(raw, evidence),
-                evidence,
-            ),
-            evidence,
-        ),
-        evidence,
-    )
-    evidence_by_domain = {
-        str(domain.get("id") or ""): domain for domain in evidence.get("domains") or []
-    }
-    if not isinstance(repaired, list):
-        return repaired
-    for domain in repaired:
-        if not isinstance(domain, dict):
-            continue
-        domain_id = str(domain.get("domain") or "")
-        evidence_domain = evidence_by_domain.get(domain_id) or {}
-        focus_analyses = [
-            str(focus.get("analysis") or "").strip()
-            for focus in domain.get("focuses") or []
-            if isinstance(focus, dict) and str(focus.get("analysis") or "").strip()
-        ]
-        if not str(domain.get("headline") or "").strip():
-            domain["headline"] = f"{evidence_domain.get('title') or domain_id}竞争信号已形成量化判断"
-        if not str(domain.get("analysis") or "").strip():
-            domain["analysis"] = " ".join(focus_analyses[:2]) or str(
-                evidence_domain.get("deterministic_insight") or "当前证据已完成量化校验。"
-            )
-        if not str(domain.get("risk") or "").strip():
-            domain["risk"] = "仅基于当前已核验来源与披露口径；跨期间、代理分部和缺失值不作因果推断。"
-        if not isinstance(domain.get("source_urls"), list):
-            domain["source_urls"] = []
-    return repaired
-
+    """Preserve model prose. Validation failures must go back to the model."""
+    return json.loads(json.dumps(raw, ensure_ascii=False))
 
 def _validate_model_summaries(
     raw: Any,
@@ -1499,7 +1465,7 @@ def _validate_model_summaries(
                     not validated_focus["headline"]
                     or any(term in validated_focus["headline"] for term in _OVERVIEW_DIRECT_HEADLINE_TERMS)
                 ):
-                    validated_focus["headline"] = _strategic_focus_headline(domain, focus_id)
+                    raise ValueError(f"AI分析标题缺少战略判断：{domain}.{focus_id}")
                 if (domain, focus_id) == ("local", "financials") and any(
                     term in validated_focus["headline"]
                     for term in ("披露", "发布", "数量", "密度", "完整度", "口径", "边界")
@@ -1512,7 +1478,7 @@ def _validate_model_summaries(
                 if validated_focus["headline"] and re.sub(r"\s+", "", validated_focus["headline"]) == re.sub(
                     r"\s+", "", str(evidence_focus.get("label") or "")
                 ):
-                    validated_focus["headline"] = str(evidence_focus.get("headline") or "").strip()
+                    raise ValueError(f"AI标题不得照抄指标名称：{domain}.{focus_id}")
                 unknown_focus_urls = set(validated_focus["source_urls"]) - allowed_urls
                 if unknown_focus_urls:
                     raise ValueError(f"AI分析分类引用了输入之外的来源：{sorted(unknown_focus_urls)}")
@@ -1615,117 +1581,12 @@ def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
 
 
 def _repair_discovery_conciseness(raw: Any) -> Any:
-    """Fit otherwise valid model discoveries into the published card contract."""
-    if not isinstance(raw, list):
-        return raw
+    """Do not synthesize interpretive phrases or replace a model conclusion."""
+    return json.loads(json.dumps(raw, ensure_ascii=False))
 
-    def clip(value: Any, limit: int) -> str:
-        text = re.sub(r"\s+", " ", str(value or "")).strip()
-        if len(text) <= limit:
-            return text
-        clauses = [part.strip() for part in re.split(r"(?<=[。！？；;])", text) if part.strip()]
-        kept: list[str] = []
-        for clause in clauses:
-            candidate = "".join([*kept, clause])
-            if len(candidate) > limit:
-                break
-            kept.append(clause)
-        if kept:
-            return "".join(kept).strip()
-        return text[:limit].rstrip("，、；;：: ")
-
-    repaired: list[Any] = []
-    for item in raw:
-        if not isinstance(item, dict):
-            repaired.append(item)
-            continue
-        title = clip(item.get("title"), 28)
-        detail = clip(item.get("detail"), 110)
-        if not any(term in f"{title}。{detail}" for term in _INTERPRETIVE_CONNECTORS):
-            detail = clip(f"这表明{detail}", 110)
-        repaired.append({
-            **item,
-            "title": title,
-            "detail": detail,
-            "kind": clip(item.get("kind") or "AI综合研判", 12),
-        })
-    return repaired
-
-
-def _repair_discovery_depth(
-    raw: Any,
-    evidence: dict[str, Any],
-) -> tuple[Any, int]:
-    """Strengthen only shallow model cards with a gated evidence-only sentence.
-
-    The model still selects the cross-domain pairing and title. If its detail
-    only juxtaposes numbers, reuse the already validated deterministic detail
-    for that same pair. Unknown pairs, numbers, URLs and other contract errors
-    are not repaired and continue to fail closed in the validator.
-    """
-    if not isinstance(raw, list):
-        return raw, 0
-    if not _numeric_tokens(evidence):
-        return raw, 0
-    if all(
-        not isinstance(item, dict)
-        or _has_deep_interpretation(
-            f"{item.get('title') or ''}。{item.get('detail') or ''}"
-        )
-        for item in raw
-    ):
-        return raw, 0
-    try:
-        deterministic = _deterministic_discoveries(evidence)
-    except ValueError:
-        return raw, 0
-    deterministic_by_pair = {
-        tuple(sorted((str(item.get("from") or ""), str(item.get("to") or "")))): item
-        for item in deterministic
-        if isinstance(item, dict)
-    }
-    repaired: list[Any] = []
-    repair_count = 0
-    for item in raw:
-        if not isinstance(item, dict):
-            repaired.append(item)
-            continue
-        combined = f"{item.get('title') or ''}。{item.get('detail') or ''}"
-        if _has_deep_interpretation(combined):
-            repaired.append(item)
-            continue
-        pair = tuple(sorted((str(item.get("from") or ""), str(item.get("to") or ""))))
-        seed = deterministic_by_pair.get(pair)
-        seed_detail = str((seed or {}).get("detail") or "").strip()
-        if seed_detail and _has_deep_interpretation(
-            f"{item.get('title') or ''}。{seed_detail}"
-        ):
-            repaired.append({**item, "detail": seed_detail})
-            repair_count += 1
-            continue
-        original_detail = re.sub(r"\s+", " ", str(item.get("detail") or "")).strip()
-        topic_text = f"{item.get('title') or ''} {original_detail}"
-        if re.search(r"用户|客户|ARPU|ARPA|套餐|价格", topic_text, re.I):
-            dimension = "客户与价格口径"
-        elif re.search(r"资本|投入|开支|Capex", topic_text, re.I):
-            dimension = "资本投入结构"
-        elif re.search(r"利润|盈利|EBITDA|营收|收入", topic_text, re.I):
-            dimension = "收入与盈利结构"
-        else:
-            dimension = "经营口径"
-        suffix = f"；差距表明两域{dimension}分化，并非同一口径的直接排名。"
-        prefix = original_detail.rstrip("。；; ")
-        prefix = prefix[: max(0, 110 - len(suffix))].rstrip("，、；;：:。 ")
-        bounded_detail = f"{prefix}{suffix}" if prefix else suffix.lstrip("；")
-        if _has_deep_interpretation(
-            f"{item.get('title') or ''}。{bounded_detail}"
-        ):
-            repaired.append({**item, "detail": bounded_detail})
-            repair_count += 1
-        else:
-            repaired.append(item)
-    return repaired, repair_count
-
+def _repair_discovery_depth(raw: Any, evidence: dict[str, Any]) -> tuple[Any, int]:
+    """Depth is model work, not a deterministic sentence-repair step."""
+    return json.loads(json.dumps(raw, ensure_ascii=False)), 0
 
 def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
     if not isinstance(raw, list) or len(raw) != 4:
@@ -2553,12 +2414,9 @@ def _safe_focus_regeneration_fallback(
 
 
 def generate_model_focus_insight(
-    domain_id: str,
-    focus: dict[str, Any],
-    *,
-    temperature: float = 0.25,
+    domain_id: str, focus: dict[str, Any], *, temperature: float = 0.25,
 ) -> dict[str, Any]:
-    """Generate only the current overview judgement, without repeating entity summaries."""
+    """Generate a single focus with model retries, never template substitutions."""
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
     from network_utils import urlopen_with_local_proxy_fallback
@@ -2568,703 +2426,80 @@ def generate_model_focus_insight(
     if not api_key:
         raise RuntimeError("未配置内网模型密钥")
     focus_id = str(focus.get("id") or "")
-    focus_contracts = {
-        ("local", "financials"): (
-            "只分析同一报告期间、同一币种下的收入与净利润关系；必须至少引用两家公司收入或净利润原值。"
-            "披露项数只作样本完整度边界，不能成为标题或主要结论；不得把FY全年与H1半年直接排名。"
-        ),
-        ("local", "revenue"): "只比较FY2025营收绝对值；必须从至少两家原值提炼收入基础或竞争资源承载力分层，不得只复述高低。",
-        ("local", "ebitda"): "只比较FY2025 EBITDA绝对值；必须解释经营现金创造代理或盈利缓冲分层，不得引入净利润或利润率。",
-        ("local", "net_profit"): "只比较FY2025净利润绝对值；必须解释利润池或盈利韧性分化，不得只写金额差距。",
-        ("local", "postpaid"): "只比较FY2025后付费用户绝对值；从客户基础与经常性收入基础切入，缺失值只能作为样本边界。",
-        ("local", "scale"): "只分析运营商之间去重后在售产品数量的分层与区隔；记录数只作数据质量边界，不能成为标题或主要结论。",
-        ("local", "mobile_price"): "只分析个人5G的月费中位数、价格带重合与价格区隔。",
-        ("local", "fibre_value"): "只分析家宽每千兆月费及合约期对价格优势的影响。",
-        ("local", "overlap"): (
-            "只分析同一套餐类型内的月费区间重合，不得跨套餐类型比较。"
-        ),
-        ("international", "growth"): "只比较Q1 2026四家企业营收同比的正负分层与增长强弱，不解释无证据原因。",
-        ("international", "momentum"): "只比较四家企业本期与上期营收增速变化，说明放缓范围或梯队，不使用驱动、导致等因果词。",
-        ("international", "investment"): "只比较同期间资本开支占营收比例，并明确缺失主体与投入比例不等于投资回报。",
-        ("international", "margin"): "只比较已披露且同口径经营利润率的层次与样本边界，不计算输入外差值。",
-        ("international", "revenue"): "只比较四家公司各自最新完整财年统一折算为百万美元的营收绝对值；十年序列仅留在后台，不得引入增速、利润、资本或用户维度。",
-        ("international", "net_profit"): "只比较四家公司各自最新完整财年统一折算的净利润绝对值；不得引入同比、增速、利润率、资本或用户维度。",
-        ("international", "capex"): "只比较四家公司各自最新完整财年统一折算的资本开支绝对值；必须说明投入规模不等同投资回报。",
-        ("international", "mobile_arpu"): "只比较四家公司各自最新完整财年统一折算的美元/月移动ARPU，并保留用户范围边界。",
-        ("cloud", "revenue"): "只比较FY2024云收入绝对金额；先区分直接云收入口径与代理分部口径，不得引入增速、利润率或自行换算。",
-        ("cloud", "trend"): "只比较同一厂商FY2024至FY2025收入增速方向，说明提速覆盖面与例外主体。",
-        ("cloud", "profit"): "只解释FY2024云利润绝对金额及经营利润、调整后EBITA和代理分部毛利的定义边界；不得引入利润率、增速或自行换算。",
-        ("cloud", "investment"): "只比较FY2024集团资本开支绝对值；提炼资源承载力层次，同时明确集团投入不等于云业务单独投入或投入转化效率。",
-        ("cloud", "margin_change"): "只比较各厂商自身同口径利润率变化的正负方向，不把不同利润定义混成统一排名。",
-        ("macro", "connections"): "只解释登记数量、移动宽带登记和每百人登记的共同变化及多卡/联网设备边界，不等同独立客户。",
-        ("macro", "traffic"): "只比较总流量与每连接流量同比，解释规模和单连接强度差异；禁止使用驱动、导致等因果词。",
-        ("macro", "purchasing"): "只使用当前同月家庭收入、消费物价和输入中的购买力代理原值；不引用旧月份或自行重算。",
-        ("macro", "service"): "只分别解释异期间的投资、投诉及网络供给背景，不比较差值、不建立因果。",
-        ("mainland", "revenue"): "只比较FY2025营收绝对值；必须从至少两家原值提炼收入基础或竞争资源承载力分层，不得只复述高低。",
-        ("mainland", "ebitda"): "只比较FY2025 EBITDA绝对值；必须解释经营现金创造代理或盈利缓冲分层，不得引入净利润或利润率。",
-        ("mainland", "net_profit"): "只比较FY2025净利润绝对值；必须解释利润池或盈利韧性分化，不得只写金额差距。",
-        ("mainland", "postpaid"): "只比较中国移动、中国电信和中国联通FY2025移动客户绝对值；联通必须明确为官方期初加全年净增推导约值。",
-    }
-    focus_contract = focus_contracts.get(
-        (domain_id, focus_id),
-        "只分析当前focus标签、metric和items直接表达的同一指标维度，不得借用其他页面维度。",
-    )
-    recent_insights = list(dict.fromkeys(
-        str(value or "").strip()
-        for value in [focus.get("insight"), *(focus.get("recent_insights") or [])]
-        if str(value or "").strip()
-    ))[-12:]
-    recent_headlines = list(dict.fromkeys(
-        str(value or "").strip()
-        for value in [focus.get("headline"), *(focus.get("recent_headlines") or [])]
-        if str(value or "").strip()
-    ))[-12:]
-    scale_has_record_counts = (
-        (domain_id, focus_id) == ("local", "scale")
-        and any(item.get("record_count") for item in focus.get("items") or [] if isinstance(item, dict))
-    )
-    focus_angle_options = {
-        ("local", "financials"): (
-            "比较H1 2026同期间收入规模与净利润转化的分层，至少引用两家公司原值",
-            "比较同期间收入较高与净利润较高主体是否一致，不计算输入外比率",
-            "从同期间收入梯队与净利润梯队是否同步切入，并保留缺失指标边界",
-            "说明FY全年与H1半年不可混排，同时用H1 2026至少两家公司原值形成战略判断",
-        ),
-        ("local", "mobile_price"): (
-            "比较两家月费中位数与价格带重合，判断中位数差异是否形成清晰区隔",
-            "比较两家价格带宽度与共同覆盖区间，说明竞争重合范围",
-            "从只有两家披露的样本边界切入，说明结论不能代表全市场",
-            "从基础档重合与高价端延伸切入，但不得计算新差值",
-        ),
-        ("local", "fibre_value"): (
-            "比较每千兆月费的价格层次，并保留合约期和覆盖边界",
-            "判断低价组与高价组是否形成梯队，不计算新倍数",
-            "从折算价不等于客户最终成本切入，仍须引用至少两个主体原值",
-            "比较中位折算价的离散程度，禁止补写安装费或优惠金额",
-        ),
-        ("local", "overlap"): (
-            "只判断个人5G价格区间重合及其区隔含义",
-            "只判断光纤家宽同类价格重合及其区隔含义",
-            "比较哪些同类组合有重合、哪些没有，不跨产品类型",
-            "从价格带重合不等于产品同质切入，仍须引用原始区间",
-        ),
-        ("international", "growth"): (
-            "按正增长与负增长分成两层",
-            "比较最高与最低原值呈现的增长梯队，不计算差值",
-            "说明正增长只集中于哪些主体，并保留同季度边界",
-            "判断四家是否同步扩张，禁止解释无证据原因",
-        ),
-        ("international", "momentum"): (
-            "说明四家公司增速变化是否同向",
-            "比较放缓幅度较大的主体与其余主体，只引用输入原值",
-            "从放缓覆盖面切入，禁止使用驱动、导致、源于",
-            "判断增长动量是否形成梯队，不计算新差值",
-        ),
-        ("international", "investment"): (
-            "比较联通与移动、电信的投入比例层次",
-            "从移动与电信比例接近切入，不计算两者差值",
-            "从铁塔缺少同口径值的样本边界切入",
-            "说明投入比例不等于投资回报，仍须引用至少两个原值",
-        ),
-        ("international", "margin"): (
-            "比较已披露经营利润率的高低梯队，不计算新差值",
-            "从头部与中尾部利润缓冲层次切入",
-            "从只有三家可比的样本边界切入",
-            "说明利润率不等于绝对利润，仍须引用至少两个主体原值",
-        ),
-        ("international", "revenue"): (
-            "比较四家各自最新完整财年统一折算营收的高低梯队，至少引用两家原值",
-            "只展示最新年度营收绝对值，十年序列仅作后台溯源",
-            "从头部营收是否接近切入，不计算输入外差值",
-            "说明统一汇率便于规模比较，但不等于盈利能力",
-        ),
-        ("international", "net_profit"): (
-            "按四家各自最新完整财年净利润绝对值分层，引用最高与最低原值",
-            "只比较净利润折算金额，不引入同比、增速或利润率",
-            "从绝对规模差距切入，不将单年数值外推为增长趋势",
-            "说明集团范围与财年口径边界",
-        ),
-        ("international", "capex"): (
-            "比较四家各自最新完整财年资本开支美元绝对值，引用两家原值",
-            "说明投入规模不等同投资回报",
-            "保留SK Telecom与Singtel财年截止日差异",
-            "只分析资本开支，不混入收入或利润",
-        ),
-        ("international", "mobile_arpu"): (
-            "比较四家各自最新完整财年美元/月ARPU",
-            "说明四家用户范围按原披露保留",
-            "至少引用两家ARPU美元原值形成量级判断",
-            "说明汇率统一不代表用户定义统一",
-        ),
-        ("local", "revenue"): (
-            "从最高与最低营收原值提炼竞争资源承载力分层",
-            "从头部与中尾部收入基础断层切入，不计算输入外比例",
-            "说明收入规模层次不等同经营效率，但不能只写口径边界",
-            "引用至少两家公司原值，判断可披露收入基础是否集中",
-        ),
-        ("local", "ebitda"): (
-            "从最高与最低EBITDA原值提炼盈利缓冲分层",
-            "判断经营现金创造代理是否形成头尾断层",
-            "比较至少两家公司原值，不引入利润率或净利润",
-            "说明EBITDA规模层次对竞争资源承载的有界含义",
-        ),
-        ("local", "net_profit"): (
-            "从正负利润或最高最低原值提炼盈利韧性分化",
-            "判断利润池是否向头部集中，不计算输入外比例",
-            "引用至少两家公司净利润原值形成战略发现",
-            "说明利润绝对值分层而非复述金额高低",
-        ),
-        ("local", "postpaid"): (
-            "从已披露两家后付费用户原值提炼客户基础分层",
-            "说明客户基础不等同客户价值，缺失主体只作边界",
-            "判断经常性收入基础是否存在规模层次",
-            "引用至少两家原值，禁止以总用户或5G用户补位",
-        ),
-        ("cloud", "revenue"): (
-            "比较FY2024云收入绝对金额梯队，至少引用两个主体原值",
-            "把直接披露云收入与代理分部口径分开说明",
-            "从直接披露与代理分部两种口径边界切入，不引入增速",
-            "说明统一为百万美元只便于观察规模，不等于盈利能力",
-        ),
-        ("cloud", "trend"): (
-            "说明多数厂商提速与唯一放缓主体",
-            "从提速覆盖面切入，不计算新比例",
-            "比较提速幅度较大的主体与其余主体，只引用输入原值",
-            "判断变化方向是否一致，并明确缺少可比历史的主体",
-        ),
-        ("cloud", "profit"): (
-            "比较FY2024云利润绝对金额，并说明不同利润定义不可直接混排",
-            "从经营利润、代理分部毛利与调整后EBITA定义不同切入",
-            "说明已披露与未披露主体的样本边界",
-            "引用至少两个主体利润绝对金额，不计算新差值或利润率",
-        ),
-        ("cloud", "investment"): (
-            "比较已披露集团资本开支的头尾层次，提炼资源承载力差异",
-            "从Google与Azure高位投入接近切入，不计算输入外差值",
-            "说明集团投入不等于云业务单独投入或投入转化效率",
-            "引用至少两个主体原值形成战略发现，缺失主体只作样本边界",
-        ),
-        ("mainland", "revenue"): (
-            "从最高与最低营收原值提炼收入基础和资源承载力分层",
-            "判断头部与中尾部是否形成断层，不计算输入外比例",
-            "引用至少两家原值，不能只说主体规模不同",
-            "说明收入规模层次不等同经营效率",
-        ),
-        ("mainland", "ebitda"): (
-            "比较已披露两家EBITDA原值，提炼盈利缓冲层次",
-            "从经营现金创造代理的头尾差异切入",
-            "说明只有两家可比的样本边界，但不能只报告缺口",
-            "不得引入净利润、利润率或输入外数字",
-        ),
-        ("mainland", "net_profit"): (
-            "从最高与最低净利润原值提炼利润池集中或盈利韧性分化",
-            "比较头部与中尾部利润绝对值层次，不计算新比例",
-            "引用至少两家公司原值形成战略发现",
-            "只比较当前中国移动、中国电信和中国联通三家，不补入其他主体",
-        ),
-        ("mainland", "postpaid"): (
-            "比较移动、电信和联通FY2025移动客户绝对值",
-            "明确联通约值来自官方期初加全年净增推导",
-            "从客户覆盖底盘对交叉销售和网络规模摊薄的影响切入",
-            "只分析当前三家，不补入其他运营商或5G用户数",
-        ),
-        ("cloud", "revenue"): (
-            "判断哪家云业务的生态底盘最厚，并点名尾部企业的资源弹性",
-            "从收入底盘对基础设施持续投入的承载力切入",
-            "从头部规模能否形成生态扩张正循环切入，保留代理分部边界",
-            "从尾部厂商的资源容错和持续投入压力切入",
-        ),
-        ("cloud", "profit"): (
-            "判断哪家云业务的自我造血能力最强，并说明再投资缓冲",
-            "从AWS与Azure的头部接近关系切入，判断是单一主导还是双强竞争",
-            "从Google与头部经营利润的距离切入，说明价格竞争和再投资弹药",
-            "从利润定义边界切入，只在经营利润同口径企业中给出经营判断",
-        ),
-        ("cloud", "investment"): (
-            "判断哪家集团的基础设施扩容弹药最足，并点名尾部企业",
-            "从资本投入对持续扩容的承载力切入，不判断转化效率",
-            "从集团投入不等同云业务投入的边界切入，仍给出资源弹性判断",
-            "从尾部集团的扩容容错压力切入",
-        ),
-        ("cloud", "margin_change"): (
-            "按自身同口径利润率改善与减弱分组",
-            "比较改善主体与下降主体的方向分化，不计算新差值",
-            "从不同利润定义不能跨厂商统一排名切入",
-            "说明收入增长不等于利润转化同步改善",
-        ),
-        ("macro", "connections"): (
-            "比较三项登记指标增速接近的共同特征",
-            "从多卡和联网设备使登记数不等于独立客户切入",
-            "说明每百人登记高位的口径边界，不推算客户人数",
-            "区分连接规模变化与客户规模变化",
-        ),
-        ("macro", "traffic"): (
-            "比较总流量与每连接流量增速的层次",
-            "从规模增长与单连接使用强度分化切入",
-            "说明两项增速不同但不建立因果",
-            "判断流量增长是否主要体现在总量层面，只引用原值",
-        ),
-        ("macro", "purchasing"): (
-            "比较当前家庭收入与消费物价原值，引用输入中的购买力代理值",
-            "从购买力代理为负切入，但不等同电讯消费变化",
-            "从同月口径边界切入，禁止引用旧月份数字",
-            "说明收入与物价方向形成压力，但不预测消费行为",
-        ),
-        ("macro", "service"): (
-            "说明投资与投诉期间不同，不能直接关联",
-            "从5G覆盖与频谱只属于网络供给背景切入",
-            "比较投入规模与服务压力的口径边界，不计算差值",
-            "说明覆盖高位不等同服务质量改善",
-        ),
-    }
-    angle_options = focus_angle_options.get((domain_id, focus_id)) or (
-        (
-            "比较头部三家与尾部两家的数量层次，必须说明竞争结构分成哪两层",
-            "从头部三家去重产品数量相近切入，必须说明三家之间的数量差距有限",
-            "比较尾部两家与头部三家的选择宽度，说明数量差距对应的产品覆盖层次",
-            "从数据边界切入，必须说明产品数量不能等同产品吸引力、价值或竞争力",
-        )
-        if scale_has_record_counts
-        else (
-            "从竞争区隔或增长质量切入",
-            "从资本投入比例或利润转化切入",
-            "从需求强度或购买力压力切入",
-            "从服务压力或数据边界切入",
-        )
-    )
-    regeneration_index = max(1, int(focus.get("regeneration_index") or len(recent_insights) or 1))
-    angle_instruction = angle_options[(regeneration_index - 1) % len(angle_options)]
-    request_nonce = hashlib.sha256(
-        f"{time.time_ns()}-{os.urandom(16).hex()}".encode("utf-8")
-    ).hexdigest()[:20]
-    include_item_detail = (domain_id, focus_id) != ("local", "scale")
-    compact_focus = {
-        "id": focus_id,
-        "label": focus.get("label"),
-        "metric": focus.get("metric"),
-        "scope": focus_contract,
-        "required_angle": angle_instruction,
-        "regeneration_round": regeneration_index,
-        "forbidden_recent_headlines": recent_headlines,
-        "forbidden_recent_analyses": recent_insights,
-        "business_question": (
-            "只依据这组证据，哪家企业的当前经营状态更强或更稳，"
-            "哪家相对承压？这个判断对其竞争资源或客户经营意味着什么？"
-        ),
-        "items": [
-            {
-                "name": item.get("name"),
-                "value": item.get("value"),
-                "unit": item.get("unit"),
-                **({
-                    "record_count": item.get("record_count"),
-                    "deduplicated_plan_count": item.get("component_count"),
-                } if scale_has_record_counts else {}),
-                **({"detail": item.get("detail")} if include_item_detail else {}),
-                **({"analysis": item.get("analysis")} if (domain_id, focus_id) == ("local", "overlap") else {}),
-                **({"relationships": item.get("components")} if (domain_id, focus_id) == ("local", "overlap") else {}),
-                **({"metrics": item.get("components")} if (domain_id, focus_id) == ("local", "financials") else {}),
-            }
-            for item in focus.get("items") or []
-            if isinstance(item, dict)
-        ],
-    }
+    evidence = json.loads(json.dumps(focus, ensure_ascii=False))
+    for key in ("insight", "headline", "recent_insights", "recent_headlines", "regeneration_index"):
+        evidence.pop(key, None)
+    recent = [str(value) for value in focus.get("recent_insights") or []]
+    if focus.get("insight"):
+        recent.append(str(focus["insight"]))
     messages = [
-        {
-            "role": "system",
-            "content": (
-                "你是电信竞争情报分析员。只返回JSON对象{headline:string,analysis:string}。"
-                "任务不是解释指标，而是回答输入business_question。"
-                "先在内部完成四步：提出一个候选经营判断；从items中找出支持与反驳证据；"
-                "缩小到当前指标真正能支持的边界；再写成最终结论。不输出思考过程。"
-                "最终文案必须点名企业并回答其经营画像，例如资源底盘更厚、自我造血更强、"
-                "客户经营更稳或盈利防线承压；不能只把高低差距改名为分层、断层、梯队或壁垒。"
-                "forbidden_recent_headlines和forbidden_recent_analyses是最近已展示版本；不得复制、近义改写或仅调换语序。"
-                "regeneration_round不同时，必须依照required_angle改变判断切口，不能只换标题。"
-                "不得输出缺少数值的差距占位语，例如‘差距百万美元’；不计算输入未提供的衍生差值。"
-                "至少比较当前items中两个竞对、期间或指标，再说明有界经营含义。"
-                "headline是随本次判断重新生成的4至14字结论标题，不含数字、单位、标点或行动建议，"
-                "不得复用旧版标题。标题必须直接概括这组数字对持续投入、竞争防守、客户收入底盘、盈利飞轮或资本军备的意义；"
-                "禁止用年份、指标名、金额、绝对值、序列、入库、披露、口径、数据或重新判断充当标题。只能使用输入数字和事实。"
-                "analysis必须一至两句、120字内，引用输入具体数值，给出结构、集中度、"
-                "口径可比性、市场阶段或指标关系判断；结论还必须落到资源承载、现金创造、盈利韧性、"
-                "利润池、投入转化、客户价值、收入基础或竞争结构中的至少一项；换一个有效分析角度，不能解释指标定义、"
-                "复述高低增减、给行动建议或编造因果。正文必须进一步落到持续投入能力、价格竞争容错、客户获取/保有、"
-                "自我融资/再投资、生态扩张或基础设施资本军备中的至少一项，不能以‘形成梯队’作为句号。所有数字必须原样选自metric.value或items.value；"
-                "引用某个有效items.value后不得又说该主体‘不能纳入这一判断’；只有value为空或输入明确标注代理口径时才可作为边界。"
-                "local.financials还可原样选自items.metrics.value。禁止自行加总、计算占比或创造衍生数字。"
-                "结论必须使用表明、说明、意味着、主要来自、并非、而非或不能等同中的至少一个连接词。"
-                "必须严格遵守输入scope，只能总结当前页，"
-                "不得把相邻页或item附带信息扩展为当前页结论。"
-                "禁止把单项高低直接写成领先、竞争力、定价权或因果；少于3个可比对象时必须明确样本边界。"
-                "如果items.value全部为空、横线或待补，不得输出‘待补为-’、空值、占位符或虚构数字；"
-                "此时直接解释该口径缺口限制了哪一种客户价值、盈利质量或竞争结构判断。"
-                "禁止使用导致、造成、推动、带来、源于、驱动等因果词；输入scope要求说明驱动时，也只能改写为关系或边界。"
-                + FOCUS_RELATION_FEW_SHOTS
-            ),
-        },
-        {
-            "role": "user",
-            "content": (
-                f"请求唯一标识（仅用于避免服务端缓存，不得写入答案）：{request_nonce}\n"
-                f"只重新生成{domain_id}.{focus_id}当前洞察，必须采用required_angle，"
-                "必须只使用下方当前证据，不得补入历史数字或旧版句式：\n"
-            )
-            + json.dumps(compact_focus, ensure_ascii=False),
-        },
+        {"role": "system", "content": (
+            "你是电信竞争情报分析员。只分析指定指标，使用输入的公司、数值、期间、单位和来源。"
+            "给出有边界的经营或竞争关系判断，不把相关当因果，不猜数字。"
+            "正文一至两句、120字内；引用具体数值并解释其经营含义，不写行动建议。"
+            "缺少可比证据时明确比较边界，不能强行排序或编造关系。"
+            "返回JSON对象{headline,analysis,risk,source_urls}；标题28字内，不照抄指标名。"
+            "请依据当前证据重新推导，不复用最近的分析或标题。"
+        )},
+        {"role": "user", "content": json.dumps({
+            "domain": domain_id, "focus": evidence,
+            "forbidden_recent_analyses": recent,
+            "forbidden_recent_headlines": [*(focus.get("recent_headlines") or []), str(focus.get("headline") or "")],
+            "request_id": uuid4().hex,
+        }, ensure_ascii=False)},
     ]
-    base_models = _executive_model_route()
-    has_safe_outage_fallback = scale_has_record_counts or (domain_id, focus_id) in {
-        ("macro", "service"),
-        ("international", "growth"),
-    }
-    attempt_models = [*base_models, *base_models]
-    previous_insights = [re.sub(r"\s+", "", value) for value in recent_insights]
-    last_error: ValueError | None = None
-    headline = f"{str(focus.get('label') or '当前指标').strip()}结构重新分化"[:14]
-    for attempt, attempt_model in enumerate(attempt_models):
-        if attempt >= len(base_models):
-            grounded_seed = _compact_grounded_focus_analysis(domain_id, focus)
-            attempt_messages = [
-                {
-                    "role": "system",
-                    "content": (
-                        "你是电信数据分析员。只返回合法JSON对象{headline,analysis}。"
-                        "在不改变任何数字和事实的前提下，把证据底稿改写为新的数据关系结论。"
-                        "标题4至14字且不含数字；正文一至两句、100字内。"
-                        "禁止建议、因果词、衍生计算和证据外事实。"
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": json.dumps({
-                        "focus": compact_focus,
-                        "required_angle": angle_instruction,
-                        "grounded_seed": grounded_seed,
-                        "forbidden_recent_headlines": recent_headlines,
-                        "request_nonce": f"{request_nonce}-{attempt}",
-                    }, ensure_ascii=False),
-                },
-            ]
-        else:
-            attempt_messages = list(messages)
-        if attempt and attempt < len(base_models):
-            retry_angle = angle_instruction
-            attempt_messages.append({
-                "role": "user",
-                "content": (
-                    f"上一版未通过事实或格式校验：{last_error}。请先自我批评：它是否只复述高低、"
-                    "分层或断层，而没有回答哪家企业经营更强/更稳、哪家承压。然后重写，"
-                    "不得复用current_insight或既有标题；若错误涉及衍生数字，只并列输入原值，"
-                    f"不得输出相减、相加或换算结果；本次改用‘{retry_angle}’，该角度覆盖上一条"
-                    "required_angle；仍只能使用输入原值，只返回JSON对象。"
-                ),
-            })
-        request_id = f"focus-{domain_id}-{focus_id}-{request_nonce}-{attempt}"
+    last_error = None
+    for model in _executive_model_route():
+        request_id = f"focus-{domain_id}-{focus_id}-{uuid4().hex}"
+        body = prepare_structured_chat_body({
+            **dict(config.get("extra_parameters") or {}), "model": model,
+            "messages": messages, "temperature": temperature, "max_tokens": 4000,
+        })
         request = urllib.request.Request(
-            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions"
-            f"?request_id={urllib.parse.quote(request_id, safe='')}",
-            data=json.dumps(prepare_structured_chat_body({
-                **dict(config.get("extra_parameters") or {}),
-                "model": attempt_model,
-                "messages": attempt_messages,
-                "temperature": temperature if attempt == 0 else max(0.55, temperature),
-                "max_tokens": 480,
-            }), ensure_ascii=False).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-                "Cache-Control": "no-cache, no-store",
-                "Pragma": "no-cache",
-                "X-Request-ID": request_id,
-            },
-            method="POST",
+            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions?request_id={request_id}",
+            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
+                     "Cache-Control": "no-cache, no-store", "Pragma": "no-cache",
+                     "X-Request-ID": request_id}, method="POST",
         )
         wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")
         try:
             with open_llm_request(
-                request,
-                timeout=30,
-                config=config,
-                requested_key=api_key,
-                model=attempt_model,
+                request, timeout=75, config=config, requested_key=api_key, model=model,
                 open_func=urlopen_with_local_proxy_fallback,
             ) as response:
                 payload = json.loads(response.read().decode("utf-8"))
-        except urllib.error.HTTPError as exc:
-            detail = exc.read().decode("utf-8", errors="ignore")[:800]
-            last_error = ValueError(f"内网模型 HTTP {exc.code}: {detail}")
-            if attempt + 1 < len(attempt_models):
-                continue
-            raise RuntimeError(str(last_error)) from exc
-        except (TimeoutError, urllib.error.URLError, json.JSONDecodeError) as exc:
-            last_error = ValueError(f"模型连接或响应异常：{exc}")
-            if attempt + 1 < len(attempt_models):
-                continue
-            raise last_error
-        try:
             parsed = load_json_response(
-                final_chat_message_text(payload, operation="单项AI洞察"), operation="单项AI洞察"
+                final_chat_message_text(payload, operation="单指标AI分析"), operation="单指标AI分析",
             )
             if not isinstance(parsed, dict):
-                raise ValueError("单项AI洞察未返回JSON对象")
-            headline = re.sub(r"\s+", " ", str(parsed.get("headline") or "")).strip()
-            analysis = re.sub(r"\s+", " ", str(parsed.get("analysis") or "")).strip()
-            forbidden_headline_terms = {
-                ("local", "scale"): ("赛道", "月费", "资费", "重叠", "交集"),
-                ("local", "financials"): ("披露", "发布", "数量", "密度", "完整度", "口径", "边界"),
-            }.get((domain_id, focus_id), ())
-            headline = _normalize_fresh_focus_headline(
-                headline,
-                label=str(focus.get("label") or "当前指标").strip(),
-                recent_headlines=[] if scale_has_record_counts else recent_headlines,
-                forbidden_terms=forbidden_headline_terms,
-            )
-            if (domain_id, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and any(
-                term in headline for term in _OVERVIEW_DIRECT_HEADLINE_TERMS
-            ):
-                headline = _strategic_focus_headline(
-                    domain_id, focus_id, variant_index=regeneration_index - 1 + attempt
-                )
-            if (domain_id, focus_id) == ("local", "financials") and (
-                "重要财务指标" in headline
-                or "重新" in headline
-                or any(term in headline for term in forbidden_headline_terms)
-            ):
-                financial_headlines = (
-                    "收入规模呈现分层",
-                    "收入与利润梯队分化",
-                    "规模差距映射利润分层",
-                    "同期间业绩形成梯队",
-                )
-                headline = financial_headlines[(regeneration_index - 1 + attempt) % len(financial_headlines)]
-            if "分散" in headline and any(term in analysis for term in ("集中", "头部三家", "主要来自头部")):
-                raise ValueError(f"AI洞察标题与正文判断相反：{headline}")
-            unsupported_headline_causal = tuple(
-                term for term in ("导致", "造成", "推动", "带来", "源于", "驱动")
-                if term in headline
-            )
-            if unsupported_headline_causal:
-                raise ValueError(
-                    f"AI洞察标题使用了未经证据支持的因果词{unsupported_headline_causal}：{headline}"
-                )
-            headline_similarities = [
-                difflib.SequenceMatcher(None, previous, headline).ratio()
-                for previous in recent_headlines
-            ]
-            if max(headline_similarities, default=0.0) >= 0.96:
-                label = str(focus.get("label") or "当前指标").strip()
-                fallback_headlines = _OVERVIEW_STRATEGIC_HEADLINE_VARIANTS.get(
-                    (domain_id, focus_id),
-                    (
-                        f"{label}呈现头尾断层",
-                        f"{label}形成梯队分化",
-                        f"{label}分布明显失衡",
-                        f"{label}集中于头部主体",
-                        f"{label}尾部显著分化",
-                        f"{label}结构出现分层",
-                        f"{label}头部优势扩大",
-                        f"{label}供给呈现偏态",
-                        f"{label}主体差异拉开",
-                        f"{label}层次重新分化",
-                    ),
-                )
-                fallback_start = (regeneration_index - 1 + attempt) % len(fallback_headlines)
-                headline = next(
-                    (
-                        fallback_headlines[(fallback_start + offset) % len(fallback_headlines)]
-                        for offset in range(len(fallback_headlines))
-                        if fallback_headlines[(fallback_start + offset) % len(fallback_headlines)]
-                        not in recent_headlines
-                    ),
-                    fallback_headlines[fallback_start],
-                )
-            if analysis and not re.search(r"[。！？!?]$", analysis):
-                analysis += "。"
-            # Repair two recurring model slips before applying the strict gate:
-            # derived differences and an overlong trailing disclosure caveat.
-            allowed_numeric_evidence = {
-                "metric": compact_focus.get("metric"),
-                "items": compact_focus.get("items"),
-            }
-            analysis, analysis_repaired = _repair_generated_focus_analysis(
-                analysis,
-                allowed_numeric_evidence,
-            )
-            analysis, analysis_compacted = _compact_generated_focus_analysis(
-                domain_id,
-                focus_id,
-                analysis,
-                focus,
-                allowed_numeric_evidence,
-            )
-            analysis_repaired = analysis_repaired or analysis_compacted
-            gate_error = _focus_gate_error(domain_id, focus_id, analysis, focus)
-            if gate_error:
-                grounded_seed = _compact_grounded_focus_analysis(domain_id, focus)
-                merged = f"{grounded_seed.rstrip('。！？!?')}；{analysis}"
-                merged, _ = _repair_generated_focus_analysis(
-                    merged,
-                    allowed_numeric_evidence,
-                )
-                merged, _ = _compact_generated_focus_analysis(
-                    domain_id,
-                    focus_id,
-                    merged,
-                    focus,
-                    allowed_numeric_evidence,
-                )
-                if not _focus_gate_error(domain_id, focus_id, merged, focus):
-                    analysis = merged
-                    analysis_repaired = True
-                    gate_error = ""
-            if gate_error:
-                raise ValueError(gate_error)
-            if scale_has_record_counts:
-                angle_index = (regeneration_index - 1) % len(angle_options)
-                angle_passed = (
-                    (sum(name in analysis for name in ("HKBN", "3HK", "SmarTone", "i-CABLE", "HGC")) >= 4
-                     and any(term in analysis for term in ("两层", "头部", "尾部")))
-                    if angle_index == 0 else
-                    (any(term in analysis for term in ("接近", "相近", "差距有限")))
-                    if angle_index == 1 else
-                    ("i-CABLE" in analysis and "HGC" in analysis and any(term in analysis for term in ("选择", "覆盖", "层次")))
-                    if angle_index == 2 else
-                    (
-                        any(term in analysis for term in ("不能等同", "不代表", "并不等同"))
-                        and any(term in analysis for term in ("吸引力", "价值", "竞争力"))
-                    )
-                )
-                if not angle_passed:
-                    raise ValueError(f"AI洞察未真正采用指定的新分析角度：{angle_instruction}")
-            # Validate against exactly what the model was allowed to see. Hidden
-            # cross-focus details must never make their numbers look admissible.
-            unknown_numbers = _numeric_tokens(analysis) - _numeric_tokens(allowed_numeric_evidence)
+                raise ValueError("AI未返回指标分析对象")
+            headline = str(parsed.get("headline") or "").strip()
+            analysis = str(parsed.get("analysis") or "").strip()
+            if not headline or len(headline) > 28:
+                raise ValueError("AI标题为空或超过28字，请由AI重新生成")
+            error = _focus_gate_error(domain_id, focus_id, analysis, focus)
+            if error:
+                raise ValueError(error)
+            unknown_numbers = _numeric_tokens({"headline": headline, "analysis": analysis}) - _numeric_tokens(evidence)
             if unknown_numbers:
-                raise ValueError(f"AI分析分类出现输入之外的数字：{sorted(unknown_numbers)}")
-            normalized_analysis = re.sub(r"\s+", "", analysis)
-            similarities = [
-                difflib.SequenceMatcher(None, previous_insight, normalized_analysis).ratio()
-                for previous_insight in previous_insights
-                if previous_insight
-            ]
-            similarity = max(similarities, default=0.0)
-            # The same small evidence set necessarily shares names and numeric
-            # anchors. Reject near-copies, but allow a genuinely different
-            # judgement angle even when those immutable anchors keep lexical
-            # similarity moderately high.
-            if similarity >= 0.88:
-                raise ValueError(f"新洞察与最近洞察过于相似：{similarity:.0%}")
-        except (ValueError, json.JSONDecodeError) as exc:
-            last_error = ValueError(str(exc))
-            if attempt + 1 < len(attempt_models):
-                continue
-            break
-        return {
-            "generated_at_hkt": _now(),
-            "model": attempt_model,
-            "focus": {
-                "id": focus_id,
-                "headline": headline,
-                "analysis": analysis,
-                "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-                "source_urls": [],
-                **({"repaired": True} if analysis_repaired else {}),
-            },
-        }
-    safe_fallback = _safe_focus_regeneration_fallback(
-        domain_id,
-        focus,
-        regeneration_index=regeneration_index,
-        recent_insights=recent_insights,
-    )
-    if safe_fallback:
-        return safe_fallback
-    grounded_repair = _final_grounded_focus_repair(
-        domain_id,
-        focus,
-        regeneration_index=regeneration_index,
-        recent_insights=recent_insights,
-    )
-    if grounded_repair:
-        if (domain_id, focus_id) == ("local", "financials"):
-            financial_headlines = (
-                "收入规模呈现分层",
-                "收入与利润梯队分化",
-                "规模差距映射利润分层",
-                "同期间业绩形成梯队",
-            )
-            repaired_headline = financial_headlines[(regeneration_index - 1) % len(financial_headlines)]
-        elif (domain_id, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES:
-            repaired_headline = _strategic_focus_headline(domain_id, focus_id)
-        else:
-            repaired_headline = _normalize_fresh_focus_headline(
-                "",
-                label=str(focus.get("label") or "当前指标").strip(),
-                recent_headlines=recent_headlines,
-            )
-        return {
-            "generated_at_hkt": _now(),
-            "model": attempt_models[-1],
-            "focus": {
-                "id": focus_id,
-                "headline": repaired_headline,
-                "analysis": grounded_repair,
-                "risk": "仅基于当前已核验记录；跨期间、缺失值和异口径不作因果推断。",
-                "source_urls": [],
-                "repaired": True,
-            },
-        }
-    if scale_has_record_counts:
-        items = compact_focus.get("items") or []
-        angle_index = (regeneration_index - 1) % len(angle_options)
-        if angle_index == 0:
-            a, b, c = items[:3]
-            d, e = items[-2:]
-            headline = "产品数量形成两层"
-            analysis = (
-                f"{a.get('name')}、{b.get('name')}、{c.get('name')}分别有{_display_number(a.get('value'))}、"
-                f"{_display_number(b.get('value'))}、{_display_number(c.get('value'))}个产品，"
-                f"而{d.get('name')}、{e.get('name')}为{_display_number(d.get('value'))}、{_display_number(e.get('value'))}个；"
-                "数量形成头尾两层，但头部三家彼此接近，难以靠数量形成区隔。"
-            )
-        elif angle_index == 1:
-            a, b, c = items[:3]
-            headline = "头部选择宽度接近"
-            analysis = (
-                f"{a.get('name')}{_display_number(a.get('value'))}个、{b.get('name')}"
-                f"{_display_number(b.get('value'))}个与{c.get('name')}{_display_number(c.get('value'))}个相近，"
-                "说明头部三家的当前套餐选择宽度差距有限。"
-            )
-        elif angle_index == 2:
-            a, b = items[-2:]
-            headline = "尾部套餐选择较少"
-            analysis = (
-                f"{a.get('name')}{_display_number(a.get('value'))}个、{b.get('name')}"
-                f"{_display_number(b.get('value'))}个，说明两家在当前收录中的套餐选择较少；"
-                "这只反映选择宽度，不代表产品价值。"
-            )
-        else:
-            headline = "数量不代表吸引力"
-            analysis = (
-                f"去重后在售产品{_display_number((compact_focus.get('metric') or {}).get('value'))}个，"
-                "但产品数量不能等同产品吸引力、价值或竞争力；"
-                "这页只能说明当前收录的选择宽度。"
-            )
-        return {
-            "generated_at_hkt": _now(),
-            "model": "evidence-rule-fallback",
-            "focus": {
-                "id": focus_id,
-                "headline": headline,
-                "analysis": analysis,
-                "risk": "仅基于当前已核验记录；产品数量不代表产品吸引力。",
-                "source_urls": [],
-                "origin": "evidence_rule",
-            },
-        }
-    raise last_error or ValueError("AI洞察生成失败")
-
+                raise ValueError(f"AI分析引用了输入之外的数字：{sorted(unknown_numbers)}")
+            normalized = re.sub(r"\s+", "", analysis)
+            if any(normalized == re.sub(r"\s+", "", old) for old in recent):
+                raise ValueError("AI返回了与最近版本相同的分析")
+            allowed_urls = set(re.findall(r'https?://[^\s"<>]+', json.dumps(evidence, ensure_ascii=False)))
+            urls = [str(url) for url in parsed.get("source_urls") or []]
+            if set(urls) - allowed_urls:
+                raise ValueError("AI引用了当前证据之外的来源")
+            return {
+                "generated_at_hkt": _now(), "model": model,
+                "focus": {"id": focus_id, "headline": headline, "analysis": analysis,
+                          "risk": str(parsed.get("risk") or ""), "source_urls": urls, "origin": "ai"},
+            }
+        except (ValueError, TimeoutError, urllib.error.URLError) as exc:
+            last_error = exc
+            messages.append({"role": "user", "content": f"上次未通过校验：{exc}。请重新生成，不改变证据。"})
+    raise ValueError(f"AI指标分析未生成，原结果未修改：{last_error}")
 
 def generate_model_domain_summaries(
     evidence: dict[str, Any] | None = None,
@@ -3282,36 +2517,16 @@ def generate_model_domain_summaries(
     if not api_key:
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
-        "你是电信竞争情报分析员。只能使用输入JSON里的事实、数字、期间、口径和来源，不得补充常识数字或猜测。"
-        "任务不是解释数据，而是从每个focus的竞对、期间或指标之间找出可验证关系，回答"
-        "‘哪家企业当前经营更强或更稳、哪家相对承压、这对竞争资源意味着什么’，并说明判断边界。"
-        "每个focus先在内部完成候选判断、支持/反驳证据、边界收缩、最终改写四步，只输出最终文案。"
-        "overview四区的每条文案必须点名企业并给出有边界的经营画像；不能只把高低差距改名为分层、断层、梯队或壁垒。"
-        "这项判断还需说明对竞争结构、"
-        "价格区隔、增长质量、利润转化、需求强度或服务压力的有界含义。"
-        "每个领域给出一句headline、一段analysis和一句risk；为每个focus给出analysis、risk；"
-        "并为每个focus中的每个实体逐一给出headline、analysis、risk、evidence_labels和source_urls。"
-        "实体analysis只需准确陈述该实体的事实、期间、单位和口径，不强迫单个实体推导经营含义；"
-        "evidence_labels必须从该实体components的label中原样选择，不能编造。所有focus和实体必须逐一覆盖，不能遗漏、合并或新增。"
-        "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图、不代表经营排名等界面说明或空话。"
-        "每个focus的analysis必须是一至两句、总长不超过120字；有有效数值时必须引用至少一个输入具体数值作为证据；"
-        "若该focus所有value均为空、横线或待补，不得输出‘待补为-’、空值、占位符或虚构数字，"
-        "而要直接解释这一口径缺口限制了哪一种客户价值、盈利质量或竞争结构判断；"
-        "结论必须解释数字背后的结构、驱动因素、集中度、口径可比性、市场阶段或指标关系，不能停留在数字高低、增减或事实复述；"
-        "禁止写建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术，也不要告诉读者下一步做什么。"
-        "全部当前focus都必须给出深层解释性结论，而不是指标定义、展示方法、新闻式发生描述或泛化业务建议。"
-        "focus.headline必须是战略意义判断，不能照抄页签或指标名称，也不能用年份、金额、绝对值、序列、入库、披露、口径或数据作标题。"
-        "overview四区域的focus正文在引用具体数字后，必须继续说明对具体企业持续投入、价格竞争容错、客户收入底盘、"
-        "自我融资与再投资、生态扩张或基础设施资本军备的意义，不能停在高低、分层或梯队描述。"
-        "每个focus至少比较两个竞对、两个期间或两个指标；无法同口径比较时，结论必须是不可比边界而非强行排名。"
-        "禁止无证据写领先、竞争力、定价权、导致、造成、推动、带来、源于或驱动；少于3个可比对象时明确样本边界。"
-        "local.price必须明确写出品牌月费中位数的最低值、最高值和至少一个价格差距，不能把‘缺失值不估算’当作结论。"
-        "local.financials必须比较同期间至少两家公司的收入、净利润、EBITDA或资本开支原值；"
-        "发布日期、披露项数和资料完整度只能写入risk，不能成为headline或analysis的主要结论。"
-        "跨期间、代理分部、披露缺口必须明确写入risk；"
-        "不得把相关性写成因果。不得从URL文件名推断日期，也不得把FY财年自行转换成具体月日。"
-        "source_urls只能从输入中原样选择。只返回JSON对象，顶层字段只能是items数组。"
-        + FOCUS_RELATION_FEW_SHOTS
+        "你是电信竞争情报分析员。只使用输入的公司、数值、单位、原始财年、口径和来源。"
+        "按领域和focus组织分析：点名具体企业、引用当前数值，解释有证据支持的经营意义、结构或可比性边界；"
+        "不要只复述排名，不把相关性当因果，不写行动建议，不编造数字、来源或缺失值。"
+        "每个领域返回headline、analysis、risk、source_urls和focuses。每个focus返回id、headline、"
+        "analysis、risk、source_urls、entities。每个实体返回name、headline、analysis、risk、"
+        "evidence_labels、source_urls。必须覆盖输入的全部focus和实体，不额外添加。"
+        "focus正文一至两句、120字内，标题28字内且是经营判断；实体正文只需准确说明本实体事实和口径。"
+        "同币种、同期间才比较金额。用户总数与后付费客户、云分部与公司整体不能混作同一指标。"
+        "所有标题与正文由你生成；若结果不完整或不可信，程序会拒绝并请求你修正，不会代写。"
+        "source_urls和evidence_labels仅从对应输入中原样选择。仅返回JSON对象{\"items\":[领域对象]}。"
     )
     requested_domain_ids = [str(domain.get("id") or "") for domain in evidence.get("domains") or []]
     validation_domains = set(requested_domain_ids) if allow_partial_domains else None
@@ -3873,16 +3088,8 @@ def regenerate_model_discovery(
     evidence = _analysis_input_snapshot()
     evidence_hash = _content_hash(evidence)
     analysis = _read_json(path, {}) or {}
-    previous = analysis.get("model_analysis") or {}
-    previous_is_current = bool(
-        str(previous.get("evidence_hash") or "") == evidence_hash
-        and str(previous.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
-        and previous.get("summaries")
-    )
-    discoveries = json.loads(json.dumps(
-        previous.get("discoveries") if previous_is_current else _deterministic_discoveries(evidence),
-        ensure_ascii=False,
-    ))
+    previous = _ai_only_bundle(evidence, analysis.get("model_analysis") or {})
+    discoveries = json.loads(json.dumps(previous["discoveries"], ensure_ascii=False))
     discoveries = _validate_model_discoveries(discoveries, evidence)
     current = discoveries[index]
     if {str(current.get("from") or ""), str(current.get("to") or "")} != {source_domain, target_domain}:
@@ -3998,47 +3205,16 @@ def regenerate_model_discovery(
             ("口径边界", "市场阶段", "范围差异", "竞争层次"),
         ),
     )
-    grounded_seed = _safe_discovery_regeneration_fallback(
-        evidence,
-        source_domain,
-        target_domain,
-        current=current,
-        regeneration_index=regeneration_count - 1,
-    )
     for attempt, model in enumerate(models):
         request_id = f"relation-{index}-{uuid4().hex}"
         angle = regeneration_angles[(regeneration_count - 1 + attempt) % len(regeneration_angles)]
-        if attempt >= len(base_models) and grounded_seed:
-            request_messages = [
-                {
-                    "role": "system",
-                    "content": (
-                        "只返回合法JSON对象{from,to,title,detail,kind,source_urls}。"
-                        "严格保留证据底稿中的领域、两个数字和两个来源，改写成一条新的口径或市场阶段判断。"
-                        "detail不超过100字；禁止脱钩、结构性差异、驱动、因果、建议和证据外事实。"
-                    ),
-                },
-                {
-                    "role": "user",
-                    "content": json.dumps({
-                        "from": source_domain,
-                        "to": target_domain,
-                        **scoped_evidence,
-                        "required_angle": angle,
-                        "grounded_seed": grounded_seed,
-                        "recent_titles_to_avoid": [str(item.get("title") or "") for item in discoveries],
-                        "request_id": request_id,
-                    }, ensure_ascii=False),
-                },
-            ]
-        else:
-            request_messages = [*messages, {
-                "role": "user",
-                "content": (
-                    f"本次重生成请求编号：{request_id}。该编号只用于隔离缓存，不属于证据，不得写入答案。"
-                    f"本次必须从“{angle}”形成与最近版本不同的新判断。"
-                ),
-            }]
+        request_messages = [*messages, {
+            "role": "user",
+            "content": (
+                f"本次重生成请求编号：{request_id}。该编号只用于隔离缓存，不属于证据，不得写入答案。"
+                f"本次必须从“{angle}”形成与最近版本不同的新判断。"
+            ),
+        }]
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
             data=json.dumps(prepare_structured_chat_body({
@@ -4121,17 +3297,7 @@ def regenerate_model_discovery(
                 "content": f"上一版未通过门禁：{exc}。保持领域组合，换一个数据关系角度，只返回合法JSON对象。",
             })
     if replacement is None:
-        fallback = grounded_seed
-        if fallback is None:
-            raise ValueError("模型本次未返回有效内容")
-        candidate = [dict(item) for item in discoveries]
-        candidate[index] = fallback
-        try:
-            replacement = _validate_model_discoveries(candidate, evidence)[index]
-        except ValueError as exc:
-            raise ValueError("模型本次未返回有效内容") from exc
-        used_model = "evidence-rule-fallback"
-        fallback_used = True
+        raise ValueError(f"AI本次未返回有效跨库分析，原结果未修改：{last_error}")
 
     report("证据校验通过，正在返回洞察")
     discoveries[index] = replacement
@@ -4188,321 +3354,110 @@ def regenerate_model_discovery(
     }
 
 
-def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
-    analysis = _read_json(path, {}) or {}
-    evidence = _analysis_input_snapshot()
+def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any]) -> dict[str, Any]:
+    """Build atomically; a failed model never replaces the last persisted bundle."""
     evidence_hash = _content_hash(evidence)
-    previous = analysis.get("model_analysis") or {}
-    previous_summaries = previous.get("summaries") or []
-    previous_discoveries = previous.get("discoveries") or []
-    previous_hash = str(previous.get("evidence_hash") or "")
-    previous_format_current = str(previous.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
     if (
-        previous_summaries and previous_discoveries and previous_hash == evidence_hash
-        and previous_format_current and not previous.get("fallback_used")
+        model_generated_only(previous)
+        and previous.get("evidence_hash") == evidence_hash
+        and previous.get("insight_format") == INSIGHT_FORMAT_VERSION
     ):
         try:
-            validated = _validate_model_summaries(
-                _repair_model_summaries(previous_summaries, evidence),
-                evidence,
-            )
-            validated_discoveries = _validate_model_discoveries(previous_discoveries, evidence)
+            summaries = _validate_model_summaries(previous["summaries"], evidence)
+            discoveries = _validate_model_discoveries(previous["discoveries"], evidence)
         except ValueError:
             pass
         else:
-            generated = {
-                **previous,
-                "evidence_hash": evidence_hash,
-                "insight_format": INSIGHT_FORMAT_VERSION,
-                "summaries": validated,
-                "discoveries": validated_discoveries,
-                "reused": True,
-            }
-            analysis["model_analysis"] = generated
-            _atomic_write_json(path, analysis)
-            return {"ok": True, **generated}
-    summaries_reused = False
-    if previous_summaries and previous_hash == evidence_hash and previous_format_current and not previous.get("fallback_used"):
-        try:
-            validated_summaries = _validate_model_summaries(
-                _repair_model_summaries(previous_summaries, evidence),
-                evidence,
-            )
-        except ValueError:
-            validated_summaries = []
-        else:
-            summaries_reused = True
-    if summaries_reused:
-        generated = {
-            "generated_at_hkt": str(previous.get("generated_at_hkt") or _now()),
-            "model": str(previous.get("model") or "validated-previous-analysis"),
-            "summaries": validated_summaries,
-        }
-    else:
-        try:
-            generated = generate_model_domain_summaries(evidence)
-        except Exception as exc:
-            generated = {
-                "generated_at_hkt": _now(),
-                "model": "deterministic-evidence-fallback",
-                "summaries": _deterministic_domain_summaries(evidence),
-                "fallback_used": True,
-                "fallback_reason": str(exc)[:500],
-            }
-    try:
-        discovery_payload = generate_model_discoveries(evidence)
-    except Exception as exc:
-        discovery_payload = {
-            "generated_at_hkt": _now(),
-            "model": "deterministic-evidence-fallback",
-            "discoveries": _deterministic_discoveries(evidence),
-            "fallback_used": True,
-            "fallback_reason": str(exc)[:500],
-        }
-    generated["discoveries"] = discovery_payload["discoveries"]
-    generated["discovery_model"] = discovery_payload["model"]
-    generated["discovery_generated_at_hkt"] = discovery_payload["generated_at_hkt"]
-    generated["discovery_evidence_repair_count"] = int(
-        discovery_payload.get("evidence_repair_count") or 0
-    )
-    if discovery_payload.get("fallback_used"):
-        generated["discovery_fallback_used"] = True
-        generated["discovery_fallback_reason"] = discovery_payload.get("fallback_reason", "")
-    generated["evidence_hash"] = evidence_hash
-    generated["insight_format"] = INSIGHT_FORMAT_VERSION
-    generated["reused"] = False
+            return {**previous, "summaries": summaries, "discoveries": discoveries, "reused": True}
+    generated = generate_model_domain_summaries(evidence)
+    discoveries = generate_model_discoveries(evidence)
+    bundle = {
+        **generated,
+        "summaries": _validate_model_summaries(generated["summaries"], evidence),
+        "discoveries": _validate_model_discoveries(discoveries["discoveries"], evidence),
+        "discovery_model": discoveries["model"],
+        "discovery_generated_at_hkt": discoveries["generated_at_hkt"],
+        "generation_policy": AI_ONLY_POLICY,
+        "discovery_fallback_used": bool(discoveries.get("fallback_used")),
+        "evidence_hash": evidence_hash,
+        "insight_format": INSIGHT_FORMAT_VERSION,
+        "reused": False,
+    }
+    if not model_generated_only(bundle):
+        raise ValueError("分析包含非AI结果，禁止作为AI分析保存或发布")
+    return bundle
+
+
+def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
+    analysis = _read_json(path, {}) or {}
+    generated = _ai_only_bundle(_analysis_input_snapshot(), analysis.get("model_analysis") or {})
     analysis["model_analysis"] = generated
     _atomic_write_json(path, analysis)
     return {"ok": True, **generated}
 
-
 def regenerate_model_focus_summary(
-    domain_id: str,
-    focus_id: str,
-    *,
-    path: Path = AI_ANALYSIS_PATH,
+    domain_id: str, focus_id: str, *, path: Path = AI_ANALYSIS_PATH,
     progress: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
-    """Regenerate one visible insight against the current evidence and merge it atomically."""
-    def report(message: str) -> None:
-        if progress:
-            progress(message)
-
+    """Regenerate with AI; never rotate templates or replace unrelated focuses."""
+    report = progress or (lambda _message: None)
     report("正在读取当前证据")
     evidence = _analysis_input_snapshot()
-    evidence_hash = _content_hash(evidence)
-    domain_evidence = next(
-        (domain for domain in evidence.get("domains") or [] if str(domain.get("id") or "") == domain_id),
-        None,
-    )
-    if not domain_evidence:
-        raise ValueError(f"未知竞争情报领域：{domain_id}")
-    focus_evidence = next(
-        (focus for focus in domain_evidence.get("focuses") or [] if str(focus.get("id") or "") == focus_id),
-        None,
-    )
-    if not focus_evidence:
+    focus = next((
+        item for domain in evidence.get("domains") or [] if domain.get("id") == domain_id
+        for item in domain.get("focuses") or [] if item.get("id") == focus_id
+    ), None)
+    if focus is None:
         raise ValueError(f"未知竞争情报关注点：{domain_id}.{focus_id}")
-
     analysis = _read_json(path, {}) or {}
-    previous = analysis.get("model_analysis") or {}
-    previous_is_current = bool(
-        str(previous.get("evidence_hash") or "") == evidence_hash
-        and str(previous.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
-        and previous.get("summaries")
-    )
-    previous_focus = next((
-        focus
-        for summary in previous.get("summaries") or []
-        if str(summary.get("domain") or "") == domain_id
-        for focus in summary.get("focuses") or []
-        if str(focus.get("id") or "") == focus_id
-    ), None) if previous_is_current else None
+    report("正在核对AI分析版本")
+    bundle = _ai_only_bundle(evidence, analysis.get("model_analysis") or {})
+    report("正在通过AI生成新的数据判断")
     history_key = f"{domain_id}.{focus_id}"
-    previous_history = previous.get("manual_focus_regeneration_history") or {}
-    recent_insights = (
-        previous_history.get(history_key) or []
-        if isinstance(previous_history, dict)
-        else []
-    )
-    previous_title_history = previous.get("manual_focus_regeneration_title_history") or {}
-    if not isinstance(previous_title_history, dict):
-        previous_title_history = {}
-    recent_headlines = previous_title_history.get(history_key) or []
-    if not isinstance(recent_headlines, list):
-        recent_headlines = []
-    previous_counts = previous.get("manual_focus_regeneration_counts") or {}
-    if not isinstance(previous_counts, dict):
-        previous_counts = {}
-    regeneration_index = int(previous_counts.get(history_key) or 0) + 1
-    generation_focus = {
-        **focus_evidence,
-        "insight": str((previous_focus or {}).get("analysis") or focus_evidence.get("insight") or ""),
-        "headline": str((previous_focus or {}).get("headline") or ""),
-        "recent_insights": recent_insights,
-        "recent_headlines": recent_headlines,
-        "regeneration_index": regeneration_index,
-    }
-    report("正在生成新的数据判断")
-    try:
-        scoped = generate_model_focus_insight(domain_id, generation_focus, temperature=0.25)
-    except Exception as exc:
-        # Manual regeneration must remain usable when the internal model is
-        # temporarily slow or unavailable. Rotate wording only; all numbers,
-        # units, periods and judgements still come from the validated focus.
-        fallback_summary = next(
-            item for item in _deterministic_domain_summaries(evidence, validate=False)
-            if str(item.get("domain") or "") == domain_id
-        )
-        fallback_focus = next(
-            item for item in fallback_summary.get("focuses") or []
-            if str(item.get("id") or "") == focus_id
-        )
-        fallback_focus = json.loads(json.dumps(fallback_focus, ensure_ascii=False))
-        fallback_analysis = str(fallback_focus.get("analysis") or "")
-        wording_variants = (
-            (("表明", "说明"), ("意味着", "反映"), ("不能", "不可")),
-            (("说明", "表明"), ("反映", "意味着"), ("不可", "不能")),
-        )
-        for old, new in wording_variants[(regeneration_index - 1) % len(wording_variants)]:
-            fallback_analysis = fallback_analysis.replace(old, new)
-        previous_analysis = str((previous_focus or {}).get("analysis") or "")
-        if fallback_analysis == previous_analysis:
-            for old, new in wording_variants[regeneration_index % len(wording_variants)]:
-                fallback_analysis = fallback_analysis.replace(old, new)
-        fallback_focus["analysis"] = fallback_analysis
-        fallback_focus["origin"] = "evidence_rule"
-        scoped = {
-            "model": "deterministic-evidence-fallback",
-            "focus": fallback_focus,
-            "fallback_reason": str(exc)[:500],
-        }
-    scoped_focus = scoped.get("focus")
-    if not isinstance(scoped_focus, dict):
-        raise ValueError(f"模型未返回当前洞察：{domain_id}.{focus_id}")
-
-    report("正在校验数字与来源")
-    # Rebuild the non-target summaries from current evidence before merging the
-    # newly generated focus. A previously valid bundle can still contain copy
-    # produced under an older metric meaning (for example record counts rather
-    # than deduplicated plan counts); validating that whole stale bundle would
-    # reject an otherwise valid new focus and leave the UI apparently unchanged.
-    summaries = _deterministic_domain_summaries(evidence, validate=False)
-    discoveries = (
-        json.loads(json.dumps(previous.get("discoveries") or [], ensure_ascii=False))
-        if previous_is_current
-        else _deterministic_discoveries(evidence)
-    )
-
-    target_domain = next(item for item in summaries if str(item.get("domain") or "") == domain_id)
-    target_domain["focuses"] = [
-        {**item, **scoped_focus} if str(item.get("id") or "") == focus_id else item
-        for item in target_domain.get("focuses") or []
+    previous_focus = next(item for domain in bundle["summaries"] if domain.get("domain") == domain_id
+                          for item in domain.get("focuses") or [] if item.get("id") == focus_id)
+    history = json.loads(json.dumps(bundle.get("manual_focus_regeneration_history") or {}))
+    title_history = json.loads(json.dumps(bundle.get("manual_focus_regeneration_title_history") or {}))
+    scoped = generate_model_focus_insight(domain_id, {
+        **focus, "insight": previous_focus.get("analysis"), "headline": previous_focus.get("headline"),
+        "recent_insights": history.get(history_key, []), "recent_headlines": title_history.get(history_key, []),
+    }, temperature=0.25)
+    replacement = scoped.get("focus")
+    if not isinstance(replacement, dict):
+        raise ValueError("AI未返回当前指标分析；原结果未修改")
+    if replacement.get("origin") == "evidence_rule" or "fallback" in str(scoped.get("model") or ""):
+        raise ValueError("当前指标未由AI生成，原结果未修改")
+    summaries = json.loads(json.dumps(bundle["summaries"], ensure_ascii=False))
+    target = next(item for item in summaries if item.get("domain") == domain_id)
+    target["focuses"] = [
+        {**item, **replacement} if item.get("id") == focus_id else item for item in target.get("focuses") or []
     ]
-    repaired_summaries = _repair_model_summaries(summaries, evidence)
-    repaired_target = next(
-        item for item in repaired_summaries if str(item.get("domain") or "") == domain_id
-    )
-    target_focus_only = {
-        **repaired_target,
-        "focuses": [
-            item for item in repaired_target.get("focuses") or []
-            if str(item.get("id") or "") == focus_id
-        ],
-    }
-    validated_target_focus = _validate_model_summaries(
-        [target_focus_only],
-        evidence,
-        expected_domains={domain_id},
-        expected_focus_ids_by_domain={domain_id: {focus_id}},
-    )[0]["focuses"][0]
-    validated_target = {
-        **repaired_target,
-        "focuses": [
-            validated_target_focus
-            if str(item.get("id") or "") == focus_id
-            else item
-            for item in repaired_target.get("focuses") or []
-        ],
-    }
-    previous_by_domain = {
-        str(item.get("domain") or ""): item
-        for item in previous.get("summaries") or []
-        if isinstance(item, dict) and str(item.get("domain") or "")
-    }
-    validated_summaries = []
-    for item in repaired_summaries:
-        item_domain = str(item.get("domain") or "")
-        if item_domain == domain_id:
-            validated_summaries.append(validated_target)
-            continue
-        try:
-            validated_summaries.extend(_validate_model_summaries(
-                [item], evidence, expected_domains={item_domain},
-            ))
-        except ValueError:
-            # Regenerating one visible tab must not be blocked by a concurrent
-            # edit in another domain. Preserve its last summary and leave that
-            # domain to its own generation cycle.
-            if item_domain in previous_by_domain:
-                validated_summaries.append(previous_by_domain[item_domain])
-    report("证据校验通过，正在返回洞察")
-    if previous_is_current:
-        try:
-            validated_discoveries = _validate_model_discoveries(discoveries, evidence)
-        except ValueError:
-            validated_discoveries = _deterministic_discoveries(evidence)
-    else:
-        validated_discoveries = discoveries
-
+    report("正在校验数字与来源")
+    bundle["summaries"] = _validate_model_summaries(summaries, evidence)
     generated_at = _now()
-    updated_history = json.loads(json.dumps(previous_history, ensure_ascii=False)) \
-        if isinstance(previous_history, dict) else {}
-    updated_history[history_key] = list(dict.fromkeys([
-        *[str(value or "").strip() for value in recent_insights if str(value or "").strip()],
-        str((previous_focus or {}).get("analysis") or "").strip(),
-        str(scoped_focus.get("analysis") or "").strip(),
-    ]))[-12:]
-    updated_counts = json.loads(json.dumps(previous_counts, ensure_ascii=False))
-    updated_counts[history_key] = regeneration_index
-    updated_title_history = json.loads(json.dumps(previous_title_history, ensure_ascii=False))
-    updated_title_history[history_key] = list(dict.fromkeys([
-        *[str(value or "").strip() for value in recent_headlines if str(value or "").strip()],
-        str((previous_focus or {}).get("headline") or "").strip(),
-        str(scoped_focus.get("headline") or "").strip(),
-    ]))[-12:]
-    generated = {
-        **previous,
-        "generated_at_hkt": generated_at,
-        "model": str(scoped.get("model") or previous.get("model") or "internal-ai"),
-        "summaries": validated_summaries,
-        "discoveries": validated_discoveries,
-        "evidence_hash": evidence_hash,
-        "insight_format": INSIGHT_FORMAT_VERSION,
-        "reused": False,
-        "manual_focus_regeneration_history": updated_history,
-        "manual_focus_regeneration_counts": updated_counts,
-        "manual_focus_regeneration_title_history": updated_title_history,
-        "manual_focus_regeneration": {"domain": domain_id, "focus": focus_id, "generated_at_hkt": generated_at},
-    }
-    if not previous_is_current:
-        generated["fallback_used"] = True
-        generated["fallback_reason"] = "仅当前洞察由AI重新生成，其他洞察使用当前证据回退。"
-    analysis["model_analysis"] = generated
+    history[history_key] = list(dict.fromkeys([*history.get(history_key, []), str(previous_focus.get("analysis") or ""), str(replacement.get("analysis") or "")]))[-12:]
+    title_history[history_key] = list(dict.fromkeys([*title_history.get(history_key, []), str(previous_focus.get("headline") or ""), str(replacement.get("headline") or "")]))[-12:]
+    counts = dict(bundle.get("manual_focus_regeneration_counts") or {})
+    counts[history_key] = int(counts.get(history_key) or 0) + 1
+    bundle.update({
+        "generated_at_hkt": generated_at, "reused": False,
+        "manual_focus_regeneration_history": history,
+        "manual_focus_regeneration_title_history": title_history,
+        "manual_focus_regeneration_counts": counts,
+        "manual_focus_regeneration": {
+            "domain": domain_id, "focus": focus_id, "model": scoped["model"],
+            "generated_at_hkt": generated_at,
+        },
+    })
+    analysis["model_analysis"] = bundle
     _atomic_write_json(path, analysis)
+    report("AI结果已校验并保存")
     return {
-        "ok": True,
-        "domain": domain_id,
-        "focus": focus_id,
-        "headline": str(scoped_focus.get("headline") or ""),
-        "analysis": str(scoped_focus.get("analysis") or ""),
-        "model": generated["model"],
-        "origin": str(scoped_focus.get("origin") or "ai"),
-        "repaired": bool(scoped_focus.get("repaired")),
-        "generated_at_hkt": generated_at,
-        "evidence_hash": evidence_hash,
+        "ok": True, "domain": domain_id, "focus": focus_id,
+        "headline": replacement.get("headline", ""), "analysis": replacement.get("analysis", ""),
+        "model": scoped["model"], "origin": "ai", "generated_at_hkt": generated_at,
+        "evidence_hash": bundle["evidence_hash"],
     }
-
 
 def _period_rank(value: Any) -> tuple[int, int, int]:
     text = str(value or "")
@@ -5243,6 +4198,8 @@ def run_pipeline(
             )
             try:
                 model_analysis = publish_model_domain_summaries()
+                if not model_generated_only(model_analysis):
+                    raise ValueError("非AI或来源未确认的分析禁止进入发布流程")
                 passed_focus_count = sum(
                     len(summary.get("focuses") or [])
                     for summary in model_analysis.get("summaries") or []
@@ -5252,6 +4209,7 @@ def run_pipeline(
                 passed_insight_count = passed_focus_count + passed_discovery_count
                 state["model_analysis"] = {
                     "ok": True,
+                    "generation_policy": AI_ONLY_POLICY,
                     "generated_at_hkt": model_analysis["generated_at_hkt"],
                     "model": model_analysis["model"],
                     "domains": len(model_analysis["summaries"]),
@@ -5308,6 +4266,10 @@ def run_pipeline(
                     "ok": False,
                     "error": str(exc),
                     "fallback_preserved": True,
+                    "focuses_expected": expected_focus_count,
+                    "discoveries_expected": expected_discovery_count,
+                    "insights_expected": expected_focus_count + expected_discovery_count,
+                    "insights_passed": 0,
                 }
                 _append_log(f"model analysis failed {exc}")
                 _task_event(task_run_id, "生成AI洞察", f"AI洞察生成失败：{exc}", level="critical")
@@ -5341,7 +4303,10 @@ def run_pipeline(
                 state["domains"][domain].get("changed") or sidecar.get("published")
             )
         failed = [key for key, value in state["domains"].items() if not value.get("ok")]
-        model_ok = bool(state.get("model_analysis", {}).get("ok"))
+        model_ok = bool(state.get("model_analysis", {}).get("ok")) and not bool(
+            state.get("model_analysis", {}).get("fallback_used")
+            or state.get("model_analysis", {}).get("discovery_fallback_used")
+        )
         recrawl_ok = bool(state.get("overview_source_recrawl", {}).get("ok"))
         ui_contract_ok = bool(dry_run or state.get("ui_contract", {}).get("aligned"))
         source_discovery_ok = bool(
@@ -5461,26 +4426,8 @@ def _retry_delays() -> list[int]:
 
 
 def _validated_fallback_complete(result: dict[str, Any]) -> bool:
-    """Accept only a fully gated deterministic fallback after AI retries end."""
-    analysis = result.get("model_analysis")
-    pages = result.get("pages_publish")
-    if not isinstance(analysis, dict) or not isinstance(pages, dict):
-        return False
-    expected = int(analysis.get("focuses_expected") or 0)
-    passed = int(analysis.get("focuses_passed") or 0)
-    discoveries_expected = int(analysis.get("discoveries_expected") or 0)
-    discoveries_passed = int(analysis.get("discoveries_passed") or 0)
-    return bool(
-        result.get("status") == "completed_with_fallback"
-        and not result.get("failed_domains")
-        and (analysis.get("fallback_used") or analysis.get("discovery_fallback_used"))
-        and expected > 0
-        and passed == expected
-        and discoveries_expected == 4
-        and discoveries_passed == discoveries_expected
-        and pages.get("ok")
-    )
-
+    """Legacy degraded results never satisfy the AI generation contract."""
+    return False
 
 def run_pipeline_with_recovery(
     *,
@@ -5510,6 +4457,11 @@ def run_pipeline_with_recovery(
             task_run_id=task_run_id,
             attempt=attempt,
         )
+        analysis_status = result.get("model_analysis") or {}
+        if (result.get("status") == "completed_with_fallback"
+                or analysis_status.get("fallback_used")
+                or analysis_status.get("discovery_fallback_used")):
+            result = {**result, "ok": False, "error": "AI分析未全部生成，非AI结果不能计作成功"}
         if result.get("status") == "failed_feishu_detail_log":
             break
         if result.get("ok") or result.get("skipped"):
@@ -5530,26 +4482,10 @@ def run_pipeline_with_recovery(
     result["total_duration_ms"] = round((time.monotonic() - overall_started) * 1000)
     result["attempts"] = attempts
     result["agent_run_id"] = agent_run_id
-    fallback_complete = _validated_fallback_complete(result)
-    if fallback_complete:
-        # The online model path was exhausted, but every deterministic insight
-        # passed the same evidence/focus gates and the public artifact was read
-        # back. Preserve the degraded status without misreporting the entire
-        # morning crawler as failed or retrying it forever.
-        result["ok"] = True
-        result["degraded"] = True
-        result["recovery_exhausted"] = True
     ok = bool(result.get("ok") or result.get("skipped"))
     if ok:
         if result.get("skipped"):
             detail = "已有另一条四库任务执行，本次已安全合并。"
-        elif fallback_complete:
-            detail = (
-                f"在线AI连续 {attempts} 次未通过后，已使用通过全部证据门禁的确定性回退；"
-                f"{int((result.get('model_analysis') or {}).get('insights_passed') or 0)}项洞察"
-                f"（含{int((result.get('model_analysis') or {}).get('discoveries_passed') or 0)}条顶部跨库研判）"
-                "及公开页面回读完整。"
-            )
         elif (result.get("pages_publish") or {}).get("ok"):
             insight_count = int((result.get("model_analysis") or {}).get("insights_passed") or 0)
             discovery_count = int((result.get("model_analysis") or {}).get("discoveries_passed") or 0)

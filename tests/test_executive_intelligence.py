@@ -23,17 +23,19 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
 
     def test_relationships_connect_different_domains_and_are_typed(self):
         relations = self.snapshot["relations"]
-        self.assertGreaterEqual(len(relations), 4)
+        if not self.snapshot["ai"]["model_analysis_fresh"]:
+            self.assertEqual(relations, [])
+            return
+        self.assertEqual(len(relations), 4)
         self.assertTrue(all(item["from"] != item["to"] for item in relations))
         self.assertTrue(all(item["kind"] and item["detail"] for item in relations))
-        ai_relations = [item for item in relations if item.get("origin") == "ai"]
-        if ai_relations:
-            self.assertTrue(all(item["source_urls"] for item in ai_relations))
-        else:
-            self.assertTrue(any(item["kind"] == "不可直接比较" for item in relations))
+        self.assertTrue(all(item.get("origin") == "ai" and item["source_urls"] for item in relations))
 
-    def test_relationship_strip_always_exposes_exactly_four_executive_discoveries(self):
+    def test_relationship_strip_only_exposes_four_real_model_discoveries(self):
         relations = self.snapshot["relations"]
+        if not self.snapshot["ai"]["discoveries_generated"]:
+            self.assertEqual(relations, [])
+            return
         self.assertEqual(len(relations), 4)
         self.assertEqual(len({tuple(sorted((item["from"], item["to"]))) for item in relations}), 4)
         self.assertEqual(
@@ -180,11 +182,12 @@ class ExecutiveIntelligenceTests(unittest.TestCase):
             "segment_with_reclassification",
         ):
             self.assertNotIn(forbidden, text)
-        self.assertTrue(
-            any(boundary in text for boundary in (
-                "不直接比较", "不可直接比较", "不能直接比较", "不能等同", "不可等同",
-            ))
-        )
+        if self.snapshot["relations"]:
+            self.assertTrue(
+                any(boundary in text for boundary in (
+                    "不直接比较", "不可直接比较", "不能直接比较", "不能等同", "不可等同",
+                ))
+            )
         self.assertNotIn("同类套餐竞争最多", text)
         self.assertNotIn("可核验指标数", text)
         self.assertNotIn("（%）", text)

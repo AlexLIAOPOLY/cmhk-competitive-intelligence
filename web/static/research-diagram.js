@@ -20,15 +20,23 @@
     .replace(/合规终态|终态/g, "处理结果")
     .replace(/门禁/g, "审核")
     .replace(/增量更新/g, "新增或更新")
-    .replace(/规则回退/g, "程序整理");
+    .replace(/规则回退/g, "非AI历史结果");
   const pageState = (value) => ({published:"已发布", completed:"已完成", running:"更新中", pending:"等待更新", error:"更新失败", failed:"更新失败", skipped:"未更新", blocked:"暂未发布", deferred:"稍后更新"})[value] || "未记录";
   const fallbackNote = (publication) => {
     const model = publication?.model_analysis;
     if (publication?.result_status !== "completed_with_fallback" && !model?.fallback_used && !model?.discovery_fallback_used) return "";
-    if (!model || !Number.isFinite(model.focuses_passed) || !Number.isFinite(model.discoveries_passed)) return "部分分析由程序整理，未由 AI 生成；详见发布记录";
+    if (!model || !Number.isFinite(model.focuses_passed) || !Number.isFinite(model.discoveries_passed)) return "AI 生成未全部完成；详见失败记录";
     const fallback = (model.fallback_used ? model.focuses_passed : 0) + (model.discovery_fallback_used ? model.discoveries_passed : 0);
-    return `AI 生成 ${model.focuses_passed + model.discoveries_passed - fallback} 项 · 程序整理 ${fallback} 项`;
+    return `AI 已生成 ${model.focuses_passed + model.discoveries_passed - fallback} 项 · AI 未生成 ${fallback} 项`;
   };
+  const aiGeneratedCount = (publication) => {
+    const model = publication?.model_analysis;
+    if (!model) return "—";
+    if (model.ok === false) return 0;
+    if (Number.isFinite(model.focuses_passed) && Number.isFinite(model.discoveries_passed)) return (model.fallback_used ? 0 : model.focuses_passed) + (model.discovery_fallback_used ? 0 : model.discoveries_passed);
+    return publication?.result_status === "completed_with_fallback" ? "—" : model.insights_passed ?? "—";
+  };
+  const aiNote = (publication) => fallbackNote(publication) || (publication?.model_analysis?.ok === false ? `AI 生成失败：${businessReason(publication.model_analysis.error || "未取得有效模型结果")}` : `AI 已生成 ${aiGeneratedCount(publication)} 项`);
   const terms = { no_update: "库内已有", verified: "研究通过（入库另核对）", missing: "执行失败", conflict: "执行失败", not_applicable: "执行失败", error: "执行失败" };
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
@@ -176,16 +184,16 @@
       publication: run?.publication,
       note: incremental && run ? updateSummary(run, true) : "统一写入本地、国际、内地运营商和全球云厂商四库",
     });
-    add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], run?.publication?.insights ?? "—", "项分析", "使用四库最新数据生成分析，更新页面并读取发布结果", [
+    add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], aiGeneratedCount(run?.publication), "项AI生成", "使用四库最新数据调用AI生成分析；全部通过校验后才更新页面", [
       "读取更新后的四库数据，生成分库分析和跨库分析",
       "校验分析引用的数据与公司，更新主页数据和公开页面",
       "发布后读取实际版本，只有成功读取后才记录为发布完成",
       "输入：四库已发布数据；输出：AI分析、页面版本及发布结果",
-    ], status(run?.publication?.status), { publication: run?.publication });
+    ], status(run?.publication?.status), { publication: run?.publication, note: aiNote(run?.publication) });
     edges.push(["research-merge", "research-update", "可更新字段", "cyan", {}], ["research-update", "research-publish", "四库最新数据", "cyan", {}]);
     nodes.filter((node) => node.research).forEach((node) => {
       if (node.key === "research-publish" && run?.publication?.status === "completed" && fallbackNote(run.publication)) {
-        node.health = { key: "warning", label: "部分为规则汇总·非AI" };
+        node.health = { key: "warning", label: "AI 生成未完成" };
         node.note = `${fallbackNote(run.publication)}；页面发布状态：${pageState(run.publication.pages?.status)}`;
       }
       if (node.key === "research-publish" && run?.publication?.storage_readback?.ok === false) {
@@ -329,7 +337,7 @@
     if (node.key === "research-publish") {
       const items = data.insight_items || [];
       const publication = run?.publication;
-      return section(`本轮 ${publication?.insights ?? "—"} 项分析具体内容`, `${publication?.storage_replay?.analysis_rebuilt === false ? "本次仅重跑审核与入库，下面保留重跑前的分析和发布记录，未重新生成或发布。" : ""}${fallbackNote(publication)}${fallbackNote(publication) ? "。" : ""}已读取 ${items.length} 项本次任务的明细。页面发布：${pageState(publication?.pages?.status)}`, items.map((item, i) => `<article><strong>${i + 1}. ${esc(item.headline || item.title || item.id || "跨库分析")}</strong><p>${esc(domainNames[item.domain] || item.domain)} · ${esc(item.analysis || item.detail || item.insight || "未保存正文")}</p>${item.risk ? `<p>判断依据与风险：${esc(item.risk)}</p>` : ""}<p>${(item.source_urls || []).map(link).join("<br>")}</p></article>`));
+      return section(`本轮 ${aiGeneratedCount(publication)} 项AI分析具体内容`, `${publication?.storage_replay?.analysis_rebuilt === false ? "本次仅重跑审核与入库，下面保留重跑前的分析和发布记录，未重新生成或发布。" : ""}${fallbackNote(publication)}${fallbackNote(publication) ? "。" : ""}已读取 ${items.length} 项本次任务的明细。页面发布：${pageState(publication?.pages?.status)}`, items.map((item, i) => `<article><strong>${i + 1}. ${esc(item.headline || item.title || item.id || "跨库分析")}</strong><p>${esc(domainNames[item.domain] || item.domain)} · ${esc(item.analysis || item.detail || item.insight || "未保存正文")}</p>${item.risk ? `<p>判断依据与风险：${esc(item.risk)}</p>` : ""}<p>${(item.source_urls || []).map(link).join("<br>")}</p></article>`));
     }
     const reports = (node.agent ? [node.agent] : data.agents || []).flatMap((a) => (a.reports || []).flatMap((r) => (r.items || []).map((item) => ({ ...item, company: r.company }))));
     const update = node.key === "research-update";
@@ -387,8 +395,8 @@
     return `<header><div><span>${esc(date)} · ${run && !isIncremental(run) ? "历史运行（新增数据未统计）" : "查找最新数据并更新四库"} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(plainText(node.purpose))}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
       ${node.key === "research-update" ? storageDetails(run) : ["research-dispatch", "research-publish"].includes(node.key) ? actualList(node, snapshot, date) : decisionGroups(node, snapshot, date)}
-      <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.key === "research-merge" ? finalReviewSummary(snapshot?.date === date ? snapshot : {}) : node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || (run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : "AI 结果未记录")}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `${updateSummary(run)}。${run?.publication?.database_updated ? "四库写入已完成。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
-      ${node.key === "research-publish" && fallbackNote(run?.publication) ? '<section class="news-lineage-dialog-section"><header><h3>程序整理是什么意思</h3></header><p>部分 AI 生成失败或未通过校验，系统改用固定规则汇总已有资料。这些内容不是新的 AI 分析，也不表示数据库回滚。资料保存和 AI 生成是两个独立步骤。</p></section>' : ""}
+      <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.key === "research-merge" ? finalReviewSummary(snapshot?.date === date ? snapshot : {}) : node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : aiNote(run?.publication)}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `${updateSummary(run)}。${run?.publication?.database_updated ? "四库写入已完成。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
+      ${node.key === "research-publish" && fallbackNote(run?.publication) ? '<section class="news-lineage-dialog-section"><header><h3>AI 未生成原因</h3></header><p>原批次存在模型调用失败或校验未通过，未生成部分不计作 AI 成果。规则结果不再作为 AI 分析展示或发布；原始失败记录保留在运行日志中，数据库已入库结果不受影响。</p></section>' : ""}
       ${node.assignment ? `<details class="news-lineage-technical research-search-disclosure"><summary>查看检索过程与搜索结果</summary>${searchHistory(node, agents, events)}</details>` : ""}
       <details class="news-lineage-technical"><summary>运行日志与详细依据</summary>
       ${companyCoverageOverview(node, run)}

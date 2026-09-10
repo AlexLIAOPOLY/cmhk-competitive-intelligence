@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
+from cmhk.intelligence.ai_provenance import model_generated_only
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -2558,17 +2559,10 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     domains = _reader_percent_units(domains)
     evidence = _analysis_evidence_snapshot(domains)
     evidence_hash = _content_hash(evidence)
-    def displayed_fy(domain: dict[str, Any]) -> str:
-        years = re.findall(r"FY(20\d{2})", json.dumps(domain, ensure_ascii=False))
-        return f"FY{max(years)}" if years else "最新披露期"
-
-    local_period = displayed_fy(local)
-    international_period = displayed_fy(international)
-    mainland_period = displayed_fy(mainland)
-    cloud_period = displayed_fy(cloud)
     model_analysis = ai_payload.get("model_analysis") or {} if isinstance(ai_payload, dict) else {}
     model_analysis_fresh = bool(
-        str(model_analysis.get("evidence_hash") or "")
+        model_generated_only(model_analysis)
+        and str(model_analysis.get("evidence_hash") or "")
         and str(model_analysis.get("evidence_hash") or "") == evidence_hash
         and str(model_analysis.get("insight_format") or "") == INSIGHT_FORMAT_VERSION
     )
@@ -2597,39 +2591,6 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
         domain["ai_updated_at"] = str(ai_payload.get("generated_at_hkt") or "") if isinstance(ai_payload, dict) else ""
         domain["ai_run_id"] = str(ai_payload.get("agent_run_id") or "") if isinstance(ai_payload, dict) else ""
     domains = _reader_percent_units(domains)
-    deterministic_relations = [
-        {
-            "from": "mainland",
-            "to": "local",
-            "title": f"{local_period}香港与内地财务口径分开",
-            "detail": f"香港运营商与内地运营商均采用{local_period}/{mainland_period}最新已核验披露，但主体范围及货币不同；后付客户与移动/5G用户也不是同一口径。",
-            "kind": "不可直接比较",
-        },
-        {
-            "from": "international",
-            "to": "cloud",
-            "title": f"{cloud_period}云收入与运营商财务分口径",
-            "detail": (
-                f"云厂商页面采用{cloud_period}最新已核验云收入与利润绝对值，国际运营商页面采用{international_period}财务及用户价值指标；"
-                "业务范围和计量单位不同，不作高低排名。"
-            ),
-            "kind": "不可直接比较",
-        },
-        {
-            "from": "local",
-            "to": "cloud",
-            "title": f"{local_period}香港财务与云收入边界不同",
-            "detail": f"香港运营商使用{local_period}公司财务及后付口径；云厂商使用{cloud_period}云业务或代理分部收入与利润，集团CAPEX另取各公司最新已披露期，不能混合排名。",
-            "kind": "数据边界",
-        },
-        {
-            "from": "mainland",
-            "to": "international",
-            "title": f"{mainland_period}内地与国际用户口径分开",
-            "detail": f"内地页按{mainland_period}披露区分移动用户总数、5G网络用户和5G套餐客户；国际页采用{international_period}公司财务与移动ARPU原生口径，两者不直接相加或排名。",
-            "kind": "数据边界",
-        },
-    ]
     model_discoveries = [
         item for item in (model_analysis.get("discoveries") or [])
         if isinstance(item, dict)
@@ -2650,7 +2611,7 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
             "origin": "ai",
         }
         for item in model_discoveries[:4]
-    ] if len(model_discoveries) >= 4 else deterministic_relations
+    ] if len(model_discoveries) >= 4 else []
     relations = _reader_facing_copy(_reader_percent_units(relations))
     refresh_state = _read_json_optional(REFRESH_STATE_PATH, {})
     ui_domain_ids = [str(domain.get("id") or "") for domain in domains]

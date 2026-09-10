@@ -8476,14 +8476,14 @@ document.addEventListener("keydown", (event) => {
   function renderEntityFocus(domain, entity, index, focus, items) {
     if (!entity) {
       const isFinancialFocus = focus.id === "financials";
-      const aiAnalysis = focus.ai_summary?.analysis || focus.insight || domain.ai_summary?.analysis;
+      const aiAnalysis = focus.ai_summary?.analysis;
       const hasFreshAi = Boolean(
         payload?.ai?.model_analysis_fresh
         && aiAnalysis
         && focus.ai_summary?.origin !== "evidence_rule"
       );
-      const interpretationLabel = hasFreshAi ? "AI 战略解读" : "数据战略解读";
-      const aiHeadline = focus.ai_summary?.headline || focus.headline || focus.metric?.label || domain.metric?.label || domain.title;
+      const interpretationLabel = "AI 战略解读";
+      const aiHeadline = hasFreshAi ? focus.ai_summary.headline : "AI 分析待生成";
       const refreshState = insightRefreshState.get(`${domain.id}:${focus.id}`);
       const isGenerating = refreshState?.status === "loading" || refreshState?.status === "streaming";
       const hasRefreshError = refreshState?.status === "error";
@@ -8498,7 +8498,7 @@ document.addEventListener("keydown", (event) => {
           : `<span class="intelligence-ai-paragraph-skeleton" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="sr-only">${safe(refreshState.message || "正在生成新的数据判断")}</span>`
         : hasRefreshError
           ? `<span class="intelligence-ai-refresh-error">${safe(refreshState.message || "本次未生成新内容，请点击重试")}</span>`
-          : safe(aiAnalysis || focus.insight || domain.insight || "暂无综合结论");
+          : safe(hasFreshAi ? aiAnalysis : "当前数据尚无通过校验的 AI 分析，可点击上方重新生成。数据图表仍正常展示。");
       const headlineContent = isGenerating
         ? `<span class="intelligence-ai-headline-skeleton" aria-hidden="true"><i></i><i></i></span>`
         : safe(aiHeadline);
@@ -8646,6 +8646,10 @@ document.addEventListener("keydown", (event) => {
   }
 
   function renderRail(relations) {
+    if (!relations.length) {
+      patchElementList(rail, `<div class="intelligence-relation"><em>AI</em><strong>跨库 AI 分析待生成</strong><small>尚无通过校验的模型分析</small></div>`);
+      return;
+    }
     const relationRefreshPending = Array.from(relationRefreshState.values()).some((state) => state?.status === "loading");
     const markup = relations.slice(0, 4).map((relation, index) => `
       <div class="intelligence-relation ${relation.origin === "ai" ? "is-ai-discovery" : ""}"

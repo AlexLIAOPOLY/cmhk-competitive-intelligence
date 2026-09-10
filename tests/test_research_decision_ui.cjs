@@ -65,4 +65,23 @@ const pending = renderer.finalReviewGroups([{status:'verified'}]);
 assert.equal(pending.ready.length, 0);
 assert.equal(pending.rejected.length, 1);
 assert.ok(pending.rejected[0].write_preflight.reason.includes('尚未核对'));
+const originalPublication = JSON.stringify(snapshot.run.publication);
+snapshot.run.publication = {status:'completed', result_status:'completed_with_fallback', insights:19,
+  model_analysis:{ok:true, focuses_passed:15, discoveries_passed:4, fallback_used:true},
+  pages:{status:'published'}, storage_replay:{analysis_rebuilt:false}};
+let aiNode = renderer.build({nodes:[],edges:[]},snapshot,snapshot.date).nodes.find(n=>n.key==='research-publish');
+assert.equal(aiNode.value,4,'Templates must not inflate AI output count');
+assert.ok(aiNode.note.includes('AI 未生成 15 项'));
+let aiDetail=renderer.detail(aiNode,snapshot,snapshot.date);
+assert.ok(!aiDetail.includes('程序整理'));
+assert.ok(aiDetail.includes('AI 未生成原因'));
+snapshot.run.publication={status:'error',model_analysis:{ok:false,error:'budget_exceeded'}};
+aiNode=renderer.build({nodes:[],edges:[]},snapshot,snapshot.date).nodes.find(n=>n.key==='research-publish');
+assert.equal(aiNode.value,0);
+assert.ok(aiNode.note.includes('模型服务额度不足'));
+snapshot.run.publication={status:'completed',model_analysis:{ok:true,focuses_passed:15,discoveries_passed:4}};
+aiNode=renderer.build({nodes:[],edges:[]},snapshot,snapshot.date).nodes.find(n=>n.key==='research-publish');
+assert.equal(aiNode.value,19);
+assert.ok(aiNode.note.includes('AI 已生成 19 项'));
+snapshot.run.publication=JSON.parse(originalPublication);
 console.log('Decision groups, first-section ordering, formal table/zero readback, dispatch and escaping: PASS');

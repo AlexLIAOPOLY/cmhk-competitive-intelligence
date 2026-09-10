@@ -8,6 +8,7 @@ from datetime import date as calendar_date
 from pathlib import Path
 
 from .research_plan import ARCHITECTURE_VERSION, research_plan
+from cmhk.intelligence.ai_provenance import model_generated_only
 from .six_agent_research import now
 
 
@@ -167,9 +168,27 @@ def research_snapshot(root: Path, date: str = "") -> dict:
         if (analysis.get("agent_run_id") == manifest.get("run_id")
                 and str((analysis.get("model_analysis") or {}).get("generated_at_hkt", "")) >= str(manifest.get("started_at", ""))):
             model = analysis.get("model_analysis") or {}
-            payload["insight_items"] = [dict(item, domain=summary.get("domain"))
-                for summary in model.get("summaries", []) for item in summary.get("focuses", [])]
-            payload["insight_items"] += [dict(item, domain="cross") for item in model.get("discoveries", [])]
+            # Legacy template bundles remain archived, never reclassified as AI.
+            if model_generated_only(model):
+                payload["insight_items"] = [dict(item, domain=summary.get("domain"))
+                    for summary in model.get("summaries", []) for item in summary.get("focuses", [])]
+                payload["insight_items"] += [dict(item, domain="cross") for item in model.get("discoveries", [])]
+            else:
+                # The archived mixed batch separately attests its four model-made
+                # discoveries. Show those historical outputs, never its templates;
+                # this exception is display-only and cannot admit a cache/publication.
+                recorded = (manifest.get("publication") or {}).get("model_analysis") or {}
+                if (recorded.get("discovery_model") == model.get("discovery_model")
+                        and recorded.get("discovery_model")
+                        and "fallback" not in str(model.get("discovery_model"))
+                        and recorded.get("evidence_hash") == model.get("evidence_hash")
+                        and not recorded.get("discovery_fallback_used")
+                        and not model.get("discovery_fallback_used")
+                        and not model.get("manual_discovery_regeneration")
+                        and model.get("discovery_evidence_repair_count") == 0
+                        and len(model.get("discoveries") or []) == recorded.get("discoveries_passed")):
+                    payload["insight_items"] = [dict(item, domain="cross", origin="historical_ai")
+                        for item in model.get("discoveries", [])]
     except (OSError, ValueError):
         pass
     for task in payload["plan"]:
