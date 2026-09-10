@@ -930,6 +930,10 @@ class WorkspaceTabsTests(unittest.TestCase):
             self.assertIn(label, SCRIPT)
         for health in ("healthy", "running", "warning", "critical", "unknown"):
             self.assertIn(f".news-lineage.is-global .news-lineage-node.is-health-{health}", STYLE)
+        self.assertIn("animation: news-lineage-running-breathe 2.6s ease-in-out infinite", STYLE)
+        self.assertIn("@keyframes news-lineage-running-breathe", STYLE)
+        self.assertIn(".news-lineage-canvas.is-paused .news-lineage-node.is-health-running", STYLE)
+        self.assertIn(".news-lineage-node.is-health-running { filter: drop-shadow", STYLE)
         self.assertNotIn('node.tone', SCRIPT)
 
     def test_news_lineage_accepts_recovered_completed_stage_evidence(self):
