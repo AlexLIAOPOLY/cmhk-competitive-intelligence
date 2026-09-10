@@ -13,6 +13,12 @@ NOW = datetime(2026, 9, 10, tzinfo=ZoneInfo('Asia/Hong_Kong'))
 
 
 class PerformanceAgentTests(unittest.TestCase):
+    def setUp(self):
+        profile = patch('cmhk.reporting.performance_agent.company_profile', return_value={
+            'official_hosts': ['hkt.com'], 'seed_urls': []})
+        profile.start()
+        self.addCleanup(profile.stop)
+
     def test_database_first_and_no_unrelated_writes(self):
         baseline = {'sources': ['formal.json'], 'companies': {'HKT': {
             m: [{'period': 'H1 2026', 'value': 100, 'unit': 'HKD million'}]
@@ -42,7 +48,7 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertFalse(fresh_rows([{'period': '2026-08-01'}], 'broker', NOW.date()))
         self.assertEqual(publication_date({}, {'publication_date': '2026-09-09T12:00:00Z'}).isoformat(), '2026-09-09')
         def search(query, limit):
-            return {'results': [{'title': 'HKT future', 'url': 'https://example.test/a', 'snippet': '2027-01-01 HKT'}]}
+            return {'results': [{'title': 'HKT future', 'url': 'https://www.hkt.com/a', 'snippet': '2027-01-01 HKT'}]}
         with tempfile.TemporaryDirectory() as temp:
             model = build_model(Path(temp), ['HKT'], now=NOW,
                 baseline_loader=lambda p: {'companies': {}, 'sources': []}, search_client=search,
@@ -55,10 +61,10 @@ class PerformanceAgentTests(unittest.TestCase):
 
     def test_recent_company_matched_citation_is_accepted(self):
         def search(query, limit):
-            return {"results": [{"title": "HKT Trust 2026-09-09", "url": "https://example.test/broker", "snippet": "机构观点"}]}
+            return {"results": [{"title": "HKT Trust 2026-09-09", "url": "https://www.hkt.com/broker", "snippet": "机构观点"}]}
         def model(packs):
             return {"companies": [{"company": "HKT", "fields": {"broker": "机构于2026年9月9日维持买入评级，目标价100港元。"},
-                                    "sources": {"broker": ["https://example.test/broker"]}}]}, "test"
+                                    "sources": {"broker": ["https://www.hkt.com/broker"]}}]}, "test"
         with tempfile.TemporaryDirectory() as temp:
             result = build_model(Path(temp), ["HKT"], now=NOW,
                 baseline_loader=lambda p: {"companies": {}, "sources": []}, search_client=search,
@@ -68,10 +74,10 @@ class PerformanceAgentTests(unittest.TestCase):
 
     def test_citation_from_another_field_cannot_support_new_number(self):
         def search(query, limit):
-            return {'results': [{'title': 'HKT 2026-09-09', 'url': 'https://example.test/' + ('broker' if '评级' in query else 'other'), 'snippet': 'HKT 2026-09-09'}]}
+            return {'results': [{'title': 'HKT 2026-09-09', 'url': 'https://www.hkt.com/' + ('broker' if '评级' in query else 'other'), 'snippet': 'HKT 2026-09-09'}]}
         def model(packs):
             return {'companies': [{'company': 'HKT', 'fields': {'dividend': '公司每股派息100港元，保持稳定。'},
-                                    'sources': {'dividend': ['https://example.test/broker']}}]}, 'test'
+                                    'sources': {'dividend': ['https://www.hkt.com/broker']}}]}, 'test'
         with tempfile.TemporaryDirectory() as temp:
             result = build_model(Path(temp), ['HKT'], now=NOW,
                 baseline_loader=lambda p: {'companies': {}, 'sources': []}, search_client=search,

@@ -12,6 +12,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 from pathlib import Path
 from uuid import uuid4
+from urllib.parse import urlparse, urljoin
+from functools import lru_cache
 from zoneinfo import ZoneInfo
 
 from data_curation.research_freshness import load_baseline, period_key
@@ -94,7 +96,25 @@ def read_public_page(url: str) -> dict:
     published = (date_tag.get("content") or date_tag.get("datetime")) if date_tag else ""
     for tag in soup.select("script, style, nav, header, footer"):
         tag.decompose()
-    return {"opened": True, "text": soup.get_text(" ", strip=True), "publication_date": published}
+    links = [{"url": urljoin(str(response.url), a.get("href", "")), "title": a.get_text(" ", strip=True)}
+             for a in soup.select("a[href]") if re.search(r"20\d{2}|interim|中期|半年|results|业绩|業績", a.get_text(" ", strip=True) + a.get("href", ""), re.I)]
+    return {"opened": True, "text": soup.get_text(" ", strip=True), "publication_date": published, "disclosure_links": links}
+
+
+@lru_cache(maxsize=20)
+def company_profile(company: str) -> dict:
+    from data_curation.workflow import _company_research_profile
+    return _company_research_profile(ALIASES.get(company, company))
+
+
+def trusted_source(company: str, url: str, field: str) -> bool:
+    host = urlparse(url).hostname or ""
+    domains = company_profile(company)["official_hosts"] + ["hkexnews.hk", "cninfo.com.cn"]
+    if field in {"broker", "market"}:
+        domains += ["aastocks.com", "finance.yahoo.com", "finance.sina.com.cn", "reuters.com",
+                    "bloomberg.com", "hket.com", "hk01.com", "cnstock.com", "10jqka.com.cn",
+                    "jrj.com.cn", "stcn.com", "eastmoney.com", "marketscreener.com", "stockanalysis.com"]
+    return any(host == domain or host.endswith("." + domain) for domain in domains)
 
 
 def company_matches(company: str, text: str) -> bool:
@@ -113,6 +133,7 @@ def publication_date(result: dict, page: dict):
     text = " ".join(str(v or "") for v in [page.get("publication_date"), page.get("published_at"),
                          result.get("published_date"), result.get("title"), result.get("snippet"),
                          result.get("url"), str(page.get("text", ""))[:1200]])
+    text += " " + re.sub(r"(?<!\d)(20\d{2})(\d{2})(\d{2})(?=\d|\.)", r"\1-\2-\3 ", str(result.get("url", "")))
     for match in re.finditer(r"(20\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})", text):
         try:
             return datetime(*map(int, match.groups())).date()
@@ -158,6 +179,11 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
         candidates = row.get("results", [])
         row["discardedSearchResults"] = [r for r in candidates if not company_matches(row["company"], str(r.get("title", "")) + " " + str(r.get("snippet", "")))]
         row["results"] = [r for r in candidates if r not in row["discardedSearchResults"]]
+    for row in rows:
+        if row["field"] not in {"broker", "market"}:
+            for url in company_profile(row["company"])["seed_urls"][:2]:
+                row["results"].append({"url": url, "title": row["company"] + " 官方业绩披露入口", "snippet": ""})
+        row["results"] = [r for r in row["results"] if trusted_source(row["company"], r["url"], row["field"])]
     urls = list(dict.fromkeys(str(r["url"]) for row in rows for r in row.get("results", [])))
     progress(f"[业绩摘要 Agent] 已筛除无关公司，读取 {len(urls)} 篇原文并检查日期。")
     def read(url):
@@ -168,6 +194,18 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
             return url, {"opened": False, "error": str(exc)[:180]}
     with ThreadPoolExecutor(max_workers=3) as pool:
         pages = dict(pool.map(read, urls))
+    children = {}
+    for row in rows:
+        if row["field"] in {"broker", "market"}:
+            continue
+        links = [link for result in row["results"] for link in pages.get(result["url"], {}).get("disclosure_links", [])
+                 if trusted_source(row["company"], link["url"], row["field"]) and str(today.year) in str(link)]
+        for link in links[:2]:
+            row["results"].append(link)
+            if link["url"] not in pages:
+                children[link["url"]] = link
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        pages.update(dict(pool.map(read, children)))
     for row in rows:
         accepted, rejected = [], []
         for result in row.get("results", []):
@@ -229,9 +267,20 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
         batch = packs[start:start + 2]
         progress(f"[业绩摘要 Agent] 整理 {start + 1}–{min(start + 2, len(packs))}/{len(packs)} 家公司并核对来源。")
         try:
-            response, _model = ai_client(batch)
+            editor_batch = []
+            for pack in batch:
+                documents = {}
+                for page in pack["web_research"]["results"]:
+                    document = documents.setdefault(page["url"], {**page, "fields": []})
+                    if page["field"] not in document["fields"]:
+                        document["fields"].append(page["field"])
+                editor_batch.append({"company": pack["company"], "asOf": pack["asOf"],
+                    "evidence": pack["evidence"], "missing": pack["missing"],
+                    "web_research": {"results": list(documents.values())}})
+            response, _model = ai_client(editor_batch)
             returned.update({item["company"]: item for item in response.get("companies", [])})
         except Exception as exc:
+            progress("[业绩摘要局限][report_agent] 该批整理暂未完成，保留已核实的数据与缺项状态。")
             errors.append({"stage": "report_agent", "reason": str(exc)[:200], "companies": [p["company"] for p in batch]})
     sections, table, audit = [], [["主体", "最新披露", "收益", "EBITDA / 利润", "资本开支", "派息"]], []
     for pack in packs:
@@ -243,7 +292,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
             supplied = (result.get("sources") or {}).get(field, [])
             sources = supplied if isinstance(supplied, list) else []
             matched = [r for r in pack["web_research"]["results"] if r["field"] == field and r["url"] in sources]
-            evidence = {"database": pack["evidence"][field], "pages": matched}
+            evidence = {"database": pack["evidence"][field], "pages": [{"title": r["title"], "text": r["text"], "publishedAt": r["publishedAt"]} for r in matched]}
             valid, text, reason = validator(field, candidate, evidence)
             # New facts require a cited page for that exact company/field.
             if field in pack["missing"] and not matched:
