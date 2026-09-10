@@ -1402,6 +1402,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
         }
         model_payload = {
             "learned_rules": ["香港本地电讯商的明确业务动作优先进入APP"],
+            "event_groups": [{"event": "本地套餐发布", "news_ids": [target_id]}],
             "avoid_patterns": ["纯转载且没有新增事实"],
             "app_preference_summary": "偏好及时、与香港市场直接相关的新闻",
             "weekly_preference_summary": "偏好有持续影响和可复用事实的新闻",
@@ -1416,6 +1417,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
                     "app_reason": "本地套餐可比较",
                     "app_evidence": target_values[8],
                     "app_impact": "提供即时本地资费比较",
+                    "app_signal": "产品资费",
                 }
             ],
         }
@@ -2086,6 +2088,8 @@ class ModelBatchCheckpointTests(unittest.TestCase):
     @staticmethod
     def invoke(_examples, targets):
         return {
+            "event_groups": [{"event": target.get("title") or target["news_id"],
+                              "news_ids": [target["news_id"]]} for target in targets],
             "decisions": [
                 {
                     "news_id": target["news_id"],
@@ -2097,6 +2101,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                     "app_reason": "本地新套餐事实",
                     "app_evidence": target.get("summary", ""),
                     "app_impact": "本地资费比较",
+                    "app_signal": "产品资费",
                 }
                 for target in targets
             ]

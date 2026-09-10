@@ -160,6 +160,7 @@ REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
 )
 VALID_STATUSES = {"接受", "不接受"}
 TRAINING_PROVENANCE_VERSION = "verified-human-final-actor-evidence-v6"
+ACCEPTANCE_REVIEW_PROTOCOL = 2
 MACHINE_ACTOR_IDS = {
     "news-auto-screening-bot",
     "feishu-robot",
@@ -902,7 +903,7 @@ def _human_examples(
                 "region": _text(row.get("region"), 60),
                 "category": _text(row.get("category"), 80),
                 "source": _text(row.get("source"), 100),
-                "url": _text(row.get("url"), 1600),
+                "url": _text(row.get("source_url") or row.get("url"), 1600),
                 "source_date": _text(row.get("source_date"), 40),
                 "keywords": _text(row.get("keywords"), 180),
                 "app_status": effective_statuses["app"],
@@ -1104,7 +1105,7 @@ def _candidate_rows(
                 "region": _text(row.get("region"), 60),
                 "category": _text(row.get("category"), 100),
                 "source": _text(row.get("source"), 100),
-                "url": _text(row.get("url"), 1600),
+                "url": _text(row.get("source_url") or row.get("url"), 1600),
                 "source_date": _text(row.get("source_date"), 40),
                 "search_date": _text(row.get("search_date"), 20),
                 "keywords": _text(row.get("keywords"), 220),
@@ -1263,6 +1264,7 @@ def _invoke_langchain(
                   "calibration": (_MODEL_SESSION.get() or {}).get("calibration"),
                   "quality_feedback": (_MODEL_SESSION.get() or {}).get("quality_feedback"),
                   "acceptance_review": (_MODEL_SESSION.get() or {}).get("acceptance_review"),
+                  "acceptance_review_protocol": ACCEPTANCE_REVIEW_PROTOCOL if (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None else None,
                   "profile": (_MODEL_SESSION.get() or {}).get("profile"),
                   "preferences": (_MODEL_SESSION.get() or {}).get("preferences", False),
                   "model": public_config.get("model"), "base_url": public_config.get("base_url")},
@@ -1342,7 +1344,7 @@ def _invoke_langchain_transport(
         )
     else:
         system_prompt += (
-            "本次仅输出decisions；learned_preferences来自本轮同一批已核验人工样本的学习结果，"
+            "本次不重复输出学习摘要；learned_preferences来自本轮同一批已核验人工样本的学习结果，"
             "请按其偏好分类，human_examples为各状态组合的最近人工例证；不必重复学习或输出偏好。"
         )
     acceptance_review = (session or {}).get("acceptance_review")
@@ -1350,11 +1352,21 @@ def _invoke_langchain_transport(
         system_prompt += (
             "现在执行写入前的独立接受复核，候选包含全部分批初筛拟接受的新闻。"
             "provisional_decisions只是待核验的机器输出，不能当作事实或人工偏好。"
+            "必须先输出event_groups数组，再输出decisions。每组为"
+            '{"event":"主体+本次动作+产品或项目","news_ids":["本事件全部候选ID"]}。'
+            "所有候选恰好分组一次，单独事件也要成组。同次合作签约的简称/全称、"
+            "同次产品发布的发布会/方案/功能/市场预测分别报道，仍是同一事件；"
+            "新增细节用来选最完整代表，不能借新增细节把同一事件拆成多条。"
             "只能保留原接受或降为不接受，不得把原不接受升级；非待审核字段保持原值。"
             "对每个原拟接受字段，额外输出app_reason/weekly_reason，说明具体依据；"
             "仍接受还须输出app_evidence/weekly_evidence（逐字摘录当前标题或摘要8至220字），"
             "以及app_impact/weekly_impact（说明该事实的直接业务或管理决策价值）。"
+            "仍接受另给app_signal/weekly_signal，只能为产品资费、网络项目、具体合作、"
+            "政策标准、经营指标、行业研究之一；经营指标必须引用候选中具体数字及指标，"
+            "仅称发布财报但没提供数值不构成经营数据或经营对标依据。"
             "缺乏足够事实就不接受；不得借辅助标签或泛称可对标、影响市场补造因果。"
+            "国际对标运营商的具体产品、网络方案和经营数据可以有对标价值，"
+            "不得只因其在海外而否决；地域、技术标签本身也不能构成接受。"
             "同一事件不同媒体/标题/片段合并，每个字段只保留事实最完整的一条；"
             "相同主体但不同时间/产品/独立实质进展不应合并。"
             "重复项该字段必须不接受并输出app_duplicate_of/weekly_duplicate_of，"
@@ -1612,11 +1624,33 @@ def _normalized_acceptance_review(
     reviewed = {item["news_id"]: item for item in decisions}
     if set(initial) != set(reviewed):
         raise ValueError("接受复核候选与初筛计划不一致")
+    groups = payload.get("event_groups")
+    if not isinstance(groups, list) or not groups:
+        raise ValueError("接受复核缺少全批事件分组")
+    group_by_id: dict[str, int] = {}
+    for index, group in enumerate(groups):
+        if not isinstance(group, dict) or not _text(group.get("event"), 300):
+            raise ValueError("接受复核事件分组缺少具体事件")
+        members = group.get("news_ids")
+        if not isinstance(members, list) or not members:
+            raise ValueError("接受复核事件分组缺少候选")
+        for news_id in members:
+            if not isinstance(news_id, str) or news_id not in reviewed or news_id in group_by_id:
+                raise ValueError("接受复核事件分组含未知或重复候选")
+            group_by_id[news_id] = index
+        for field in ("app", "weekly"):
+            accepted = [news_id for news_id in members if reviewed[news_id].get(f"{field}_before") == "待审核"
+                        and reviewed[news_id].get(f"{field}_status") == "接受"]
+            if len(accepted) > 1:
+                raise ValueError(f"同一事件同字段重复接受 {field}: {'、'.join(accepted)}")
+    if set(group_by_id) != set(reviewed):
+        raise ValueError("接受复核事件分组遗漏候选")
     for item in decisions:
         news_id = item["news_id"]
         raw, before = raw_by_id[news_id], initial[news_id]
         evidence_sources = [_simplified(item.get(key), 1000) for key in ("title", "summary")]
-        review: dict[str, Any] = {}
+        review: dict[str, Any] = {"protocol": ACCEPTANCE_REVIEW_PROTOCOL,
+                                 "event": groups[group_by_id[news_id]]["event"]}
         for field in ("app", "weekly"):
             if item.get(f"{field}_before") != "待审核":
                 continue
@@ -1627,6 +1661,7 @@ def _normalized_acceptance_review(
             reason = _simplified(raw.get(f"{field}_reason"), 500)
             evidence = _simplified(raw.get(f"{field}_evidence"), 220)
             impact = _simplified(raw.get(f"{field}_impact"), 500)
+            signal = _text(raw.get(f"{field}_signal"), 40)
             duplicate_of = _text(raw.get(f"{field}_duplicate_of"), 80)
             if not reason:
                 raise ValueError(f"接受复核缺少独立字段理由 {news_id}/{field}")
@@ -1635,18 +1670,25 @@ def _normalized_acceptance_review(
                     raise ValueError(f"接受复核缺少可回溯的原文事实与业务价值 {news_id}/{field}")
                 if duplicate_of:
                     raise ValueError(f"重复新闻不得同时接受 {news_id}/{field}")
+                if signal not in {"产品资费", "网络项目", "具体合作", "政策标准", "经营指标", "行业研究"}:
+                    raise ValueError(f"接受复核缺少具体事实类型 {news_id}/{field}")
+                if signal == "经营指标" and (not re.search(r"\d", evidence) or not re.search(
+                    r"营收|收入|利润|盈利|亏损|用户|客户|资本开支|渗透率|增长率|ARPU|EBITDA|Revenue", evidence, re.I
+                )):
+                    raise ValueError(f"经营指标接受依据缺少实际指标数值 {news_id}/{field}")
             if duplicate_of:
                 representative = reviewed.get(duplicate_of, {})
                 if (
                     duplicate_of == news_id
                     or representative.get(f"{field}_status") != "接受"
                     or initial.get(duplicate_of, {}).get(f"{field}_status") != "接受"
+                    or group_by_id.get(duplicate_of) != group_by_id[news_id]
                 ):
                     raise ValueError(f"重复新闻缺少同字段已接受代表 {news_id}/{field}")
             review[field] = {
                 "initial_status": "接受", "final_status": item[f"{field}_status"],
                 "reason": reason, "evidence": evidence, "impact": impact,
-                "duplicate_of": duplicate_of,
+                "duplicate_of": duplicate_of, "signal": signal,
             }
         item["acceptance_review"] = review
     return decisions
@@ -1668,26 +1710,39 @@ def _review_acceptances(
     ids = {item["news_id"] for item in candidates}
     review_targets = [item for item in targets if item["news_id"] in ids]
     provisional = [{key: item.get(key) for key in
-                    ("news_id", "app_status", "weekly_status", "reason")} for item in candidates]
+                    ("news_id", "app_status", "weekly_status")} for item in candidates]
     session = _MODEL_SESSION.get()
     if session is None:
         raise RuntimeError("接受复核必须运行于持久化筛选会话")
     review_key = "acceptance-review:" + hashlib.sha256(json.dumps({
+        "protocol": ACCEPTANCE_REVIEW_PROTOCOL,
         "input": _model_checkpoint_key(examples, review_targets), "provisional": provisional,
     }, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
     cached = (checkpoint or {}).get(review_key, {})
     prior_profile = session.pop("profile", None)
     prior_preferences = session.get("preferences", False)
+    prior_feedback = session.get("quality_feedback")
     session["preferences"] = True
     session["acceptance_review"] = provisional
     try:
         if session.get("request_callback"):
             session["request_callback"](f"对全部分批拟接受的 {len(candidates)} 条进行事实、独立字段理由及同事件重复复核。")
-        if cached.get("payload"):
-            review_payload, reviewer_model = cached["payload"], cached["model"]
-        else:
-            review_payload, reviewer_model = _invoke_langchain(examples, review_targets)
-        reviewed = _normalized_acceptance_review(review_payload, review_targets, provisional)
+        for repair in range(2):
+            try:
+                if cached.get("payload"):
+                    review_payload, reviewer_model = cached["payload"], cached["model"]
+                else:
+                    review_payload, reviewer_model = _invoke_langchain(examples, review_targets)
+                reviewed = _normalized_acceptance_review(review_payload, review_targets, provisional)
+                break
+            except ValueError as exc:
+                if repair:
+                    raise
+                cached = {}
+                session["quality_feedback"] = (
+                    f"{prior_feedback or ''} 接受复核校验未通过：{exc.__cause__ or exc}。"
+                    "请重新检查事件分组、代表项和独立事实依据；不得按配额调整接受数。"
+                )
         if checkpoint is not None and not cached.get("payload"):
             checkpoint[review_key] = {"payload": review_payload, "model": reviewer_model}
             if checkpoint_callback:
@@ -1700,6 +1755,7 @@ def _review_acceptances(
     finally:
         session.pop("acceptance_review", None)
         session["preferences"] = prior_preferences
+        session["quality_feedback"] = prior_feedback
         if prior_profile is not None:
             session["profile"] = prior_profile
 

@@ -34,8 +34,9 @@ class AcceptanceReviewTests(unittest.TestCase):
         for i, item in enumerate(rows):
             item.update(app_status="不接受" if i else "接受", app_reason="同一套餐重复报道" if i else "具体本地套餐变化",
                         app_evidence="本地运营商推出每月98元的5G套餐", app_impact="可比较香港本地资费竞争",
-                        app_duplicate_of="N-0" if i else "")
-        return {"decisions": rows}
+                        app_duplicate_of="N-0" if i else "", app_signal="产品资费")
+        return {"event_groups": [{"event": "本地运营商发布同一套餐", "news_ids": [x["news_id"] for x in rows]}],
+                "decisions": rows}
 
     def test_whole_batch_deduplication_and_durable_reuse(self):
         checkpoint, phases = {}, []
@@ -64,6 +65,20 @@ class AcceptanceReviewTests(unittest.TestCase):
             with self.subTest(key=key):
                 payload = self.review_payload()
                 payload["decisions"][0][key] = value
+                with self.assertRaisesRegex(ValueError, error):
+                    agent._normalized_acceptance_review(payload, self.targets, self.primary)
+
+    def test_event_partition_and_one_accepted_representative_are_required(self):
+        for change, error in [
+            (lambda p: p.pop("event_groups"), "缺少全批事件分组"),
+            (lambda p: p["event_groups"][0]["news_ids"].pop(), "遗漏候选"),
+            (lambda p: p["event_groups"][0]["news_ids"].append("N-0"), "重复候选"),
+            (lambda p: p["decisions"][1].update(app_status="接受", app_duplicate_of=""), "同字段重复接受"),
+            (lambda p: p["decisions"][0].update(app_signal="经营指标"), "实际指标数值"),
+        ]:
+            with self.subTest(error=error):
+                payload = self.review_payload()
+                change(payload)
                 with self.assertRaisesRegex(ValueError, error):
                     agent._normalized_acceptance_review(payload, self.targets, self.primary)
 
