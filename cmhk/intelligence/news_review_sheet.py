@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 from collections import Counter
@@ -258,18 +259,26 @@ def _schedule_public_dashboard_publish() -> dict[str, Any]:
 def _read_json(path: Path, default: Any) -> Any:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError, TypeError):
+    except FileNotFoundError:
+        return default
+    except (OSError, json.JSONDecodeError, TypeError) as exc:
+        if path == STATE_PATH:
+            raise RuntimeError("新闻审核状态文件无法完整读取，已停止覆盖；请从备份恢复后重试") from exc
         return default
 
 
 def _write_json(path: Path, payload: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix(path.suffix + ".tmp")
-    temporary.write_text(
-        json.dumps(payload, ensure_ascii=False, indent=2),
-        encoding="utf-8",
-    )
-    temporary.replace(path)
+    descriptor, name = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    temporary = Path(name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
+            json.dump(payload, stream, ensure_ascii=False, indent=2)
+            stream.flush()
+            os.fsync(stream.fileno())
+        temporary.replace(path)
+    finally:
+        temporary.unlink(missing_ok=True)
 
 
 def _append_jsonl(path: Path, payload: dict[str, Any]) -> None:
@@ -4811,7 +4820,11 @@ def _review_news_candidate(item: dict[str, Any]) -> tuple[bool, str]:
             and window_start <= published_at <= window_end
         ):
             return False, "不在明确检索时间窗口"
-    title_years = {int(value) for value in re.findall(r"(?<!\d)(20\d{2})(?!\d)", title)}
+    # A quantity such as 2000万台 or 2025元 is not a publication year.
+    title_years = {int(value) for value in re.findall(
+        r"(?<!\d)(20\d{2})(?!\d|\s*(?:万|亿|千|百|港元|美元|元|台|户|人|个|家|条|项|倍|%|％|Mbps|Gbps|MHz|GHz|MB|GB|TB|kW|MW|GW))",
+        title, flags=re.I,
+    )}
     if title_years and int(search_date[:4]) not in title_years and max(title_years) < int(search_date[:4]):
         return False, "标题显示旧年份"
     url_date_hint = _url_publication_hint(url)

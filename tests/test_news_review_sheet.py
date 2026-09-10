@@ -41,6 +41,25 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             stderr="",
         )
 
+    def test_concurrent_state_writes_are_complete_and_leave_no_shared_temp_file(self):
+        from concurrent.futures import ThreadPoolExecutor
+        from threading import Barrier
+        barrier = Barrier(6)
+        def writer(number):
+            barrier.wait(timeout=10)
+            for _ in range(8):
+                review_sheet._write_json(review_sheet.STATE_PATH, {"writer": number, "body": str(number) * 100000})
+                current = review_sheet._read_json(review_sheet.STATE_PATH, {})
+                self.assertEqual(current["body"], str(current["writer"]) * 100000)
+        with ThreadPoolExecutor(max_workers=6) as pool:
+            list(pool.map(writer, range(6)))
+        self.assertEqual(list(review_sheet.STATE_PATH.parent.glob("*.tmp")), [])
+
+    def test_corrupt_state_does_not_silently_become_an_empty_new_sheet(self):
+        review_sheet.STATE_PATH.write_text('{"sheet_id":', encoding="utf-8")
+        with self.assertRaisesRegex(RuntimeError, "已停止覆盖"):
+            review_sheet._read_json(review_sheet.STATE_PATH, {})
+
     def test_lark_read_retries_transient_2200_then_succeeds(self):
         transient = self._lark_result(
             {"ok": False, "error": {"code": 2200, "message": "Internal Error"}},
@@ -485,6 +504,19 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             flow,
             "Agentic Search 缺口复查（模块：竞争对手；命中：T-Mobile） → Google News搜索",
         )
+
+    def test_quantity_in_title_is_not_misread_as_an_old_year(self):
+        for title, expected in [
+            ("中国联通预计eSIM手机破2000万台", True),
+            ("本地运营商推出2025元设备优惠", True),
+            ("运营商发布2025年年度报告", False),
+        ]:
+            with self.subTest(title=title):
+                keep, reason = review_sheet._review_news_candidate({
+                    "title": title, "url": "https://example.com/news",
+                    "source_date": "2026-09-10", "search_date": "2026-09-10",
+                })
+                self.assertEqual(keep, expected, reason)
 
     def test_current_competitor_product_news_is_kept_for_human_review(self):
         keep, reason = review_sheet._review_news_candidate(
