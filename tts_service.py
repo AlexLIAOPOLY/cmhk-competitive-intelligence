@@ -803,6 +803,14 @@ def build_audio_summary(report_path: Path, max_chars: int = 1100) -> str:
         if "业绩摘要" in report_path.name or "运营商及香港主要竞对关键业绩摘要" in text
         else "weekly"
     )
+    if report_kind == 'carrier-performance':
+        # Core earnings are in the existing summary table, not necessarily in
+        # the five narrative fields. Include the same document's figures.
+        document = Document(str(report_path))
+        table_text = '\n'.join(' | '.join(cell.text for cell in row.cells)
+                               for table in document.tables for row in table.rows)
+        if table_text:
+            text = '业绩汇总表（沿用各行原期间与币种）：\n' + table_text + '\n\n' + text
 
     llm_summary = _generate_audio_summary_with_llm(text, report_kind=report_kind)
     if llm_summary:
