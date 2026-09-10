@@ -7398,7 +7398,7 @@ class AppHandler(BaseHTTPRequestHandler):
             name = Path(unquote(parsed.path.removeprefix("/audio/"))).name
             target = AUDIO_DIR / name
             if target.exists() and target.suffix.lower() in {".wav", ".mp3"}:
-                self.serve_head(target)
+                self.serve_audio(target, head_only=True)
                 return
         if parsed.path.startswith("/generated-charts/"):
             target = generated_chart_path(unquote(parsed.path.removeprefix("/generated-charts/")))
@@ -7898,7 +7898,7 @@ class AppHandler(BaseHTTPRequestHandler):
             if not target.exists() or target.suffix.lower() not in {".wav", ".mp3"} or target.parent != AUDIO_DIR:
                 json_response(self, {"ok": False, "error": "audio not found"}, 404)
                 return
-            self.serve_file(target)
+            self.serve_audio(target)
             return
         if path.startswith("/generated-charts/"):
             target = generated_chart_path(unquote(path.removeprefix("/generated-charts/")))
@@ -9265,6 +9265,66 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Disposition", self.download_disposition(path))
         self.end_headers()
         self.wfile.write(body)
+
+    def serve_audio(self, path: Path, head_only: bool = False) -> None:
+        """Serve report audio with byte ranges so browsers can seek while paused."""
+        if not path.is_file():
+            self.send_response(404)
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
+        with path.open("rb") as stream:
+            stat = os.fstat(stream.fileno())
+            size = stat.st_size
+            etag = f'"{stat.st_mtime_ns:x}-{size:x}"'
+            modified = self.date_time_string(stat.st_mtime)
+            start, end = 0, size - 1
+            status = 200
+            requested = "" if head_only else self.headers.get("Range", "").strip()
+            if_range = self.headers.get("If-Range", "")
+            if if_range and if_range not in {etag, modified}:
+                requested = ""
+            # Browsers request one span. Ignore malformed/multipart ranges and
+            # return the complete representation instead of inventing a span.
+            match = re.fullmatch(r"bytes=([0-9]{0,20})-([0-9]{0,20})", requested)
+            if match and any(match.groups()):
+                first, last = match.groups()
+                if first:
+                    start = int(first)
+                    end = min(int(last), size - 1) if last else size - 1
+                else:
+                    start = max(0, size - int(last))
+                if start >= size or start > end:
+                    self.send_response(416)
+                    self.send_header("Accept-Ranges", "bytes")
+                    self.send_header("Content-Range", f"bytes */{size}")
+                    self.send_header("Content-Length", "0")
+                    self.end_headers()
+                    return
+                status = 206
+            length = max(0, end - start + 1)
+            self.send_response(status)
+            self.send_header("Content-Type", mimetypes.guess_type(str(path))[0] or "application/octet-stream")
+            self.send_header("Accept-Ranges", "bytes")
+            self.send_header("Content-Length", str(length))
+            self.send_header("ETag", etag)
+            self.send_header("Last-Modified", modified)
+            if status == 206:
+                self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
+            self.end_headers()
+            if head_only:
+                return
+            stream.seek(start)
+            try:
+                while length:
+                    chunk = stream.read(min(length, 64 * 1024))
+                    if not chunk:
+                        break
+                    self.wfile.write(chunk)
+                    length -= len(chunk)
+            except (BrokenPipeError, ConnectionResetError):
+                # A new seek cancels the previous browser request.
+                return
 
     def serve_reference(self, path: Path) -> None:
         if not path.exists() or not path.is_file():
