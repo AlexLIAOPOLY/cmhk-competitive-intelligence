@@ -405,7 +405,10 @@ def _internal_asr_timing_payload(audio_path: Path) -> dict:
     )
     try:
         wait_for_internal_ai_slot("tts-subtitle-alignment")
-        with urllib.request.urlopen(request, timeout=180) as response:
+        with open_llm_request(
+            request, timeout=180, config=config, requested_key=api_key,
+            model=dict(fields)["model"], buffer_response=True,
+        ) as response:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:600]
@@ -1346,7 +1349,10 @@ def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
             )
             try:
                 wait_for_internal_ai_slot("tts-audio-chunk")
-                with urllib.request.urlopen(request, timeout=180) as response:
+                with open_llm_request(
+                    request, timeout=180, config=config, requested_key=api_key,
+                    model=model, buffer_response=True,
+                ) as response:
                     audio_bytes = response.read()
             except urllib.error.HTTPError as exc:
                 detail = exc.read().decode("utf-8", errors="ignore")[:600]

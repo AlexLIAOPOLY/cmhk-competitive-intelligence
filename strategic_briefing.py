@@ -23,7 +23,10 @@ from zoneinfo import ZoneInfo
 from opencc import OpenCC
 
 from ai_config import api_key_candidates, load_ai_config
-from ai_key_rotation import is_key_unavailable_error
+from ai_key_rotation import (
+    is_key_unavailable_error, available_key_routes, api_key_retry_after,
+    mark_api_key_unavailable, APIKeyPoolUnavailable, is_transient_llm_error,
+)
 from ai_rate_limit import wait_for_internal_ai_slot
 from ai_response_compat import load_json_response
 from cmhk.intelligence.agent_harness import (
@@ -3812,7 +3815,7 @@ def _call_internal_ai_transport(
                 for value in route_keys
                 if (normalized_key := _clean_text(value, 500))
             )
-    routes = list(dict.fromkeys(routes))
+    routes = available_key_routes(list(dict.fromkeys(routes)))
     opener = build_opener(ProxyHandler({}))
     timeout_seconds = max(
         30,
@@ -3822,6 +3825,8 @@ def _call_internal_ai_transport(
     payload: dict[str, Any] = {}
     request_succeeded = False
     for route_index, (route_model, api_key) in enumerate(routes, start=1):
+        if api_key_retry_after(api_key, model=route_model) > 0:
+            continue
         request_body = {
             "model": route_model,
             "messages": [
@@ -3910,20 +3915,11 @@ def _call_internal_ai_transport(
                         method="POST",
                     )
                     continue
-                if key_unavailable and route_index < len(routes):
-                    logging.warning(
-                        "战略新闻AI路由 %s/%s（%s）额度耗尽或无模型权限，"
-                        "自动切换下一路由。",
-                        route_index,
-                        len(routes),
-                        route_model,
-                    )
+                if key_unavailable:
+                    mark_api_key_unavailable(api_key, exc, model=route_model,
+                                             raw_body=raw_error.encode("utf-8"))
                     switch_key = True
                     break
-                if key_unavailable:
-                    raise RuntimeError(
-                        "战略新闻AI所有配置路由均额度耗尽或无模型权限"
-                    ) from exc
                 retryable = exc.code == 429 or 500 <= exc.code < 600
                 if not retryable or attempt >= attempts:
                     raise
@@ -3945,9 +3941,10 @@ def _call_internal_ai_transport(
                     attempts,
                 )
                 time.sleep(delay)
-            except TimeoutError:
+            except Exception as exc:
                 if (
-                    attempt >= attempts
+                    not is_transient_llm_error(exc)
+                    or attempt >= attempts
                     or (
                         deadline_monotonic is not None
                         and time.monotonic() >= deadline_monotonic
@@ -3955,7 +3952,7 @@ def _call_internal_ai_transport(
                 ):
                     raise
                 logging.warning(
-                    "公司内部 AI 请求超时，正在重试 %s/%s",
+                    "公司内部 AI 连接中断，正在重试 %s/%s",
                     attempt + 1,
                     attempts,
                 )
@@ -3970,6 +3967,9 @@ def _call_internal_ai_transport(
         if switch_key:
             continue
         break
+    if not request_succeeded:
+        available_key_routes(routes)
+        raise APIKeyPoolUnavailable(1, len(routes))
     choice = (payload.get("choices") or [{}])[0]
     message = choice.get("message") or {}
     tool_calls = message.get("tool_calls") if isinstance(message.get("tool_calls"), list) else []
