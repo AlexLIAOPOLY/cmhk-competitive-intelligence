@@ -70,10 +70,18 @@ class PerformanceAgentTests(unittest.TestCase):
             ('broker', '瑞银2026年7月29日维持买入，目标价13.40港元。', 'UBS Buy $13.40 Jul 29, 2026'),
             ('broker', '瑞银2026年7月29日维持买入，目标价13.40港元。', '2026.07.29 UBS Buy $13.40'),
             ('dividend', '2025年末期股息每股人民币0.1329元。', '2025 final dividend RMB0.1329 per share'),
+            ('market', '2026年9月10日16:08，股价报4.605港元。', 'Sep 10, 2026 at 4:08PM HKT HKD 4.605'),
             ('strategy', '新项目合约额超过22亿港元，推进人工智能转型。', 'new contract value exceeding HK$2.2 billion AI transformation')]
         for field, text, source in cases:
             self.assertTrue(valid_ai_performance_field(field, text, source)[0])
         self.assertFalse(valid_ai_performance_field('broker', '瑞银目标价提高至99港元。', 'UBS target HK$13.40')[0])
+
+    def test_verbose_supported_views_keep_complete_clauses_and_attribution(self):
+        opinion = '瑞银维持买入评级，关注企业业务与现金流增长。' * 12 + '（来源：公开评级页面）'
+        ok, text, _ = valid_ai_performance_field('broker', opinion, opinion)
+        self.assertTrue(ok)
+        self.assertLessEqual(len(text), 160)
+        self.assertTrue(text.endswith('。（来源：公开评级页面）'))
 
     def test_database_display_deduplicates_and_excludes_processing_notes(self):
         rows = [{'period': 'H1 2026', 'metric': '收入', 'value': 2846, 'unit': 'millions HKD',

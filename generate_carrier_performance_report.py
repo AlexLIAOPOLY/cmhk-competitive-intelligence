@@ -913,6 +913,8 @@ def extract_numeric_tokens(value: object) -> set[str]:
     tokens = set()
     text = str(value or "")
     text = re.sub(r'\b(20\d{2})\.(\d{1,2})\.(\d{1,2})\b', r'\1-\2-\3', text)
+    for hour, minute, meridiem in re.findall(r'\b(\d{1,2}):(\d{2})\s*(AM|PM)\b', text, re.I):
+        text += f" {int(hour) % 12 + (12 if meridiem.lower() == 'pm' else 0)}:{minute}"
     for index, month in enumerate(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 1):
         text = re.sub(rf'\b{month}[a-z]*\s+(\d{{1,2}}),?\s+(20\d{{2}})', rf'\2-{index}-\1', text, flags=re.I)
         text = re.sub(rf'\b(\d{{1,2}})\s+{month}[a-z]*\s+(20\d{{2}})', rf'\2-{index}-\1', text, flags=re.I)
@@ -1113,6 +1115,20 @@ def call_performance_editor_batches(
 def valid_ai_performance_field(field_key: str, candidate: object, evidence: object) -> tuple[bool, str, str]:
     text = _SIMPLIFIED_CHINESE_CONVERTER.convert(clean_text(candidate, preserve_units=True))
     maximum = 260 if field_key == "strategy" else 160
+    if len(text) > maximum:
+        # Preserve complete clauses and the explicit attribution; a verbose
+        # supported answer should not become a false missing-information cell.
+        source_match = re.search(r'[（(]来源[：:].*?[）)]', text)
+        source = source_match.group() if source_match else ''
+        body = text.replace(source, '') if source else text
+        parts = re.findall(r'[^。！？；，]+[。！？；，]?', body)
+        shortened = ''
+        for part in parts:
+            if len(shortened + part + source) > maximum - 1:
+                break
+            shortened += part
+        if shortened:
+            text = shortened.rstrip('，；。') + '。' + source
     if len(text) < 8 or len(text) > maximum:
         return False, text, f"长度不在8至{maximum}字"
     if not is_publishable_field(text):

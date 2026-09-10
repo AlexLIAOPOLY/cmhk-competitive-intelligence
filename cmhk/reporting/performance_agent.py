@@ -31,7 +31,7 @@ SEARCH_NAMES = {"HKT / csl / 1O1O": "香港電訊 HKT", "3HK / Hutchison": "和�
 TERMS = {"dividend": "interim final dividend per share 股息 派息",
          "capex": "interim results capital expenditure 资本开支",
          "strategy": "interim results business outlook 战略 业绩",
-         "broker": "analyst rating target price 大行 评级 目标价",
+         "broker": "业绩 评级 分析 评论",
          "market": "stock price market reaction 股价 市场反应",
          "revenue": "interim results revenue 收入",
          "profit": "interim results EBITDA net profit 净利润"}
@@ -42,7 +42,7 @@ TICKERS = {"中国移动": "0941", "中国电信": "0728", "中国联通": "0762
 FIELD_PATTERNS = {
     "dividend": r"dividend|distribution|股息|派息|分红|分紅|分派",
     "capex": r"capex|capital expend|capital invest|资本开支|資本開支|资本支出|資本支出",
-    "strategy": r"strategy|strategic|outlook|artificial intelligence|data centre|business review|战略|戰略|人工智能|算力|展望|转型|轉型",
+    "strategy": r"strategy|strategic|outlook|artificial intelligence|data centre|business review|computing|digital|intelligent|cloud|transformation|战略|戰略|人工智能|算力|展望|转型|轉型|数智|数字",
     "broker": r"analyst|rating|price target|forecast|大行|券商|评级|評級|目标价|目標價|观点|觀點|分析",
     "market": r"price|stock|share|market|股价|股價|市场|市場|成交|收市",
     "revenue": r"revenue|turnover|收入|收益",
@@ -242,8 +242,9 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
             start = today - timedelta(days=180 if recent else 370)
             terms = TERMS[fields[0]] if len(fields) == 1 else "interim results financial report dividend capex 中期业绩 股息 资本开支"
             subject = SEARCH_NAMES.get(pack["company"], pack["company"]).split()[0]
-            requests.append({"id": f"{pack['company']}:{','.join(fields)}", "company": pack["company"], "fields": fields,
-                "query": f'"{subject}" {today.year} {terms} after:{start.isoformat()} before:{(today + timedelta(days=1)).isoformat()}'})
+            query = (f'{subject} {today.year} {terms}' if fields == ['broker']
+                     else f'"{subject}" {today.year} {terms} after:{start.isoformat()} before:{(today + timedelta(days=1)).isoformat()}')
+            requests.append({"id": f"{pack['company']}:{','.join(fields)}", "company": pack["company"], "fields": fields, "query": query})
     progress(f"[业绩摘要 Agent] 缺项按公司合并为 {len(requests)} 次搜索，近期观点单独查询。")
     collected = {}
     with ThreadPoolExecutor(max_workers=3) as pool:
