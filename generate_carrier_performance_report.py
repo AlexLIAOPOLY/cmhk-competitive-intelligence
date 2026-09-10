@@ -999,10 +999,12 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         }
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
+    incomplete_retry = any(pack.get('retryIncompleteOutput') for pack in fact_packs)
+    request_timeout = max(PERFORMANCE_AI_TIMEOUT_SECONDS, 180) if incomplete_retry else PERFORMANCE_AI_TIMEOUT_SECONDS
     if provider != "openai":
         # Some V4 gateway routes still spend tokens on hidden reasoning despite
         # thinking=disabled. Leave room for the complete final JSON as well.
-        body.setdefault("max_tokens", 16384)
+        body.setdefault("max_tokens", 32768 if incomplete_retry else 16384)
         body = prepare_structured_chat_body(body)
     request = urllib.request.Request(
         url,
@@ -1015,8 +1017,8 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         started = time.monotonic()
         with open_llm_request(
             request,
-            timeout=PERFORMANCE_AI_TIMEOUT_SECONDS,
-            deadline_monotonic=started + PERFORMANCE_AI_TIMEOUT_SECONDS,
+            timeout=request_timeout,
+            deadline_monotonic=started + request_timeout,
             max_transport_retries=0,
             config=config,
             requested_key=api_key,
@@ -1025,10 +1027,10 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         ) as response:
             chunks = []
             while True:
-                remaining = PERFORMANCE_AI_TIMEOUT_SECONDS - (time.monotonic() - started)
+                remaining = request_timeout - (time.monotonic() - started)
                 if remaining <= 0:
                     raise TimeoutError(
-                        f"业绩摘要模型超过{PERFORMANCE_AI_TIMEOUT_SECONDS}秒总等待上限"
+                        f"业绩摘要模型超过{request_timeout}秒总等待上限"
                     )
                 try:
                     response.fp.raw._sock.settimeout(max(1.0, remaining))

@@ -61,6 +61,8 @@ class PerformanceAgentTests(unittest.TestCase):
             {'text': 'For six months ended 2026-06-30'}).isoformat(), '2026-08-13')
         self.assertEqual(publication_date({'url': 'https://example.com/2026_09_03_1042.pdf'},
             {'document_type': 'pdf', 'text': 'Dividend payment on 2026-09-20'}).isoformat(), '2026-09-03')
+        self.assertEqual(publication_date({'url': 'https://example.com/2026/09/2026_09_03_1042.pdf'},
+            {'document_type': 'pdf', 'text': 'Dividend payment on 2026-09-20'}).isoformat(), '2026-09-03')
         self.assertIsNone(publication_date({'url': 'https://example.com/ir2026/financial.pdf'},
             {'document_type': 'pdf', 'text': 'Incorporated on 3 August 2007. Six months ended 30 June 2026.'}))
 

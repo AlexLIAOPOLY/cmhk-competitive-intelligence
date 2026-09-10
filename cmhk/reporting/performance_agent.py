@@ -204,7 +204,7 @@ def publication_date(result: dict, page: dict):
     # Dated URL/metadata precede report-period dates embedded in the body.
     dated_url = re.sub(r"(?<!\d)(20\d{2})(\d{2})(\d{2})(?=\d|\.)", r"\1-\2-\3 ", str(result.get("url", "")))
     explicit = " ".join(str(v or "") for v in [page.get("publication_date"), page.get("published_at"), result.get("published_date"), dated_url])
-    for match in re.finditer(r"(20\d{2})[-/年._](\d{1,2})[-/月._](\d{1,2})", explicit):
+    for match in re.finditer(r"(20\d{2})[-/年._](\d{1,2})[-/月._](\d{1,2})(?!\d)", explicit):
         try:
             return datetime(*map(int, match.groups())).date()
         except ValueError:
@@ -216,7 +216,7 @@ def publication_date(result: dict, page: dict):
                          result.get("published_date"), result.get("title"), result.get("snippet"),
                          result.get("url"), str(page.get("text", ""))[:1200]])
     text += " " + re.sub(r"(?<!\d)(20\d{2})(\d{2})(\d{2})(?=\d|\.)", r"\1-\2-\3 ", str(result.get("url", "")))
-    for match in re.finditer(r"(20\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})", text):
+    for match in re.finditer(r"(20\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})(?!\d)", text):
         try:
             return datetime(*map(int, match.groups())).date()
         except ValueError:
@@ -430,7 +430,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
                 response, _model = ai_client(editor_batch)
             except (TimeoutError, ValueError):
                 progress(f"[业绩摘要 Agent] {pack['company']} 整理输出不完整，重试一次。")
-                response, _model = ai_client(editor_batch)
+                response, _model = ai_client([{**item, 'retryIncompleteOutput': True} for item in editor_batch])
             returned.update({item["company"]: item for item in response.get("companies", [])})
             draft = returned.get(pack["company"], {})
             feedback = {}
