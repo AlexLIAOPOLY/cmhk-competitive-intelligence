@@ -4406,7 +4406,7 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
             result = web_app.run_report_generation()
 
         self.assertTrue(result["ok"])
-        self.assertEqual(run.call_args.kwargs["timeout"], 900)
+        self.assertEqual(run.call_args.kwargs["timeout"], 2400)
 
     def test_sync_performance_endpoint_allows_long_report_generation(self) -> None:
         completed = subprocess.CompletedProcess(
@@ -4422,7 +4422,7 @@ class WeeklyReportFailOpenWebTests(unittest.TestCase):
             result = web_app.run_carrier_performance_generation()
 
         self.assertTrue(result["ok"])
-        self.assertEqual(run.call_args.kwargs["timeout"], 900)
+        self.assertEqual(run.call_args.kwargs["timeout"], 2400)
 
 
 class IntelligenceEntityScrollTests(unittest.TestCase):

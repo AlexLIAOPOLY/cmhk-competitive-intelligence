@@ -6244,6 +6244,8 @@ def main() -> None:
             "处理：主报告已保留，归档失败不改变生成成功状态。",
             flush=True,
         )
+    from report_audio_pipeline import generate_report_audio
+    generate_report_audio(weekly_docx)
     print("==================================================")
 
 

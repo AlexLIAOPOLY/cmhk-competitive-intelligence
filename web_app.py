@@ -3667,14 +3667,15 @@ def run_report_generation() -> dict:
         cwd=str(ROOT),
         text=True,
         capture_output=True,
-        timeout=900,
+        timeout=2400,
     )
     status = build_status()
-    audio_result = None
-    if proc.returncode == 0 and status.get("outputs"):
+    from report_audio_pipeline import audio_result_from_output
+    audio_result = audio_result_from_output(proc.stdout or "") if proc.returncode == 0 else None
+    if proc.returncode == 0 and audio_result is None:
         try:
             latest_path = latest_output_path(status, "weekly")
-            audio_result = synthesize_report_audio(latest_path, force=True)
+            audio_result = synthesize_report_audio(latest_path, force=False)
             status = build_status()
         except Exception as exc:
             audio_result = {"ok": False, "error": str(exc)}
@@ -3684,6 +3685,8 @@ def run_report_generation() -> dict:
         "durationMs": round((time.time() - started) * 1000),
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),
+        "reportGenerated": proc.returncode == 0,
+        "completedWithWarnings": proc.returncode == 0 and bool(audio_result and not audio_result.get("ok")),
         "audio": audio_result,
         "status": status,
     }
@@ -3697,14 +3700,15 @@ def run_carrier_performance_generation() -> dict:
         cwd=str(ROOT),
         text=True,
         capture_output=True,
-        timeout=900,
+        timeout=2400,
     )
     status = build_status()
-    audio_result = None
-    if proc.returncode == 0 and status.get("outputs"):
+    from report_audio_pipeline import audio_result_from_output
+    audio_result = audio_result_from_output(proc.stdout or "") if proc.returncode == 0 else None
+    if proc.returncode == 0 and audio_result is None:
         try:
             latest_path = latest_output_path(status, "carrier-performance")
-            audio_result = synthesize_report_audio(latest_path, force=True)
+            audio_result = synthesize_report_audio(latest_path, force=False)
             status = build_status()
         except Exception as exc:
             audio_result = {"ok": False, "error": str(exc)}
@@ -3714,6 +3718,8 @@ def run_carrier_performance_generation() -> dict:
         "durationMs": round((time.time() - started) * 1000),
         "stdout": proc.stdout.strip(),
         "stderr": proc.stderr.strip(),
+        "reportGenerated": proc.returncode == 0,
+        "completedWithWarnings": proc.returncode == 0 and bool(audio_result and not audio_result.get("ok")),
         "audio": audio_result,
         "status": status,
     }
@@ -4158,10 +4164,18 @@ def stream_report_generation(
     handler._task_worker_pid = proc.pid
     handler._task_monitor_phase = "报告生成"
     handler._task_monitor_detail = "报告生成进程正在执行。"
+    from report_audio_pipeline import audio_result_from_output, RESULT_PREFIX
+    audio_result = None
     created_path = None
     if proc.stdout:
         for line in proc.stdout:
             text = line.strip()
+            if text.startswith(RESULT_PREFIX):
+                audio_result = audio_result_from_output(text)
+                continue
+            if text.startswith("[生成语音摘要]"):
+                handler._task_monitor_phase = "生成语音摘要"
+                handler._task_monitor_detail = "报告文档已完成，正在自动生成对应语音。"
             write_sse(handler, sse_payload_from_process_line(text))
             if text.startswith("->"):
                 candidate = Path(text[2:].strip())
@@ -4171,8 +4185,7 @@ def stream_report_generation(
     handler._task_worker_pid = 0
 
     status = build_status()
-    audio_result = None
-    if proc.returncode == 0 and status.get("outputs"):
+    if proc.returncode == 0 and audio_result is None:
         try:
             latest_path = created_path if created_path and created_path.exists() else latest_output_path(status, report_type)
             write_sse(handler, {"type": "log", "text": "报告生成完成。开始生成语音摘要..."})
@@ -4180,7 +4193,7 @@ def stream_report_generation(
             handler._task_monitor_phase = "生成语音摘要"
             handler._task_monitor_detail = "报告文档已完成，正在调用公司内部语音模型。"
             proc_audio = subprocess.Popen(
-                [sys.executable, "-c", code, str(latest_path), "True"],
+                [sys.executable, "-c", code, str(latest_path), "False"],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
@@ -4885,9 +4898,14 @@ def _run_recovered_general_task(original: dict) -> None:
                 worker_pid=proc.pid,
                 append_log=True,
             )
+            from report_audio_pipeline import audio_result_from_output, RESULT_PREFIX
+            recovered_audio = None
             if proc.stdout:
                 for line in proc.stdout:
                     value = line.rstrip()
+                    if value.startswith(RESULT_PREFIX):
+                        recovered_audio = audio_result_from_output(value)
+                        continue
                     if value:
                         append_general_task_log(task_id, value)
                         phase, progress = _task_phase_from_payload({"type": "log", "text": value}, "报告生成")
@@ -4901,14 +4919,14 @@ def _run_recovered_general_task(original: dict) -> None:
             proc.wait()
             if proc.returncode:
                 raise RuntimeError(f"报告生成进程返回{proc.returncode}")
-            target = _latest_report_for_recovered_task(kind)
+            target = Path(recovered_audio["report_path"]) if recovered_audio else _latest_report_for_recovered_task(kind)
             heartbeat_general_task_run(
                 task_id,
                 "生成语音摘要",
                 "Word已恢复生成，正在重新生成音频。",
                 append_log=True,
             )
-            audio = synthesize_report_audio(target, force=True)
+            audio = recovered_audio if recovered_audio is not None else synthesize_report_audio(target, force=False)
             if not audio.get("ok"):
                 raise RuntimeError(str(audio.get("error") or "音频生成失败"))
             detail = f"自动恢复成功：{target.name}及音频均已生成"

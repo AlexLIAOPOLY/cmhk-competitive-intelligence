@@ -2669,7 +2669,7 @@ class SubscriptionService:
             }
             process = self._run(
                 [sys.executable, str(self.runtime_root / "generate_weekly_report.py")],
-                timeout=1200,
+                timeout=2400,
             )
             if process.returncode != 0:
                 detail = (process.stderr or process.stdout or "周报生成失败").strip()[-1200:]
@@ -2694,7 +2694,7 @@ class SubscriptionService:
                 try:
                     from tts_service import synthesize_report_audio
 
-                    audio_result = synthesize_report_audio(report_path, force=True)
+                    audio_result = synthesize_report_audio(report_path, force=False)
                     if not audio_result.get("ok", True):
                         raise RuntimeError(str(audio_result.get("error") or "周报语音生成失败"))
                 except Exception as exc:

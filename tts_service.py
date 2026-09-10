@@ -1506,7 +1506,7 @@ def _minimum_audio_duration_seconds(summary: str) -> float:
     return max(35.0, min(90.0, len(summary) / 7.0))
 
 
-def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
+def _synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
     if not report_path.exists():
         raise FileNotFoundError(f"report not found: {report_path}")
     AUDIO_DIR.mkdir(exist_ok=True)
@@ -1573,3 +1573,31 @@ def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
         "duration": duration,
         "audio": audio_info_for_report(report_path),
     }
+
+
+def synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
+    """Serialize per report and reuse audio only for the exact document revision."""
+    import fcntl
+    import hashlib
+    report_path = Path(report_path).resolve()
+    AUDIO_DIR.mkdir(parents=True, exist_ok=True)
+    meta_path = audio_path_for_report_ext(report_path, ".source.json")
+    with audio_path_for_report_ext(report_path, ".lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        fingerprint = hashlib.sha256(report_path.read_bytes()).hexdigest()
+        try:
+            previous = json.loads(meta_path.read_text())
+        except (OSError, ValueError):
+            previous = {}
+        info = audio_info_for_report(report_path)
+        if not force and previous.get("report_sha256") == fingerprint and info.get("exists"):
+            return {"ok": True, "created": False, "backend": "cached", "audio": info}
+        meta_path.unlink(missing_ok=True)
+        result = _synthesize_report_audio(report_path, force=True)
+        if result.get("ok"):
+            if hashlib.sha256(report_path.read_bytes()).hexdigest() != fingerprint:
+                delete_audio_for_report(report_path)
+                return {"ok": False, "error": "语音生成期间报告已变化，需按新版本重新生成", "audio": {"exists": False}}
+            from data_curation.storage import atomic_write_json
+            atomic_write_json(meta_path, {"report_sha256": fingerprint})
+        return result

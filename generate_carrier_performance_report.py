@@ -1788,6 +1788,8 @@ def main() -> None:
     sidecar_path = performance_quality_sidecar_path(output_path)
     if sidecar_path.exists():
         print(" ->", sidecar_path)
+    from report_audio_pipeline import generate_report_audio
+    generate_report_audio(output_path)
     print("==================================================")
 
 
