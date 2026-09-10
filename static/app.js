@@ -3653,7 +3653,7 @@ function annotateClientTaskRetries(tasks) {
 }
 
 function taskAnalysisStatusMarkup(task) {
-  if (task.kind !== "executive-intelligence-refresh") return "";
+  if (!["executive-intelligence-refresh", "four-database-research"].includes(task.kind)) return "";
   const model = String(task.analysis_model || "等待模型结果");
   const evidenceHash = String(task.evidence_hash || "");
   const fallbackReason = String(task.analysis_fallback_reason || "");

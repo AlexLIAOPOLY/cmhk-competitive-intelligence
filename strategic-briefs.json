@@ -1,79 +1,79 @@
 {
   "ok": true,
-  "generated_at": "2026-09-10T03:55:30+08:00",
+  "generated_at": "2026-09-10T11:16:44+08:00",
   "items": [
     {
-      "id": "NEWS-E83ED0FBB8AA6A",
-      "title": "星展下调中国联通目标价至8港元",
-      "summary": "星展因增值税重分类及员工福利开支上升，下调中国联通盈利预测及目标价；管理层称暂停中期派息为一次性安排，全年资本开支指引维持约500亿元。",
+      "id": "NEWS-9191359B5C89D4",
+      "title": "中国移动香港推全球通5.5G服务 享马场VIP礼遇",
+      "summary": "中国移动香港推出5.5G全球通Privilege服务计划，客户可享马场专属贵宾厢房观赛等尊享礼遇。",
+      "category": "公司动态",
+      "source_url": "https://www.hk01.com/%E7%A4%BE%E6%9C%83%E6%96%B0%E8%81%9E/60388277/%E4%B8%AD%E5%9C%8B%E7%A7%BB%E5%8B%95%E9%A6%99%E6%B8%AF%E6%8E%A8%E5%85%A8%E7%90%83%E9%80%9A5-5g%E6%9C%8D%E5%8B%99-%E5%B0%88%E4%BA%AB%E9%A6%AC%E5%A0%B4vip%E5%BB%82%E6%88%BF%E8%88%87%E9%A0%82%E7%B4%9A%E7%A6%AE%E9%81%87",
+      "published_at": "2026-09-09T19:55:00+08:00"
+    },
+    {
+      "id": "NEWS-BDF2CDB1E32853",
+      "title": "联通联手魅族发布小魔方AI手机",
+      "summary": "联通联手魅族发布小魔方AI手机，4英寸方屏仅99克，主打全语音交互。",
       "category": "竞对动态",
-      "source_url": "https://i.ifeng.com/c/8wH9cvQh07W",
-      "published_at": "2026-09-09T06:02:00+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE91RDNnZkUwbFllSVVfUXZEWTdCYUt0Q3BrRi13MF82OEhlaGJjYU9OZkJYekt4eFN5LVI2VlV3dHBOM2xsdUJnclp6WV9EUQ?oc=5",
+      "published_at": "2026-09-09T17:24:19+08:00"
     },
     {
-      "id": "NEWS-C832100CA99288",
-      "title": "信息通信业十五五规划部署智能算力与AI网络建设",
-      "summary": "信息通信发展司解读十五五规划，部署智能算力发展、智能体互联网络建设、网络智能化升级及AI监管安全等任务，智能算力目标增逾5倍。",
-      "category": "政策监管",
-      "source_url": "https://news.ifeng.com/c/8wGCQMJ6ZPS",
-      "published_at": "2026-09-08T22:29:00+08:00"
+      "id": "NEWS-735295F64C10DC",
+      "title": "中国移动与阿里云智算中心项目在新疆开工",
+      "summary": "“疆算入渝”算力交付暨中国移动—阿里云智算中心项目在新疆哈密开工，标志该工程迈入新阶段。",
+      "category": "竞对动态",
+      "source_url": "https://finance.eastmoney.com/a/202609093869637091.html",
+      "published_at": "2026-09-09T16:04:00+08:00"
     },
     {
-      "id": "NEWS-3F2C8580DC1589",
-      "title": "中国将6G商用服务纳入2026-2030电信规划",
-      "summary": "中国工信部将6G商用服务纳入2026-2030年电信发展规划，肯尼亚仍在扩展5G网络。",
-      "category": "政策监管",
-      "source_url": "https://tech-ish.com/2026/09/08/china-puts-6g-commercial-services-into-its-2026-2030-telecoms-plan/",
-      "published_at": "2026-09-08T19:55:00+08:00"
-    },
-    {
-      "id": "NEWS-33B266E9B8B2B1",
-      "title": "中国最高法院发布AI新规划定深度伪造与隐私红线",
-      "summary": "中国最高法院发布新指南，为隐私泄露、色情内容、欺诈及消费者保护等AI相关问题提供更广泛法律框架。",
-      "category": "政策监管",
-      "source_url": "https://www.msn.com/en-xl/news/other/china-s-highest-court-sets-out-new-ai-red-lines-with-rules-on-deepfakes-and-privacy/ar-AA2bNE4Y",
-      "published_at": "2026-09-08T12:12:50+08:00"
-    },
-    {
-      "id": "NEWS-1DAD2EC6821089",
-      "title": "港珠澳桥口岸12月推「智通行」 乘客免落车过关",
-      "summary": "港珠澳大桥口岸计划12月推出「智通行」，乘客可免落车过关。",
+      "id": "NEWS-9D934263725F32",
+      "title": "远传friDay影音导入Agentic AI「问AI 2.0」",
+      "summary": "远传电信旗下friDay影音导入Agentic AI「问AI 2.0」，将被动搜寻升级为主动推荐。",
       "category": "基础设施/网络/技术类",
-      "source_url": "https://news.google.com/rss/articles/CBMidEFVX3lxTE90V3RoZ282M2x6Q2VUanBWZ2JtNUx3d0lZQWdnT0RJMFY4aHRja3JZb0JtQ3lzdTVQd1JKNHVqc3pVejAwWE1POUx6NTRfUjJMVXlIenlNTlV5OGRjUndna2RZUFlSbWFOeUUzaVQtaUIzVDNh?oc=5",
-      "published_at": "2026-09-07T04:22:54+08:00"
+      "source_url": "https://news.google.com/rss/articles/CBMiWkFVX3lxTE5pbkxXQlR1SVVyX0tHc21ac0V2MjNSTUllc0wxUVJydmNRNVcydXdQSU9OLTA3Vm9PNWVDazN5NmJhakwwY3dOaW1rcmxLVXc5aFNSb200aFhSQQ?oc=5",
+      "published_at": "2026-09-09T15:36:25+08:00"
     },
     {
-      "id": "NEWS-7F3CB458C53FD3",
-      "title": "滴滴出行拟在将军澳试无人驾驶车",
-      "summary": "立法会交通委员会参观滴滴出行，据悉滴滴拟在将军澳开展无人驾驶车测试。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMipANBVV95cUxPTmtON1Rzd1RQbnNHNUhWOGlPV2V3eC03bkYwalpLX3VxWXZWZC1tYWlqQ0lKOW92U1c2TUJtMTVwdUpLai1oMkhEMHZ0U241RWxxUzg0U0EyMm9NVVNYNXhQZV92enhxZkh5N1p2N2lDLVB4T1c5WktialhmSnBheS1HOEY4QVdZYTg5MXB1ZElFbk9BWFlvc2FYakRkbnN4aWJUYTYzU3ZEd3d2VUQxZXlHQzA4TGlEMDNScUVwb3JnSW93VUotaTh4V2ZicFo5dWJhU2RQbkxYQm1EdFB4RWlUbmRkMjI2ZWlWUElHUm00c3lKTXh5MFV4YzllVFBZU2FhXzdQdnNEYmRWYmF6Vk5McG42enpydXliSGRnNnVlZC01NjNlU3JFdHhkZGgzNEFjbTg1MENjenk0WXNXQWdteTgxaHNVb182YU01ZnJQOXMwYmpvc3htRHFRamtsNDlRa01tbEpvT2VrS3U2ZnVOM3FWbW9nb1ZuRVY5YzNENWhKZDRrb1M3akcxNDI1Nm9qV05JWDJzdFFJRWZtS0hSWFQ?oc=5",
-      "published_at": "2026-09-06T23:33:46+08:00"
+      "id": "NEWS-6447F629EE3504",
+      "title": "中国联通发布eSIM升级方案预计下半年eSIM手机破2000万台",
+      "summary": "中国联通发布eSIM尝鲜季2026升级方案，预计下半年eSIM手机突破2000万台，推动一机四号码时代。",
+      "category": "竞对动态",
+      "source_url": "https://tech.ifeng.com/c/8wFMkZC2Mo4",
+      "published_at": "2026-09-09T14:53:00+08:00"
     },
     {
-      "id": "NEWS-D75852A0ED91A1",
-      "title": "李家超：香港人口需升至1000万，「扩容」政策如何平衡旺市与物价",
-      "summary": "李家超提出香港人口目标需升至1000万，并探讨扩容政策如何在促进市场繁荣的同时避免推高物价。",
-      "category": "政策监管",
-      "source_url": "https://news.google.com/rss/articles/CBMi2AJBVV95cUxNOXRlLUYzQXFkemI2X1p4YW90eWw5OXBzVFpjZlN3UDJGWmdHWUZpTWQ2cmZUZjZxeU1BY1VkVU56ZWdfdTNpVnk1NWlVemNHZ1V4MFR4bExsTmZSZnJWX2ZUY0dCUXNITlVpNzBLNnZ3NTMyS0Q4WGlZUE14bGRCQjhfWnFuNk0zQU9sRE9oNFg4aEVnZllhNDl2aXBfbW1DMEYtSGYxR3huemgtVFlGWGZvUVFFQ0h2QjJ1ZlZwSi1XYkRoQmxaR2NiR3lGSDdHcWo2VDJaYXFBdG9ZQmJWNWhhWkdHVzl3alhVRzFDbFJHQ2xDY1BZenJPWVNnV09oZ3pLLThMSFJOR0Jkb01DSnByUXlwaDg3M0FsbkZKZDhXeFBJYWtIYUV3NzRlNVlVaDdWcE53LWxHdjVHM0FocEFkQm4xTHFrSE5UVW1id3MxT3lpMnR2eA?oc=5",
-      "published_at": "2026-09-06T20:09:00+08:00"
+      "id": "NEWS-68F263252CF943",
+      "title": "香港电讯旗下PCCW Global与德鲁伊科技签署MOU推物联网方案",
+      "summary": "香港电讯旗下PCCW Global与内地德鲁伊科技于一带一路高峰论坛签署MOU，计划为内地、港澳及一带一路地区提供结合卫星及混合网络的一站式物联网解决方案。",
+      "category": "竞对动态",
+      "source_url": "https://hk.finance.yahoo.com/news/%E9%A6%99%E6%B8%AF%E9%9B%BB%E8%A8%8A-06823-%E6%97%97%E4%B8%8Bpccw-global-%E8%88%87%E5%BE%B7%E9%AD%AF%E4%BC%8A%E7%A7%91%E6%8A%80%E7%B0%BD%E7%BD%B2mou-103720855.html",
+      "published_at": "2026-09-09T11:37:00+08:00"
     },
     {
-      "id": "NEWS-FE4A65254BD495",
-      "title": "Tesla Cybercab无人出租车亚洲路演首站选香港",
-      "summary": "Tesla Cybercab无人出租车正式开放乘坐，亚洲路演首站选址香港。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMiggFBVV95cUxNWEhWT0c0ME5zbEFiRTFzVy0xN0VPaHptTzhYWVo1TVJoSjN3SkV4WlFFX0VDU21Edjk1OU1BOGdZaGNuckR6X2l2NG5PUGpFSElDX0tOMkZUblUzMkVYZWZ5Z3NVUllDblJ0cTBQX2labWN3VTNrbjQyem9SeV9rU2hR?oc=5",
-      "published_at": "2026-09-05T00:59:44+08:00"
+      "id": "NEWS-43B664D1753AC3",
+      "title": "SmarTone推iPhone 18出机上台优惠 优先取机兼享$2,600回赠",
+      "summary": "SmarTone推出iPhone 18出机及上台攻略，提供优先取机服务，数字银行上台可享$2,600优惠。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiaEFVX3lxTE9KYm5nZWRva09KTV9RQlFyU3JyVHBERmhuM1htQXZmbTJwb2l5SzlIcFBwZVBOd2tHbWd3cVItcGpaeVlWM2JITjZaT05LbUJkM1hNTXZobURZNmx1ZDFmUXZNMHdQMDct?oc=5",
+      "published_at": "2026-09-09T11:02:25+08:00"
+    },
+    {
+      "id": "NEWS-35516725BB2A2D",
+      "title": "AT&T Business将Amazon Leo卫星服务纳入管理连接产品线",
+      "summary": "AT&T Business成为美国首家采用Amazon Leo卫星宽带服务的主要电信运营商，将其纳入管理连接产品组合。",
+      "category": "竞对动态",
+      "source_url": "https://www.telecompaper.com/news/att-business-adds-amazon-leo-to-managed-connectivity-range--1582143",
+      "published_at": "2026-09-09T07:52:00+08:00"
     }
   ],
   "monitor": {
     "status": "snapshot",
     "scan_times": [
-      "04:00",
+      "03:00",
       "14:00"
     ],
     "last_error": ""
   },
-  "site_version": "6bc8c9f65d82c64f36eee7549b2ae7a84432941435b777f52d0b1bf9e22c3873"
+  "site_version": "d515c694188fdbd440b0bacc22182824dd7a3afac66f3cc1303a8a8c49d227ab"
 }
