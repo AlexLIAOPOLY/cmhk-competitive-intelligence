@@ -52,6 +52,37 @@
     return { collected: sum.collected + current.collected, total: sum.total + current.total };
   }, { collected: 0, total: 0 });
   const isIncremental = (run) => run?.research_policy === "latest_disclosure_incremental_v1";
+  const mainTableChanges = (publication) => {
+    let recorded = false;
+    let added = 0;
+    let upgraded = 0;
+    Object.values(publication?.domains || {}).forEach((domain) => {
+      Object.entries(domain || {}).forEach(([key, promotion]) => {
+        if (!key.endsWith("_promotion") || !promotion || typeof promotion !== "object") return;
+        if (Number.isFinite(promotion.added_rows)) { added += promotion.added_rows; recorded = true; }
+        if (Number.isFinite(promotion.upgraded_rows)) { upgraded += promotion.upgraded_rows; recorded = true; }
+      });
+    });
+    return recorded ? { added, upgraded } : null;
+  };
+  const visibleChanges = (publication) => {
+    const changes = publication?.changes;
+    if (changes?.baseline_available !== true) return null;
+    const changed = Number(changes.changed || 0);
+    const added = Number(changes.added || 0);
+    const removed = Number(changes.removed || 0);
+    return { changed, added, removed, total: changed + added + removed };
+  };
+  const updateSummary = (run) => {
+    const publication = run?.publication;
+    const accepted = run?.accepted ?? "未记录";
+    const parts = [`${accepted} 项数据通过审核${publication?.database_updated ? "并已保存" : ""}`];
+    const main = mainTableChanges(publication);
+    if (main) parts.push(`主表实际新增 ${main.added} 行${main.upgraded ? `、升级 ${main.upgraded} 行` : ""}`);
+    const visible = visibleChanges(publication);
+    if (visible) parts.push(`页面指标数值变化 ${visible.total} 项`);
+    return parts.join("；");
+  };
   const itemLabel = (value) => terms[value] || "执行失败";
   const resultCounts = (reports) => {
     const items = (reports || []).flatMap((report) => report.items || []);
@@ -130,10 +161,10 @@
       assignment: { key: "final-review" },
       note: data.final_reviewer ? resultCounts(data.final_reviewer.reports || []) : "收齐研究结果后，继续联网补查并核对",
     });
-    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.database_updated ? run.accepted : incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—", incremental ? "项新增更新" : "条历史核对通过数据", "统一写入本地、国际、内地运营商和全球云厂商四库", [
+    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.database_updated ? run.accepted : incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—", incremental ? "项审核通过" : "条历史核对通过数据", incremental && run ? updateSummary(run) : "统一写入本地、国际、内地运营商和全球云厂商四库", [
       "由一个更新步骤处理六个 Agent 提交的数据，防止多个研究任务同时覆盖文件",
       "仅把有来源支持的新报告期或新指标写入四库；保留库内同一报告期的数据",
-      "分别记录已审核字段写入、主表新增或更新、文件变化和界面数值变化，不能把四者混为一谈",
+      "审核通过数量不等于主表新增数量，也不等于页面数值变化数量；三者分别记录",
       "输入：本次审核通过字段；输出：四库更新结果与前后变化记录",
     ], status(run?.publication?.database_updated ? "completed" : run?.publication?.status), { publication: run?.publication });
     add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], run?.publication?.insights ?? "—", "项分析", "使用四库最新数据生成分析，更新页面并读取发布结果", [
@@ -180,8 +211,10 @@
     const update = node.key === "research-update";
     const items = update ? data.accepted_items || [] : node.key === "research-merge" ? data.result_items || reports : reports;
     const selected = node.agent ? [...items].sort((a, b) => Number(b.status === "verified") - Number(a.status === "verified")) : items;
-    const title = update ? `${isIncremental(run) ? "新增更新" : "历史核对通过"}的 ${run?.accepted ?? "—"} 项数据是哪几项` : node.agent ? `${node.label}：${isIncremental(run) ? "逐公司、逐指标结果" : "历史核对结果（新增未统计）"}` : `本次 ${run?.tasks ?? "—"} 项指标结果清单`;
-    const note = update ? `实际读取 ${items.length} 项审核通过记录；本次页面数值变化 ${run?.publication?.changes?.changed ?? "未记录"} 项。通过审核、保存字段数据与主表数值变化分别记录。` : `只列本节点的公司与指标；${isIncremental(run) ? "只显示库内已有、新增更新、执行失败；失败原因逐项写明" : "历史核对结果不代表数据库缺失，也不能换算成新增数据数量"}；共 ${items.length} 项处理记录。`;
+    const title = update ? `${isIncremental(run) ? "审核通过" : "历史核对通过"}的 ${run?.accepted ?? "—"} 项数据是哪几项` : node.agent ? `${node.label}：${isIncremental(run) ? "逐公司、逐指标结果" : "历史核对结果（新增未统计）"}` : `本次 ${run?.tasks ?? "—"} 项指标结果清单`;
+    const main = update ? mainTableChanges(run?.publication) : null;
+    const visible = update ? visibleChanges(run?.publication) : null;
+    const note = update ? `实际读取 ${items.length} 项审核通过记录；${main ? `主表实际新增 ${main.added} 行、升级 ${main.upgraded} 行；` : "主表新增或升级数量未单独记录；"}${visible ? `页面指标新增 ${visible.added} 项、变更 ${visible.changed} 项、删除 ${visible.removed} 项。` : "页面数值变化未记录。"}审核通过、主表写入和页面变化分别统计。` : `只列本节点的公司与指标；${isIncremental(run) ? "只显示库内已有、新增更新、执行失败；失败原因逐项写明" : "历史核对结果不代表数据库缺失，也不能换算成新增数据数量"}；共 ${items.length} 项处理记录。`;
     return section(title, note, selected.map((raw, i) => { const existing = (raw.research_status || raw.status) === "no_update"; const item = existing && raw.latest_baseline ? { ...raw, ...raw.latest_baseline, baseline: [raw.latest_baseline] } : { ...raw, baseline: raw.latest_baseline ? [raw.latest_baseline] : [] }; return `<article><strong>${i + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(metricValue(item))} · ${esc(item.period || "报告期未记录")} · ${esc(itemLabel(item.research_status || item.status || (item.decision === "accepted" ? "verified" : "conflict"), isIncremental(run)))}</p><p>${esc(plainText(item.reason || (item.reasons || []).join("；")))}</p>${!existing && item.baseline?.length ? `<p>库内已有：${item.baseline.map((old) => esc(`${old.period || "报告期未记录"} · ${metricValue(old)}`)).join("；")}</p>` : ""}<p>${(item.sources || [item.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>")}</p></article>`; }));
   }
   function searchHistory(node, agents, events) {
@@ -228,7 +261,7 @@
       : isIncremental(run) ? resultCounts((snapshot.agents || []).flatMap((a) => a.reports || [])) : `已核对 ${run.accepted ?? "未提供"} 项，待核对或缺失 ${run.review ?? "未提供"} 项（历史运行未区分新增与重复数据）`;
     return `<header><div><span>${esc(date)} · ${run && !isIncremental(run) ? "历史运行（新增数据未统计）" : "查找最新数据并更新四库"} · 节点详情</span><h2>${esc(node.label)}</h2><p>${esc(plainText(node.purpose))}</p></div><form method="dialog"><button type="submit" aria-label="关闭节点详情">×</button></form></header>
       <div class="news-lineage-dialog-content research-node-detail">
-      <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || (run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : "AI 结果未记录")}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `新增更新 ${run?.accepted ?? "未记录"} 项；页面指标数值变化 ${run?.publication?.changes?.baseline_available === true ? run.publication.changes.changed : "未记录"} 项。${run?.publication?.database_updated ? "已保存字段数据。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
+      <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || (run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : "AI 结果未记录")}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `${updateSummary(run)}。${run?.publication?.database_updated ? "四库写入已完成。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
       ${actualList(node, snapshot, date)}
       ${searchHistory(node, agents, events)}
       <details class="news-lineage-technical"><summary>运行日志与详细依据</summary>
