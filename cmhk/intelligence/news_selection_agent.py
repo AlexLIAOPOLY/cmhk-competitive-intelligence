@@ -1533,8 +1533,15 @@ def _invoke_langchain_transport(
                 if session is not None:
                     session["preferred_route"] = (model_name, api_key)
                 return repaired, model_name
-        except (_ModelRoundLimit, TruncatedModelOutput):
+        except _ModelRoundLimit:
             raise
+        except TruncatedModelOutput:
+            if _HARNESS_RECOVERY.get() < 2:
+                raise
+            # After bounded budget recovery, try the remaining configured
+            # routes. A repeatedly truncated primary must not trap recovery.
+            errors.append(f"{model_name}: 输出在增额恢复后仍被截断")
+            logging.warning("新闻初筛增额恢复仍截断，尝试下一配置路由：model=%s", model_name)
         except Exception as exc:
             errors.append(f"{model_name}: {_text(exc, 180)}")
             if session is not None and is_key_unavailable_error(exc):

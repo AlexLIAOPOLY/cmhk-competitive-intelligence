@@ -132,6 +132,22 @@ class AcceptanceReviewTests(unittest.TestCase):
         self.assertEqual(records[1]["training_provenance_version"], agent.TRAINING_PROVENANCE_VERSION)
         self.assertTrue(records[1]["acceptance_review"]["app"]["evidence"])
 
+    def test_persistent_truncation_tries_configured_fallback_after_budget_recovery(self):
+        model = mock.Mock()
+        model.invoke.side_effect = [
+            SimpleNamespace(content="", response_metadata={"finish_reason": "length"})
+            for _ in range(3)
+        ] + [SimpleNamespace(content=json.dumps({"decisions": self.primary[:1]}),
+                             response_metadata={"finish_reason": "stop"})]
+        with (mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+              mock.patch.object(agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret"), ("fallback", "secret")]),
+              mock.patch.object(agent, "ChatDeepSeek", return_value=model) as factory):
+            payload, selected_model = agent._invoke_langchain([], self.targets[:1])
+        self.assertEqual(selected_model, "fallback")
+        self.assertEqual(len(payload["decisions"]), 1)
+        self.assertEqual([call.kwargs["model"] for call in factory.call_args_list],
+                         ["DeepSeek-V4-Pro"] * 3 + ["fallback"])
+
     def test_empty_reasoning_truncation_uses_bounded_larger_budget(self):
         responses = [
             SimpleNamespace(content="", additional_kwargs={"reasoning_content": "private reasoning"},
