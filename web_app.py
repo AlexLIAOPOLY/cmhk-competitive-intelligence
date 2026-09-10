@@ -5040,6 +5040,8 @@ def _normalize_crawl_task(run: dict) -> dict:
         "title": (
             "新闻自动初筛"
             if task_kind == "news-selection-agent"
+            else "四库资料研究与更新"
+            if task_kind == "four-database-research"
             else str(run.get("trigger") or "爬虫任务")
         ),
         "scope": str(run.get("scope") or "未记录范围"),
@@ -5204,7 +5206,7 @@ def _orphan_research_tasks() -> list[dict]:
             "task_run_id": directory.name,
             "kind": "four-database-research",
             "kind_label": "03:00四库研究",
-            "title": "03:00 四库资料研究与更新",
+            "title": "四库资料研究与更新",
             "scope": f"六 Agent 最新资料研究（{started_at[:10] or directory.name}）",
             "run_status": run_status,
             "started_at_hkt": started_at,

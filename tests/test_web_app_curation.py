@@ -176,6 +176,7 @@ class ReportFileNameTests(unittest.TestCase):
 
         self.assertEqual(len(tasks), 1)
         self.assertEqual(tasks[0]["task_run_id"], "research-parent")
+        self.assertEqual(tasks[0]["title"], "四库资料研究与更新")
         self.assertEqual(tasks[0]["merged_task_ids"], ["refresh-child"])
         self.assertEqual(tasks[0]["analysis_model"], "deterministic")
         self.assertTrue(tasks[0]["pages_publish_ok"])

@@ -30,7 +30,7 @@ def _start_research_task(root: Path, run_id: str, scheduled_for: str) -> dict:
     if registry is None:
         return {}
     task = registry.start_crawl_run(
-        trigger="03:00 四库资料研究与更新",
+        trigger="四库资料研究与更新",
         scope=f"六 Agent 最新资料研究（{scheduled_for}）",
         task_kind="four-database-research",
         phase="分配六个研究 Agent",
