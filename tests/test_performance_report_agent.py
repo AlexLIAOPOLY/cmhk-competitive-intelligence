@@ -120,6 +120,8 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertFalse(assess_field(pack, draft, 'dividend', valid_ai_performance_field)[0])
 
     def test_table_uses_per_share_dividend_and_keeps_cash_flow_sign(self):
+        profits = '2026H1 EBITDA人民币302.52亿元；归属于公司股东的利润人民币74.89亿元'
+        self.assertIn('74.89', compact_table_value(profits, 'profit'))
         self.assertEqual(compact_table_value('2026H1 2013.64亿元人民币', 'revenue'), '2026H1 2013.64亿元人民币')
         self.assertEqual(compact_table_value('H1 2026 2013.64亿元人民币', 'revenue'), '2026H1 2013.64亿元人民币')
         self.assertEqual(compact_table_value('1H 2026: RMB48,693 million', 'revenue'), '2026H1: 48,693百万元人民币')

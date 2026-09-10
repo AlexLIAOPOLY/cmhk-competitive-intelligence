@@ -412,24 +412,29 @@ def compact_table_value(text: str, field: str) -> str:
     text = re.sub(r'RMB\s*([\d,]+(?:\.\d+)?)\s*million\b', r'\1百万元人民币', text, flags=re.I)
     text = re.sub(r'RMB\s*([\d,]+(?:\.\d+)?)\s*per share\b', r'每股\1元人民币', text, flags=re.I)
     text = re.sub(r'\binterim\b', '中期', text, flags=re.I)
+    text = re.sub(r'截至(20\d{2})年6月30日止六个月', r'\1H1', text)
     text = text.replace('（负值表示流出）', '')
-    if len(text) > 70 and field in {'capex', 'dividend'}:
+    if len(text) > 35 and field in {'capex', 'dividend', 'profit'}:
         period = re.search(r'FY20\d{2}|20\d{2}[HQ][1-4]|20\d{2}(?:/\d{2,4})?年?(?:中期|全年|财年|半年度)', text)
         prefix = (period.group() + ' ') if period else ''
         amount = r'(?:人民币|HK\$|RMB\s*)?[-+]?\d+(?:,\d{3})*(?:\.\d+)?\s*(?:百万|亿|万)?(?:港仙|港元|美元|元|HKD|CNY|RMB)(?:人民币)?'
         if field == 'dividend':
-            if re.search(r'(?:未宣派|不派发|不宣派)中期股息', text):
+            if re.search(r'(?:未宣派|不派发|不宣派|不建议)[^。；]{0,45}中期股息', text):
                 return prefix + '不派中期股息'
             value = re.search(r'每股[^\d。；+-]{0,16}?(' + amount + r')', text)
             if value:
                 return prefix + '每股' + value.group(1)
-        else:
+        elif field == 'capex':
             value = re.search(r'资本(?:开支|支出)[^\d。；+-]{0,16}?(' + amount + r')', text)
             if value:
                 return prefix + ('现金流 ' if '现金流' in text else '') + value.group(1)
             change = re.search(r'资本(?:开支|支出)[^。；]*?(?:下降|减少|低)(\d+(?:\.\d+)?)%', text)
             if change:
                 return prefix + '同比下降' + change.group(1) + '%'
+        elif '净亏损' in text and len(set(re.findall(r'FY20\d{2}|20\d{2}[HQ][1-4]', text))) <= 1:
+            loss = re.search(r'净亏损[^\d。；，+-]{0,12}?(' + amount + r')', text)
+            if loss:
+                return prefix + '净亏损 ' + loss.group(1)
     if field == 'revenue':
         text = text.replace('收入 ', '')
     if field == 'capex':
@@ -535,10 +540,10 @@ def finalize_model(packs, returned, errors, *, searches, baseline, clock, run_di
         # Keep the actual period on each numeric field; avoid declaring all fields current.
         cells = []
         for field in ['revenue', 'profit', 'capex', 'dividend']:
-            compact = (result.get('tableFields') or {}).get(field, '')
+            compact = compact_table_value((result.get('tableFields') or {}).get(field, ''), field)
             # A compact cell is a second presentation of the already accepted fact.
             ok = (states[field]['accepted'] and 0 < len(compact) <= 70
-                  and validator(field, compact, fields[field])[0])
+                  and validator(field, compact, {'original': fields[field], 'normalized': compact_table_value(fields[field], field)})[0])
             cells.append(compact_table_value(compact if ok else fields[field], field))
         displayed_periods = list(dict.fromkeys(re.findall(r'FY20\d{2}|20\d{2}(?:/\d{2,4})?(?:H[12]|Q[1-4]|财年|年度|年中期|年全年)', '；'.join(cells))))
         period_label = '；'.join(displayed_periods) or re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', '；'.join(periods))
