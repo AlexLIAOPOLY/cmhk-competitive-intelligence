@@ -10,7 +10,7 @@ const records = ['ready', 'existing', 'duplicate', 'rejected'].map((state, i) =>
 records[2].write_preflight.represented_by = records[0].id;
 const snapshot = {date: '2026-09-10', plan: [{key: 'hong-kong', title: '香港运营商研究 Agent', companies: ['HKT'], purpose: '经营业绩'}],
   run: {run_id: 'research_test', research_policy: 'latest_disclosure_incremental_v1', status: 'partial', accepted: 1, tasks: 4, final_review: {status: 'completed'}, publication: {
-    storage_readback: {ok: true, accepted: 1, written: 1, checked_at: 'now', items: [{company: 'HKT', metric: '收入', status: 'written', main_table: {
+    storage_readback: {ok: true, accepted: 1, written: 1, checked_at: 'now', items: [{company: 'HKT', metric: '收入', period: 'H1 2026', status: 'written', main_table: {
       status: 'written', subject: 'HKT / csl / 1O1O', path: 'agent_knowledge/quarterly_metrics.json', metric_key: 'revenue', period: 'H1 2026', candidate_value: 0, current_value: 0, unit: 'millions HKD', reason: '正式表数值和来源回读一致'
     }}]}}},
   agents: [{key: 'hong-kong', reports: [{company: 'HKT', metrics: ['收入', '用户数'], items: records}]}], result_items: records,
@@ -100,8 +100,8 @@ assert.ok(!matrix[0].rows[0].cells.some(cell => cell.metric === '指标2'));
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标3').key, 'rejected');
 for (const node of model.nodes.filter(n => n.research && n.key !== "research-publish")) {
   const html = renderer.detail(node, snapshot, snapshot.date);
-  assert.ok(html.includes('公司 × 指标检索矩阵'), node.key);
-  assert.ok(html.indexOf('公司 × 指标检索矩阵') < html.indexOf('本节点结果'), node.key);
+  assert.ok(html.includes('公司 × 指标 × 报告期矩阵'), node.key);
+  assert.ok(html.indexOf('公司 × 指标 × 报告期矩阵') < html.indexOf('本节点结果'), node.key);
 }
 const savedSnapshot = JSON.stringify(snapshot);
 snapshot.run.publication.storage_readback.items[0].metric = '指标0';
@@ -115,7 +115,7 @@ Object.assign(snapshot, JSON.parse(savedSnapshot));
 assert.equal(renderer.matrixModel(hkNode, snapshot, '2026-09-01').length, 0);
 console.log('Company/metric matrix, missing results, merged aliases, write readback and date scope: PASS');
 
-assert.ok(!detail('research-publish').includes('公司 × 指标检索矩阵'));
+assert.ok(!detail('research-publish').includes('公司 × 指标 × 报告期矩阵'));
 assert.equal(renderer.matrixModel(model.nodes.find(n => n.key === 'research-update'), {...snapshot, accepted_items: []}, snapshot.date).length, 0);
 const finalMatrix = renderer.matrixModel(model.nodes.find(n => n.key === 'research-merge'), snapshot, snapshot.date);
 assert.equal(finalMatrix[0].rows[0].cells.length, 3, 'Final review only owns representative metrics');

@@ -261,6 +261,55 @@
     const groups = finalReviewGroups(items);
     return `可入库 ${groups.ready.length} 项 · 库内已有 ${groups.existing.length} 项 · 不可入库 ${groups.rejected.length} 项`;
   }
+  // Report periods describe the source data, never the crawler run date.
+  function reportPeriod(item = {}) {
+    const target = item.write_preflight || item.main_table || {};
+    const baselinePeriod = (item.research_status || item.status) === "no_update" ? item.latest_baseline?.period : "";
+    const original = String(item.period || baselinePeriod || target.period || "").trim();
+    const text = String(target.period || original).toLowerCase().replace(/\s+/g, " ");
+    const full = original.toLowerCase();
+    if (!text || /未取得|未明确|unknown|未提供/.test(text)) return { key: "unknown", label: "报告期未取得", year: "", kind: "unknown", original };
+    const fiscal = /\bfy\s*\d|fiscal|financial year/.test(text + " " + full);
+    const fy = (text + " " + full).match(/\bfy\s*(\d{4}|\d{2})(?!\d)/);
+    const year = fy ? String(Number(fy[1]) + (fy[1].length === 2 ? 2000 : 0)) : ((text + " " + full).match(/20\d{2}/) || [""])[0];
+    const quarterText = (text + " " + full).replace(/(first|second|third|fourth) quarter/g, (_, word) => `Q${["first", "second", "third", "fourth"].indexOf(word) + 1}`).replace(/第([一二三四])季/g, (_, word) => `Q${"一二三四".indexOf(word) + 1}`).toLowerCase();
+    const quarter = quarterText.match(/q\s*([1-4])|([1-4])\s*q/);
+    let kind = quarter ? `Q${quarter[1] || quarter[2]}` : /h\s*1|1\s*h|first half|first six months|上半年/.test(text) ? "H1"
+      : /h\s*2|2\s*h|second half|下半年/.test(text) ? "H2" : "";
+    let end = target.period_end || "";
+    if (!end) {
+      const iso = original.match(/(20\d{2})[-年](\d{1,2})[-月](\d{1,2})/);
+      const months = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"];
+      const english = full.match(/(\d{1,2})\s+([a-z]+)\s+(20\d{2})/) || full.match(/([a-z]+)\s+(\d{1,2}),?\s+(20\d{2})/);
+      if (iso) end = `${iso[1]}-${iso[2].padStart(2, "0")}-${iso[3].padStart(2, "0")}`;
+      else if (english) {
+        const dayFirst = /^\d/.test(english[1]);
+        const month = months.indexOf(dayFirst ? english[2] : english[1]) + 1;
+        if (month) end = `${english[3]}-${String(month).padStart(2, "0")}-${(dayFirst ? english[1] : english[2]).padStart(2, "0")}`;
+      }
+    }
+    if (!end && year && !fiscal && /^(H[12]|Q[1-4])$/.test(kind)) {
+      const month = kind === "H1" ? 6 : kind === "H2" ? 12 : Number(kind[1]) * 3;
+      end = `${year}-${String(month).padStart(2, "0")}-${[6, 9].includes(month) ? "30" : "31"}`;
+    }
+    if (!kind) kind = /six months|six-month|半年|中期/.test(text + " " + full) ? "half"
+      : /three months|three-month|quarter|季度/.test(text + " " + full) ? "quarter"
+      : /year|年度|全年|\bfy|^20\d{2}$/.test(text) ? "FY" : "other";
+    const names = { FY: fiscal ? "全年" : "年度", half: "六个月", quarter: "三个月", other: "报告区间" };
+    let label = year && !["half", "quarter", "other"].includes(kind) ? `${fiscal ? "FY" : ""}${year} ${names[kind] || kind}`
+      : names[kind] || kind;
+    if (end) label += ` · 截至${end}`;
+    // Without a verified interval keep the original wording visible and distinct.
+    if (!end && ["half", "quarter", "other"].includes(kind)) label = original;
+    if (!year) label = original;
+    const key = JSON.stringify([year, fiscal, kind, end || (["half", "quarter", "other"].includes(kind) ? original : "")]);
+    return { key, label, year, kind, original };
+  }
+  function withReportEvidence(item, reports) {
+    const candidates = reports.filter((row) => row.company === item.company && row.metric === item.metric);
+    const report = candidates.find((row) => reportPeriod(row).key === reportPeriod(item).key) || (candidates.length === 1 ? candidates[0] : {});
+    return { ...report, ...item, value: item.value === "" ? report.value : item.value };
+  }
   function matrixModel(node, snapshot, date) {
     const data = snapshot?.date === date ? snapshot : {};
     const run = data.run;
@@ -272,19 +321,21 @@
     const allReports = scopedAgents.flatMap((agent) => agent.reports || []);
     const rawItems = allReports.flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company })));
     const mergedRawItems = mergeSubmissions(rawItems);
-    const mergedAliasKeys = new Set(mergedRawItems.flatMap((item) => (item.mergedSubmissions || []).map((alias) => JSON.stringify([alias.company, alias.metric]))));
-    const finalItems = data.result_items || [];
+    const primaryKeys = new Set(mergedRawItems.map((item) => JSON.stringify([item.company, item.metric])));
+    const mergedAliasKeys = new Set(mergedRawItems.flatMap((item) => (item.mergedSubmissions || []).map((alias) => JSON.stringify([alias.company, alias.metric]))).filter((key) => !primaryKeys.has(key)));
+    const finalItems = (data.result_items || []).map((item) => withReportEvidence(item, rawItems));
     // Each downstream node owns its actual input set, not the complete research plan.
     const scopeItems = node.key === "research-update" ? (data.accepted_items ?? run?.publication?.storage_readback?.items ?? [])
-      : node.key === "research-merge" ? Object.values(finalReviewGroups(data.result_items ?? rawItems)).flat() : null;
+      : node.key === "research-merge" ? Object.values(finalReviewGroups(data.result_items ? finalItems : rawItems)).flat() : null;
     const receipts = run?.publication?.storage_readback?.items || [];
     const identity = (item) => JSON.stringify([item.company, item.metric]);
+    const samePeriod = (a, b) => reportPeriod(a).key === reportPeriod(b).key;
     const index = (items) => {
       const map = new Map();
       items.forEach((item) => { const key = identity(item); if (!map.has(key)) map.set(key, []); map.get(key).push(item); });
       return map;
     };
-    const rawIndex = index(rawItems), finalIndex = index(finalItems), receiptIndex = index(receipts);
+    const rawIndex = index(mergedRawItems), finalIndex = index(mergeSubmissions(finalItems)), receiptIndex = index(receipts);
     const byId = new Map(finalItems.filter((item) => item.id).map((item) => [item.id, item]));
     const finished = run && ["completed", "partial", "error", "cancelled"].includes(run.display_status || run.status);
     const outcome = (item) => {
@@ -301,7 +352,7 @@
       if (state === "existing" || (!state && (item.research_status || item.status) === "no_update")) return { key: "existing", label: "库内已有" };
       if (state === "rejected") return { key: "rejected", label: "不可入库" };
       if (state === "ready") {
-        const saved = receiptIndex.get(identity(item)) || [];
+        const saved = (receiptIndex.get(identity(item)) || []).filter((receipt) => samePeriod(item, receipt));
         if (saved.length && saved.every((receipt) => ["written", "saved"].includes(receipt.main_table?.status))) return { key: "written", label: "已入库" };
         if (saved.length) return { key: "rejected", label: "未入库" };
         return { key: "ready", label: "可入库" };
@@ -327,12 +378,22 @@
           const raw = rawIndex.get(key) || [];
           const final = finalIndex.get(key) || [];
           const items = companyItems ? companyItems.filter((item) => item.metric === metric) : final.length ? final : raw;
-          const outcomes = items.length ? items.map(outcome) : [outcome(null)];
-          const result = outcomes.every((current) => current.key === outcomes[0].key && current.label === outcomes[0].label)
-            ? outcomes[0] : { key: "mixed", label: "结果不一" };
-          const representative = items[0]?.write_preflight?.status === "duplicate" ? byId.get(items[0].write_preflight.represented_by) : null;
-          const targetMetric = representative?.company === company ? representative.metric : metric;
-          return { company, metric, targetMetric, ...result, items, raw, receipts: receiptIndex.get(identity({ company, metric: targetMetric })) || [] };
+          const periods = new Map();
+          (items.length ? items : [null]).forEach((item) => {
+            const period = reportPeriod(item || {});
+            if (!periods.has(period.key)) periods.set(period.key, { period, items: [] });
+            if (item) periods.get(period.key).items.push(item);
+          });
+          const slices = [...periods.values()].map(({ period, items: periodItems }) => {
+            const outcomes = periodItems.length ? periodItems.map(outcome) : [outcome(null)];
+            const result = outcomes.every((current) => current.key === outcomes[0].key && current.label === outcomes[0].label)
+              ? outcomes[0] : { key: "mixed", label: "结果不一" };
+            return { company, metric, targetMetric: metric, ...result, period, items: periodItems,
+              raw: raw.filter((item) => reportPeriod(item).key === period.key),
+              receipts: (receiptIndex.get(identity({ company, metric })) || []).filter((item) => reportPeriod(item).key === period.key) };
+          }).sort((a, b) => b.period.year.localeCompare(a.period.year) || a.period.label.localeCompare(b.period.label));
+          return { company, metric, ...slices[0], slices };
+
         }) };
       });
       return { key: task.key, title: childTitle(task.title), rows, metrics: [...new Set(rows.flatMap((row) => row.cells.map((cell) => cell.metric)))] };
@@ -345,23 +406,34 @@
     const scopeNote = node.key === "research-update" ? "仅列本节点收到的本次写入项目。"
       : node.key === "research-merge" ? "仅列本节点审核的主指标，合并提交保留在主指标依据中。"
       : node.key === "research-dispatch" ? "仅列本节点派发给当前研究组的公司和指标。" : "仅列本研究节点负责的公司和指标。";
-    return `<section class="news-lineage-dialog-section research-matrix"><header><h3>公司 × 指标检索矩阵</h3><span data-matrix-count>${groupCount(groups[0])}</span></header>
-      <p class="research-matrix-note">${scopeNote}表格和数量均对应当前组；点击格子跳到该项明细。颜色表示最后确认的结果。</p>
+    const periods = groups.flatMap((group) => group.rows.flatMap((row) => row.cells.flatMap((cell) => cell.slices.map((slice) => slice.period))));
+    const years = [...new Set(periods.map((period) => period.year).filter(Boolean))].sort().reverse();
+    const kindNames = { H1: "H1 · 上半期", H2: "H2 · 下半期", Q1: "Q1 · 第一季度", Q2: "Q2 · 第二季度", Q3: "Q3 · 第三季度", Q4: "Q4 · 第四季度", FY: "全年", half: "六个月区间", quarter: "三个月区间", other: "其他报告期", unknown: "报告期未取得" };
+    return `<section class="news-lineage-dialog-section research-matrix" data-matrix-view="${esc(`${date}/${node.key}`)}"><header><h3>公司 × 指标 × 报告期矩阵</h3><span data-matrix-count>${groupCount(groups[0])}</span></header>
+      <p class="research-matrix-note">${scopeNote}每格按报告期分层；点击某一期跳到对应明细，颜色表示该期结果。报告期是数据所属期间，与本轮检索日期不同。</p>
+      <div class="research-matrix-time" role="group" aria-label="筛选矩阵报告期">
+        <label>报告年份<select data-custom-select="native" data-matrix-year aria-label="矩阵报告年份"><option value="">全部年份</option>${years.map((year) => `<option>${esc(year)}</option>`).join("")}</select></label>
+        <label>报告类型<select data-custom-select="native" data-matrix-kind aria-label="矩阵报告类型"><option value="">全部报告期</option>${Object.entries(kindNames).map(([kind, label]) => `<option value="${kind}">${label}</option>`).join("")}</select></label>
+        <button type="button" data-matrix-time-clear disabled>清除时间筛选</button><span data-matrix-time-status role="status" aria-live="polite"></span>
+      </div>
       <div class="research-matrix-legend" aria-label="矩阵结果图例">${[["written", "已入库"], ["ready", "研究通过 / 可入库"], ["existing", "库内已有"], ["rejected", "不可入库 / 未入库"], ["pending", "待检索 / 待核对 / 未取得结果"], ["na", "不适用"]].map(([key, label]) => `<span class="is-${key}"><i aria-hidden="true"></i>${label}</span>`).join("")}</div>
       ${groups.length > 1 ? `<div class="research-matrix-groups" role="group" aria-label="选择研究组">${groups.map((group, index) => `<button type="button" data-matrix-group="${esc(group.key)}" aria-pressed="${index === 0}">${esc(group.title.replace(/研究子 Agent$/, ""))}</button>`).join("")}</div>` : ""}
       ${groups.map((group, index) => `<section data-matrix-panel="${esc(group.key)}" data-matrix-count="${groupCount(group)}" aria-label="${esc(group.title)}检索矩阵"${index ? " hidden" : ""}><div class="research-matrix-scroll" role="region" aria-label="公司指标矩阵，可横向滚动" tabindex="0"><table><thead><tr><th scope="col">公司 / 对象</th>${group.metrics.map((metric) => `<th scope="col">${esc(metric)}</th>`).join("") || '<th scope="col">检索指标</th>'}</tr></thead><tbody>${group.rows.map((row) => `<tr><th scope="row">${esc(row.company)}</th>${!row.cells.length ? `<td colspan="${group.metrics.length || 1}" class="research-matrix-unassigned">本轮尚未保存该公司的指标清单</td>` : group.metrics.map((metric) => {
         const cell = row.cells.find((item) => item.metric === metric);
         if (!cell) return '<td class="research-matrix-outside" aria-label="不在该公司的检索清单">—</td>';
+        return `<td>${cell.slices.map((cell) => {
         const details = cell.items.length ? cell.items.map((item) => {
           const raw = cell.raw.find((record) => record.metric === item.metric) || {};
           const reason = item.write_preflight?.reason || item.reason || (item.reasons || []).join("；") || raw.reason || "未保存判断依据";
           return `<p>${esc(metricValue(item))} · ${esc(item.period || "报告期未取得")}</p><p>${esc(businessReason(reason))}</p><p>${(item.sources || raw.sources || [item.source_url || raw.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>") || "尚未取得可用来源"}</p>`;
         }).join("") : '<p>该指标在本轮检索清单内，尚未保存处理结果；不能视为库内已有或已完成。</p>';
-        return `<td><button type="button" class="research-matrix-cell is-${cell.key}" aria-pressed="false" data-matrix-company="${esc(cell.company)}" data-matrix-metric="${esc(cell.metric)}" data-matrix-target-metric="${esc(cell.targetMetric)}" aria-label="${esc(`${cell.company} · ${cell.metric} · ${cell.label}，点击查看明细`)}" title="${esc(`${cell.company} · ${cell.metric}：${cell.label}`)}">${esc(cell.label)}</button><template><h4>${esc(cell.company)} · ${esc(cell.metric)} <span>${esc(cell.label)}</span></h4>${details}${cell.receipts.map((receipt) => `<p>正式表回读：${esc(receipt.main_table?.reason || receipt.reason || "未保存回读说明")} · 当前值 ${esc(receipt.main_table?.current_value ?? "未确认")}</p>`).join("")}</template></td>`;
+        return `<div data-matrix-entry data-year="${esc(cell.period.year)}" data-kind="${esc(cell.period.kind)}"><button type="button" class="research-matrix-cell is-${cell.key}" aria-pressed="false" data-matrix-period="${esc(cell.period.key)}" data-matrix-company="${esc(cell.company)}" data-matrix-metric="${esc(cell.metric)}" data-matrix-target-metric="${esc(cell.targetMetric)}" aria-label="${esc(`${cell.company} · ${cell.metric} · ${cell.period.label} · ${cell.label}，点击查看明细`)}" title="${esc(`${cell.company} · ${cell.metric} · ${cell.period.label}：${cell.label}`)}"><span class="research-matrix-period">${esc(cell.period.label)}</span><span>${esc(cell.label)}</span></button><template><h4>${esc(cell.company)} · ${esc(cell.metric)} · ${esc(cell.period.label)} <span>${esc(cell.label)}</span></h4>${details}${cell.receipts.map((receipt) => `<p>正式表回读：${esc(receipt.main_table?.reason || receipt.reason || "未保存回读说明")} · 当前值 ${esc(receipt.main_table?.current_value ?? "未确认")}</p>`).join("")}</template></div>`;
+        }).join("")}<span data-matrix-period-empty hidden>本期无记录</span></td>`;
       }).join("")}</tr>`).join("")}</tbody></table></div></section>`).join("") || '<p class="research-matrix-note">本节点尚无对应的公司与指标项目。</p>'}
-      <p class="research-matrix-note">“—”表示不在该公司的检索清单；标有“合并”的提交可跳到主指标依据。较宽的矩阵可左右滚动。</p>
+      <p class="research-matrix-note">“—”表示不在检索清单；“本期无记录”表示本轮没有该期记录，不代表数值为零或不可入库。FY为公司财年；不确定H1/H2的区间保留截止日。可左右滚动查看。</p>
     </section><section class="news-lineage-dialog-section research-matrix-selection" data-matrix-selection tabindex="-1" hidden></section>`;
   }
+  const matrixViews = new Map();
   function mountMatrix(root) {
     const matrix = root.querySelector(".research-matrix");
     if (!matrix || matrix.dataset.mounted) return;
@@ -381,6 +453,33 @@
     };
     let restoreSelection = null;
     const cells = [...matrix.querySelectorAll("[data-matrix-company]")];
+    const yearSelect = matrix.querySelector("[data-matrix-year]"), kindSelect = matrix.querySelector("[data-matrix-kind]");
+    const timeClear = matrix.querySelector("[data-matrix-time-clear]");
+    const savedTime = matrixViews.get(matrix.dataset.matrixView) || {};
+    yearSelect.value = savedTime.year || ""; kindSelect.value = savedTime.kind || "";
+    const clearSelection = () => {
+      if (restoreSelection) { restoreSelection(); restoreSelection = null; }
+      cells.forEach((cell) => { cell.classList.remove("is-selected"); cell.setAttribute("aria-pressed", "false"); });
+    };
+    const renderTime = () => {
+      let count = 0, unknown = 0;
+      matrix.querySelectorAll("[data-matrix-entry]").forEach((entry) => {
+        entry.hidden = !!((yearSelect.value && entry.dataset.year !== yearSelect.value) || (kindSelect.value && entry.dataset.kind !== kindSelect.value));
+        if (!entry.hidden && !entry.closest("[data-matrix-panel]").hidden) { count++; if (entry.dataset.kind === "unknown") unknown++; }
+      });
+      matrix.querySelectorAll("[data-matrix-period-empty]").forEach((empty) => {
+        empty.hidden = [...empty.parentElement.querySelectorAll("[data-matrix-entry]")].some((entry) => !entry.hidden);
+      });
+      matrix.querySelector("[data-matrix-time-status]").textContent = `当前显示 ${count} 条期间记录${unknown ? ` · ${unknown} 条报告期未取得` : ""}`;
+      timeClear.disabled = !yearSelect.value && !kindSelect.value;
+      matrixViews.set(matrix.dataset.matrixView, { year: yearSelect.value, kind: kindSelect.value,
+        group: matrix.querySelector('[data-matrix-panel]:not([hidden])')?.dataset.matrixPanel });
+    };
+    [yearSelect, kindSelect].forEach((select) => select.addEventListener("change", () => { clearSelection(); renderTime(); }));
+    timeClear.addEventListener("click", () => { clearSelection(); yearSelect.value = kindSelect.value = ""; renderTime(); });
+    matrix.querySelectorAll("[data-matrix-group]").forEach((button) => button.addEventListener("click", () => { clearSelection(); renderTime(); }));
+    const savedGroup = [...matrix.querySelectorAll("[data-matrix-group]")].find((button) => button.dataset.matrixGroup === savedTime.group);
+    if (savedGroup) savedGroup.click(); else renderTime();
     cells.forEach((button) => button.addEventListener("click", () => {
       const wasSelected = button.classList.contains("is-selected");
       if (restoreSelection) { restoreSelection(); restoreSelection = null; }
@@ -390,7 +489,7 @@
         cell.setAttribute("aria-pressed", String(selected));
       });
       if (wasSelected) return;
-      const company = button.dataset.matrixCompany, metric = button.dataset.matrixMetric;
+      const company = button.dataset.matrixCompany, metric = button.dataset.matrixMetric, period = button.dataset.matrixPeriod;
       const section = root.querySelector(".research-decisions");
       const content = root.querySelector(".research-node-detail");
       const scrollTop = content?.scrollTop || 0;
@@ -406,7 +505,7 @@
         }
         if (content) content.scrollTop = scrollTop;
       };
-      const row = [...root.querySelectorAll("[data-research-row]")].find((item) => item.dataset.company === company
+      const row = [...root.querySelectorAll("[data-research-row]")].find((item) => item.dataset.company === company && item.dataset.period === period
         && (item.dataset.metric === metric || JSON.parse(item.dataset.mergedMetrics || "[]").includes(metric)));
       if (section && row) {
         selection.hidden = true;
@@ -415,6 +514,7 @@
         section.querySelector("[data-research-company]").value = company;
         const metricSelect = section.querySelector("[data-research-metric]");
         metricSelect.value = row.dataset.metric;
+        section.querySelector("[data-research-period]").value = period;
         metricSelect.dispatchEvent(new Event("change"));
         // Keep the matching row below the sticky filtering toolbar.
         row.style.scrollMarginTop = `${section.querySelector(".research-decision-controls").offsetHeight + 16}px`;
@@ -422,7 +522,7 @@
         jump(row);
         return;
       }
-      const storedRow = [...root.querySelectorAll("[data-research-storage-row]")].find((item) => item.dataset.company === company && item.dataset.metric === button.dataset.matrixTargetMetric);
+      const storedRow = [...root.querySelectorAll("[data-research-storage-row]")].find((item) => item.dataset.company === company && item.dataset.metric === button.dataset.matrixTargetMetric && item.dataset.period === period);
       if (storedRow) {
         selection.hidden = true;
         for (let parent = storedRow.parentElement; parent && parent !== root; parent = parent.parentElement) {
@@ -441,8 +541,7 @@
     const reports = (node.agent ? [node.agent] : data.agents || []).flatMap((a) => (a.reports || []).flatMap((r) => (r.items || []).map((i) => ({ ...i, company: r.company }))));
     const final = node.key === "research-merge";
     const items = final ? (data.result_items || reports).map((i) => {
-      const report = reports.find((r) => r.company === i.company && r.metric === i.metric) || {};
-      return { ...report, ...i, value: i.value === "" ? report.value : i.value };
+      return withReportEvidence(i, reports);
     }) : reports;
     const groups = final ? finalReviewGroups(items) : { ready: [], existing: [], rejected: [], pending: [] };
     if (!final) mergeSubmissions(items).forEach((item) => {
@@ -458,20 +557,24 @@
     const filterOptions = (field) => [...new Set(filterItems.map((item) => String(item[field] ?? "")).filter(Boolean))]
       .sort((a, b) => a.localeCompare(b, "zh-Hans-CN", { numeric: true }))
       .map((value) => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
+    const periodOptions = [...new Map(filterItems.map((item) => { const period = reportPeriod(item); return [period.key, period]; })).values()]
+      .sort((a, b) => b.year.localeCompare(a.year) || a.label.localeCompare(b.label))
+      .map((period) => `<option value="${esc(period.key)}">${esc(period.label)}</option>`).join("");
     return `<section class="news-lineage-dialog-section research-decisions" data-research-view="${esc(`${date}/${node.key}`)}"><header><h3>${final ? "终审入库判断" : "本Agent指标与判断"}</h3><span>共 ${displayCount} 项指标 · 同指标提交已合并</span></header>
-      <div class="research-decision-controls"><div class="research-decision-toolbar"><div class="research-decision-switcher" role="group" aria-label="按入库判断筛选">${categories.map(([key, rows], index) => `<button type="button" data-research-filter="${key}" aria-pressed="${index === 0}" title="${labels[key]}"><span>${shortLabels[key]}</span><b>${rows.length}</b></button>`).join("")}</div><div class="research-decision-filters" role="group" aria-label="筛选指标"><label><span>公司/对象</span><select data-custom-select="native" data-research-company aria-label="筛选公司或对象"><option value="">全部公司/对象</option>${filterOptions("company")}</select></label><label><span>指标</span><select data-custom-select="native" data-research-metric aria-label="筛选指标"><option value="">全部指标</option>${filterOptions("metric")}</select></label><button type="button" data-research-clear disabled>清除</button></div></div><div class="research-decision-meta"><p data-research-description>${descriptions.ready}</p><div class="research-decision-pagination"><span data-research-page-status role="status" aria-live="polite"></span><button type="button" data-research-page="-1" aria-label="上一页指标">上一页</button><button type="button" data-research-page="1" aria-label="下一页指标">下一页</button></div></div></div>
+      <div class="research-decision-controls"><div class="research-decision-toolbar"><div class="research-decision-switcher" role="group" aria-label="按入库判断筛选">${categories.map(([key, rows], index) => `<button type="button" data-research-filter="${key}" aria-pressed="${index === 0}" title="${labels[key]}"><span>${shortLabels[key]}</span><b>${rows.length}</b></button>`).join("")}</div><div class="research-decision-filters" role="group" aria-label="筛选指标"><label><span>公司/对象</span><select data-custom-select="native" data-research-company aria-label="筛选公司或对象"><option value="">全部公司/对象</option>${filterOptions("company")}</select></label><label><span>指标</span><select data-custom-select="native" data-research-metric aria-label="筛选指标"><option value="">全部指标</option>${filterOptions("metric")}</select></label><label><span>报告期</span><select data-custom-select="native" data-research-period aria-label="筛选报告期"><option value="">全部报告期</option>${periodOptions}</select></label><button type="button" data-research-clear disabled>清除</button></div></div><div class="research-decision-meta"><p data-research-description>${descriptions.ready}</p><div class="research-decision-pagination"><span data-research-page-status role="status" aria-live="polite"></span><button type="button" data-research-page="-1" aria-label="上一页指标">上一页</button><button type="button" data-research-page="1" aria-label="下一页指标">下一页</button></div></div></div>
       ${categories.map(([key, rows], index) => `<section class="research-decision-panel is-${key}" data-research-panel="${key}" data-description="${esc(descriptions[key])}" aria-label="${labels[key]}指标明细"${index ? " hidden" : ""}><table class="research-decision-table"><thead><tr><th scope="col">公司／具体指标</th><th scope="col">数值／报告期</th><th scope="col">判断原因与依据</th></tr></thead><tbody>${rows.map((raw) => {
       const old = raw.latest_baseline;
       const item = key === "existing" && old ? { ...raw, ...old } : raw;
       const target = raw.write_preflight || {};
       const reason = target.reason || raw.reason || (raw.reasons || []).join("；") || "未保存判断依据，不能据此确认可入库";
-      return `<tr data-research-row data-company="${esc(raw.company)}" data-metric="${esc(raw.metric)}" data-merged-metrics="${esc(JSON.stringify((raw.mergedSubmissions || []).map((item) => item.metric)))}"><th scope="row"><strong>${esc(raw.company)}</strong><span>${esc(raw.metric)}</span>${target.field ? `<code>${esc(target.field)}</code>` : ""}</th><td class="research-decision-value"><strong>${esc(metricValue(item))}</strong><span>${esc(item.period || "报告期未取得")}</span>${target.field ? `<small>标准值 ${esc(target.value)} ${esc(target.unit)} · ${esc(target.period)}</small>` : ""}</td><td><p>${esc(businessReason(reason))}</p>${key === "existing" && target.previous_value != null ? `<p>正式表已有值：${esc(target.previous_value)} ${esc(target.unit)}</p>` : ""}<details class="research-record-source"><summary>查看来源与原文依据</summary><p>${(item.sources || [item.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>") || "本条未取得可用来源"}</p><p>${esc(raw.quote || raw.basis || "未保存可用原文摘录")}</p><p>原始判断记录：${esc(reason)}</p>${raw.mergedSubmissions?.length ? `<h4>同指标合并记录</h4><p>以下提交已并入当前指标，不单独计数或再次写入。</p><ul>${raw.mergedSubmissions.map((merged) => `<li><strong>${esc(merged.company)} · ${esc(merged.metric)}</strong><p>${esc(metricValue(merged))} · ${esc(merged.period)}</p><p>${esc(merged.write_preflight?.reason || "同指标合并")}</p><p>${(merged.sources || [merged.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>")}</p></li>`).join("")}</ul>` : ""}</details></td></tr>`;
+      return `<tr data-research-row data-period="${esc(reportPeriod(raw).key)}" data-company="${esc(raw.company)}" data-metric="${esc(raw.metric)}" data-merged-metrics="${esc(JSON.stringify((raw.mergedSubmissions || []).map((item) => item.metric)))}"><th scope="row"><strong>${esc(raw.company)}</strong><span>${esc(raw.metric)}</span>${target.field ? `<code>${esc(target.field)}</code>` : ""}</th><td class="research-decision-value"><strong>${esc(metricValue(item))}</strong><span>${esc(item.period || "报告期未取得")}</span>${target.field ? `<small>标准值 ${esc(target.value)} ${esc(target.unit)} · ${esc(target.period)}</small>` : ""}</td><td><p>${esc(businessReason(reason))}</p>${key === "existing" && target.previous_value != null ? `<p>正式表已有值：${esc(target.previous_value)} ${esc(target.unit)}</p>` : ""}<details class="research-record-source"><summary>查看来源与原文依据</summary><p>${(item.sources || [item.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>") || "本条未取得可用来源"}</p><p>${esc(raw.quote || raw.basis || "未保存可用原文摘录")}</p><p>原始判断记录：${esc(reason)}</p>${raw.mergedSubmissions?.length ? `<h4>同指标合并记录</h4><p>以下提交已并入当前指标，不单独计数或再次写入。</p><ul>${raw.mergedSubmissions.map((merged) => `<li><strong>${esc(merged.company)} · ${esc(merged.metric)}</strong><p>${esc(metricValue(merged))} · ${esc(merged.period)}</p><p>${esc(merged.write_preflight?.reason || "同指标合并")}</p><p>${(merged.sources || [merged.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>")}</p></li>`).join("")}</ul>` : ""}</details></td></tr>`;
     }).join("")}</tbody></table><p class="research-empty" data-research-empty hidden>本类暂无记录</p></section>`).join("")}</section>`;
   }
   const decisionViews = new Map();
   function decisionPage(rows, filters, page, size = 20) {
     const matched = rows.filter((row) => (!filters.company || row.dataset.company === filters.company)
-      && (!filters.metric || row.dataset.metric === filters.metric));
+      && (!filters.metric || row.dataset.metric === filters.metric)
+      && (!filters.period || row.dataset.period === filters.period));
     const pages = Math.max(1, Math.ceil(matched.length / size));
     const current = Math.max(0, Math.min(page, pages - 1));
     return { matched, pages, current, visible: matched.slice(current * size, (current + 1) * size) };
@@ -485,11 +588,12 @@
     const panels = [...section.querySelectorAll("[data-research-panel]")];
     const company = section.querySelector("[data-research-company]");
     const metric = section.querySelector("[data-research-metric]");
+    const period = section.querySelector("[data-research-period]");
     const clear = section.querySelector("[data-research-clear]");
     const key = section.dataset.researchView;
-    const view = decisionViews.get(key) || { category: buttons[0].dataset.researchFilter, company: "", metric: "", page: 0 };
+    const view = decisionViews.get(key) || { category: buttons[0].dataset.researchFilter, company: "", metric: "", period: "", page: 0 };
     if (!panels.some((panel) => panel.dataset.researchPanel === view.category)) view.category = buttons[0].dataset.researchFilter;
-    [[company, "company"], [metric, "metric"]].forEach(([select, field]) => {
+    [[company, "company"], [metric, "metric"], [period, "period"]].forEach(([select, field]) => {
       if (![...select.options].some((option) => option.value === view[field])) { view[field] = ""; view.page = 0; }
       select.value = view[field];
     });
@@ -510,20 +614,20 @@
       section.querySelector("[data-research-page-status]").textContent = `${result.matched.length} 项 · ${result.current + 1} / ${result.pages} 页`;
       section.querySelector('[data-research-page="-1"]').disabled = result.current === 0;
       section.querySelector('[data-research-page="1"]').disabled = result.current + 1 === result.pages;
-      clear.disabled = !view.company && !view.metric;
+      clear.disabled = !view.company && !view.metric && !view.period;
       decisionViews.set(key, view);
     };
     section.addEventListener("research-decision-restore", () => {
-      company.value = view.company; metric.value = view.metric; render();
+      company.value = view.company; metric.value = view.metric; period.value = view.period || ""; render();
     });
     const resetScroll = () => section.scrollIntoView({ block: "start", behavior: "instant" });
     buttons.forEach((button) => button.addEventListener("click", () => { view.category = button.dataset.researchFilter; view.page = 0; render(); resetScroll(); }));
     section.querySelectorAll("[data-research-page]").forEach((button) => button.addEventListener("click", () => { view.page += Number(button.dataset.researchPage); render(); resetScroll(); }));
-    [company, metric].forEach((select) => select.addEventListener("change", () => {
-      view.company = company.value; view.metric = metric.value; view.page = 0; render(); resetScroll();
+    [company, metric, period].forEach((select) => select.addEventListener("change", () => {
+      view.company = company.value; view.metric = metric.value; view.period = period.value; view.page = 0; render(); resetScroll();
     }));
     clear.addEventListener("click", () => {
-      view.company = company.value = ""; view.metric = metric.value = ""; view.page = 0; render(); resetScroll();
+      view.company = company.value = ""; view.metric = metric.value = ""; view.period = period.value = ""; view.page = 0; render(); resetScroll();
     });
     render();
   }
@@ -623,8 +727,8 @@
       const tables = new Map();
       rows.forEach((item) => { const path = item.main_table?.path || item.path || "未记录"; if (!tables.has(path)) tables.set(path, []); tables.get(path).push(item); });
       const count = success ? written : Math.max(0, check.accepted - written);
-      return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr data-research-storage-row data-company="${esc(item.company)}" data-metric="${esc(item.metric)}"><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url, "官方来源") : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
+      return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr data-research-storage-row data-period="${esc(reportPeriod(item).key)}" data-company="${esc(item.company)}" data-metric="${esc(item.metric)}"><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url, "官方来源") : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
     }).join("")}</section>`;
   }
-  window.CmhkResearchDiagram = { build, detail, mount, decisionPage, finalReviewGroups, matrixModel };
+  window.CmhkResearchDiagram = { build, detail, mount, decisionPage, finalReviewGroups, matrixModel, reportPeriod };
 })();
