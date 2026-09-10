@@ -3,6 +3,7 @@ set -euo pipefail
 
 WEB_LABEL="com.liaowang.cmhk-web-app"
 SCHEDULER_LABEL="com.liaowang.cmhk-frequency-scheduler"
+MONITOR_LABEL="com.liaowang.cmhk-project-monitor"
 QUEUE_LABEL="com.liaowang.cmhk-queued-web-reload"
 DOMAIN="gui/$(id -u)"
 TASKS_URL="${CMHK_TASK_RUNS_URL:-http://127.0.0.1:8765/api/task-runs?limit=100}"
@@ -250,6 +251,14 @@ while [[ -f "$REQUEST_FILE" ]]; do
   card_actions_label="com.liaowang.cmhk-project-monitor-card-actions"
   if /bin/launchctl print "$DOMAIN/$card_actions_label" >/dev/null 2>&1; then
     /bin/launchctl kickstart -k "$DOMAIN/$card_actions_label" >> "$LOG_FILE" 2>&1
+  fi
+
+  # The resident monitor imports the shared AI client once, just like Web and
+  # scheduler. Keep an intentionally unloaded monitor disabled; a failed reload
+  # of a loaded monitor must leave the release queued instead of claiming success.
+  if /bin/launchctl print "$DOMAIN/$MONITOR_LABEL" >/dev/null 2>&1; then
+    /bin/launchctl kickstart -k "$DOMAIN/$MONITOR_LABEL" >> "$LOG_FILE" 2>&1
+    log "Reloaded $MONITOR_LABEL with the activated runtime."
   fi
 
   # scheduler.py is a long-lived process, so copying a new file is not enough.

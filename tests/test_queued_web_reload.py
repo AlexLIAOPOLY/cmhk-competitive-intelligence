@@ -121,6 +121,71 @@ class QueuedWebReloadTests(unittest.TestCase):
             worker.index('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"'),
         )
 
+    def test_resident_monitor_reload_is_required_before_activation(self):
+        for monitor_loaded, reload_fails in ((True, False), (False, False), (True, True)):
+            with self.subTest(loaded=monitor_loaded, fails=reload_fails), tempfile.TemporaryDirectory() as temporary_directory:
+                root = Path(temporary_directory)
+                state = root / "Library/Application Support/CMHK"
+                token = "20260910T100000-1-1"
+                release = state / "web-reload-releases" / token
+                release.mkdir(parents=True)
+                request = state / "web-reload-requested"
+                request.write_text(token + "\n")
+                trace = root / "trace"
+                mocks = {
+                    "launchctl": '''#!/bin/bash
+printf '%s\\n' "$*" >> "$RELOAD_TRACE"
+if [[ "$1" == print && "$2" == */com.liaowang.cmhk-project-monitor ]]; then
+  exit "$MONITOR_UNLOADED"
+fi
+if [[ "$1" == kickstart && "$3" == */com.liaowang.cmhk-project-monitor ]]; then
+  exit "$MONITOR_RELOAD_FAILURE"
+fi
+''',
+                    "curl": '''#!/bin/bash
+printf 'probe\\n' >> "$RELOAD_TRACE"
+printf '{"tasks":[]}\\n'
+''',
+                    "rsync": '#!/bin/bash\nprintf "copy-runtime\\n" >> "$RELOAD_TRACE"\n',
+                    "pgrep": '#!/bin/bash\nexit 1\n',
+                }
+                worker = (ROOT / "scripts/queued_web_app_reload_worker.sh").read_text()
+                for name, content in mocks.items():
+                    executable = root / name
+                    executable.write_text(content)
+                    executable.chmod(0o755)
+                    original = f"/bin/{name}" if name == "launchctl" else f"/usr/bin/{name}"
+                    worker = worker.replace(original, f'"{executable}"')
+                worker = worker.replace("set -euo pipefail", "set -euo pipefail\nsleep() { :; }")
+                script = root / "worker.sh"
+                script.write_text(worker)
+                result = subprocess.run(
+                    ["bash", str(script)], capture_output=True, text=True, timeout=15,
+                    env={**os.environ, "HOME": str(root), "RELOAD_TRACE": str(trace),
+                         "CMHK_WEB_RUNTIME": str(root / "runtime"),
+                         "CMHK_RELOAD_FORCE_INDEX_FALLBACK": "0",
+                         "MONITOR_UNLOADED": str(int(not monitor_loaded)),
+                         "MONITOR_RELOAD_FAILURE": "23" if reload_fails else "0"},
+                )
+                events = trace.read_text().splitlines()
+                # Two independent idle readbacks must precede runtime copying.
+                self.assertEqual(events[:3], ["probe", "probe", "copy-runtime"])
+                reloads = [event for event in events if event.startswith("kickstart -k ")
+                           and event.endswith("/com.liaowang.cmhk-project-monitor")]
+                self.assertEqual(len(reloads), int(monitor_loaded))
+                if reloads:
+                    self.assertGreater(events.index(reloads[0]), events.index("copy-runtime"))
+                log = (root / "Library/Logs/cmhk_public_crawl/queued-web-reload.log").read_text()
+                if reload_fails:
+                    self.assertNotEqual(result.returncode, 0)
+                    self.assertEqual(request.read_text().strip(), token)
+                    self.assertTrue(release.is_dir())
+                    self.assertNotIn("activated; queue is empty", log)
+                else:
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertFalse(request.exists())
+                    self.assertIn("activated; queue is empty", log)
+
     def test_worker_fallback_counts_running_protected_tasks(self):
         with tempfile.TemporaryDirectory() as temporary_directory:
             runtime = Path(temporary_directory)
