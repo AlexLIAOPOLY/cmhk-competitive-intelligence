@@ -2443,11 +2443,6 @@ def sync_candidates(
             if isinstance(state.get(GATE_METADATA_STATE_KEY), dict)
             else {}
         )
-        for item in curated_items:
-            metadata_key = _gate_metadata_key(item.get("url"))
-            metadata = _gate_metadata(item)
-            if metadata_key and metadata:
-                candidate_gate_metadata[metadata_key] = metadata
         from strategic_briefing import (
             acknowledge_deferred_ai_candidates,
             agent_semantic_deduplicate_candidates,
@@ -2469,6 +2464,19 @@ def sync_candidates(
             if progress_callback is not None
             else polish_candidates_before_review(curated_items)
         )
+        # AI recovery may reintroduce a valid source that deterministic
+        # deduplication removed, or replay a deferred candidate. Preserve its
+        # actual time-window evidence too, never fabricate a window at publish.
+        for source_item in [*items, *prepared_items]:
+            item = dict(source_item)
+            item["title"] = item.get("title") or item.get("ai_title")
+            item["url"] = item.get("url") or item.get("source_url")
+            if not _review_news_candidate(item)[0]:
+                continue
+            metadata_key = _gate_metadata_key(item.get("url"))
+            metadata = _gate_metadata(item)
+            if metadata_key and metadata:
+                candidate_gate_metadata[metadata_key] = metadata
         ai_review_audit = load_latest_ai_review_audit()
         ai_review_items = (
             ai_review_audit.get("review_items")

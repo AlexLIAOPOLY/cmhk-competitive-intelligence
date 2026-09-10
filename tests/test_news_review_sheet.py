@@ -661,6 +661,32 @@ class NewsReviewSheetSyncTests(unittest.TestCase):
             "history_shards": 1,
         }
 
+    def test_ai_recovered_candidate_retains_verified_publication_window(self):
+        sheet = self._LiveSheet([self._existing_row()])
+        item = {**self._new_item(), "title": "今日新新闻", "source_date": "2026-07-21", "published_at": "2026-07-21T18:00:00+08:00",
+                "search_date": "2026-07-22", "search_window_start": "2026-07-21T14:00:00+08:00",
+                "search_window_end": "2026-07-22T03:00:00+08:00", "search_origin": "monitoring_sheet_keyword_search"}
+        with (
+            mock.patch.object(review_sheet, "ensure_sheet", return_value="sheet"),
+            mock.patch.object(review_sheet, "_read_rows", side_effect=sheet.read),
+            mock.patch.object(review_sheet, "_write", side_effect=sheet.write),
+            mock.patch.object(review_sheet, "_insert_rows", side_effect=sheet.insert),
+            mock.patch.object(review_sheet, "_read_json", return_value={}),
+            mock.patch.object(review_sheet, "_write_json") as write_json,
+            mock.patch.object(review_sheet, "curate_news_items", return_value=([], {})),
+            mock.patch.object(strategic_briefing, "polish_candidates_before_review", return_value=[item]),
+            mock.patch.object(strategic_briefing, "agent_semantic_deduplicate_candidates", side_effect=self._semantic_keep),
+            mock.patch.object(strategic_briefing, "load_latest_ai_review_audit", return_value={}),
+            mock.patch.object(strategic_briefing, "acknowledge_deferred_ai_candidates", return_value={}),
+        ):
+            result = review_sheet.sync_candidates([item])
+        self.assertEqual(result["new_count"], 1)
+        state = next(call.args[1] for call in reversed(write_json.call_args_list) if call.args[0] == review_sheet.STATE_PATH)
+        metadata = state[review_sheet.GATE_METADATA_STATE_KEY][review_sheet._gate_metadata_key(item["url"])]
+        self.assertEqual(metadata["search_window_start"], item["search_window_start"])
+        self.assertEqual(metadata["published_at"], item["published_at"])
+        self.assertTrue(review_sheet._review_news_candidate({**item, **metadata})[0])
+
     def test_sync_places_new_rows_above_history_and_preserves_history(self):
         sheet = self._LiveSheet([self._existing_row()])
         progress_events = []
