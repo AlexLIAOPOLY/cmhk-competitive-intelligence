@@ -233,7 +233,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
             returned.update({item["company"]: item for item in response.get("companies", [])})
         except Exception as exc:
             errors.append({"stage": "report_agent", "reason": str(exc)[:200], "companies": [p["company"] for p in batch]})
-    sections, table, audit = [], [["主体", "报告期间", "收入", "EBITDA / 利润", "资本开支", "派息"]], []
+    sections, table, audit = [], [["主体", "最新披露", "收益", "EBITDA / 利润", "资本开支", "派息"]], []
     for pack in packs:
         company = pack["company"]
         result = returned.get(company, {})
@@ -270,7 +270,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
     progress(f"[业绩摘要 Agent] 核验完成；{len(unresolved)} 项未取得可确认的新信息，按真实状态保留。")
     model = {"title": "内地运营商及香港主要竞对关键业绩摘要", "subtitle": "战略部（智库）对标分析简报",
              "intro": f"本摘要截至{clock.year}年{clock.month}月{clock.day}日，汇总正式数据库的最近已保存业绩，并补查缺项及近期券商观点。各项保留原报告期间、币种与主体口径；未取得可核实信息的项目明确标注。",
-             "table_caption": "表 内地运营商及香港主要竞对关键业绩", "table": table, "sections": sections,
+             "table_caption": "表：内地运营商及香港主要竞对最新关键业绩数据汇总", "table": table, "sections": sections,
              "generationMode": "limited" if unresolved or errors else "normal", "generationLimitations": errors,
              "researchAudit": proof}
     save_json(run_dir / "model.json", model)
