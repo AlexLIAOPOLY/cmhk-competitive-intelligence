@@ -83,7 +83,7 @@ class ResearchReliabilityTests(unittest.TestCase):
                 def extract(self, company, metric, pages, save, **kw):
                     save(dict(company=company, metric=metric, status='verified', value='123', period='2026', unit='HK$ million', quote=text, source_url=url))
             result = review_run(directory, model_factory=lambda: None, collector=collect, harness_factory=Harness)
-            self.assertEqual(result['outcome_counts'], dict(existing=0, updated=1, failed=0))
+            self.assertEqual(result['outcome_counts'], dict(existing=0, duplicate=0, updated=1, failed=0))
             self.assertEqual(len((directory/'verified_facts.jsonl').read_text().splitlines()), 1)
             review_run(directory, model_factory=lambda: self.fail('must not create model'), collector=collect, harness_factory=Harness)
             self.assertEqual(calls, ['HKT'])
@@ -104,7 +104,7 @@ class ResearchReliabilityTests(unittest.TestCase):
                     save(dict(company=company,metric=metric,status='verified',value='123',period='2026',unit='HK$ million',quote=text,source_url=url))
             self_test = self
             result = review_run(directory,model_factory=lambda:None,collector=lambda *args:({url:dict(opened=False,error='timeout')},[]),harness_factory=Harness)
-            self.assertEqual(result['outcome_counts'],dict(existing=0,updated=1,failed=0))
+            self.assertEqual(result['outcome_counts'],dict(existing=0,duplicate=0,updated=1,failed=0))
 
     def test_model_timeout_enters_bounded_retry_not_immediate_fallback(self):
         import executive_intelligence_pipeline as p

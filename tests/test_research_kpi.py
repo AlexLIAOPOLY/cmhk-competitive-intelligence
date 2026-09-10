@@ -26,6 +26,7 @@ class FormalResearchTests(unittest.TestCase):
                                       ("0 USD million", "USD million", (0, "USD"))]:
             self.assertEqual(exact_amount(value, unit), expected)
         self.assertEqual(exact_amount("$220 Hong Kong dollars", "Hong Kong dollars", per_customer=True), (220, "HKD"))
+        self.assertIsNone(exact_amount("HKD 220 million", "HKD million", per_customer=True))
         for value in ["surpassed $100 billion USD billions", "USD 20-30 million", "22,937 $m", "USD 12,34 million", "USD 2 million billion", "USD 10 million EUR"]:
             self.assertIsNone(exact_amount(value, ""), value)
 
@@ -113,7 +114,17 @@ class FormalResearchTests(unittest.TestCase):
             sidecar.write_text(json.dumps({"facts": [fact()]}))
             revised, _ = prepare_facts(root, [fact(decision="unchanged", research_status="no_update")], "research_test")
             self.assertEqual(revised[0]["decision"], "review")
-            self.assertIn("未查到正式指标", revised[0]["reasons"][0])
+            self.assertIn("未查到相应期间的正式指标", revised[0]["reasons"][0])
+
+    def test_canonical_baseline_matches_written_revenue_but_not_newer_source_only_period(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            row = normalize_fact(fact())[0]
+            tables(root, [row])
+            source = fact(decision="unchanged", research_status="no_update", period="", baseline=[{"period": "H1 2026"}])
+            self.assertEqual(prepare_facts(root, [source], "research_test")[0][0]["write_preflight"]["status"], "existing")
+            source["baseline"] = [{"period": "Q3 2026"}]
+            self.assertEqual(prepare_facts(root, [source], "research_test")[0][0]["write_preflight"]["status"], "rejected")
 
     def test_backed_up_repair_updates_agents_and_binary_receipt_idempotently(self):
         from data_curation.review_store import ReviewStore, load_review

@@ -86,7 +86,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertEqual(review['unit'], '项可入库')
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=23', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=24', (ROOT / 'web/static/index.html').read_text())
 
     def test_saved_materials_explain_all_destinations_and_tooltip_explains_role(self):
         receipts = [{'readback_verified': True, 'main_table': {'status': state}}

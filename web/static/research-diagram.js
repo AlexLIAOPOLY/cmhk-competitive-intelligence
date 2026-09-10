@@ -38,7 +38,14 @@
     const unit = String(item.unit || "").trim();
     return !value ? "未取得可更新值" : !unit || unit.split(/\s+/).every((part) => value.includes(part)) ? value : `${value} ${unit}`;
   };
-  const link = (url) => /^https?:\/\//i.test(String(url || "")) ? `<a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(url)}</a>` : esc(url);
+  const link = (url, label) => /^https?:\/\//i.test(String(url || "")) ? `<a href="${esc(url)}" target="_blank" rel="noreferrer">${esc(typeof label === "string" ? label : url)}</a>` : esc(url);
+  const businessReason = (reason) => {
+    if (/budget.exceeded|budget has been exceeded|quota.exceeded|insufficient_quota/i.test(reason)) return "模型服务额度不足，本项研究未完成；未取得可核验的数据，不能入库。";
+    if (/401|unauthorized|authentication.error/i.test(reason)) return "模型服务鉴权失败，本项未完成核对，不能入库。";
+    if (/429|rate.limit|too many requests/i.test(reason)) return "服务请求受限，本项未完成；需重试取得可靠数据后再审核。";
+    if (/timed?\s*out|timeout/i.test(reason)) return "处理超时，本项未取得完整结果；不能据此判断库内已有或没有新数据。";
+    return plainText(reason);
+  };
   const reportCoverage = (report) => {
     const items = Array.isArray(report?.items) ? report.items : [];
     const expected = new Set((Array.isArray(report?.metrics) ? report.metrics : []).map(String).filter(Boolean));
@@ -226,13 +233,61 @@
     });
     const labels = { ready: final ? "可入库" : "研究通过", existing: "库内已有 · 不提交", duplicate: "本轮重复 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
     const descriptions = { ready: final ? "字段、期间、单位与证据已核对；实际写入结果见四库更新节点。" : "展示本Agent提交的具体指标；最终判断及写入结果分别在下游节点查看。", existing: "已在Agent阶段识别，无需重复提交四库更新。", duplicate: "同一公司、指标及期间只提交一次。", rejected: "逐项说明未通过的原因；这些记录不进入写入批次。", pending: "已取得候选数据，但尚无正式表入库检查结果。" };
-    return `<section class="news-lineage-dialog-section research-decisions"><header><h3>${final ? "终审入库判断" : "本Agent指标与判断"}</h3><span>共 ${items.length} 项 · 按判断分类</span></header><div class="research-decision-grid">${Object.entries(groups).filter(([key]) => key !== "pending" || groups.pending.length).map(([key, rows]) => `<details class="research-decision-group is-${key}" open><summary>${labels[key]} <b>${rows.length} 项</b></summary><p>${descriptions[key]}</p><div class="research-decision-scroll" role="region" aria-label="${labels[key]}指标明细" tabindex="0">${rows.map((raw) => {
+    const categories = Object.entries(groups).filter(([key]) => key !== "pending" || groups.pending.length);
+    const shortLabels = { ...labels, existing: "库内已有", duplicate: "本轮重复" };
+    return `<section class="news-lineage-dialog-section research-decisions" data-research-view="${esc(`${date}/${node.key}`)}"><header><h3>${final ? "终审入库判断" : "本Agent指标与判断"}</h3><span>共 ${items.length} 项 · 按判断分类</span></header>
+      <div class="research-decision-controls"><div class="research-decision-toolbar"><div class="research-decision-switcher" role="group" aria-label="按入库判断筛选">${categories.map(([key, rows], index) => `<button type="button" data-research-filter="${key}" aria-pressed="${index === 0}" title="${labels[key]}"><span>${shortLabels[key]}</span><b>${rows.length}</b></button>`).join("")}</div><label class="research-decision-search"><span>搜索指标</span><input type="search" data-research-search placeholder="公司、指标或原因" aria-label="搜索公司、指标或原因" autocomplete="off"></label></div><div class="research-decision-meta"><p data-research-description>${descriptions.ready}</p><div class="research-decision-pagination"><span data-research-page-status role="status" aria-live="polite"></span><button type="button" data-research-page="-1" aria-label="上一页指标">上一页</button><button type="button" data-research-page="1" aria-label="下一页指标">下一页</button></div></div></div>
+      ${categories.map(([key, rows], index) => `<section class="research-decision-panel is-${key}" data-research-panel="${key}" data-description="${esc(descriptions[key])}" aria-label="${labels[key]}指标明细"${index ? " hidden" : ""}><table class="research-decision-table"><thead><tr><th scope="col">公司／具体指标</th><th scope="col">数值／报告期</th><th scope="col">判断原因与依据</th></tr></thead><tbody>${rows.map((raw) => {
       const old = raw.latest_baseline;
       const item = key === "existing" && old ? { ...raw, ...old } : raw;
       const target = raw.write_preflight || {};
       const reason = target.reason || raw.reason || (raw.reasons || []).join("；") || "未保存判断依据，不能据此确认可入库";
-      return `<article><strong>${esc(raw.company)} · ${esc(raw.metric)}</strong><p class="research-record-value">${esc(metricValue(item))} <span>· ${esc(item.period || "报告期未取得")}</span></p><p><span class="research-reason-label">判断原因</span>${esc(plainText(reason))}</p>${target.field ? `<p>目标字段：${esc(target.field_label)} <code>${esc(target.field)}</code><br>标准值：${esc(target.value)} ${esc(target.unit)} · ${esc(target.period)}</p>` : ""}${key === "existing" && target.previous_value != null ? `<p>正式表已有值：${esc(target.previous_value)} ${esc(target.unit)}</p>` : ""}<details class="research-record-source"><summary>查看来源与原文依据</summary><p>${(item.sources || [item.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>") || "本条未取得可用来源"}</p><p>${esc(raw.quote || raw.basis || "未保存可用原文摘录")}</p></details></article>`;
-    }).join("") || '<p class="research-empty">本类暂无记录</p>'}</div></details>`).join("")}</div></section>`;
+      const search = [raw.company, raw.metric, metricValue(item), item.period, businessReason(reason), target.field].join(" ").toLocaleLowerCase();
+      return `<tr data-research-row data-search="${esc(search)}"><th scope="row"><strong>${esc(raw.company)}</strong><span>${esc(raw.metric)}</span>${target.field ? `<code>${esc(target.field)}</code>` : ""}</th><td class="research-decision-value"><strong>${esc(metricValue(item))}</strong><span>${esc(item.period || "报告期未取得")}</span>${target.field ? `<small>标准值 ${esc(target.value)} ${esc(target.unit)} · ${esc(target.period)}</small>` : ""}</td><td><p>${esc(businessReason(reason))}</p>${key === "existing" && target.previous_value != null ? `<p>正式表已有值：${esc(target.previous_value)} ${esc(target.unit)}</p>` : ""}<details class="research-record-source"><summary>查看来源与原文依据</summary><p>${(item.sources || [item.source_url]).filter(Boolean).map((u) => link(typeof u === "string" ? u : u.url)).join("<br>") || "本条未取得可用来源"}</p><p>${esc(raw.quote || raw.basis || "未保存可用原文摘录")}</p><p>原始判断记录：${esc(reason)}</p></details></td></tr>`;
+    }).join("")}</tbody></table><p class="research-empty" data-research-empty hidden>本类暂无记录</p></section>`).join("")}</section>`;
+  }
+  const decisionViews = new Map();
+  function decisionPage(rows, query, page, size = 20) {
+    const matched = rows.filter((row) => (row.dataset.search || "").includes(query.trim().toLocaleLowerCase()));
+    const pages = Math.max(1, Math.ceil(matched.length / size));
+    const current = Math.max(0, Math.min(page, pages - 1));
+    return { matched, pages, current, visible: matched.slice(current * size, (current + 1) * size) };
+  }
+  function mount(root) {
+    const section = root.querySelector(".research-decisions");
+    if (!section || section.dataset.mounted) return;
+    section.dataset.mounted = "true";
+    const buttons = [...section.querySelectorAll("[data-research-filter]")];
+    const panels = [...section.querySelectorAll("[data-research-panel]")];
+    const search = section.querySelector("[data-research-search]");
+    const key = section.dataset.researchView;
+    const view = decisionViews.get(key) || { category: buttons[0].dataset.researchFilter, query: "", page: 0 };
+    if (!panels.some((panel) => panel.dataset.researchPanel === view.category)) view.category = buttons[0].dataset.researchFilter;
+    search.value = view.query;
+    const render = () => {
+      buttons.forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.researchFilter === view.category)));
+      panels.forEach((panel) => { panel.hidden = panel.dataset.researchPanel !== view.category; });
+      const panel = panels.find((item) => !item.hidden);
+      const rows = [...panel.querySelectorAll("[data-research-row]")];
+      const result = decisionPage(rows, view.query, view.page);
+      view.page = result.current;
+      const visible = new Set(result.visible);
+      rows.forEach((row) => { row.hidden = !visible.has(row); });
+      panel.querySelector("table").hidden = !result.matched.length;
+      const empty = panel.querySelector("[data-research-empty]");
+      empty.hidden = !!result.matched.length;
+      empty.textContent = rows.length ? "本类没有匹配的公司、指标或原因，请修改搜索词。" : "本类暂无记录。";
+      section.querySelector("[data-research-description]").textContent = panel.dataset.description;
+      section.querySelector("[data-research-page-status]").textContent = `${result.matched.length} 项 · ${result.current + 1} / ${result.pages} 页`;
+      section.querySelector('[data-research-page="-1"]').disabled = result.current === 0;
+      section.querySelector('[data-research-page="1"]').disabled = result.current + 1 === result.pages;
+      decisionViews.set(key, view);
+    };
+    const resetScroll = () => { const content = section.closest(".research-node-detail"); if (content) content.scrollTop = 0; };
+    buttons.forEach((button) => button.addEventListener("click", () => { view.category = button.dataset.researchFilter; view.page = 0; render(); resetScroll(); }));
+    section.querySelectorAll("[data-research-page]").forEach((button) => button.addEventListener("click", () => { view.page += Number(button.dataset.researchPage); render(); resetScroll(); }));
+    search.addEventListener("input", () => { view.query = search.value; view.page = 0; render(); resetScroll(); });
+    render();
   }
   function actualList(node, snapshot, date) {
     const data = snapshot?.date === date ? snapshot : {};
@@ -329,8 +384,8 @@
       const tables = new Map();
       rows.forEach((item) => { const path = item.main_table?.path || item.path || "未记录"; if (!tables.has(path)) tables.set(path, []); tables.get(path).push(item); });
       const count = success ? written : Math.max(0, check.accepted - written);
-      return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url) : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
+      return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url, "官方来源") : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
     }).join("")}</section>`;
   }
-  window.CmhkResearchDiagram = { build, detail };
+  window.CmhkResearchDiagram = { build, detail, mount, decisionPage };
 })();

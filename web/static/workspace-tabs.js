@@ -3042,7 +3042,12 @@
       if (!dialog || !body) return;
       const render = () => {
         const node = globalSchedulerLineageModel([], []).nodes.find((item) => item.key === nodeKey);
-        if (node) body.innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, selectedDate);
+        if (node) {
+          const scrollTop = body.querySelector(".research-node-detail")?.scrollTop || 0;
+          body.innerHTML = window.CmhkResearchDiagram.detail(node, state.researchArchitecture, selectedDate);
+          window.CmhkResearchDiagram.mount(body);
+          body.querySelector(".research-node-detail").scrollTop = scrollTop;
+        }
       };
       if (state.researchArchitecture?.date === selectedDate) render();
       else body.innerHTML = `<header><h3>正在读取该节点</h3><button type="button" onclick="this.closest('dialog').close()" aria-label="关闭节点详情">关闭</button></header><p role="status">正在读取 ${esc(selectedDate)} 的公司指标与搜索结果。</p>`;

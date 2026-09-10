@@ -10,7 +10,7 @@ from pathlib import Path
 
 from .storage import atomic_write_json, atomic_write_jsonl
 from .six_agent_research import collect_sources, merge_results, now, validate_fact, page_mentions_metric
-from .research_freshness import compare_candidate, metric_key
+from .research_freshness import compare_candidate, metric_key, period_key
 from .review_store import ReviewStore, load_company
 
 
@@ -70,11 +70,16 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
         report.setdefault("reviewed_metrics", [])
         report.setdefault("pages", {})
         report.setdefault("searches", [])
+        old_baseline = report.get("baseline", {})
         report["baseline"] = baseline.get(company, {})
         report.setdefault("incremental", True)
         for position, item in enumerate(report["items"]):
-            if item.get("status") == "no_update" and not report["baseline"].get(metric_key(item.get("metric"))):
-                item.update(status="conflict", value="", reason="库内未找到该指标基线，最终审核须继续补查，不能标记库内已有")
+            key = metric_key(item.get("metric"))
+            old_rows = item.get("baseline") or old_baseline.get(key, [])
+            current_rows = report["baseline"].get(key, [])
+            newest = lambda rows: max((period_key(row.get("period")) or (0, 0, "") for row in rows), default=(0, 0, ""))
+            if item.get("status") == "no_update" and (not current_rows or newest([item, *old_rows]) > newest(current_rows)):
+                item.update(status="conflict", value="", reason="库内未找到该指标相应期间的正式记录，最终审核须继续补查，不能标记库内已有")
             if item.get("status") == "verified":
                 report["items"][position] = compare_candidate(
                     validate_fact(item, company, report["metrics"], report["pages"]), report["baseline"])

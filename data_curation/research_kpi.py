@@ -39,6 +39,8 @@ def exact_amount(value, unit, *, per_customer=False):
     text = re.sub(r"([£$])m\b", r"\1 million", text, flags=re.I)
     codes = {_currency(t) for t in re.findall(CURRENCY, text, re.I)}
     scales = re.findall(SCALE, text, re.I)
+    if per_customer and scales:
+        return None  # ARPU requires a per-customer currency amount, not financial millions.
     multipliers = {1000000 if s.lower().startswith("trillion") else 1000 if s.lower().startswith("bil") or s.lower() == "bn" else 100 if s in {"亿元", "億港元"} else 1 for s in scales}
     if per_customer and not scales:
         multipliers = {1}
@@ -252,11 +254,14 @@ def prepare_facts(root, facts, run_id, *, allow_replay=False):
                 previous = baseline.get(fact.get("company"), {}).get(metric_key(fact.get("metric")), [])
                 fact.setdefault("preflight_original", {k: fact.get(k) for k in
                                 ("decision", "status", "research_status", "freshness", "reasons")})
-                if previous:
+                claimed = [fact, *(fact.get("baseline") or [])]
+                claimed_rank = max((period_key(r.get("period")) or (0, 0, "") for r in claimed), default=(0, 0, ""))
+                formal_rank = max((period_key(r.get("period")) or (0, 0, "") for r in previous), default=(0, 0, ""))
+                if previous and formal_rank >= claimed_rank:
                     fact["latest_baseline"] = max(previous, key=lambda r: period_key(r.get("period")) or (0, 0, ""))
                     fact["write_preflight"] = {"status": "existing", "reason": "Agent已回查正式数据，库内已有该指标；本条不提交写入"}
                 else:
-                    reason = "此前标为库内已有，但本次未查到正式指标记录；需重新研究核实"
+                    reason = "此前标为库内已有，但本次未查到相应期间的正式指标记录；需重新研究核实"
                     fact.update(decision="review", research_status="conflict", status="unavailable", reasons=[reason],
                                 write_preflight={"status": "rejected", "reason": reason})
             output.append(fact)
