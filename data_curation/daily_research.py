@@ -296,13 +296,13 @@ def execute(root: Path, run_id: str) -> dict:
                 f"完成时间：{final_review.get('completed_at') or '未记录'}。",
             )
             if summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted"):
-                summary["publication"] = {"status": "completed", "completed_at": now(),
+                summary["publication"] = {"status": "partial" if summary.get("review") else "completed", "completed_at": now(),
                     "database_updated": False, "insights": 0,
                     "result_status": "needs_review" if summary.get("review") else "no_new_disclosures",
                     "note": "本轮未形成可写入的新披露，保留现有数据库和页面；待处理或失败记录见研究结果，未重复生成洞察。"}
                 atomic_write_json(manifest_path, summary)
                 _append_task_detail(root, task_run_id, "发布判定", summary["publication"]["note"])
-                _finish_research_task(root, task_run_id, task_started, ok=True,
+                _finish_research_task(root, task_run_id, task_started, ok=not bool(summary.get("review")),
                                       detail="研究与最终审核已完成；本轮无可写入的新资料，现有四库和页面保持不变。", summary=summary)
                 return summary
             summary["publication"] = {"status": "running", "started_at": now()}
@@ -320,7 +320,8 @@ def execute(root: Path, run_id: str) -> dict:
             summary["publication"] = {
                 "status": "completed" if result.get("ok") and not result.get("skipped") else "error",
                 "task_run_id": task_run_id, "completed_at": now(),
-                "database_updated": bool(result.get("domains")) and not result.get("failed_domains"),
+                "database_updated": bool(result.get("storage_readback", {}).get("ok")),
+                "storage_readback": result.get("storage_readback", {}),
                 "insights": result.get("model_analysis", {}).get("insights_passed", 0),
                 "model_analysis": result.get("model_analysis", {}),
                 "domains": result.get("domains", {}), "changes": result.get("ui_value_changes", {}),

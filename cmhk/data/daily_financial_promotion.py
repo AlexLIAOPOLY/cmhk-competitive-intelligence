@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 import csv
+import fcntl
 import json
 import os
 import re
 import tempfile
 from datetime import datetime
+from decimal import Decimal
 from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -57,6 +59,8 @@ def _read_json(path: Path, default: Any) -> Any:
 
 
 def _atomic_text(path: Path, text: str) -> None:
+    if path.exists() and path.read_bytes() == text.encode("utf-8"):
+        return
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     temp = Path(name)
@@ -259,31 +263,29 @@ def _incremental_rows(lines: list[str]) -> list[dict[str, Any]]:
             continue
         if not all(fact.get(key) for key in ("entity_supported", "metric_supported", "value_supported", "evidence_hash")):
             continue
+        if fact.get("status") != "ok" or fact.get("source_tier") != "official" or float(fact.get("quality_score") or 0) < .85:
+            continue
         mapped = METRICS.get(str(fact.get("metric", "")).casefold())
+        if str(fact.get("metric", "")).casefold() == "ebitda或经营利润":
+            # These are different definitions, not interchangeable KPI aliases.
+            mapped = None
         rank = period_key(fact.get("period"))
         rendered = str(fact.get("value", "")) + " " + str(fact.get("unit", ""))
-        number = re.search(r"[-+]?\d[\d,]*(?:\.\d+)?", str(fact.get("value", "")))
-        currency = re.search(r"HKD|HK\$|USD|US\$|RMB|CNY|SGD|AUD|JPY|KRW|EUR|GBP|INR|AED|SAR", rendered, re.I)
+        money = _exact_money(str(fact.get("value", "")), str(fact.get("unit", "")))
         sources = list(dict.fromkeys(url for url in fact.get("sources", []) if str(url).startswith("https://")))
-        if not mapped or not rank or not number or not currency or not sources or "%" in rendered:
+        if not mapped or not rank or money is None or not sources:
             continue
         year, month, grain = rank
         if grain == "quarter":
             period = f"Q{month // 3} {year}"
         elif grain == "half" and month == 6:
             period = f"H1 {year}"
-        elif grain == "year":
+        elif grain == "year" and month == 12:
             period = f"FY{year}"
         else:
             # Off-calendar half years remain in the domain fact layer with native periods.
             continue
-        scale = 1000 if re.search(r"billion|\bbn\b", rendered, re.I) else 1 if re.search(r"million|百万|百萬", rendered, re.I) else None
-        if scale is None:
-            continue
-        amount = float(number[0].replace(",", "")) * scale
-        if re.match(r"^\s*-\s*[A-Za-z$]", str(fact.get("value", ""))):
-            amount = -abs(amount)
-        code = {"HK$": "HKD", "US$": "USD", "RMB": "CNY"}.get(currency[0].upper(), currency[0].upper())
+        amount, code = money
         subject = {"HKT": "HKT / csl / 1O1O", "3HK": "3HK / Hutchison"}.get(company, company)
         row = _record(subject=subject, period=period, metric_key=mapped[0], metric_zh=mapped[1],
             value=amount, unit=f"millions {code}", source_url=sources[0], source_label="本轮最新官方披露",
@@ -296,18 +298,50 @@ def _incremental_rows(lines: list[str]) -> list[dict[str, Any]]:
     return output
 
 
-def promote_daily_financial_facts(*, database_path: Path, local_financial_path: Path,
+def _exact_money(value: str, unit: str) -> tuple[float | int, str] | None:
+    """Require one exact amount and explicit, consistent currency and magnitude."""
+    text = value + " " + unit
+    currencies = re.findall(r"HKD|HK\$|USD|US\$|RMB|CNY|SGD|AUD|JPY|KRW|EUR|GBP|INR|AED|SAR|€|£", text, re.I)
+    codes = {{"HK$": "HKD", "US$": "USD", "RMB": "CNY", "€": "EUR", "£": "GBP"}.get(c.upper(), c.upper()) for c in currencies}
+    scales = re.findall(r"trillions?|billions?|millions?|\bbil\b|\bbn\b|百万|百萬", text, re.I)
+    magnitudes = {1000000 if s.lower().startswith("trillion") else 1000 if s.lower().startswith("bil") or s.lower() == "bn" else 1 for s in scales}
+    numbers = re.findall(r"\d+(?:,\d{3})*(?:\.\d+)?", value)
+    remainder = re.sub(r"HKD|HK\$|USD|US\$|RMB|CNY|SGD|AUD|JPY|KRW|EUR|GBP|INR|AED|SAR|€|£|trillions?|billions?|millions?|\bbil\b|\bbn\b|百万|百萬", "", text, flags=re.I)
+    remainder = re.sub(r"\d+(?:,\d{3})*(?:\.\d+)?", "", remainder).strip()
+    if len(codes) != 1 or len(magnitudes) != 1 or len(numbers) != 1 or remainder not in {"", "-", "+"}:
+        return None
+    amount = Decimal(numbers[0].replace(",", "")) * next(iter(magnitudes))
+    if remainder == "-":
+        amount = -amount
+    return (int(amount) if amount == amount.to_integral() else float(amount)), next(iter(codes))
+
+
+def promote_daily_financial_facts(**kwargs) -> dict[str, Any]:
+    # The pipeline lock protects the normal writer; this also protects direct
+    # repair invocations from competing promotion processes.
+    path = Path(kwargs["database_path"])
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.with_suffix(".promotion.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        return _promote_daily_financial_facts(**kwargs)
+
+
+def _promote_daily_financial_facts(*, database_path: Path, local_financial_path: Path,
                                   verified_facts_path: Path, dry_run: bool = False,
                                   generated_at: str = "", incremental_only: bool = False) -> dict[str, Any]:
-    payload = _read_json(database_path, {}) or {}
+    from data_curation.research_storage import read_object
+    payload = read_object(database_path)
+    manifest_path = database_path.with_name("manifest.json")
+    manifest = read_object(manifest_path, missing_ok=True)
+    if not isinstance(payload.get("rows"), list):
+        raise ValueError("Formal KPI rows must exist before promotion")
     current_rows = list(payload.get("rows") or [])
-    local_payload = _read_json(local_financial_path, {}) or {}
-    try:
-        verified_lines = verified_facts_path.read_text(encoding="utf-8").splitlines()
-    except OSError:
-        verified_lines = []
+    local_payload = {} if incremental_only else read_object(local_financial_path, missing_ok=True)
+    verified_lines = verified_facts_path.read_text(encoding="utf-8").splitlines()
     candidates = _incremental_rows(verified_lines) if incremental_only else _candidate_rows(local_payload, verified_lines)
     keyed = {(str(row.get("subject") or ""), str(row.get("period") or ""), str(row.get("metric_key") or "")): row for row in current_rows}
+    if len(keyed) != len(current_rows):
+        raise ValueError("Duplicate primary keys in formal KPI table; refusing silent deletion")
     added = upgraded = preserved = 0
     for candidate in candidates:
         key = (candidate["subject"], candidate["period"], candidate["metric_key"])
@@ -322,29 +356,31 @@ def promote_daily_financial_facts(*, database_path: Path, local_financial_path: 
             preserved += 1
     rows = sorted(keyed.values(), key=lambda row: (str(row.get("category") or ""), str(row.get("subject") or ""), str(row.get("metric_key") or ""), str(row.get("period_end") or row.get("period") or "")))
     changed = added > 0 or upgraded > 0
-    if changed and not dry_run:
+    if (changed or incremental_only) and not dry_run:
         payload["rows"] = rows
-        payload["generated_at"] = generated_at or datetime.now(HKT).isoformat(timespec="seconds")
-        payload["daily_official_promotion"] = {
-            "generated_at_hkt": payload["generated_at"], "candidates": len(candidates),
-            "added_rows": added, "upgraded_rows": upgraded, "preserved_stronger_rows": preserved,
-            "local_financial_path": str(local_financial_path), "verified_facts_path": str(verified_facts_path),
-        }
+        if changed:
+            payload["generated_at"] = generated_at or datetime.now(HKT).isoformat(timespec="seconds")
+            payload["daily_official_promotion"] = {
+                "generated_at_hkt": payload["generated_at"], "candidates": len(candidates),
+                "added_rows": added, "upgraded_rows": upgraded, "preserved_stronger_rows": preserved,
+                "local_financial_path": str(local_financial_path), "verified_facts_path": str(verified_facts_path),
+            }
         subjects = {str(item.get("subject") or ""): item for item in payload.get("subjects") or []}
-        for row in candidates:
+        for candidate in candidates:
+            # Derived subject indexes must reflect the selected persisted row,
+            # never the rejected candidate value.
+            row = keyed[(candidate["subject"], candidate["period"], candidate["metric_key"])]
             subject = subjects.get(row["subject"])
             if not subject:
                 continue
             periods = subject.setdefault("periods", [])
             if not any(str(item.get("period") or "") == row["period"] for item in periods):
-                periods.append({"period": row["period"], "grain": row["grain"], "period_end": row["period_end"]})
+                periods.append({"period": row["period"], "grain": row.get("grain", ""), "period_end": row.get("period_end", row["period"])})
             subject.setdefault("metrics", {}).setdefault(row["metric_key"], {})[row["period"]] = row["value"]
         _atomic_text(database_path, json.dumps(payload, ensure_ascii=False, indent=2) + "\n")
         _write_csv(database_path.with_suffix(".csv"), rows)
         human_fields = ["subject", "period", "grain", "metric_zh", "value", "unit", "verification_status", "official_value", "official_unit", "verification_count", "verification_method", "official_source_url", "verification_note"]
         _write_csv(database_path.with_name("quarterly_metrics_human_readable.csv"), rows, human_fields)
-        manifest_path = database_path.with_name("manifest.json")
-        manifest = _read_json(manifest_path, {}) or {}
         manifest["row_count"] = len(rows)
         if isinstance(manifest.get("quality"), dict):
             manifest["quality"]["row_count"] = len(rows)
@@ -353,6 +389,10 @@ def promote_daily_financial_facts(*, database_path: Path, local_financial_path: 
             if note not in manifest["quality"]["notes"]:
                 manifest["quality"]["notes"].append(note)
         _atomic_text(manifest_path, json.dumps(manifest, ensure_ascii=False, indent=2) + "\n")
+    if not dry_run:
+        actual = read_object(database_path).get("rows")
+        if actual != (rows if changed or incremental_only else current_rows):
+            raise ValueError("Formal KPI readback differs from intended rows")
     return {"ok": True, "changed": changed, "candidates": len(candidates), "added_rows": added,
             "upgraded_rows": upgraded, "preserved_stronger_rows": preserved,
             "published_rows": len(rows), "dry_run": dry_run}

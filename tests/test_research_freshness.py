@@ -72,6 +72,7 @@ class FreshnessTests(unittest.TestCase):
                    'unit':'millions USD','verification_status':'legacy_unrated'}
             database.write_text(json.dumps({'rows':[old], 'subjects':[]}))
             base = {'company':'AT&T','metric':'收入','value':'US$ 200 million','unit':'USD million',
+                'source_tier':'official','quality_score':.95,
                 'decision':'accepted','status':'ok','freshness':'new_period',
                 'entity_supported':True,'metric_supported':True,'value_supported':True,
                 'evidence_hash':'test-hash','sources':['https://investors.att.com/results'],'basis':'official release'}

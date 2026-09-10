@@ -200,7 +200,24 @@ while [[ -f "$REQUEST_FILE" ]]; do
   fi
 
   log "Activating coalesced request $requested_token."
-  /usr/bin/rsync -a "$release_dir/" "$RUNTIME/" >> "$LOG_FILE" 2>&1
+  # Reapply data protection at activation, including old queued releases and
+  # overlays. A source release must never roll operational data backwards.
+  /usr/bin/rsync -a "$release_dir/" "$RUNTIME/" \
+    --exclude='agent_verified_facts.json' \
+    --exclude='agent_knowledge/global_top5_operators_2016_2025/' \
+    --exclude='agent_knowledge/local_hk_operator_operating_metrics_2016_2025/' \
+    --exclude='agent_knowledge/hk_competitor_product_tariffs/' \
+    --exclude='agent_knowledge/quarterly_competitor_metrics_2026-06-18/' \
+    --exclude='agent_knowledge/cloud_vendor_metrics_2026-06-17/' \
+    --exclude='agent_knowledge/cmhk_macro_policy_2026-06-19/' \
+    --exclude='agent_knowledge/executive_intelligence_refresh/' \
+    --exclude='agent_knowledge/requested_overview_010304_2016_2025/' \
+    --exclude='agent_knowledge/crawl_run_logs/' \
+    --exclude='curation_data/' --exclude='results/' --exclude='strategy_briefing/' \
+    --exclude='agent_chat_threads/' --exclude='crawl_runs/' --exclude='task_runs/' \
+    --exclude='agent_runs/' --exclude='var/' \
+    --exclude='scheduler_state.json' --exclude='scheduler_pending_run.json' \
+    >> "$LOG_FILE" 2>&1
   if [[ -f "$release_dir/$WEB_LABEL.plist" ]]; then
     /usr/bin/plutil -lint "$release_dir/$WEB_LABEL.plist" >> "$LOG_FILE" 2>&1
     /bin/cp "$release_dir/$WEB_LABEL.plist" "$WEB_PLIST"

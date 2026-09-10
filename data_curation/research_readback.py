@@ -144,6 +144,21 @@ def research_snapshot(root: Path, date: str = "") -> dict:
                 payload[key] = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
             except (OSError, ValueError):
                 pass
+    # Archived completion flags are not proof that current files still contain
+    # the data. Detect a later deployment overwrite as well as a failed write.
+    if manifest.get("research_policy") == "latest_disclosure_incremental_v1" and manifest.get("publication"):
+        from .research_storage import audit_storage
+        check = audit_storage(root, payload.get("accepted_items") or [], expected=int(manifest.get("accepted") or 0))
+        payload["storage_readback"] = check
+        publication = dict(manifest["publication"])
+        publication["recorded_database_updated"] = publication.get("database_updated", False)
+        publication["database_updated"] = check["ok"] and check["accepted"] > 0
+        publication["storage_readback"] = check
+        manifest["publication"] = publication
+        receipts = {item["id"]: item for item in check["items"]}
+        from .research_storage import fact_id
+        for item in payload.get("accepted_items") or []:
+            item["storage"] = receipts.get(fact_id(item))
     # A latest analysis belongs to this date only when the research run ID matches.
     payload["insight_items"] = []
     try:

@@ -536,7 +536,7 @@ def build_ai_analysis(
                 facts.append(fact)
 
     domains: dict[str, list[dict[str, Any]]] = {key: [] for key in FACT_DOMAIN_IDS}
-    seen: set[tuple[str, str, str]] = set()
+    seen: set[tuple] = set()
     facts.sort(
         key=lambda item: (
             str(item.get("source_tier") or "") == "official",
@@ -550,6 +550,9 @@ def build_ai_analysis(
         if not domain:
             continue
         key = (domain, str(fact.get("company") or ""), str(fact.get("metric") or ""))
+        if (curation_summary or {}).get("architecture") == "six_research_agents_v1":
+            # Preserve every accepted item, including multiple reporting periods.
+            key += (fact.get("id"), fact.get("period"), fact.get("unit"), str(fact.get("value")), fact.get("evidence_hash"))
         if key in seen:
             continue
         seen.add(key)
@@ -557,7 +560,8 @@ def build_ai_analysis(
             {
                 "company": fact.get("company") or "",
                 "metric": fact.get("metric") or "",
-                "analysis": fact.get("value") or fact.get("basis") or "",
+                "analysis": fact.get("value") if fact.get("value") is not None else fact.get("basis") or "",
+                "id": fact.get("id") or "",
                 "basis": fact.get("basis") or "",
                 "period": fact.get("period") or "",
                 "unit": fact.get("unit") or "",
@@ -628,6 +632,12 @@ def publish_domain_fact_sidecars(
     to use their stricter schema-specific promotion gates.
     """
     paths = output_paths or DOMAIN_FACT_PATHS
+    if analysis.get("architecture") == "six_research_agents_v1":
+        from data_curation.research_storage import merge_domain
+        return {domain: merge_domain(paths[domain], (analysis.get("domains") or {}).get(domain) or [],
+                    domain=domain, run_id=analysis.get("agent_run_id", ""),
+                    generated_at=analysis.get("generated_at_hkt") or _now(), dry_run=dry_run)
+                for domain in UI_DOMAIN_IDS}
     results: dict[str, Any] = {}
     for domain in FACT_DOMAIN_IDS:
         path = paths[domain]
@@ -5028,6 +5038,7 @@ def run_pipeline(
         if dry_run:
             ai_payload = build_ai_analysis(agent_run_id=agent_run_id, curation_summary=curation_summary, verified_facts_path=facts_path)
             ai_result = {
+                **ai_payload,
                 "ok": True,
                 "changed": _content_hash(_fact_content(ai_payload))
                 != _content_hash(_fact_content(_read_json(AI_ANALYSIS_PATH, {}) or {})),
@@ -5147,6 +5158,17 @@ def run_pipeline(
                 "skipped": True,
                 "reason": "refresh_builders_disabled",
             }
+        if six_agent_run:
+            from data_curation.research_storage import audit_storage
+            accepted_facts = [json.loads(line) for line in facts_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+            state["storage_readback"] = audit_storage(ROOT, accepted_facts, expected=int((curation_summary or {}).get("accepted") or 0))
+            if not dry_run:
+                _atomic_write_json(facts_path.parent / "storage_receipt.json", {
+                    "agent_run_id": agent_run_id, "readback": state["storage_readback"],
+                    "writes": state["domain_fact_sidecars"], "main_table": state.get("daily_main_database_promotion", {}),
+                })
+            if not dry_run and not state["storage_readback"]["ok"]:
+                raise ValueError("四库逐项回读未通过，保留研究档案，停止后续分析与发布")
         if six_agent_run:
             state["overview_source_recrawl"] = {
                 "ok": True, "skipped": True, "reason": "official_pages_already_read_by_research_agents",
@@ -5289,6 +5311,9 @@ def run_pipeline(
             state["domains"].setdefault(domain, {"ok": True, "changed": False})
             state["domains"][domain]["agent_fact_update"] = {
                 "facts": int(sidecar.get("facts") or 0),
+                "submitted_facts": sidecar.get("submitted_facts"),
+                "inserted_facts": sidecar.get("inserted_facts"),
+                "confirmed_facts": sidecar.get("confirmed_facts"),
                 "changed": bool(sidecar.get("changed")),
                 "published": bool(sidecar.get("published")),
             }
@@ -5307,6 +5332,7 @@ def run_pipeline(
             )
         )
         core_ok = not failed and model_ok and recrawl_ok and ui_contract_ok and source_discovery_ok
+        core_ok = core_ok and (not six_agent_run or dry_run or bool(state.get("storage_readback", {}).get("ok")))
         if dry_run:
             state["pages_publish"] = {"ok": True, "skipped": True, "reason": "dry_run"}
         elif core_ok:
@@ -5338,8 +5364,10 @@ def run_pipeline(
             final_status = "completed"
         elif core_ok and not pages_ok:
             final_status = "failed_frontend_publish"
-        else:
+        elif core_ok:
             final_status = "completed_with_fallback"
+        else:
+            final_status = "failed_validation"
         state.update(
             {
                 "ok": pipeline_ok,

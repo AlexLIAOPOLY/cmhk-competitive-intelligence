@@ -172,6 +172,9 @@ else
   --exclude='strategy_briefing/' \
   --exclude='agent_knowledge/crawl_run_logs/' \
   --exclude='agent_knowledge/hk_competitor_product_tariffs/' \
+  --exclude='agent_knowledge/global_top5_operators_2016_2025/' \
+  --exclude='agent_knowledge/local_hk_operator_operating_metrics_2016_2025/' \
+  --exclude='agent_verified_facts.json' \
   --exclude='agent_knowledge/quarterly_competitor_metrics_2026-06-18/' \
   --exclude='agent_knowledge/cloud_vendor_metrics_2026-06-17/' \
   --exclude='agent_knowledge/cmhk_macro_policy_2026-06-19/' \

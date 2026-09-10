@@ -58,7 +58,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}, {'metric': 'EBITDA', 'status': 'no_update'}])
         node = next(n for n in result['nodes'] if n['key'] == 'research-asia')
         self.assertEqual(node['value'], 1)
-        self.assertEqual(node['unit'], '项新增更新')
+        self.assertEqual(node['unit'], '项研究通过·待终审')
         self.assertIn('库内已有 1 项', node['note'])
         self.assertIn('逐公司、逐指标结果', result['detail'])
         self.assertLess(result['detail'].index('本节点逐条明细'), result['detail'].index('这个节点如何处理'))
@@ -72,19 +72,30 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         }
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}], publication=publication)
         update = next(n for n in result['nodes'] if n['key'] == 'research-update')
-        self.assertEqual(update['unit'], '项审核通过')
+        self.assertEqual(update['unit'], '项已保存·回读确认')
+        self.assertEqual(update['value'], '—')
+        self.assertNotEqual(update['health']['key'], 'healthy')
+        self.assertIn('实际保存尚未核对', update['note'])
         self.assertIn('审核', update['note'])
-        self.assertIn('主表实际新增 4 行', update['note'])
+        self.assertIn('原运行记录：主表新增 4 行', update['note'])
         self.assertIn('页面指标数值变化 0 项', update['note'])
 
     def test_final_review_card_leads_with_new_update_count(self):
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}])
         review = next(n for n in result['nodes'] if n['key'] == 'research-merge')
         self.assertEqual(review['value'], 1)
-        self.assertEqual(review['unit'], '项新增更新')
+        self.assertEqual(review['unit'], '项最终审核通过')
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=20', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=21', (ROOT / 'web/static/index.html').read_text())
+
+    def test_current_readback_overrides_archived_completion(self):
+        for complete in [True, False]:
+            check = {'confirmed': 1 if complete else 0, 'accepted': 1, 'missing': 0 if complete else 1, 'ok': complete, 'items': []}
+            result = self.render(items=[{'status': 'verified'}], publication={'status': 'completed', 'database_updated': True, 'storage_readback': check})
+            update = next(n for n in result['nodes'] if n['key'] == 'research-update')
+            self.assertEqual(update['value'], check['confirmed'])
+            self.assertEqual(update['health']['key'], 'healthy' if complete else 'critical')
 
 
 if __name__ == '__main__':
