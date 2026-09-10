@@ -415,10 +415,27 @@ def _internal_asr_timing_payload(audio_path: Path) -> dict:
         raise RuntimeError(f"公司内网语音对齐返回 HTTP {exc.code}: {detail}") from exc
 
 
-def _write_internal_asr_subtitle_timings(output_path: Path, display_text: str = "") -> dict:
+def _verify_complete_spoken_text(display_text: str, asr_text: str) -> dict:
+    expected, _ = _alignment_char_positions(prepare_tts_text(display_text))
+    recognized, _ = _alignment_char_positions(asr_text)
+    matches = SequenceMatcher(None, expected, recognized, autojunk=False).get_matching_blocks()
+    matched = sum(match.size for match in matches)
+    tail_start = max(0, len(expected) - 48)
+    tail_matched = sum(max(0, match.a + match.size - max(match.a, tail_start)) for match in matches)
+    coverage = matched / max(1, len(expected))
+    tail_coverage = tail_matched / max(1, len(expected) - tail_start)
+    if not expected or coverage < 0.88 or tail_coverage < 0.80:
+        raise RuntimeError("业绩语音未完整播出文稿或结尾，已阻止发布并等待重试")
+    return {"matchedTextFraction": round(coverage, 4), "endingMatchedFraction": round(tail_coverage, 4)}
+
+
+def _write_internal_asr_subtitle_timings(
+    output_path: Path, display_text: str = "", *, require_complete: bool = False,
+) -> dict:
     result = _internal_asr_timing_payload(output_path)
     asr_transcript = str(result.get("text") or result.get("transcript") or "").strip()
     transcript = str(display_text or asr_transcript).strip()
+    completion = _verify_complete_spoken_text(transcript, asr_transcript) if require_complete else None
     segments = result.get("segments")
     cues = _build_asr_subtitle_cues(
         transcript,
@@ -427,6 +444,11 @@ def _write_internal_asr_subtitle_timings(output_path: Path, display_text: str = 
     )
     if not transcript or not cues:
         raise RuntimeError("公司内网语音模型未返回可用的逐字时间戳")
+    if require_complete:
+        expected, _ = _alignment_char_positions(transcript)
+        timed, _ = _alignment_char_positions("".join(cue["text"] for cue in cues))
+        if timed != expected:
+            raise RuntimeError("业绩语音有未对齐的完整句子，已阻止发布并等待重试")
     duration = float(result.get("duration") or cues[-1]["end"])
     payload = {
         "version": 2,
@@ -435,6 +457,8 @@ def _write_internal_asr_subtitle_timings(output_path: Path, display_text: str = 
         "spokenText": transcript,
         "cues": cues,
     }
+    if completion is not None:
+        payload["completionCheck"] = {**completion, "allSentencesTimed": True}
     output_path.with_suffix(".timings.json").write_text(
         json.dumps(payload, ensure_ascii=False, indent=2),
         encoding="utf-8",
@@ -1309,7 +1333,9 @@ def _normalize_and_merge_internal_tts_parts(
     )
 
 
-def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
+def _synthesize_with_internal_tts(
+    text: str, output_path: Path, *, chunk_chars: int | None = None,
+) -> str | None:
     import urllib.error
     import urllib.request
 
@@ -1330,9 +1356,11 @@ def _synthesize_with_internal_tts(text: str, output_path: Path) -> str | None:
         "INTERNAL_TTS_INSTRUCT",
         "使用稳定一致、正式克制的企业新闻播报风格；语速自然适中、清晰利落且恒定，句间停顿简短均匀，音调平稳，不随内容改变情绪或声线。",
     ).strip()
-    # Generated summaries are capped below this value, so normal reports stay
-    # in one request and retain one continuous voice/prosody conditioning pass.
     max_chars = max(120, int(os.environ.get("INTERNAL_TTS_CHUNK_CHARS", "1200")))
+    if chunk_chars is not None:
+        # Financial figures expand substantially when spoken. Keep each
+        # performance-report request below the service's long-output cutoff.
+        max_chars = min(max_chars, max(120, chunk_chars))
     sentences = [part.strip() for part in re.split(r"(?<=[。！？；!?;])", text) if part.strip()]
     chunks: list[str] = []
     current = ""
@@ -1532,6 +1560,7 @@ def _synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
 
     summary = build_audio_summary(report_path)
     tts_text = prepare_tts_text(summary)
+    performance_report = "业绩摘要" in report_path.name or "运营商及香港主要竞对关键业绩摘要" in _source_text(report_path)
     backend = "internal"
     last_error = ""
     try:
@@ -1539,7 +1568,10 @@ def _synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
         used = None
         output_path = audio_path_for_report_ext(report_path, ".wav")
         output_path = audio_path_for_report_ext(report_path, ".mp3")
-        used = _synthesize_with_internal_tts(tts_text, output_path)
+        if performance_report:
+            used = _synthesize_with_internal_tts(tts_text, output_path, chunk_chars=360)
+        else:
+            used = _synthesize_with_internal_tts(tts_text, output_path)
         if not used:
             raise RuntimeError(
                 "公司内网 TTS 不可用，请检查内部模型网关、API Key、Qwen3TTS 和音色配置。"
@@ -1567,7 +1599,9 @@ def _synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
         }
 
     try:
-        timing_payload = _write_internal_asr_subtitle_timings(output_path, summary)
+        timing_payload = _write_internal_asr_subtitle_timings(
+            output_path, summary, require_complete=performance_report,
+        )
     except Exception as exc:
         if output_path.exists():
             output_path.unlink()
