@@ -70,6 +70,10 @@ class _ModelRoundLimit(RuntimeError):
     pass
 
 
+class NewsSelectionQualityBlocked(RuntimeError):
+    """Identical input needs review, not another automatic failed task."""
+
+
 def _selection_model_invoke(model: Any, messages: list[Any]) -> Any:
     session = _MODEL_SESSION.get()
     if session is not None:
@@ -161,6 +165,7 @@ REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
 VALID_STATUSES = {"接受", "不接受"}
 TRAINING_PROVENANCE_VERSION = "verified-human-final-actor-evidence-v6"
 ACCEPTANCE_REVIEW_PROTOCOL = 3
+ZERO_ACCEPTANCE_REVIEW_PROTOCOL = 1
 MACHINE_ACTOR_IDS = {
     "news-auto-screening-bot",
     "feishu-robot",
@@ -353,6 +358,7 @@ def _record_verified_decision_audits(
                 "weekly_confidence": decision["weekly_confidence"],
                 "reason": decision["reason"],
                 "acceptance_review": decision.get("acceptance_review"),
+                "zero_acceptance_review": decision.get("zero_acceptance_review"),
                 "write_verified": True,
                 "writer_identity": "bot",
                 "writer_profile": FEISHU_BOT_PROFILE,
@@ -1013,7 +1019,7 @@ def _validate_model_decision_distribution(
     minimum_fields: int | None = None,
     training_stats: dict[str, Any] | None = None,
 ) -> None:
-    """Fail before writes on collapsed all-reject or implausibly high output."""
+    """Require independent evidence for zero selections; retain the upper gate."""
     threshold = minimum_fields or ALL_REJECT_GATE_MIN_FIELDS
     rejected_fields: list[str] = []
     for field, label in (("app", "APP滚动栏"), ("weekly", "双周报")):
@@ -1022,7 +1028,7 @@ def _validate_model_decision_distribution(
         ]
         if len(eligible) >= threshold and not any(
             item.get(f"{field}_status") == "接受" for item in eligible
-        ):
+        ) and not all(_has_zero_acceptance_evidence(item, field) for item in eligible):
             rejected_fields.append(f"{label}{len(eligible)}条")
     if rejected_fields:
         raise RuntimeError(
@@ -1245,7 +1251,9 @@ def _invoke_langchain(
             request_targets = targets[offset:] + targets[:offset]
             payload, model = _invoke_langchain_transport(examples, request_targets)
             try:
-                if (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None:
+                if (_MODEL_SESSION.get() or {}).get("zero_acceptance_review"):
+                    _normalized_zero_acceptance_review(payload, targets)
+                elif (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None:
                     _normalized_acceptance_review(
                         payload, targets, _MODEL_SESSION.get()["acceptance_review"]
                     )
@@ -1270,6 +1278,7 @@ def _invoke_langchain(
                   "quality_feedback": (_MODEL_SESSION.get() or {}).get("quality_feedback"),
                   "acceptance_review": (_MODEL_SESSION.get() or {}).get("acceptance_review"),
                   "acceptance_review_protocol": ACCEPTANCE_REVIEW_PROTOCOL if (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None else None,
+                  "zero_acceptance_review": (_MODEL_SESSION.get() or {}).get("zero_acceptance_review"),
                   "profile": (_MODEL_SESSION.get() or {}).get("profile"),
                   "preferences": (_MODEL_SESSION.get() or {}).get("preferences", False),
                   "model": public_config.get("model"), "base_url": public_config.get("base_url")},
@@ -1358,6 +1367,19 @@ def _invoke_langchain_transport(
             "请按其偏好分类，human_examples为各状态组合的最近人工例证；不必重复学习或输出偏好。"
         )
     acceptance_review = (session or {}).get("acceptance_review")
+    zero_acceptance_review = (session or {}).get("zero_acceptance_review")
+    evidence_review = acceptance_review is not None or bool(zero_acceptance_review)
+    if zero_acceptance_review:
+        system_prompt += (
+            "现在进行独立的零入选复核：不提供原机器判断或理由，请重新逐条审核待审核字段。"
+            "零入选是允许的结果，但必须有逐条事实依据，不能按数量或比例凑出接受项。"
+            "每个待审核字段无论接受或不接受，都必须输出app_reason/weekly_reason（独立字段理由）"
+            "和app_evidence/weekly_evidence（逐字摘录当前标题或摘要8至220字）。"
+            "不接受须说明该事实为何缺乏相应资讯或管理决策价值，不能只说海外、非核心市场。"
+            "国际对标运营商的具体资费、产品、网络和经营数据可以有明确对标价值；"
+            "如发现原批次遗漏的合格内容，应接受，后续另行做接受证据与重复事件复核。"
+            "非待审核字段保持原值。不得引用候选以外事实。"
+        )
     if acceptance_review is not None:
         system_prompt += (
             "现在执行写入前的独立接受复核，候选包含全部分批初筛拟接受的新闻。"
@@ -1444,13 +1466,13 @@ def _invoke_langchain_transport(
             disable_streaming=True,
             include_response_headers=True,
             max_retries=0,
-            timeout=max(MODEL_REQUEST_TIMEOUT, 240) if acceptance_review is not None else MODEL_REQUEST_TIMEOUT,
+            timeout=max(MODEL_REQUEST_TIMEOUT, 240) if evidence_review else MODEL_REQUEST_TIMEOUT,
             # Some V4-compatible routes currently ignore the documented
             # non-thinking switch. Reserve enough output budget for that hidden
             # reasoning so the final JSON is not truncated away.
             max_tokens=max(
-                DEEPSEEK_V4_MIN_OUTPUT_TOKENS * (2 if acceptance_review is not None else 1) if is_v4 else 1500,
-                min(32000, 300 + (500 if acceptance_review is not None else 180) * len(targets)),
+                DEEPSEEK_V4_MIN_OUTPUT_TOKENS * (2 if evidence_review else 1) if is_v4 else 1500,
+                min(32000, 300 + (500 if evidence_review else 180) * len(targets)),
             ),
         )
         if _HARNESS_RECOVERY.get():
@@ -1625,8 +1647,110 @@ def _normalized_decisions(
         item["reason"] = reason
         if isinstance(raw.get("acceptance_review"), dict):
             item["acceptance_review"] = raw["acceptance_review"]
+        if isinstance(raw.get("zero_acceptance_review"), dict):
+            item["zero_acceptance_review"] = raw["zero_acceptance_review"]
         decisions.append(item)
     return decisions
+
+
+def _has_zero_acceptance_evidence(item: dict[str, Any], field: str) -> bool:
+    review = item.get("zero_acceptance_review") or {}
+    proof = review.get(field) or {}
+    evidence = _simplified(proof.get("evidence"), 220)
+    return bool(
+        review.get("protocol") == ZERO_ACCEPTANCE_REVIEW_PROTOCOL
+        and review.get("model")
+        and proof.get("status") in VALID_STATUSES
+        and _text(proof.get("reason"), 500)
+        and len(evidence) >= 8
+        and any(evidence in _simplified(item.get(key), 1000) for key in ("title", "summary"))
+    )
+
+
+def _normalized_zero_acceptance_review(
+    payload: dict[str, Any], targets: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    decisions = _normalized_decisions(payload, targets)
+    raw_by_id = {item["news_id"]: item for item in payload["decisions"]}
+    for item in decisions:
+        proof: dict[str, Any] = {"protocol": ZERO_ACCEPTANCE_REVIEW_PROTOCOL}
+        raw = raw_by_id[item["news_id"]]
+        for field in ("app", "weekly"):
+            if item.get(f"{field}_before") != "待审核":
+                continue
+            reason = _simplified(raw.get(f"{field}_reason"), 500)
+            evidence = _simplified(raw.get(f"{field}_evidence"), 220)
+            if not reason or len(evidence) < 8 or not any(
+                evidence in _simplified(item.get(key), 1000) for key in ("title", "summary")
+            ):
+                raise ValueError(f"零入选复核缺少独立理由或原文事实 {item['news_id']}/{field}")
+            proof[field] = {"status": item[f"{field}_status"], "reason": reason, "evidence": evidence}
+        item["zero_acceptance_review"] = proof
+    return decisions
+
+
+def _review_zero_acceptances(
+    examples: list[dict[str, Any]], targets: list[dict[str, Any]],
+    payload: dict[str, Any], *, checkpoint: dict[str, Any] | None = None,
+    checkpoint_callback: Any = None,
+) -> dict[str, Any]:
+    initial = _normalized_decisions(payload, targets)
+    fields = []
+    for field in ("app", "weekly"):
+        eligible = [x for x in initial if x.get(f"{field}_before") == "待审核"]
+        if len(eligible) >= ALL_REJECT_GATE_MIN_FIELDS and all(
+            x.get(f"{field}_status") == "不接受" for x in eligible
+        ):
+            fields.append(field)
+    if not fields:
+        return payload
+    # Freeze every other field, including human values. Do not show the
+    # independent reviewer the original machine decisions or reasons.
+    by_id = {x["news_id"]: x for x in initial}
+    review_targets = []
+    for target in targets:
+        item = dict(target)
+        for field in ("app", "weekly"):
+            if field not in fields:
+                item[f"{field}_before"] = by_id[item["news_id"]][f"{field}_status"]
+        if any(item.get(f"{field}_before") == "待审核" for field in fields):
+            review_targets.append(item)
+    session = _MODEL_SESSION.get()
+    if session is None:
+        raise RuntimeError("零入选复核必须运行于持久化筛选会话")
+    prior = {key: session.pop(key, None) for key in ("profile", "quality_feedback", "preferences")}
+    session["preferences"] = True
+    session["zero_acceptance_review"] = ZERO_ACCEPTANCE_REVIEW_PROTOCOL
+    try:
+        key = f"zero-acceptance-review:{ZERO_ACCEPTANCE_REVIEW_PROTOCOL}:" + _model_checkpoint_key(examples, review_targets)
+        cached = (checkpoint or {}).get(key, {})
+        if session.get("request_callback"):
+            session["request_callback"](f"对零入选字段 {'、'.join(fields)} 的 {len(review_targets)} 条候选逐条独立复核；允许零入选，不设配额。")
+        if cached.get("payload"):
+            review_payload, model = cached["payload"], cached["model"]
+        else:
+            review_payload, model = _invoke_langchain(examples, review_targets)
+        reviewed = _normalized_zero_acceptance_review(review_payload, review_targets)
+        if checkpoint is not None and not cached.get("payload"):
+            checkpoint[key] = {"payload": review_payload, "model": model}
+            if checkpoint_callback:
+                checkpoint_callback(1, 1, len(reviewed))
+        for item in reviewed:
+            original = by_id[item["news_id"]]
+            original["zero_acceptance_review"] = {**item["zero_acceptance_review"], "model": model}
+            for field in fields:
+                if original.get(f"{field}_before") == "待审核":
+                    original[f"{field}_status"] = item[f"{field}_status"]
+                    original[f"{field}_confidence"] = item[f"{field}_confidence"]
+            original["reason"] = item["reason"]
+        return {**payload, "decisions": initial, "_zero_acceptance_review_count": len(reviewed)}
+    finally:
+        session.pop("zero_acceptance_review", None)
+        for key, value in prior.items():
+            if value is not None:
+                session[key] = value
+            else:
+                session.pop(key, None)
 
 
 def _normalized_acceptance_review(
@@ -1665,6 +1789,8 @@ def _normalized_acceptance_review(
     for item in decisions:
         news_id = item["news_id"]
         raw, before = raw_by_id[news_id], initial[news_id]
+        # Preserve only the caller's independently validated zero-review proof.
+        item.pop("zero_acceptance_review", None)
         evidence_sources = [_simplified(item.get(key), 1000) for key in ("title", "summary")]
         review: dict[str, Any] = {"protocol": ACCEPTANCE_REVIEW_PROTOCOL,
                                  "event": groups[group_by_id[news_id]]["event"]}
@@ -1767,7 +1893,7 @@ def _review_acceptances(
         reviewed_by_id = {item["news_id"]: item for item in reviewed}
         for item in reviewed:
             item["acceptance_review"]["model"] = reviewer_model
-        return {**payload, "decisions": [reviewed_by_id.get(item["news_id"], item) for item in initial],
+        return {**payload, "decisions": [{**item, **reviewed_by_id.get(item["news_id"], {})} for item in initial],
                 "_acceptance_review_count": len(reviewed)}
     finally:
         session.pop("acceptance_review", None)
@@ -1797,18 +1923,32 @@ def _invoke_langchain_batches(
     token = _MODEL_SESSION.set(session)
     try:
         checkpoint = kwargs.get("checkpoint")
-        quality_key = "quality:" + _model_checkpoint_key(examples, targets)
+        quality_key = (f"quality:zero-v{ZERO_ACCEPTANCE_REVIEW_PROTOCOL}:" if review_acceptances else "quality:") + _model_checkpoint_key(examples, targets)
         review = (checkpoint or {}).get(quality_key, {})
         if review.get("blocked"):
-            raise RuntimeError("新闻初筛质量复核仍未通过；相同输入已暂停模型重试，请人工审核或更新候选/人工基准。")
+            raise NewsSelectionQualityBlocked("新闻初筛质量复核仍未通过；相同输入已暂停模型重试，请人工审核或更新候选/人工基准。")
         session["quality_feedback"] = review.get("feedback")
         for review_round in range(int(review.get("round", 0)), 2):
             payload, model = _invoke_langchain_batches_impl(examples, targets, **kwargs)
+            # Only the validated independent reviewer can mint this evidence.
+            payload = {**payload, "decisions": [
+                {key: value for key, value in item.items() if key != "zero_acceptance_review"}
+                for item in payload["decisions"]
+            ]}
             if review_acceptances:
                 payload = _review_acceptances(
                     examples, targets, payload, checkpoint=checkpoint,
                     checkpoint_callback=kwargs.get("checkpoint_callback"),
                 )
+                payload = _review_zero_acceptances(
+                    examples, targets, payload, checkpoint=checkpoint,
+                    checkpoint_callback=kwargs.get("checkpoint_callback"),
+                )
+                if payload.get("_zero_acceptance_review_count"):
+                    payload = _review_acceptances(
+                        examples, targets, payload, checkpoint=checkpoint,
+                        checkpoint_callback=kwargs.get("checkpoint_callback"),
+                    )
             if training_stats is not None:
                 try:
                     _validate_model_decision_distribution(
@@ -1829,7 +1969,7 @@ def _invoke_langchain_batches(
                         session["request_callback"]("质量检查未通过，隔离原决策；" +
                             ("启动一次独立复核。" if review_round == 0 else "停止自动重判，保留待审核。"))
                     if review_round == 1:
-                        raise
+                        raise NewsSelectionQualityBlocked(str(exc)) from exc
                     continue
             payload["_model_request_count"] = session["calls"]
             return payload, model

@@ -878,7 +878,7 @@ def _remaining_selection_agent_error(
         selection = archive.get("selection_agent")
         if not isinstance(selection, dict):
             continue
-        if str(selection.get("status") or "") not in {"failed", "retry_pending"}:
+        if str(selection.get("status") or "") not in {"failed", "retry_pending", "needs_review"}:
             continue
         completed_at = _crawl_record_time(archive, "completed_at", "scanned_at")
         if completed_at is not None and completed_at < cutoff:
@@ -892,8 +892,13 @@ def _remaining_selection_agent_error(
 def _recover_pending_selection_agents(
     now: datetime,
     state: dict[str, Any],
+    *,
+    only_slot: str = "",
+    force: bool = False,
 ) -> list[dict[str, Any]]:
     """Retry one failed post-crawl selection task without replaying the crawl/card."""
+    if force and not only_slot:
+        raise ValueError("人工重试必须指定原新闻批次")
     recoveries: list[dict[str, Any]] = []
     retry_state = state.setdefault("selection_agent_retries", {})
     if not isinstance(retry_state, dict):
@@ -906,10 +911,15 @@ def _recover_pending_selection_agents(
         if not isinstance(archive, dict) or archive.get("status") != "completed":
             continue
         slot_key = _clean_text(archive.get("slot"), 120)
+        if only_slot and slot_key != only_slot:
+            continue
         selection = archive.get("selection_agent")
         if not slot_key or not isinstance(selection, dict):
             continue
-        if str(selection.get("status") or "") not in {"pending", "failed", "retry_pending"}:
+        allowed_statuses = {"pending", "failed", "retry_pending"}
+        if force:
+            allowed_statuses.add("needs_review")
+        if str(selection.get("status") or "") not in allowed_statuses:
             continue
         completed_at = _crawl_record_time(
             archive,
@@ -932,7 +942,7 @@ def _recover_pending_selection_agents(
         entry = retry_state.get(slot_key)
         entry = dict(entry) if isinstance(entry, dict) else {}
         attempts = int(entry.get("attempts") or 0)
-        if attempts >= SELECTION_RECOVERY_MAX_ATTEMPTS:
+        if not force and attempts >= SELECTION_RECOVERY_MAX_ATTEMPTS:
             entry["status"] = "exhausted"
             retry_state[slot_key] = entry
             state["last_selection_agent_error"] = (
@@ -941,7 +951,7 @@ def _recover_pending_selection_agents(
             continue
         last_attempt_at = _crawl_record_time(entry, "last_attempt_at")
         if (
-            last_attempt_at is not None
+            not force and last_attempt_at is not None
             and now - last_attempt_at
             < timedelta(minutes=SELECTION_RECOVERY_INTERVAL_MINUTES)
         ):
@@ -959,7 +969,7 @@ def _recover_pending_selection_agents(
         _save_state(state)
         try:
             from cmhk.intelligence.news_selection_agent import (
-                run_news_selection_agent,
+                NewsSelectionQualityBlocked, run_news_selection_agent,
             )
 
             parent_crawl_run_id = (
@@ -1069,23 +1079,24 @@ def _recover_pending_selection_agents(
             _append_event({"type": "selection_agent_recovered", **recovery})
         except Exception as exc:
             error = _clean_text(exc, 600)
+            recovery_status = "needs_review" if isinstance(exc, NewsSelectionQualityBlocked) else "retry_pending"
             entry.update(
                 {
-                    "status": "retry_pending",
+                    "status": recovery_status,
                     "error": error,
                     "next_retry_at": _now_iso(
                         now + timedelta(minutes=SELECTION_RECOVERY_INTERVAL_MINUTES)
-                    ),
+                    ) if recovery_status == "retry_pending" else "",
                 }
             )
-            selection["status"] = "retry_pending"
+            selection["status"] = recovery_status
             selection["error"] = error
             selection["readback_verified"] = False
             archive["selection_agent"] = selection
             review["selection_agent"] = selection
             archive["review_sheet"] = review
             archive["selection_agent_recovery"] = {
-                "status": "retry_pending",
+                "status": recovery_status,
                 "attempts": attempts,
                 "last_attempt_at": _now_iso(now),
                 "next_retry_at": entry["next_retry_at"],
@@ -1096,7 +1107,7 @@ def _recover_pending_selection_agents(
             _atomic_write_json(path, archive)
             recovery = {
                 "slot": slot_key,
-                "status": "retry_pending",
+                "status": recovery_status,
                 "attempt": attempts,
                 "error": error,
                 "no_notification_replay": True,
@@ -1140,7 +1151,7 @@ def _recover_pending_review_selection_batches(
             and archive.get("slot") == candidate_key
             and isinstance(archive_selection, dict)
             and str(archive_selection.get("status") or "")
-            in {"failed", "retry_pending"}
+            in {"failed", "retry_pending", "needs_review"}
         ):
             # Scan-owned batches are retried by _recover_pending_selection_agents,
             # which also amends the parent archive and task. Letting this generic
@@ -1190,7 +1201,7 @@ def _recover_pending_review_selection_batches(
         state["last_selection_agent_error"] = error
         return [{"status": "exhausted", "idempotency_key": batch_key, "error": error}]
     try:
-        from cmhk.intelligence.news_selection_agent import run_news_selection_agent
+        from cmhk.intelligence.news_selection_agent import NewsSelectionQualityBlocked, run_news_selection_agent
 
         result = run_news_selection_agent(
             new_items=new_items,
@@ -1213,14 +1224,16 @@ def _recover_pending_review_selection_batches(
         return [recovery]
     except Exception as exc:
         error = _clean_text(exc, 600)
+        blocked = isinstance(exc, NewsSelectionQualityBlocked)
         news_review_sheet.fail_selection_batch(
             batch_key,
             error,
+            exhausted=blocked,
             attempted_at=_now_iso(current),
         )
         state["last_selection_agent_error"] = error
         recovery = {
-            "status": "retry_pending",
+            "status": "needs_review" if blocked else "retry_pending",
             "idempotency_key": batch_key,
             "error": error,
             "no_crawl_replay": True,
@@ -3576,7 +3589,7 @@ def _continue_written_scan(
     )
     try:
         from cmhk.intelligence.news_selection_agent import (
-            run_news_selection_agent,
+            NewsSelectionQualityBlocked, run_news_selection_agent,
         )
 
         selection_agent_result = run_news_selection_agent(
@@ -3615,11 +3628,12 @@ def _continue_written_scan(
             ),
         )
     except Exception as exc:
+        blocked = isinstance(exc, NewsSelectionQualityBlocked)
         selection_agent_result = {
-            "status": "retry_pending",
+            "status": "needs_review" if blocked else "retry_pending",
             "error": _clean_text(exc, 600),
             "readback_verified": False,
-            "recovery": "scheduled_without_resending_scan",
+            "recovery": "manual_review_required" if blocked else "scheduled_without_resending_scan",
         }
         selection_batch_key = _clean_text(
             review_result.get("selection_batch_key"), 120
@@ -3629,6 +3643,7 @@ def _continue_written_scan(
                 news_review_sheet.fail_selection_batch(
                     selection_batch_key,
                     selection_agent_result["error"],
+                    exhausted=blocked,
                 )
             except Exception:
                 logging.exception("选材失败后未能更新通用待选批次")
@@ -3640,7 +3655,8 @@ def _continue_written_scan(
             "选材 Agent 失败",
             (
                 "独立选材任务已在任务日志记为失败；未覆盖既有人工决策，"
-                "主爬虫和群通知不会重跑，后台将仅续写选材结果。"
+                + ("质量复核未通过，已暂停自动重试，等待人工处理。" if blocked else "主爬虫和群通知不会重跑，后台将仅续写选材结果。")
+                +
                 f"原因：{selection_agent_result['error']}"
             ),
         )
