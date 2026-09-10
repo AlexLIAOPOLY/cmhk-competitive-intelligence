@@ -7,6 +7,7 @@ const records = ['ready', 'existing', 'duplicate', 'rejected'].map((state, i) =>
   status: state === 'ready' ? 'verified' : state === 'rejected' ? 'conflict' : 'no_update',
   write_preflight: {status: state, reason: `真实原因${i}<script>alert(1)</script>`, field: 'revenue', value: i, unit: 'millions HKD'}
 }));
+records[2].write_preflight.represented_by = records[0].id;
 const snapshot = {date: '2026-09-10', plan: [{key: 'hong-kong', title: '香港运营商研究 Agent', companies: ['HKT'], purpose: '经营业绩'}],
   run: {run_id: 'research_test', research_policy: 'latest_disclosure_incremental_v1', status: 'partial', accepted: 1, tasks: 4, final_review: {status: 'completed'}, publication: {
     storage_readback: {ok: true, accepted: 1, written: 1, checked_at: 'now', items: [{company: 'HKT', metric: '收入', status: 'written', main_table: {
@@ -18,7 +19,14 @@ const renderer = window.CmhkResearchDiagram;
 const model = renderer.build({nodes: [], edges: []}, snapshot, snapshot.date);
 function detail(key) {return renderer.detail(model.nodes.find(n => n.key === key), snapshot, snapshot.date);}
 const review = detail('research-merge');
-for (const group of ['可入库', '库内已有 · 不提交', '本轮重复 · 不提交', '不可入库']) assert.ok(review.includes(group));
+for (const group of ['可入库', '库内已有 · 不提交', '不可入库']) assert.ok(review.includes(group));
+assert.equal((review.match(/data-research-filter=/g) || []).length, 3);
+assert.ok(!review.includes('data-research-filter="duplicate"'));
+assert.ok(!review.includes('data-research-panel="duplicate"'));
+assert.ok(review.includes('共 3 项指标'));
+assert.ok(review.includes('同指标合并记录'));
+assert.ok(review.includes('可入库 1 项 · 库内已有 1 项 · 不可入库 1 项'));
+assert.ok(!model.nodes.find(n => n.key === 'research-merge').note.includes('本轮重复'));
 assert.ok(review.indexOf('终审入库判断') < review.indexOf('本节点结果'));
 for (let i = 0; i < 4; i++) assert.ok(review.includes(`真实原因${i}`));
 assert.ok(!review.includes('<script>alert'));
@@ -42,4 +50,19 @@ assert.equal(renderer.decisionPage(list, '', 2).visible.length, 3);
 assert.equal(renderer.decisionPage(list, ' HKT ', 9).current, 2);
 assert.equal(renderer.decisionPage(list, 'no match', 2).visible.length, 0);
 assert.equal(renderer.decisionPage(list, 'no match', 2).current, 0);
+const archived = JSON.stringify(records);
+const groups = renderer.finalReviewGroups(records);
+assert.deepEqual(Object.keys(groups), ['ready', 'existing', 'rejected']);
+assert.equal(groups.ready.length, 1);
+assert.equal(groups.ready[0].mergedSubmissions.length, 1);
+assert.equal(groups.existing.length, 1);
+assert.equal(groups.rejected.length, 1);
+assert.equal(JSON.stringify(records), archived, 'Rendering must not rewrite archived outcomes');
+const orphan = renderer.finalReviewGroups([records[2]]);
+assert.equal(orphan.rejected.length, 1);
+assert.ok(orphan.rejected[0].write_preflight.reason.includes('未找到'));
+const pending = renderer.finalReviewGroups([{status:'verified'}]);
+assert.equal(pending.ready.length, 0);
+assert.equal(pending.rejected.length, 1);
+assert.ok(pending.rejected[0].write_preflight.reason.includes('尚未核对'));
 console.log('Decision groups, first-section ordering, formal table/zero readback, dispatch and escaping: PASS');
