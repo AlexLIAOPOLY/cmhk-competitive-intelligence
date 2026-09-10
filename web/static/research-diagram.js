@@ -166,7 +166,10 @@
       "仅把有来源支持的新报告期或新指标写入四库；保留库内同一报告期的数据",
       "审核通过数量不等于主表新增数量，也不等于页面数值变化数量；三者分别记录",
       "输入：本次审核通过字段；输出：四库更新结果与前后变化记录",
-    ], status(run?.publication?.database_updated ? "completed" : run?.publication?.status), { publication: run?.publication });
+    ], status(run?.publication?.database_updated ? "completed" : run?.publication?.status), {
+      publication: run?.publication,
+      note: incremental && run ? updateSummary(run) : "统一写入本地、国际、内地运营商和全球云厂商四库",
+    });
     add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], run?.publication?.insights ?? "—", "项分析", "使用四库最新数据生成分析，更新页面并读取发布结果", [
       "读取更新后的四库数据，生成分库分析和跨库分析",
       "校验分析引用的数据与公司，更新主页数据和公开页面",

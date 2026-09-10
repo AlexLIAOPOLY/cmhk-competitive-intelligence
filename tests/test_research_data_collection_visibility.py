@@ -72,12 +72,12 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}], publication=publication)
         update = next(n for n in result['nodes'] if n['key'] == 'research-update')
         self.assertEqual(update['unit'], '项审核通过')
-        self.assertIn('审核', update['purpose'])
-        self.assertIn('主表实际新增 4 行', update['purpose'])
-        self.assertIn('页面指标数值变化 0 项', update['purpose'])
+        self.assertIn('审核', update['note'])
+        self.assertIn('主表实际新增 4 行', update['note'])
+        self.assertIn('页面指标数值变化 0 项', update['note'])
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=19', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=20', (ROOT / 'web/static/index.html').read_text())
 
 
 if __name__ == '__main__':
