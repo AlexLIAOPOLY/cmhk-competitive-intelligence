@@ -93,10 +93,10 @@ console.log('Decision groups, first-section ordering, formal table/zero readback
 // The matrix uses saved task coverage and the latest confirmed outcome.
 const hkNode = model.nodes.find(n => n.key === 'research-hong-kong');
 const matrix = renderer.matrixModel(hkNode, snapshot, snapshot.date);
-assert.deepEqual(matrix[0].rows[0].cells.map(cell => cell.metric), ['收入', '用户数', '指标0', '指标1', '指标2', '指标3']);
+assert.deepEqual(matrix[0].rows[0].cells.map(cell => cell.metric), ['收入', '用户数', '指标0', '指标1', '指标3']);
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '收入').label, '未取得结果');
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标0').label, '可入库');
-assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标2').label, '可入库·合并');
+assert.ok(!matrix[0].rows[0].cells.some(cell => cell.metric === '指标2'));
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标3').key, 'rejected');
 for (const node of model.nodes.filter(n => n.research && n.key !== "research-publish")) {
   const html = renderer.detail(node, snapshot, snapshot.date);
@@ -107,7 +107,7 @@ const savedSnapshot = JSON.stringify(snapshot);
 snapshot.run.publication.storage_readback.items[0].metric = '指标0';
 let updated = renderer.matrixModel(hkNode, snapshot, snapshot.date)[0].rows[0].cells;
 assert.equal(updated.find(cell => cell.metric === '指标0').label, '已入库');
-assert.equal(updated.find(cell => cell.metric === '指标2').label, '已入库·合并');
+assert.ok(!updated.some(cell => cell.metric === '指标2'));
 snapshot.run.publication.storage_readback.items[0].main_table.status = 'missing';
 updated = renderer.matrixModel(hkNode, snapshot, snapshot.date)[0].rows[0].cells;
 assert.equal(updated.find(cell => cell.metric === '指标0').label, '未入库');
@@ -129,3 +129,9 @@ assert.equal(scopedMatrix[0].rows.length, 1);
 assert.equal(scopedMatrix[0].rows[0].company, 'HKT');
 assert.ok(!JSON.stringify(scopedMatrix).includes('AWS'));
 console.log('Node ownership: child, review representatives, write inputs and publish scope: PASS');
+
+const childDetail = detail('research-hong-kong');
+assert.ok(!childDetail.includes('data-research-filter="duplicate"'));
+assert.ok(!childDetail.includes('本轮重复'));
+assert.ok(childDetail.includes('同指标合并记录'));
+assert.ok(childDetail.includes('共 3 项指标'));

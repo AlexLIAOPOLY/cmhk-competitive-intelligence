@@ -98,9 +98,8 @@
   const storageComplete = (check) => check?.ok === true && Number(check.accepted) === writtenCount(check);
   const itemLabel = (value) => terms[value] || "执行失败";
   const resultCounts = (reports) => {
-    const items = (reports || []).flatMap((report) => report.items || []);
-    const duplicates = items.filter((item) => item.write_preflight?.status === "duplicate").length;
-    return `库内已有 ${items.filter((item) => item.status === "no_update").length - duplicates} 项${duplicates ? ` · 本轮重复 ${duplicates} 项` : ""} · 研究通过 ${items.filter((item) => item.status === "verified").length} 项 · 执行失败 ${items.filter((item) => !["verified", "no_update"].includes(item.status)).length} 项`;
+    const items = mergeSubmissions((reports || []).flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company }))));
+    return `库内已有 ${items.filter((item) => item.status === "no_update").length} 项 · 研究通过 ${items.filter((item) => item.status === "verified").length} 项 · 执行失败 ${items.filter((item) => !["verified", "no_update"].includes(item.status)).length} 项`;
   };
   const researchHealth = (actual, run) => {
     const execution = actual?.status || (run?.status === "running" ? "running" : undefined);
@@ -226,17 +225,25 @@
     ], groups: [] };
   }
   const domainNames = { local: "本地运营商", international: "国际运营商", mainland: "内地运营商", cloud: "全球云厂商", cross: "跨库研判" };
-  function finalReviewGroups(items) {
+  function mergeSubmissions(items) {
     // Alias submissions belong to their representative's evidence, not a fourth outcome.
     // Keep archived records immutable and fail closed if their representative is absent.
     const primary = items.filter((item) => item.write_preflight?.status !== "duplicate")
       .map((item) => ({ ...item, mergedSubmissions: [] }));
     const byId = new Map(primary.filter((item) => item.id).map((item) => [item.id, item]));
     items.filter((item) => item.write_preflight?.status === "duplicate").forEach((item) => {
-      const representative = byId.get(item.write_preflight.represented_by);
+      const target = item.write_preflight;
+      const matches = primary.filter((row) => row.company === item.company && target.path && target.field && target.period
+        && row.write_preflight?.path === target.path && row.write_preflight?.field === target.field
+        && row.write_preflight?.period === target.period);
+      const representative = byId.get(target.represented_by) || (matches.length === 1 ? matches[0] : null);
       if (representative && representative.company === item.company) representative.mergedSubmissions.push(item);
       else primary.push({ ...item, write_preflight: { ...item.write_preflight, status: "rejected", reason: "未找到该指标对应的主记录，无法确认合并关系；需补齐后重新审核，不能独立入库" } });
     });
+    return primary;
+  }
+  function finalReviewGroups(items) {
+    const primary = mergeSubmissions(items);
     const groups = { ready: [], existing: [], rejected: [] };
     primary.forEach((item) => {
       const state = item.write_preflight?.status;
@@ -264,6 +271,8 @@
     const scopedAgents = (data.agents || []).filter((agent) => scoped.some((task) => task.key === agent.key));
     const allReports = scopedAgents.flatMap((agent) => agent.reports || []);
     const rawItems = allReports.flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company })));
+    const mergedRawItems = mergeSubmissions(rawItems);
+    const mergedAliasKeys = new Set(mergedRawItems.flatMap((item) => (item.mergedSubmissions || []).map((alias) => JSON.stringify([alias.company, alias.metric]))));
     const finalItems = data.result_items || [];
     // Each downstream node owns its actual input set, not the complete research plan.
     const scopeItems = node.key === "research-update" ? (data.accepted_items ?? run?.publication?.storage_readback?.items ?? [])
@@ -311,7 +320,7 @@
         const reports = allReports.filter((report) => report.company === company);
         const companyItems = scopeItems?.filter((item) => item.company === company);
         const metrics = [...new Set((companyItems ? companyItems.map((item) => item.metric)
-          : reports.flatMap((report) => [...(report.metrics || []), ...(report.items || []).map((item) => item.metric)])).filter(Boolean))];
+          : reports.flatMap((report) => [...(report.metrics || []), ...(report.items || []).map((item) => item.metric)])).filter((metric) => metric && !mergedAliasKeys.has(JSON.stringify([company, metric]))))];
         // Archived contracts win; never infer old tasks from today's metric catalog.
         return { company, cells: metrics.map((metric) => {
           const key = identity({ company, metric });
@@ -435,21 +444,21 @@
       const report = reports.find((r) => r.company === i.company && r.metric === i.metric) || {};
       return { ...report, ...i, value: i.value === "" ? report.value : i.value };
     }) : reports;
-    const groups = final ? finalReviewGroups(items) : { ready: [], existing: [], duplicate: [], rejected: [], pending: [] };
-    if (!final) items.forEach((item) => {
+    const groups = final ? finalReviewGroups(items) : { ready: [], existing: [], rejected: [], pending: [] };
+    if (!final) mergeSubmissions(items).forEach((item) => {
       const state = item.write_preflight?.status || ((item.research_status || item.status) === "no_update" ? "existing" : (item.research_status || item.status) === "verified" || item.decision === "accepted" ? (final ? "pending" : "ready") : "rejected");
       (groups[state] || groups.rejected).push(item);
     });
-    const labels = { ready: final ? "可入库" : "研究通过", existing: "库内已有 · 不提交", duplicate: "本轮重复 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
-    const descriptions = { ready: final ? "字段、期间、单位与证据已核对；实际写入结果见四库更新节点。" : "展示本Agent提交的具体指标；最终判断及写入结果分别在下游节点查看。", existing: "已在Agent阶段识别，无需重复提交四库更新。", duplicate: "同一公司、指标及期间只提交一次。", rejected: "逐项说明未通过的原因；这些记录不进入写入批次。", pending: "已取得候选数据，但尚无正式表入库检查结果。" };
+    const labels = { ready: final ? "可入库" : "研究通过", existing: "库内已有 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
+    const descriptions = { ready: final ? "字段、期间、单位与证据已核对；实际写入结果见四库更新节点。" : "展示本Agent提交的具体指标；最终判断及写入结果分别在下游节点查看。", existing: "已在Agent阶段识别，无需重复提交四库更新。", rejected: "逐项说明未通过的原因；这些记录不进入写入批次。", pending: "已取得候选数据，但尚无正式表入库检查结果。" };
     const categories = Object.entries(groups).filter(([key]) => key !== "pending" || groups.pending.length);
-    const shortLabels = { ...labels, existing: "库内已有", duplicate: "本轮重复" };
+    const shortLabels = { ...labels, existing: "库内已有" };
     const displayCount = categories.reduce((count, [, rows]) => count + rows.length, 0);
     const filterItems = categories.flatMap(([, rows]) => rows);
     const filterOptions = (field) => [...new Set(filterItems.map((item) => String(item[field] ?? "")).filter(Boolean))]
       .sort((a, b) => a.localeCompare(b, "zh-Hans-CN", { numeric: true }))
       .map((value) => `<option value="${esc(value)}">${esc(value)}</option>`).join("");
-    return `<section class="news-lineage-dialog-section research-decisions" data-research-view="${esc(`${date}/${node.key}`)}"><header><h3>${final ? "终审入库判断" : "本Agent指标与判断"}</h3><span>共 ${displayCount} 项${final ? "指标 · 同指标提交已合并" : " · 按判断分类"}</span></header>
+    return `<section class="news-lineage-dialog-section research-decisions" data-research-view="${esc(`${date}/${node.key}`)}"><header><h3>${final ? "终审入库判断" : "本Agent指标与判断"}</h3><span>共 ${displayCount} 项指标 · 同指标提交已合并</span></header>
       <div class="research-decision-controls"><div class="research-decision-toolbar"><div class="research-decision-switcher" role="group" aria-label="按入库判断筛选">${categories.map(([key, rows], index) => `<button type="button" data-research-filter="${key}" aria-pressed="${index === 0}" title="${labels[key]}"><span>${shortLabels[key]}</span><b>${rows.length}</b></button>`).join("")}</div><div class="research-decision-filters" role="group" aria-label="筛选指标"><label><span>公司/对象</span><select data-custom-select="native" data-research-company aria-label="筛选公司或对象"><option value="">全部公司/对象</option>${filterOptions("company")}</select></label><label><span>指标</span><select data-custom-select="native" data-research-metric aria-label="筛选指标"><option value="">全部指标</option>${filterOptions("metric")}</select></label><button type="button" data-research-clear disabled>清除</button></div></div><div class="research-decision-meta"><p data-research-description>${descriptions.ready}</p><div class="research-decision-pagination"><span data-research-page-status role="status" aria-live="polite"></span><button type="button" data-research-page="-1" aria-label="上一页指标">上一页</button><button type="button" data-research-page="1" aria-label="下一页指标">下一页</button></div></div></div>
       ${categories.map(([key, rows], index) => `<section class="research-decision-panel is-${key}" data-research-panel="${key}" data-description="${esc(descriptions[key])}" aria-label="${labels[key]}指标明细"${index ? " hidden" : ""}><table class="research-decision-table"><thead><tr><th scope="col">公司／具体指标</th><th scope="col">数值／报告期</th><th scope="col">判断原因与依据</th></tr></thead><tbody>${rows.map((raw) => {
       const old = raw.latest_baseline;
