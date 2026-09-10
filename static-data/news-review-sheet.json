@@ -25,17 +25,17 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-09-11T05:32:56+08:00",
+  "updatedAt": "2026-09-11T05:39:11+08:00",
   "rows": [
     {
       "rowNumber": 2,
       "originalRowNumber": 2,
       "recordId": "NEWS-F9F1765A3E8291",
       "values": [
-        "",
-        "待审核",
-        "待审核",
-        "未同步",
+        "新闻自动初筛机器人",
+        "接受",
+        "不接受",
+        "已纳入",
         "2026-09-11",
         "香港本地",
         "竞对动态",
@@ -52,12 +52,35 @@
       "sourceSheetId": "BYK3u",
       "readOnly": false,
       "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-09-11T05:34:17+08:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-09-11T05:34:17+08:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-09-11T05:34:17+08:00"
+        }
+      },
       "screening": {
-        "kind": "pending",
-        "label": "待筛选",
+        "kind": "machine",
+        "label": "机器筛选",
         "fields": {
-          "纳入滚动栏": "pending",
-          "纳入周报": "pending"
+          "纳入滚动栏": "machine",
+          "纳入周报": "machine"
         }
       }
     },

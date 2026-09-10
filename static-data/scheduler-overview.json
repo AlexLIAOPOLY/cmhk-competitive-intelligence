@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-11T05:33:00+08:00",
+  "checked_at_hkt": "2026-09-11T05:39:16+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -47,18 +47,16 @@
     ],
     "next_scan_at": "2026-09-11T14:00:00+08:00",
     "next_group_check_at": "2026-09-11T06:00:00+08:00",
-    "last_scan_at": "2026-09-11T03:00:09+08:00",
-    "last_group_check_at": "2026-09-11T03:00:09+08:00",
-    "last_cycle_at": "2026-09-11T03:00:09+08:00",
+    "last_scan_at": "2026-09-11T05:23:38+08:00",
+    "last_group_check_at": "2026-09-11T05:33:51+08:00",
+    "last_cycle_at": "2026-09-11T05:36:21+08:00",
     "latest_scan_slot": {
       "slot": "2026-09-11@03:00",
       "status": "completed",
-      "at": "2026-09-11T03:00:09+08:00",
+      "at": "2026-09-11T05:23:38+08:00",
       "candidate_count": 179,
       "message_id": "om_x100b6505b32ff4a0b32bc088823acc0",
-      "auto_recovered_after_disconnect": false,
-      "deferred_by_prior_slot": false,
-      "interrupted_attempts": 0
+      "recovered_from_archive": true
     },
     "last_candidate_count": 179,
     "feishu_identity": "bot",

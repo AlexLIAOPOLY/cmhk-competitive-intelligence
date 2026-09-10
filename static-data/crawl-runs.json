@@ -2,6 +2,82 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260911_053351_960296",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-11@review-03a9e199b12e3211）",
+      "task_kind": "news-selection-agent",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 1 条，验证 2 格，本次新写 2 格，已有 0 格；逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 1 条，验证 2 格，本次新写 2 格，已有 0 格；逐格回读通过。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-11T05:34:18+08:00",
+      "started_at_hkt": "2026-09-11T05:33:51+08:00",
+      "completed_at_hkt": "2026-09-11T05:34:18+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 26745,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "status": "completed",
+        "candidate_count": 1,
+        "changed_count": 2,
+        "newly_written_count": 2,
+        "already_applied_count": 0,
+        "verified_field_count": 2,
+        "app_accepted_count": 1,
+        "weekly_accepted_count": 0,
+        "deferred_field_count": 0,
+        "superseded_field_count": 0,
+        "training_provenance_version": "verified-human-final-actor-evidence-v6",
+        "training_stats": {
+          "training_provenance_version": "verified-human-final-actor-evidence-v6",
+          "human_example_count": 106,
+          "verified_human_row_count_before_limit": 106,
+          "verified_human_field_count": 166,
+          "human_correction_field_count": 152,
+          "machine_history_excluded_field_count": 3475,
+          "unknown_history_excluded_field_count": 584,
+          "stale_history_excluded_field_count": 111,
+          "source_app_accept_count": 11,
+          "source_app_reject_count": 85,
+          "source_weekly_accept_count": 9,
+          "source_weekly_reject_count": 61,
+          "app_accept_count": 11,
+          "app_reject_count": 24,
+          "weekly_accept_count": 9,
+          "weekly_reject_count": 24,
+          "balanced_human_example_count": 68
+        },
+        "human_example_count": 106,
+        "balanced_human_example_count": 68,
+        "human_correction_count": 152,
+        "model": "deepseek-v4-free",
+        "decision_models": [
+          "deepseek-v4-free"
+        ],
+        "decision_source_counts": {
+          "deepseek-v4-free": 1
+        },
+        "mixed_decision_sources": false,
+        "skill_path": "agent_knowledge/news_selection_agent/SKILL.md",
+        "audit_path": "agent_knowledge/news_selection_agent/decisions.jsonl",
+        "readback_verified": true,
+        "operation_audit_count": 2,
+        "decision_audit_count": 1,
+        "resumed_from_plan": false,
+        "recovered_decision_count": 0,
+        "published_count": 71,
+        "published_provenance_refreshed": true,
+        "writer_identity": "bot",
+        "writer_profile": "cli_a9575e70ae799cb2",
+        "skill_migrated": false,
+        "task_run_id": "20260911_053351_960296",
+        "model_request_count": 6,
+        "model_request_limit": 0
+      }
+    },
+    {
       "crawl_run_id": "20260911_052900_968052",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-09-11@03:00）",
@@ -304919,50 +304995,6 @@
       "crawl_return_code": 0,
       "final_audit": {},
       "curation": {}
-    },
-    {
-      "crawl_run_id": "20260710_111342",
-      "trigger": "手动全量",
-      "scope": "全量（第2-34行）",
-      "run_status": "completed",
-      "started_at_hkt": "2026-07-10T11:13:42+08:00",
-      "completed_at_hkt": "2026-07-10T11:28:46+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 1029047,
-      "final_audit": {
-        "generated_at": "2026-07-10T11:13:50.361834",
-        "rows_crawled": "33",
-        "ok_rows": "22",
-        "partial_rows": "11",
-        "failed_rows": "0",
-        "fulfilled": "33/33 (100.0%)",
-        "live_url_success": "120/122 (98.4%)",
-        "live_url_failures": "2",
-        "restored_from_previous_evidence": "0"
-      },
-      "curation": {
-        "agent_run_id": "20260710_111401_7e020f57",
-        "started_at": "2026-07-10T11:14:01+08:00",
-        "completed_at": "2026-07-10T11:28:33+08:00",
-        "tasks": 167,
-        "accepted": 160,
-        "rejected": 1,
-        "review": 6,
-        "gaps": 7,
-        "recrawl_rows": [
-          30
-        ],
-        "search_verification": {
-          "checked": 167,
-          "corrected": 2,
-          "review": 6,
-          "conflicts": 41,
-          "workers": 4,
-          "online_search": true,
-          "online_checked": 167,
-          "online_votes": 134
-        }
-      }
     }
   ],
   "total": 500,
