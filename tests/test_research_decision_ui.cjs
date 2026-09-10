@@ -98,7 +98,7 @@ assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '收入').labe
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标0').label, '可入库');
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标2').label, '可入库·合并');
 assert.equal(matrix[0].rows[0].cells.find(cell => cell.metric === '指标3').key, 'rejected');
-for (const node of model.nodes.filter(n => n.research)) {
+for (const node of model.nodes.filter(n => n.research && n.key !== "research-publish")) {
   const html = renderer.detail(node, snapshot, snapshot.date);
   assert.ok(html.includes('公司 × 指标检索矩阵'), node.key);
   assert.ok(html.indexOf('公司 × 指标检索矩阵') < html.indexOf('本节点结果'), node.key);
@@ -114,3 +114,18 @@ assert.equal(updated.find(cell => cell.metric === '指标0').label, '未入库')
 Object.assign(snapshot, JSON.parse(savedSnapshot));
 assert.equal(renderer.matrixModel(hkNode, snapshot, '2026-09-01').length, 0);
 console.log('Company/metric matrix, missing results, merged aliases, write readback and date scope: PASS');
+
+assert.ok(!detail('research-publish').includes('公司 × 指标检索矩阵'));
+assert.equal(renderer.matrixModel(model.nodes.find(n => n.key === 'research-update'), {...snapshot, accepted_items: []}, snapshot.date).length, 0);
+const finalMatrix = renderer.matrixModel(model.nodes.find(n => n.key === 'research-merge'), snapshot, snapshot.date);
+assert.equal(finalMatrix[0].rows[0].cells.length, 3, 'Final review only owns representative metrics');
+assert.ok(!finalMatrix[0].rows[0].cells.some(cell => cell.metric === '指标2'));
+const expanded = JSON.parse(JSON.stringify(snapshot));
+expanded.plan.push({key: 'cloud', title: '全球云厂商研究 Agent', companies: ['AWS']});
+expanded.agents.push({key: 'cloud', reports: [{company: 'AWS', metrics: ['云收入'], items: [{metric: '云收入', status: 'missing'}]}]});
+const scopedMatrix = renderer.matrixModel(hkNode, expanded, expanded.date);
+assert.equal(scopedMatrix.length, 1);
+assert.equal(scopedMatrix[0].rows.length, 1);
+assert.equal(scopedMatrix[0].rows[0].company, 'HKT');
+assert.ok(!JSON.stringify(scopedMatrix).includes('AWS'));
+console.log('Node ownership: child, review representatives, write inputs and publish scope: PASS');

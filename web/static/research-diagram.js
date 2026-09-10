@@ -257,9 +257,17 @@
   function matrixModel(node, snapshot, date) {
     const data = snapshot?.date === date ? snapshot : {};
     const run = data.run;
-    const allReports = (data.agents || []).flatMap((agent) => agent.reports || []);
+    if (node.key === "research-publish") return [];
+    const plan = run?.plan || data.plan || [];
+    const assignedTask = plan.find((task) => task.key === (node.assignment?.key || node.key.replace(/^research-/, "")));
+    const scoped = assignedTask ? [assignedTask] : ["research-dispatch", "research-merge", "research-update"].includes(node.key) ? plan : [];
+    const scopedAgents = (data.agents || []).filter((agent) => scoped.some((task) => task.key === agent.key));
+    const allReports = scopedAgents.flatMap((agent) => agent.reports || []);
     const rawItems = allReports.flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company })));
     const finalItems = data.result_items || [];
+    // Each downstream node owns its actual input set, not the complete research plan.
+    const scopeItems = node.key === "research-update" ? (data.accepted_items ?? run?.publication?.storage_readback?.items ?? [])
+      : node.key === "research-merge" ? Object.values(finalReviewGroups(data.result_items ?? rawItems)).flat() : null;
     const receipts = run?.publication?.storage_readback?.items || [];
     const identity = (item) => JSON.stringify([item.company, item.metric]);
     const index = (items) => {
@@ -296,20 +304,20 @@
       if (researchState === "verified" || item.decision === "accepted") return { key: "ready", label: "研究通过" };
       return { key: "rejected", label: "不可入库" };
     };
-    const plan = data.plan || run?.plan || [];
-    const scoped = node.assignment?.key && node.key !== "research-merge"
-      ? plan.filter((task) => task.key === node.assignment.key) : plan;
     return scoped.map((task) => {
-      const companies = [...new Set([...(task.companies || []), ...(data.agents || []).filter((agent) => agent.key === task.key).flatMap((agent) => (agent.reports || []).map((report) => report.company))])];
+      const companies = [...new Set([...(task.companies || []), ...scopedAgents.filter((agent) => agent.key === task.key).flatMap((agent) => (agent.reports || []).map((report) => report.company))])]
+        .filter((company) => scopeItems === null || scopeItems.some((item) => item.company === company));
       const rows = companies.map((company) => {
         const reports = allReports.filter((report) => report.company === company);
-        const metrics = [...new Set(reports.flatMap((report) => [...(report.metrics || []), ...(report.items || []).map((item) => item.metric)]).filter(Boolean))];
+        const companyItems = scopeItems?.filter((item) => item.company === company);
+        const metrics = [...new Set((companyItems ? companyItems.map((item) => item.metric)
+          : reports.flatMap((report) => [...(report.metrics || []), ...(report.items || []).map((item) => item.metric)])).filter(Boolean))];
         // Archived contracts win; never infer old tasks from today's metric catalog.
         return { company, cells: metrics.map((metric) => {
           const key = identity({ company, metric });
           const raw = rawIndex.get(key) || [];
           const final = finalIndex.get(key) || [];
-          const items = final.length ? final : raw;
+          const items = companyItems ? companyItems.filter((item) => item.metric === metric) : final.length ? final : raw;
           const outcomes = items.length ? items.map(outcome) : [outcome(null)];
           const result = outcomes.every((current) => current.key === outcomes[0].key && current.label === outcomes[0].label)
             ? outcomes[0] : { key: "mixed", label: "结果不一" };
@@ -319,17 +327,20 @@
         }) };
       });
       return { key: task.key, title: childTitle(task.title), rows, metrics: [...new Set(rows.flatMap((row) => row.cells.map((cell) => cell.metric)))] };
-    });
+    }).filter((group) => group.rows.length);
   }
   function researchMatrix(node, snapshot, date) {
+    if (node.key === "research-publish") return "";
     const groups = matrixModel(node, snapshot, date);
-    const count = groups.reduce((total, group) => total + group.rows.reduce((sum, row) => sum + row.cells.length, 0), 0);
-    const companyCount = groups.reduce((total, group) => total + group.rows.length, 0);
-    return `<section class="news-lineage-dialog-section research-matrix"><header><h3>公司 × 指标检索矩阵</h3><span>${companyCount} 家公司 · ${count} 项已明确指标</span></header>
-      <p class="research-matrix-note">按本轮保存的任务列出应检索指标，颜色表示目前最后确认的结果。点击格子跳到对应明细；研究通过、可入库与已入库分别标示。</p>
+    const groupCount = (group) => `${group?.rows.length || 0} 家公司 · ${group?.rows.reduce((sum, row) => sum + row.cells.length, 0) || 0} 项指标`;
+    const scopeNote = node.key === "research-update" ? "仅列本节点收到的本次写入项目。"
+      : node.key === "research-merge" ? "仅列本节点审核的主指标，合并提交保留在主指标依据中。"
+      : node.key === "research-dispatch" ? "仅列本节点派发给当前研究组的公司和指标。" : "仅列本研究节点负责的公司和指标。";
+    return `<section class="news-lineage-dialog-section research-matrix"><header><h3>公司 × 指标检索矩阵</h3><span data-matrix-count>${groupCount(groups[0])}</span></header>
+      <p class="research-matrix-note">${scopeNote}表格和数量均对应当前组；点击格子跳到该项明细。颜色表示最后确认的结果。</p>
       <div class="research-matrix-legend" aria-label="矩阵结果图例">${[["written", "已入库"], ["ready", "研究通过 / 可入库"], ["existing", "库内已有"], ["rejected", "不可入库 / 未入库"], ["pending", "待检索 / 待核对 / 未取得结果"], ["na", "不适用"]].map(([key, label]) => `<span class="is-${key}"><i aria-hidden="true"></i>${label}</span>`).join("")}</div>
       ${groups.length > 1 ? `<div class="research-matrix-groups" role="group" aria-label="选择研究组">${groups.map((group, index) => `<button type="button" data-matrix-group="${esc(group.key)}" aria-pressed="${index === 0}">${esc(group.title.replace(/研究子 Agent$/, ""))}</button>`).join("")}</div>` : ""}
-      ${groups.map((group, index) => `<section data-matrix-panel="${esc(group.key)}" aria-label="${esc(group.title)}检索矩阵"${index ? " hidden" : ""}><div class="research-matrix-scroll" role="region" aria-label="公司指标矩阵，可横向滚动" tabindex="0"><table><thead><tr><th scope="col">公司 / 对象</th>${group.metrics.map((metric) => `<th scope="col">${esc(metric)}</th>`).join("") || '<th scope="col">检索指标</th>'}</tr></thead><tbody>${group.rows.map((row) => `<tr><th scope="row">${esc(row.company)}</th>${!row.cells.length ? `<td colspan="${group.metrics.length || 1}" class="research-matrix-unassigned">本轮尚未保存该公司的指标清单</td>` : group.metrics.map((metric) => {
+      ${groups.map((group, index) => `<section data-matrix-panel="${esc(group.key)}" data-matrix-count="${groupCount(group)}" aria-label="${esc(group.title)}检索矩阵"${index ? " hidden" : ""}><div class="research-matrix-scroll" role="region" aria-label="公司指标矩阵，可横向滚动" tabindex="0"><table><thead><tr><th scope="col">公司 / 对象</th>${group.metrics.map((metric) => `<th scope="col">${esc(metric)}</th>`).join("") || '<th scope="col">检索指标</th>'}</tr></thead><tbody>${group.rows.map((row) => `<tr><th scope="row">${esc(row.company)}</th>${!row.cells.length ? `<td colspan="${group.metrics.length || 1}" class="research-matrix-unassigned">本轮尚未保存该公司的指标清单</td>` : group.metrics.map((metric) => {
         const cell = row.cells.find((item) => item.metric === metric);
         if (!cell) return '<td class="research-matrix-outside" aria-label="不在该公司的检索清单">—</td>';
         const details = cell.items.length ? cell.items.map((item) => {
@@ -338,7 +349,7 @@
           return `<p>${esc(metricValue(item))} · ${esc(item.period || "报告期未取得")}</p><p>${esc(businessReason(reason))}</p><p>${(item.sources || raw.sources || [item.source_url || raw.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>") || "尚未取得可用来源"}</p>`;
         }).join("") : '<p>该指标在本轮检索清单内，尚未保存处理结果；不能视为库内已有或已完成。</p>';
         return `<td><button type="button" class="research-matrix-cell is-${cell.key}" data-matrix-company="${esc(cell.company)}" data-matrix-metric="${esc(cell.metric)}" data-matrix-target-metric="${esc(cell.targetMetric)}" aria-label="${esc(`${cell.company} · ${cell.metric} · ${cell.label}，点击查看明细`)}" title="${esc(`${cell.company} · ${cell.metric}：${cell.label}`)}">${esc(cell.label)}</button><template><h4>${esc(cell.company)} · ${esc(cell.metric)} <span>${esc(cell.label)}</span></h4>${details}${cell.receipts.map((receipt) => `<p>正式表回读：${esc(receipt.main_table?.reason || receipt.reason || "未保存回读说明")} · 当前值 ${esc(receipt.main_table?.current_value ?? "未确认")}</p>`).join("")}</template></td>`;
-      }).join("")}</tr>`).join("")}</tbody></table></div></section>`).join("") || '<p class="research-matrix-note">所选日期尚无可读取的公司与指标清单。</p>'}
+      }).join("")}</tr>`).join("")}</tbody></table></div></section>`).join("") || '<p class="research-matrix-note">本节点尚无对应的公司与指标项目。</p>'}
       <p class="research-matrix-note">“—”表示不在该公司的检索清单；标有“合并”的提交可跳到主指标依据。较宽的矩阵可左右滚动。</p>
     </section><section class="news-lineage-dialog-section research-matrix-selection" data-matrix-selection tabindex="-1" hidden></section>`;
   }
@@ -349,7 +360,10 @@
     const selection = root.querySelector("[data-matrix-selection]");
     matrix.querySelectorAll("[data-matrix-group]").forEach((button) => button.addEventListener("click", () => {
       matrix.querySelectorAll("[data-matrix-group]").forEach((tab) => tab.setAttribute("aria-pressed", String(tab === button)));
-      matrix.querySelectorAll("[data-matrix-panel]").forEach((panel) => { panel.hidden = panel.dataset.matrixPanel !== button.dataset.matrixGroup; });
+      matrix.querySelectorAll("[data-matrix-panel]").forEach((panel) => {
+        panel.hidden = panel.dataset.matrixPanel !== button.dataset.matrixGroup;
+        if (!panel.hidden) matrix.querySelector("header [data-matrix-count]").textContent = panel.dataset.matrixCount;
+      });
     }));
     const jump = (target) => {
       target.tabIndex = -1;
