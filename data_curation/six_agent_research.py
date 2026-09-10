@@ -198,6 +198,7 @@ def disclosure_recency(row: dict, year: int) -> int:
 
 def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: dict | None = None) -> tuple[dict, list[dict]]:
     from . import workflow as w
+    from .research_freshness import metric_key
     started = time.monotonic()
     profile = w._company_research_profile(company)
     year = datetime.now(HKT).year
@@ -206,10 +207,17 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
                       "Alibaba Cloud": "Alibaba", "Tencent Cloud": "Tencent", "Oracle Cloud": "Oracle"}.get(company, company)
     # Find the latest disclosure first. Old stored values never enter a search query.
     queries = [("最新披露", f'"{search_subject}" {year} latest financial results earnings')]
-    # Anchor discovery to governed investor sources, avoiding product/help pages.
+    # Financial metrics use investor sources; product/service metrics need
+    # their own queries and cannot be squeezed out by newer financial PDFs.
     queries += [("官方最新业绩", f'site:{host} {search_subject} {year} financial results earnings')
                 for host in profile["official_hosts"][:2]]
-    queries += [(metric, f'"{search_subject}" {year} {" ".join(w._metric_evidence_terms(metric)[:2]) or metric} results') for metric in metrics]
+    product_metrics = {metric for metric in metrics if re.search(r"套餐|资费|合约|规格|专线|增值|漫游|促销", metric)}
+    for metric in metrics:
+        terms = w._metric_evidence_terms(metric)
+        english = next((term for term in terms if re.search(r"[a-z]", term)), "")
+        terms = list(dict.fromkeys([metric_key(metric), english]))
+        qualifiers = "" if metric in product_metrics else f"{year}"
+        queries.append((metric, f'"{search_subject}" {qualifiers} {" ".join(filter(None, terms))}'.strip()))
     def search(entry):
         metric, query = entry
         started = time.monotonic()
@@ -248,6 +256,12 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
         return (not irrelevant, disclosure_recency(row, year), financial)
     # Reserve room for official IR entries and the reports linked from them.
     initial = sorted(ranked.values(), key=recency, reverse=True)[:8]
+    for record in searches:
+        if record["metric"] not in metrics:
+            continue
+        candidates = [row for row in record["results"] if str(row.get("url") or "") in ranked]
+        if candidates:
+            initial.append(candidates[0])
     initial += [{"url": url, "title": "官方最新公告入口"} for url in profile["seed_urls"][:4]]
     pages, discovered = {}, {}
     def read(row):
@@ -288,7 +302,8 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
     return pages, searches
 
 
-NO_METRIC_EVIDENCE = "本轮读取的披露中未找到该指标的新数据；不代表库内缺失或已有值错误，保留原库。"
+NO_METRIC_EVIDENCE = "本轮原文预筛选未命中该指标用语，尚未完成语义核对；不代表没有公开资料，保留原库。"
+LEGACY_NO_METRIC_EVIDENCE = "本轮读取的披露中未找到该指标的新数据；不代表库内缺失或已有值错误，保留原库。"
 
 
 def page_mentions_metric(metric: str, pages: dict) -> bool:
@@ -315,7 +330,7 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     reports = list((checkpoint or {}).get("reports") or [])
     for report in reports:
         retry = [item for item in report.get("items", [])
-                 if item.get("status") == "missing" and item.get("reason") == NO_METRIC_EVIDENCE
+                 if item.get("status") == "missing" and item.get("reason") in {NO_METRIC_EVIDENCE, LEGACY_NO_METRIC_EVIDENCE}
                  and page_mentions_metric(item["metric"], report.get("pages", {}))]
         if retry:
             report["items"] = [item for item in report["items"] if item not in retry]
@@ -384,11 +399,13 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
 
 def merge_results(results: list[dict], run_id: str) -> list[dict]:
     from crawl import ALL_COMPANY_CURRENT_RESULT_TARGETS
+    from .research_source_audit import attach_source_audit
     facts = []
     seen = set()
     for agent in results:
         for report in agent["reports"]:
             for item in report["items"]:
+                item = attach_source_audit(item, report)
                 if item.get("status") == "verified":
                     checked = validate_fact(item, report["company"], report["metrics"], report.get("pages", {}))
                     item.update(checked)
@@ -405,7 +422,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "company": item["company"], "metric": item["metric"],
                     "value": rendered_value if accepted else "",
                     "period": item.get("period", ""), "unit": item.get("unit", ""),
-                    "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", ""), item.get("period_quote", "")])), "status": "ok" if accepted else "unavailable",
+                    "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", ""), item.get("period_quote", "")])) or item.get("basis", ""), "status": "ok" if accepted else "unavailable",
                     "decision": "accepted" if accepted else "unchanged" if item["status"] == "no_update" and report.get("incremental") else "review", "row_ref": f"row_{row}",
                     "sources": [item["source_url"]] if item.get("source_url") else [],
                     "source_tier": "official" if accepted else "unknown", "source_score": 1.0 if accepted else 0,
@@ -415,6 +432,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "entity_basis": item.get("entity_quote", ""),
                     "research_agent_id": agent["key"], "research_status": item["status"],
                     "freshness": item.get("freshness", ""), "baseline": item.get("baseline", []),
+                    "source_diagnostics": item.get("source_diagnostics", {}),
                 })
     return facts
 

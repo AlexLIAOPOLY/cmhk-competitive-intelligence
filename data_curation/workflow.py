@@ -1442,6 +1442,16 @@ def _metric_evidence_terms(metric: str) -> list[str]:
         (r"资费|套餐", ["资费", "套餐", "月费", "计划", "tariff", "price", "fee", "plan"]),
         (r"企业\s*ICT|enterprise\s*ICT", ["企业ict", "企业 ict", "enterprise ict", "enterprise"]),
         (r"产品规格", ["产品规格", "product specification", "specification"]),
+        (r"企业专线", ["企业专线", "專線", "leased line", "private line", "iplc", "iepl"]),
+        (r"合约期", ["合约期", "合約期", "contract period", "contract term", "commitment period"]),
+        (r"促销折扣", ["促销", "優惠", "promotion", "discount", "rebate"]),
+        (r"战略合作", ["战略合作", "合作", "partnership", "strategic cooperation"]),
+        (r"战略升级", ["战略升级", "strategy", "transformation", "strategic upgrade"]),
+        (r"数据中心", ["数据中心", "數據中心", "data centre", "data center"]),
+        (r"网络API", ["网络api", "network api", "network apis", "open gateway"]),
+        (r"高管人事", ["高管", "人事", "appointment", "chief executive", "management"]),
+        (r"投资并购", ["并购", "收购", "acquisition", "merger", "investment"]),
+        (r"中标", ["中标", "中標", "contract award", "tender"]),
         (r"增值服务", ["增值服务", "value-added service", "value added service"]),
         (r"漫游", ["漫游", "roaming"]),
         (r"Open RAN", ["open ran", "open-ran", "o-ran"]),
@@ -2674,6 +2684,10 @@ def _company_research_profile(company: str) -> dict[str, Any]:
                 if str(url).startswith(("http://", "https://"))
             )
         )
+        # HKT's corporate enterprise directory explicitly links these service
+        # sites. Product evidence must not be restricted to investor PDFs.
+        if company == "HKT":
+            hosts = list(dict.fromkeys([*hosts, "hkt-enterprise.com", "hkt-sme.com", "1010corporate.com", "hktchina.com"]))
         return {
             "aliases": list(dict.fromkeys([company, *aliases])),
             "official_hosts": hosts,

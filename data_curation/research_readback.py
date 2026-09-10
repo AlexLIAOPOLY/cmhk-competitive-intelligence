@@ -103,13 +103,14 @@ def _reconcile_run_status(root: Path, directory: Path, manifest: dict) -> tuple[
 
 def _display_results(payload):
     from .research_freshness import period_key, metric_key
+    from .research_source_audit import annotate_snapshot
     for agent in [*payload.get("agents", []), payload.get("final_reviewer") or {}]:
         for report in agent.get("reports", []):
             for item in report.get("items", []):
                 baseline = item.get("baseline") or report.get("baseline", {}).get(metric_key(item.get("metric")), [])
                 if baseline and not item.get("latest_baseline"):
                     item["latest_baseline"] = max(baseline, key=lambda row: period_key(row.get("period")) or (0, 0, ""))
-    return payload
+    return annotate_snapshot(payload)
 
 
 def research_snapshot(root: Path, date: str = "") -> dict:

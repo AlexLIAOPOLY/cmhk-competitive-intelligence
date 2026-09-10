@@ -113,7 +113,7 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
                     raise RuntimeError("最终审核仍无法读取可信来源；不能确认该指标最新内容")
                 if not page_mentions_metric(metric, report["pages"]):
                     save({"company": company, "metric": metric, "status": "error", "value": "",
-                          "reason": "最终审核已补充搜索并读取可信原文，仍未找到该指标的可核实内容；原有数据保留"})
+                          "reason": "最终审核已读取公司原文，但预筛选未命中该指标用语，尚未完成语义核对；不能据此判断没有公开资料，原有数据保留"})
                 else:
                     worker_harness().extract(company, metric, report["pages"], save, baseline=report.get("baseline", {}))
             except Exception as exc:
