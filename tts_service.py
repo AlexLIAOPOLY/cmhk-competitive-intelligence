@@ -586,8 +586,12 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
     if report_kind == "carrier-performance":
         report_instruction = (
             "根据运营商业绩摘要全文撰写管理层语音摘要，控制在320至450个汉字。"
-            "依次概括香港主要竞对、内地运营商、资本开支与股东回报、关键风险和观察重点。"
+            "概括香港主要竞对、内地运营商、资本开支与股东回报中有明确依据的重点，自然衔接。"
+            "摘要里的短横线只是本份摘要缺项，不代表公司未披露，更不能由此推断风险或影响市场判断；完全跳过缺项。"
+            "不强行凑齐公司和栏目，不自行增加风险或投资判断。"
         )
+        text = '\n'.join(line for line in text.splitlines()
+                         if not re.search(r'[：:]\s*[-—–]\s*$', line))
         report_label = "运营商业绩摘要"
     else:
         report_instruction = (

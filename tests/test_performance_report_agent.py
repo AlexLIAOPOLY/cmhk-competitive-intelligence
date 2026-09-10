@@ -27,6 +27,8 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertFalse(trusted_source("HKT", "https://www.bilibili.com/video/x", "capex"))
         self.assertFalse(trusted_source("HKT", "https://finance.yahoo.com/story", "capex"))
         self.assertTrue(trusted_source("HKT", "https://finance.yahoo.com/story", "broker"))
+        self.assertTrue(trusted_source('中国铁塔', 'https://doc.irasia.com/listco/hk/chinatower/interim/2026/intrep.pdf', 'dividend'))
+        self.assertFalse(trusted_source('中国铁塔', 'https://doc.irasia.com/listco/hk/other/intrep.pdf', 'dividend'))
 
     def test_database_first_and_no_unrelated_writes(self):
         baseline = {'sources': ['formal.json'], 'companies': {'HKT': {
@@ -57,11 +59,17 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertIn('34.80', field_excerpt(text, 'dividend'))
         self.assertEqual(publication_date({'url': 'https://www.hkexnews.hk/2026081300218.pdf'},
             {'text': 'For six months ended 2026-06-30'}).isoformat(), '2026-08-13')
+        self.assertEqual(publication_date({'url': 'https://example.com/2026_09_03_1042.pdf'},
+            {'document_type': 'pdf', 'text': 'Dividend payment on 2026-09-20'}).isoformat(), '2026-09-03')
+        self.assertIsNone(publication_date({'url': 'https://example.com/ir2026/financial.pdf'},
+            {'document_type': 'pdf', 'text': 'Incorporated on 3 August 2007. Six months ended 30 June 2026.'}))
 
     def test_publication_dates_and_exact_amounts_survive_chinese_editing(self):
         cases = [
             ('dividend', '2026年7月29日公告，派发中期股息34.80港仙。', '2026-07-29 interim distribution 34.80 HK cents'),
             ('broker', '瑞银2026年7月29日维持买入，目标价13.40港元。', 'UBS Buy $13.40 Jul 29, 2026'),
+            ('broker', '瑞银2026年7月29日维持买入，目标价13.40港元。', '2026.07.29 UBS Buy $13.40'),
+            ('dividend', '2025年末期股息每股人民币0.1329元。', '2025 final dividend RMB0.1329 per share'),
             ('strategy', '新项目合约额超过22亿港元，推进人工智能转型。', 'new contract value exceeding HK$2.2 billion AI transformation')]
         for field, text, source in cases:
             self.assertTrue(valid_ai_performance_field(field, text, source)[0])

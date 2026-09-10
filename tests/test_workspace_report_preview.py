@@ -34,12 +34,13 @@ class WorkspaceReportPreviewTests(unittest.TestCase):
         self.assertIn('row.setAttribute("aria-pressed", String(active));', script)
         self.assertIn('取消预览', script)
 
-    def test_only_the_filename_content_opens_the_rename_editor(self):
+    def test_filename_previews_on_single_click_and_renames_on_double_click(self):
         app = (ROOT / "web/static/app.js").read_text(encoding="utf-8")
         style = (ROOT / "web/static/styles.css").read_text(encoding="utf-8")
 
         self.assertIn('<span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot"', app)
-        self.assertIn('<span class="file-name-editable" data-path="${safePath}" title="点击编辑文件名与备注">${file.name}</span>', app)
+        self.assertIn('title="单击预览，双击编辑文件名与备注">${escapeHtml(file.name)}</span>', app)
+        self.assertIn('cell.addEventListener("dblclick", () => openFileEditor(cell.dataset.path));', app)
         self.assertNotIn('class="file-name-cell file-name-editable"', app)
         self.assertIn(".file-name-editable {\n  display: inline-flex;", style)
 

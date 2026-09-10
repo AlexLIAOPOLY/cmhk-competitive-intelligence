@@ -54,7 +54,10 @@ def market_source_urls(company: str, field: str) -> list[str]:
     ticker = TICKERS.get(company)
     if not ticker or field not in {"broker", "market"}:
         return []
-    return [f"https://stockanalysis.com/quote/hkg/{ticker}/" + ("forecast/" if field == "broker" else "")]
+    urls = [f"https://stockanalysis.com/quote/hkg/{ticker}/" + ("forecast/" if field == "broker" else "")]
+    if field == "broker":
+        urls.append(f"https://www.etnet.com.hk/www/tc/stocks/realtime/quote_profit.php?code={ticker.zfill(5)}")
+    return urls
 
 
 def field_excerpt(text: str, field: str, limit: int = 4200) -> str:
@@ -123,16 +126,36 @@ def read_public_page(url: str) -> dict:
     if "pdf" in response.headers.get("content-type", "").lower() or url.split("?")[0].endswith(".pdf"):
         from pypdf import PdfReader
         text = "\n".join(page.extract_text() or "" for page in PdfReader(BytesIO(response.content)).pages)
-        return {"opened": True, "text": text}
+        return {"opened": True, "text": text, "document_type": "pdf"}
     soup = BeautifulSoup(response.text, "html.parser")
     date_tag = soup.select_one('meta[property="article:published_time"], meta[name="date"], time[datetime]')
     published = (date_tag.get("content") or date_tag.get("datetime")) if date_tag else ""
+    structured_links = []
+    next_data = soup.select_one('script#__NEXT_DATA__')
+    if next_data and (urlparse(url).hostname or '').endswith('hkbn.net'):
+        # These are public page contents embedded by HKBN's financial-results page.
+        try:
+            data = json.loads(next_data.get_text())['props']['pageProps']['initialState']['initData']['data']['data']
+            for group in data.get('queryPageFinancialResultContents', []):
+                for item in group['data']['financialResultList']['iv']:
+                    row = item['data']
+                    for button in row['docBtnList'].get('en_US', []):
+                        structured_links.append({'url': button['docLink'], 'title': row['docTitleText']['en_US'],
+                                                 'published_date': row['docDate']['iv']})
+        except (KeyError, TypeError, ValueError):
+            pass
     for tag in soup.select("script, style, nav, header, footer"):
         tag.decompose()
     links = [{"url": urljoin(str(response.url), a.get("href", "")), "title": a.get_text(" ", strip=True)}
              for a in soup.select("a[href]") if re.search(r"20\d{2}|interim|中期|半年|results|业绩|業績", a.get_text(" ", strip=True) + a.get("href", ""), re.I)]
-    return {"opened": True, "text": soup.get_text(" ", strip=True), "publication_date": published,
-            "title": soup.title.get_text(" ", strip=True) if soup.title else "", "disclosure_links": links}
+    text = soup.get_text(" ", strip=True)
+    if 'etnet.com.hk' in (urlparse(url).hostname or ''):
+        quote_date = re.search(r'即時報價更新時間為\s*(\d{2})/(\d{2})/(20\d{2})', text)
+        if quote_date:
+            day, month, year = quote_date.groups()
+            published = f'{year}-{month}-{day}'
+    return {"opened": True, "text": text, "publication_date": published,
+            "title": soup.title.get_text(" ", strip=True) if soup.title else "", "disclosure_links": links + structured_links}
 
 
 @lru_cache(maxsize=20)
@@ -147,6 +170,9 @@ def company_profile(company: str) -> dict:
 
 def trusted_source(company: str, url: str, field: str) -> bool:
     host = urlparse(url).hostname or ""
+    # The company's own financial reports page links to this hosted archive.
+    if company == '中国铁塔' and host == 'doc.irasia.com' and urlparse(url).path.startswith('/listco/hk/chinatower/'):
+        return True
     domains = company_profile(company)["official_hosts"] + ["hkexnews.hk", "cninfo.com.cn"]
     if field in {"broker", "market"}:
         # Public commentary can be used with explicit publisher/date attribution.
@@ -170,7 +196,7 @@ def company_matches(company: str, text: str) -> bool:
              "3HK / Hutchison": ["和记电讯", "3hk", "hutchison telecommunications"],
              "HGC": ["环球全域电讯", "hgc", "hutchison global"],
              "HKBN": ["香港宽频", "hkbn"], "SmarTone": ["数码通", "smartone"],
-             "i-CABLE": ["有线宽频", "i-cable", "i cable", "ctf services", "ctf enterprises"]}.get(company, [company.casefold()])
+             "i-CABLE": ["有线宽频", "i-cable", "i cable", "ctf media & entertainment", "周大福媒体娱乐"]}.get(company, [company.casefold()])
     return any(term in normal for term in terms)
 
 
@@ -178,11 +204,14 @@ def publication_date(result: dict, page: dict):
     # Dated URL/metadata precede report-period dates embedded in the body.
     dated_url = re.sub(r"(?<!\d)(20\d{2})(\d{2})(\d{2})(?=\d|\.)", r"\1-\2-\3 ", str(result.get("url", "")))
     explicit = " ".join(str(v or "") for v in [page.get("publication_date"), page.get("published_at"), result.get("published_date"), dated_url])
-    for match in re.finditer(r"(20\d{2})[-/年.](\d{1,2})[-/月.](\d{1,2})", explicit):
+    for match in re.finditer(r"(20\d{2})[-/年._](\d{1,2})[-/月._](\d{1,2})", explicit):
         try:
             return datetime(*map(int, match.groups())).date()
         except ValueError:
             pass
+    if page.get('document_type') == 'pdf':
+        # Incorporation dates and reporting-period ends are not publication dates.
+        return None
     text = " ".join(str(v or "") for v in [page.get("publication_date"), page.get("published_at"),
                          result.get("published_date"), result.get("title"), result.get("snippet"),
                          result.get("url"), str(page.get("text", ""))[:1200]])
@@ -323,8 +352,12 @@ def assess_field(pack: dict, result: dict, field: str, validator):
     supplied = (result.get("sources") or {}).get(field, [])
     sources = supplied if isinstance(supplied, list) else []
     matched = [r for r in pack["web_research"]["results"] if r["field"] == field and r["url"] in sources]
-    evidence = {"database": pack["evidence"][field], "pages": [{"title": r["title"], "text": r["text"], "publishedAt": r["publishedAt"]} for r in matched]}
+    evidence = {"database": pack["evidence"][field] if field not in pack['missing'] else '', "pages": [{"title": r["title"], "text": r["text"], "publishedAt": r["publishedAt"]} for r in matched]}
     valid, text, reason = validator(field, candidate, evidence)
+    if valid and field in pack['missing'] and field in {'revenue', 'profit'}:
+        metric = r'收入|收益|revenue' if field == 'revenue' else r'EBITDA|净利|淨利|溢利|亏损|虧損'
+        if not re.search(metric, text, re.I) or not re.search(r'\d[\d,.]*\s*(?:[百千万亿]+)?(?:港元|美元|元|HKD|RMB|CNY|USD)', text, re.I):
+            valid, reason = False, '缺少该主体收入或利润的金额，不能以增长率或客户数替代'
     if field in pack["missing"] and not matched:
         valid, reason = False, "补查内容未引用对应公司的原文"
     if field in {"revenue", "profit", "capex", "dividend"} and field not in pack["missing"]:
@@ -386,11 +419,17 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
                         document["fields"].append(page["field"])
                     document["excerpts"][page["field"]] = page["text"]
                 for document in documents.values():
-                    document["text"] = "\n".join(f"{field}: {value}" for field, value in document.pop("excerpts").items())[:14000]
+                    # Truncating this joined value dropped the later revenue and
+                    # profit evidence entirely. Keep each field's bounded excerpt.
+                    document["text"] = "\n".join(f"{field}: {value}" for field, value in document.pop("excerpts").items())
                 editor_batch.append({"company": pack["company"], "asOf": pack["asOf"],
-                    "evidence": pack["evidence"], "missing": pack["missing"],
+                    "evidence": {f: value if f not in pack['missing'] else '' for f, value in pack["evidence"].items()}, "missing": pack["missing"],
                     "web_research": {"results": list(documents.values())}})
-            response, _model = ai_client(editor_batch)
+            try:
+                response, _model = ai_client(editor_batch)
+            except (TimeoutError, ValueError):
+                progress(f"[业绩摘要 Agent] {pack['company']} 整理输出不完整，重试一次。")
+                response, _model = ai_client(editor_batch)
             returned.update({item["company"]: item for item in response.get("companies", [])})
             draft = returned.get(pack["company"], {})
             feedback = {}
@@ -414,6 +453,8 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
         except Exception as exc:
             progress("[业绩摘要局限][report_agent] 该批整理暂未完成，保留已核实的数据与缺项状态。")
             errors.append({"stage": "report_agent", "reason": str(exc)[:200], "companies": [p["company"] for p in batch]})
+        save_json(run_dir / "drafts.json", returned)
+        save_json(run_dir / "errors.json", {"errors": errors})
     save_json(run_dir / "drafts.json", returned)
     sections, table, audit = [], [["主体", "最新披露", "收益", "EBITDA / 利润", "资本开支", "派息"]], []
     for pack in packs:

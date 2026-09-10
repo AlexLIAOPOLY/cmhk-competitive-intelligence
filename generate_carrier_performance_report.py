@@ -51,7 +51,7 @@ RESULTS_DIR = ROOT / "results"
 PERFORMANCE_AI_PROMPT_VERSION = "carrier-performance-editor-v2-web-verified"
 PERFORMANCE_AI_BATCH_SIZE = 2
 PERFORMANCE_AI_WORKERS = 4
-PERFORMANCE_AI_TIMEOUT_SECONDS = 65
+PERFORMANCE_AI_TIMEOUT_SECONDS = 120
 PERFORMANCE_SOURCE_WORKERS = 8
 COMPANIES = ["中国移动", "中国电信", "中国联通", "中国铁塔"]
 DEFAULT_PERFORMANCE_COMPANIES = [
@@ -912,10 +912,11 @@ def enrich_field_with_confirmed_facts(base: str, field_key: str, facts: list[dic
 def extract_numeric_tokens(value: object) -> set[str]:
     tokens = set()
     text = str(value or "")
+    text = re.sub(r'\b(20\d{2})\.(\d{1,2})\.(\d{1,2})\b', r'\1-\2-\3', text)
     for index, month in enumerate(['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], 1):
         text = re.sub(rf'\b{month}[a-z]*\s+(\d{{1,2}}),?\s+(20\d{{2}})', rf'\2-{index}-\1', text, flags=re.I)
         text = re.sub(rf'\b(\d{{1,2}})\s+{month}[a-z]*\s+(20\d{{2}})', rf'\2-{index}-\1', text, flags=re.I)
-    for raw in re.findall(r"(?<![A-Za-z])\d+(?:[,.]\d+)*(?:\.\d+)?", text):
+    for raw in re.findall(r"\d+(?:,\d{3})*(?:\.\d+)?", text):
         tokens.add(format(Decimal(raw.replace(',', '')).normalize(), 'f'))
     return tokens
 
@@ -923,7 +924,7 @@ def extract_numeric_tokens(value: object) -> set[str]:
 def equivalent_scaled_numbers(candidate: str, evidence: object) -> set[str]:
     scales = {'trillion': '1000000000000', 'billion': '1000000000', 'million': '1000000',
               '亿': '100000000', '百万': '1000000', '万': '10000', '千': '1000'}
-    pattern = r'(\d+(?:[,.]\d+)*)\s*(trillion|billion|million|百万|亿|万|千)'
+    pattern = r'(\d+(?:,\d{3})*(?:\.\d+)?)\s*(trillion|billion|million|百万|亿|万|千)'
     def values(text):
         return [(Decimal(n.replace(',', '')), Decimal(n.replace(',', '')) * Decimal(scales[unit.lower()]))
                 for n, unit in re.findall(pattern, str(text), re.I)]
@@ -973,6 +974,7 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         "如果证据没有相关信息，该字段只写短横线-，不得反复写未找到或未披露。不得写来源编号、抓取过程、AI过程或对CMHK的套话。strategy必须是业务战略或进展，不能只抄收入利润；不是上市主体不能编造其股价。"
         "若含revisionFeedback，只修正其中未通过项：使用原文直接支持的数字与原单位、提供准确对应URL；其余字段保持已有结果。"
         "另外输出revenue（收入）和profit（EBITDA及净利润）用于汇总表，保留原始期间和币种。每字段只能写其evidence或相同field原文支持的内容，不得跨字段挪用数字。"
+        "revenue和profit只能填该主体合并口径的收入、EBITDA或净利润金额。只有业务增速、客户数、毛利或分部数字时填-，不能拿它们代替集团收入利润。行情按页面注明的时间表述，不擅自称为收盘价。"
         "另输出tableFields，含revenue、profit、capex、dividend四个精简表格值，各8至45字，仅保留期间、数值和单位，不放长句或来源。不能改变fields中的数值口径。只返回合法JSON，不要Markdown。"
     )
     user_prompt = (
@@ -996,7 +998,9 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
     if provider != "openai":
-        body.setdefault("max_tokens", 8192)
+        # Some V4 gateway routes still spend tokens on hidden reasoning despite
+        # thinking=disabled. Leave room for the complete final JSON as well.
+        body.setdefault("max_tokens", 16384)
         body = prepare_structured_chat_body(body)
     request = urllib.request.Request(
         url,

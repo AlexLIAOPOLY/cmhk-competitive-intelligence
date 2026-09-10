@@ -4274,7 +4274,7 @@ function updateProgressFill() {
   const max = parseFloat(bar.max) || 100;
   const val = parseFloat(bar.value) || 0;
   const pct = max > min ? ((val - min) / (max - min)) * 100 : 0;
-  bar.style.background = `linear-gradient(to right, var(--blue) ${pct}%, #dde3ea ${pct}%)`;
+  bar.style.background = `linear-gradient(to right, #67d1df ${pct}%, #294b59 ${pct}%)`;
 }
 
 function stopAudioAnimation() {
