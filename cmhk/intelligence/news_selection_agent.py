@@ -504,6 +504,9 @@ class _EmptyFinalOutput(ValueError):
 
 def _langchain_response_text(response: Any) -> str:
     """Extract only a model's final answer from LangChain message variants."""
+    # Hidden reasoning can exhaust the output budget before any final text.
+    # Route that through the harness's bounded larger-budget recovery too.
+    assert_complete(response)
     content = getattr(response, "content", "")
     if isinstance(content, str):
         text = content.strip()
@@ -520,7 +523,6 @@ def _langchain_response_text(response: Any) -> str:
     else:
         text = str(content or "").strip()
     if text:
-        assert_complete(response)
         return text
     additional = getattr(response, "additional_kwargs", {})
     reasoning = getattr(response, "reasoning_content", "")
@@ -1433,6 +1435,7 @@ def _invoke_langchain_transport(
             model_options["max_tokens"] = min(
                 32000, model_options["max_tokens"] * (2 ** _HARNESS_RECOVERY.get())
             )
+            model_options["timeout"] = max(model_options["timeout"], 180)
         try:
             model = ChatDeepSeek(**model_options)
             response = _selection_model_invoke(
@@ -1604,7 +1607,7 @@ def _normalized_acceptance_review(
 ) -> list[dict[str, Any]]:
     """Validate evidence and representative links before any accepted write."""
     decisions = _normalized_decisions(payload, targets)
-    raw_by_id = {item["news_id"]: item for item in payload["decisions"]}
+    raw_by_id = {_text(item["news_id"], 80): item for item in payload["decisions"]}
     initial = {item["news_id"]: item for item in provisional}
     reviewed = {item["news_id"]: item for item in decisions}
     if set(initial) != set(reviewed):
@@ -1797,35 +1800,15 @@ def _invoke_langchain_batches_impl(
     checkpoint_callback: Any = None,
     reuse_callback: Any = None,
 ) -> tuple[dict[str, Any], str]:
-    def balanced_retry_examples() -> list[dict[str, Any]]:
-        """Keep recent examples from every observed APP/weekly outcome pair."""
-        grouped_indexes: dict[tuple[str, str], list[int]] = {}
-        for index, example in enumerate(examples):
-            key = (
-                _text(example.get("app_status"), 20),
-                _text(example.get("weekly_status"), 20),
-            )
-            grouped_indexes.setdefault(key, []).append(index)
-        selected_indexes = {
-            index for indexes in grouped_indexes.values() for index in indexes[:4]
-        }
-        return [
-            example
-            for index, example in enumerate(examples)
-            if index in selected_indexes
-        ]
-
     def invoke_singleton_with_fresh_nonce(
         target: dict[str, Any],
         *,
         attempts: int = 3,
     ) -> tuple[dict[str, Any], str]:
         last_error: Exception | None = None
-        compact_examples = balanced_retry_examples()
         for attempt_index in range(max(1, attempts)):
             try:
-                retry_examples = examples if attempt_index == 0 else compact_examples
-                payload, model_name = _invoke_repairable(retry_examples, [target])
+                payload, model_name = _invoke_repairable(examples, [target])
                 _normalized_decisions(payload, [target])
                 if checkpoint is not None:
                     checkpoint[_model_checkpoint_key(examples, [target])] = {

@@ -5,6 +5,7 @@ import json
 import tempfile
 import unittest
 from pathlib import Path
+from types import SimpleNamespace
 from unittest import mock
 
 from cmhk.intelligence import news_selection_agent as agent
@@ -115,6 +116,27 @@ class AcceptanceReviewTests(unittest.TestCase):
         self.assertEqual(records[0], old)
         self.assertEqual(records[1]["training_provenance_version"], agent.TRAINING_PROVENANCE_VERSION)
         self.assertTrue(records[1]["acceptance_review"]["app"]["evidence"])
+
+    def test_empty_reasoning_truncation_uses_bounded_larger_budget(self):
+        responses = [
+            SimpleNamespace(content="", additional_kwargs={"reasoning_content": "private reasoning"},
+                            response_metadata={"finish_reason": "length"}),
+            SimpleNamespace(content=json.dumps({"decisions": self.primary[:1]}),
+                            response_metadata={"finish_reason": "stop"}),
+        ]
+        model = mock.Mock()
+        model.invoke.side_effect = responses
+        with (mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
+              mock.patch.object(agent, "_model_routes", return_value=[("DeepSeek-V4-Pro", "secret")]),
+              mock.patch.object(agent, "ChatDeepSeek", return_value=model) as factory):
+            payload, _ = agent._invoke_langchain([], self.targets[:1])
+        self.assertEqual(len(payload["decisions"]), 1)
+        self.assertEqual(factory.call_count, 2)
+        self.assertEqual(factory.call_args_list[1].kwargs["max_tokens"],
+                         min(32000, factory.call_args_list[0].kwargs["max_tokens"] * 2))
+        self.assertGreaterEqual(factory.call_args_list[1].kwargs["timeout"], 180)
+        for call in model.invoke.call_args_list:
+            self.assertNotIn("private reasoning", str(call))
 
 
 if __name__ == "__main__":

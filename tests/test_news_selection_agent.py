@@ -772,7 +772,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 }
             ]
         }
-        for finish_reason in ("stop", "length"):
+        for finish_reason in ("stop",):
             with self.subTest(finish_reason=finish_reason):
                 requests = []
 
@@ -1066,7 +1066,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(payload["decisions"], recovered["decisions"])
         self.assertEqual(model, "model")
 
-    def test_singleton_empty_output_retry_compacts_examples_by_outcome(self):
+    def test_singleton_empty_output_retry_preserves_calibrated_examples(self):
         target = {"news_id": "NEWS-1"}
         examples = [
             {
@@ -1110,7 +1110,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
         self.assertEqual(invoke.call_args_list[0].args[0], examples)
         self.assertEqual(invoke.call_args_list[1].args[0], examples)
         compact_examples = invoke.call_args_list[2].args[0]
-        self.assertEqual(len(compact_examples), 11)
+        self.assertEqual(compact_examples, examples)
         self.assertEqual(
             {(item["app_status"], item["weekly_status"]) for item in compact_examples},
             {
