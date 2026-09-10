@@ -38,6 +38,15 @@ class SourceAuditTests(unittest.TestCase):
         self.assertEqual(output["source_diagnostics"]["stage"], "source_read_failed")
         self.assertIn("不能宣称已充分检索", output["basis"])
 
+    def test_only_known_prefilter_reasons_imply_semantic_review_was_skipped(self):
+        item = {"metric": "企业专线", "status": "error"}
+        for reason, expected in (
+            ("最终审核已补充搜索并读取可信原文，仍未找到该指标的可核实内容；原有数据保留", "screening_no_match"),
+            ("模型核对原文后未找到该指标的明确数值", "extraction_or_validation"),
+        ):
+            output = attach_source_audit(dict(item, reason=reason), self.report())
+            self.assertEqual(output["source_diagnostics"]["stage"], expected)
+
     def test_all_nodes_receive_diagnostics_and_original_quotes_survive(self):
         report = self.report()
         report["items"] = [{"company": "HKT", "metric": "企业专线", "status": "error", "quote": "existing original"}]

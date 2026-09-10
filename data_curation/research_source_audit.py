@@ -27,7 +27,10 @@ def source_audit(item: dict, report: dict) -> dict:
         stage, explanation = "search_failed", "补充搜索发生错误，来源覆盖不完整"
     elif not trusted:
         stage, explanation = "source_read_failed", "没有成功读取的可信原文，不能判断是否公开披露"
-    elif "未找到该指标" in reason or "预筛选未命中" in reason:
+    elif any(marker in reason for marker in (
+        "本轮读取的披露中未找到该指标的新数据",
+        "最终审核已补充搜索并读取可信原文，仍未找到该指标", "预筛选未命中",
+    )):
         stage, explanation = "screening_no_match", "本轮预筛选未命中指标用语，未完成语义核对；不能据此判定没有公开资料"
     else:
         stage, explanation = "extraction_or_validation", "未形成通过核对的指标证据；原始失败原因保留"
