@@ -704,9 +704,9 @@ class StrategicBriefingTests(unittest.TestCase):
     def test_both_daily_slots_share_next_midnight_deadline(self):
         self.assertEqual(
             [value.strftime("%H:%M") for value in briefing.SCAN_TIMES],
-            ["04:00", "14:00"],
+            ["03:00", "14:00"],
         )
-        for hour, minute in ((4, 0), (14, 0)):
+        for hour, minute in ((3, 0), (14, 0)):
             slot_at = datetime(2026, 8, 19, hour, minute, tzinfo=briefing.HKT)
             self.assertEqual(
                 briefing._daily_cutoff_at(slot_at),
@@ -745,7 +745,7 @@ class StrategicBriefingTests(unittest.TestCase):
         self.assertFalse(result["scans"])
 
     def test_completed_scan_archive_prevents_any_second_run(self):
-        slot_key = "2026-07-30@04:00"
+        slot_key = "2026-07-30@03:00"
         archived = {
             "slot": slot_key,
             "slot_label": "晨间扫描",
@@ -1139,7 +1139,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_recovers_completed_archive_from_stale_state(self):
         now = datetime(2026, 7, 30, 10, 46, tzinfo=briefing.HKT)
-        slot_key = "2026-07-30@04:00"
+        slot_key = "2026-07-30@03:00"
         archived = {
             "slot": slot_key,
             "slot_label": "晨间扫描",
@@ -1206,7 +1206,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_restarts_interrupted_scan_after_normal_catchup_window(self):
         now = datetime(2026, 8, 18, 11, 6, tzinfo=briefing.HKT)
-        slot_key = "2026-08-18@04:00"
+        slot_key = "2026-08-18@03:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
             "scan_slots": {
@@ -1276,7 +1276,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_cycle_runs_afternoon_slot_after_morning_crossed_its_start_time(self):
         now = datetime(2026, 8, 18, 17, 30, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@04:00"
+        morning_key = "2026-08-18@03:00"
         afternoon_key = "2026-08-18@14:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
@@ -1384,7 +1384,7 @@ class StrategicBriefingTests(unittest.TestCase):
 
     def test_new_afternoon_slot_gets_turn_before_unlimited_morning_retry(self):
         now = datetime(2026, 8, 18, 15, 10, tzinfo=briefing.HKT)
-        morning_key = "2026-08-18@04:00"
+        morning_key = "2026-08-18@03:00"
         afternoon_key = "2026-08-18@14:00"
         stale_state = {
             "initialized_at": "2026-08-18T08:00:00+08:00",
