@@ -1390,7 +1390,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
             weekly="不接受",
         )
         target_values = _row(
-            title="本轮候选",
+            title="本轮香港电信新套餐",
             url="https://example.com/current",
         )
         target_id = news_review_sheet._row_dict(target_values, 3)["news_id"]
@@ -1413,6 +1413,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
                     "app_confidence": 0.92,
                     "weekly_confidence": 0.73,
                     "reason": "适合即时APP，周报价值仍需观察",
+                    "app_reason": "本地套餐可比较",
+                    "app_evidence": target_values[8],
+                    "app_impact": "提供即时本地资费比较",
                 }
             ],
         }
@@ -2091,12 +2094,15 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                     "app_confidence": 0.9,
                     "weekly_confidence": 0.8,
                     "reason": "检查点测试",
+                    "app_reason": "本地新套餐事实",
+                    "app_evidence": target.get("summary", ""),
+                    "app_impact": "本地资费比较",
                 }
                 for target in targets
             ]
         }, "test-model"
 
-    def test_exact_history_checkpoint_profile_replaces_repeated_full_training(self):
+    def test_checkpoint_profile_preserves_all_calibrated_examples(self):
         examples = [
             {
                 "news_id": f"H-{i}",
@@ -2136,7 +2142,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                 examples, targets, checkpoint=checkpoint
             )
         sent = json.loads(model.invoke.call_args.args[0][1].content)
-        self.assertEqual(len(sent["human_examples"]), 2)
+        self.assertEqual(len(sent["human_examples"]), 20)
         self.assertEqual(sent["human_examples"][0]["weekly_status"], "待审核")
         self.assertEqual(
             sent["learned_preferences"]["learned_rules"], cached["learned_rules"]
@@ -2268,7 +2274,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             values = [
-                _row(title=f"候选{i}", url=f"https://example.com/{i}") for i in range(6)
+                _row(title=f"香港电信新套餐候选{i}", url=f"https://example.com/{i}") for i in range(6)
             ]
             snapshot = {
                 "rows": [
@@ -2378,7 +2384,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                     result = agent.run_news_selection_agent(
                         **{**kwargs, "sheet_id": "sheet-2"}
                     )
-                self.assertEqual(invoke.call_count, 1)
+                self.assertEqual(invoke.call_count, 2)
                 self.assertEqual(result["candidate_count"], 6)
                 self.assertEqual(result["verified_field_count"], 12)
                 state = json.loads((root / "state.json").read_text())
