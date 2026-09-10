@@ -75,6 +75,11 @@ class FakeLark:
 
 class SubscriptionServiceTests(unittest.TestCase):
     def setUp(self):
+        from cmhk.services.news_delivery_dedupe import exact_unique
+        dedupe = mock.patch("cmhk.services.news_delivery_guard.deduplicate_events",
+                            side_effect=lambda items, history, root: (exact_unique(items, history), []))
+        dedupe.start()
+        self.addCleanup(dedupe.stop)
         editor = mock.patch("cmhk.services.news_digest_editor.prepare_digest",
                             side_effect=lambda items, root: {"items": items, "overview": "测试新闻综述。"})
         editor.start()
@@ -579,7 +584,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(submissions[1]["changes"], [])
         self.assertFalse(submissions[0]["is_initial"])
         changes = {item["field"]: item for item in submissions[0]["changes"]}
-        self.assertEqual(changes["frequency"]["before"], "每天一次")
+        self.assertEqual(changes["frequency"]["before"], "每天一次（上午）")
         self.assertEqual(changes["frequency"]["after"], "每天两次")
         self.assertEqual(changes["news_item_limit"]["before"], "5 条")
         self.assertEqual(changes["news_item_limit"]["after"], "20 条")

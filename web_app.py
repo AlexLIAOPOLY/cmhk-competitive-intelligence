@@ -3913,7 +3913,9 @@ def push_latest_subscription_content(
             results.append(result)
             completed_steps += 1
             if callable(progress_callback):
-                progress_callback(completed_steps, total_steps, "战略新闻已发送并回读")
+                detail = ("战略新闻已进入重试队列" if result.get("queued_count") else
+                          "战略新闻发送失败" if result.get("failed_count") else "战略新闻已发送并回读")
+                progress_callback(completed_steps, total_steps, detail)
     return {
         "batch_id": f"manual-latest-{uuid.uuid4().hex[:12]}",
         "target_open_id": target_open_id,
@@ -3925,6 +3927,7 @@ def push_latest_subscription_content(
         "recipient_count": sum(int(item.get("recipient_count") or 0) for item in results),
         "verified_count": sum(int(item.get("verified_count") or 0) for item in results),
         "failed_count": sum(int(item.get("failed_count") or 0) for item in results),
+        "queued_count": sum(int(item.get("queued_count") or 0) for item in results),
         "results": results,
     }
 
@@ -4049,10 +4052,12 @@ def start_subscription_push_job(
                 progress_callback=progress,
             )
             failed_count = int(result.get("failed_count") or 0)
+            queued_count = int(result.get("queued_count") or 0)
             _update_subscription_push_job(
                 job_id,
                 status="completed",
-                detail="推送完成" if not failed_count else f"推送完成，其中 {failed_count} 项失败",
+                detail=(f"已确认 {int(result.get('verified_count') or 0)} 项，{queued_count} 项等待重试，{failed_count} 项失败"
+                        if queued_count or failed_count else "推送完成"),
                 error="",
                 result=result,
             )

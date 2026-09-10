@@ -15,7 +15,6 @@ from contextlib import closing
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
-from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
@@ -35,7 +34,7 @@ VALID_SERVICES = frozenset(SERVICE_LABELS)
 VALID_DELIVERY_MODES = frozenset({"text", "audio", "both", "pdf", "pdf_audio"})
 FREQUENCY_LABELS = {
     "twice_daily": "每天两次",
-    "once_daily": "每天一次",
+    "once_daily": "每天一次（上午）",
 }
 VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
 VALID_NEWS_ITEM_LIMITS = frozenset({5, 10, 15, 20})
@@ -79,7 +78,7 @@ NEWS_CRAWL_REF_PREFIX = "strategic-crawl:"
 
 
 def _now_hkt() -> str:
-    return datetime.now().astimezone().isoformat(timespec="seconds")
+    return datetime.now(HKT).isoformat(timespec="seconds")
 
 
 def _normalize_news_frequency(value: str) -> str:
@@ -101,29 +100,8 @@ def _news_sort_timestamp(item: dict[str, Any]) -> float:
 
 
 def _news_identity_keys(item: dict[str, Any]) -> set[str]:
-    """Return stable aliases used to prevent repeat delivery to one recipient."""
-    keys: set[str] = set()
-    news_id = str(item.get("news_id") or item.get("record_id") or item.get("recordId") or "").strip().casefold()
-    if news_id:
-        keys.add(f"id:{news_id}")
-    raw_url = str(item.get("source_url") or item.get("url") or "").strip()
-    if raw_url:
-        try:
-            parts = urlsplit(raw_url)
-            query = urlencode([
-                (key, value)
-                for key, value in parse_qsl(parts.query, keep_blank_values=True)
-                if not key.casefold().startswith("utm_")
-                and key.casefold() not in {"fbclid", "gclid", "mc_cid", "mc_eid"}
-            ])
-            normalized_url = urlunsplit((parts.scheme.casefold(), parts.netloc.casefold(), parts.path.rstrip("/") or "/", query, ""))
-        except ValueError:
-            normalized_url = raw_url
-        keys.add(f"url:{normalized_url}")
-    title = re.sub(r"[^0-9a-z\u3400-\u9fff]+", "", str(item.get("title") or "").casefold())
-    if title:
-        keys.add(f"title:{title}")
-    return keys
+    from cmhk.services.news_delivery_dedupe import identity_keys
+    return identity_keys(item)
 
 
 def _news_primary_key(item: dict[str, Any]) -> str:
@@ -148,9 +126,10 @@ def _deduplicate_news_items(
         if not isinstance(item, dict):
             continue
         keys = _news_identity_keys(item)
-        if keys and keys & seen:
-            continue
+        duplicate = bool(keys & seen)
         seen.update(keys)
+        if duplicate:
+            continue
         unique.append(item)
     return unique
 
@@ -396,7 +375,10 @@ def _normalize_news_delivery_times(value: Any) -> list[str]:
         if re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", raw) and raw not in normalized:
             normalized.append(raw)
     normalized.sort()
-    return normalized if len(normalized) == 2 else list(NEWS_DELIVERY_TIMES_DEFAULT)
+    if len(normalized) != 2:
+        return list(NEWS_DELIVERY_TIMES_DEFAULT)
+    morning = normalized[0] if "08:00" <= normalized[0] < "12:00" else NEWS_DELIVERY_TIMES_DEFAULT[0]
+    return [morning, max(normalized[1], "14:00")]
 
 
 def _validated_news_delivery_times(value: Any) -> list[str]:
@@ -575,7 +557,7 @@ def subscription_entry_card(
                             "placeholder": {"tag": "plain_text", "content": "选择战略新闻频率"},
                             "options": [
                                 {"text": {"tag": "plain_text", "content": "每天两次"}, "value": "twice_daily"},
-                                {"text": {"tag": "plain_text", "content": "每天一次"}, "value": "once_daily"},
+                                {"text": {"tag": "plain_text", "content": "每天一次（上午）"}, "value": "once_daily"},
                             ],
                         },
                         {"tag": "markdown", "content": "**每次战略新闻条数**"},
@@ -591,7 +573,7 @@ def subscription_entry_card(
                             ],
                         },
                         {"tag": "markdown", "content": "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"},
-                        {"tag": "markdown", "content": "第一次：不早于08:00（每天一次使用此时间）"},
+                        {"tag": "markdown", "content": "第一次：上午08:00至11:59（每天一次使用此时间）"},
                         {
                             "tag": "picker_time",
                             "name": "news_delivery_time_morning",
@@ -609,7 +591,7 @@ def subscription_entry_card(
                         },
                         {
                             "tag": "markdown",
-                            "content": "<font color='grey'>每天一次只使用第一个时间；每天两次使用两个时间。</font>",
+                            "content": "<font color='grey'>每天一次默认上午08:00推送，可选上午时间；每天两次使用早、下午两个时间。</font>",
                             "text_size": "notation",
                         },
                         {"tag": "hr"},
@@ -1143,6 +1125,15 @@ class SubscriptionService:
                 );
                 CREATE INDEX IF NOT EXISTS news_crawl_item_pool_date_idx
                     ON news_crawl_item_pool(crawl_date, delivery_window, sort_timestamp DESC);
+                CREATE TABLE IF NOT EXISTS news_delivery_receipts (
+                    open_id TEXT NOT NULL, batch_id TEXT NOT NULL,
+                    logical_day TEXT NOT NULL, send_day TEXT NOT NULL,
+                    items_json TEXT NOT NULL, card_json TEXT NOT NULL, audit_json TEXT NOT NULL,
+                    status TEXT NOT NULL, message_id TEXT NOT NULL DEFAULT '', updated_at TEXT NOT NULL,
+                    PRIMARY KEY(open_id, batch_id)
+                );
+                CREATE INDEX IF NOT EXISTS news_delivery_receipts_day_idx
+                    ON news_delivery_receipts(open_id, send_day, logical_day);
                 CREATE TABLE IF NOT EXISTS news_recipient_item_history (
                     open_id TEXT NOT NULL,
                     crawl_date TEXT NOT NULL,
@@ -1255,7 +1246,7 @@ class SubscriptionService:
                 for row in db.execute(
                     """SELECT delivery_id FROM pending_subscription_deliveries
                        WHERE service='news' AND status='queued'
-                         AND frequency NOT IN ('scheduled_after_crawl', 'crawl_retry')"""
+                         AND frequency NOT IN ('scheduled_after_crawl', 'crawl_retry', 'schedule_retry')"""
                 ).fetchall()
             ]
             if legacy_pending_ids:
@@ -1268,7 +1259,7 @@ class SubscriptionService:
                     """UPDATE pending_subscription_deliveries
                        SET status='superseded', last_error='已改为战略爬虫完成后推送'
                        WHERE service='news' AND status='queued'
-                         AND frequency NOT IN ('scheduled_after_crawl', 'crawl_retry')"""
+                         AND frequency NOT IN ('scheduled_after_crawl', 'crawl_retry', 'schedule_retry')"""
                 )
             pending_columns = {
                 str(row[1])
@@ -1445,6 +1436,9 @@ class SubscriptionService:
             if normalized_delivery_times[0] >= normalized_delivery_times[1]:
                 normalized_delivery_times = list(NEWS_DELIVERY_TIMES_DEFAULT)
                 adjustments.append("两次时间顺序不合适，已调整为08:00 / 18:30（香港时间）。")
+            elif normalized_delivery_times[0] >= "12:00":
+                normalized_delivery_times[0] = NEWS_DELIVERY_TIMES_DEFAULT[0]
+                adjustments.append("第一次推送固定使用上午时间，已调整为08:00（香港时间）。")
         delivery_times_json = json.dumps(normalized_delivery_times, separators=(",", ":"))
         now = _now_hkt()
         final_snapshot = _preference_snapshot(
@@ -3822,21 +3816,9 @@ class SubscriptionService:
         message_ids: list[str] = []
         if mode in {"text", "both"}:
             if service == "news":
-                subscriptions = self.config.get("subscriptions") if isinstance(self.config.get("subscriptions"), dict) else {}
-                news_image_keys = subscriptions.get("news_image_keys") if isinstance(subscriptions.get("news_image_keys"), dict) else {}
-                period_key = "afternoon" if "下午茶" in title else "morning" if "早茶" in title else ""
-                image_key = str(news_image_keys.get(period_key) or "") if period_key else ""
-                if body.startswith(NEWS_DIGEST_PREFIX):
-                    from cmhk.services.news_digest_editor import prepare_digest
-                    prepared = prepare_digest(json.loads(body[len(NEWS_DIGEST_PREFIX):]), self.runtime_root)
-                    body = NEWS_DIGEST_PREFIX + json.dumps(prepared, ensure_ascii=False)
-                message_ids.append(self._send_interactive_card(
-                    open_id,
-                    strategic_news_card(title=title, body=body, image_key=image_key),
-                    idempotency_key=f"{batch_id}-n-{open_id[-6:]}",
-                    profile=profile,
-                    preserve_markdown_bold=True,
-                ))
+                from cmhk.services.news_delivery_guard import deliver_news
+                return deliver_news(self, open_id=open_id, content_ref=content_ref, title=title,
+                                    body=body, batch_id=batch_id, profile=profile)
             else:
                 for index, chunk in enumerate(text_chunks, start=1):
                     message_ids.append(self._send_markdown(
@@ -3864,7 +3846,7 @@ class SubscriptionService:
         return message_ids
 
     def due_count(self, *, now: datetime | None = None) -> int:
-        current = (now or datetime.now().astimezone()).astimezone().isoformat(timespec="seconds")
+        current = (now or datetime.now(HKT)).astimezone(HKT).isoformat(timespec="seconds")
         with closing(self._connect()) as db:
             row = db.execute(
                 "SELECT COUNT(*) FROM pending_subscription_deliveries WHERE status='queued' AND due_at<=?",
@@ -3873,7 +3855,7 @@ class SubscriptionService:
         return int(row[0] if row else 0)
 
     def flush_due(self, *, now: datetime | None = None, limit: int = 100) -> dict[str, Any]:
-        current = (now or datetime.now().astimezone()).astimezone().isoformat(timespec="seconds")
+        current = (now or datetime.now(HKT)).astimezone(HKT).isoformat(timespec="seconds")
         with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT p.*, d.batch_id FROM pending_subscription_deliveries p
@@ -3889,11 +3871,16 @@ class SubscriptionService:
             error = ""
             service = str(row["service"])
             open_id = str(row["open_id"])
-            active_open_ids = {item["open_id"] for item in self._subscribers_for(service)}
-            gate_open = self.automatic_delivery_enabled(service) and open_id in active_open_ids
+            active_recipients = {item["open_id"]: item for item in self._subscribers_for(service)}
+            gate_open = self.automatic_delivery_enabled(service) and open_id in active_recipients
+            content_ref = str(row["content_ref"] or "")
+            morning_only = (service == "news" and content_ref.startswith(NEWS_CRAWL_REF_PREFIX)
+                            and content_ref.rsplit("@", 1)[-1] >= "12:00"
+                            and active_recipients.get(open_id, {}).get("frequency") == "once_daily")
+            gate_open = gate_open and not morning_only
             if not gate_open:
                 status = "cancelled"
-                error = "自动推送已暂停或接收人已取消该项订阅"
+                error = "接收人已改为每天一次，仅保留上午推送" if morning_only else "自动推送已暂停或接收人已取消该项订阅"
                 with closing(self._connect()) as db, db:
                     db.execute(
                         "UPDATE deliveries SET status='cancelled', message_ids='[]', error=? WHERE id=?",
@@ -3952,7 +3939,7 @@ class SubscriptionService:
                         (_now_hkt(), int(row["id"])),
                     )
                 else:
-                    retry_at = ((now or datetime.now().astimezone()).astimezone() + timedelta(minutes=15)).isoformat(timespec="seconds")
+                    retry_at = ((now or datetime.now(HKT)).astimezone(HKT) + timedelta(minutes=15)).isoformat(timespec="seconds")
                     db.execute(
                         """UPDATE pending_subscription_deliveries
                            SET status='queued', attempts=attempts+1, last_error=?, due_at=?
@@ -4096,18 +4083,13 @@ class SubscriptionService:
                 # Older releases keyed twice-daily sends by the exact clock
                 # time, so keep the legacy-window check inside the same lock.
                 db.execute("BEGIN IMMEDIATE")
-                legacy_claimed = False
-                if frequency == "twice_daily":
-                    legacy_claimed = db.execute(
-                        """SELECT 1 FROM news_crawl_dispatches
-                           WHERE open_id=? AND crawl_date=? AND frequency='twice_daily'
-                             AND CASE
-                                   WHEN substr(crawl_slot, 12, 5) < '12:00' THEN 'morning'
-                                   ELSE 'afternoon'
-                                 END=?
-                           LIMIT 1""",
-                        (open_id, crawl_date, delivery_window),
-                    ).fetchone() is not None
+                legacy_claimed = db.execute(
+                    """SELECT 1 FROM news_crawl_dispatches
+                       WHERE open_id=? AND crawl_date=?
+                         AND CASE WHEN substr(crawl_slot,12,5)<'12:00' THEN 'morning'
+                                  ELSE 'afternoon' END=? LIMIT 1""",
+                    (open_id, crawl_date, delivery_window),
+                ).fetchone() is not None
                 cursor = db.execute(
                     """INSERT OR IGNORE INTO news_crawl_dispatches(
                            open_id, dispatch_key, crawl_slot, crawl_date, frequency,
@@ -4287,6 +4269,8 @@ class SubscriptionService:
             raise ValueError("战略新闻目前只支持文字推送")
         if service in {"weekly", "performance"} and mode not in {"pdf", "pdf_audio", "audio"}:
             raise ValueError("周报和业绩摘要只支持 PDF、PDF 加独立语音或仅语音")
+        # News review/transport recovery must keep its original durable request.
+        queue_failures = queue_failures or service == "news"
         recipients = self._subscribers_for(service)
         send_profile = self.delivery_profile
         if target_open_id:
@@ -4328,7 +4312,9 @@ class SubscriptionService:
             if not body:
                 raise ValueError("新闻推送正文不能为空")
             content_ref = title
-        batch_source = batch_key or f"{service}:{mode}:{content_ref}:{_now_hkt()}"
+        default_batch = (f"news:{mode}:{content_ref}:{hashlib.sha256(body.encode()).hexdigest()}:{_now_hkt()[:10]}"
+                         if service == "news" else f"{service}:{mode}:{content_ref}:{_now_hkt()}")
+        batch_source = batch_key or default_batch
         batch_id = hashlib.sha256(batch_source.encode()).hexdigest()[:24]
         results = []
         for recipient in recipients:
@@ -4376,7 +4362,7 @@ class SubscriptionService:
                     (status, json.dumps(message_ids), error, delivery_id),
                 )
                 if status == "retrying":
-                    due_at = (datetime.now().astimezone() + timedelta(minutes=15)).isoformat(timespec="seconds")
+                    due_at = (datetime.now(HKT) + timedelta(minutes=15)).isoformat(timespec="seconds")
                     db.execute(
                         """INSERT INTO pending_subscription_deliveries(
                                delivery_id, open_id, service, mode, content_ref, title, body,

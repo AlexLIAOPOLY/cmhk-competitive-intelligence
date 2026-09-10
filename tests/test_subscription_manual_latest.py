@@ -131,6 +131,20 @@ class LatestSubscriptionPushTests(unittest.TestCase):
         self.assertEqual(completed["total_steps"], 1)
         self.assertEqual(completed["result"]["verified_count"], 1)
 
+    def test_manual_job_reports_retry_queue_without_claiming_delivery(self):
+        with tempfile.TemporaryDirectory() as folder:
+            with (
+                mock.patch.object(web_app, "SUBSCRIPTION_PUSH_JOBS_PATH", Path(folder) / "jobs.json"),
+                mock.patch.object(web_app.threading, "Thread", ImmediateThread),
+                mock.patch.object(web_app, "push_latest_subscription_content", return_value={
+                    "verified_count": 0, "queued_count": 1, "failed_count": 0}),
+            ):
+                queued = web_app.start_subscription_push_job(FakeSubscriptionService(), target_open_id="ou_target123")
+                completed = web_app.subscription_push_job_snapshot(queued["job_id"])
+        self.assertIn("1 项等待重试", completed["detail"])
+        self.assertNotIn("推送完成", completed["detail"])
+        self.assertEqual(completed["result"]["queued_count"], 1)
+
     def test_person_icon_uses_latest_content_and_current_subscription_preferences(self):
         service = FakeSubscriptionService()
         with tempfile.TemporaryDirectory() as folder:

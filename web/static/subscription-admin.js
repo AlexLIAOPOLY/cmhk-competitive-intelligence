@@ -65,7 +65,7 @@
   function newsFrequencyOptions(selected = "once_daily") {
     const frequencies = state.data?.frequencies || [
       { key: "twice_daily", label: "每天两次" },
-      { key: "once_daily", label: "每天一次" },
+      { key: "once_daily", label: "每天一次（上午）" },
     ];
     return frequencies.map((item) => `<option value="${esc(item.key)}"${item.key === selected ? " selected" : ""}>${esc(item.label)}</option>`).join("");
   }
@@ -172,7 +172,7 @@
       <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-frequency${hasNews ? "" : " disabled"}>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-limit aria-label="每次新闻条数"${hasNews ? "" : " disabled"}>${newsItemLimitOptions(item.news_item_limit)}</select>`, "未订阅新闻")}</td>
-      <td>${conditionalSetting("news", hasNews, `<div class="news-delivery-times" aria-label="${esc(item.display_name)}的个人期待收到信息时间"><input data-subscriber-news-time="0" type="time" title="香港时间，不早于08:00" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[0])}" aria-label="第一次期待收到时间"${hasNews ? "" : " disabled"}><input data-subscriber-news-time="1" type="time" title="香港时间，不早于14:00" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[1])}" aria-label="第二次期待收到时间"${hasNews ? "" : " disabled"}></div>`, "未订阅新闻")}</td>
+      <td>${conditionalSetting("news", hasNews, `<div class="news-delivery-times" aria-label="${esc(item.display_name)}的个人期待收到信息时间"><input data-subscriber-news-time="0" type="time" min="08:00" max="11:59" title="香港时间，上午08:00至11:59" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[0])}" aria-label="第一次期待收到时间"${hasNews ? "" : " disabled"}><input data-subscriber-news-time="1" type="time" title="香港时间，不早于14:00；仅每天两次使用" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[1])}" aria-label="第二次期待收到时间"${hasNews ? "" : " disabled"}></div>`, "未订阅新闻")}</td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td class="subscriber-action-cell"><button class="icon-button${differsFromDefault ? " is-different" : ""}" type="button" data-reset-subscriber data-default-different="${differsFromDefault}" aria-label="${differsFromDefault ? `恢复 ${esc(item.display_name)} 的默认选项（当前设置与默认不同）` : `${esc(item.display_name)} 当前已是默认选项`}" title="${differsFromDefault ? "当前设置与默认订阅不同，点击恢复" : "当前设置与默认订阅一致"}">${icon("refresh")}</button></td>
       <td class="subscriber-action-cell"><button class="button compact-save" type="button" data-save-subscriber>保存${subscriberDrafts.has(item.open_id) ? " *" : ""}</button></td>
@@ -281,7 +281,7 @@
   function preferenceValueText(field, value) {
     const serviceLabels = { weekly: "双周战略报告", performance: "经营数据", news: "战略新闻" };
     const reportModeLabels = { pdf: "仅 PDF", pdf_audio: "PDF + 单独语音", audio: "仅语音" };
-    const frequencyLabels = { once_daily: "每天一次", twice_daily: "每天两次" };
+    const frequencyLabels = { once_daily: "每天一次（上午）", twice_daily: "每天两次" };
     if (field === "services") return (value || []).map((item) => serviceLabels[item] || item).join("、") || "无";
     if (field === "report_mode") return reportModeLabels[value] || value || "-";
     if (field === "news_categories") {
@@ -904,10 +904,12 @@
       manualPushPollId = "";
       if (job.status === "completed") {
         const failed = Number(job.result?.failed_count || 0);
-        state.notice = failed ? `推送已结束，其中 ${failed} 项失败；请查看推送记录` : "推送完成，所有消息均已确认发送";
-        state.noticeKind = failed ? "error" : "success";
+        const queued = Number(job.result?.queued_count || 0);
+        state.notice = queued ? `已确认 ${Number(job.result?.verified_count || 0)} 项，${queued} 项等待重试${failed ? `，${failed} 项失败` : ""}；请查看推送记录`
+          : failed ? `推送已结束，其中 ${failed} 项失败；请查看推送记录` : "推送完成，所有消息均已确认发送";
+        state.noticeKind = failed || queued ? "error" : "success";
         render();
-        if (!failed) announceDeliveredMessage("pushLatest", job.result?.batch_id || job.job_id);
+        if (!failed && !queued) announceDeliveredMessage("pushLatest", job.result?.batch_id || job.job_id);
         loadData({ keepNotice: true }).catch(() => {});
       } else {
         state.notice = `推送失败：${job.error || job.detail || "未知错误"}`;
