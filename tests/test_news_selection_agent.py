@@ -852,6 +852,9 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 self.assertEqual(requests[1]["max_tokens"], 1500)
                 original = json.loads(requests[0]["messages"][1]["content"])
                 recovered = json.loads(requests[1]["messages"][1]["content"])
+                for request in requests:
+                    request_id = json.loads(request["messages"][1]["content"])["request_id"]
+                    self.assertIn(request_id, request["messages"][0]["content"][:80])
                 self.assertNotEqual(
                     original.pop("request_id"), recovered.pop("request_id")
                 )
@@ -2027,7 +2030,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
             payload, _ = agent._invoke_langchain_batches([], self.targets())
         self.assertEqual(payload["_model_request_count"], 3)
         self.assertIn("本次另输出learned_rules", messages[0][0].content)
-        self.assertIn("本次仅输出decisions", messages[2][0].content)
+        self.assertIn("本次不重复输出学习摘要", messages[2][0].content)
         self.assertNotIn("private", str(messages))
 
     def test_failed_keys_are_tried_once_and_successful_route_finishes_over_ten_requests(self):

@@ -150,6 +150,11 @@ class AcceptanceReviewTests(unittest.TestCase):
         self.assertEqual(factory.call_args_list[1].kwargs["max_tokens"],
                          min(32000, factory.call_args_list[0].kwargs["max_tokens"] * 2))
         self.assertGreaterEqual(factory.call_args_list[1].kwargs["timeout"], 180)
+        first_system, second_system = [call.args[0][0].content for call in model.invoke.call_args_list]
+        self.assertNotEqual(first_system[:80], second_system[:80])
+        for call in model.invoke.call_args_list:
+            request_id = json.loads(call.args[0][1].content)["request_id"]
+            self.assertIn(request_id, call.args[0][0].content[:80])
         for call in model.invoke.call_args_list:
             self.assertNotIn("private reasoning", str(call))
 

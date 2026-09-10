@@ -1304,6 +1304,7 @@ def _invoke_langchain_transport(
         for item in examples
     ]
     system_prompt = (
+        f"请求标识 {request_id}；仅处理本次候选，标识不参与选材判断。\n"
         "你是 CMHK 每日新闻选材偏好学习 Agent。你只从已提供的历史人工决策中归纳习惯，"
         "并对本轮候选分别判断 APP 滚动新闻与双周报。两个字段互相独立。"
         "接受表示符合历史取舍，不接受表示不符合或信息不足。"
@@ -1480,7 +1481,7 @@ def _invoke_langchain_transport(
                     model,
                     [
                         SystemMessage(
-                            content=system_prompt
+                            content=system_prompt.replace(request_id, retry_payload["request_id"], 1)
                             + "请直接给出完整JSON对象，不输出分析过程或Markdown。"
                         ),
                         HumanMessage(
