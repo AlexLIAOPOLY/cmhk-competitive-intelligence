@@ -73,15 +73,21 @@
     const removed = Number(changes.removed || 0);
     return { changed, added, removed, total: changed + added + removed };
   };
-  const updateSummary = (run) => {
+  const updateSummary = (run, compact = false) => {
     const publication = run?.publication;
     const accepted = run?.accepted ?? "未记录";
     const check = publication?.storage_readback;
-    const parts = [`审核通过 ${accepted} 项；${check ? `资料库回读确认 ${check.confirmed}/${check.accepted} 项${check.missing ? `，缺失 ${check.missing} 项` : ""}` : "实际保存尚未核对"}`];
+    const parts = compact && check?.ok ? [] : [`审核通过 ${accepted} 项；${check ? `已确认保存 ${check.confirmed}/${check.accepted} 项${check.missing ? `，${check.missing} 项未找到已保存资料` : ""}` : "实际保存尚未核对"}`];
     const main = mainTableChanges(publication);
     if (check) {
-      parts.push(`主表确认 ${(check.items || []).filter((item) => item.main_table?.status === "saved").length} 项，保留已有 ${(check.items || []).filter((item) => item.main_table?.status === "existing_preserved").length} 项`);
-      if (check.main_missing) parts.push(`主表待补写 ${check.main_missing} 项`);
+      const saved = (check.items || []).filter((item) => item.readback_verified);
+      const count = (state) => saved.filter((item) => item.main_table?.status === state).length;
+      parts.push(`${count("saved")} 项已进入正式指标表`);
+      parts.push(`${count("existing_preserved")} 项沿用表中已有记录`);
+      parts.push(`${count("source_fact_only")} 项仅保存为资料，未进入指标表`);
+      if (check.main_missing) parts.push(`${check.main_missing} 项应进入指标表，但尚未确认写入`);
+      const unknown = Math.max(0, Number(check.confirmed || 0) - ["saved", "existing_preserved", "source_fact_only", "missing"].reduce((sum, state) => sum + count(state), 0));
+      if (unknown) parts.push(`${unknown} 项的指标表去向尚未确认`);
     } else if (main) parts.push(`原运行记录：主表新增 ${main.added} 行${main.upgraded ? `、升级 ${main.upgraded} 行` : ""}`);
     const visible = visibleChanges(publication);
     if (visible && !check) parts.push(`原发布时页面指标数值变化 ${visible.total} 项`);
@@ -165,14 +171,14 @@
       assignment: { key: "final-review" },
       note: data.final_reviewer ? resultCounts(data.final_reviewer.reports || []) : "收齐研究结果后，继续联网补查并核对",
     });
-    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.storage_readback?.confirmed ?? (incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—"), incremental ? "项已保存·回读确认" : "条历史核对通过数据", incremental && run ? updateSummary(run) : "统一写入本地、国际、内地运营商和全球云厂商四库", [
+    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.storage_readback?.confirmed ?? (incremental && run?.publication?.result_status === "no_new_disclosures" ? 0 : "—"), incremental ? "项资料已保存" : "条历史核对通过数据", "把终审通过的资料统一保存到四个资料库，再将符合要求的数据写入正式指标表，保留表中已有记录；保存后重新读取核对，确认没有漏存。", [
       "由一个更新步骤处理六个 Agent 提交的数据，防止多个研究任务同时覆盖文件",
       "仅把有来源支持的新报告期或新指标写入四库；保留库内同一报告期的数据",
       "审核通过数量不等于主表新增数量，也不等于页面数值变化数量；三者分别记录",
       "输入：本次审核通过字段；输出：四库更新结果与前后变化记录",
     ], run?.publication?.storage_readback ? status(run.publication.storage_readback.ok ? "completed" : "error") : status(run?.publication?.status === "completed" ? "pending" : run?.publication?.status), {
       publication: run?.publication,
-      note: incremental && run ? updateSummary(run) : "统一写入本地、国际、内地运营商和全球云厂商四库",
+      note: incremental && run ? updateSummary(run, true) : "统一写入本地、国际、内地运营商和全球云厂商四库",
     });
     add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], run?.publication?.insights ?? "—", "项分析", "使用四库最新数据生成分析，更新页面并读取发布结果", [
       "读取更新后的四库数据，生成分库分析和跨库分析",
@@ -297,7 +303,7 @@
   function storageDetails(run) {
     const check = run?.publication?.storage_readback;
     if (!check) return '<section class="news-lineage-dialog-section"><p>尚无逐项回读证据，不能仅凭审核通过数确认入库。</p></section>';
-    return `<section class="news-lineage-dialog-section research-actual-list"><header><h3>逐项保存去向 · 当前文件回读</h3><span>${esc(check.checked_at)} · 确认 ${esc(check.confirmed)}/${esc(check.accepted)} 项</span></header><p>资料库保留原始指标；正式主表只接收定义、报告期和单位均能明确转换的指标。同义名称可以对应同一条已保存记录。</p><div class="news-lineage-preview-scroll" role="region" aria-label="逐项保存去向" tabindex="0">${(check.items || []).map((item, index) => `<article><strong>${index + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(item.period)} · ${esc(item.destination)}：${item.readback_verified ? "已回读确认" : "未找到匹配记录"}${item.matched_metric && item.matched_metric !== item.metric ? `（对应指标：${esc(item.matched_metric)}）` : ""}</p><p>${esc(item.main_table?.reason || "主表去向未记录")}</p>${item.main_table?.status === "existing_preserved" ? `<p>保留主表值：${esc(item.main_table.current_value)}；候选值：${esc(item.main_table.candidate_value)} ${esc(item.main_table.unit)}</p>` : ""}</article>`).join("")}</div></section>`;
+    return `<section class="news-lineage-dialog-section research-actual-list"><header><h3>逐项保存去向 · 当前文件回读</h3><span>${esc(check.checked_at)} · 确认 ${esc(check.confirmed)}/${esc(check.accepted)} 项</span></header><p>资料库保存查到的原始资料和来源；正式指标表用于统一统计收入、利润等数值。只有指标含义、报告期和单位都能明确对应的数据，才会进入指标表。仅保存为资料不代表丢失，但不算指标表更新；沿用已有记录表示不覆盖表中原值。下面逐项说明去向和原因。这里的“完成”仅指资料保存步骤，不代表全部研究任务成功。</p><div class="news-lineage-preview-scroll" role="region" aria-label="逐项保存去向" tabindex="0">${(check.items || []).map((item, index) => `<article><strong>${index + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(item.period)} · ${esc(item.destination)}：${item.readback_verified ? "已回读确认" : "未找到匹配记录"}${item.matched_metric && item.matched_metric !== item.metric ? `（对应指标：${esc(item.matched_metric)}）` : ""}</p><p>${esc(item.main_table?.reason || "指标表去向未记录")}</p>${item.main_table?.status === "existing_preserved" ? `<p>指标表沿用的原值：${esc(item.main_table.current_value)}；本次资料中的值：${esc(item.main_table.candidate_value)} ${esc(item.main_table.unit)}</p>` : ""}</article>`).join("")}</div></section>`;
   }
   window.CmhkResearchDiagram = { build, detail };
 })();

@@ -72,7 +72,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         }
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}], publication=publication)
         update = next(n for n in result['nodes'] if n['key'] == 'research-update')
-        self.assertEqual(update['unit'], '项已保存·回读确认')
+        self.assertEqual(update['unit'], '项资料已保存')
         self.assertEqual(update['value'], '—')
         self.assertNotEqual(update['health']['key'], 'healthy')
         self.assertIn('实际保存尚未核对', update['note'])
@@ -87,7 +87,41 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertEqual(review['unit'], '项最终审核通过')
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=21', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=22', (ROOT / 'web/static/index.html').read_text())
+
+    def test_saved_materials_explain_all_destinations_and_tooltip_explains_role(self):
+        receipts = [{'readback_verified': True, 'main_table': {'status': state}}
+                    for state, count in [('saved', 8), ('existing_preserved', 1), ('source_fact_only', 25)]
+                    for _ in range(count)]
+        check = {'confirmed': 34, 'accepted': 34, 'missing': 0, 'ok': True, 'items': receipts}
+        result = self.render(accepted=34, publication={'status': 'completed', 'storage_readback': check})
+        update = next(n for n in result['nodes'] if n['key'] == 'research-update')
+        self.assertEqual(update['value'], 34)
+        self.assertEqual(update['note'], '8 项已进入正式指标表；1 项沿用表中已有记录；25 项仅保存为资料，未进入指标表')
+        for node in result['nodes']:
+            self.assertNotEqual(node['purpose'], node['note'])
+        self.assertIn('终审通过的资料统一保存', update['purpose'])
+        self.assertIn('保存后重新读取核对', update['purpose'])
+        self.assertNotIn('34', update['purpose'])
+
+    def test_missing_materials_are_not_counted_as_saved_reference_materials(self):
+        check = {'confirmed': 1, 'accepted': 3, 'missing': 2, 'main_missing': 1, 'ok': False,
+                 'items': [{'readback_verified': True, 'main_table': {'status': 'missing'}},
+                           {'readback_verified': False, 'main_table': {'status': 'source_fact_only'}},
+                           {'readback_verified': False, 'main_table': {'status': 'saved'}}]}
+        result = self.render(accepted=3, publication={'status': 'completed', 'storage_readback': check})
+        update = next(n for n in result['nodes'] if n['key'] == 'research-update')
+        self.assertIn('2 项未找到已保存资料', update['note'])
+        self.assertIn('0 项仅保存为资料', update['note'])
+        self.assertIn('0 项已进入正式指标表', update['note'])
+        self.assertIn('1 项应进入指标表，但尚未确认写入', update['note'])
+
+    def test_missing_destination_receipts_are_not_inferred_as_reference_materials(self):
+        check = {'confirmed': 34, 'accepted': 34, 'missing': 0, 'ok': True, 'items': []}
+        result = self.render(accepted=34, publication={'status': 'completed', 'storage_readback': check})
+        update = next(n for n in result['nodes'] if n['key'] == 'research-update')
+        self.assertIn('34 项的指标表去向尚未确认', update['note'])
+        self.assertNotIn('34 项仅保存为资料', update['note'])
 
     def test_current_readback_overrides_archived_completion(self):
         for complete in [True, False]:
