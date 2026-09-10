@@ -2,6 +2,410 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260911_052900_968052",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-11@03:00）",
+      "task_kind": "news-selection-agent",
+      "run_status": "failed",
+      "phase": "失败",
+      "progress_detail": "新闻自动初筛失败：模型决策尚未通过完整性校验",
+      "status_detail": "新闻自动初筛失败：模型决策尚未通过完整性校验",
+      "failure_stage": "news_selection_agent",
+      "heartbeat_at_hkt": "2026-09-11T05:30:45+08:00",
+      "started_at_hkt": "2026-09-11T05:29:00+08:00",
+      "completed_at_hkt": "2026-09-11T05:30:45+08:00",
+      "crawl_return_code": 1,
+      "duration_ms": 104053,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {}
+    },
+    {
+      "crawl_run_id": "20260911_052347_640128",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-11@03:00）",
+      "task_kind": "news-selection-agent",
+      "run_status": "failed",
+      "phase": "失败",
+      "progress_detail": "新闻自动初筛失败：模型决策尚未通过完整性校验",
+      "status_detail": "新闻自动初筛失败：模型决策尚未通过完整性校验",
+      "failure_stage": "news_selection_agent",
+      "heartbeat_at_hkt": "2026-09-11T05:28:20+08:00",
+      "started_at_hkt": "2026-09-11T05:23:47+08:00",
+      "completed_at_hkt": "2026-09-11T05:28:20+08:00",
+      "crawl_return_code": 1,
+      "duration_ms": 272896,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {}
+    },
+    {
+      "crawl_run_id": "20260911_030009_655083",
+      "trigger": "战略新闻定时爬虫",
+      "scope": "晨间扫描（2026-09-11@03:00）",
+      "task_kind": "strategic-news",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 656 条，AI保留 243 条，历史重复 64 条，新增 179 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 656 条，AI保留 243 条，历史重复 64 条，新增 179 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-11T05:29:00+08:00",
+      "started_at_hkt": "2026-09-11T03:00:09+08:00",
+      "completed_at_hkt": "2026-09-11T05:29:00+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 8931234,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "slot": "2026-09-11@03:00",
+        "discovered": 656,
+        "ai_retained": 243,
+        "history_duplicates": 64,
+        "new_count": 179,
+        "readback_verified": true,
+        "notification_status": "sent",
+        "message_id": "om_x100b6505b32ff4a0b32bc088823acc0",
+        "message_ids": [
+          "om_x100b6505b32ff4a0b32bc088823acc0",
+          "om_x100b6505b0f8bca0b323870067656f6"
+        ],
+        "notification_destination_count": 2,
+        "selection_agent_status": "retry_pending",
+        "selection_agent_changed": 0
+      }
+    },
+    {
+      "crawl_run_id": "20260911_030003_928545",
+      "trigger": "四库资料研究与更新",
+      "scope": "六 Agent 最新资料研究（2026-09-11T03:00:00+08:00）",
+      "task_kind": "four-database-research",
+      "run_status": "failed",
+      "phase": "失败",
+      "progress_detail": "研究任务已结束，但四库写入或页面发布失败；请查看任务日志。",
+      "status_detail": "研究任务已结束，但四库写入或页面发布失败；请查看任务日志。",
+      "failure_stage": "daily_research",
+      "heartbeat_at_hkt": "2026-09-11T05:17:27+08:00",
+      "started_at_hkt": "2026-09-11T03:00:03+08:00",
+      "completed_at_hkt": "2026-09-11T05:17:27+08:00",
+      "crawl_return_code": 1,
+      "duration_ms": 8243384,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "agent_run_id": "research_20260911",
+        "accepted": 3,
+        "review": 114,
+        "publication": {
+          "status": "error",
+          "task_run_id": "20260911_030003_928545",
+          "completed_at": "2026-09-11T05:17:27+08:00",
+          "database_updated": true,
+          "storage_readback": {
+            "schema_version": 2,
+            "policy": "formal_kpi_binary_v1",
+            "checked_at": "2026-09-11T05:15:27+08:00",
+            "accepted": 3,
+            "written": 3,
+            "not_written": 0,
+            "records_read": 3,
+            "confirmed": 3,
+            "missing": 0,
+            "main_missing": 0,
+            "ok": true,
+            "errors": [],
+            "items": [
+              {
+                "id": "29450057053dab11d5a8cf3c",
+                "company": "中国铁塔",
+                "metric": "净利润",
+                "period": "1H 2026",
+                "domain": "mainland",
+                "destination": "内地运营商正式指标表",
+                "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "7,489 RMB million",
+                "unit": "RMB million",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "中国铁塔",
+                  "period": "H1 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "net_income",
+                  "metric_zh": "净利润",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 7489,
+                  "candidate_value": 7489,
+                  "unit": "millions CNY",
+                  "source_url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "row_key": {
+                    "subject": "中国铁塔",
+                    "period": "H1 2026",
+                    "metric_key": "net_income"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "1ff93f4d56527948796c334a",
+                "company": "Singtel",
+                "metric": "收入",
+                "period": "Financial Year ended March 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "14,261 S$ million",
+                "unit": "S$ million",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "Singtel",
+                  "period": "FY2026",
+                  "period_end": "2026-03-31",
+                  "metric_key": "revenue",
+                  "metric_zh": "营业收入",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 14261,
+                  "candidate_value": 14261,
+                  "unit": "millions SGD",
+                  "source_url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
+                  "row_key": {
+                    "subject": "Singtel",
+                    "period": "FY2026",
+                    "metric_key": "revenue"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "8e2e75967144f622930a8398",
+                "company": "NTT Docomo",
+                "metric": "净利润",
+                "period": "FY2026/1Q",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "176.3 Billions of yen",
+                "unit": "Billions of yen",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "NTT Docomo",
+                  "period": "Q1 FY2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "net_income",
+                  "metric_zh": "净利润",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 176300,
+                  "candidate_value": 176300,
+                  "unit": "millions JPY",
+                  "source_url": "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260806/presentation_fy2026_1q_e.pdf?ver=1785990617",
+                  "row_key": {
+                    "subject": "NTT Docomo",
+                    "period": "Q1 FY2026",
+                    "metric_key": "net_income"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              }
+            ],
+            "domain_counts": {
+              "local": 0,
+              "international": 2,
+              "mainland": 1,
+              "cloud": 0
+            }
+          },
+          "insights": 0,
+          "model_analysis": {
+            "ok": false,
+            "error": "内部模型 3 个配置路由暂不可用，约 95 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。",
+            "fallback_preserved": true,
+            "focuses_expected": 15,
+            "discoveries_expected": 4,
+            "insights_expected": 19,
+            "insights_passed": 0
+          },
+          "domains": {
+            "local": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 161,
+                "path": "",
+                "latest_period": "",
+                "quality": "passed",
+                "verified_rows": 161,
+                "financial_reports": 5,
+                "latest_financial_period": "H1 2026",
+                "latest_financial_publication_date": "2026-08-27"
+              },
+              "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
+              "agent_fact_update": {
+                "facts": 41,
+                "submitted_facts": 0,
+                "inserted_facts": 0,
+                "confirmed_facts": 0,
+                "changed": false,
+                "published": false
+              },
+              "database_changed": false
+            },
+            "international": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 3118,
+                "path": "",
+                "latest_period": "Jun '26 Jun 30, 2026",
+                "quality": "passed",
+                "verified_rows": 2732
+              },
+              "note": "本次仅验证现有数据库，未执行联网重建。",
+              "agent_fact_update": {
+                "facts": 33,
+                "submitted_facts": 2,
+                "inserted_facts": 2,
+                "confirmed_facts": 2,
+                "changed": true,
+                "published": true
+              },
+              "database_changed": true
+            },
+            "cloud": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 430,
+                "path": "",
+                "latest_period": "2025",
+                "quality": "passed",
+                "verified_rows": 171
+              },
+              "note": "本次仅验证现有数据库，未执行联网重建。",
+              "agent_fact_update": {
+                "facts": 14,
+                "submitted_facts": 0,
+                "inserted_facts": 0,
+                "confirmed_facts": 0,
+                "changed": false,
+                "published": false
+              },
+              "database_changed": false
+            },
+            "macro": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 7751,
+                "path": "",
+                "latest_period": "2026-07-31",
+                "quality": "passed",
+                "verified_rows": 7748
+              },
+              "note": "本次仅验证现有数据库，未执行联网重建。"
+            },
+            "mainland": {
+              "ok": true,
+              "changed": true,
+              "daily_main_database_promotion": {
+                "ok": true,
+                "changed": true,
+                "dry_run": false,
+                "added_rows": 3,
+                "candidates": 3,
+                "written": 3,
+                "not_written": 0,
+                "failures": [],
+                "tables": {
+                  "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json": {
+                    "added_rows": 3,
+                    "candidates": 3,
+                    "rows": 3118
+                  }
+                }
+              },
+              "agent_fact_update": {
+                "facts": 22,
+                "submitted_facts": 1,
+                "inserted_facts": 1,
+                "confirmed_facts": 1,
+                "changed": true,
+                "published": true
+              },
+              "database_changed": true
+            }
+          },
+          "changes": {
+            "baseline_available": true,
+            "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+            "changed": 0,
+            "added": 0,
+            "removed": 0,
+            "domains": {
+              "local": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              },
+              "international": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              },
+              "mainland": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              },
+              "cloud": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              }
+            },
+            "items": []
+          },
+          "pages": {
+            "ok": false,
+            "skipped": true,
+            "reason": "core_gate_failed"
+          },
+          "error": "",
+          "result_status": "failed_validation"
+        },
+        "model_analysis": {
+          "ok": false,
+          "error": "内部模型 3 个配置路由暂不可用，约 95 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。",
+          "fallback_preserved": true,
+          "focuses_expected": 15,
+          "discoveries_expected": 4,
+          "insights_expected": 19,
+          "insights_passed": 0
+        },
+        "pages_publish": {
+          "ok": false,
+          "skipped": true,
+          "reason": "core_gate_failed"
+        }
+      }
+    },
+    {
       "crawl_run_id": "20260910_153038_307048",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-09-10@14:00）",
@@ -304557,137 +304961,6 @@
           "online_search": true,
           "online_checked": 167,
           "online_votes": 134
-        }
-      }
-    },
-    {
-      "crawl_run_id": "20260710_091636",
-      "trigger": "手动全量",
-      "scope": "全量（第2-34行）",
-      "run_status": "completed",
-      "started_at_hkt": "2026-07-10T09:16:36+08:00",
-      "completed_at_hkt": "2026-07-10T09:16:36+08:00",
-      "crawl_return_code": 0,
-      "final_audit": {},
-      "curation": {}
-    },
-    {
-      "crawl_run_id": "20260630_113455",
-      "trigger": "api-crawl-stream",
-      "started_at_hkt": "2026-06-30T11:35:02.349321+08:00",
-      "completed_at_hkt": "2026-07-10T09:26:01+08:00",
-      "crawl_return_code": 1,
-      "duration_ms": 703336,
-      "final_audit": {
-        "generated_at": "2026-07-10T09:16:35.395746",
-        "rows_crawled": "33",
-        "ok_rows": "33",
-        "partial_rows": "0",
-        "failed_rows": "0",
-        "fulfilled": "33/33 (100.0%)",
-        "live_url_success": "165/165 (100.0%)",
-        "live_url_failures": "0",
-        "restored_from_previous_evidence": "0"
-      },
-      "curation": {
-        "agent_run_id": "20260710_091640_68b6be37",
-        "started_at": "2026-07-10T09:16:40+08:00",
-        "completed_at": "2026-07-10T09:26:00+08:00",
-        "tasks": 210,
-        "accepted": 209,
-        "rejected": 0,
-        "review": 1,
-        "gaps": 1,
-        "recrawl_rows": [],
-        "search_verification": {
-          "checked": 210,
-          "corrected": 1,
-          "review": 1,
-          "conflicts": 67,
-          "workers": 4,
-          "online_search": true,
-          "online_checked": 210,
-          "online_votes": 232
-        }
-      }
-    },
-    {
-      "crawl_run_id": "20260623_113338",
-      "trigger": "api-crawl-stream",
-      "started_at_hkt": "2026-06-23T11:33:45.234031+08:00",
-      "completed_at_hkt": "2026-06-23T11:39:07+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 429013,
-      "final_audit": {
-        "generated_at": "2026-06-23T11:33:39.295942",
-        "rows_crawled": "33",
-        "ok_rows": "33",
-        "partial_rows": "0",
-        "failed_rows": "0",
-        "fulfilled": "33/33 (100.0%)",
-        "live_url_success": "165/165 (100.0%)",
-        "live_url_failures": "0",
-        "restored_from_previous_evidence": "0"
-      },
-      "curation": {
-        "agent_run_id": "20260623_113348_3cad8444",
-        "started_at": "2026-06-23T11:33:48+08:00",
-        "completed_at": "2026-06-23T11:39:00+08:00",
-        "tasks": 208,
-        "accepted": 207,
-        "rejected": 1,
-        "review": 0,
-        "gaps": 1,
-        "recrawl_rows": [],
-        "search_verification": {
-          "checked": 207,
-          "corrected": 2,
-          "review": 0,
-          "conflicts": 28,
-          "workers": 4,
-          "online_search": true,
-          "online_checked": 207,
-          "online_votes": 72
-        }
-      }
-    },
-    {
-      "crawl_run_id": "20260623_104031",
-      "trigger": "api-crawl-stream",
-      "started_at_hkt": "2026-06-23T10:40:42.201814+08:00",
-      "completed_at_hkt": "2026-06-23T10:46:31+08:00",
-      "crawl_return_code": 0,
-      "duration_ms": 463723,
-      "final_audit": {
-        "generated_at": "2026-06-23T10:40:32.006135",
-        "rows_crawled": "33",
-        "ok_rows": "32",
-        "partial_rows": "1",
-        "failed_rows": "0",
-        "fulfilled": "33/33 (100.0%)",
-        "live_url_success": "165/166 (99.4%)",
-        "live_url_failures": "1",
-        "restored_from_previous_evidence": "0"
-      },
-      "curation": {
-        "agent_run_id": "20260623_104045_f4bc4d04",
-        "started_at": "2026-06-23T10:40:45+08:00",
-        "completed_at": "2026-06-23T10:46:22+08:00",
-        "tasks": 211,
-        "accepted": 207,
-        "rejected": 0,
-        "review": 4,
-        "gaps": 4,
-        "recrawl_rows": [],
-        "search_verification": {
-          "checked": 211,
-          "corrected": 0,
-          "review": 4,
-          "conflicts": 37,
-          "workers": 4,
-          "online_search": true,
-          "online_checked": 211,
-          "online_votes": 79
         }
       }
     }

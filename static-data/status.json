@@ -155,108 +155,108 @@
         "completedAt": "2026-09-05T11:54:08+08:00"
       },
       "newsFunnel": {
-        "scope": "午后扫描（2026-09-10@14:00）",
-        "label": "9月10日 14:00",
-        "completedAt": "2026-09-10T14:43:05+08:00",
-        "historyDuplicates": 11,
+        "scope": "晨间扫描（2026-09-11@03:00）",
+        "label": "9月11日 03:00",
+        "completedAt": "2026-09-11T05:29:00+08:00",
+        "historyDuplicates": 64,
         "summary": {
-          "discovered": 131,
-          "confirmed": 52,
-          "newCount": 41,
-          "sourceCount": 36
+          "discovered": 656,
+          "confirmed": 243,
+          "newCount": 179,
+          "sourceCount": 114
         },
         "categories": [
           {
-            "label": "网络与技术",
-            "value": 13
+            "label": "行业动态",
+            "value": 64
           },
           {
             "label": "竞对动态",
-            "value": 11
+            "value": 38
           },
           {
-            "label": "行业动态",
-            "value": 8
+            "label": "网络与技术",
+            "value": 33
           },
           {
             "label": "其他",
-            "value": 9
+            "value": 44
           }
         ],
         "impacts": [
           {
-            "label": "网络与运营",
-            "value": 12
-          },
-          {
             "label": "产品与定价",
-            "value": 6
-          },
-          {
-            "label": "供应韧性",
-            "value": 5
-          },
-          {
-            "label": "客户与渠道",
-            "value": 5
-          },
-          {
-            "label": "竞争格局",
-            "value": 5
-          },
-          {
-            "label": "合规与牌照",
-            "value": 3
+            "value": 34
           },
           {
             "label": "收入与需求",
-            "value": 2
+            "value": 27
+          },
+          {
+            "label": "供应韧性",
+            "value": 25
+          },
+          {
+            "label": "竞争格局",
+            "value": 24
           },
           {
             "label": "资本配置",
-            "value": 2
+            "value": 20
+          },
+          {
+            "label": "网络与运营",
+            "value": 17
           },
           {
             "label": "成本与效率",
-            "value": 1
+            "value": 13
+          },
+          {
+            "label": "客户与渠道",
+            "value": 11
+          },
+          {
+            "label": "合规与牌照",
+            "value": 8
           }
         ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 131,
+            "value": 656,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 131 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 656 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 52,
-            "removed": 79,
-            "rate": 40,
-            "note": "保留 40%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 52 条，未确认 79 条。"
+            "value": 243,
+            "removed": 413,
+            "rate": 37,
+            "note": "保留 37%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 243 条，未确认 413 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 41,
-            "removed": 11,
-            "rate": 79,
-            "note": "排除 11 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 11 条重复事件，剩余 41 条。"
+            "value": 179,
+            "removed": 64,
+            "rate": 74,
+            "note": "排除 64 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 64 条重复事件，剩余 179 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 41,
+            "value": 179,
             "removed": 0,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 41 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 179 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
