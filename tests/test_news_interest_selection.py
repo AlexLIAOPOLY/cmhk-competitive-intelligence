@@ -6,9 +6,9 @@ from cmhk.services.subscriptions import (filter_news_by_categories, Subscription
     NEWS_CATEGORY_LABELS, strategic_news_card, NEWS_DIGEST_PREFIX)
 
 
-def article(name, section, hour=10):
+def article(name, section, hour=10, region='香港本地'):
     return {'title': name, 'category': section, 'source_url': 'https://example.test/'+name,
-            'published_at': f'2026-09-09T{hour:02d}:00:00+08:00'}
+            'published_at': f'2026-09-09T{hour:02d}:00:00+08:00', 'region': region}
 
 
 class InterestSelectionTests(unittest.TestCase):
@@ -65,3 +65,44 @@ class InterestSelectionTests(unittest.TestCase):
             seen.add(chosen)
         self.assertGreater(len(seen), 1)
         self.assertEqual(len(categories), 7)
+
+    def test_non_macro_sections_use_local_news_before_international_fallback(self):
+        rows = [
+            article('intl-new', '政策监管', 20, '国际/行业'),
+            article('local-new', '政策监管', 19, '香港本地'),
+            article('local-old', '政策监管', 18, '香港本地'),
+            article('intl-old', '政策监管', 17, '国际/行业'),
+        ]
+
+        got = filter_news_by_categories(rows, ['政策监管'], limit=4)
+
+        self.assertEqual([item['title'] for item in got], [
+            'local-new', 'local-old', 'intl-new', 'intl-old',
+        ])
+
+    def test_international_news_fills_when_local_news_is_insufficient(self):
+        rows = [article('local', '行业动态', 18, '香港本地')]
+        rows += [
+            article(f'international-{index}', '行业动态', 17 - index, '国际/行业')
+            for index in range(4)
+        ]
+
+        got = filter_news_by_categories(rows, ['行业动态'], limit=5)
+
+        self.assertEqual(len(got), 5)
+        self.assertEqual(got[0]['title'], 'local')
+        self.assertEqual(sum(item['region'] == '国际/行业' for item in got), 4)
+
+    def test_macro_and_international_section_allows_international_news_to_lead(self):
+        macro = '宏观经济&国际形势&地缘政治&其他国际性质关注词汇'
+        rows = [
+            article('local-new', macro, 20, '香港本地'),
+            article('international-new', macro, 19, '国际/行业'),
+            article('international-old', macro, 18, '国际/行业'),
+        ]
+
+        got = filter_news_by_categories(rows, [macro], limit=3)
+
+        self.assertEqual([item['title'] for item in got], [
+            'international-new', 'international-old', 'local-new',
+        ])

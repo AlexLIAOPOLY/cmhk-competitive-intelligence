@@ -203,10 +203,13 @@ def filter_news_by_categories(
     limit: int | None = None,
     selection_seed: str = "",
 ) -> list[dict[str, Any]]:
-    """Sample at most four subscribed sections; competitor leads when sampled.
+    """Sample at most four subscribed sections; local news leads when sampled.
 
     The input is the already reviewed news pool. Within each section, prefer
     fresh reporting and avoid repeating an identical URL/title across sections.
+    Hong Kong news leads in every section except the explicitly international
+    macro section. International news fills any remaining capacity so a local
+    shortage does not unnecessarily reduce the personal digest.
     """
     requested = normalize_news_categories(categories)
     selected = set(_news_categories_for_push(requested, seed=selection_seed))
@@ -237,12 +240,41 @@ def filter_news_by_categories(
     # Rank within this delivery's selection; never modify saved preferences.
     section_order = section_order[:NEWS_CATEGORIES_PER_PUSH]
     selected = set(section_order)
-    buckets = {section: buckets[section] for section in section_order}
-    chosen = []
-    while len(chosen) < count and any(buckets.values()):
-        for section in section_order:
-            if buckets[section] and len(chosen) < count:
-                chosen.append(buckets[section].pop(0))
+    macro_category = "宏观经济&国际形势&地缘政治&其他国际性质关注词汇"
+    primary_buckets: dict[str, list[dict[str, Any]]] = {}
+    fallback_buckets: dict[str, list[dict[str, Any]]] = {}
+    for section in section_order:
+        section_items = buckets[section]
+        local = [item for item in section_items if str(item.get("region") or "").strip() == "香港本地"]
+        international = [item for item in section_items if str(item.get("region") or "").strip() == "国际/行业"]
+        unclassified = [
+            item for item in section_items
+            if str(item.get("region") or "").strip() not in {"香港本地", "国际/行业"}
+        ]
+        if section == macro_category:
+            # This section is intentionally international-facing. Preserve
+            # freshness inside each region while allowing international news
+            # to lead and occupy more of this section's personal selection.
+            primary_buckets[section] = [*international, *local, *unclassified]
+            fallback_buckets[section] = []
+        else:
+            primary_buckets[section] = local
+            fallback_buckets[section] = [*international, *unclassified]
+
+    def round_robin(
+        active_buckets: dict[str, list[dict[str, Any]]],
+        item_limit: int,
+    ) -> list[dict[str, Any]]:
+        picked: list[dict[str, Any]] = []
+        while len(picked) < item_limit and any(active_buckets.values()):
+            for section in section_order:
+                if active_buckets[section] and len(picked) < item_limit:
+                    picked.append(active_buckets[section].pop(0))
+        return picked
+
+    chosen = round_robin(primary_buckets, count)
+    if len(chosen) < count:
+        chosen.extend(round_robin(fallback_buckets, count - len(chosen)))
     return [{**item, "subscription_preferred": str(item.get("category") or "").strip() in selected}
             for item in chosen[:count]]
 
@@ -533,7 +565,7 @@ def subscription_entry_card(
                                 for category, label in NEWS_CATEGORY_LABELS.items()
                             ],
                         },
-                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。超过4个时，每次新闻推送从中随机抽取4个，下次重新抽取；4个及以下按所选推送。抽中的竞对动态优先展示；缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
+                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。超过4个时，每次新闻推送从中随机抽取4个，下次重新抽取；4个及以下按所选推送。抽中的竞对动态优先展示。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**战略新闻频率**"},
                         {
                             "tag": "select_static",
@@ -714,7 +746,7 @@ def subscription_confirmation_card(
                                     ],
                                 },
                                 {"tag": "markdown", "content": f"**已订阅兴趣板块**\n{categories}"},
-                                {"tag": "markdown", "content": "所选板块全部保留；超过4个时，每次新闻推送随机抽取4个，下次重新抽取。4个及以下按所选推送；抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
+                                {"tag": "markdown", "content": "所选板块全部保留；超过4个时，每次新闻推送随机抽取4个，下次重新抽取。4个及以下按所选推送。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
                                 {"tag": "markdown", "content": f"**期待收到时间（香港）**\n{' / '.join(delivery_times)}"},
                             ],
                         }
@@ -4157,6 +4189,14 @@ class SubscriptionService:
                             limit=news_item_limit - len(recipient_items),
                         ))
                     body = encode_strategic_news_digest(recipient_items)
+                    local_item_count = sum(
+                        str(item.get("region") or "").strip() == "香港本地"
+                        for item in recipient_items
+                    )
+                    international_item_count = sum(
+                        str(item.get("region") or "").strip() == "国际/行业"
+                        for item in recipient_items
+                    )
                     cursor = db.execute(
                         """INSERT INTO deliveries(batch_id, open_id, service, mode, content_ref, status, message_ids, error, created_at)
                            VALUES(?, ?, 'news', 'text', ?, 'queued', '[]', '', ?)""",
@@ -4204,6 +4244,8 @@ class SubscriptionService:
                 "news_categories": news_categories,
                 "push_news_categories": push_news_categories,
                 "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in news_categories],
+                "local_item_count": local_item_count,
+                "international_item_count": international_item_count,
                 "news_delivery_times": delivery_times,
                 "delivery_time": delivery_time,
                 "status": "queued",
