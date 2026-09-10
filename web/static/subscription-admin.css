@@ -79,8 +79,8 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table th:nth-child(1) { width: 11%; }
 .subscriber-table th:nth-child(2) { width: 9%; }
 .subscriber-table th:nth-child(3) { width: 11%; }
-.subscriber-table th:nth-child(4) { width: 19%; }
-.subscriber-table th:nth-child(5) { width: 7%; }
+.subscriber-table th:nth-child(4) { width: 16%; }
+.subscriber-table th:nth-child(5) { width: 10%; }
 .subscriber-table th:nth-child(6) { width: 6%; }
 .subscriber-table th:nth-child(7) { width: 15%; }
 .subscriber-table th:nth-child(8) { width: 7%; }
@@ -94,7 +94,7 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-table th { vertical-align: bottom; }
 .subscriber-table td select { min-width: 0; padding-right: 28px; white-space: nowrap; }
 .subscriber-table [data-subscriber-report-mode] { min-width: 160px; }
-.subscriber-table [data-subscriber-news-frequency] { width: 110px; min-width: 108px; }
+.subscriber-table [data-subscriber-news-frequency] { width: 156px; min-width: 156px; }
 .subscriber-table [data-subscriber-news-limit] { width: 92px; min-width: 88px; }
 .subscriber-table [data-subscriber-status] { min-width: 74px; }
 

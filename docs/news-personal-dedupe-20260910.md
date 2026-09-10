@@ -30,4 +30,8 @@
 
 私有复测证据：`var/subscriptions/news-dedupe-live-review-20260910.json`、`var/subscriptions/news-dedupe-full-replay-20260910.json`。正式发送审计：运行库 `news_delivery_receipts`；模型依据缓存：`var/subscriptions/news-dedupe/`。
 
-发布回执将在完成后补充。
+## 发布回执
+
+- 功能提交 `7b793dc32` 已推送公私开发分支；私有完整快照 `ac7feab796fcd12eedcf0771de337e7f691cf715`，备份 `backup/main-before-sync-20260910-193103`。
+- 安全队列 `20260910T193056-41679-16181` 于 19:31:38 激活并清空，六个运行文件与源码逐一哈希一致，健康接口 HTTP 200 / ok=true，新回执表已建立。
+- 正式登录页已回读 14 人的上午时间控件及新版“每天一次（上午）”选项，已有 09:00 的个人设置保留，控制台无错误或警告；显示宽度补齐以容纳完整上午标签。
