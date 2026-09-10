@@ -143,6 +143,72 @@ class ReportFileNameTests(unittest.TestCase):
         self.assertIn("更新失败", app)
         self.assertIn("预警发送失败", app)
 
+    def test_research_and_refresh_child_are_one_unified_task(self) -> None:
+        runs = [
+            {
+                "crawl_run_id": "research-parent",
+                "task_kind": "four-database-research",
+                "trigger": "03:00 四库资料研究与更新",
+                "run_status": "completed",
+                "started_at_hkt": "2026-09-10T03:00:00+08:00",
+                "stream_log": {"lines": 7, "bytes": 700},
+            },
+            {
+                "crawl_run_id": "refresh-child",
+                "parent_crawl_run_id": "research-parent",
+                "task_kind": "executive-intelligence-refresh",
+                "trigger": "四库与观察结论自动更新",
+                "run_status": "completed",
+                "started_at_hkt": "2026-09-10T07:39:00+08:00",
+                "stream_log": {"lines": 15, "bytes": 1500},
+                "operational_summary": {
+                    "model_analysis": {"model": "deterministic", "evidence_hash": "evidence"},
+                    "pages_publish": {"ok": True, "status": "published"},
+                },
+            },
+        ]
+        with (
+            mock.patch.object(web_app, "_task_read_local_index", return_value=[]),
+            mock.patch.object(web_app, "load_crawl_run_index", return_value=runs),
+            mock.patch.object(web_app, "_orphan_research_tasks", return_value=[]),
+        ):
+            tasks = web_app.load_unified_task_index(limit=10)
+
+        self.assertEqual(len(tasks), 1)
+        self.assertEqual(tasks[0]["task_run_id"], "research-parent")
+        self.assertEqual(tasks[0]["merged_task_ids"], ["refresh-child"])
+        self.assertEqual(tasks[0]["analysis_model"], "deterministic")
+        self.assertTrue(tasks[0]["pages_publish_ok"])
+        self.assertEqual(tasks[0]["lines"], 23)
+
+    def test_research_detail_includes_legacy_child_log(self) -> None:
+        task = {
+            "task_id": "crawl:research-parent",
+            "task_run_id": "research-parent",
+            "kind": "four-database-research",
+            "merged_task_ids": ["refresh-child"],
+        }
+
+        def load_log(run_id: str) -> dict:
+            if run_id == "research-parent":
+                return {"ok": True, "run": {"crawl_run_id": run_id}, "content": "研究日志\n", "raw": "{}\n"}
+            return {
+                "ok": True,
+                "run": {"crawl_run_id": run_id, "trigger": "四库与观察结论自动更新"},
+                "content": "四库写入日志\n",
+                "raw": "{}\n",
+            }
+
+        with (
+            mock.patch.object(web_app, "load_crawl_run_log", side_effect=load_log),
+            mock.patch.object(web_app, "load_unified_task_index", return_value=[task]),
+        ):
+            result = web_app.load_unified_task_log("crawl:research-parent")
+
+        self.assertIn("研究日志", result["content"])
+        self.assertIn("已合并阶段：四库与观察结论自动更新", result["content"])
+        self.assertIn("四库写入日志", result["content"])
+
     def test_orphan_daily_research_is_visible_while_final_review_runs(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)

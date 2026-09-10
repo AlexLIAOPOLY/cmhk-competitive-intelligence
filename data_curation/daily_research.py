@@ -40,6 +40,16 @@ def _start_research_task(root: Path, run_id: str, scheduled_for: str) -> dict:
         "type": "log",
         "text": f"[{datetime.now(HKT).strftime('%H:%M:%S')}] [任务启动] {run_id} 已分配六个研究 Agent。",
     })
+    for index, assignment in enumerate(research_plan(), start=1):
+        companies = "、".join(assignment["companies"])
+        registry.append_crawl_run_event(task["stream_log_path"], {
+            "type": "log",
+            "text": (
+                f"[{datetime.now(HKT).strftime('%H:%M:%S')}] [任务分工 {index}/6] "
+                f"{assignment['title']}；范围：{companies}（共 {len(assignment['companies'])} 家）；"
+                f"目标：{assignment['purpose']}。"
+            ),
+        })
     return task
 
 
@@ -66,10 +76,75 @@ def _task_heartbeat(root: Path, task_run_id: str, phase: str, detail: str) -> No
         registry.heartbeat_crawl_run(task_run_id, phase, detail, worker_pid=os.getpid())
 
 
+def _append_task_detail(root: Path, task_run_id: str, phase: str, detail: str) -> None:
+    """Append detailed evidence without rewriting the shared registry per line."""
+    registry = _live_registry(root)
+    if registry is None or not task_run_id:
+        return
+    registry.append_crawl_run_event(
+        root / "agent_knowledge" / "crawl_run_logs" / "runs" / f"{task_run_id}.jsonl",
+        {
+            "type": "log",
+            "text": f"[{datetime.now(HKT).strftime('%H:%M:%S')}] [{phase}] {detail}",
+        },
+    )
+
+
+def _append_research_result_details(root: Path, task_run_id: str, directory: Path, summary: dict) -> None:
+    """Archive one auditable summary per Agent and per researched company."""
+    agents = summary.get("agents") if isinstance(summary.get("agents"), list) else []
+    _append_task_detail(
+        root,
+        task_run_id,
+        "六Agent研究汇总",
+        f"六组结果已归档；新增更新候选 {int(summary.get('accepted') or 0)} 项，"
+        f"待最终审核或失败 {int(summary.get('review') or 0)} 项，Agent 结果文件 {len(agents)} 份。",
+    )
+    for index, agent in enumerate(agents, start=1):
+        key = str(agent.get("key") or "")
+        try:
+            payload = json.loads((directory / f"{key}.json").read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            payload = {}
+        reports = payload.get("reports") if isinstance(payload.get("reports"), list) else []
+        items = [item for report in reports for item in (report.get("items") or []) if isinstance(item, dict)]
+        statuses: dict[str, int] = {}
+        for item in items:
+            status = str(item.get("status") or "未标注")
+            statuses[status] = statuses.get(status, 0) + 1
+        status_text = "、".join(f"{name} {count}" for name, count in sorted(statuses.items())) or "无指标结果"
+        _append_task_detail(
+            root,
+            task_run_id,
+            f"Agent结果 {index}/6",
+            f"{agent.get('title') or key}已完成；公司 {len(reports)} 家，指标 {len(items)} 项，"
+            f"状态分布：{status_text}；完成时间：{agent.get('completed_at') or payload.get('completed_at') or '未记录'}。",
+        )
+        for company_index, report in enumerate(reports, start=1):
+            report_items = [item for item in (report.get("items") or []) if isinstance(item, dict)]
+            report_statuses: dict[str, int] = {}
+            for item in report_items:
+                status = str(item.get("status") or "未标注")
+                report_statuses[status] = report_statuses.get(status, 0) + 1
+            pages = report.get("pages") if isinstance(report.get("pages"), dict) else {}
+            opened = sum(1 for page in pages.values() if isinstance(page, dict) and page.get("opened"))
+            cached = sum(1 for page in pages.values() if isinstance(page, dict) and page.get("cache_hit"))
+            distribution = "、".join(f"{name} {count}" for name, count in sorted(report_statuses.items())) or "无"
+            _append_task_detail(
+                root,
+                task_run_id,
+                f"公司结果 {index}.{company_index}",
+                f"{report.get('company') or '未记录公司'}；研究指标 {len(report_items)} 项（{distribution}）；"
+                f"资料页 {len(pages)} 个，成功打开 {opened} 个，命中缓存 {cached} 个；"
+                f"结果状态：{report.get('status') or '未标注'}。",
+            )
+
+
 def _finish_research_task(root: Path, task_run_id: str, started: float, *, ok: bool,
                           detail: str, summary: dict) -> None:
     registry = _live_registry(root)
     if registry is not None and task_run_id:
+        publication = summary.get("publication") if isinstance(summary.get("publication"), dict) else {}
         registry.finalize_operational_crawl_run(
             task_run_id,
             ok=ok,
@@ -80,7 +155,9 @@ def _finish_research_task(root: Path, task_run_id: str, started: float, *, ok: b
                 "agent_run_id": summary.get("run_id", ""),
                 "accepted": summary.get("accepted", 0),
                 "review": summary.get("review", 0),
-                "publication": summary.get("publication", {}),
+                "publication": publication,
+                "model_analysis": publication.get("model_analysis", {}),
+                "pages_publish": publication.get("pages", {}),
             },
         )
 
@@ -196,33 +273,53 @@ def execute(root: Path, run_id: str) -> dict:
             return previous
         summary = previous
         try:
+            _append_task_detail(
+                root, task_run_id, "执行上下文",
+                f"研究编号 {run_id}；工作进程 PID {os.getpid()}；"
+                f"断点续跑：{'是' if bool(previous) else '否'}；既有状态：{previous.get('status') or '无'}。",
+            )
             _task_heartbeat(root, task_run_id, "六 Agent 研究中", "六个研究 Agent 正在搜索公司最新资料并逐项保存结果。")
             summary = previous if previous.get("status") in {"completed", "partial"} else run_research(
                 run_id=run_id, output_dir=directory, resume=bool(previous))
-            _task_heartbeat(root, task_run_id, "最终审核 Agent 联网核对", "六组研究结果已汇总，正在联网补查失败项并做最终审核。")
-            from .research_final_review import review_run
-            summary = review_run(directory)
+            _append_research_result_details(root, task_run_id, directory, summary)
+            final_review = summary.get("final_review") if isinstance(summary.get("final_review"), dict) else {}
+            if final_review.get("status") != "completed":
+                _task_heartbeat(root, task_run_id, "最终审核 Agent 联网核对", "六组研究结果已汇总，正在联网补查失败项并做最终审核。")
+                from .research_final_review import review_run
+                summary = review_run(directory)
+            final_review = summary.get("final_review") if isinstance(summary.get("final_review"), dict) else {}
+            _append_task_detail(
+                root, task_run_id, "最终审核结果",
+                f"审核方式：{final_review.get('execution') or '未记录'}；并行审核工作者 "
+                f"{int(final_review.get('workers') or 0)} 个；通过 {int(summary.get('accepted') or 0)} 项；"
+                f"待处理或未通过 {int(summary.get('review') or 0)} 项；"
+                f"完成时间：{final_review.get('completed_at') or '未记录'}。",
+            )
             if summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted"):
                 summary["publication"] = {"status": "completed", "completed_at": now(),
                     "database_updated": False, "insights": 0,
                     "result_status": "needs_review" if summary.get("review") else "no_new_disclosures",
                     "note": "本轮未形成可写入的新披露，保留现有数据库和页面；待处理或失败记录见研究结果，未重复生成洞察。"}
                 atomic_write_json(manifest_path, summary)
+                _append_task_detail(root, task_run_id, "发布判定", summary["publication"]["note"])
                 _finish_research_task(root, task_run_id, task_started, ok=True,
                                       detail="研究与最终审核已完成；本轮无可写入的新资料，现有四库和页面保持不变。", summary=summary)
                 return summary
             summary["publication"] = {"status": "running", "started_at": now()}
             atomic_write_json(manifest_path, summary)
             _task_heartbeat(root, task_run_id, "四库写入与页面发布", "最终审核已完成，正在写入四库并更新分析页面。")
-            from executive_intelligence_pipeline import _start_refresh_task, run_pipeline_with_recovery
-            task = _start_refresh_task(agent_run_id=run_id, parent_crawl_run_id=task_run_id)
+            _append_task_detail(
+                root, task_run_id, "单任务续办",
+                "研究、最终审核、四库写入、AI洞察与页面发布继续使用同一任务编号，不再创建刷新子任务。",
+            )
+            from executive_intelligence_pipeline import run_pipeline_with_recovery
             result = run_pipeline_with_recovery(
                 agent_run_id=run_id, curation_summary=summary,
-                task_run_id=task["crawl_run_id"], max_attempts=1,
+                task_run_id=task_run_id, max_attempts=1, finalize_task=False,
             )
             summary["publication"] = {
                 "status": "completed" if result.get("ok") and not result.get("skipped") else "error",
-                "task_run_id": task["crawl_run_id"], "completed_at": now(),
+                "task_run_id": task_run_id, "completed_at": now(),
                 "database_updated": bool(result.get("domains")) and not result.get("failed_domains"),
                 "insights": result.get("model_analysis", {}).get("insights_passed", 0),
                 "model_analysis": result.get("model_analysis", {}),
@@ -232,8 +329,16 @@ def execute(root: Path, run_id: str) -> dict:
             }
         except Exception as exc:
             summary["publication"] = {"status": "error", "completed_at": now(), "error": str(exc)[:1000]}
+            _append_task_detail(root, task_run_id, "任务异常", f"执行链路异常：{str(exc)[:1000]}")
         atomic_write_json(manifest_path, summary)
         publication_ok = summary.get("publication", {}).get("status") == "completed"
+        _append_task_detail(
+            root, task_run_id, "任务完成" if publication_ok else "任务失败",
+            (
+                "六Agent研究、最终审核、四库写入、AI洞察、页面发布与回读已在同一任务中完成。"
+                if publication_ok else "任务链路未全部通过，已保留分阶段日志与失败原因。"
+            ),
+        )
         _finish_research_task(
             root, task_run_id, task_started, ok=publication_ok,
             detail=("本轮四库资料研究、数据处理与页面发布均已完成。" if publication_ok

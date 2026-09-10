@@ -5443,6 +5443,7 @@ def run_pipeline_with_recovery(
     task_run_id: str = "",
     parent_crawl_run_id: str = "",
     max_attempts: int | None = None,
+    finalize_task: bool = True,
 ) -> dict[str, Any]:
     """Retry the safe refresh and keep all status reporting in the local task log."""
     attempts_limit = max_attempts or max(1, int(os.environ.get("CMHK_INTELLIGENCE_MAX_ATTEMPTS", "3")))
@@ -5526,13 +5527,21 @@ def run_pipeline_with_recovery(
         else:
             detail = f"连续 {attempts} 次未通过，失败范围：{failed or result.get('error') or '观察结论'}；旧数据已保留。"
     result["notification_policy"] = "local_log_only"
-    _finalize_refresh_task(
-        task_run_id,
-        ok=ok,
-        detail=detail,
-        result=result,
-        attempts=attempts,
-    )
+    if finalize_task:
+        _finalize_refresh_task(
+            task_run_id,
+            ok=ok,
+            detail=detail,
+            result=result,
+            attempts=attempts,
+        )
+    else:
+        _task_event(
+            task_run_id,
+            "发布阶段完成" if ok else "发布阶段失败",
+            detail,
+            level="info" if ok else "critical",
+        )
     return result
 
 

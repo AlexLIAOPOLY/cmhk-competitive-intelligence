@@ -5034,6 +5034,7 @@ def _normalize_crawl_task(run: dict) -> dict:
     return {
         "task_id": "crawl:" + crawl_id,
         "task_run_id": crawl_id,
+        "parent_crawl_run_id": str(run.get("parent_crawl_run_id") or ""),
         "kind": task_kind,
         "kind_label": kind_labels.get(task_kind, "后台任务"),
         "title": (
@@ -5066,6 +5067,48 @@ def _normalize_crawl_task(run: dict) -> dict:
         "pages_publish_error": str(pages_publish.get("error") or ""),
         "source": "crawl-archive",
     }
+
+
+def _coalesce_research_refresh_tasks(tasks: list[dict]) -> list[dict]:
+    """Present the 03:00 research and its legacy refresh child as one task."""
+    by_id = {str(task.get("task_run_id") or ""): task for task in tasks}
+    hidden: set[str] = set()
+    analysis_fields = (
+        "analysis_model",
+        "analysis_fallback_used",
+        "analysis_fallback_reason",
+        "evidence_hash",
+        "pages_publish_ok",
+        "pages_publish_status",
+        "pages_public_url",
+        "pages_site_version",
+        "pages_publish_error",
+    )
+    for child in tasks:
+        if str(child.get("kind") or "") != "executive-intelligence-refresh":
+            continue
+        parent_id = str(child.get("parent_crawl_run_id") or "")
+        parent = by_id.get(parent_id)
+        if not parent or str(parent.get("kind") or "") != "four-database-research":
+            continue
+        child_id = str(child.get("task_run_id") or "")
+        hidden.add(child_id)
+        merged_ids = parent.setdefault("merged_task_ids", [])
+        if child_id and child_id not in merged_ids:
+            merged_ids.append(child_id)
+        parent["merged_task_count"] = len(merged_ids)
+        separator = f"\n----- 已合并阶段：{child.get('title') or '四库更新与页面发布'} -----\n"
+        parent["lines"] = int(parent.get("lines") or 0) + int(child.get("lines") or 0) + 1
+        parent["bytes"] = int(parent.get("bytes") or 0) + int(child.get("bytes") or 0) + len(separator.encode("utf-8"))
+        for field in analysis_fields:
+            if child.get(field) not in (None, "", False):
+                parent[field] = child[field]
+        if str(child.get("completed_at_hkt") or "") > str(parent.get("completed_at_hkt") or ""):
+            parent["completed_at_hkt"] = child["completed_at_hkt"]
+        if child.get("run_status") == "running" and parent.get("run_status") == "running":
+            parent["phase"] = child.get("phase") or parent.get("phase")
+            parent["progress_detail"] = child.get("progress_detail") or parent.get("progress_detail")
+    return [task for task in tasks if str(task.get("task_run_id") or "") not in hidden]
 
 
 def _research_process_alive(pid: int) -> bool:
@@ -6936,6 +6979,7 @@ def load_unified_task_index(limit: int = 50) -> list[dict]:
         if isinstance(item, dict) and item.get("crawl_run_id")
     )
     tasks.extend(_orphan_research_tasks())
+    tasks = _coalesce_research_refresh_tasks(tasks)
     _annotate_task_retries(tasks)
     _annotate_task_incidents(tasks)
     tasks.sort(
@@ -6978,7 +7022,6 @@ def load_unified_task_log(task_id: str) -> dict:
         result = load_crawl_run_log(crawl_id)
         if result.get("ok"):
             run = result.get("run") if isinstance(result.get("run"), dict) else {}
-            result["task"] = _normalize_crawl_task(run)
             indexed = next(
                 (
                     item
@@ -6987,9 +7030,27 @@ def load_unified_task_log(task_id: str) -> dict:
                 ),
                 {},
             )
-            result["task"]["retry_index"] = int(
-                indexed.get("retry_index") or 0
-            )
+            result["task"] = dict(indexed) if indexed else _normalize_crawl_task(run)
+            merged_ids = result["task"].get("merged_task_ids") if isinstance(result["task"].get("merged_task_ids"), list) else []
+            contents = [str(result.get("content") or "").rstrip()]
+            raw_parts = [str(result.get("raw") or "").rstrip()]
+            for merged_id in merged_ids:
+                child = load_crawl_run_log(str(merged_id))
+                if not child.get("ok"):
+                    continue
+                child_run = child.get("run") if isinstance(child.get("run"), dict) else {}
+                heading = f"----- 已合并阶段：{child_run.get('trigger') or '四库更新与页面发布'} -----"
+                contents.extend([heading, str(child.get("content") or "").rstrip()])
+                raw_parts.extend([heading, str(child.get("raw") or "").rstrip()])
+            content = "\n".join(part for part in contents if part).rstrip()
+            raw = "\n".join(part for part in raw_parts if part).rstrip()
+            result["content"] = content + ("\n" if content else "")
+            result["raw"] = raw + ("\n" if raw else "")
+            result["lines"] = len(result["content"].splitlines())
+            result["bytes"] = len(result["raw"].encode("utf-8"))
+            result["task"]["lines"] = result["lines"]
+            result["task"]["bytes"] = result["bytes"]
+            result["task"]["retry_index"] = int(result["task"].get("retry_index") or 0)
         return result
     if not task_id.startswith("task:"):
         return {"ok": False, "error": "无效的任务编号。"}

@@ -192,6 +192,31 @@ class SixAgentPipelineTests(unittest.TestCase):
                 result = daily.execute(root, run_id)
             self.assertEqual(result["publication"]["result_status"], "needs_review")
 
+    def test_daily_research_reuses_parent_task_for_publication(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            run_id = "research_20260905"
+            run = root / "curation_data/research_runs" / run_id
+            run.mkdir(parents=True)
+            initial = {"status": "completed", "accepted": 1, "review": 0,
+                       "final_review": {"status": "completed"},
+                       "research_policy": "latest_disclosure_incremental_v1"}
+            (run / "manifest.json").write_text(json.dumps(initial))
+            publication = {"ok": True, "domains": {"local": {"ok": True}},
+                           "failed_domains": [], "model_analysis": {}, "pages_publish": {"ok": True}}
+            with (
+                patch.object(daily, "ROOT", root),
+                patch.object(daily, "_research_task_id", return_value="research-parent"),
+                patch.object(daily, "_finish_research_task"),
+                patch.object(pipeline, "run_pipeline_with_recovery", return_value=publication) as refresh,
+                patch.object(pipeline, "_start_refresh_task", side_effect=AssertionError("child task must not be created")),
+            ):
+                result = daily.execute(root, run_id)
+
+        self.assertEqual(result["publication"]["task_run_id"], "research-parent")
+        self.assertEqual(refresh.call_args.kwargs["task_run_id"], "research-parent")
+        self.assertFalse(refresh.call_args.kwargs["finalize_task"])
+
     def test_six_research_publication_requires_its_own_finished_manifest(self):
         with tempfile.TemporaryDirectory() as directory, patch.object(pipeline, "ROOT", Path(directory)):
             with self.assertRaises(ValueError):

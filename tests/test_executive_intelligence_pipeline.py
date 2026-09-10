@@ -1158,6 +1158,29 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(task["crawl_run_id"], "refresh-test")
         self.assertEqual(start.call_args.kwargs["parent_crawl_run_id"], "crawl-parent")
 
+    def test_embedded_refresh_keeps_parent_open_for_daily_research_finalization(self):
+        completed = {
+            "ok": True,
+            "status": "completed",
+            "model_analysis": {"insights_passed": 19, "discoveries_passed": 4},
+            "pages_publish": {"ok": True, "status": "published"},
+        }
+        with (
+            patch("executive_intelligence_pipeline.run_pipeline", return_value=completed),
+            patch("executive_intelligence_pipeline._task_event") as event,
+            patch("executive_intelligence_pipeline._finalize_refresh_task") as finalize,
+        ):
+            result = pipeline.run_pipeline_with_recovery(
+                agent_run_id="research-test",
+                task_run_id="research-parent",
+                max_attempts=1,
+                finalize_task=False,
+            )
+
+        self.assertTrue(result["ok"])
+        finalize.assert_not_called()
+        self.assertEqual(event.call_args.args[1], "发布阶段完成")
+
     def test_watchdog_launches_one_recovery_for_unmatched_daily_crawl(self):
         scheduled = {
             "crawl_run_id": "crawl-0300",
