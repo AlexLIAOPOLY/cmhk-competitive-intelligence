@@ -143,7 +143,7 @@
       const actual = agents.find((agent) => agent.key === task.key);
       const reports = actual?.reports || [];
       const done = reports.filter((report) => report.status === "completed").length;
-      add(`research-${task.key}`, childTitle(task.title), [researchX(index), 560], incremental && actual && (reports.some((report) => (report.items || []).length) || actual.status === "completed") ? reports.flatMap((report) => report.items || []).filter((item) => item.status === "verified").length : "—", run && !incremental ? "新增数据未统计" : "项研究通过·待终审", "查找负责公司的最新数据，与库内已有数据比较，仅提交新报告期或新指标", [
+      add(`research-${task.key}`, childTitle(task.title), [researchX(index), 560], incremental && actual && (reports.some((report) => (report.items || []).length) || actual.status === "completed") ? reports.flatMap((report) => report.items || []).filter((item) => item.status === "verified").length : "—", run && !incremental ? "新增数据未统计" : run?.final_review?.status === "completed" ? "项研究通过" : "项研究通过·待终审", "查找负责公司的最新数据，与库内已有数据比较，仅提交新报告期或新指标", [
         `负责 ${task.companies.length} 家公司：${task.companies.join("、")}`,
         "先查看库内最新报告期，再搜索最新业绩公告并读取原文",
         "提交公司、指标、期间、数值、单位、原文地址、引用摘录和处理结果",
@@ -160,7 +160,7 @@
       "有可信原文支持的新数据进入更新批次；库内已有则保留，无法核实则记执行失败并说明原因",
       "输入：六个研究 Agent 的报告；输出：本次可更新字段及待核对清单",
       "本次结束后，下一次定时任务继续搜索最新数据；已有数据保持可信",
-    ], status(run?.final_review?.status), {
+    ], run?.final_review?.status === "completed" && run?.review > 0 ? {key: "warning", label: "审核结束·含未通过项"} : status(run?.final_review?.status), {
       agent: data.final_reviewer || null,
       assignment: { key: "final-review" },
       note: data.final_reviewer ? resultCounts(data.final_reviewer.reports || []) : "收齐研究结果后，继续联网补查并核对",
@@ -189,6 +189,10 @@
       if (node.key === "research-publish" && run?.publication?.storage_readback?.ok === false) {
         node.health = { key: "critical", label: "数据回读异常" };
         node.note = "历史页面曾发布，但当前数据库回读未通过；不能视为完整交付";
+      }
+      if (["research-update", "research-publish"].includes(node.key) && run?.publication?.result_status === "needs_review") {
+        node.health = { key: "warning", label: "未取得可入库数据" };
+        node.note = "研究仍有未通过或失败项；保留原库与页面，不代表已确认没有新数据";
       }
       if (run && !incremental) {
         node.note = `历史运行 · ${node.note}`;
@@ -276,7 +280,7 @@
       <section class="news-lineage-dialog-section research-outcome"><header><h3>本节点结果</h3></header><p>${esc(node.agent ? resultCounts(node.agent.reports || []) : node.key === "research-publish" ? `${fallbackNote(run?.publication) || (run?.display_status === "cancelled" ? "本轮已中止，未生成分析" : "AI 结果未记录")}；页面${run?.publication?.pages?.status === "published" ? "已发布" : "发布状态：" + pageState(run?.publication?.pages?.status)}` : node.key === "research-update" ? `${updateSummary(run)}。${run?.publication?.database_updated ? "四库写入已完成。" : run?.display_status === "cancelled" ? "本轮已中止，未执行四库写入。" : "尚未确认字段数据已保存。"}` : resultLabel)}</p>${snapshot?.task?.task_id ? `<button type="button" class="research-open-task-log" data-research-task-log="${esc(snapshot.task.task_id)}">在任务日志中打开本轮记录</button>` : ""}</section>
       ${node.key === "research-update" ? storageDetails(run) : ""}
       ${actualList(node, snapshot, date)}
-      ${node.key === "research-publish" && fallbackNote(run?.publication) ? '<section class="news-lineage-dialog-section"><header><h3>程序整理是什么意思</h3></header><p>部分 AI 生成未通过校验，系统改用固定规则汇总已有资料。这些内容不是新的 AI 分析，也不表示数据库回滚。资料保存和 AI 生成是两个独立步骤。</p></section>' : ""}
+      ${node.key === "research-publish" && fallbackNote(run?.publication) ? '<section class="news-lineage-dialog-section"><header><h3>程序整理是什么意思</h3></header><p>部分 AI 生成失败或未通过校验，系统改用固定规则汇总已有资料。这些内容不是新的 AI 分析，也不表示数据库回滚。资料保存和 AI 生成是两个独立步骤。</p></section>' : ""}
       ${searchHistory(node, agents, events)}
       <details class="news-lineage-technical"><summary>运行日志与详细依据</summary>
       ${companyCoverageOverview(node, run)}

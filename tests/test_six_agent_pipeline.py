@@ -143,7 +143,7 @@ class SixAgentPipelineTests(unittest.TestCase):
             paths["local"].write_text(json.dumps({"facts": [old]}))
             macro = '{"facts": [{"unchanged": true}]}'
             paths["macro"].write_text(macro)
-            new = {**old, "period": "2026", "analysis": "36000"}
+            new = {**old, "period": "2026", "analysis": "36000", "evidence_hash": "new-evidence"}
             analysis = {"architecture": ARCHITECTURE_VERSION, "agent_run_id": "research_test",
                         "domains": {"local": [new]}}
             result = pipeline.publish_domain_fact_sidecars(analysis, output_paths=paths)
@@ -164,9 +164,11 @@ class SixAgentPipelineTests(unittest.TestCase):
                    "analysis": "100", "quality_score": .1, "source_tier": "official", "source_url": "https://hkt.com/old"}
             paths["local"].write_text(json.dumps({"facts": [old]}))
             analysis = {"architecture": ARCHITECTURE_VERSION, "research_policy": "latest_disclosure_incremental_v1",
-                        "domains": {"local": [{**old, "analysis": "999", "quality_score": 1},
-                                              {**old, "period": "Q3 2026", "analysis": "200"}]}}
-            pipeline.publish_domain_fact_sidecars(analysis, output_paths=paths)
+                        "domains": {"local": [{**old, "analysis": "999", "quality_score": 1, "evidence_hash": "conflicting-evidence"},
+                                              {**old, "period": "Q3 2026", "analysis": "200", "evidence_hash": "new-evidence"}]}}
+            result = pipeline.publish_domain_fact_sidecars(analysis, output_paths=paths)
+            self.assertFalse(result["local"]["ok"])
+            self.assertEqual(result["local"]["items"][0]["status"], "conflict_preserved")
             rows = json.loads(paths["local"].read_text())["facts"]
             self.assertEqual(len(rows), 2)
             self.assertEqual(next(row for row in rows if row["period"] == "H1 2026")["analysis"], "100")

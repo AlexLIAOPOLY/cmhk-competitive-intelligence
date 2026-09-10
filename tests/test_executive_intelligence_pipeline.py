@@ -2052,6 +2052,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             }),
             patch("ai_rate_limit.wait_for_internal_ai_slot"),
             patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=[TimeoutError("slow"), response]) as open_url,
+            # Isolate model rotation from the independently tested key/transport
+            # retry layer, whose persistent cooldown state is time-dependent.
+            patch("executive_intelligence_pipeline.open_llm_request",
+                  side_effect=lambda request, **kwargs: kwargs["open_func"](request, timeout=kwargs["timeout"])),
         ):
             result = pipeline.generate_model_discoveries(evidence)
 

@@ -5061,6 +5061,20 @@ def run_pipeline(
             ai_result,
             dry_run=dry_run,
         )
+        if six_agent_run and not dry_run and (
+            sum(ai_result.get("domain_counts", {}).get(domain, 0) for domain in UI_DOMAIN_IDS) != int((curation_summary or {}).get("accepted") or 0)
+            or any(not result.get("ok") for result in state["domain_fact_sidecars"].values())
+        ):
+            # No main-table promotion or AI work may follow a rejected/conflicting
+            # source-fact write. Retain receipts for retry and investigation.
+            from data_curation.research_storage import audit_storage
+            accepted_facts = [json.loads(line) for line in facts_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+            state["storage_readback"] = audit_storage(ROOT, accepted_facts, expected=int((curation_summary or {}).get("accepted") or 0))
+            _atomic_write_json(facts_path.parent / "storage_receipt.json", {
+                "agent_run_id": agent_run_id, "readback": state["storage_readback"],
+                "writes": state["domain_fact_sidecars"], "main_table": {"skipped": True, "reason": "source_fact_gate_failed"},
+            })
+            raise ValueError("审核资料未全部保存或存在冲突，停止主表写入与页面发布")
         state["domains"]["local"] = {
             "ok": True,
             "changed": False,
@@ -5358,7 +5372,7 @@ def run_pipeline(
         else:
             state["pages_publish"] = {"ok": False, "skipped": True, "reason": "core_gate_failed"}
         pages_ok = bool(state.get("pages_publish", {}).get("ok"))
-        used_fallback = bool(state.get("model_analysis", {}).get("fallback_used"))
+        used_fallback = bool(state.get("model_analysis", {}).get("fallback_used") or state.get("model_analysis", {}).get("discovery_fallback_used"))
         pipeline_ok = core_ok and pages_ok and not used_fallback
         if pipeline_ok:
             final_status = "completed"
@@ -5453,7 +5467,7 @@ def _validated_fallback_complete(result: dict[str, Any]) -> bool:
     return bool(
         result.get("status") == "completed_with_fallback"
         and not result.get("failed_domains")
-        and analysis.get("fallback_used")
+        and (analysis.get("fallback_used") or analysis.get("discovery_fallback_used"))
         and expected > 0
         and passed == expected
         and discoveries_expected == 4

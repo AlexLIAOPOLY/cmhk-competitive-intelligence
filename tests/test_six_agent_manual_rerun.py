@@ -14,6 +14,7 @@ class ManualRerunTests(unittest.TestCase):
             old.parent.mkdir(parents=True)
             old.write_text('{"historical": true}')
             summary = {"status": "completed", "accepted": 0, "review": 0,
+                       "final_review": {"status": "completed"},
                        "research_policy": "latest_disclosure_incremental_v1"}
             with patch.object(daily, "ROOT", root), patch.object(daily, "run_research", return_value=summary) as research:
                 result = daily.execute(root, "research_20260907_rerun_153300")

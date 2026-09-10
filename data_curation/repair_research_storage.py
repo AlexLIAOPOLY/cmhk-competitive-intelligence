@@ -14,6 +14,7 @@ from .storage import atomic_write_json
 
 
 def repair(root: Path, run_id: str, *, apply: bool = False) -> dict:
+    from .six_agent_research import now
     from cmhk.data.daily_financial_promotion import promote_daily_financial_facts
     from executive_intelligence_pipeline import _accepted_fact
     if not re.fullmatch(r"research_[A-Za-z0-9_-]+", run_id):
@@ -54,7 +55,7 @@ def repair(root: Path, run_id: str, *, apply: bool = False) -> dict:
                 shutil.copy2(root / relative, target)
         writes = {domain: merge_domain(root / relative,
                     [project_fact(fact) for fact in facts if domain_for(fact) == domain],
-                    domain=domain, run_id=run_id, generated_at=stamp)
+                    domain=domain, run_id=run_id, generated_at=now())
                   for domain, relative in DOMAIN_PATHS.items()}
         if not all(write["ok"] for write in writes.values()):
             raise ValueError(f"Source-fact conflict: recovery incomplete; backup retained at {backup}")

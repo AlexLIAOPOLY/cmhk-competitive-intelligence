@@ -22,6 +22,35 @@ def fact(**updates):
 
 
 class ResearchStorageTests(unittest.TestCase):
+    def test_pipeline_projection_and_api_readback_preserve_periods_zero_and_detect_drift(self):
+        import executive_intelligence_pipeline as pipeline
+        from data_curation.research_readback import research_snapshot
+        from data_curation.research_plan import ARCHITECTURE_VERSION
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            run = root / "curation_data/research_runs/research_20260910"
+            run.mkdir(parents=True)
+            facts = [fact(metric="用户数", value=0, unit="人", id="first"),
+                     fact(metric="用户数", value=1, unit="人", id="second", period="Q3 2026")]
+            verified = run / "verified_facts.jsonl"
+            verified.write_text('\n'.join(json.dumps(item) for item in facts))
+            manifest = {"architecture": ARCHITECTURE_VERSION, "research_policy": "latest_disclosure_incremental_v1",
+                        "accepted": 2, "status": "completed", "run_id": run.name, "started_at": "2026-09-10T03:00:00+08:00",
+                        "publication": {"status": "completed", "database_updated": True}}
+            (run / "manifest.json").write_text(json.dumps(manifest))
+            analysis = pipeline.build_ai_analysis(agent_run_id=run.name, verified_facts_path=verified, curation_summary=manifest)
+            self.assertEqual(analysis["domains"]["local"][0]["analysis"], 0)
+            self.assertEqual(analysis["domain_counts"]["local"], 2)
+            pipeline.publish_domain_fact_sidecars(analysis, output_paths={key: root / path for key, path in DOMAIN_PATHS.items()})
+            before = research_snapshot(root, "2026-09-10")
+            self.assertTrue(before["run"]["publication"]["database_updated"])
+            self.assertEqual(before["storage_readback"]["confirmed"], 2)
+            (root / DOMAIN_PATHS["local"]).write_text('{"facts":[]}')
+            after = research_snapshot(root, "2026-09-10")
+            self.assertFalse(after["run"]["publication"]["database_updated"])
+            self.assertTrue(after["run"]["publication"]["recorded_database_updated"])
+            self.assertEqual(json.loads((run / "manifest.json").read_text()), manifest)
+
     def merge(self, path, items, **kwargs):
         return merge_domain(path, [project_fact(item) for item in items], domain="local",
                             run_id="research_test", generated_at="2026-09-10", **kwargs)
