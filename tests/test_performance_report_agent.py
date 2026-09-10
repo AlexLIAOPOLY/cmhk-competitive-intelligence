@@ -30,6 +30,25 @@ class PerformanceAgentTests(unittest.TestCase):
         self.assertTrue(trusted_source('中国铁塔', 'https://doc.irasia.com/listco/hk/chinatower/interim/2026/intrep.pdf', 'dividend'))
         self.assertFalse(trusted_source('中国铁塔', 'https://doc.irasia.com/listco/hk/other/intrep.pdf', 'dividend'))
 
+    def test_new_annual_filing_supersedes_a_recent_but_older_database_source(self):
+        old = {'period': 'H1 2026', 'value': 100, 'unit': 'millions HKD',
+               'source_url': 'https://www.hkt.com/2026/02/2026_02_24.pdf'}
+        baseline = {'sources': [], 'companies': {'HKT': {m: [old] for m in ['收入', '净利润', 'EBITDA', '资本开支', '派息']}}}
+        url = 'https://www.hkt.com/2026/09/2026_09_03.pdf'
+        def search(query, limit):
+            return {'results': [{'url': url, 'title': 'HKT Trust 2026 Annual Results Announcement'}]}
+        def model(packs):
+            return {'companies': [{'company': 'HKT', 'fields': {'revenue': '2026财年收入200百万港元。'},
+                                   'sources': {'revenue': [url]}}]}, 'test'
+        with tempfile.TemporaryDirectory() as temp:
+            result = build_model(Path(temp), ['HKT'], now=NOW, baseline_loader=lambda p: baseline,
+                search_client=search, page_reader=lambda u: {'opened': True, 'document_type': 'pdf', 'text': 'HKT Trust 2026 revenue 200 million HKD'},
+                ai_client=model, validator=valid_ai_performance_field, progress=lambda t: None)
+        self.assertIn('200', result['table'][1][2])
+        self.assertIn('FY2026', result['table'][1][1])
+        self.assertTrue(result['researchAudit']['companies'][0]['fields']['revenue']['needsResearch'])
+        self.assertEqual(baseline['companies']['HKT']['收入'][0]['value'], 100)
+
     def test_database_first_and_no_unrelated_writes(self):
         baseline = {'sources': ['formal.json'], 'companies': {'HKT': {
             m: [{'period': 'H1 2026', 'value': 100, 'unit': 'HKD million'}]

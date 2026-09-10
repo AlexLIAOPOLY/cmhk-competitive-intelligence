@@ -294,6 +294,25 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
                 children[link["url"]] = link
     with ThreadPoolExecutor(max_workers=3) as pool:
         pages.update(dict(pool.map(read, children)))
+    # A newly published results filing can supersede an otherwise recent DB row
+    # (notably fiscal-year reporters). Reuse that official document in this run.
+    for pack in packs:
+        filings = {r['url']: r for row in rows if row['company'] == pack['company'] and row['field'] not in {'broker', 'market'}
+                   for r in row['results'] if re.search(r'annual.*results|interim.*report|results.*announcement|中期.*[报報]|年度.*[业業]绩', str(r.get('title', '')), re.I)
+                   and not re.search(r'notification|letter|notice', str(r.get('title', '')), re.I)}
+        for field in ['revenue', 'profit', 'capex', 'dividend']:
+            if field in pack['missing']:
+                continue
+            dates = [publication_date({'url': r.get('source_url', '')}, {}) for r in pack['database'][field]]
+            if not dates or any(date is None for date in dates):
+                continue
+            newer = [r for r in filings.values() if pages.get(r['url'], {}).get('opened')
+                     and (date := publication_date(r, pages[r['url']])) and max(dates) < date <= today]
+            if newer:
+                pack['missing'].append(field)
+                rows.append({'company': pack['company'], 'field': field, 'fields': [field],
+                             'query': '复用本次已读取的新业绩公告', 'results': newer, 'provider': 'official-disclosure'})
+                progress(f"[业绩摘要 Agent] {pack['company']} 发现晚于库内来源的新披露，复核{FIELDS[field]}。")
     for row in rows:
         accepted, rejected = [], []
         for result in row.get("results", []):
@@ -373,6 +392,7 @@ def compact_table_value(text: str, field: str) -> str:
     text = re.split(r'来源[：:]', text)[0]
     text = re.sub(r'(20\d{2})年上半年', r'\1H1', text)
     text = re.sub(r'(20\d{2})财年', r'FY\1', text)
+    text = re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', text)
     text = text.replace('百万元人民币', '百万元').replace('（负值表示流出）', '')
     if field == 'revenue':
         text = text.replace('收入 ', '')
@@ -476,7 +496,8 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
             ok = (states[field]['accepted'] and 0 < len(compact) <= 70
                   and validator(field, compact, fields[field])[0])
             cells.append(compact_table_value(compact if ok else fields[field], field))
-        period_label = re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', '；'.join(periods))
+        displayed_periods = list(dict.fromkeys(re.findall(r'FY20\d{2}|20\d{2}(?:/\d{2,4})?(?:H[12]|Q[1-4]|财年|年度|年中期|年全年)', '；'.join(cells))))
+        period_label = '；'.join(displayed_periods) or re.sub(r'(H[12]|Q[1-4])\s*(20\d{2})', r'\2\1', '；'.join(periods))
         table.append([company, period_label or "见正文", *cells])
         sections.append({"company": company, "title": f"{company}关键摘要",
                          "items": [f"{label}：{fields[f]}" for f, label in list(FIELDS.items())[:5]]})
@@ -484,7 +505,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
     unresolved = [{"company": c["company"], "field": f, "reason": state["reason"]}
                   for c in audit for f, state in c["fields"].items() if state["needsResearch"] and not state["accepted"]]
     proof = {"agent": "performance-report-agent", "trigger": "report_generation_only", "runDirectory": str(run_dir),
-             "generatedAt": clock.isoformat(), "databaseSources": baseline["sources"], "searchCount": len({r["query"] for r in searches}),
+             "generatedAt": clock.isoformat(), "databaseSources": baseline["sources"], "searchCount": len({r["query"] for r in searches if r.get('provider') != 'official-disclosure'}),
              "companies": audit, "unresolved": unresolved, "errors": errors,
              "databaseSnapshotSha256": hashlib.sha256((run_dir / "database.json").read_bytes()).hexdigest()}
     save_json(run_dir / "audit.json", proof)

@@ -589,6 +589,7 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
             "概括香港主要竞对、内地运营商、资本开支与股东回报中有明确依据的重点，自然衔接。"
             "摘要里的短横线只是本份摘要缺项，不代表公司未披露，更不能由此推断风险或影响市场判断；完全跳过缺项。"
             "不强行凑齐公司和栏目，不自行增加风险或投资判断。"
+            "保留原公司名字，不用‘我们’或‘我司’代指任何主体；券商评级只作为该机构观点，不推断为市场反应或股价变化的原因。"
         )
         text = '\n'.join(line for line in text.splitlines()
                          if not re.search(r'[：:]\s*[-—–]\s*$', line))
