@@ -3631,6 +3631,7 @@ function unifiedTaskKindLabel(task) {
 
 function unifiedTaskTitle(task) {
   const title = String(task?.title || "后台任务");
+  if (task?.kind === "weekly-report") return title;
   const retryIndex = Math.max(0, Number(task?.retry_index || 0));
   return retryIndex ? title + String(retryIndex + 1) : title;
 }
@@ -3644,7 +3645,8 @@ function annotateClientTaskRetries(tasks) {
     const key = [task.kind, task.title, task.scope, startedAt.slice(0, 10)].map(String).join("\u0000");
     const previous = attempts.get(key) || {};
     const fallbackIndex = previous.failed ? Number(previous.retryIndex || 0) + 1 : 0;
-    const apiIndex = Number(task.retry_index);
+    const explicitIndex = task.retry_count == null ? NaN : Number(task.retry_count);
+    const apiIndex = Number.isFinite(explicitIndex) ? explicitIndex : Number(task.retry_index);
     task.retry_index = Number.isFinite(apiIndex) ? Math.max(0, apiIndex) : fallbackIndex;
     attempts.set(key, {
       retryIndex: task.retry_index,

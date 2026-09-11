@@ -5290,7 +5290,8 @@ def _annotate_task_retries(tasks: list[dict]) -> None:
         explicit_retry_count = task.get("retry_count")
         if explicit_retry_count is not None:
             try:
-                retry_index = max(retry_index, int(explicit_retry_count or 0))
+                # A recorded zero starts a new run, even after same-day failures.
+                retry_index = max(0, int(explicit_retry_count))
             except (TypeError, ValueError):
                 pass
         task["retry_index"] = retry_index
