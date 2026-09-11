@@ -14,10 +14,8 @@ from urllib.request import ProxyHandler, Request, build_opener
 from bs4 import BeautifulSoup
 from PIL import Image
 
-IMAGE_POLICY_VERSION = 'news-image-review-v4-context-identity'
-# The visual prompt is unchanged. An independent-review correction must rerun
-# that stage, while retaining completed observations of identical bytes/evidence.
-VISUAL_POLICY_VERSION = 'news-image-visual-review-v3-independent-identity'
+IMAGE_POLICY_VERSION = 'news-image-review-v5-context-evidence'
+VISUAL_POLICY_VERSION = 'news-image-visual-review-v5-context-evidence'
 BAD_IMAGE = re.compile(
     r'(?:^|[/_.\s-])(ads?|advert\w*|banner|logo\w*|icon\w*|favicon|'
     r'placeholder|spacer|tracking|pixel|qrcode|qr-code|app-store|google-play|sponsor\w*|promotion\w*)(?:$|[/_.\s-])'
@@ -182,6 +180,12 @@ def _vision_call(item: dict, candidate: dict, data: bytes, *, deadline: float | 
               '只有图片内容及来源能支持新闻中的具体主体/事件才接受。'
               'relation=event表示来源证实是本事件原图；context表示主体明确相关的真实资料图，'
               '但不声称是本次现场；无法确认就reject。搜索到的同公司另一场不相关活动应reject。'
+              '先区分照片内容和出处文章的事件：清楚标识新闻主体的真实办公楼、门店外观可以是context，'
+              '即使出处文章介绍旧开业，也不能把没有仪式或合影的建筑外观误判为另一场活动。'
+              '例如UBS评级可用UBS办公楼，中国移动套餐或股票新闻可用中国移动真实门店，'
+              '无需照片展示评级报告、套餐价格或交易数字。若可见价格与新闻冲突则拒绝。'
+              '明确讲解新闻核心技术或风险的官方技术图解、研究图表也可以是context，'
+              '需要出处和可见内容共同证实主题；泛科技装饰图、栏目封面仍拒绝。'
               '输出一个JSON对象，含relation(event/context/reject)、confidence(0到1)、'
               'reason(具体理由)、visible_content(实际可见内容)、source_evidence(来源依据)，后三者都必须是字符串。'
               'confidence是对relation分类的把握，资料图不需要证明是本次现场。缺少依据就reject并解释缺少什么。'
@@ -234,6 +238,8 @@ def _identity_review(item: dict, candidate: dict, visual: dict, *, deadline: flo
         '必须区分现场原图和相关资料图：context只核对真实主体/地点关联，不要求照片证明本次交易、评级、政策或日期。'
         '例如瑞银评级新闻可用清楚标识UBS的真实办公楼照片，中国移动新闻可用中国移动真实门店照片；'
         '不得因资料照片没有评级报告、没有合作双方同框或没有本次活动字样而拒绝这类照片。'
+        '官方技术图解或研究图表可作context，须直接对应新闻核心技术/风险，有明确出处，'
+        '不得将图表的历史样本或数据解释为本次新闻的统计结论。泛科技装饰图和栏目封面仍拒绝。'
         '卡片不展示配图图注；资料图仅在后台记录为context，不得把它解释为本次现场；相关主体或地点必须有实际可见内容及出处支持。'
         '相关资料图也必须有明确主体关联；签约照若是同一公司但另一合作方，应拒绝，不能降为资料图。'
         '图片中价钱/数字与新闻冲突时拒绝，不用看图模型的“虽然不同但显然是同一”解释。'
