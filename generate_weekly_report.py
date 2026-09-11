@@ -2841,9 +2841,15 @@ def research_weekly_model_online(
     # A provider returning unrelated pages is a retrieval failure, not success.
     # Continue to the next provider before asking the writer to use that result.
     effective_search = search_client
+    headlines_by_id = {
+        request["id"]: clean_text(item.get("originalTitle") or item.get("title"), 160)
+        for request, item in zip(requests, items)
+    }
+    headlines_by_query = {request["query"]: headlines_by_id[request["id"]] for request in requests}
     if search_client is public_web_search:
         def effective_search(query, limit):
-            return public_web_search(query, limit, result_filter=lambda result: _headline_evidence_overlap(query, result.get("title")) >= 0.25)
+            headline = headlines_by_query.get(query, query)
+            return public_web_search(query, limit, result_filter=lambda result: _headline_evidence_overlap(headline, result.get("title")) >= 0.25)
     rows = run_web_research(requests, search_client=effective_search, limit=5, workers=4)
     rows_by_id = {clean_text(row.get("id")): row for row in rows}
     fallback_requests = []
@@ -2851,13 +2857,14 @@ def research_weekly_model_online(
         row = rows_by_id.get(request["id"]) or {}
         if any(
             isinstance(result, dict)
-            and _headline_evidence_overlap(request["query"], result.get("title")) >= 0.25
+            and _headline_evidence_overlap(headlines_by_id[request["id"]], result.get("title")) >= 0.25
             for result in row.get("results") or []
         ):
             continue
         fallback_query = weekly_recovery_search_query(request["query"])
         if fallback_query and fallback_query != request["query"]:
             fallback_requests.append({"id": request["id"], "query": fallback_query})
+            headlines_by_query[fallback_query] = headlines_by_id[request["id"]]
     if fallback_requests:
         progress(f"[周报 4/7] {len(fallback_requests)}条搜索缺少相关结果，使用繁体关键词补搜。")
         fallback_rows = run_web_research(

@@ -8,6 +8,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import generate_weekly_report as report
+import cmhk.reporting.web_research as web_research
 from tests.test_biweekly_report_quality import detailed_text, make_item, make_model
 
 
@@ -150,6 +151,18 @@ class TargetedRecoveryTests(unittest.TestCase):
         ):
             text = report._fetch_search_result_content({'title': '测试主体公布网络部署', 'url': 'https://example.test/news.pdf'}, '测试主体公布网络部署')
         self.assertIn('完整新闻正文', text)
+
+    def test_shorter_query_must_still_match_original_event(self):
+        item = self.thin_item()
+        item['title'] = item['originalTitle'] = '科大提出新一代通讯框架为7G奠基'
+        with (
+            patch.object(web_research, '_search_searxng', return_value=[]),
+            patch.object(web_research, '_search_ddgs', return_value=[{'title': '打破傳統通訊框架！ Honk... | Innopreneur', 'url': 'https://example.test/chat'}]),
+            patch.object(web_research, '_search_html', return_value=[{'title': '科大提出通訊框架 為7G奠基', 'url': 'https://example.test/research'}]),
+            patch.object(report, '_fetch_search_result_content', return_value=''),
+        ):
+            model = report.research_weekly_model_online(make_model(item), recovery_search=True, progress=lambda _: None)
+        self.assertEqual(model['sections'][0]['items'][0]['webResearch']['provider'], 'yahoo_html')
 
 
 if __name__ == '__main__':
