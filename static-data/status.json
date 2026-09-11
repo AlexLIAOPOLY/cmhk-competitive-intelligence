@@ -155,108 +155,108 @@
         "completedAt": "2026-09-05T11:54:08+08:00"
       },
       "newsFunnel": {
-        "scope": "晨间扫描（2026-09-11@03:00）",
-        "label": "9月11日 03:00",
-        "completedAt": "2026-09-11T05:29:00+08:00",
-        "historyDuplicates": 64,
+        "scope": "午后扫描（2026-09-11@14:00）",
+        "label": "9月11日 14:00",
+        "completedAt": "2026-09-11T14:38:02+08:00",
+        "historyDuplicates": 15,
         "summary": {
-          "discovered": 656,
-          "confirmed": 243,
-          "newCount": 179,
-          "sourceCount": 114
+          "discovered": 131,
+          "confirmed": 52,
+          "newCount": 37,
+          "sourceCount": 36
         },
         "categories": [
           {
+            "label": "网络与技术",
+            "value": 13
+          },
+          {
             "label": "行业动态",
-            "value": 64
+            "value": 10
           },
           {
             "label": "竞对动态",
-            "value": 38
-          },
-          {
-            "label": "网络与技术",
-            "value": 33
+            "value": 7
           },
           {
             "label": "其他",
-            "value": 44
+            "value": 7
           }
         ],
         "impacts": [
           {
-            "label": "产品与定价",
-            "value": 34
-          },
-          {
-            "label": "收入与需求",
-            "value": 27
+            "label": "竞争格局",
+            "value": 7
           },
           {
             "label": "供应韧性",
-            "value": 25
-          },
-          {
-            "label": "竞争格局",
-            "value": 24
-          },
-          {
-            "label": "资本配置",
-            "value": 20
+            "value": 6
           },
           {
             "label": "网络与运营",
-            "value": 17
-          },
-          {
-            "label": "成本与效率",
-            "value": 13
-          },
-          {
-            "label": "客户与渠道",
-            "value": 11
+            "value": 6
           },
           {
             "label": "合规与牌照",
-            "value": 8
+            "value": 5
+          },
+          {
+            "label": "资本配置",
+            "value": 4
+          },
+          {
+            "label": "产品与定价",
+            "value": 3
+          },
+          {
+            "label": "客户与渠道",
+            "value": 3
+          },
+          {
+            "label": "收入与需求",
+            "value": 2
+          },
+          {
+            "label": "成本与效率",
+            "value": 1
           }
         ],
         "stages": [
           {
             "key": "discovered",
             "label": "检索发现",
-            "value": 656,
+            "value": 131,
             "removed": 0,
             "rate": 100,
             "note": "候选池",
-            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 656 条候选。"
+            "detail": "固定页面、正式关键词、定时页面线索与 Agentic 补缺搜索合并后，在本轮时间窗内共得到 131 条候选。"
           },
           {
             "key": "confirmed",
             "label": "AI确认",
-            "value": 243,
-            "removed": 413,
-            "rate": 37,
-            "note": "保留 37%",
-            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 243 条，未确认 413 条。"
+            "value": 52,
+            "removed": 79,
+            "rate": 40,
+            "note": "保留 40%",
+            "detail": "AI逐条判断竞对或战略相关性、具体事件、发布时间及来源证据；确认 52 条，未确认 79 条。"
           },
           {
             "key": "deduplicated",
             "label": "历史去重",
-            "value": 179,
-            "removed": 64,
-            "rate": 74,
-            "note": "排除 64 条",
-            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 64 条重复事件，剩余 179 条。"
+            "value": 37,
+            "removed": 15,
+            "rate": 71,
+            "note": "排除 15 条",
+            "detail": "对全部飞书历史记录执行事件级语义去重；识别并排除 15 条重复事件，剩余 37 条。"
           },
           {
             "key": "new",
             "label": "本轮新增",
-            "value": 179,
+            "value": 37,
             "removed": 0,
             "rate": 100,
             "note": "已写入飞书",
-            "detail": "最终 179 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
+            "detail": "最终 37 条完成飞书写入和逐格回读，全部归档成功后才发送群通知。"
           }
         ]
       },
@@ -353,6 +353,99 @@
               "detail": "已写入飞书、纳入今日信息资产的新增记录。"
             }
           ]
+        },
+        {
+          "key": "2026-09-11-14-00",
+          "label": "下午",
+          "time": "14:00",
+          "status": "已完成",
+          "discovered": 131,
+          "confirmed": 127,
+          "historyDuplicates": 15,
+          "newCount": 37,
+          "note": "",
+          "categories": [
+            {
+              "label": "网络与技术",
+              "value": 13
+            },
+            {
+              "label": "行业动态",
+              "value": 10
+            },
+            {
+              "label": "竞对动态",
+              "value": 7
+            },
+            {
+              "label": "其他",
+              "value": 7
+            }
+          ],
+          "impacts": [
+            {
+              "label": "竞争格局",
+              "value": 7
+            },
+            {
+              "label": "供应韧性",
+              "value": 6
+            },
+            {
+              "label": "网络与运营",
+              "value": 6
+            },
+            {
+              "label": "合规与牌照",
+              "value": 5
+            },
+            {
+              "label": "资本配置",
+              "value": 4
+            },
+            {
+              "label": "产品与定价",
+              "value": 3
+            },
+            {
+              "label": "客户与渠道",
+              "value": 3
+            },
+            {
+              "label": "收入与需求",
+              "value": 2
+            },
+            {
+              "label": "成本与效率",
+              "value": 1
+            }
+          ],
+          "stages": [
+            {
+              "key": "discovered",
+              "label": "检索发现",
+              "value": 131,
+              "detail": "固定监控与 Agentic Search 汇总的候选新闻。"
+            },
+            {
+              "key": "confirmed",
+              "label": "AI确认",
+              "value": 127,
+              "detail": "AI 结合竞对、政策及战略相关性完成审核。"
+            },
+            {
+              "key": "deduplicated",
+              "label": "历史去重",
+              "value": 112,
+              "detail": "与历史记录比对，排除 15 条重复事件。"
+            },
+            {
+              "key": "new",
+              "label": "新增入库",
+              "value": 37,
+              "detail": "已写入飞书、纳入今日信息资产的新增记录。"
+            }
+          ]
         }
       ],
       "newsScanTimes": [
@@ -401,25 +494,37 @@
       ],
       "outputs": [
         {
-          "name": "9月10日运营商业绩摘要 (4).docx",
+          "name": "9月11日运营商业绩摘要.docx",
+          "mtime": 1789116030.0214138,
+          "mtimeText": "2026-09-11 16:40:30",
+          "audio": false
+        },
+        {
+          "name": "9月11日周报.docx",
+          "mtime": 1789113536.241589,
+          "mtimeText": "2026-09-11 15:58:56",
+          "audio": false
+        },
+        {
+          "name": "9月10日运营商业绩摘要.docx",
           "mtime": 1789089294.1212862,
           "mtimeText": "2026-09-11 09:14:54",
           "audio": true
         },
         {
-          "name": "9月10日运营商业绩摘要 (3).docx",
+          "name": "9月10日运营商业绩摘要.docx",
           "mtime": 1789038913.2973704,
           "mtimeText": "2026-09-10 19:15:13",
           "audio": true
         },
         {
-          "name": "9月10日运营商业绩摘要 (2).docx",
+          "name": "9月10日运营商业绩摘要.docx",
           "mtime": 1789037480.8615367,
           "mtimeText": "2026-09-10 18:51:20",
           "audio": true
         },
         {
-          "name": "9月10日运营商业绩摘要 (1).docx",
+          "name": "9月10日运营商业绩摘要.docx",
           "mtime": 1789033860.8624632,
           "mtimeText": "2026-09-10 17:51:00",
           "audio": false
@@ -434,18 +539,6 @@
           "name": "8月30日周报 (3)（编辑稿 2）.docx",
           "mtime": 1788854651.9999936,
           "mtimeText": "2026-09-08 16:04:11",
-          "audio": false
-        },
-        {
-          "name": "9月3日运营商业绩摘要 (1).docx",
-          "mtime": 1788402424.5366635,
-          "mtimeText": "2026-09-03 10:27:04",
-          "audio": true
-        },
-        {
-          "name": "9月3日运营商业绩摘要.docx",
-          "mtime": 1788402033.8565881,
-          "mtimeText": "2026-09-03 10:20:33",
           "audio": false
         }
       ]
@@ -463,8 +556,30 @@
     "latestOutputText": "2026-09-05 08:17:01",
     "outputs": [
       {
-        "name": "9月10日运营商业绩摘要 (4).docx",
-        "path_str": "9月10日运营商业绩摘要 (4).docx",
+        "name": "9月11日运营商业绩摘要.docx",
+        "path_str": "9月11日运营商业绩摘要.docx",
+        "note": "",
+        "reportType": "carrier-performance",
+        "size": 27317,
+        "mtime": 1789116030.0214138,
+        "mtimeText": "2026-09-11 16:40:30",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "9月11日周报.docx",
+        "path_str": "9月11日周报.docx",
+        "note": "",
+        "reportType": "weekly",
+        "size": 1652348,
+        "mtime": 1789113536.241589,
+        "mtimeText": "2026-09-11 15:58:56",
+        "url": "",
+        "audio": null
+      },
+      {
+        "name": "9月10日运营商业绩摘要.docx",
+        "path_str": "9月10日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26396,
@@ -474,8 +589,8 @@
         "audio": null
       },
       {
-        "name": "9月10日运营商业绩摘要 (3).docx",
-        "path_str": "9月10日运营商业绩摘要 (3).docx",
+        "name": "9月10日运营商业绩摘要.docx",
+        "path_str": "9月10日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27122,
@@ -485,8 +600,8 @@
         "audio": null
       },
       {
-        "name": "9月10日运营商业绩摘要 (2).docx",
-        "path_str": "9月10日运营商业绩摘要 (2).docx",
+        "name": "9月10日运营商业绩摘要.docx",
+        "path_str": "9月10日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26063,
@@ -496,8 +611,8 @@
         "audio": null
       },
       {
-        "name": "9月10日运营商业绩摘要 (1).docx",
-        "path_str": "9月10日运营商业绩摘要 (1).docx",
+        "name": "9月10日运营商业绩摘要.docx",
+        "path_str": "9月10日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22344,
@@ -529,8 +644,8 @@
         "audio": null
       },
       {
-        "name": "9月3日运营商业绩摘要 (1).docx",
-        "path_str": "9月3日运营商业绩摘要 (1).docx",
+        "name": "9月3日运营商业绩摘要.docx",
+        "path_str": "9月3日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25732,
@@ -881,8 +996,8 @@
         "audio": null
       },
       {
-        "name": "7月24日运营商业绩摘要 (5).docx",
-        "path_str": "7月24日运营商业绩摘要 (5).docx",
+        "name": "7月24日运营商业绩摘要.docx",
+        "path_str": "7月24日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25639,
@@ -892,8 +1007,8 @@
         "audio": null
       },
       {
-        "name": "7月24日运营商业绩摘要 (4).docx",
-        "path_str": "7月24日运营商业绩摘要 (4).docx",
+        "name": "7月24日运营商业绩摘要.docx",
+        "path_str": "7月24日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25614,
@@ -969,8 +1084,8 @@
         "audio": null
       },
       {
-        "name": "7月24日运营商业绩摘要 (3).docx",
-        "path_str": "7月24日运营商业绩摘要 (3).docx",
+        "name": "7月24日运营商业绩摘要.docx",
+        "path_str": "7月24日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25564,
@@ -980,8 +1095,8 @@
         "audio": null
       },
       {
-        "name": "7月24日运营商业绩摘要 (2).docx",
-        "path_str": "7月24日运营商业绩摘要 (2).docx",
+        "name": "7月24日运营商业绩摘要.docx",
+        "path_str": "7月24日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25227,
@@ -991,8 +1106,8 @@
         "audio": null
       },
       {
-        "name": "7月24日运营商业绩摘要 (1).docx",
-        "path_str": "7月24日运营商业绩摘要 (1).docx",
+        "name": "7月24日运营商业绩摘要.docx",
+        "path_str": "7月24日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25489,
@@ -1046,8 +1161,8 @@
         "audio": null
       },
       {
-        "name": "7月22日运营商业绩摘要 (1).docx",
-        "path_str": "7月22日运营商业绩摘要 (1).docx",
+        "name": "7月22日运营商业绩摘要.docx",
+        "path_str": "7月22日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25099,
@@ -1167,8 +1282,8 @@
         "audio": null
       },
       {
-        "name": "7月14日运营商业绩摘要 (2).docx",
-        "path_str": "7月14日运营商业绩摘要 (2).docx",
+        "name": "7月14日运营商业绩摘要.docx",
+        "path_str": "7月14日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1178,8 +1293,8 @@
         "audio": null
       },
       {
-        "name": "7月14日运营商业绩摘要 (1).docx",
-        "path_str": "7月14日运营商业绩摘要 (1).docx",
+        "name": "7月14日运营商业绩摘要.docx",
+        "path_str": "7月14日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1211,8 +1326,8 @@
         "audio": null
       },
       {
-        "name": "7月13日运营商业绩摘要 (6).docx",
-        "path_str": "7月13日运营商业绩摘要 (6).docx",
+        "name": "7月13日运营商业绩摘要.docx",
+        "path_str": "7月13日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1222,8 +1337,8 @@
         "audio": null
       },
       {
-        "name": "7月13日运营商业绩摘要 (5).docx",
-        "path_str": "7月13日运营商业绩摘要 (5).docx",
+        "name": "7月13日运营商业绩摘要.docx",
+        "path_str": "7月13日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1233,8 +1348,8 @@
         "audio": null
       },
       {
-        "name": "7月13日运营商业绩摘要 (4).docx",
-        "path_str": "7月13日运营商业绩摘要 (4).docx",
+        "name": "7月13日运营商业绩摘要.docx",
+        "path_str": "7月13日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1244,8 +1359,8 @@
         "audio": null
       },
       {
-        "name": "7月13日运营商业绩摘要 (3).docx",
-        "path_str": "7月13日运营商业绩摘要 (3).docx",
+        "name": "7月13日运营商业绩摘要.docx",
+        "path_str": "7月13日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1255,8 +1370,8 @@
         "audio": null
       },
       {
-        "name": "7月13日运营商业绩摘要 (2).docx",
-        "path_str": "7月13日运营商业绩摘要 (2).docx",
+        "name": "7月13日运营商业绩摘要.docx",
+        "path_str": "7月13日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1266,8 +1381,8 @@
         "audio": null
       },
       {
-        "name": "7月13日运营商业绩摘要 (1).docx",
-        "path_str": "7月13日运营商业绩摘要 (1).docx",
+        "name": "7月13日运营商业绩摘要.docx",
+        "path_str": "7月13日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 27262,
@@ -1431,8 +1546,8 @@
         "audio": null
       },
       {
-        "name": "6月16日运营商业绩摘要 (5).docx",
-        "path_str": "6月16日运营商业绩摘要 (5).docx",
+        "name": "6月16日运营商业绩摘要.docx",
+        "path_str": "6月16日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28134,
@@ -1453,8 +1568,8 @@
         "audio": null
       },
       {
-        "name": "6月16日运营商业绩摘要 (4).docx",
-        "path_str": "6月16日运营商业绩摘要 (4).docx",
+        "name": "6月16日运营商业绩摘要.docx",
+        "path_str": "6月16日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28134,
@@ -1464,8 +1579,8 @@
         "audio": null
       },
       {
-        "name": "6月16日运营商业绩摘要 (3).docx",
-        "path_str": "6月16日运营商业绩摘要 (3).docx",
+        "name": "6月16日运营商业绩摘要.docx",
+        "path_str": "6月16日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28138,
@@ -1475,8 +1590,8 @@
         "audio": null
       },
       {
-        "name": "6月16日运营商业绩摘要 (2).docx",
-        "path_str": "6月16日运营商业绩摘要 (2).docx",
+        "name": "6月16日运营商业绩摘要.docx",
+        "path_str": "6月16日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28276,
@@ -1486,8 +1601,8 @@
         "audio": null
       },
       {
-        "name": "6月16日运营商业绩摘要 (1).docx",
-        "path_str": "6月16日运营商业绩摘要 (1).docx",
+        "name": "6月16日运营商业绩摘要.docx",
+        "path_str": "6月16日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28199,
@@ -1552,8 +1667,8 @@
         "audio": null
       },
       {
-        "name": "6月15日运营商业绩摘要 (3).docx",
-        "path_str": "6月15日运营商业绩摘要 (3).docx",
+        "name": "6月15日运营商业绩摘要.docx",
+        "path_str": "6月15日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28040,
@@ -1585,8 +1700,8 @@
         "audio": null
       },
       {
-        "name": "6月15日运营商业绩摘要 (2).docx",
-        "path_str": "6月15日运营商业绩摘要 (2).docx",
+        "name": "6月15日运营商业绩摘要.docx",
+        "path_str": "6月15日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 28235,
@@ -1596,8 +1711,8 @@
         "audio": null
       },
       {
-        "name": "6月15日运营商业绩摘要 (1).docx",
-        "path_str": "6月15日运营商业绩摘要 (1).docx",
+        "name": "6月15日运营商业绩摘要.docx",
+        "path_str": "6月15日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25262,
@@ -1750,8 +1865,8 @@
         "audio": null
       },
       {
-        "name": "6月10日运营商业绩摘要 (2).docx",
-        "path_str": "6月10日运营商业绩摘要 (2).docx",
+        "name": "6月10日运营商业绩摘要.docx",
+        "path_str": "6月10日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25262,
@@ -1783,8 +1898,8 @@
         "audio": null
       },
       {
-        "name": "6月10日运营商业绩摘要 (1).docx",
-        "path_str": "6月10日运营商业绩摘要 (1).docx",
+        "name": "6月10日运营商业绩摘要.docx",
+        "path_str": "6月10日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25262,
@@ -1838,8 +1953,8 @@
         "audio": null
       },
       {
-        "name": "6月9日运营商业绩摘要 (2).docx",
-        "path_str": "6月9日运营商业绩摘要 (2).docx",
+        "name": "6月9日运营商业绩摘要.docx",
+        "path_str": "6月9日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -1882,8 +1997,8 @@
         "audio": null
       },
       {
-        "name": "6月9日运营商业绩摘要 (1).docx",
-        "path_str": "6月9日运营商业绩摘要 (1).docx",
+        "name": "6月9日运营商业绩摘要.docx",
+        "path_str": "6月9日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -1926,8 +2041,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (9).docx",
-        "path_str": "6月8日运营商业绩摘要 (9).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -1937,8 +2052,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (8).docx",
-        "path_str": "6月8日运营商业绩摘要 (8).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -1948,8 +2063,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (7).docx",
-        "path_str": "6月8日运营商业绩摘要 (7).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26785,
@@ -1959,8 +2074,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (6).docx",
-        "path_str": "6月8日运营商业绩摘要 (6).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26785,
@@ -2036,8 +2151,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (5).docx",
-        "path_str": "6月8日运营商业绩摘要 (5).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26785,
@@ -2047,8 +2162,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (4).docx",
-        "path_str": "6月8日运营商业绩摘要 (4).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26785,
@@ -2124,8 +2239,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (3).docx",
-        "path_str": "6月8日运营商业绩摘要 (3).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 26020,
@@ -2135,8 +2250,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (2).docx",
-        "path_str": "6月8日运营商业绩摘要 (2).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -2146,8 +2261,8 @@
         "audio": null
       },
       {
-        "name": "6月8日运营商业绩摘要 (1).docx",
-        "path_str": "6月8日运营商业绩摘要 (1).docx",
+        "name": "6月8日运营商业绩摘要.docx",
+        "path_str": "6月8日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -2168,8 +2283,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (15).docx",
-        "path_str": "6月1日运营商业绩摘要 (15).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -2179,8 +2294,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (14).docx",
-        "path_str": "6月1日运营商业绩摘要 (14).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -2190,8 +2305,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (13).docx",
-        "path_str": "6月1日运营商业绩摘要 (13).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25271,
@@ -2201,8 +2316,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (12).docx",
-        "path_str": "6月1日运营商业绩摘要 (12).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25207,
@@ -2212,8 +2327,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (11).docx",
-        "path_str": "6月1日运营商业绩摘要 (11).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 25207,
@@ -2223,8 +2338,8 @@
         "audio": null
       },
       {
-        "name": "6月1日香港竞对业绩摘要 (7).docx",
-        "path_str": "6月1日香港竞对业绩摘要 (7).docx",
+        "name": "6月1日香港竞对业绩摘要.docx",
+        "path_str": "6月1日香港竞对业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22046,
@@ -2234,8 +2349,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (10).docx",
-        "path_str": "6月1日运营商业绩摘要 (10).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 21818,
@@ -2245,8 +2360,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (9).docx",
-        "path_str": "6月1日运营商业绩摘要 (9).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 21818,
@@ -2256,8 +2371,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (8).docx",
-        "path_str": "6月1日运营商业绩摘要 (8).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22187,
@@ -2267,8 +2382,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (7).docx",
-        "path_str": "6月1日运营商业绩摘要 (7).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22187,
@@ -2278,8 +2393,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (5).docx",
-        "path_str": "6月1日运营商业绩摘要 (5).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22187,
@@ -2289,8 +2404,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (4).docx",
-        "path_str": "6月1日运营商业绩摘要 (4).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 21984,
@@ -2300,8 +2415,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (6).docx",
-        "path_str": "6月1日运营商业绩摘要 (6).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 21984,
@@ -2311,8 +2426,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (2).docx",
-        "path_str": "6月1日运营商业绩摘要 (2).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22208,
@@ -2322,8 +2437,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (3).docx",
-        "path_str": "6月1日运营商业绩摘要 (3).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 22208,
@@ -2333,8 +2448,8 @@
         "audio": null
       },
       {
-        "name": "6月1日运营商业绩摘要 (1).docx",
-        "path_str": "6月1日运营商业绩摘要 (1).docx",
+        "name": "6月1日运营商业绩摘要.docx",
+        "path_str": "6月1日运营商业绩摘要.docx",
         "note": "",
         "reportType": "carrier-performance",
         "size": 20441,

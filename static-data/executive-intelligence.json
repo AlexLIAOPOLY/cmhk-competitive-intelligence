@@ -1312,9 +1312,9 @@
           ],
           "ai_summary": {
             "id": "revenue",
-            "headline": "HKT FY2025营收底盘最厚",
-            "analysis": "HKT FY2025营收为36553.0百万港元，SmarTone为6253.4百万港元，3HK为5448.0百万港元，显示HKT收入底盘最厚；CMHK为4544.6百万港元但期间为2026首7月累计，与FY2025全年值不可直接比较。",
-            "risk": "CMHK营收为2026首7月累计，不能与FY2025全年值直接比较；SmarTone与3HK为FY2025，可与HKT同期间比较。",
+            "headline": "HKT FY2025营收底盘远超同业",
+            "analysis": "HKT FY2025营收为36,553.0百万港元，SmarTone为6,253.4百万港元，3HK为5,448.0百万港元，显示HKT收入底盘显著大于其他两家。CMHK 2026首7月主营业务收入为4,544.6百万港元，因期间不同，不能与FY2025全年值直接比较。",
+            "risk": "CMHK 2026首7月主营业务收入为4,544.6百万港元，与FY2025全年值不可直接比较。",
             "source_urls": [
               "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
@@ -1378,6 +1378,17 @@
                     "basis": "verified_annual_component_source_correction"
                   }
                 ]
+              }
+            ],
+            "presentation_warnings": [
+              {
+                "code": "writing_target_exceeded",
+                "scope": "local.revenue",
+                "field": "analysis",
+                "characters": 135,
+                "target_characters": 120,
+                "publication_max_characters": 160,
+                "model_text_preserved": true
               }
             ],
             "submitted_source_urls": [
@@ -3774,9 +3785,9 @@
         "focuses": [
           {
             "id": "revenue",
-            "headline": "HKT FY2025营收底盘最厚",
-            "analysis": "HKT FY2025营收为36553.0百万港元，SmarTone为6253.4百万港元，3HK为5448.0百万港元，显示HKT收入底盘最厚；CMHK为4544.6百万港元但期间为2026首7月累计，与FY2025全年值不可直接比较。",
-            "risk": "CMHK营收为2026首7月累计，不能与FY2025全年值直接比较；SmarTone与3HK为FY2025，可与HKT同期间比较。",
+            "headline": "HKT FY2025营收底盘远超同业",
+            "analysis": "HKT FY2025营收为36,553.0百万港元，SmarTone为6,253.4百万港元，3HK为5,448.0百万港元，显示HKT收入底盘显著大于其他两家。CMHK 2026首7月主营业务收入为4,544.6百万港元，因期间不同，不能与FY2025全年值直接比较。",
+            "risk": "CMHK 2026首7月主营业务收入为4,544.6百万港元，与FY2025全年值不可直接比较。",
             "source_urls": [
               "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
@@ -3840,6 +3851,17 @@
                     "basis": "verified_annual_component_source_correction"
                   }
                 ]
+              }
+            ],
+            "presentation_warnings": [
+              {
+                "code": "writing_target_exceeded",
+                "scope": "local.revenue",
+                "field": "analysis",
+                "characters": 135,
+                "target_characters": 120,
+                "publication_max_characters": 160,
+                "model_text_preserved": true
               }
             ],
             "submitted_source_urls": [
@@ -20833,7 +20855,7 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-11T12:59:51+08:00",
+      "generated_at_hkt": "2026-09-11T14:22:56+08:00",
       "model": "DeepSeek-V4-Pro+GLM+Qwen3-30B-A3B-Instruct-2507+deepseek-v4-free",
       "summaries": [
         {
@@ -20850,9 +20872,9 @@
           "focuses": [
             {
               "id": "revenue",
-              "headline": "HKT FY2025营收底盘最厚",
-              "analysis": "HKT FY2025营收为36553.0百万港元，SmarTone为6253.4百万港元，3HK为5448.0百万港元，显示HKT收入底盘最厚；CMHK为4544.6百万港元但期间为2026首7月累计，与FY2025全年值不可直接比较。",
-              "risk": "CMHK营收为2026首7月累计，不能与FY2025全年值直接比较；SmarTone与3HK为FY2025，可与HKT同期间比较。",
+              "headline": "HKT FY2025营收底盘远超同业",
+              "analysis": "HKT FY2025营收为36,553.0百万港元，SmarTone为6,253.4百万港元，3HK为5,448.0百万港元，显示HKT收入底盘显著大于其他两家。CMHK 2026首7月主营业务收入为4,544.6百万港元，因期间不同，不能与FY2025全年值直接比较。",
+              "risk": "CMHK 2026首7月主营业务收入为4,544.6百万港元，与FY2025全年值不可直接比较。",
               "source_urls": [
                 "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
                 "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
@@ -20916,6 +20938,17 @@
                       "basis": "verified_annual_component_source_correction"
                     }
                   ]
+                }
+              ],
+              "presentation_warnings": [
+                {
+                  "code": "writing_target_exceeded",
+                  "scope": "local.revenue",
+                  "field": "analysis",
+                  "characters": 135,
+                  "target_characters": 120,
+                  "publication_max_characters": 160,
+                  "model_text_preserved": true
                 }
               ],
               "submitted_source_urls": [
@@ -22175,6 +22208,15 @@
       "presentation_warnings": [
         {
           "code": "writing_target_exceeded",
+          "scope": "local.revenue",
+          "field": "analysis",
+          "characters": 135,
+          "target_characters": 120,
+          "publication_max_characters": 160,
+          "model_text_preserved": true
+        },
+        {
+          "code": "writing_target_exceeded",
           "scope": "international.revenue",
           "field": "analysis",
           "characters": 138,
@@ -22235,7 +22277,28 @@
       "discovery_fallback_used": false,
       "evidence_hash": "f84ecfab42e7757000c7d50403529f7cb2aa80208f085843149c540b3af4ef05",
       "insight_format": "strategic_operating_judgement_v9",
-      "reused": false
+      "reused": false,
+      "manual_focus_regeneration_history": {
+        "local.revenue": [
+          "HKT FY2025营收为36553.0百万港元，SmarTone为6253.4百万港元，3HK为5448.0百万港元，显示HKT收入底盘最厚；CMHK为4544.6百万港元但期间为2026首7月累计，与FY2025全年值不可直接比较。",
+          "HKT FY2025营收为36,553.0百万港元，SmarTone为6,253.4百万港元，3HK为5,448.0百万港元，显示HKT收入底盘显著大于其他两家。CMHK 2026首7月主营业务收入为4,544.6百万港元，因期间不同，不能与FY2025全年值直接比较。"
+        ]
+      },
+      "manual_focus_regeneration_title_history": {
+        "local.revenue": [
+          "HKT FY2025营收底盘最厚",
+          "HKT FY2025营收底盘远超同业"
+        ]
+      },
+      "manual_focus_regeneration_counts": {
+        "local.revenue": 1
+      },
+      "manual_focus_regeneration": {
+        "domain": "local",
+        "focus": "revenue",
+        "model": "DeepSeek-V4-Pro",
+        "generated_at_hkt": "2026-09-11T14:22:56+08:00"
+      }
     },
     "evidence_hash": "f84ecfab42e7757000c7d50403529f7cb2aa80208f085843149c540b3af4ef05",
     "model_analysis_fresh": true,

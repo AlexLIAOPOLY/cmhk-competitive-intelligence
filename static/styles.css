@@ -1636,6 +1636,25 @@ select {
   transition: background var(--transition-fast), color var(--transition-fast);
 }
 
+.file-row[hidden] { display: none !important; }
+.report-description-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 5px 10px; }
+.report-history-toggle {
+  flex: 0 0 auto;
+  border: 0;
+  padding: 3px 0;
+  background: transparent;
+  color: var(--blue);
+  font: inherit;
+  font-size: 11px;
+  cursor: pointer;
+}
+.report-history-toggle:hover { text-decoration: underline; }
+.report-history-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.report-history-row { background: rgba(70, 130, 150, .035); }
+.report-history-row .file-name-cell { padding-left: 15px; }
+.report-history-label { color: var(--muted); }
+.dashboard-page .report-history-toggle { color: #69c2d7; }
+
 .file-name-editable:hover {
   background: rgba(0, 119, 200, 0.09);
   color: var(--blue) !important;

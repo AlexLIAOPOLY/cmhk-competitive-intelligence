@@ -1912,6 +1912,19 @@ async function savePerformancePushPreference(path) {
   }
 }
 
+const expandedReportHistory = new Set();
+
+function performanceReportGroups(files) {
+  const groups = new Map();
+  [...files].sort((a, b) => b.mtime - a.mtime).forEach((file) => {
+    const match = String(file.name).match(/^(\d+月\d+日(?:运营商|香港竞对)业绩摘要)(?:（编辑稿(?:\s+\d+)?）)?\.docx$/);
+    const key = match ? `${String(file.mtimeText).slice(0, 4)}:${match[1]}` : file.path_str;
+    if (!groups.has(key)) groups.set(key, { key, files: [] });
+    groups.get(key).files.push(file);
+  });
+  return [...groups.values()];
+}
+
 function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
   if (!target) return;
   const selectColumn = state.multiSelect ? "<span></span>" : "";
@@ -1933,7 +1946,12 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
     </div>
   `;
-  files.forEach((file) => {
+  const groups = type === "performance" ? performanceReportGroups(files) : files.map((file) => ({ key: file.path_str, files: [file] }));
+  groups.forEach((group) => group.files.forEach((file, index) => {
+    const historical = index > 0;
+    const expanded = expandedReportHistory.has(group.key);
+    const historyToggle = !historical && group.files.length > 1
+      ? `<button type="button" class="report-history-toggle" data-report-history="${escapeHtml(group.key)}" aria-expanded="${expanded}" aria-label="${escapeHtml(file.name)}的历史版本">${expanded ? "收起历史" : "历史版本"}（${group.files.length - 1}）</button>` : "";
     const typeInfo = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const unread = isReportUnread(file);
@@ -1951,25 +1969,35 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       ? `<button type="button" class="weekly-push-choice${chosenForPush ? " is-selected" : ""}" ${pushDataAttribute}="${safePath}" aria-pressed="${String(chosenForPush)}" title="${chosenForPush ? "已选为下次推送；点击恢复自动选择" : `设为下次推送的${reportLabel}`}"${preferenceBusy ? " disabled" : ""}><i aria-hidden="true"></i><span>${chosenForPush ? "下次推送" : "设为推送"}</span></button>`
       : "";
     html += `
-      <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}" data-report-name="${escapeHtml(file.name)}" data-report-type="${escapeHtml(file.reportType)}">
+      <div class="file-row ${typeInfo.className} ${tableTone} ${historical ? "report-history-row" : ""} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" ${historical && !expanded ? "hidden" : ""} data-path="${safePath}" data-report-name="${escapeHtml(file.name)}" data-report-type="${escapeHtml(file.reportType)}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
         <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="单击预览，双击编辑文件名与备注">${escapeHtml(file.name)}</span></span>
-        <span>${fileDescription(file)}</span>
+        <span class="report-description-cell">${historical ? `<span class="report-history-label">历史版本</span>${file.note ? fileDescription(file) : ""}` : fileDescription(file)}${historyToggle}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
           <button type="button" class="row-icon-button edit-report-button" data-path="${safePath}" title="编辑正文" aria-label="编辑正文 ${escapeHtml(file.name)}">${iconSvg("edit")}</button>
           ${audioAction}
           <button type="button" class="row-icon-button danger delete-file-button" data-path="${safePath}" title="删除" aria-label="删除">${iconSvg("trash")}</button>
-          <a href="${file.url}" download class="row-icon-button download-icon-button" data-path="${safePath}" title="下载" aria-label="下载">${iconSvg("download")}</a>
+          <a href="${file.url}" download="${escapeHtml(file.name)}" class="row-icon-button download-icon-button" data-path="${safePath}" title="下载" aria-label="下载">${iconSvg("download")}</a>
         </span>
       </div>
     `;
-  });
+  }));
   target.innerHTML = html;
 }
 
 function bindOutputTableEvents(target) {
   if (!target) return;
+  target.querySelectorAll("[data-report-history]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const key = button.dataset.reportHistory;
+      if (expandedReportHistory.has(key)) expandedReportHistory.delete(key);
+      else expandedReportHistory.add(key);
+      const scrollTop = target.scrollTop;
+      renderFileList();
+      target.scrollTop = scrollTop;
+    });
+  });
   target.querySelectorAll("[data-weekly-push-path]").forEach((button) => {
     button.addEventListener("click", () => {
       const path = state.weeklyPushPreferencePath === button.dataset.weeklyPushPath ? "" : button.dataset.weeklyPushPath;
@@ -2052,7 +2080,7 @@ function renderFileList() {
 
   if (els.fileCountText) els.fileCountText.textContent = state.multiSelect ? `选择模式 · 已选 ${selectedCount} / ${files.length}` : `${files.length} 个文件`;
   if (els.weeklyFileCountText) els.weeklyFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${weeklyFiles.length}` : `${weeklyFiles.length} 个文件`;
-  if (els.performanceFileCountText) els.performanceFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${performanceFiles.length}` : `${performanceFiles.length} 个文件`;
+  if (els.performanceFileCountText) els.performanceFileCountText.textContent = state.multiSelect ? `已选 ${selectedCount} / ${performanceFiles.length}` : `${performanceReportGroups(performanceFiles).length} 份报告`;
   if (els.reportLibraryCount) els.reportLibraryCount.textContent = String(files.length);
   updateReportLibraryNewIndicator(files);
   els.multiSelectTriggers.forEach((button) => {
@@ -3631,6 +3659,7 @@ function unifiedTaskKindLabel(task) {
 
 function unifiedTaskTitle(task) {
   const title = String(task?.title || "后台任务");
+  if (task?.kind === "weekly-report") return title;
   const retryIndex = Math.max(0, Number(task?.retry_index || 0));
   return retryIndex ? title + String(retryIndex + 1) : title;
 }
@@ -3644,7 +3673,8 @@ function annotateClientTaskRetries(tasks) {
     const key = [task.kind, task.title, task.scope, startedAt.slice(0, 10)].map(String).join("\u0000");
     const previous = attempts.get(key) || {};
     const fallbackIndex = previous.failed ? Number(previous.retryIndex || 0) + 1 : 0;
-    const apiIndex = Number(task.retry_index);
+    const explicitIndex = task.retry_count == null ? NaN : Number(task.retry_count);
+    const apiIndex = Number.isFinite(explicitIndex) ? explicitIndex : Number(task.retry_index);
     task.retry_index = Number.isFinite(apiIndex) ? Math.max(0, apiIndex) : fallbackIndex;
     attempts.set(key, {
       retryIndex: task.retry_index,

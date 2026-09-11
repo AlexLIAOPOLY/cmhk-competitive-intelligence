@@ -1,14 +1,14 @@
 {
   "ok": true,
-  "generated_at": "2026-09-11T13:09:47+08:00",
+  "generated_at": "2026-09-11T17:55:44+08:00",
   "items": [
     {
-      "id": "NEWS-AB9CE706C8A28E",
-      "title": "中国联通董事长董昕：“十五五”时期预计撬动千亿级算力网投资，坚持战略性投入与合理性回报并重",
-      "summary": "“在人工智能从技术变量加速转化为产业增量的关键时刻，中国联通把科技创新摆在发展全局的核心位置，深化系统性变革，正实现由‘传统管道提供商’向‘数智综合服务商’的蜕变。",
+      "id": "NEWS-79E34872F80007",
+      "title": "瑞银上调中国三大电信商至买入评级，看好AI重估前景",
+      "summary": "瑞银将中国电信、中国移动和中国联通评级从「中性」上调至「买入」，认为股息下行风险有限且AI重估潜力被低估。",
       "category": "竞对动态",
-      "source_url": "https://www.sohu.com/a/1074332655_122014422",
-      "published_at": "2026-09-10T18:02:00+08:00"
+      "source_url": "https://finance.biggo.com/news/1f758bd8-423c-4947-aa60-e1e798585e25",
+      "published_at": "2026-09-11T04:25:00+08:00"
     },
     {
       "id": "NEWS-61B563B2D681A1",
@@ -17,14 +17,6 @@
       "category": "竞对动态",
       "source_url": "https://www.msn.com/en-ae/technology/general/pccw-global-and-harmony-tech-innovation-sign-mou/ar-AA2bXNZQ",
       "published_at": "2026-09-10T17:51:15+08:00"
-    },
-    {
-      "id": "NEWS-974205F6459F8D",
-      "title": "何永贤：北部都会区未来十年将提供15万公营房屋",
-      "summary": "房屋局局长何永贤表示北部都会区未来十年将有15万公营房屋，其中古洞将有3万公营房屋单位。",
-      "category": "行业动态",
-      "source_url": "https://news.google.com/rss/articles/CBMib0FVX3lxTE04cTVuMFNqNEtabWUxWk5wSjNNQzJtS29DRU04Z0swVU9jQWxVUkV4NURrR3ZqWk1oRFBWTGJtY2QxeXptY1c2RFpFdVJrSHk0ZGZIMzZmOTljU2NzZ0doc0tGUUxiMk9kS0VWbkREYw?oc=5",
-      "published_at": "2026-09-10T16:57:00+08:00"
     },
     {
       "id": "NEWS-063865725BA09F",
@@ -51,20 +43,28 @@
       "published_at": "2026-09-10T11:02:00+08:00"
     },
     {
-      "id": "NEWS-F7C03D0CC3ACEE",
-      "title": "河套香港园区「四流」仅「一流」未通，明年7月前料有突破",
-      "summary": "港深政府和中央部委正磋商河套香港园区打通「四流」，目前仅「一流」未通，即将出炉的首份香港五年规划和施政报告料只交代进展，知情者预计明年7月前有突破。",
-      "category": "政策监管",
-      "source_url": "https://paper.hket.com/article/4191810/%E6%B2%B3%E5%A5%97%E3%80%8C%E4%B8%80%E6%B5%81%E3%80%8D%E6%9C%AA%E9%80%9A%20%E6%98%8E%E5%B9%B47%E6%9C%88%E5%89%8D%E6%9C%89%E7%AA%81%E7%A0%B4%EF%BC%9F",
-      "published_at": "2026-09-10T11:00:00+08:00"
+      "id": "NEWS-453DC6E3336BFB",
+      "title": "罗湖口岸今年客流突破5100万人次",
+      "summary": "截至9月9日，罗湖边检站累计查验出入境旅客突破5100万人次，较去年提前19天达成，高效通关撬动跨境夜间经济。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://www.wenweipo.com/a/202609/10/AP6aa2becce4b01d54a282a82b.html",
+      "published_at": "2026-09-10T09:29:00+08:00"
     },
     {
-      "id": "NEWS-FEDFD3CED5FC9A",
-      "title": "硬蛋创新中期业绩大增，AI数据中心需求拉动",
-      "summary": "硬蛋创新公布2026年上半年收入132.49亿元，按年增98.4%，溢利3.73亿元增96.3%，受惠AI数据中心、存储芯片及机器人对高端芯片需求拉动。",
-      "category": "行业动态",
-      "source_url": "https://hk.on.cc/hk/bkn/cnt/finance/20260910/bkn-20260910090732065-0910_00842_001.html",
-      "published_at": "2026-09-10T10:07:00+08:00"
+      "id": "NEWS-D97CFA168BDD85",
+      "title": "2026年8月CPI同比上涨0.8%，PPI同比上涨3.8%",
+      "summary": "2026年8月CPI同比上涨0.8%，核心CPI同比上涨1.0%；PPI同比上涨3.8%。通胀回升主要受能源和黄金价格带动，内生动能仍然有限。",
+      "category": "宏观经济&国际形势&地缘政治&其他国际性质关注词汇",
+      "source_url": "https://finance.sina.com.cn/stock/stockzmt/2026-09-10/doc-inirhvxe7980757.shtml",
+      "published_at": "2026-09-10T08:55:00+08:00"
+    },
+    {
+      "id": "NEWS-BDF2CDB1E32853",
+      "title": "联通联手魅族发布小魔方AI手机",
+      "summary": "联通联手魅族发布小魔方AI手机，4英寸方屏仅99克，主打全语音交互。",
+      "category": "竞对动态",
+      "source_url": "https://news.google.com/rss/articles/CBMiTkFVX3lxTE91RDNnZkUwbFllSVVfUXZEWTdCYUt0Q3BrRi13MF82OEhlaGJjYU9OZkJYekt4eFN5LVI2VlV3dHBOM2xsdUJnclp6WV9EUQ?oc=5",
+      "published_at": "2026-09-09T17:24:19+08:00"
     }
   ],
   "monitor": {
@@ -75,5 +75,5 @@
     ],
     "last_error": ""
   },
-  "site_version": "9a74cbc83d8992ab5f6a46b6fbed33557e8dd16435a61a8060f5123eb50e1dea"
+  "site_version": "a743462b1e71120dd9f20a2a9b88c4e3e3bdb53fa96406c3b2616517888aea71"
 }
