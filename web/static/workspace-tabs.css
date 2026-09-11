@@ -771,8 +771,8 @@
 .news-lineage.is-global .news-lineage-node > em { color: #a2bcc3; font-size: 9.5px; line-height: 1.4; }
 .news-lineage.is-global .news-lineage-node.is-dual-metric > strong { font-size: 16px; line-height: 1.25; white-space: normal; }
 .news-lineage.is-global .news-lineage-node.is-dual-metric > em { color: #d5e6ea; font-size: 12px; font-weight: 700; }
-/* Full copy determines card height; the graph fitter keeps growing cards apart. */
-.news-lineage.is-global .news-lineage-node[class] { height: auto; overflow: visible; }
+/* Card geometry never depends on runtime copy or error length. */
+.news-lineage.is-global .news-lineage-node[class] { box-sizing: border-box; height: var(--lineage-card-height,160px); min-height: var(--lineage-card-height,160px); max-height: var(--lineage-card-height,160px); overflow: hidden; }
 .news-lineage.is-global .news-lineage-node { min-height: 154px; }
 .news-lineage.is-global .news-lineage-node.is-primary { min-height: 178px; }
 .news-lineage-node > span,.news-lineage-node > strong { min-width: 0; overflow-wrap: anywhere; }
@@ -2094,12 +2094,12 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 /* Six research workers have identical, generously spaced cards. */
 .news-lineage.is-global .news-lineage-node.is-research-agent,
 .news-lineage.is-global .news-lineage-node.is-research-step {
-  width: 250px; min-height: 160px; height: auto; padding: 30px 16px 16px;
+  --lineage-card-height: 180px; width: 250px; padding: 30px 16px 16px;
 }
 .news-lineage.is-global .news-lineage-node.is-research-agent > span,
 .news-lineage.is-global .news-lineage-node.is-research-step > span { font-size: 16px; line-height: 1.5; }
 .news-lineage.is-global .news-lineage-node.is-research-agent > em,
-.news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; max-height: none; overflow: visible; }
+.news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; }
 /* Keep the strategic-news row horizontal while preserving readable connector runs. */
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="strategic"],
@@ -2110,11 +2110,11 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   [data-news-lineage-node="news-selection-agent"],
   [data-news-lineage-node="app-result"],
   [data-news-lineage-node="weekly-result"]
-) { width: 230px; min-height: 160px; height: auto; padding: 30px 16px 16px; }
+) { --lineage-card-height: 160px; width: 230px; padding: 30px 16px 16px; }
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="app-result"],
   [data-news-lineage-node="weekly-result"]
-) { min-height: 132px; }
+) { --lineage-card-height: 132px; }
 /* Keep the strategic-news row readable at the same visual distance as the research cards. */
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="strategic"],
@@ -2157,6 +2157,12 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   [data-news-lineage-node="app-result"],
   [data-news-lineage-node="weekly-result"]
 ) > em { font-size: 12px; line-height: 1.5; }
+/* Reserve bounded rows even if a future title, number or note is longer. */
+.news-lineage.is-global .news-lineage-node[class] > span,
+.news-lineage.is-global .news-lineage-node[class] > em { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; max-height: 3.2em; }
+.news-lineage.is-global .news-lineage-node[class] > strong { flex-wrap: nowrap; white-space: nowrap; overflow: hidden; min-height: 32px; }
+.news-lineage.is-global .news-lineage-node[class] > strong small { flex-shrink: 0; white-space: nowrap; }
+.news-lineage.is-global .news-lineage-node[class] > em { font-weight: 400; }
 .research-node-detail { overflow-wrap: anywhere; }
 .research-node-detail ol { padding-left: 24px; line-height: 1.9; }
 .research-node-detail dl { margin: 10px 0; }
@@ -2190,7 +2196,7 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
   .news-lineage.is-global .news-lineage-nodes { position: relative; display: grid; gap: 12px; padding: 12px; }
   .news-lineage.is-global .news-lineage-node {
     position: relative !important; inset: auto !important; transform: none !important;
-    width: 100% !important; min-height: 142px; height: auto;
+    width: 100% !important;
   }
   .news-lineage.is-global .news-lineage-node > span { font-size: 16px; }
   .news-lineage.is-global .news-lineage-node > em { font-size: 12px; white-space: normal; }

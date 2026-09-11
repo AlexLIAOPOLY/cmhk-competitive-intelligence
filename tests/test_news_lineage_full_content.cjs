@@ -5,6 +5,21 @@ const vm = require('node:vm');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../web/static/workspace-tabs.js'), 'utf8');
 const extract = (name, next) => source.slice(source.indexOf(`  function ${name}(`), source.indexOf(`  function ${next}(`));
 
+test('card copy stays fixed across retries while numeric results can change', () => {
+  const context = vm.createContext({});
+  vm.runInContext(extract('newsLineageCardContent', 'globalSchedulerLineageModel'), context);
+  for (const key of ['strategic','news-search','news-ai','news-dedupe','news-output','news-selection-agent','app-result','weekly-result','news-subscription','research-dispatch','research-hong-kong','research-merge','research-update','research-publish']) {
+    const node = {key, research:key.startsWith('research-'), value:11, unit:'动态单位', note:'正常', health:{label:'已完成'}};
+    const before = context.newsLineageCardContent(node);
+    const after = context.newsLineageCardContent({...node, value:999999, unit:'异常单位', note:'恢复失败原因'.repeat(20000), health:{label:'恢复中'}});
+    assert.equal(after.note, before.note);
+    assert.equal(after.unit, before.unit);
+    assert.equal(after.value, '999999');
+    assert.equal(context.newsLineageCardContent({...node,value:'服务异常'.repeat(100)}).value, '—');
+    assert.equal(context.newsLineageCardContent({...node,value:'已完成 11 次',cardValue:11}).value, '11');
+  }
+});
+
 test('every node preview includes all 1562 records in an accessible scrolling region', () => {
   const context = vm.createContext({
     newsLineageFirstScreenModel: () => ({ input: '', action: '', output: '', previews: Array.from({length:1562}, (_,i) => ({title:`record-${i}`, detail:'Complete content'})) }),

@@ -59,8 +59,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
             "weekly-result",
         ):
             self.assertIn(f'[data-news-lineage-node="{key}"]', strategic_cards)
-        self.assertIn("width: 230px; min-height: 160px; height: auto; padding: 30px 16px 16px", strategic_cards)
-        self.assertIn(") { min-height: 132px; }", strategic_cards)
+        self.assertIn("--lineage-card-height: 160px; width: 230px; padding: 30px 16px 16px", strategic_cards)
+        self.assertIn(") { --lineage-card-height: 132px; }", strategic_cards)
         self.assertIn('[data-news-lineage-node="news-selection-agent"] > strong { font-size: 24px; }', STYLE)
 
     def test_user_date_is_pinned_before_run_selection_and_research_loaded_without_news(self):
@@ -170,9 +170,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=184', INDEX)
-        self.assertIn('/static/research-diagram.js?v=34', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=230', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=185', INDEX)
+        self.assertIn('/static/research-diagram.js?v=35', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=231', INDEX)
 
 
 if __name__ == "__main__":
