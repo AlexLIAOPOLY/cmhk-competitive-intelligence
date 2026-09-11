@@ -2429,6 +2429,8 @@ def current_crawl_result_files() -> list[Path]:
 
 
 def build_status() -> dict:
+    from strategic_briefing import SCAN_TIMES
+
     result_files = current_crawl_result_files()
     running_tasks = [
         task
@@ -2558,6 +2560,10 @@ def build_status() -> dict:
             "rejection": build_curation_rejection_visuals(),
             "newsFunnel": latest_news_funnel,
             "todayNewsRounds": today_news_rounds,
+            "newsScanTimes": [
+                {"label": "上午" if scan_time.hour < 12 else "下午", "time": scan_time.strftime("%H:%M")}
+                for scan_time in SCAN_TIMES
+            ],
             "entities": sorted(
                 [{"label": key, "value": value} for key, value in entity_counts.items()],
                 key=lambda item: item["value"],

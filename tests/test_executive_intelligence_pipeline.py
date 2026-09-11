@@ -1926,7 +1926,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
             }),
             patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=[TimeoutError("slow"), response]) as open_url,
+            patch("urllib.request.urlopen", side_effect=[TimeoutError("slow"), response]) as open_url,
             # Isolate model rotation from the independently tested key/transport
             # retry layer, whose persistent cooldown state is time-dependent.
             patch("executive_intelligence_pipeline.open_llm_request",
@@ -1987,7 +1987,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
             }),
             patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as open_url,
+            patch("urllib.request.urlopen", return_value=response) as open_url,
         ):
             with self.assertRaisesRegex(ValueError, "跨库发现"):
                 pipeline.generate_model_discoveries(evidence)

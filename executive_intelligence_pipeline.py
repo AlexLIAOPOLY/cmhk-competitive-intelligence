@@ -184,6 +184,8 @@ MAX_FOCUS_INSIGHT_PUBLISH_CHARS = 160
 MAX_FOCUS_HEADLINE_CHARS = 28
 MAX_FOCUS_HEADLINE_PUBLISH_CHARS = 36
 MAX_FOCUS_INSIGHT_SENTENCES = 2
+MAX_DISCOVERY_DETAIL_CHARS = 110
+MAX_DISCOVERY_DETAIL_PUBLISH_CHARS = 160
 TASK_KIND = "executive-intelligence-refresh"
 DEFAULT_EXECUTIVE_AI_MODEL = "DeepSeek-V4-Pro"
 EXECUTIVE_AI_FALLBACK_MODELS = ("GLM", "Qwen3-30B-A3B-Instruct-2507")
@@ -1567,6 +1569,19 @@ def _summary_presentation_warnings(summaries):
             for warning in _focus_presentation_warnings(domain["domain"], focus)]
 
 
+def _discovery_presentation_warnings(discoveries):
+    warnings = []
+    for discovery in discoveries or []:
+        for field, target, maximum in (("title", MAX_FOCUS_HEADLINE_CHARS, MAX_FOCUS_HEADLINE_PUBLISH_CHARS),
+                                      ("detail", MAX_DISCOVERY_DETAIL_CHARS, MAX_DISCOVERY_DETAIL_PUBLISH_CHARS)):
+            characters = len(str(discovery.get(field) or ""))
+            if target < characters <= maximum:
+                warnings.append({"code": "writing_target_exceeded", "scope": f"discoveries.{discovery['from']}.{discovery['to']}",
+                                 "field": field, "characters": characters, "target_characters": target,
+                                 "publication_max_characters": maximum, "model_text_preserved": True})
+    return warnings
+
+
 def _validate_model_summaries(
     raw: Any,
     evidence: dict[str, Any],
@@ -1824,11 +1839,17 @@ def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict
         }
         if not discovery["title"] or not discovery["detail"]:
             raise ValueError("AI跨库发现标题或结论为空")
-        if len(discovery["title"]) > 28 or len(discovery["detail"]) > 110 or len(discovery["kind"]) > 12:
-            raise ValueError("AI跨库发现不够精炼")
+        if (len(discovery["title"]) > MAX_FOCUS_HEADLINE_PUBLISH_CHARS
+                or len(discovery["detail"]) > MAX_DISCOVERY_DETAIL_PUBLISH_CHARS or len(discovery["kind"]) > 12):
+            raise ValueError("AI跨库发现超过发布保护上限：标题36字、正文160字、kind12字")
+        if not re.search(r"[。！？!?]$", discovery["detail"]) or len(re.findall(r"[。！？!?]", discovery["detail"])) > 2:
+            raise ValueError("AI跨库发现必须为一至两句完整句")
         combined_text = f'{discovery["title"]}。{discovery["detail"]}'
         if _contains_action_advice(combined_text):
             raise ValueError("AI跨库发现含行动建议而非数据洞察")
+        unsupported_causal = _unsupported_causal_terms(combined_text)
+        if unsupported_causal:
+            raise ValueError(f"AI跨库发现使用了未经证据支持的因果词：{unsupported_causal}")
         if allowed_numbers:
             if not (_numeric_tokens(combined_text) & allowed_numbers):
                 raise ValueError("AI跨库发现缺少输入数值证据")
@@ -1843,6 +1864,9 @@ def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict
         unknown_numbers = _numeric_tokens(discovery) - allowed_numbers
         if unknown_numbers:
             raise ValueError(f"AI跨库发现出现输入之外的数字：{sorted(unknown_numbers)}")
+        warnings = _discovery_presentation_warnings([discovery])
+        if warnings:
+            discovery["presentation_warnings"] = warnings
         result.append(discovery)
     if covered_domains != expected_domains:
         raise ValueError(f"AI跨库发现领域覆盖不完整：{sorted(expected_domains - covered_domains)}")
@@ -3599,7 +3623,6 @@ def _manual_discovery_evidence(
 def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attempt_trace_path: Path | None = None) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
-    from network_utils import urlopen_with_local_proxy_fallback
 
     evidence = evidence or _analysis_input_snapshot()
     prompt_evidence = _compact_discovery_evidence(evidence)
@@ -3607,12 +3630,59 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         raise RuntimeError("未配置内网模型密钥")
+    draft_path = attempt_trace_path.with_suffix(".discoveries.json") if attempt_trace_path else None
+    saved = _read_json(draft_path, {}) if draft_path else {}
+    if not isinstance(saved, dict):
+        saved = {}
+    evidence_hash = _content_hash({"schema": "four_discoveries_v1", "evidence": prompt_evidence})
+    entry = saved.setdefault(evidence_hash, {"protocol": 1, "evidence_hash": evidence_hash,
+                                            "attempts": [], "model_route_counts": {}})
+    if not isinstance(entry, dict) or not isinstance(entry.get("attempts"), list) or not isinstance(entry.get("model_route_counts"), dict):
+        raise ValueError("跨库发现恢复记录损坏，禁止重置已用路由")
+
+    def persist():
+        if draft_path:
+            from ai_config import api_key_candidates
+            text = json.dumps(saved, ensure_ascii=False)
+            for route in ("", *_executive_model_route()):
+                for secret in api_key_candidates(config, model=route):
+                    if secret:
+                        text = text.replace(json.dumps(secret, ensure_ascii=False)[1:-1], "[redacted]")
+            text = re.sub(r"(?i)Bearer\s+[^\s\"\\]+", "Bearer [redacted]", text)
+            _atomic_write_json(draft_path, json.loads(text))
+
+    # Revalidate the original model packet before spending any additional route.
+    # Gate fixes may recover saved text; model-route counts are never reset.
+    saved_error = None
+    for index in range(len(entry["attempts"]) - 1, -1, -1):
+        old = entry["attempts"][index]
+        candidate = old.get("candidate")
+        if not isinstance(candidate, list) and isinstance(old.get("response"), dict):
+            try:
+                candidate = unwrap_items_payload(load_json_response(final_chat_message_text(
+                    old["response"], operation="已存跨库发现"), operation="已存跨库发现"), operation="已存跨库发现")
+            except ValueError:
+                candidate = None
+        if not isinstance(candidate, list) or not old.get("reported_model"):
+            continue
+        try:
+            accepted = _validate_model_discoveries(candidate, prompt_evidence)
+        except ValueError as exc:
+            saved_error = exc
+            continue
+        entry["selected"] = {"attempt_index": index, "revalidated_at_hkt": _now(),
+                             "candidate_hash": _content_hash(accepted), "full_gate": "passed"}
+        persist()
+        return {"generated_at_hkt": _now(), "model": old["reported_model"], "discoveries": accepted,
+                "presentation_warnings": _discovery_presentation_warnings(accepted),
+                "evidence_repair_count": 0, "reused": True}
     system_prompt = (
         "你是电信竞争情报分析员。从local、international、mainland、cloud四个战略总览数据域中提炼恰好四条跨库发现。"
         "每条必须联系两个不同领域，四条不得重复同一领域组合，且四个领域都要被覆盖。"
         "不要逐库摘要，不要写论文，不要复述发生了什么；标题写数据关系结论，detail只解释背后的结构、驱动、"
         "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
         "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
+        "不得把规模差距解释成客户需求、效率或投入驱动；证据无法建立因果时明确保留推断边界。"
         "agent_verified_facts是独立正式披露，必须保留各自period和grain；季度、半年事实不能替代全年金额比较。"
         "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
         "每条detail还必须同时出现一个比较判断词（如高于、低于、差距、分化）、一个分析维度词"
@@ -3623,7 +3693,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     )
     user_prompt = (
         "请返回{\"items\":[四条发现]}，每项字段严格为from,to,title,detail,kind,source_urls。"
-        "title不超过28字，detail不超过110字，kind统一写AI综合研判。不要Markdown。输入：\n"
+        "title不超过28字，detail目标80至110字、一至两句完整句，kind统一写AI综合研判。不要Markdown。输入：\n"
         + json.dumps(prompt_evidence, ensure_ascii=False)
     )
     messages = [
@@ -3642,10 +3712,12 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     })
     discoveries: list[dict[str, Any]] | None = None
     evidence_repair_count = 0
-    last_error: Exception | None = None
+    last_error: Exception | None = saved_error
     discovery_models = _executive_model_route()
     used_model = discovery_models[0]
     for attempt, discovery_model in enumerate(discovery_models):
+        if int(entry["model_route_counts"].get(discovery_model) or 0) >= 1:
+            continue
         body["model"] = discovery_model
         body["messages"] = messages
         request = _model_request(config, api_key, body)
@@ -3653,6 +3725,18 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
         attempt_started = time.monotonic()
         payload = {}
         attempt_error = None
+        record = {"requested_model": discovery_model, "status": "running", "started_at_hkt": _now(), "http_calls": 0}
+        entry["attempts"].append(record)
+        entry["model_route_counts"][discovery_model] = int(entry["model_route_counts"].get(discovery_model) or 0) + 1
+        persist()  # Reserve the route before its single HTTP, including a crash.
+
+        def single_transport(*args, **kwargs):
+            if record["http_calls"]:
+                raise ValueError("单条跨库发现模型路由只允许一个HTTP，禁止隐式重试")
+            record["http_calls"] += 1
+            persist()
+            return urllib.request.urlopen(*args, **kwargs)
+
         try:
             with open_llm_request(
                 request,
@@ -3660,16 +3744,25 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                 config=config,
                 requested_key=api_key,
                 model=discovery_model,
-                open_func=urlopen_with_local_proxy_fallback,
+                open_func=single_transport,
+                max_transport_retries=0,
             ) as response:
                 payload = read_chat_completion_sse(response)
+            record.update(response=payload, reported_model=payload.get("model"), response_id=payload.get("id"),
+                          response_hash=_content_hash(payload), status="received")
+            persist()  # Preserve the complete SSE packet before parsing/quality gates.
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             last_error = RuntimeError(f"内网模型 HTTP {exc.code}: {detail}")
+            record.update(status="failed", error=str(last_error), completed_at_hkt=_now())
+            persist()
             _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model, attempt_started, payload, last_error, config)
             continue
         except (APIKeyPoolUnavailable, ValueError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
+            record.update(status="failed", error=str(exc), completed_at_hkt=_now(),
+                          stream=getattr(exc, "stream_diagnostics", {}))
+            persist()
             _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model, attempt_started, payload, exc, config)
             continue
         try:
@@ -3679,6 +3772,8 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                     load_json_response(content, operation="跨库AI发现"), operation="跨库AI发现"
                 )
             )
+            record.update(candidate=concise, candidate_hash=_content_hash(concise))
+            persist()
             depth_repaired, current_repair_count = _repair_discovery_depth(
                 concise,
                 prompt_evidence,
@@ -3686,10 +3781,16 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
             discoveries = _validate_model_discoveries(depth_repaired, prompt_evidence)
             evidence_repair_count = current_repair_count
             used_model = payload["model"]
+            record.update(status="passed", completed_at_hkt=_now())
+            entry["selected"] = {"attempt_index": len(entry["attempts"]) - 1,
+                                 "candidate_hash": _content_hash(discoveries), "full_gate": "passed"}
+            persist()
             break
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = exc
             attempt_error = exc
+            record.update(status="failed", error=str(exc), completed_at_hkt=_now())
+            persist()
             if attempt + 1 < len(discovery_models):
                 messages.extend([
                     {"role": "assistant", "content": content},
@@ -3708,12 +3809,13 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
             _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model,
                                  attempt_started, payload, attempt_error, config)
     if discoveries is None:
-        raise ValueError(f"AI跨库发现连续三次未通过门禁：{last_error}")
+        raise ValueError(f"AI跨库发现可用模型路由已用完；相同证据不重复请求：{last_error}")
     return {
         "generated_at_hkt": _now(),
         "model": used_model,
         "discoveries": discoveries,
         "evidence_repair_count": evidence_repair_count,
+        "presentation_warnings": _discovery_presentation_warnings(discoveries),
     }
 
 
@@ -3969,6 +4071,8 @@ def regenerate_model_discovery(
         **previous,
         "generated_at_hkt": generated_at,
         "discoveries": discoveries,
+        "presentation_warnings": (_summary_presentation_warnings(previous.get("summaries") or [])
+                                  + _discovery_presentation_warnings(discoveries)),
         "discovery_model": used_model,
         "discovery_generated_at_hkt": generated_at,
         "evidence_hash": evidence_hash,
@@ -4014,7 +4118,7 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, check
             pass
         else:
             return {**previous, "summaries": summaries, "discoveries": discoveries, "reused": True,
-                    "presentation_warnings": _summary_presentation_warnings(summaries)}
+                    "presentation_warnings": _summary_presentation_warnings(summaries) + _discovery_presentation_warnings(discoveries)}
     generated = (generate_model_domain_summaries(evidence, checkpoint_path=checkpoint_path)
                  if checkpoint_path else generate_model_domain_summaries(evidence))
     discoveries = (generate_model_discoveries(evidence, attempt_trace_path=checkpoint_path.with_suffix(".attempts.jsonl"))
@@ -4033,7 +4137,8 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, check
     }
     if not model_generated_only(bundle):
         raise ValueError("分析包含非AI结果，禁止作为AI分析保存或发布")
-    bundle["presentation_warnings"] = _summary_presentation_warnings(bundle["summaries"])
+    bundle["presentation_warnings"] = (_summary_presentation_warnings(bundle["summaries"])
+                                       + _discovery_presentation_warnings(bundle["discoveries"]))
     return bundle
 
 
@@ -4084,7 +4189,8 @@ def regenerate_model_focus_summary(
     ]
     report("正在校验数字与来源")
     bundle["summaries"] = _validate_model_summaries(summaries, evidence)
-    bundle["presentation_warnings"] = _summary_presentation_warnings(bundle["summaries"])
+    bundle["presentation_warnings"] = (_summary_presentation_warnings(bundle["summaries"])
+                                       + _discovery_presentation_warnings(bundle["discoveries"]))
     generated_at = _now()
     history[history_key] = list(dict.fromkeys([*history.get(history_key, []), str(previous_focus.get("analysis") or ""), str(replacement.get("analysis") or "")]))[-12:]
     title_history[history_key] = list(dict.fromkeys([*title_history.get(history_key, []), str(previous_focus.get("headline") or ""), str(replacement.get("headline") or "")]))[-12:]
