@@ -47,6 +47,7 @@
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
     faultFeedback: null,
+    faultFeedbackTimer: 0,
     loadedKeys: new Set(),
     dirtyModules: new Set(),
     renderFrames: {},
@@ -3688,11 +3689,21 @@
     const feedback = document.querySelector("#faultActionFeedback");
     if (!feedback) return;
     const current = state.faultFeedback;
+    window.clearTimeout(state.faultFeedbackTimer);
+    state.faultFeedbackTimer = 0;
     feedback.hidden = !current;
     feedback.className = `fault-action-feedback${current ? ` is-${current.tone || "info"}` : ""}`;
     feedback.setAttribute("role", current?.tone === "error" ? "alert" : "status");
     feedback.setAttribute("aria-live", current?.tone === "error" ? "assertive" : "polite");
-    feedback.innerHTML = current ? `<i aria-hidden="true"></i><span><strong>${esc(current.title)}</strong><small>${esc(current.detail)}</small></span>` : "";
+    feedback.innerHTML = current ? `<i aria-hidden="true"></i><span><strong>${esc(current.title)}</strong><small>${esc(current.detail)}</small></span><button type="button" data-dismiss-fault-feedback aria-label="关闭提示" title="关闭提示">×</button>` : "";
+    if (current && current.tone !== "progress") {
+      const shownFeedback = current;
+      state.faultFeedbackTimer = window.setTimeout(() => {
+        if (state.faultFeedback !== shownFeedback) return;
+        state.faultFeedback = null;
+        renderFaultFeedback();
+      }, current.tone === "error" ? 8000 : 5000);
+    }
   }
 
   function faultStatus(task) {
@@ -4038,6 +4049,10 @@
       expandPreview.title = expanded ? "还原预览" : "放大预览";
     }
     if (event.target.closest("[data-refresh-fault]")) refreshFaultData();
+    if (event.target.closest("[data-dismiss-fault-feedback]")) {
+      state.faultFeedback = null;
+      renderFaultFeedback();
+    }
     if (event.target.closest("[data-download-alert-report]")) {
       const period = document.querySelector("[data-alert-report-period]")?.value || "daily";
       window.location.assign(`/api/alert-report.pdf?period=${encodeURIComponent(period)}`);

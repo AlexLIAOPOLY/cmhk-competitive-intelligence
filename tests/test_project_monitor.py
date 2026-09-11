@@ -31,6 +31,7 @@ class FakeCommandRunner:
         self.fail_resolution_update = False
         self.updated_messages: dict[str, str] = {}
         self.fail_ledger = False
+        self.transient_bot_user_missing = 0
         self.fail_ledger_styles = False
         self.ledger_append_row_shift = 0
         self.ledger_sheet_row_count = 200
@@ -47,6 +48,22 @@ class FakeCommandRunner:
     def __call__(self, argv, *, cwd, env, timeout):
         args = list(argv)
         self.calls.append(args)
+        if args[:3] == ["lark-cli", "auth", "status"]:
+            return subprocess.CompletedProcess(args, 0, json.dumps({"ok": True, "verified": True}), "")
+        if (
+            self.transient_bot_user_missing > 0
+            and args[:1] == ["lark-cli"]
+            and "--as" in args
+            and "bot" in args
+            and args[1:2] != ["whoami"]
+        ):
+            self.transient_bot_user_missing -= 1
+            return subprocess.CompletedProcess(
+                args,
+                1,
+                "",
+                json.dumps({"ok": False, "error": {"code": 20008, "message": "The user does not exist."}}),
+            )
         if args[:2] == ["launchctl", "print"]:
             return subprocess.CompletedProcess(
                 args,
@@ -2110,6 +2127,19 @@ class ProjectMonitorTests(unittest.TestCase):
         rows, mapping = monitor._read_error_ledger()
         self.assertEqual(mapping[incident_id], 4)
         self.assertEqual(rows[mapping[incident_id] - 2][12], "李四")
+
+    def test_bot_user_missing_refreshes_identity_and_retries_ledger_read(self):
+        self.runner.transient_bot_user_missing = 2
+        monitor = self._monitor(enabled=True, enable_ledger=True)
+
+        rows, mapping = monitor._read_error_ledger()
+
+        self.assertEqual(rows, [])
+        self.assertEqual(mapping, {})
+        self.assertTrue(any("+cells-get" in call for call in self.runner.calls))
+        verify_calls = [call for call in self.runner.calls if call[:3] == ["lark-cli", "auth", "status"]]
+        self.assertEqual(len(verify_calls), 2)
+        self.assertTrue(all("--verify" in call for call in verify_calls))
 
     def test_error_ledger_is_read_in_bounded_chunks_without_losing_rows(self):
         ledger_rows = []

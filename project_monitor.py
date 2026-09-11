@@ -575,12 +575,39 @@ class ProjectMonitor:
         return isinstance(config, dict) and bool(config.get("enabled"))
 
     def _run(self, argv: list[str], timeout: float = 20) -> subprocess.CompletedProcess[str]:
-        return self.command_runner(
-            portable_lark_argv(argv, self.environ) if self._uses_default_command_runner else argv,
+        command = portable_lark_argv(argv, self.environ) if self._uses_default_command_runner else argv
+        command_env = _command_env(self.environ)
+        proc = self.command_runner(
+            command,
             cwd=self.runtime_root,
-            env=_command_env(self.environ),
+            env=command_env,
             timeout=timeout,
         )
+        is_bot_command = argv and Path(argv[0]).name == "lark-cli" and "--as" in argv and "bot" in argv
+        for retry_delay in (0.2, 0.5):
+            raw = (proc.stderr or proc.stdout or "").lower()
+            if not is_bot_command or "20008" not in raw or "user does not exist" not in raw:
+                break
+            profile = argv[argv.index("--profile") + 1] if "--profile" in argv else ""
+            verify_argv = ["lark-cli", "auth", "status"]
+            if profile:
+                verify_argv.extend(["--profile", profile])
+            verify_argv.extend(["--verify", "--json"])
+            verify_command = portable_lark_argv(verify_argv, self.environ) if self._uses_default_command_runner else verify_argv
+            self.command_runner(
+                verify_command,
+                cwd=self.runtime_root,
+                env=command_env,
+                timeout=min(timeout, 15),
+            )
+            time.sleep(retry_delay)
+            proc = self.command_runner(
+                command,
+                cwd=self.runtime_root,
+                env=command_env,
+                timeout=timeout,
+            )
+        return proc
 
     def _issue(
         self,
@@ -3570,6 +3597,8 @@ class ProjectMonitor:
             raise RuntimeError(f"lark-cli returned non-JSON output: {_redact(raw, 500)}") from exc
         if proc.returncode != 0 or payload.get("ok") is False:
             error = payload.get("error") if isinstance(payload, dict) else {}
+            if str((error or {}).get("code") or "") == "20008":
+                raise RuntimeError("飞书机器人身份暂时不可用，系统已刷新凭据并重试，请稍后再试")
             raise RuntimeError(_redact((error or {}).get("message") or raw, 600))
         return payload
 
