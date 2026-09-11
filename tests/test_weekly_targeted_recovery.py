@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from copy import deepcopy
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import generate_weekly_report as report
 from tests.test_biweekly_report_quality import detailed_text, make_item, make_model
@@ -121,6 +121,35 @@ class TargetedRecoveryTests(unittest.TestCase):
         ] + [{'title': item['title'], 'url': 'https://example.test/full', 'content': '完整参考正文包含部署节点和技术方案。'}]
         facts = report.weekly_writer_fact_package(item)
         self.assertTrue(any('完整参考正文' in fact['value'] for fact in facts if fact['role'] == 'matching_search_reference'))
+
+    def test_unrelated_search_hits_trigger_traditional_keyword_fallback(self):
+        item = self.thin_item()
+        item['title'] = item['originalTitle'] = 'HGC环电推出商业安全宽频2.0方案'
+        queries = []
+        def search(query, limit):
+            queries.append(query)
+            title = '完全无关的网页' if len(queries) == 1 else 'HGC環電商業安全寬頻2.0'
+            return {'query': query, 'results': [{'title': title, 'url': 'https://example.test/news'}]}
+        researched = report.research_weekly_model_online(make_model(item), search_client=search, progress=lambda _: None)
+        self.assertEqual(len(queries), 2)
+        self.assertIn('環電', queries[1])
+        self.assertIn('2.0', queries[1])
+        self.assertEqual(researched['sections'][0]['items'][0]['webResearch']['results'][0]['title'], 'HGC環電商業安全寬頻2.0')
+
+    def test_official_pdf_fulltext_is_available_to_writer(self):
+        response = MagicMock()
+        response.__enter__.return_value = response
+        response.iter_bytes.return_value = [b'%PDF-1.7 test']
+        page = MagicMock()
+        page.extract_text.return_value = detailed_text('完整新闻正文。') * 3
+        reader = MagicMock()
+        reader.pages = [page]
+        with (
+            patch.object(report.httpx, 'stream', return_value=response),
+            patch('pypdf.PdfReader', return_value=reader),
+        ):
+            text = report._fetch_search_result_content({'title': '测试主体公布网络部署', 'url': 'https://example.test/news.pdf'}, '测试主体公布网络部署')
+        self.assertIn('完整新闻正文', text)
 
 
 if __name__ == '__main__':

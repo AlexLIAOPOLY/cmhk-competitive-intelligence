@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import io
 import hashlib
 import json
 import os
@@ -2797,11 +2798,19 @@ def review_weekly_items_with_ai(
     return reviewed, audit
 
 
+def weekly_recovery_search_query(title: str) -> str:
+    keywords = re.sub(r"【[^】]+】|新一代|宣布|推出|提出|正式|成功|奠基|跃居", " ", title)
+    keywords = re.sub(r"([A-Za-z0-9][A-Za-z0-9.-]*)", r" \1 ", keywords)
+    keywords = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff.]+", " ", keywords)
+    return clean_text(OpenCC("s2t").convert(keywords), 220)
+
+
 def research_weekly_model_online(
     model: dict,
     *,
     search_client=public_web_search,
     progress=print,
+    recovery_search: bool = False,
 ) -> dict:
     researched_model = deepcopy(model)
     supplemental_by_title = weekly_supplemental_evidence()
@@ -2825,7 +2834,7 @@ def research_weekly_model_online(
                 # The exact headline is the strongest retrieval key. Appending
                 # publisher/date/"latest official" previously suppressed good
                 # matches for syndications and Traditional/Simplified variants.
-                "query": title,
+                "query": weekly_recovery_search_query(title) if recovery_search else title,
             }
         )
     progress(f"[周报 4/7] 正在逐条联网搜索核实并查找可补充信息，共{len(requests)}条……")
@@ -2834,15 +2843,17 @@ def research_weekly_model_online(
     fallback_requests = []
     for request in requests:
         row = rows_by_id.get(request["id"]) or {}
-        if row.get("results"):
+        if any(
+            isinstance(result, dict)
+            and _headline_evidence_overlap(request["query"], result.get("title")) >= 0.25
+            for result in row.get("results") or []
+        ):
             continue
-        fallback_query = clean_text(
-            re.sub(r"【[^】]+】|[^0-9A-Za-z\u4e00-\u9fff]+", " ", request["query"]),
-            220,
-        )
+        fallback_query = weekly_recovery_search_query(request["query"])
         if fallback_query and fallback_query != request["query"]:
             fallback_requests.append({"id": request["id"], "query": fallback_query})
     if fallback_requests:
+        progress(f"[周报 4/7] {len(fallback_requests)}条搜索缺少相关结果，使用繁体关键词补搜。")
         fallback_rows = run_web_research(
             fallback_requests,
             search_client=search_client,
@@ -3714,6 +3725,25 @@ def _fetch_search_result_content(result: dict, headline: str) -> str:
     url = clean_text(result.get("url"), 1200)
     if not url.startswith(("http://", "https://")):
         return ""
+    if urlparse(url).path.lower().endswith(".pdf"):
+        try:
+            from pypdf import PdfReader
+            # Read a bounded public press release, never an unbounded download.
+            content = bytearray()
+            with httpx.stream("GET", url, follow_redirects=True,
+                              timeout=WEEKLY_PAGE_FETCH_TIMEOUT_SECONDS) as response:
+                response.raise_for_status()
+                for chunk in response.iter_bytes():
+                    content.extend(chunk)
+                    if len(content) > 8_000_000:
+                        return ""
+            if not content.startswith(b"%PDF"):
+                return ""
+            reader = PdfReader(io.BytesIO(content))
+            text = clean_text(" ".join(page.extract_text() or "" for page in reader.pages[:12]), 7000)
+            return text if len(text) >= 240 else ""
+        except Exception:
+            return ""
     try:
         html_text = _fetch_public_html(url, timeout=WEEKLY_PAGE_FETCH_TIMEOUT_SECONDS)
     except Exception:
@@ -5396,7 +5426,7 @@ def repair_weekly_thin_items(model: dict, *, progress=print) -> dict:
                 "sources": deepcopy(model.get("sources") or []),
             }
             try:
-                refreshed = research_weekly_model_online(subset, progress=progress)
+                refreshed = research_weekly_model_online(subset, progress=progress, recovery_search=True)
                 fresh_items = [item for section in refreshed.get("sections") or [] for item in section.get("items") or []]
                 if len(fresh_items) != len(pending):
                     raise ValueError("补搜条目数量不一致")
