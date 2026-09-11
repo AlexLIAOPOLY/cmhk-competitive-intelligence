@@ -8,7 +8,9 @@ from contextlib import closing
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from cmhk.services.news_delivery_dedupe import deduplicate_events
+from cmhk.services.news_delivery_dedupe import VERSION as DEDUPE_VERSION, deduplicate_events, exact_unique
+from cmhk.services.news_digest_editor import EDITOR_VERSION
+from cmhk.services.news_summary_quality import VERSION as SUMMARY_VERSION
 from cmhk.services.news_delivery_assets import prepare_news_assets
 from cmhk.services.news_image_quality import policy_key, require_reviewed_images
 from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract
@@ -20,7 +22,7 @@ class NewsNotPrepared(RuntimeError):
 
 
 def preparation_key(*, body: str, title: str, history: list[dict], send_day: str, context: str = "") -> str:
-    encoded = json.dumps([POLICY_VERSION, TEMPLATE_VERSION, policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
+    encoded = json.dumps([POLICY_VERSION, DEDUPE_VERSION, EDITOR_VERSION, SUMMARY_VERSION, TEMPLATE_VERSION, policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
         json.dumps(item, ensure_ascii=False, sort_keys=True) for item in history
     )], ensure_ascii=False)
     return hashlib.sha256(encoded.encode()).hexdigest()
@@ -61,12 +63,19 @@ def delivered_history(db, *, open_id: str, batch_id: str, logical_day: str, send
     items = []
     first_day = (date.fromisoformat(send_day) - timedelta(days=2)).isoformat()
     for row in db.execute(
-        """SELECT items_json FROM news_delivery_receipts
+        """SELECT items_json, audit_json FROM news_delivery_receipts
            WHERE open_id=? AND batch_id<>? AND status IN ('sending','sent','verified')
              AND (logical_day=? OR send_day BETWEEN ? AND ?)""",
         (open_id, batch_id, logical_day, first_day, send_day),
     ).fetchall():
-        items.extend(json.loads(row[0]))
+        entries = json.loads(row[0])
+        assets = {asset.get('news_id'): asset for asset in json.loads(row[1]).get('assets', [])
+                  if asset.get('news_id')}
+        # Older receipts already archived resolved URLs in their asset audit.
+        # Recover those aliases read-only without touching any sent messages.
+        entries = [{**item, **({'news_url': assets[item['news_id']]['news_url']}
+                   if assets.get(item.get('news_id'), {}).get('news_url') else {})} for item in entries]
+        items.extend(entries)
     # Upgrade compatibility: old outbox bodies are the original sent selections.
     # Do not count future queued cards, cancelled sends, or this batch against itself.
     for row in db.execute(
@@ -183,10 +192,17 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             period = 'afternoon' if '下午茶' in title else 'morning'
             banner = str(image_keys.get(period) or '')
             prepared_items = []
+            summary_reviews = []
             if selected and structured:
                 assets = prepare_news_assets(selected, service, profile=profile, fallback_image_key=banner)
+                # Canonical URLs become available only after publisher resolution.
+                unique_assets = exact_unique(assets, history)
+                kept = {id(item) for item in unique_assets}
+                selected = [item for item, asset in zip(selected, assets) if id(asset) in kept]
+                assets = unique_assets
                 prepared = prepare_digest(assets, service.runtime_root)
                 prepared_items = prepared['items']
+                summary_reviews = prepared.get('summary_reviews', [])
                 rendered_body = NEWS_DIGEST_PREFIX + json.dumps(prepared, ensure_ascii=False)
             elif selected:
                 rendered_body = body
@@ -206,6 +222,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                     (open_id, batch_id, logical_day, send_day, json.dumps(selected, ensure_ascii=False),
                      json.dumps(card, ensure_ascii=False), json.dumps({"input_count": input_count, "eligible_count": len(candidates),
                      "selection_policy": POLICY_VERSION, "template_version": TEMPLATE_VERSION,
+                     "editor_version": EDITOR_VERSION, "summary_policy": SUMMARY_VERSION,
+                     "summary_reviews": summary_reviews,
                      "skill_hash": skill_contract()[1],
                      "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind",
                          "image_source_url", "image_page_url", "image_sha256", "image_policy_key",

@@ -7,6 +7,13 @@ from cmhk.services.news_digest_editor import prepare_digest
 
 
 class NewsDigestEditorTests(unittest.TestCase):
+    def setUp(self):
+        # This suite tests editorial transport/cache behavior. Source-grounded
+        # quality and real integration are covered in test_news_summary_quality.
+        quality = patch('cmhk.services.news_digest_editor.review_summaries', return_value=[])
+        quality.start()
+        self.addCleanup(quality.stop)
+
     def test_recipient_subset_reuses_exact_source_prose_without_another_model_call(self):
         overview = '运营商推出面向企业的新套餐，产品竞争进一步聚焦企业服务。具体定价与客户采用情况仍需持续观察。'
         prose = {'summary': '运营商公布面向企业客户的新套餐，首批服务对象为制造企业。',

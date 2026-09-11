@@ -191,7 +191,8 @@ class NewsAssetTests(unittest.TestCase):
 
     def test_editor_actually_consumes_skill_and_returns_summary_without_overview(self):
         model = Mock(return_value={'items': [{'id': '0', 'summary': self.item['summary']}]})
-        prepared = prepare_digest([self.item], self.root, model_call=model)
+        with patch('cmhk.services.news_digest_editor.review_summaries', return_value=[]):
+            prepared = prepare_digest([self.item], self.root, model_call=model)
         self.assertEqual(model.call_args.args[0], skill_contract()[0])
         self.assertEqual(prepared['skill_hash'], skill_contract()[1])
         self.assertNotIn('overview', prepared)

@@ -216,9 +216,16 @@ class SubscriptionClockTests(unittest.TestCase):
             return 'om_' + oid
         self.send.side_effect = send
         try:
-            self.tick('08:00:00')
-            self.assertTrue(entered.wait(1))
-            self.assertTrue(second_sent.wait(1))
+            # Keep the simulated day in force until both background senders ran.
+            with mock.patch('cmhk.services.news_delivery_guard.datetime') as guard_clock, \
+                    mock.patch('cmhk.services.subscriptions.datetime') as send_clock:
+                now = datetime.fromisoformat('2026-09-11T08:00:00+08:00')
+                guard_clock.now.return_value = send_clock.now.return_value = now
+                self.worker.tick(now=now)
+                self.assertTrue(entered.wait(1))
+                self.assertTrue(second_sent.wait(1))
+                release.set()
+                self.worker.senders.shutdown()
         finally:
             release.set()
             self.worker.senders.shutdown()

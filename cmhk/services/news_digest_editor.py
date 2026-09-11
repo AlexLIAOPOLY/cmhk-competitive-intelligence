@@ -10,8 +10,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from cmhk.services.news_push_skill import skill_contract
+from cmhk.services.news_summary_quality import SummaryQualityError, enrich_source, repeats_title, review_summaries
 
-EDITOR_VERSION = 8
+EDITOR_VERSION = 9
 
 
 
@@ -37,6 +38,8 @@ def _validate(result: Any, items: list[dict]) -> dict:
         )
         if any(marker in summary for marker in editorial_markers):
             raise ValueError('新闻简介混入编辑提醒，须依据事件事实重写')
+        if repeats_title(item.get('title', ''), summary):
+            raise SummaryQualityError('新闻简介与标题重复，须补充原文中的具体事实')
         enriched.append({**item, 'digest_summary': summary.strip()})
     return {'skill_hash': skill_contract()[1], 'items': enriched, 'editor_version': EDITOR_VERSION, 'status': 'model_generated'}
 
@@ -103,8 +106,9 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
     for index, item in enumerate(items):
         record = by_url.get(item.get('source_url')) or by_url.get(item.get('url')) or {}
         evidence = {k: str(item.get(k) or record.get(k) or '')[:5000]
-                    for k in ('title', 'summary', 'source_summary', 'snippet', 'description',
+                    for k in ('title', 'summary', 'source_summary', 'snippet', 'description', 'source_url', 'news_url',
                               'content', 'source', 'published_at', 'category', 'inclusion_reason')}
+        evidence = enrich_source(item, evidence, runtime_root)
         inputs.append({'id': str(index), **evidence,
                        'supporting_sources': item.get('supporting_sources') or record.get('supporting_sources') or []})
     encoded = json.dumps({'version': EDITOR_VERSION, 'skill_hash': skill_contract()[1], 'items': inputs}, ensure_ascii=False, sort_keys=True)
@@ -113,7 +117,9 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
     try:
         cached = json.loads(target.read_text())
         # Validate cached output too; retain current titles, URLs, source dates and categories.
-        return _validate(cached['model_output'], items)
+        prepared = _validate(cached['model_output'], items)
+        prepared['summary_reviews'] = review_summaries(inputs, cached['model_output']['items'], runtime_root)
+        return prepared
     except (OSError, ValueError, KeyError, TypeError):
         pass
     if model_call is None:
@@ -132,8 +138,13 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
                                                           for name in ("id", "summary")}}}}}}}
     reused = _reuse_cached_items(inputs, target.parent)
     if reused:
-        result = {'items': reused}
-    else:
+        try:
+            result = {'items': reused}
+            _validate(result, items)
+            review_summaries(inputs, reused, runtime_root)
+        except ValueError:
+            reused = None
+    if not reused:
         from strategic_briefing import AIInvalidStructuredResponse, AIUnstructuredResponse
         from cmhk.intelligence.agent_harness import TruncatedModelOutput
         task = '按少样本示例的字段分工重新撰写：新闻简介直接交代事件事实，不输出编辑提醒、阅读建议或材料缺失清单；不输出综述或AI解析。示例只是写法，不是本次事实。'
@@ -149,14 +160,24 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
         try:
             if len(items) > 1 and recovery.exists():
                 raise ValueError('继续已记录的逐条编辑恢复')
-            result = model_call(system, json.dumps(payload, ensure_ascii=False),
-                                max_tokens=max(16000, len(items) * 1200), response_format=response_format,
-                                deadline_monotonic=time.monotonic() + 360, _structured_response_retries=1)
-            if _single_response:
-                result = {'items': [result]}
-            _validate(result, items)
+            for attempt in range(2 if _single_response else 1):
+                result = model_call(system, json.dumps(payload, ensure_ascii=False),
+                                    max_tokens=max(16000, len(items) * 1200), response_format=response_format,
+                                    deadline_monotonic=time.monotonic() + 360, _structured_response_retries=1)
+                if _single_response:
+                    result = {'items': [result]}
+                try:
+                    _validate(result, items)
+                    review_summaries(inputs, result['items'], runtime_root)
+                    break
+                except SummaryQualityError as exc:
+                    if not _single_response or attempt:
+                        raise
+                    payload['revision_required'] = str(exc)
+                    payload['rejected_summary'] = result['items'][0]['summary']
+                    payload['task'] += ' 上次简介未通过事实增量审核；从原文选具体措施、数据、对象或进展重写，禁止换词复述标题或编造。'
         except (ValueError, AIInvalidStructuredResponse, AIUnstructuredResponse, TruncatedModelOutput) as exc:
-            if isinstance(exc, ValueError) and str(exc) not in {
+            if isinstance(exc, ValueError) and not isinstance(exc, SummaryQualityError) and str(exc) not in {
                     '继续已记录的逐条编辑恢复', '新闻编辑结果无效',
                     '新闻编辑返回条数不完整', '新闻编辑返回标识不匹配'}:
                 raise
@@ -173,6 +194,7 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
                 rows.append({'id': str(index), 'summary': one['items'][0]['digest_summary']})
             result = {'items': rows}
     prepared = _validate(result, items)
+    prepared['summary_reviews'] = review_summaries(inputs, result['items'], runtime_root)
     target.parent.mkdir(parents=True, exist_ok=True)
     temporary = target.with_suffix(f'.{uuid.uuid4().hex}.tmp')
     temporary.write_text(json.dumps({'inputs': inputs, 'model_output': result, **prepared}, ensure_ascii=False, indent=2))

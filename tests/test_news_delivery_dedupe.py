@@ -35,6 +35,14 @@ class EventDedupeTests(unittest.TestCase):
         self.assertTrue(identity_keys(a) & identity_keys(b))
         self.assertEqual(exact_unique([a, b, {"news_id": "b", "title": "再次改写"}]), [a])
 
+    def test_later_alias_bridge_to_history_cannot_leak_an_earlier_candidate(self):
+        history = [{'news_id': 'sent', 'title': '已发送标题', 'news_url': 'https://publisher.example/original'}]
+        first = {'news_id': 'new', 'title': '新版标题', 'url': 'https://aggregator.example/a'}
+        bridge = {'news_id': 'bridge', 'title': '新版标题', 'source_url': 'https://publisher.example/original?utm_source=rss'}
+        for items in ([first, bridge], [bridge, first]):
+            self.assertEqual(exact_unique(items, history), [])
+        self.assertEqual(exact_unique([first, bridge]), [first])
+
     def test_same_meeting_removed_but_different_event_retained_and_cache_reused(self):
         result = model_result([REWRITE, DISTINCT])
         result["decisions"][0].update(duplicate_of="h0", reason="同一次双方海关会议的不同议题",
@@ -350,13 +358,66 @@ class DeliveryGuardTests(unittest.TestCase):
         self.assertEqual(fresh.list_summary()["subscribers"][0]["news_delivery_times"], ["08:00", "18:30"])
 
     def test_legacy_verified_outbox_is_used_but_future_queue_is_not(self):
-        self.service.dispatch_news_after_crawl(crawl_slot="2026-09-10@03:00", slot_label="晨间扫描", items=[MEETING])
+        self.service.dispatch_news_after_crawl(crawl_slot="2026-09-10@03:00", slot_label="晨间扫描", items=[MEETING],
+                                               completed_at='2026-09-10T07:00:00+08:00')
         with sqlite3.connect(self.service.db_path) as db:
             db.execute("UPDATE deliveries SET status='verified'")
             db.execute("UPDATE pending_subscription_deliveries SET status='verified',dispatched_at='2026-09-10T08:00:00+08:00'")
-        self.service.dispatch_news_after_crawl(crawl_slot="2026-09-10@14:00", slot_label="午后扫描", items=[DISTINCT])
+        self.service.dispatch_news_after_crawl(crawl_slot="2026-09-10@14:00", slot_label="午后扫描", items=[DISTINCT],
+                                               completed_at='2026-09-10T15:00:00+08:00')
         self.send_news("new-boundary", [MEETING, DISTINCT])
         self.assertEqual(self.receipt_items("new-boundary"), [DISTINCT])
+
+    def test_resolved_original_url_is_recovered_from_real_asset_receipt_history(self):
+        from tests.news_push_fixtures import prepared_assets
+        canonical = 'https://publisher.example/original'
+        def resolve(items, *args, **kwargs):
+            return [{**item, 'news_url': canonical} for item in prepared_assets(items)]
+        with mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=resolve):
+            self.send_news('first-url', [MEETING])
+        # Same article gets an unrelated title/ID/aggregator URL next time.
+        alias = {**DISTINCT, 'source_url': canonical + '?utm_source=changed'}
+        self.send_news('second-url', [alias])
+        self.assertEqual(self.receipt_items('second-url'), [])
+
+    def test_canonical_collision_discovered_during_preparation_is_removed(self):
+        from tests.news_push_fixtures import prepared_assets
+        canonical = 'https://publisher.example/original'
+        def resolve(items, *args, **kwargs):
+            return [{**item, 'news_url': canonical} for item in prepared_assets(items)]
+        with mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=resolve):
+            self.send_news('two-aliases', [MEETING, DISTINCT])
+        self.assertEqual(len(self.receipt_items('two-aliases')), 1)
+
+    def test_prepared_card_is_reselected_after_manual_send_and_editor_upgrade(self):
+        from cmhk.services.news_delivery_guard import NewsNotPrepared, prepared_for
+        args = dict(open_id='ou_test123', batch_id='prepared', content_ref='strategic-crawl:2026-09-10@14:00',
+                    title='CMHK战略下午茶', body=encode_strategic_news_digest([MEETING, DISTINCT]))
+        deliver_news(self.service, **args, profile=self.service.delivery_profile, prepare_only=True)
+        self.assertTrue(prepared_for(self.service, args, send_day='2026-09-10'))
+        with mock.patch('cmhk.services.news_delivery_guard.EDITOR_VERSION', 999):
+            self.assertFalse(prepared_for(self.service, args, send_day='2026-09-10'))
+        self.send_news('manual-between', [MEETING], ref='人工推送')
+        self.assertFalse(prepared_for(self.service, args, send_day='2026-09-10'))
+        with self.assertRaises(NewsNotPrepared):
+            deliver_news(self.service, **args, profile=self.service.delivery_profile, prepared_only=True)
+        self.assertEqual(self.send.call_count, 1)
+        deliver_news(self.service, **args, profile=self.service.delivery_profile, prepare_only=True)
+        self.assertEqual(self.receipt_items('prepared'), [DISTINCT])
+        deliver_news(self.service, **args, profile=self.service.delivery_profile, prepared_only=True)
+        self.assertEqual(self.send.call_count, 2)
+
+    def test_summary_quality_failure_keeps_original_batch_queued_without_send(self):
+        from cmhk.services.news_summary_quality import SummaryQualityError
+        with mock.patch('cmhk.services.news_digest_editor.prepare_digest',
+                        side_effect=SummaryQualityError('简介重复标题')):
+            result = self.service.push(service='news', mode='text', target_open_id='ou_test123',
+                                       body=encode_strategic_news_digest([MEETING]))
+        self.assertEqual(result['queued_count'], 1)
+        self.send.assert_not_called()
+        with sqlite3.connect(self.service.db_path) as db:
+            self.assertEqual(db.execute('SELECT count(*) FROM news_delivery_receipts').fetchone()[0], 0)
+            self.assertEqual(db.execute('SELECT status FROM pending_subscription_deliveries').fetchone()[0], 'queued')
 
     def test_failed_review_queues_without_sending_and_survives_service_restart(self):
         with mock.patch("cmhk.services.news_delivery_guard.deduplicate_events", side_effect=TimeoutError("review failed")):
