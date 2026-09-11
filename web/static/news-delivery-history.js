@@ -1,6 +1,7 @@
 /* Personal news delivery readback. All interactions here are read-only. */
 (() => {
   "use strict";
+  const canvasWidth = 2716;
   const snapshots = new Map();
   const esc = (value) => String(value ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
   const labels = { verified: "已确认发送", queued: "等待发送", sending: "发送中", retrying: "等待重试", sent: "已发送 · 待确认", prepared: "已准备", failed: "发送失败", cancelled: "已取消", superseded: "已停用" };
@@ -31,7 +32,7 @@
       note: summary ? `确认 ${summary.verified} 次 · 待完成 ${summary.pending} 次 · 异常/停用 ${summary.issue} 次` : snapshot?.error || "点击查看每个人的推送记录",
       health, variant: "output", position: [2468, 92], cornerBadge: "个人推送", cornerTone: "cyan",
       purpose: "按每个人的订阅排期推送战略新闻；点击查看接收人、发送时间、状态和新闻明细", details: [], evidence: date });
-    model.canvasSize[0] = Math.max(model.canvasSize[0], 2716);
+    model.canvasSize[0] = Math.max(model.canvasSize[0], canvasWidth);
     model.edges.push(["news-output", "news-subscription", "按个人订阅排期", "news-subscription", { key: "unknown", label: "订阅排期" }]);
     return model;
   }
@@ -126,5 +127,5 @@
     if (!dialog.open) dialog.showModal();
     refresh();
   }
-  window.CmhkNewsDeliveryHistory = { decorate, setSummary, load, open };
+  window.CmhkNewsDeliveryHistory = { canvasWidth, decorate, setSummary, load, open };
 })();

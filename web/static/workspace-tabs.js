@@ -1773,6 +1773,7 @@
     const date = state.newsSelectedDate || newsRunDate(runs[0]);
     const model = window.CmhkResearchDiagram.build(
       legacySchedulerLineageModel(runs, stages, attemptRuns), state.researchArchitecture, date,
+      window.CmhkNewsDeliveryHistory.canvasWidth,
     );
     window.CmhkNewsDeliveryHistory.decorate(model, date);
     const nodes = new Map(model.nodes.map((node) => [node.key, node]));

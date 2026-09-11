@@ -26,7 +26,8 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('font-size: 16px; font-weight: 750', STYLE)
 
     def test_research_lane_spreads_workers_and_outputs_across_full_canvas(self):
-        self.assertIn("const canvasWidth = 2366", RESEARCH)
+        self.assertIn("function build(legacy, snapshot, date, canvasWidth = 2366)", RESEARCH)
+        self.assertIn("window.CmhkNewsDeliveryHistory.canvasWidth", SCRIPT)
         self.assertIn("index * researchSpan / (plan.length - 1)", RESEARCH)
         self.assertIn("[researchX(index), 560]", RESEARCH)
         self.assertIn("[Math.round((canvasWidth - researchCardWidth) / 2), 820]", RESEARCH)
@@ -169,9 +170,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=183', INDEX)
-        self.assertIn('/static/research-diagram.js?v=33', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=227', INDEX)
+        self.assertIn('/static/workspace-tabs.css?v=184', INDEX)
+        self.assertIn('/static/research-diagram.js?v=34', INDEX)
+        self.assertIn('/static/workspace-tabs.js?v=230', INDEX)
 
 
 if __name__ == "__main__":
