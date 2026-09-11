@@ -9,7 +9,7 @@ from pathlib import Path
 
 from cmhk.services.news_delivery_dedupe import normalized_text
 
-VERSION = 'summary-information-gain-v1'
+VERSION = 'summary-information-gain-v3'
 SOURCE_FIELDS = ('source_content', 'source_summary', 'snippet', 'description', 'content', 'summary')
 
 
@@ -108,6 +108,17 @@ def validate_review(result: dict, source: dict, summary: str) -> dict:
     return result
 
 
+def quote_options(text: str, limit: int) -> list[str]:
+    """Offer literal source clauses, including traditional Chinese unchanged."""
+    options = []
+    for chunk in [text, *re.split(r'[。！？；\n]|(?<=[.!?])\s+', text),
+                  *re.split(r'[。！？；，,\n]|(?<=[.!?])\s+', text)]:
+        chunk = chunk.strip()
+        if 4 <= len(chunk) <= limit and chunk not in options:
+            options.append(chunk)
+    return options
+
+
 def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *, model_call=None) -> list[dict]:
     from cmhk.services.news_delivery_assets import fingerprint, load, save
     from cmhk.services.news_push_skill import skill_contract
@@ -118,6 +129,11 @@ def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *
         summary = row['summary']
         if repeats_title(source['title'], summary):
             raise SummaryQualityError('新闻简介与标题重复，须补充原文中的具体事实')
+        details = [text for text in quote_options(summary, 300) if compact(text) not in compact(source['title'])]
+        quotes = list(dict.fromkeys(text for field in SOURCE_FIELDS
+                                    for text in quote_options(str(source.get(field) or ''), 500)))
+        if not details or not quotes:
+            raise SummaryQualityError('新闻简介新增事实的原文证据不完整，等待补充来源')
         evidence = {k: source.get(k, '') for k in ('title', *SOURCE_FIELDS, 'source_evidence_url', 'source_page_title')}
         target = runtime_root / 'var/subscriptions/news-summary-reviews' / (
             fingerprint([VERSION, skill_contract()[1], evidence, summary]) + '.json')
@@ -139,16 +155,35 @@ def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *
             '例如“达成合作推动AI方案”改成“共同推动AI解决方案落地”仍是重复；'
             '评级由中性升至买入的标题之外，增加来源明确的目标价7.10港元可以通过。'
             'summary可能由另一模型生成，不能相信它自带的结论。source中的旧AI评论也不能当原始事实。'
-            'accepted仅在有具体增量且全篇有依据时为true；summary_detail逐字摘取简介里的新增细节，'
-            'source_quote逐字摘取source里支持该细节的原文，reason说明增量及依据。'
+            'accepted仅在有具体增量且全篇有依据时为true。'
+            'summary_detail_index填写summary_details中新增细节的下标，source_quote_index填写source_quotes中对应原文证据的下标；'
+            '下标均为从0开始的整数，不通过时填-1。reason说明具体增量及依据。只输出下标，不输出或改写任何引文。'
             '不充分就false，不补写新闻，不用语义相近的伪造引文。',
-            json.dumps({'source': evidence, 'summary': summary}, ensure_ascii=False),
+            json.dumps({'source': evidence, 'summary': summary,
+                        'summary_details': details, 'source_quotes': quotes}, ensure_ascii=False),
             max_tokens=3000, deadline_monotonic=time.monotonic() + 120, _structured_response_retries=1,
             response_format={'type': 'json_schema', 'json_schema': {'name': 'news_summary_quality', 'strict': True,
                 'schema': {'type': 'object', 'additionalProperties': False,
-                    'required': ['accepted', 'summary_detail', 'source_quote', 'reason'],
-                    'properties': {'accepted': {'type': 'boolean'}, **{k: {'type': 'string'}
-                        for k in ('summary_detail', 'source_quote', 'reason')}}}}})
-        reviews.append(validate_review(result, source, summary))
-        save(target, {'version': VERSION, 'source': evidence, 'summary': summary, 'result': result})
+                    'required': ['accepted', 'summary_detail_index', 'source_quote_index', 'reason'],
+                    'properties': {'accepted': {'type': 'boolean'}, 'reason': {'type': 'string'},
+                        'summary_detail_index': {'type': 'integer', 'enum': [-1, *range(len(details))]},
+                        'source_quote_index': {'type': 'integer', 'enum': [-1, *range(len(quotes))]}}}}})
+        model_output = result
+        try:
+            if not isinstance(result, dict):
+                raise SummaryQualityError('新闻简介事实审核未完整返回')
+            resolved = {k: result.get(k) for k in ('accepted', 'reason')}
+            for field, options in (('summary_detail', details), ('source_quote', quotes)):
+                index = result.get(field + '_index')
+                if type(index) is not int or not -1 <= index < len(options):
+                    raise SummaryQualityError('新闻简介事实审核引用未知证据')
+                resolved[field] = options[index] if index >= 0 else ''
+            result = resolved
+            reviews.append(validate_review(result, source, summary))
+        except SummaryQualityError:
+            save(target.with_suffix('.rejected.json'), {'version': VERSION, 'source': evidence,
+                'summary': summary, 'result': result, 'model_output': model_output, 'status': 'rejected'})
+            raise
+        save(target, {'version': VERSION, 'source': evidence, 'summary': summary,
+                      'result': result, 'model_output': model_output})
     return reviews
