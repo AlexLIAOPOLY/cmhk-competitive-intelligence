@@ -180,6 +180,9 @@ FOCUS_RELATION_FEW_SHOTS = (
     "竞争结构判断不能由移动或5G用户总量替代。"
 )
 MAX_FOCUS_INSIGHT_CHARS = 120
+MAX_FOCUS_INSIGHT_PUBLISH_CHARS = 160
+MAX_FOCUS_HEADLINE_CHARS = 28
+MAX_FOCUS_HEADLINE_PUBLISH_CHARS = 36
 MAX_FOCUS_INSIGHT_SENTENCES = 2
 TASK_KIND = "executive-intelligence-refresh"
 DEFAULT_EXECUTIVE_AI_MODEL = "DeepSeek-V4-Pro"
@@ -1047,12 +1050,12 @@ def _strategic_focus_headline(
 
 
 def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str:
-    if len(headline) > 28:
-        return f"AI分析标题超过28字：{domain}.{focus_id}（当前{len(headline)}字）"
+    if len(headline) > MAX_FOCUS_HEADLINE_PUBLISH_CHARS:
+        return f"AI分析标题超过{MAX_FOCUS_HEADLINE_PUBLISH_CHARS}字发布保护上限：{domain}.{focus_id}（当前{len(headline)}字）"
     normalized = headline.replace("营收", "收入")
     operating_judgement = (
-        any(term in normalized for term in (*_OVERVIEW_STRATEGIC_MEANING_TERMS, "客户基础", "经营规模", "资源承载"))
-        and any(term in normalized for term in (*_ANALYTICAL_JUDGEMENT_TERMS, *_DEEP_RELATION_MARKERS))
+        any(term in normalized for term in (*_OVERVIEW_STRATEGIC_MEANING_TERMS, "客户基础", "经营规模", "资源承载", "造血能力"))
+        and any(term in normalized for term in (*_ANALYTICAL_JUDGEMENT_TERMS, *_DEEP_RELATION_MARKERS, "主导", "远超"))
         and not _contains_action_advice(headline)
     )
     administrative = any(term in headline for term in ("入库", "数据维护", "待补", "重新判断", "按三来源", "披露完整", "披露更新"))
@@ -1077,11 +1080,11 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
     ):
         return f"AI分析分类句序不完整：{domain}.{focus_id}"
     terminal_marks = re.findall(r"[。！？!?]", analysis)
-    if len(analysis) > MAX_FOCUS_INSIGHT_CHARS or not terminal_marks or (
+    if len(analysis) > MAX_FOCUS_INSIGHT_PUBLISH_CHARS or not terminal_marks or (
         len(terminal_marks) > MAX_FOCUS_INSIGHT_SENTENCES
     ) or not re.search(r"[。！？!?]$", analysis):
         return (
-            f"AI分析分类必须精炼为一至两句、总长不超过{MAX_FOCUS_INSIGHT_CHARS}字："
+            f"AI分析分类必须为一至两句完整句、总长不超过{MAX_FOCUS_INSIGHT_PUBLISH_CHARS}字发布保护上限："
             f"{domain}.{focus_id}"
         )
     if _contains_action_advice(analysis):
@@ -1547,6 +1550,23 @@ def _canonical_entity_labels(labels, entity):
     return canonical, mappings
 
 
+def _focus_presentation_warnings(domain, focus):
+    warnings = []
+    for field, target, maximum in (("headline", MAX_FOCUS_HEADLINE_CHARS, MAX_FOCUS_HEADLINE_PUBLISH_CHARS),
+                                    ("analysis", MAX_FOCUS_INSIGHT_CHARS, MAX_FOCUS_INSIGHT_PUBLISH_CHARS)):
+        characters = len(str(focus.get(field) or ""))
+        if target < characters <= maximum:
+            warnings.append({"code": "writing_target_exceeded", "scope": f"{domain}.{focus['id']}",
+                             "field": field, "characters": characters, "target_characters": target,
+                             "publication_max_characters": maximum, "model_text_preserved": True})
+    return warnings
+
+
+def _summary_presentation_warnings(summaries):
+    return [warning for domain in summaries or [] for focus in domain.get("focuses") or []
+            for warning in _focus_presentation_warnings(domain["domain"], focus)]
+
+
 def _validate_model_summaries(
     raw: Any,
     evidence: dict[str, Any],
@@ -1722,6 +1742,11 @@ def _validate_model_summaries(
                     raise ValueError(
                         f"AI分析实体不完整：{domain}.{focus_id}.{sorted(set(evidence_entities) - entity_seen)}"
                     )
+                # Compute presentation metadata only after every fact gate.
+                # Discard model-supplied warnings, including on cache readback.
+                warnings = _focus_presentation_warnings(domain, validated_focus)
+                if warnings:
+                    validated_focus["presentation_warnings"] = warnings
                 validated_focuses.append(validated_focus)
             if focus_seen != expected_focuses:
                 raise ValueError(f"AI分析分类不完整：{domain}.{sorted(expected_focuses - focus_seen)}")
@@ -2641,8 +2666,8 @@ def generate_model_focus_insight(
                 raise ValueError("AI未返回指标分析对象")
             headline = str(parsed.get("headline") or "").strip()
             analysis = str(parsed.get("analysis") or "").strip()
-            if not headline or len(headline) > 28:
-                raise ValueError("AI标题为空或超过28字，请由AI重新生成")
+            if not headline or len(headline) > MAX_FOCUS_HEADLINE_PUBLISH_CHARS:
+                raise ValueError(f"AI标题为空或超过{MAX_FOCUS_HEADLINE_PUBLISH_CHARS}字发布保护上限，请由AI重新生成")
             headline_error = _focus_headline_gate_error(domain_id, focus_id, headline)
             if headline_error:
                 raise ValueError(headline_error)
@@ -2659,11 +2684,14 @@ def generate_model_focus_insight(
             urls = [str(url) for url in parsed.get("source_urls") or []]
             if set(urls) - allowed_urls:
                 raise ValueError("AI引用了当前证据之外的来源")
+            presentation_warnings = _focus_presentation_warnings(domain_id,
+                {"id": focus_id, "headline": headline, "analysis": analysis})
             return {
                 "generated_at_hkt": _now(), "model": payload["model"], "requested_model": model,
                 "response_id": payload["id"], "stream_diagnostics": payload["stream_diagnostics"],
                 "focus": {"id": focus_id, "headline": headline, "analysis": analysis,
-                          "risk": str(parsed.get("risk") or ""), "source_urls": urls, "origin": "ai"},
+                          "risk": str(parsed.get("risk") or ""), "source_urls": urls, "origin": "ai",
+                          **({"presentation_warnings": presentation_warnings} if presentation_warnings else {})},
             }
         except (APIKeyPoolUnavailable, ValueError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
@@ -2769,8 +2797,8 @@ def _apply_scope_model_patch(candidate, patch, options):
             expected == "array" and (not isinstance(value, list) or any(not isinstance(v, str) for v in value))
         ):
             raise ValueError("局部AI修订值类型错误")
-        if value == options[path]["current"]:
-            raise ValueError(f"局部AI修订照抄了仍有错误的字段：{path}")
+        # Keep every explicit model value, even an unchanged field, so a later
+        # valid field is not discarded. The full validator still rejects errors.
         target = result
         parts = path.lstrip("/").split("/")
         for part in parts[:-1]:
@@ -2994,8 +3022,6 @@ def generate_model_domain_summaries(
         history = previous.get("history")
         if not isinstance(history, list):
             history = [{k: v for k, v in previous.items() if k != "history"}] if previous.get("attempted") else []
-        if previous.get("status") == "stopped" or len(history) >= 3:
-            raise ValueError("AI分析修订额度已使用或重复无进展，保留全部历史：" + str(previous.get("error") or previous.get("stop_reason") or "最多3次HTTP"))
         eligible = [item for item in entry.get("candidates") or [] if item.get("eligible_fields") and item.get("reported_model")]
         if not eligible:
             return None
@@ -3006,14 +3032,13 @@ def generate_model_domain_summaries(
         selected = selected or min(reversed(eligible), key=lambda item: len(item["eligible_fields"]))
         candidate = selected["candidate"]
         models = {selected["reported_model"]}
+        history_patch_hashes = set()
+        recovered_prior_patch = None
         # Legacy attempt 1 remains charged. Reconstruct only its explicit model
         # patch against its recorded whitelist; never synthesize missing prose.
         for old in history:
             if old.get("reported_model"):
                 models.add(old["reported_model"])
-            if isinstance(old.get("candidate"), dict):
-                candidate = old["candidate"]
-                continue
             packet = old.get("submitted_patch") or ({"patches": old["patches"]} if old.get("patches") else None)
             if packet is None and old.get("response"):
                 try:
@@ -3021,15 +3046,17 @@ def generate_model_domain_summaries(
                 except ValueError:
                     packet = None
             if packet is not None:
-                old.setdefault("submitted_patch", packet)
-                old.setdefault("patch_hash", _content_hash(packet))
+                recovered_prior_patch = packet
+                history_patch_hashes.add(_content_hash(packet))
+            if isinstance(old.get("candidate"), dict):
+                candidate = old["candidate"]
+                continue
+            if packet is not None:
                 try:
                     candidate = _apply_scope_model_patch(candidate, packet, old.get("eligible_fields") or selected["eligible_fields"])
-                    old["candidate"] = candidate
-                    old.setdefault("after_hash", _content_hash(candidate))
                 except (ValueError, KeyError, TypeError, IndexError):
                     pass
-        while len(history) < 3:
+        while True:
             options = _scope_patch_options(candidate, scope)
             try:
                 already_valid = validate_scope(scope, [candidate])[0]
@@ -3042,6 +3069,10 @@ def generate_model_domain_summaries(
                 persist_drafts()
                 used_models.update(models)
                 return already_valid, "+".join(sorted(models))
+            # A corrected gate may accept the saved model text with zero HTTP.
+            # Revalidation never resets or extends a spent/stopped budget.
+            if previous.get("status") == "stopped" or len(history) >= 3:
+                raise ValueError("AI分析修订额度已使用或重复无进展，保留全部历史：" + str(previous.get("error") or previous.get("stop_reason") or "最多3次HTTP"))
             if not options:
                 raise ValueError("失败稿没有可安全修订的现有字段：" + current_error)
             prior = history[-1] if history else {}
@@ -3056,7 +3087,7 @@ def generate_model_domain_summaries(
             try:
                 repaired, audit = _request_scope_model_patch(scope, candidate, options, config,
                     trace_path=attempt_trace_path, repair_feedback={"current_gate_error": current_error,
-                        "previous_error": prior.get("error"), "previous_patch": prior.get("submitted_patch")})
+                        "previous_error": prior.get("error"), "previous_patch": prior.get("submitted_patch") or recovered_prior_patch})
                 attempt.update(audit, status="passed", candidate=repaired, completed_at_hkt=_now())
                 models.add(audit["reported_model"])
                 entry["repair"] = {**attempt, "history": history, "max_attempts": 3}
@@ -3077,8 +3108,8 @@ def generate_model_domain_summaries(
                         improved |= len(before["current"]) > before["max_characters"] and len(after["current"]) < len(before["current"])
                     allowed = set(before.get("allowed_numeric_tokens") or [])
                     improved |= len(_numeric_tokens(after.get("current")) - allowed) < len(_numeric_tokens(before.get("current")) - allowed)
-                repeated = bool(attempt.get("patch_hash") and any(
-                    old.get("patch_hash") == attempt["patch_hash"] for old in history[:-1]))
+                repeated = bool(attempt.get("patch_hash") and (attempt["patch_hash"] in history_patch_hashes or any(
+                    old.get("patch_hash") == attempt["patch_hash"] for old in history[:-1])))
                 repeated |= any(old.get("error") == str(exc) for old in history[:-1]) and not improved
                 if repeated:
                     attempt.update(status="stopped", stop_reason="重复patch/hash或同错误无进展")
@@ -3087,7 +3118,6 @@ def generate_model_domain_summaries(
                 if repeated or len(history) >= 3:
                     raise ValueError("AI分析修订额度已使用或重复无进展：" + str(exc)) from exc
                 candidate = next_candidate
-        raise ValueError("AI分析修订额度已使用：最多3次HTTP")
 
 
     def save_valid_focus_parts(domain_scope, candidate, model, requested=None, reported=None, raw_candidate=None):
@@ -3478,6 +3508,7 @@ def generate_model_domain_summaries(
         "generated_at_hkt": _now(),
         "model": "+".join(sorted(used_models)) if used_models else str(body["model"]),
         "summaries": summaries,
+        "presentation_warnings": _summary_presentation_warnings(summaries),
     }
 
 
@@ -3982,7 +4013,8 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, check
         except ValueError:
             pass
         else:
-            return {**previous, "summaries": summaries, "discoveries": discoveries, "reused": True}
+            return {**previous, "summaries": summaries, "discoveries": discoveries, "reused": True,
+                    "presentation_warnings": _summary_presentation_warnings(summaries)}
     generated = (generate_model_domain_summaries(evidence, checkpoint_path=checkpoint_path)
                  if checkpoint_path else generate_model_domain_summaries(evidence))
     discoveries = (generate_model_discoveries(evidence, attempt_trace_path=checkpoint_path.with_suffix(".attempts.jsonl"))
@@ -4001,6 +4033,7 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, check
     }
     if not model_generated_only(bundle):
         raise ValueError("分析包含非AI结果，禁止作为AI分析保存或发布")
+    bundle["presentation_warnings"] = _summary_presentation_warnings(bundle["summaries"])
     return bundle
 
 
@@ -4051,6 +4084,7 @@ def regenerate_model_focus_summary(
     ]
     report("正在校验数字与来源")
     bundle["summaries"] = _validate_model_summaries(summaries, evidence)
+    bundle["presentation_warnings"] = _summary_presentation_warnings(bundle["summaries"])
     generated_at = _now()
     history[history_key] = list(dict.fromkeys([*history.get(history_key, []), str(previous_focus.get("analysis") or ""), str(replacement.get("analysis") or "")]))[-12:]
     title_history[history_key] = list(dict.fromkeys([*title_history.get(history_key, []), str(previous_focus.get("headline") or ""), str(replacement.get("headline") or "")]))[-12:]
@@ -4862,6 +4896,7 @@ def run_pipeline(
                     "insights_expected": expected_insight_count,
                     "insights_passed": passed_insight_count,
                     "reused": bool(model_analysis.get("reused")),
+                    "presentation_warnings": model_analysis.get("presentation_warnings") or [],
                     "fallback_used": bool(model_analysis.get("fallback_used")),
                     "fallback_reason": str(model_analysis.get("fallback_reason") or ""),
                     "evidence_hash": str(model_analysis.get("evidence_hash") or ""),
@@ -4903,6 +4938,12 @@ def run_pipeline(
                     f"{passed_discovery_count}/{expected_discovery_count}）；模型：{state['model_analysis']['model']}；"
                     f"证据哈希：{state['model_analysis']['evidence_hash'][:16]}{fallback_note}。",
                 )
+                if model_analysis.get("presentation_warnings"):
+                    warning_details = "；".join(
+                        f"{w['scope']}.{w['field']} {w['characters']}字（写作目标{w['target_characters']}，发布上限{w['publication_max_characters']}）"
+                        for w in model_analysis["presentation_warnings"])
+                    _task_event(task_run_id, "AI样式提示", "已保留完整AI原文并通过全部事实门禁：" + warning_details,
+                                level="warning")
             except Exception as exc:
                 state["model_analysis"] = {
                     "ok": False,

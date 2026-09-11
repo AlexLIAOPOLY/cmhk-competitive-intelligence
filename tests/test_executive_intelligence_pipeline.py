@@ -1630,7 +1630,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertNotIn("HKBN等三家未披露", repaired)
         self.assertIn("价格带124–228", repaired)
 
-    def test_overlong_ai_analysis_is_compacted_to_strongest_grounded_clauses(self):
+    def test_analysis_within_publication_limit_is_preserved_without_compacting(self):
         focus = {
             "metric": {"value": 35.8},
             "items": [
@@ -1650,8 +1650,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "cloud", "growth", analysis, focus, focus
         )
 
-        self.assertTrue(changed)
-        self.assertLessEqual(len(compacted), pipeline.MAX_FOCUS_INSIGHT_CHARS)
+        self.assertFalse(changed)
+        self.assertEqual(compacted, analysis)
+        self.assertLessEqual(len(compacted), pipeline.MAX_FOCUS_INSIGHT_PUBLISH_CHARS)
         self.assertEqual(pipeline._focus_gate_error("cloud", "growth", compacted, focus), "")
         self.assertIn("35.8%", compacted)
         self.assertIn("增长梯队", compacted)

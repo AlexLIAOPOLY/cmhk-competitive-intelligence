@@ -323,7 +323,7 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
         analysis = ("HKT的EBITDA为14234.0百万港元，SmarTone为2445.1百万港元，3HK为1508.0百万港元，"
                     "显示HKT的经营造血规模显著不同，与SmarTone和3HK不在同一层次。")
         self.assertEqual(pipeline._focus_gate_error("local", "ebitda", analysis, focus), "")
-        self.assertIn("120字", pipeline._focus_gate_error("local", "ebitda", analysis * 2, focus))
+        self.assertIn("160字", pipeline._focus_gate_error("local", "ebitda", analysis * 2, focus))
         self.assertFalse(pipeline._has_deep_interpretation("HKT的经营造血为14234.0百万港元。"))
         self.assertIn("行动建议", pipeline._focus_gate_error("local", "ebitda", analysis + "建议优先扩张。", focus))
 

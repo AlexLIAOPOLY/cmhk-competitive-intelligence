@@ -92,9 +92,11 @@ class ExecutiveModelPatchTests(unittest.TestCase):
 
     def test_copied_invalid_field_and_omitted_errors_are_rejected(self):
         options = pipeline._scope_patch_options(self.draft, self.scope)
-        with self.assertRaisesRegex(ValueError, '照抄'):
-            pipeline._apply_scope_model_patch(self.draft, {'patches': [
-                {'path': '/focuses/0/analysis', 'value': self.draft['focuses'][0]['analysis']}]}, options)
+        unchanged = pipeline._apply_scope_model_patch(self.draft, {'patches': [
+            {'path': '/focuses/0/analysis', 'value': self.draft['focuses'][0]['analysis']}]}, options)
+        self.assertEqual(unchanged, self.draft)
+        with self.assertRaises(ValueError):
+            pipeline._validate_model_summaries([unchanged], self.scope)
         draft = copy.deepcopy(self.draft)
         draft['focuses'][0]['entities'][0]['source_urls'] = ['https://unknown.test']
         options = pipeline._scope_patch_options(draft, self.scope)
@@ -228,8 +230,9 @@ class ExecutiveModelPatchTests(unittest.TestCase):
             self.assertEqual(result['summaries'][0]['focuses'], self.valid['focuses'])
             history = next(iter(json.loads(checkpoint.with_suffix('.drafts.json').read_text()).values()))['repair']['history']
             self.assertEqual(len(history), 2)
-            self.assertEqual(history[0]['candidate']['focuses'][0]['analysis'], invalid)
-            self.assertEqual(history[1]['before_hash'], history[0]['after_hash'])
+            self.assertNotIn('candidate', history[0])  # Historical raw record stays immutable.
+            self.assertEqual(history[1]['before_candidate']['focuses'][0]['analysis'], invalid)
+            self.assertEqual(history[1]['before_hash'], pipeline._content_hash(history[1]['before_candidate']))
             self.assertEqual(history[1]['attempt_number'], 2)
             self.assertEqual(history[0]['protocol'], 1)
 
@@ -322,8 +325,8 @@ class ExecutiveModelPatchTests(unittest.TestCase):
 
     def test_title_limit_is_a_full_gate_and_prompt_uses_exact_signed_numbers(self):
         candidate = copy.deepcopy(self.valid)
-        candidate['focuses'][0]['headline'] = '客户经营结构明显分化' * 3
-        with self.assertRaisesRegex(ValueError, '标题超过28字'):
+        candidate['focuses'][0]['headline'] = '客户经营结构明显分化' * 4
+        with self.assertRaisesRegex(ValueError, '标题超过36字'):
             pipeline._validate_model_summaries([candidate], self.scope)
         scope = copy.deepcopy(self.scope)
         scope['domains'][0]['focuses'][0]['items'][0]['value'] = -25
@@ -332,6 +335,97 @@ class ExecutiveModelPatchTests(unittest.TestCase):
         self.assertEqual(option['target_characters'], [10, 22])
         self.assertIn('-25', option['allowed_numeric_tokens'])
         self.assertNotIn('25', option['allowed_numeric_tokens'])
+
+    def test_operating_synonyms_still_require_meaning_and_relationship(self):
+        accepted = [('revenue', 'AWS与Azure云收入底盘远超中国厂商'),
+                    ('revenue', '全球云收入底盘由AWS与Azure主导'),
+                    ('profit', 'AWS云利润领先Azure，造血能力更强'),
+                    ('profit', 'AWS云利润规模领先，造血能力更强')]
+        rejected = [('revenue', '云收入远超'), ('revenue', '云收入由AWS主导'),
+                    ('revenue', '云收入底盘'), ('profit', '云利润造血能力'),
+                    ('profit', 'AWS云利润规模领先'), ('profit', '云利润造血能力数据维护'),
+                    ('revenue', '应优先扩大云收入底盘'), ('revenue', '云收入底盘主导披露更新')]
+        for focus, title in accepted + rejected:
+            with self.subTest(title=title):
+                self.assertEqual(not bool(pipeline._focus_headline_gate_error('cloud', focus, title)),
+                                 (focus, title) in accepted)
+
+    def test_revalidated_model_text_can_pass_spent_budget_without_another_http(self):
+        for count, status in [(2, 'stopped'), (3, 'failed'), (3, 'stopped')]:
+            with self.subTest(count=count, status=status), tempfile.TemporaryDirectory() as td:
+                checkpoint = Path(td) / 'ai.json'
+                self.seed_repair(checkpoint)
+                draft_path = checkpoint.with_suffix('.drafts.json')
+                drafts = json.loads(draft_path.read_text())
+                entry = next(iter(drafts.values()))
+                old = entry['repair']
+                history = [{**old, 'attempt_number': i + 1, 'status': 'failed'} for i in range(count)]
+                history[-1].update(status=status, candidate=self.valid,
+                                   after_hash=pipeline._content_hash(self.valid))
+                entry['repair'] = {**history[-1], 'history': history}
+                draft_path.write_text(json.dumps(drafts))
+                with patch.object(pipeline, 'open_llm_request') as request:
+                    result = pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+                request.assert_not_called()
+                self.assertEqual(result['summaries'][0]['focuses'], self.valid['focuses'])
+                stored = next(iter(json.loads(draft_path.read_text()).values()))['repair']
+                self.assertEqual(stored['status'], 'passed')
+                self.assertEqual(stored['history'], history)
+                self.assertEqual(len(stored['history']), count)
+
+    def presentation_draft(self, body_length=138, title_length=29):
+        candidate = copy.deepcopy(self.valid)
+        focus = candidate['focuses'][0]
+        base = focus['analysis'][:-1]
+        focus['analysis'] = base + '原' * (body_length - len(base) - 1) + '。'
+        focus['headline'] = '客户结构分化' + '原' * (title_length - len('客户结构分化'))
+        return candidate
+
+    def test_writing_target_warning_and_publication_limit_are_distinct(self):
+        for body, title, warning_count in [(120, 28, 0), (121, 28, 1), (120, 29, 1), (160, 36, 2)]:
+            with self.subTest(body=body, title=title):
+                candidate = self.presentation_draft(body, title)
+                validated = pipeline._validate_model_summaries([candidate], self.scope)[0]
+                focus = validated['focuses'][0]
+                self.assertEqual(focus['analysis'], candidate['focuses'][0]['analysis'])
+                self.assertEqual(len(focus.get('presentation_warnings', [])), warning_count)
+                # Cache/final revalidation ignores metadata numbers and rebuilds warnings.
+                self.assertEqual(pipeline._validate_model_summaries([validated], self.scope), [validated])
+        for body, title in [(161, 28), (120, 37)]:
+            with self.subTest(body=body, title=title), self.assertRaisesRegex(ValueError, '发布保护上限'):
+                pipeline._validate_model_summaries([self.presentation_draft(body, title)], self.scope)
+
+    def test_style_warning_never_bypasses_facts_sentences_or_sources(self):
+        variants = []
+        for field, value in [('analysis', self.presentation_draft()['focuses'][0]['analysis'].replace('10', '99')),
+                             ('analysis', self.valid['focuses'][0]['analysis'] + '保持原值。保持口径。'),
+                             ('analysis', self.valid['focuses'][0]['analysis'][:-1]),
+                             ('analysis', self.valid['focuses'][0]['analysis'] + '差距源于经营效率。'),
+                             ('source_urls', ['https://unknown.test'])]:
+            candidate = self.presentation_draft()
+            candidate['focuses'][0][field] = value
+            candidate['focuses'][0]['presentation_warnings'] = [{'allow_all': True}]
+            variants.append(candidate)
+        for candidate in variants:
+            with self.subTest(focus=candidate['focuses'][0]), self.assertRaises(ValueError):
+                pipeline._validate_model_summaries([candidate], self.scope)
+        candidate = self.presentation_draft(120, 28)
+        candidate['focuses'][0]['presentation_warnings'] = [{'characters': 999, 'allow_all': True}]
+        validated = pipeline._validate_model_summaries([candidate], self.scope)[0]
+        self.assertNotIn('presentation_warnings', validated['focuses'][0])
+
+    def test_explicit_unchanged_field_does_not_discard_valid_model_title(self):
+        draft = self.presentation_draft(138, 37)
+        options = pipeline._scope_patch_options(draft, self.scope)
+        options['/focuses/0/analysis'] = {'type': 'string', 'current': draft['focuses'][0]['analysis']}
+        packet = {'patches': [
+            {'path': '/focuses/0/headline', 'value': self.valid['focuses'][0]['headline']},
+            {'path': '/focuses/0/analysis', 'value': draft['focuses'][0]['analysis']}]}
+        result = pipeline._apply_scope_model_patch(draft, packet, options)
+        validated = pipeline._validate_model_summaries([result], self.scope)[0]
+        self.assertEqual(validated['focuses'][0]['headline'], packet['patches'][0]['value'])
+        self.assertEqual(validated['focuses'][0]['analysis'], packet['patches'][1]['value'])
+        self.assertEqual(validated['focuses'][0]['presentation_warnings'][0]['characters'], 138)
 
     def test_no_programmatic_deletion_of_numeric_prose_or_unknown_sources(self):
         draft = copy.deepcopy(self.valid)
