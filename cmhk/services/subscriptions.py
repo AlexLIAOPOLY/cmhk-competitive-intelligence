@@ -865,9 +865,6 @@ def strategic_news_card(
                 })
                 if not thumbnail:
                     group_elements[-1]['elements'][0]['columns'].pop()
-                elif item.get('image_kind') == 'related':
-                    group_elements[-1]['elements'][0]['columns'][1]['elements'].append({
-                        'tag': 'markdown', 'text_size': 'notation', 'content': '相关资料图'})
             elements.append({"tag": "column_set", "flex_mode": "none", "columns": [{
                 "tag": "column", "width": "weighted", "weight": 1,
                 "background_style": f"{color}-50", "padding": "12px", "vertical_spacing": "8px",

@@ -129,7 +129,7 @@ class NewsImageQualityTests(unittest.TestCase):
             different = {**self.item, 'title': '缺少出处的图片'}
             self.assertFalse(review_image(different, self.candidate, self.data, self.root)['accepted'])
 
-    def test_missing_photo_searches_and_uploads_identical_reviewed_bytes_with_context_label(self):
+    def test_missing_photo_searches_and_uploads_identical_reviewed_bytes_without_visible_caption(self):
         service = SimpleNamespace(runtime_root=self.root, _lark=Mock())
         metadata = {'news_url': self.item['source_url'], 'image_candidates': []}
         with patch('cmhk.services.news_delivery_assets.source_metadata', return_value=metadata), \
@@ -143,8 +143,21 @@ class NewsImageQualityTests(unittest.TestCase):
         self.assertEqual(items[0]['news_url'], self.item['source_url'])
         card = build_card_pages(title='战略新闻', items=items, banner='img_banner')
         text = json.dumps(card, ensure_ascii=False)
-        self.assertIn('相关资料图', text)
+        self.assertEqual(items[0]['image_kind'], 'related')
+        self.assertEqual(items[0]['image_source_url'], self.candidate['url'])
+        self.assertEqual(items[0]['image_page_url'], self.candidate['page_url'])
+        self.assertNotIn('相关资料图', text)
         self.assertEqual(text.count('80px 80px'), 1)
+        def check_thumbnail_columns(value):
+            if isinstance(value, dict):
+                if value.get('tag') == 'column' and value.get('width') == '80px':
+                    self.assertEqual([element['tag'] for element in value['elements']], ['img'])
+                for child in value.values():
+                    check_thumbnail_columns(child)
+            elif isinstance(value, list):
+                for child in value:
+                    check_thumbnail_columns(child)
+        check_thumbnail_columns(card)
 
     def test_rejected_original_uses_next_picture_before_keyword_search(self):
         service = SimpleNamespace(runtime_root=self.root, _lark=Mock())

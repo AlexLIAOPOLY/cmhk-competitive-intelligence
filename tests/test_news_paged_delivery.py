@@ -54,11 +54,14 @@ class NewsPagedDeliveryTests(unittest.TestCase):
         self.assertEqual([c.args[0] for c in self.verify.call_args_list[-2:]], ['om_page1', 'om_page2'])
 
     def test_oversized_rows_are_split_at_article_boundaries(self):
-        items = [{**item, 'image_key': 'img_test', 'summary': '事实。' * 160,
-                  'news_url': item['source_url'] + '?long=' + 'a' * 1000} for item in self.items()]
+        from tests.news_push_fixtures import prepared_assets
+        items = [{**item, 'image_kind': 'related', 'summary': '事实。' * 160,
+                  'news_url': item['source_url'] + '?long=' + 'a' * 1000}
+                 for item in prepared_assets(self.items())]
         bundle = build_card_pages(title='战略下午茶', items=items, banner='img_banner')
         self.assertGreaterEqual(len(bundle['cards']), 3)
         for card in bundle['cards']:
             self.assertLessEqual(len(json.dumps(card, ensure_ascii=False, separators=(',', ':')).encode()), 30000)
         text = '\n'.join(_card_text(bundle))
+        self.assertNotIn('相关资料图', text)
         self.assertTrue(all(item['title'] in text for item in items))
