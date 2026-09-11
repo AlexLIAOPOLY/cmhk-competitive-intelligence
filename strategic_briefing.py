@@ -943,7 +943,9 @@ def _reconcile_completed_selection_recovery(path, archive, entry):
     synchronized = True
     if parent:
         try:
-            amend_operational_crawl_run(parent, summary_updates={
+            amend_operational_crawl_run(parent,
+                progress_detail="主扫描及原群通知已完成；后置选材已完成写入与逐格回读，完成回执已同步。",
+                summary_updates={
                 "selection_agent_status": "completed", "selection_agent_error": "",
                 "selection_agent_next_retry_at": "", "selection_agent_recovered": True,
                 "selection_agent_attempts": int(entry.get("attempts") or 0),

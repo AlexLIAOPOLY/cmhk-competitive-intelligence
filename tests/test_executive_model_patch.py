@@ -165,7 +165,9 @@ class ExecutiveModelPatchTests(unittest.TestCase):
             repair = next(iter(json.loads(draft_text).values()))['repair']
             self.assertEqual(repair['reported_model'], 'actual-patch')
             self.assertEqual(repair['response']['model'], 'actual-patch')
-            self.assertEqual(repair['status'], 'failed')
+            self.assertEqual(repair['status'], 'stopped')
+            self.assertEqual(len(repair['history']), 2)
+            self.assertEqual(repair['history'][0]['patch_hash'], repair['history'][1]['patch_hash'])
             self.assertFalse(checkpoint.exists())
             before = len(calls)
             with self.assertRaisesRegex(ValueError, '修订额度已使用'):
@@ -183,6 +185,153 @@ class ExecutiveModelPatchTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, '数字') as error:
                 pipeline._request_scope_model_patch(self.scope, self.draft, pipeline._scope_patch_options(self.draft, self.scope), self.config)
             self.assertEqual(error.exception.model_patch_attempt['reported_model'], 'actual-patch')
+
+    def seed_repair(self, checkpoint, *, packet=None, status='failed'):
+        """Create the deployed protocol-1 shape, with its first HTTP charged."""
+        before = pipeline._content_hash(self.draft)
+        options = pipeline._scope_patch_options(self.draft, self.scope)
+        repair = {'protocol': 1, 'attempted': True, 'status': status,
+                  'before_hash': before, 'eligible_fields': options,
+                  'error': '上次实际修订仍含证据之外的数字', 'reported_model': 'actual-old-patch'}
+        if packet:
+            repair['response'] = {'choices': [{'message': {'content': json.dumps(packet, ensure_ascii=False)},
+                                               'finish_reason': 'stop'}]}
+        key = pipeline._content_hash({'format': pipeline.INSIGHT_FORMAT_VERSION,
+                                     'checkpoint_protocol': 2, 'scope': self.scope})
+        checkpoint.with_suffix('.drafts.json').write_text(json.dumps({key: {
+            'evidence_hash': pipeline._content_hash(self.scope), 'repair': repair,
+            'candidates': [{'candidate': self.draft, 'candidate_hash': before,
+                            'eligible_fields': options, 'requested_model': 'source-alias',
+                            'reported_model': 'actual-source'}]}}, ensure_ascii=False))
+
+    def test_legacy_failed_patch_reuses_exact_after_draft_and_counts_first_http(self):
+        invalid = self.valid['focuses'][0]['analysis'].replace('10', '999')
+        old_patch = {'patches': [{'path': '/focuses/0/analysis', 'value': invalid}]}
+        calls = []
+        def request(req, **kwargs):
+            user = json.loads(req.data)['messages'][1]['content']
+            content = json.loads(user[user.index('{'):])
+            self.assertEqual(content['task'], 'repair_only_invalid_fields_v1')
+            self.assertEqual(content['original_draft']['focuses'][0]['analysis'], invalid)
+            self.assertEqual(content['previous_failed_correction']['previous_patch'], old_patch)
+            self.assertIn('数字', content['previous_failed_correction']['current_gate_error'])
+            options = content['allowed_patches']['/focuses/0/analysis']
+            self.assertEqual(options['allowed_numeric_tokens'], ['10', '20'])
+            calls.append(content)
+            return model_response({'patches': [{'path': '/focuses/0/analysis',
+                'value': self.valid['focuses'][0]['analysis']}]}, model='actual-second-patch')
+        with tempfile.TemporaryDirectory() as td, patch.object(pipeline, 'open_llm_request', side_effect=request):
+            checkpoint = Path(td) / 'ai.json'
+            self.seed_repair(checkpoint, packet=old_patch)
+            result = pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            self.assertEqual(len(calls), 1)
+            self.assertEqual(result['summaries'][0]['focuses'], self.valid['focuses'])
+            history = next(iter(json.loads(checkpoint.with_suffix('.drafts.json').read_text()).values()))['repair']['history']
+            self.assertEqual(len(history), 2)
+            self.assertEqual(history[0]['candidate']['focuses'][0]['analysis'], invalid)
+            self.assertEqual(history[1]['before_hash'], history[0]['after_hash'])
+            self.assertEqual(history[1]['attempt_number'], 2)
+            self.assertEqual(history[0]['protocol'], 1)
+
+    def test_three_attempts_preserve_each_failed_candidate_and_never_reset_on_restart(self):
+        calls = []
+        values = [self.valid['focuses'][0]['analysis'] * 4,
+                  self.valid['focuses'][0]['analysis'] * 3,
+                  self.valid['focuses'][0]['analysis'].replace('10', '999')]
+        def request(req, **kwargs):
+            user = json.loads(req.data)['messages'][1]['content']
+            if '"task": "repair_only_invalid_fields_v1"' not in user:
+                return model_response({'items': [self.draft]})
+            content = json.loads(user[user.index('{'):])
+            if calls:
+                self.assertEqual(content['original_draft']['focuses'][0]['analysis'], values[len(calls) - 1])
+            calls.append(content)
+            return model_response({'patches': [{'path': '/focuses/0/analysis', 'value': values[len(calls) - 1]}]})
+        with tempfile.TemporaryDirectory() as td, patch.object(pipeline, 'open_llm_request', side_effect=request) as transport:
+            checkpoint = Path(td) / 'ai.json'
+            with self.assertRaisesRegex(ValueError, '修订额度已使用'):
+                pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            self.assertEqual(len(calls), 3)
+            repair = next(iter(json.loads(checkpoint.with_suffix('.drafts.json').read_text()).values()))['repair']
+            self.assertEqual([h['attempt_number'] for h in repair['history']], [1, 2, 3])
+            self.assertEqual([h['candidate']['focuses'][0]['analysis'] for h in repair['history']], values)
+            before = transport.call_count
+            with self.assertRaisesRegex(ValueError, '修订额度已使用'):
+                pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            self.assertEqual(transport.call_count, before)
+            self.assertFalse(checkpoint.exists())
+
+    def test_reserved_http_survives_crash_and_resume_never_regenerates_full_scope(self):
+        with tempfile.TemporaryDirectory() as td:
+            checkpoint = Path(td) / 'ai.json'
+            self.seed_repair(checkpoint, status='running')
+            with patch.object(pipeline, 'open_llm_request', return_value=model_response({'patches': [
+                {'path': '/focuses/0/analysis', 'value': self.valid['focuses'][0]['analysis']}]})) as request:
+                pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            self.assertEqual(request.call_count, 1)
+            repair = next(iter(json.loads(checkpoint.with_suffix('.drafts.json').read_text()).values()))['repair']
+            self.assertEqual(len(repair['history']), 2)
+            self.assertEqual(repair['history'][0]['status'], 'running')
+            self.assertEqual(repair['history'][1]['attempt_number'], 2)
+
+    def test_different_patch_with_same_error_and_no_progress_stops_early(self):
+        calls = []
+        def request(req, **kwargs):
+            user = json.loads(req.data)['messages'][1]['content']
+            if '"task": "repair_only_invalid_fields_v1"' not in user:
+                return model_response({'items': [self.draft]})
+            suffix = '保持口径。保持原值。' if not calls else '保留原值。保持口径。'
+            calls.append(user)
+            return model_response({'patches': [{'path': '/focuses/0/analysis',
+                'value': self.valid['focuses'][0]['analysis'] + suffix}]})
+        with tempfile.TemporaryDirectory() as td, patch.object(pipeline, 'open_llm_request', side_effect=request):
+            checkpoint = Path(td) / 'ai.json'
+            with self.assertRaisesRegex(ValueError, '重复无进展'):
+                pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            repair = next(iter(json.loads(checkpoint.with_suffix('.drafts.json').read_text()).values()))['repair']
+            self.assertEqual(len(calls), 2)
+            self.assertEqual(repair['status'], 'stopped')
+            self.assertNotEqual(repair['history'][0]['patch_hash'], repair['history'][1]['patch_hash'])
+            self.assertEqual(repair['history'][0]['error'], repair['history'][1]['error'])
+
+    def test_missing_original_draft_cannot_change_input_or_refund_history(self):
+        with tempfile.TemporaryDirectory() as td:
+            checkpoint = Path(td) / 'ai.json'
+            self.seed_repair(checkpoint)
+            draft_path = checkpoint.with_suffix('.drafts.json')
+            drafts = json.loads(draft_path.read_text())
+            next(iter(drafts.values()))['repair']['before_hash'] = 'missing-original'
+            draft_path.write_text(json.dumps(drafts))
+            with patch.object(pipeline, 'open_llm_request') as request, self.assertRaisesRegex(ValueError, '缺少原始草稿'):
+                pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            request.assert_not_called()
+            self.assertEqual(json.loads(draft_path.read_text()), drafts)
+
+    def test_single_patch_cannot_hide_a_second_transport_or_proxy_retry(self):
+        def rotate(req, **kwargs):
+            self.assertEqual(kwargs['max_transport_retries'], 0)
+            kwargs['open_func'](req, timeout=1)
+            return kwargs['open_func'](req, timeout=1)
+        with patch.object(pipeline, 'open_llm_request', side_effect=rotate), \
+             patch('urllib.request.urlopen', return_value=model_response({})) as http:
+            with self.assertRaisesRegex(ValueError, '一个HTTP') as raised:
+                pipeline._request_scope_model_patch(self.scope, self.draft,
+                    pipeline._scope_patch_options(self.draft, self.scope), self.config)
+            self.assertEqual(http.call_count, 1)
+            self.assertEqual(raised.exception.model_patch_attempt['http_calls'], 1)
+
+    def test_title_limit_is_a_full_gate_and_prompt_uses_exact_signed_numbers(self):
+        candidate = copy.deepcopy(self.valid)
+        candidate['focuses'][0]['headline'] = '客户经营结构明显分化' * 3
+        with self.assertRaisesRegex(ValueError, '标题超过28字'):
+            pipeline._validate_model_summaries([candidate], self.scope)
+        scope = copy.deepcopy(self.scope)
+        scope['domains'][0]['focuses'][0]['items'][0]['value'] = -25
+        option = pipeline._scope_patch_options(candidate, scope)['/focuses/0/headline']
+        self.assertEqual(option['max_characters'], 28)
+        self.assertEqual(option['target_characters'], [10, 22])
+        self.assertIn('-25', option['allowed_numeric_tokens'])
+        self.assertNotIn('25', option['allowed_numeric_tokens'])
 
     def test_no_programmatic_deletion_of_numeric_prose_or_unknown_sources(self):
         draft = copy.deepcopy(self.valid)

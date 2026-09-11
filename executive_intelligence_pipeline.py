@@ -1047,6 +1047,8 @@ def _strategic_focus_headline(
 
 
 def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str:
+    if len(headline) > 28:
+        return f"AI分析标题超过28字：{domain}.{focus_id}（当前{len(headline)}字）"
     normalized = headline.replace("营收", "收入")
     operating_judgement = (
         any(term in normalized for term in (*_OVERVIEW_STRATEGIC_MEANING_TERMS, "客户基础", "经营规模", "资源承载"))
@@ -2700,7 +2702,8 @@ def _scope_patch_options(candidate: dict[str, Any], scope: dict[str, Any]) -> di
                     target_characters=[60, 85], max_sentences=MAX_FOCUS_INSIGHT_SENTENCES,
                     content_selection="保留原稿中同期间可比的两家公司原值及经营关系；其余事实已在实体明细，不在正文重复。")
             elif path == "/focuses/0/headline":
-                options[path].update(max_characters=28)
+                options[path].update(max_characters=28, target_characters=[10, 22],
+                    content_selection="标题只写经营判断，不堆金额、单位或财年；原样保留必要公司名，具体数值已在正文及实体明细。")
 
     def text_fields(obj, prefix, allowed):
         for field in ("headline", "analysis", "risk"):
@@ -2739,6 +2742,13 @@ def _scope_patch_options(candidate: dict[str, Any], scope: dict[str, Any]) -> di
         urls = {str(source.get("source_url") or "")} - {""}
         if not isinstance(entity.get("source_urls"), list) or any(not isinstance(u, str) or u not in urls for u in entity["source_urls"]):
             add(prefix + "/source_urls", entity, "source_urls", "引用了其他实体或未知来源", entity=entity["name"], allowed_values=sorted(urls))
+    for path, option in options.items():
+        allowed = scope
+        if "/entities/" in path:
+            index = int(path.split("/entities/", 1)[1].split("/", 1)[0])
+            allowed = by_name[entities[index]["name"]]
+        option["allowed_numeric_tokens"] = sorted(_numeric_tokens(allowed))
+        option["numeric_rule"] = "只允许这些精确数字；保留正负号，不缩写财年，不改约数，不计算新值。"
     return options
 
 
@@ -2773,9 +2783,8 @@ def _apply_scope_model_patch(candidate, patch, options):
     return result
 
 
-def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=None):
+def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=None, repair_feedback=None):
     from ai_rate_limit import wait_for_internal_ai_slot
-    from network_utils import urlopen_with_local_proxy_fallback
 
     model = _executive_model_route()[0]
     api_key = str(config.get("api_key") or "")
@@ -2785,6 +2794,7 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
             "只返回JSON对象{patches:[{path,value}]}。path必须逐字选自allowed_patches；"
             "不要修改未列出的字段、实体身份或输入证据。每个value必须由你依据原证据重新生成。"
             "必须逐一修正全部allowed_patches字段，禁止照抄仍有错误的current值。"
+            "headline只能是28字内的经营判断，目标10至22字；不在标题堆金额、单位或财年，数字留在原正文。"
             "过长正文必须由你改写为60至85字，英文、数字和标点每个字符均计数，一至两句；"
             "输出前自行核对字符数。正文只保留原稿中同期间可比的两家公司原值及经营关系，"
             "其他事实已经保留在完整实体明细，不要重复全部公司的数值；无法比较时保留真实口径边界。"
@@ -2793,7 +2803,7 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
             + "本次局部修订的字数目标以每个allowed_patches字段的target_characters为准，必须真正改正列出的错误。"
         )},
         {"role": "user", "content": json.dumps({"task": "repair_only_invalid_fields_v1",
-            "allowed_patches": options, "original_draft": candidate,
+            "allowed_patches": options, "original_draft": candidate, "previous_failed_correction": repair_feedback,
             "evidence": _model_prompt_evidence(scope)}, ensure_ascii=False)},
     ]
     request = _model_request(config, api_key, prepare_structured_chat_body({
@@ -2802,9 +2812,20 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
     }))
     wait_for_internal_ai_slot("executive-intelligence-local-patch")
     started, payload, error = time.monotonic(), {}, None
+    patch, patched, http_calls = None, None, 0
+
+    def single_transport(*args, **kwargs):
+        nonlocal http_calls
+        if http_calls:
+            raise ValueError("单次局部AI修订只允许一个HTTP，禁止隐式轮转或重放")
+        http_calls += 1
+        # The recovery budget counts HTTP requests, including failed requests.
+        # A proxy fallback or key rotation must not silently multiply this call.
+        return urllib.request.urlopen(*args, **kwargs)
+
     try:
         with open_llm_request(request, timeout=90, config=config, requested_key=api_key, model=model,
-                              open_func=urlopen_with_local_proxy_fallback) as response:
+                              open_func=single_transport, max_transport_retries=0) as response:
             payload = read_chat_completion_sse(response)
         patch = load_json_response(final_chat_message_text(payload, operation="局部AI修订"), operation="局部AI修订")
         actual_model = str(payload.get("model") or "")
@@ -2815,6 +2836,7 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
         validated = _validate_model_summaries([patched], scope, expected_domains={domain["id"]},
             expected_focus_ids_by_domain={domain["id"]: {f["id"] for f in domain["focuses"]}})[0]
         return validated, {"requested_model": model, "reported_model": actual_model, "patches": patch["patches"],
+                           "patch_hash": _content_hash(patch), "http_calls": http_calls,
                            "response_id": payload["id"], "created": payload["created"],
                            "stream": payload["stream_diagnostics"], "response_hash": payload["stream_diagnostics"]["response_hash"],
                            "before_hash": _content_hash(candidate), "after_hash": _content_hash(validated), "full_gate": "passed"}
@@ -2823,6 +2845,9 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
         exc.model_patch_attempt = {
             "requested_model": model, "reported_model": payload.get("model"),
             "response": payload, "response_hash": _content_hash(payload),
+            "submitted_patch": patch, "patch_hash": _content_hash(patch) if patch is not None else "",
+            "candidate": patched, "after_hash": _content_hash(patched) if patched is not None else "",
+            "http_calls": http_calls,
             "elapsed_seconds": round(time.monotonic() - started, 3),
             "before_hash": _content_hash(candidate), "full_gate": "failed",
         }
@@ -2965,32 +2990,105 @@ def generate_model_domain_summaries(
         entry = drafts.get(cache_key(scope), {})
         if not entry or not draft_path:
             return None
-        if patch_spent(scope):
-            raise ValueError("该scope同证据的局部AI修订已执行，保留失败草稿等待明确处理：" + str(entry["repair"].get("error") or entry["repair"].get("status")))
+        previous = entry.get("repair") or {}
+        history = previous.get("history")
+        if not isinstance(history, list):
+            history = [{k: v for k, v in previous.items() if k != "history"}] if previous.get("attempted") else []
+        if previous.get("status") == "stopped" or len(history) >= 3:
+            raise ValueError("AI分析修订额度已使用或重复无进展，保留全部历史：" + str(previous.get("error") or previous.get("stop_reason") or "最多3次HTTP"))
         eligible = [item for item in entry.get("candidates") or [] if item.get("eligible_fields") and item.get("reported_model")]
         if not eligible:
             return None
-        selected = min(reversed(eligible), key=lambda item: len(item["eligible_fields"]))
+        selected = (next((item for item in eligible if item["candidate_hash"] == history[0].get("before_hash")), None)
+                    if history else None)
+        if history and selected is None:
+            raise ValueError("已存修订缺少原始草稿，保留预算并拒绝更换输入")
+        selected = selected or min(reversed(eligible), key=lambda item: len(item["eligible_fields"]))
         candidate = selected["candidate"]
-        repair = {"protocol": 1, "attempted": True, "status": "running", "started_at_hkt": _now(),
-                  "source_requested_model": selected["requested_model"], "source_reported_model": selected["reported_model"],
-                  "before_hash": selected["candidate_hash"]}
-        entry["repair"] = repair
-        persist_drafts()  # Reserve the one repair before network activity.
-        try:
-            repaired, audit = _request_scope_model_patch(scope, candidate, selected["eligible_fields"], config,
-                                                        trace_path=attempt_trace_path)
-            repair.update(audit, status="passed", completed_at_hkt=_now())
-            models = "+".join(sorted({selected["reported_model"], audit["reported_model"]}))
-            save(scope, repaired, models, patch_audit=repair)
-            used_models.update(models.split("+"))
-            return repaired, models
-        except Exception as exc:
-            repair.update(getattr(exc, "model_patch_attempt", {}))
-            repair.update(status="failed", error=str(exc), completed_at_hkt=_now())
-            raise
-        finally:
-            persist_drafts()
+        models = {selected["reported_model"]}
+        # Legacy attempt 1 remains charged. Reconstruct only its explicit model
+        # patch against its recorded whitelist; never synthesize missing prose.
+        for old in history:
+            if old.get("reported_model"):
+                models.add(old["reported_model"])
+            if isinstance(old.get("candidate"), dict):
+                candidate = old["candidate"]
+                continue
+            packet = old.get("submitted_patch") or ({"patches": old["patches"]} if old.get("patches") else None)
+            if packet is None and old.get("response"):
+                try:
+                    packet = load_json_response(final_chat_message_text(old["response"], operation="已存失败修订"))
+                except ValueError:
+                    packet = None
+            if packet is not None:
+                old.setdefault("submitted_patch", packet)
+                old.setdefault("patch_hash", _content_hash(packet))
+                try:
+                    candidate = _apply_scope_model_patch(candidate, packet, old.get("eligible_fields") or selected["eligible_fields"])
+                    old["candidate"] = candidate
+                    old.setdefault("after_hash", _content_hash(candidate))
+                except (ValueError, KeyError, TypeError, IndexError):
+                    pass
+        while len(history) < 3:
+            options = _scope_patch_options(candidate, scope)
+            try:
+                already_valid = validate_scope(scope, [candidate])[0]
+            except (ValueError, TypeError, AttributeError) as exc:
+                current_error = str(exc)
+            else:
+                audit = {**previous, "protocol": 2, "history": history, "status": "passed", "max_attempts": 3}
+                entry["repair"] = audit
+                save(scope, already_valid, "+".join(sorted(models)), patch_audit=audit)
+                persist_drafts()
+                used_models.update(models)
+                return already_valid, "+".join(sorted(models))
+            if not options:
+                raise ValueError("失败稿没有可安全修订的现有字段：" + current_error)
+            prior = history[-1] if history else {}
+            attempt = {"protocol": 2, "attempted": True, "attempt_number": len(history) + 1,
+                       "status": "running", "started_at_hkt": _now(),
+                       "source_requested_model": selected["requested_model"], "source_reported_model": selected["reported_model"],
+                       "before_hash": _content_hash(candidate), "before_candidate": candidate,
+                       "eligible_fields": options, "input_gate_error": current_error}
+            history.append(attempt)
+            entry["repair"] = {**attempt, "history": history, "max_attempts": 3}
+            persist_drafts()  # Charge before the one bounded HTTP; never refund.
+            try:
+                repaired, audit = _request_scope_model_patch(scope, candidate, options, config,
+                    trace_path=attempt_trace_path, repair_feedback={"current_gate_error": current_error,
+                        "previous_error": prior.get("error"), "previous_patch": prior.get("submitted_patch")})
+                attempt.update(audit, status="passed", candidate=repaired, completed_at_hkt=_now())
+                models.add(audit["reported_model"])
+                entry["repair"] = {**attempt, "history": history, "max_attempts": 3}
+                save(scope, repaired, "+".join(sorted(models)), patch_audit=entry["repair"])
+                persist_drafts()
+                used_models.update(models)
+                return repaired, "+".join(sorted(models))
+            except Exception as exc:
+                attempt.update(getattr(exc, "model_patch_attempt", {}), status="failed", error=str(exc), completed_at_hkt=_now())
+                if attempt.get("reported_model"):
+                    models.add(attempt["reported_model"])
+                next_candidate = attempt.get("candidate") or candidate
+                next_options = _scope_patch_options(next_candidate, scope)
+                improved = bool(set(options) - set(next_options))
+                for path in set(options) & set(next_options):
+                    before, after = options[path], next_options[path]
+                    if before.get("max_characters") and isinstance(before.get("current"), str) and isinstance(after.get("current"), str):
+                        improved |= len(before["current"]) > before["max_characters"] and len(after["current"]) < len(before["current"])
+                    allowed = set(before.get("allowed_numeric_tokens") or [])
+                    improved |= len(_numeric_tokens(after.get("current")) - allowed) < len(_numeric_tokens(before.get("current")) - allowed)
+                repeated = bool(attempt.get("patch_hash") and any(
+                    old.get("patch_hash") == attempt["patch_hash"] for old in history[:-1]))
+                repeated |= any(old.get("error") == str(exc) for old in history[:-1]) and not improved
+                if repeated:
+                    attempt.update(status="stopped", stop_reason="重复patch/hash或同错误无进展")
+                entry["repair"] = {**attempt, "history": history, "max_attempts": 3}
+                persist_drafts()
+                if repeated or len(history) >= 3:
+                    raise ValueError("AI分析修订额度已使用或重复无进展：" + str(exc)) from exc
+                candidate = next_candidate
+        raise ValueError("AI分析修订额度已使用：最多3次HTTP")
+
 
     def save_valid_focus_parts(domain_scope, candidate, model, requested=None, reported=None, raw_candidate=None):
         if not checkpoint_path:
@@ -3221,8 +3319,18 @@ def generate_model_domain_summaries(
                         focus_parts.extend(restored["focuses"])
                         continue
                     if patch_spent(focus_scope):
-                        scope_errors.append(f"AI分析修订额度已使用：{domain_id}.{focus_id}: {drafts[cache_key(focus_scope)]['repair'].get('error') or '请核查修订审计'}")
-                        domain_focus_failed = True
+                        try:
+                            repaired = repair_scope_once(focus_scope)
+                            if not repaired:
+                                raise ValueError("已有修订历史但无可安全继续的草稿")
+                            restored, repaired_models = repaired
+                            domain_models.update(repaired_models.split("+"))
+                            if domain_fields is None:
+                                domain_fields = {k: restored.get(k) for k in ("domain", "headline", "analysis", "risk", "source_urls")}
+                            focus_parts.extend(restored["focuses"])
+                        except (APIKeyPoolUnavailable, ValueError, RuntimeError, TimeoutError, urllib.error.URLError) as exc:
+                            scope_errors.append(f"AI分析修订额度已使用或未通过：{domain_id}.{focus_id}: {exc}")
+                            domain_focus_failed = True
                         continue
                     expected_names = {
                         str(entity.get("name") or "") for entity in focus_evidence.get("items") or []

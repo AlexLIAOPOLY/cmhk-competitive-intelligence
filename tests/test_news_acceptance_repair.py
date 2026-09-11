@@ -257,7 +257,7 @@ class ExhaustedStateTests(unittest.TestCase):
             state = dict(selection_agent_retries={slot: dict(attempts=13, next_retry_at='stale', error='old',
                                                             outcome_synchronized=False)})
             with (patch.object(briefing, 'RUNS_DIR', Path(td)),
-                  patch.object(briefing, 'amend_operational_crawl_run') as amend,
+                  patch.object(briefing, 'amend_operational_crawl_run', autospec=True) as amend,
                   patch('cmhk.intelligence.news_review_sheet.complete_selection_batch',
                         side_effect=[OSError('temporary'), None]) as complete,
                   patch.object(agent, 'run_news_selection_agent') as run):
@@ -266,6 +266,7 @@ class ExhaustedStateTests(unittest.TestCase):
                 briefing._recover_pending_selection_agents(now, state)
                 briefing._recover_pending_selection_agents(now, state)
             self.assertEqual(complete.call_count, 2)
+            self.assertIn('逐格回读', amend.call_args.kwargs['progress_detail'])
             self.assertEqual(amend.call_args.kwargs['summary_updates']['selection_agent_error'], '')
             self.assertEqual(amend.call_args.kwargs['summary_updates']['selection_agent_next_retry_at'], '')
             self.assertTrue(state['selection_agent_retries'][slot]['outcome_synchronized'])
