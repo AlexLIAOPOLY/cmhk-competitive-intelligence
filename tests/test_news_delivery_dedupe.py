@@ -154,6 +154,56 @@ class EventDedupeTests(unittest.TestCase):
         self.assertEqual(deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)[0], [MEETING, DISTINCT])
         self.assertEqual(seen, [MEETING["title"], DISTINCT["title"], DISTINCT["title"]])
 
+    def test_long_history_checks_later_partitions_before_retaining_news(self):
+        history = [{"title": f"独立业务{i}", "summary": f"第{i}家企业公布新的业务进展。"}
+                   for i in range(17)] + [MEETING]
+        calls = []
+        def model(system, user, **kwargs):
+            p = json.loads(user)
+            calls.append(p)
+            row = model_result(p['candidates'])['decisions'][0]
+            for old in p['history']:
+                if old['title'] == MEETING['title']:
+                    row.update(duplicate_of=old['id'], reason='同一次海关会议',
+                               evidence=REWRITE['summary'], matched_evidence=MEETING['summary'])
+            return {'decisions': [row]}
+        kept, audit = deduplicate_events([REWRITE], history, self.root, model_call=model)
+        self.assertEqual(kept, [])
+        self.assertEqual(audit[0]['duplicate_of'], 'h17')
+        self.assertEqual([h['title'] for p in calls for h in p['history']], [h['title'] for h in history])
+        self.assertEqual(len(audit[0]['history_reviews']), 3)
+
+    def test_long_history_failure_resumes_without_sending_or_repeating_passed_partitions(self):
+        history = [{"title": f"独立业务{i}", "summary": f"第{i}家企业公布新的业务进展。"}
+                   for i in range(17)]
+        calls, fail = [], True
+        def model(system, user, **kwargs):
+            p = json.loads(user)
+            calls.append(p['history'][0]['id'])
+            if fail and p['history'][0]['id'] == 'h8':
+                raise TimeoutError('second history partition unavailable')
+            return model_result(p['candidates'])
+        with self.assertRaises(TimeoutError):
+            deduplicate_events([DISTINCT], history, self.root, model_call=model)
+        fail = False
+        kept, audit = deduplicate_events([DISTINCT], history, self.root, model_call=model)
+        self.assertEqual(kept, [DISTINCT])
+        self.assertEqual(calls, ['h0', 'h8', 'h8', 'h16'])
+        self.assertEqual(sum(len(x['history_ids']) for x in audit[0]['history_reviews']), 17)
+
+    def test_transport_schema_failure_recovers_with_validated_single_item_reviews(self):
+        from strategic_briefing import AIInvalidStructuredResponse
+        seen = []
+        def model(system, user, **kwargs):
+            p = json.JSONDecoder().raw_decode(user)[0]
+            seen.append(len(p['candidates']))
+            if len(p['candidates']) > 1:
+                raise AIInvalidStructuredResponse('{}', 'missing decisions')
+            return model_result(p['candidates'])
+        kept, _ = deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)
+        self.assertEqual(kept, [MEETING, DISTINCT])
+        self.assertEqual(seen, [2, 2, 1, 1])
+
 
 class DeliveryGuardTests(unittest.TestCase):
     def setUp(self):
