@@ -153,7 +153,11 @@ NEWS_ENTITY_SOURCES: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ..
         "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
     )),
     ("mainland", "中国铁塔", ("中国铁塔", "中國鐵塔", "China Tower", "0788.HK"), ("https://ir.china-tower.com/", "https://ir.china-tower.com/en/ir/reports.php", "https://ir.china-tower.com/en/ir/presentation.php")),
-    ("mainland", "中国广电", ("中国广电", "中國廣電", "China Broadnet", "China Broadcasting Network"), ("https://www.cbn.cn/",)),
+    ("mainland", "中国广电", ("中国广电", "中國廣電", "中国广播电视网络集团有限公司", "中国广电集团", "China Broadnet", "China Broadcasting Network"), (
+        "https://www.cbn.cn/",
+        "https://www.nrta.gov.cn/art/2026/8/14/art_114_73831.html",
+        "https://gbdsj.cq.gov.cn/sjfb/202608/t20260824_15973393.html",
+    )),
     ("cloud", "AWS", ("AWS", "Amazon Web Services"), ("https://www.sec.gov/Archives/edgar/data/1018724/000101872426000024/amzn-20260630xex991.htm", "https://ir.aboutamazon.com/quarterly-results/default.aspx")),
     ("cloud", "Microsoft Azure", ("Azure", "Microsoft cloud"), ("https://www.microsoft.com/en-us/investor/default", "https://www.microsoft.com/en-us/Investor/earnings")),
     ("cloud", "Google Cloud", ("Google Cloud", "Alphabet"), ("https://abc.xyz/investor/",)),

@@ -67,6 +67,20 @@ def metric_value_is_bound(metric: str, value: str, quote: str) -> bool:
 def company_value_is_bound(company: str, value: str, quote: str, source_url: str) -> bool:
     """A group filing mentioning a subsidiary is not that subsidiary's revenue."""
     from urllib.parse import urlparse
+    if company == "中国广电" and re.search(r"\d", value):
+        # Regulators also publish nationwide industry totals and provincial
+        # operators' figures. An issuer name elsewhere in the page is not a
+        # binding between those amounts and the national Broadnet group.
+        issuer = (r"中国广播电视网络集团有限公司|中国广电集团|"
+                  r"中国广电(?=实现|取得|公布|披露|录得|营业|营收|收入|净利润|的|[\s（(\d])|"
+                  r"China Broadnet|China Broadcasting Network(?: Group)?")
+        for match in re.finditer(re.escape(value), quote):
+            prefix = re.split(r"[，,。；;•]|(?<=[a-z])\.\s+", quote[max(0, match.start()-180):match.start()])[-1]
+            if re.search(r"全国|全行业|广播电视机构|网络视听服务机构|旗下|所属|子公司|分公司", prefix):
+                continue
+            if re.search(issuer, prefix, re.I):
+                return True
+        return False
     scoped = {
         "CMHK": (["CMHK", "China Mobile Hong Kong", "中国移动香港", "中國移動香港"], ["hk.chinamobile.com"]),
         "AWS": (["AWS", "Amazon Web Services"], ["aws.amazon.com"]),
@@ -134,7 +148,7 @@ different companies, search snippets and invented URLs becoming database facts.
             errors.append("摘录没有明确对应公司主体")
         if not item["value"] or item["value"] not in quote:
             errors.append("数值或描述不在引用原文中")
-        elif re.search(r"(?:surpassed|exceeded|over|more than|less than|approximately|about|超过|超過|约|約|逾|至少|不足)\s*(?:(?:HK|US)?[$€£¥￥]|USD|HKD)?\s*$", quote[:quote.find(item["value"])], re.I):
+        elif re.search(r"(?:surpassed|exceeded|over|more than|less than|approximately|about|超过|超過|约|約|近|逾|至少|不足)\s*(?:(?:HK|US)?[$€£¥￥]|USD|HKD)?\s*$", quote[:quote.find(item["value"])], re.I):
             errors.append("原文含超过、约等限定词，value须保留该限定词，不能写成精确值")
         # A report period is often a table/header passage, separate from the metric.
         # Keep the model-selected literal period and attach its actual page excerpt;
