@@ -231,7 +231,7 @@ class PublicationLabelTests(unittest.TestCase):
         self.assertFalse(report.summary_has_search_noise(repaired))
         self.assertEqual(report.deterministic_evidence_repair_errors({**item, "detail": repaired}), [])
 
-    def test_fallback_selects_only_concise_snippet_from_matching_web_evidence(self) -> None:
+    def test_matching_snippets_remain_evidence_for_writer_not_final_copy(self) -> None:
         item = make_item(
             "W001",
             1,
@@ -259,10 +259,9 @@ class PublicationLabelTests(unittest.TestCase):
 
         detail = report.deterministic_limited_weekly_detail(item)
 
-        self.assertIn("东莞松山湖", detail)
-        self.assertNotIn("消费品展览", detail)
-        self.assertTrue(report.summary_is_concise(detail))
-        self.assertTrue(report.summary_adds_information(item["title"], detail, item["title"]))
+        self.assertEqual(detail, "")
+        self.assertTrue(report.human_template_item_errors(item))
+        self.assertIn("东莞松山湖", str(report.weekly_writer_fact_package(item)))
 
     def test_title_only_evidence_requires_verified_supplemental_detail(self) -> None:
         pcb = make_item(

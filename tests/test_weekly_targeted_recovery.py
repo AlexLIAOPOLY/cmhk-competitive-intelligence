@@ -152,6 +152,20 @@ class TargetedRecoveryTests(unittest.TestCase):
             text = report._fetch_search_result_content({'title': '测试主体公布网络部署', 'url': 'https://example.test/news.pdf'}, '测试主体公布网络部署')
         self.assertIn('完整新闻正文', text)
 
+    def test_matching_search_snippet_never_becomes_unreviewed_body(self):
+        item = self.thin_item()
+        item['title'] = item['originalTitle'] = '粤港澳大湾区创新实力跃居全球第一'
+        item['rawDetail'] = item['detail'] = item['title'] + '。'
+        item['webResearch'] = {'results': [{
+            'title': '粤港澳大湾区将成为全球第一湾区',
+            'snippet': 'IFF联合主席、顾问委员会主席等嘉宾们发言，围绕为大湾区构建全球增长新动力展开头脑风暴，并纷纷表示粤港澳大湾区将成全球最大湾区。六年后成为全球第一湾区，覆盖了十一个城市。',
+        }]}
+        with patch.object(report, 'weekly_supplemental_evidence', return_value={}):
+            self.assertEqual(report.deterministic_limited_weekly_detail(item), '')
+            restored = report.finalize_weekly_limited_model(make_model(item))
+        self.assertTrue(report.human_template_item_errors(restored['sections'][0]['items'][0]))
+        self.assertNotIn('IFF', restored['sections'][0]['items'][0]['detail'])
+
     def test_shorter_query_must_still_match_original_event(self):
         item = self.thin_item()
         item['title'] = item['originalTitle'] = '科大提出新一代通讯框架为7G奠基'

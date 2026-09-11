@@ -55,7 +55,7 @@ class ReportPdfPreviewTests(unittest.TestCase):
         self.assertIn("libreoffice-writer", (root/"Dockerfile").read_text())
         self.assertIn("runtime: docker", (root/"render.yaml").read_text())
 
-    def test_word_fonts_are_available_to_performance_previews_only(self):
+    def test_word_fonts_are_available_to_both_retained_report_templates(self):
         from cmhk.reporting.pdf_preview import _convert_with_soffice
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -69,10 +69,11 @@ class ReportPdfPreviewTests(unittest.TestCase):
                  patch.dict(os.environ, {}, clear=True), \
                  patch('cmhk.reporting.pdf_preview.Path.is_dir', return_value=True), \
                  patch('cmhk.reporting.pdf_preview.subprocess.run', side_effect=convert):
-                for name in ['业绩摘要', '周报']:
+                for name in ['业绩摘要', '9月11日周报 (1)', 'unrelated']:
                     _convert_with_soffice(root/(name+'.docx'),root/(name+'.pdf'),'test-soffice',30)
             self.assertIn('Microsoft Word.app/Contents/Resources/DFonts', configs[0])
-            self.assertNotIn('Microsoft Word.app', configs[1])
+            self.assertIn('Microsoft Word.app/Contents/Resources/DFonts', configs[1])
+            self.assertNotIn('Microsoft Word.app', configs[2])
 
 
 if __name__ == "__main__":

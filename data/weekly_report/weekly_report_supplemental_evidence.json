@@ -200,6 +200,30 @@
       "verifiedAt": "2026-09-11",
       "verification": "经济通原文与香港宽频企业方案公司说明交叉核对；属于核实事实，不标记为AI生成",
       "detail": "香港宽频企业方案与博云国际签署合作备忘录，合作将结合双方的产品研发、技术及市场资源。双方把AI智能体、代理式AI、多智能体协作和企业级解决方案作为重点，推动相关服务在香港、澳门及区域市场落地；后续合作范围将随市场需求和技术发展调整。"
+    },
+    {
+      "title": "HGC环电推出商业安全宽频2.0方案",
+      "sourceUrl": "https://www.hgc.com.hk/press-releases/hgc-and-cisco-launch-secured-broadband-2-0-redefines-next-generation-connectivity-with-security-seamlessly-embedded",
+      "sourcePublishedAt": "2025-12-10",
+      "verifiedAt": "2026-09-11",
+      "verification": "HGC官方原文核对；原文为2025年12月发布，正文明确首次推出时间，保留人工选材而不冒充本周新发布。非AI生成。",
+      "detail": "HGC环电与思科合作的商业安全宽频2.0把Cisco SASE安全功能嵌入核心网络，企业无需额外安装安全设备即可使用云应用、DNS层及零信任存取防护。方案也覆盖自携设备，并由HGC提供全托管服务及全天候热线支援；该方案于2025年12月首次推出。"
+    },
+    {
+      "title": "科大提出新一代通讯框架为7G奠基",
+      "sourceUrl": "https://hkust.edu.hk/news/hkust-charts-roadmap-agentic-7g-ai-powered-wireless-networks",
+      "sourcePublishedAt": "2026-09-01",
+      "verifiedAt": "2026-09-11",
+      "verification": "香港科技大学官方研究新闻逐条核对，保留研究愿景与标准的区别。非AI生成。",
+      "detail": "香港科技大学研究团队提出推理赋能任务导向通讯框架，让AI代理判断应交换哪些信息、何时通讯，以及通讯对后续决策的价值。框架结合意图理解、自动建模优化和主动预测，在带宽、功耗、时延与稳健性之间选择通讯策略。研究为未来7G智能体网络提出方向，尚属研究路线图，并非已经完成的技术标准。"
+    },
+    {
+      "title": "粤港澳大湾区创新实力跃居全球第一",
+      "sourceUrl": "https://www.info.gov.hk/gia/general/202609/08/P2026090800253.htm",
+      "sourcePublishedAt": "2026-09-08",
+      "verifiedAt": "2026-09-11",
+      "verification": "香港政府2026年9月8日公报逐条核对；本年为再次第一，不将旧首次登顶报道写成本周首次。非AI生成。",
+      "detail": "世界知识产权组织公布的2026年全球创新指数百强创新集群中，深圳—香港—广州集群再次排名全球第一。排名依据国际专利申请、科学论文发表和风险资本交易三个维度；该集群过去五年的相关密度分别为每百万人2259个PCT专利申请、4060篇科学论文及138宗风险资本交易。"
     }
   ]
 }

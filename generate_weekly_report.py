@@ -793,43 +793,6 @@ def _headline_evidence_overlap(headline: object, candidate_title: object) -> flo
     return len(left_pairs & right_pairs) / min(len(left_pairs), len(right_pairs))
 
 
-def concise_web_evidence_detail(item: dict) -> str:
-    """Assemble supported facts from strongly matching search-result evidence."""
-    headline = item.get("originalTitle") or item.get("title")
-    research = item.get("webResearch") or {}
-    for result in research.get("results") or []:
-        if not isinstance(result, dict):
-            continue
-        if _headline_evidence_overlap(headline, result.get("title")) < 0.35:
-            continue
-        snippet = strip_publication_scaffolding(
-            result.get("snippet"),
-            item.get("eventAt"),
-        )
-        snippet = strip_trailing_source_attribution(snippet, item.get("sourceName"))
-        if not snippet or summary_has_search_noise(snippet):
-            continue
-        units = [
-            clean_text(unit).strip("，,；;。.!！？? ")
-            for unit in re.split(r"[。！？!?；;]+", snippet)
-            if clean_text(unit)
-        ]
-        selected: list[str] = []
-        for unit in units:
-            if summary_has_search_noise(unit):
-                continue
-            selected.append(unit)
-        detail = "。".join(selected) + ("。" if selected else "")
-        if (
-            detail
-            and summary_has_publishable_explanation(detail)
-            and summary_adds_information(headline, detail, headline)
-            and not summary_has_unneeded_scaffolding(detail, item.get("eventAt"))
-        ):
-            return simplified_chinese(detail)
-    return ""
-
-
 def deterministic_headline_fact_sentence(item: dict) -> str:
     """Turn an evidence-poor fact headline into prose without adding facts."""
     headline = simplified_chinese(item.get("title") or item.get("originalTitle"))
@@ -4649,8 +4612,9 @@ def deterministic_limited_weekly_detail(item: dict) -> str:
         if not summary_adds_information(title, raw, title):
             continue
         return raw
-    web_detail = concise_web_evidence_detail(item)
-    return web_detail if summary_has_publishable_explanation(web_detail) else ""
+    # Similar headlines cannot establish that a snippet describes this event.
+    # Leave unresolved items for the evidence-aware writer and targeted repair.
+    return ""
 
 
 def best_available_weekly_detail(item: dict) -> str:
