@@ -779,12 +779,40 @@ def _annual_financial_value(
             "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
         ]))
     value = sum(float(_verified_number(row) or 0) for row in selected)
+    # A summed annual value must link to its annual disclosure when one of
+    # the verified component rows identifies it. The first component is often
+    # H1 and its first URL supports only that half, not the annual total.
+    annual_sources: list[str] = []
+    for row in selected:
+        label = str(row.get("official_source_label") or "")
+        url = str(row.get("official_source_url") or row.get("primary_source_url") or "")
+        if (url in urls and re.search(rf"(?<!\d){year}(?!\d)", label)
+                and re.search(r"annual|年度|年报|全年|year ended", label, re.I)
+                and not re.search(r"interim|中报|中期|半年", label, re.I)):
+            annual_sources.append(url)
+    old_source = urls[0] if urls else ""
+    primary_sources = {str(row.get("official_source_url") or row.get("primary_source_url") or "") for row in selected}
+    shared_source = next(iter(primary_sources)) if len(primary_sources) == 1 else ""
+    source_url = (annual_sources[0] if annual_sources else
+                  shared_source if shared_source in urls else old_source)
+    source_metadata = {}
+    if source_url != old_source:
+        source_metadata = {
+            "source_url_aliases": [old_source] if old_source else [],
+            "annual_source_components": [{
+                "period": row.get("period"), "value": _verified_number(row),
+                "unit": row.get("official_unit") or row.get("unit"),
+                "source_url": row.get("official_source_url") or row.get("primary_source_url") or "",
+                "source_urls": _row_source_urls(row),
+            } for row in selected],
+        }
     return {
         "value": value,
         "unit": str(selected[0].get("official_unit") or selected[0].get("unit") or ""),
         "period": f"FY{year}",
         "source_urls": urls,
-        "source_url": urls[0] if urls else "",
+        "source_url": source_url,
+        **source_metadata,
         "verification_count": len(urls),
         "verification_status": (
             "official_three_distinct_sources_verified"
@@ -799,6 +827,13 @@ def _annual_financial_value(
 def _financial_report_year(report: dict[str, Any]) -> int | None:
     match = re.fullmatch(r"FY\s*(20\d{2})", str(report.get("period") or "").strip(), re.I)
     return int(match.group(1)) if match else None
+
+
+def _annual_source_metadata(row: dict[str, Any] | None) -> dict[str, Any]:
+    """Carry only proven annual-link corrections; old URLs are lineage, not alternate annual evidence."""
+    if not row or not row.get("source_url_aliases"):
+        return {}
+    return {key: row[key] for key in ("source_url_aliases", "source_urls", "annual_source_components") if key in row}
 
 
 def _financial_report_metric_value(report: dict[str, Any], metric: str) -> float | None:
@@ -1263,6 +1298,7 @@ def _requested_hong_kong_domain(
             "components": cmhk_reference_components() if name == "CMHK" else ([_component("营收", round(float(revenue["value"]), 1), "百万港元", annual_period)] if revenue else [_component("营收", detail=missing_note)]),
             "component_count": len(cmhk_reference_components()) if name == "CMHK" else 1, "source_url": str((revenue or {}).get("source_url") or ""),
             "verification_count": int((revenue or {}).get("verification_count") or 0),
+            **_annual_source_metadata(revenue),
             "trend": _annual_financial_trend(financial_rows, subject, "revenue", unit="百万港元", start_year=annual_start_year, end_year=latest_annual_year, direct_reports=financial_reports, company=operator),
         })
         ebitda_items.append({
@@ -1273,6 +1309,7 @@ def _requested_hong_kong_domain(
             "components": [_component("EBITDA", round(float(ebitda["value"]), 1), "百万港元", annual_period)] if ebitda else [_component("EBITDA", detail=missing_note)],
             "component_count": 1, "source_url": str((ebitda or {}).get("source_url") or ""),
             "verification_count": int((ebitda or {}).get("verification_count") or 0),
+            **_annual_source_metadata(ebitda),
             "trend": _annual_financial_trend(financial_rows, subject, "ebitda", unit="百万港元", start_year=annual_start_year, end_year=latest_annual_year, direct_reports=financial_reports, company=operator),
         })
         profit_items.append({
@@ -1283,6 +1320,7 @@ def _requested_hong_kong_domain(
             "components": [_component("净利润", round(float(profit["value"]), 1), "百万港元", cmhk_reference_ppt["period"] if name == "CMHK" else annual_period)] if profit else [_component("净利润", detail=missing_note)],
             "component_count": 1, "source_url": str((profit or {}).get("source_url") or ""),
             "verification_count": int((profit or {}).get("verification_count") or 0),
+            **_annual_source_metadata(profit),
             "trend": _annual_financial_trend(financial_rows, subject, "net_income", unit="百万港元", start_year=annual_start_year, end_year=latest_annual_year, direct_reports=financial_reports, company=operator),
         })
         customer = operating_row(operator, "mobile_postpaid_customers")
@@ -1481,6 +1519,7 @@ def _financial_item(name: str, row: dict[str, Any] | None, label: str, unit: str
             "analysis": f"FY2025{label}为{value:,.2f}{unit}；沿用公司原披露口径。" if value is not None else gap,
             "components": [_component(label, round(value, 2), unit, "FY2025")] if value is not None else [_component(label, detail=gap)], "component_count": 1,
             "source_url": str((row or {}).get("source_url") or ""), "verification_count": source_count,
+            **_annual_source_metadata(row),
             "verification_status": str((row or {}).get("verification_status") or "")}
 
 
@@ -2277,6 +2316,7 @@ def _analysis_evidence_snapshot(domains: list[dict[str, Any]]) -> dict[str, Any]
                             "record_count": item.get("record_count"),
                             "source_url": item.get("source_url"),
                             "verification_count": item.get("verification_count"),
+                            **_annual_source_metadata(item),
                         }
                         for item in (focus.get("items") or [])[:8]
                     ],

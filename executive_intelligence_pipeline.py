@@ -893,9 +893,9 @@ def _numeric_tokens(value: Any) -> set[str]:
     return tokens
 
 
-def _unsupported_causal_terms(text: str) -> tuple[str, ...]:
+def _unsupported_causal_terms(text: str, terms=None) -> tuple[str, ...]:
     """An inability to infer applies only before a cause in the same clause."""
-    terms = ("导致", "造成", "推动", "带来", "源于", "驱动")
+    terms = terms or ("导致", "造成", "推动", "带来", "源于", "驱动")
     clauses = re.split(r"[。！？!?；;，\n]|(?<!\d),|,(?!\d)|"
                        r"(?=但是|然而|不过|反而|而是|实际上|事实上|因此|所以|但|却)", text)
     negation = re.compile(r"(?:无法|不能)(?:仅|只)?(?:据此|由此|直接|就此)?"
@@ -1552,6 +1552,40 @@ def _canonical_entity_labels(labels, entity):
     return canonical, mappings
 
 
+def _previous_annual_source_evidence(evidence):
+    previous = json.loads(json.dumps(evidence, ensure_ascii=False))
+    for domain in previous.get("domains") or []:
+        for focus in domain.get("focuses") or []:
+            for item in focus.get("items") or []:
+                aliases = item.get("source_url_aliases") or []
+                if aliases and item.get("annual_source_components"):
+                    item["source_url"] = aliases[0]
+                    for key in ("source_url_aliases", "source_urls", "annual_source_components"):
+                        item.pop(key, None)
+    return previous
+
+
+def _canonical_annual_sources(obj, evidence_items):
+    """Map only proven annual-source corrections within this entity/scope."""
+    submitted = obj.get("submitted_source_urls", obj.get("source_urls") or [])
+    mappings = {}
+    for fact in evidence_items:
+        if not fact.get("annual_source_components") or not fact.get("source_url"):
+            continue
+        for alias in fact.get("source_url_aliases") or []:
+            mappings.setdefault(alias, set()).add(fact["source_url"])
+    canonical, audit = [], []
+    for url in submitted:
+        targets = sorted(mappings.get(url) or {url})
+        canonical.extend(targets)
+        if targets != [url]:
+            audit.append({"submitted": url, "canonical": targets, "basis": "verified_annual_component_source_correction"})
+    canonical = list(dict.fromkeys(canonical))
+    if "submitted_source_urls" in obj and canonical != obj.get("source_urls"):
+        raise ValueError("年度来源身份审计与当前证据不一致")
+    return canonical, ({"submitted_source_urls": list(submitted), "source_identity_mappings": audit} if audit else {})
+
+
 def _focus_presentation_warnings(domain, focus):
     warnings = []
     for field, target, maximum in (("headline", MAX_FOCUS_HEADLINE_CHARS, MAX_FOCUS_HEADLINE_PUBLISH_CHARS),
@@ -1629,6 +1663,8 @@ def _validate_model_summaries(
             "source_urls": [str(url) for url in item.get("source_urls") or []],
             "focuses": [],
         }
+        scope_items = [entity for f in evidence_by_domain[domain].get("focuses") or [] for entity in f.get("items") or []]
+        summary["source_urls"], summary_source_audit = _canonical_annual_sources(item, scope_items)
         if not summary["headline"] or not summary["analysis"] or not summary["risk"]:
             raise ValueError(f"AI分析字段不完整：{domain}")
         unknown_urls = set(summary["source_urls"]) - allowed_urls
@@ -1678,6 +1714,7 @@ def _validate_model_summaries(
                     focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
                     if str(focus.get("id") or "") == focus_id
                 )
+                validated_focus["source_urls"], focus_source_audit = _canonical_annual_sources(focus_item, evidence_focus.get("items") or [])
                 if validated_focus["headline"] and re.sub(r"\s+", "", validated_focus["headline"]) == re.sub(
                     r"\s+", "", str(evidence_focus.get("label") or "")
                 ):
@@ -1720,6 +1757,7 @@ def _validate_model_summaries(
                         "evidence_labels": [str(label) for label in raw_entity.get("evidence_labels") or []],
                         "source_urls": [str(url) for url in raw_entity.get("source_urls") or []],
                     }
+                    entity_summary["source_urls"], entity_source_audit = _canonical_annual_sources(raw_entity, [evidence_entities[name]])
                     submitted_labels = [str(label) for label in raw_entity.get(
                         "submitted_evidence_labels", entity_summary["evidence_labels"]) or []]
                     canonical_labels, identity_mappings = _canonical_entity_labels(submitted_labels, evidence_entities[name])
@@ -1752,6 +1790,7 @@ def _validate_model_summaries(
                         raise ValueError(
                             f"AI分析实体出现输入之外的数字：{domain}.{focus_id}.{name}.{sorted(unknown_entity_numbers)}"
                         )
+                    entity_summary.update(entity_source_audit)
                     validated_focus["entities"].append(entity_summary)
                 if entity_seen != set(evidence_entities):
                     raise ValueError(
@@ -1762,10 +1801,12 @@ def _validate_model_summaries(
                 warnings = _focus_presentation_warnings(domain, validated_focus)
                 if warnings:
                     validated_focus["presentation_warnings"] = warnings
+                validated_focus.update(focus_source_audit)
                 validated_focuses.append(validated_focus)
             if focus_seen != expected_focuses:
                 raise ValueError(f"AI分析分类不完整：{domain}.{sorted(expected_focuses - focus_seen)}")
             summary["focuses"] = validated_focuses
+        summary.update(summary_source_audit)
         result.append(summary)
     if seen != expected:
         raise ValueError(f"AI分析领域不完整：{sorted(expected - seen)}")
@@ -1805,8 +1846,122 @@ def _repair_discovery_depth(raw: Any, evidence: dict[str, Any]) -> tuple[Any, in
     """Depth is model work, not a deterministic sentence-repair step."""
     return json.loads(json.dumps(raw, ensure_ascii=False)), 0
 
-def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict[str, Any]]:
-    if not isinstance(raw, list) or len(raw) != 4:
+def _discovery_fact_anchors(evidence):
+    anchors = []
+    aliases = {"investment": "capex", "profit": "operating_profit", "postpaid": "customer_count"}
+    for domain in evidence.get("domains") or []:
+        for focus in domain.get("focuses") or []:
+            for item in focus.get("items") or []:
+                if item.get("value") in (None, "", "-") or not item.get("unit"):
+                    continue
+                anchors.append({**item, "domain": domain["id"], "metric": aliases.get(focus.get("id"), focus.get("id"))})
+        for fact in domain.get("agent_verified_facts") or []:
+            if fact.get("value") not in (None, "", "-") and fact.get("unit"):
+                anchors.append({**fact, "domain": domain["id"], "name": fact.get("company"),
+                                "metric": fact.get("metric_key") or fact.get("metric")})
+    return anchors
+
+
+def _discovery_comparability_error(item, evidence):
+    text = str(item.get("title") or "") + "。" + str(item.get("detail") or "")
+    pair = {item.get("from"), item.get("to")}
+    anchors = [a for a in _discovery_fact_anchors(evidence) if a["domain"] in pair]
+    matched = [a for a in anchors if _numeric_tokens(a["value"]) & _numeric_tokens(text)
+               and str(a["unit"]) in text]
+    # Bind each explicit value to the closest company, FY and metric in its
+    # factual clause. Mere presence elsewhere in the paragraph is insufficient.
+    metric_names = {"净利润": "net_profit", "净利": "net_profit", "营收": "revenue", "收入": "revenue",
+                    "EBITDA": "ebitda", "ARPU": "mobile_arpu", "客户数": "customer_count", "用户数": "customer_count",
+                    "资本开支": "capex", "资本支出": "capex", "营业利润": "operating_profit", "云利润": "operating_profit"}
+    metric_aliases = {"净利润": "net_profit", "net_income": "net_profit", "subscribers": "customer_count"}
+    known_names = {str(a.get("name")) for a in _discovery_fact_anchors(evidence) if a.get("name")}
+    bound = []
+    for value_match in re.finditer(r"[-+]?\d+(?:,\d{3})*(?:\.\d+)?", text):
+        matching = [a for a in matched if _numeric_tokens(a["value"]) == _numeric_tokens(value_match.group())
+                    and text[value_match.end():].lstrip().startswith(str(a["unit"]))]
+        if not matching:
+            continue
+        prefix = re.split(r"[。！？!?；;，\n]", text[:value_match.start()])[-1]
+        mentions = [(m.start(), len(name), name) for name in known_names
+                    for m in re.finditer(re.escape(name), prefix, re.I)]
+        if mentions:
+            company_start, company_length, company = max(mentions)
+            matching = [a for a in matching if str(a.get("name", "")).casefold() == company.casefold()]
+            if not matching:
+                return f"跨库发现数值与所在从句公司归属不一致：{company} {value_match.group()}"
+            prefix = prefix[company_start + company_length:]
+        years = re.findall(r"(?<!\d)(?:FY\s*)?(20\d{2})(?!\d)", prefix, re.I)
+        if years:
+            matching = [a for a in matching if re.search(r"(?<!\d)" + years[-1] + r"(?!\d)", str(a.get("period") or ""))]
+            if not matching:
+                return f"跨库发现数值与显式财年不一致：FY{years[-1]} {value_match.group()}"
+        explicit_grains = re.findall(r"Q[1-4]|H[12]|全年|年度", prefix, re.I)
+        if explicit_grains:
+            expected_grain = explicit_grains[-1].upper()
+            def period_matches(fact):
+                period = str(fact.get("period") or "").upper()
+                parts = re.findall(r"Q[1-4]|H[12]", period)
+                if expected_grain in ("全年", "年度"):
+                    return not parts and str(fact.get("grain") or "").lower() not in (
+                        "quarter", "quarterly", "half_year", "half-year", "half", "semiannual")
+                return expected_grain in parts
+            matching = [a for a in matching if period_matches(a)]
+            if not matching:
+                return f"跨库发现数值与显式季度、半年或全年粒度不一致：{expected_grain} {value_match.group()}"
+        metric_mentions = [(m.start(), len(label), category) for label, category in metric_names.items()
+                           for m in re.finditer(re.escape(label), prefix, re.I)]
+        if metric_mentions:
+            _, _, metric = max(metric_mentions)
+            matching = [a for a in matching if metric_aliases.get(a.get("metric"), a.get("metric")) == metric]
+            if not matching:
+                return f"跨库发现数值与所在从句指标类别不一致：{metric} {value_match.group()}"
+        bound.extend(matching)
+    matched = [a for a in matched if a in bound]
+    selected = []
+    for domain in pair:
+        matches = [a for a in matched if a["domain"] == domain]
+        if not matches:
+            # Legacy generic fixtures have no typed metric facts; production does.
+            if any(a["domain"] == domain for a in anchors):
+                return f"跨库发现没有绑定{domain}领域的具体数值与单位"
+            continue
+        named = [a for a in matches if a.get("name") and str(a["name"]) in text]
+        chosen = named or matches
+        if not named and len({(a.get("name"), a.get("value"), a.get("unit"), a.get("period"), a.get("metric")) for a in chosen}) > 1:
+            # Several distinct unnamed facts cannot be bound by a coincident number.
+            by_value = {}
+            for fact in chosen:
+                by_value.setdefault((_content_hash(fact["value"]), fact.get("unit")), []).append(fact)
+            if any(len(group) > 1 for group in by_value.values()):
+                return f"跨库发现{domain}领域数值存在多个实体或指标归属，必须点名所用事实"
+        selected.extend(chosen)
+        for fact in chosen:
+            if fact.get("source_url") not in (item.get("source_urls") or []):
+                return f"跨库发现未引用所用事实的精确来源：{domain}.{fact.get('name')}.{fact.get('metric')}"
+    matched = selected
+    if not matched:
+        return ""
+    def currency(unit):
+        return next((c for c in ("美元", "港元", "欧元", "日元", "英镑") if c in str(unit)),
+                    "人民币" if "元" in str(unit) else str(unit))
+    incompatible = (len({a.get("metric") for a in matched}) > 1
+                    or len({currency(a.get("unit")) for a in matched}) > 1
+                    or len({(a.get("period"), a.get("grain")) for a in matched}) > 1)
+    if incompatible:
+        boundary = re.search(r"(?:不能|不可|无法|不宜)(?:据此|直接|据此直接)?(?:比较|排名|混排|判断|推断|等同)", text)
+        if not boundary:
+            return "跨库发现指标、币种、期间或范围不同，必须明确不能直接比较或推断经营高低"
+        clauses = re.split(r"[。！？!?；;，\n]|(?=但是|然而|但|却)", text)
+        for clause in clauses:
+            if re.search(r"差距|领先|落后|高于|低于|远超|梯队|分化|脱钩", clause) and not re.search(
+                r"(?:不能|不可|无法|不宜|不代表|不等于|不构成)[^。]{0,35}(?:比较|排名|推断|判断|证明|等同|差距|领先|分化|梯队)", clause
+            ):
+                return "跨库发现对不同指标、币种或期间作了肯定排名或差距判断；限制句不能覆盖相邻肯定结论"
+    return ""
+
+
+def _validate_model_discoveries(raw: Any, evidence: dict[str, Any], *, require_complete=True) -> list[dict[str, Any]]:
+    if not isinstance(raw, list) or (require_complete and len(raw) != 4):
         raise ValueError("AI跨库发现必须恰好返回四项")
     expected_domains = {
         str(domain.get("id") or "") for domain in evidence.get("domains") or [] if str(domain.get("id") or "")
@@ -1847,7 +2002,8 @@ def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict
         combined_text = f'{discovery["title"]}。{discovery["detail"]}'
         if _contains_action_advice(combined_text):
             raise ValueError("AI跨库发现含行动建议而非数据洞察")
-        unsupported_causal = _unsupported_causal_terms(combined_text)
+        unsupported_causal = _unsupported_causal_terms(combined_text,
+            ("导致", "造成", "推动", "带来", "源于", "驱动", "主要来自", "源自", "归因于", "脱钩"))
         if unsupported_causal:
             raise ValueError(f"AI跨库发现使用了未经证据支持的因果词：{unsupported_causal}")
         if allowed_numbers:
@@ -1864,11 +2020,14 @@ def _validate_model_discoveries(raw: Any, evidence: dict[str, Any]) -> list[dict
         unknown_numbers = _numeric_tokens(discovery) - allowed_numbers
         if unknown_numbers:
             raise ValueError(f"AI跨库发现出现输入之外的数字：{sorted(unknown_numbers)}")
+        comparability_error = _discovery_comparability_error(discovery, evidence)
+        if comparability_error:
+            raise ValueError(comparability_error)
         warnings = _discovery_presentation_warnings([discovery])
         if warnings:
             discovery["presentation_warnings"] = warnings
         result.append(discovery)
-    if covered_domains != expected_domains:
+    if require_complete and covered_domains != expected_domains:
         raise ValueError(f"AI跨库发现领域覆盖不完整：{sorted(expected_domains - covered_domains)}")
     return result
 
@@ -2978,7 +3137,14 @@ def generate_model_domain_summaries(
             expected_focus_ids_by_domain={d["id"]: {f["id"] for f in d.get("focuses", [])} for d in scope["domains"]})
 
     def cached(scope):
-        entry = checkpoint.get(cache_key(scope), {})
+        key = cache_key(scope)
+        entry = checkpoint.get(key, {})
+        migrated_from = None
+        if not entry:
+            old_key = cache_key(_previous_annual_source_evidence(scope))
+            if old_key != key and checkpoint.get(old_key):
+                entry = checkpoint[old_key]
+                migrated_from = old_key
         if not isinstance(entry, dict) or not isinstance(entry.get("model"), str) or not entry.get("model") or not entry.get("summaries"):
             return None
         try:
@@ -2986,6 +3152,12 @@ def generate_model_domain_summaries(
         except (ValueError, TypeError, AttributeError):
             return None
         used_models.update(entry["model"].split("+"))
+        if migrated_from and checkpoint_path:
+            checkpoint[key] = {**entry, "summaries": result,
+                "source_migration": {"previous_checkpoint_key": migrated_from, "current_checkpoint_key": key,
+                                     "basis": "verified_annual_source_correction", "full_gate": "passed",
+                                     "model_text_preserved": True}}
+            _atomic_write_json(checkpoint_path, checkpoint)
         return result[0]
 
     def save(scope, candidate, model, patch_audit=None):
@@ -3620,6 +3792,141 @@ def _manual_discovery_evidence(
     }
 
 
+def _discovery_patch_options(candidate, evidence):
+    if not isinstance(candidate, list) or len(candidate) != 4:
+        return {}
+    pairs = [tuple(sorted((item.get("from", ""), item.get("to", "")))) for item in candidate if isinstance(item, dict)]
+    if len(pairs) != 4 or len(set(pairs)) != 4 or any(a == b for a, b in pairs):
+        return {}
+    options = {}
+    for index, item in enumerate(candidate):
+        try:
+            _validate_model_discoveries([item], evidence, require_complete=False)
+        except ValueError as exc:
+            options[str(index)] = {"error": str(exc), "current": item,
+                "binding_error": _discovery_comparability_error(item, evidence),
+                "title_target": 28, "detail_target": 110, "title_max": 36, "detail_max": 160,
+                "facts": [a for a in _discovery_fact_anchors(evidence) if a["domain"] in (item["from"], item["to"])]}
+    return options
+
+
+def _apply_discovery_model_patch(candidate, packet, options):
+    if not isinstance(packet, dict) or set(packet) != {"patches"} or not isinstance(packet["patches"], list):
+        raise ValueError("跨库局部修订必须返回patches数组")
+    result = json.loads(json.dumps(candidate, ensure_ascii=False))
+    seen = set()
+    for patch in packet["patches"]:
+        if not isinstance(patch, dict) or set(patch) != {"index", "title", "detail", "source_urls"}:
+            raise ValueError("跨库局部修订只能修改index/title/detail/source_urls")
+        index = patch["index"]
+        if type(index) is not int or str(index) not in options or index in seen:
+            raise ValueError("跨库局部修订包含未失败条目、重复或未知位置")
+        if not all(isinstance(patch[k], str) for k in ("title", "detail")) or not isinstance(patch["source_urls"], list) or any(not isinstance(u, str) for u in patch["source_urls"]):
+            raise ValueError("跨库局部修订值类型非法")
+        seen.add(index)
+        result[index].update({k: patch[k] for k in ("title", "detail", "source_urls")})
+    if {str(i) for i in seen} != set(options):
+        raise ValueError("跨库局部修订遗漏失败条目")
+    return result
+
+
+def _repair_saved_discoveries(entry, evidence, config, persist, trace_path):
+    from ai_rate_limit import wait_for_internal_ai_slot
+    history = entry.setdefault("repair_history", [])
+    selected = (entry.get("selected") or {}).get("attempt_index")
+    source = (entry["attempts"][selected] if isinstance(selected, int) and selected < len(entry["attempts"]) else None)
+    if not source or not isinstance(source.get("candidate"), list):
+        source = next((a for a in reversed(entry["attempts"]) if isinstance(a.get("candidate"), list) and len(a["candidate"]) == 4), None)
+    if source is None:
+        return None
+    candidate = source["candidate"]
+    models = {source["reported_model"]}
+    for old in history:
+        if old.get("reported_model"):
+            models.add(old["reported_model"])
+        if isinstance(old.get("candidate"), list):
+            candidate = old["candidate"]
+        elif old.get("response") and old.get("allowed_items"):
+            try:
+                packet = old.get("submitted_patch") or load_json_response(final_chat_message_text(old["response"], operation="已存跨库修订"))
+                candidate = _apply_discovery_model_patch(old.get("before_candidate") or candidate, packet, old["allowed_items"])
+            except ValueError:
+                pass
+    while True:
+        try:
+            accepted = _validate_model_discoveries(candidate, evidence)
+        except ValueError as exc:
+            error = str(exc)
+        else:
+            entry["repair_status"] = "passed"
+            persist()
+            return {"generated_at_hkt": _now(), "model": "+".join(sorted(models)), "discoveries": accepted,
+                    "evidence_repair_count": 0, "reused": True,
+                    "presentation_warnings": _discovery_presentation_warnings(accepted)}
+        if len(history) >= 2 or entry.get("repair_status") == "stopped":
+            raise ValueError("跨库局部修订最多2次或重复无进展，保留全部历史：" + error)
+        options = _discovery_patch_options(candidate, evidence)
+        if not options:
+            raise ValueError("已存跨库草稿不能安全局部修订：" + error)
+        model = _executive_model_route()[0]
+        record = {"attempt_number": len(history) + 1, "status": "running", "requested_model": model,
+                  "source_reported_model": source["reported_model"], "before_candidate": candidate,
+                  "before_hash": _content_hash(candidate), "input_gate_error": error,
+                  "allowed_items": options, "http_calls": 0, "started_at_hkt": _now()}
+        history.append(record)
+        persist()
+        messages = [{"role": "system", "content": (
+            "只修正列出的失败跨库发现，其他条目必须保持原样。只返回JSON对象{patches:[{index,title,detail,source_urls}]}。"
+            "index只能来自allowed_items；保留from/to身份，每个失败条目都要真正纠错。标题目标28字内，正文目标80至110字、最多两句。"
+            "每条只能使用facts中明确的公司、指标、原值、单位、期间与精确source_url，禁止引用同域其他公司或其他指标来源。"
+            "所有事实值保留原币，禁止自己换汇或计算差額。指标、币种、期间、集团/业务范围不同时只能陈述比较边界，"
+            "明确说明不能直接比较或排名，不得在标题或其他从句又宣称差距、梯队、领先、客户价值分化。"
+            "客户数不是ARPU，利润不是利润率，不能用不同指标推断后者差距。横截面数据不能支持脱钩。"
+            "禁止主要来自、源自、驱动等未经证据支持的原因归纳，不得猜市场结构、客户需求或定价导致差距。"
+            "依据真实口径解释边界，可用不同、表明、口径、不能直接比较自然连接证据与关系；不要为了词表拼造原因。"
+            "若来源与事实未绑定，选择有精确来源的其他事实；不能补写不存在的事实。")},
+            {"role": "user", "content": json.dumps({"task": "repair_failed_discoveries_v1", "allowed_items": options,
+                "previous_error": history[-2].get("error") if len(history) > 1 else None}, ensure_ascii=False)}]
+        request = _model_request(config, config["api_key"], prepare_structured_chat_body({
+            **dict(config.get("extra_parameters") or {}), "model": model, "messages": messages,
+            "temperature": 0.0, "max_tokens": 8000}))
+        payload, packet, after, attempt_error = {}, None, None, None
+        started = time.monotonic()
+        def single_transport(*args, **kwargs):
+            if record["http_calls"]:
+                raise ValueError("每次跨库局部修订只允许一个HTTP")
+            record["http_calls"] += 1
+            persist()
+            return urllib.request.urlopen(*args, **kwargs)
+        try:
+            wait_for_internal_ai_slot("executive-intelligence-discovery-patch")
+            with open_llm_request(request, timeout=180, config=config, requested_key=config["api_key"], model=model,
+                                  open_func=single_transport, max_transport_retries=0) as response:
+                payload = read_chat_completion_sse(response)
+            record.update(response=payload, reported_model=payload.get("model"), response_id=payload.get("id"), response_hash=_content_hash(payload))
+            persist()
+            packet = load_json_response(final_chat_message_text(payload, operation="跨库局部修订"))
+            record.update(submitted_patch=packet, patch_hash=_content_hash(packet))
+            after = _apply_discovery_model_patch(candidate, packet, options)
+            record.update(candidate=after, after_hash=_content_hash(after))
+            persist()
+            _validate_model_discoveries(after, evidence)
+            record.update(status="passed", completed_at_hkt=_now())
+            models.add(payload["model"])
+            candidate = after
+            persist()
+        except (ValueError, APIKeyPoolUnavailable, TimeoutError, urllib.error.URLError) as exc:
+            attempt_error = exc
+            record.update(status="failed", error=str(exc), completed_at_hkt=_now())
+            duplicate = any(a.get("patch_hash") and a.get("patch_hash") == record.get("patch_hash") for a in history[:-1])
+            if duplicate or (after is not None and _content_hash(after) == _content_hash(candidate)):
+                entry["repair_status"] = "stopped"
+            candidate = after or candidate
+            persist()
+        finally:
+            _trace_model_attempt(trace_path, "discoveries.patch", model, started, payload, attempt_error, config)
+
+
 def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attempt_trace_path: Path | None = None) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
@@ -3635,6 +3942,14 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     if not isinstance(saved, dict):
         saved = {}
     evidence_hash = _content_hash({"schema": "four_discoveries_v1", "evidence": prompt_evidence})
+    if evidence_hash not in saved:
+        previous_compact = _compact_discovery_evidence(_previous_annual_source_evidence(evidence))
+        previous_hash = _content_hash({"schema": "four_discoveries_v1", "evidence": previous_compact})
+        if previous_hash != evidence_hash and previous_hash in saved:
+            saved[evidence_hash] = json.loads(json.dumps(saved[previous_hash], ensure_ascii=False))
+            saved[evidence_hash]["source_migration"] = {"previous_evidence_hash": previous_hash, "current_evidence_hash": evidence_hash,
+                                                       "basis": "verified_annual_source_correction", "request_history_preserved": True}
+            saved[evidence_hash]["evidence_hash"] = evidence_hash
     entry = saved.setdefault(evidence_hash, {"protocol": 1, "evidence_hash": evidence_hash,
                                             "attempts": [], "model_route_counts": {}})
     if not isinstance(entry, dict) or not isinstance(entry.get("attempts"), list) or not isinstance(entry.get("model_route_counts"), dict):
@@ -3663,6 +3978,9 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                     old["response"], operation="已存跨库发现"), operation="已存跨库发现"), operation="已存跨库发现")
             except ValueError:
                 candidate = None
+            if isinstance(candidate, list):
+                old.update(candidate=candidate, candidate_hash=_content_hash(candidate))
+                persist()
         if not isinstance(candidate, list) or not old.get("reported_model"):
             continue
         try:
@@ -3676,6 +3994,10 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
         return {"generated_at_hkt": _now(), "model": old["reported_model"], "discoveries": accepted,
                 "presentation_warnings": _discovery_presentation_warnings(accepted),
                 "evidence_repair_count": 0, "reused": True}
+    if draft_path and entry["attempts"]:
+        repaired = _repair_saved_discoveries(entry, prompt_evidence, config, persist, attempt_trace_path)
+        if repaired:
+            return repaired
     system_prompt = (
         "你是电信竞争情报分析员。从local、international、mainland、cloud四个战略总览数据域中提炼恰好四条跨库发现。"
         "每条必须联系两个不同领域，四条不得重复同一领域组合，且四个领域都要被覆盖。"
@@ -3685,10 +4007,11 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
         "不得把规模差距解释成客户需求、效率或投入驱动；证据无法建立因果时明确保留推断边界。"
         "agent_verified_facts是独立正式披露，必须保留各自period和grain；季度、半年事实不能替代全年金额比较。"
         "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
-        "每条detail还必须同时出现一个比较判断词（如高于、低于、差距、分化）、一个分析维度词"
+        "每条detail应包含有证据支持的比较或边界判断（如不同、不可直接比较）、一个分析维度词"
         "（如结构、口径、效率、盈利、客户、资本）和一个深层关系词"
-        "（如主要来自、并非、而非、不等同、受制、约束、同步、脱钩、梯队、差距）。"
-        "不得只并列两组数字；应写成‘A为输入值、B为输入值，差距表明两域资本结构分化，并非同一口径的规模领先’这类有边界判断。"
+        "（如并非、不等同、不能直接比较、范围不同）。禁止主要来自、驱动、脱钩等无证据因果或时间关系。"
+        "不同指标、币种、期间或主体范围不能比较大小、排名或推断ARPU/利润率差距；明确说明不能直接比较及具体边界。"
+        "每个原值引用其公司、指标和期间的精确source_url，不能使用同域任意URL。"
         "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON对象，顶层字段只能是items数组。"
     )
     user_prompt = (
@@ -3799,8 +4122,8 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                         "content": (
                             f"上一版未通过跨库门禁：{exc}。请改成有数字锚点的深层数据关系结论，只解释结构、驱动、"
                             "集中度、口径或市场阶段；每条detail必须含表明、说明、意味着、并非、而非或不能等同之一，"
-                            "并同时包含高于/低于/差距/分化之一、结构/口径/效率/盈利/客户/资本之一，以及"
-                            "主要来自/并非/而非/不等同/受制/约束/同步/脱钩/梯队/差距之一；不得只并列数字。"
+                            "依据所用事实解释具体结构或口径边界；不同指标、币种、期间或主体范围时明确不能直接比较，"
+                            "不得再写高低、差距、梯队或客户价值领先，不用主要来自、驱动或脱钩归因；每个值绑定其精确来源。"
                             "不写发生了什么，不提建议或下一步；仍只返回{\"items\":[四条发现]}。"
                         ),
                     },

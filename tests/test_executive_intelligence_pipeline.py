@@ -15,6 +15,22 @@ from data_curation.workflow import _source_rank
 import scheduler
 
 
+def _typed_discovery_fixture(evidence):
+    # Test data: explicit typed facts and their own URLs, never a runtime fallback.
+    anchors = pipeline._discovery_fact_anchors(evidence)
+    by_domain = {domain: next(a for a in anchors if a["domain"] == domain and a.get("source_url"))
+                 for domain in ("local", "international", "mainland", "cloud")}
+    items = []
+    for source, target in (("mainland", "local"), ("international", "cloud"), ("local", "cloud"), ("mainland", "international")):
+        a, b = by_domain[source], by_domain[target]
+        detail = (f"{a['name']}{a.get('period') or ''}为{a['value']}{a['unit']}，"
+                  f"{b['name']}{b.get('period') or ''}为{b['value']}{b['unit']}；"
+                  "口径不同表明不能直接比较。")
+        items.append({"from": source, "to": target, "title": "披露口径不同限制直接比较", "detail": detail,
+                      "kind": "AI综合研判", "source_urls": [a["source_url"], b["source_url"]]})
+    return pipeline._validate_model_discoveries(items, evidence)
+
+
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def setUp(self):
         # Unit tests must not spend model quota or wait on the live global queue.
@@ -219,7 +235,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
     def test_manual_discovery_failure_preserves_all_four_pairs(self):
         evidence = pipeline._analysis_input_snapshot()
-        discoveries = pipeline._deterministic_discoveries(evidence)  # Test fixture only.
+        discoveries = _typed_discovery_fixture(evidence)  # Test fixture only.
         fixture = {"summaries": [], "discoveries": discoveries}
         response = mock.MagicMock()
         response = sse_payload_response({"choices": [{"message": {"content": ""}}]})
@@ -785,7 +801,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch.object(pipeline, "_ai_only_bundle", return_value={
                     "summaries": pipeline._deterministic_domain_summaries(evidence),
-                    "discoveries": pipeline._deterministic_discoveries(evidence),
+                    "discoveries": _typed_discovery_fixture(evidence),
                     "model": "fixture-model", "discovery_model": "fixture-model",
                     "evidence_hash": pipeline._content_hash(evidence), "generation_policy": pipeline.AI_ONLY_POLICY,
                 }),
@@ -850,7 +866,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch.object(pipeline, "_ai_only_bundle", return_value={
                     "summaries": pipeline._deterministic_domain_summaries(evidence),
-                    "discoveries": pipeline._deterministic_discoveries(evidence),
+                    "discoveries": _typed_discovery_fixture(evidence),
                     "model": "fixture-model", "discovery_model": "fixture-model",
                     "evidence_hash": pipeline._content_hash(evidence), "generation_policy": pipeline.AI_ONLY_POLICY,
                 }),
@@ -903,7 +919,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("executive_intelligence_pipeline._analysis_input_snapshot", return_value=evidence),
                 patch.object(pipeline, "_ai_only_bundle", return_value={
                     "summaries": pipeline._deterministic_domain_summaries(evidence),
-                    "discoveries": pipeline._deterministic_discoveries(evidence),
+                    "discoveries": _typed_discovery_fixture(evidence),
                     "model": "fixture-model", "discovery_model": "fixture-model",
                     "evidence_hash": pipeline._content_hash(evidence), "generation_policy": pipeline.AI_ONLY_POLICY,
                 }),
