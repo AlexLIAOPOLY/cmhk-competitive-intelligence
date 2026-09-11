@@ -47,6 +47,7 @@
     faultFilters: { status: "all", kind: "all", query: "" },
     faultSort: { key: "time", direction: "desc" },
     faultFeedback: null,
+    faultFeedbackTimer: 0,
     loadedKeys: new Set(),
     dirtyModules: new Set(),
     renderFrames: {},
@@ -1768,11 +1769,39 @@
       : "飞书固定链接数量暂不可用";
   }
 
+  // Card copy is a fixed template. Runtime messages belong in node details.
+  // Both initial rendering and live patches consume this same presentation.
+  function newsLineageCardContent(node) {
+    const templates = {
+      strategic: ["次已完成", "按设定时间启动新闻采集"],
+      "news-search": ["条候选新闻链接", "按关键词及固定来源搜索网页"],
+      "news-ai": ["条相关新闻通过审核", "判断新闻与业务的相关性"],
+      "news-dedupe": ["条历史重复新闻", "检查并排除历史重复新闻"],
+      "news-output": ["条新增战略新闻", "保存审核表及本地任务归档"],
+      "news-selection-agent": ["条周报初筛通过", "分别判断滚动栏与周报适用性"],
+      "app-result": ["条新闻", "汇总滚动栏最终审核结果"],
+      "weekly-result": ["条新闻", "汇总周报最终审核结果"],
+      "news-subscription": ["位接收人", "按个人订阅排期推送新闻"],
+      "research-dispatch": ["个研究 Agent", "分配公司与指标研究任务"],
+      "research-merge": ["组数据通过", "联网核对原文，排除已有与重复数据"],
+      "research-update": ["组数据已入库", "写入正式指标表并逐项回读"],
+      "research-publish": ["项AI生成", "生成数据分析并更新页面"],
+    };
+    const [unit, note] = templates[node.key] || (node.research
+      ? ["组数据通过", "查找负责公司的最新数据，提交终审"]
+      : ["项", "点击查看本节点处理详情"]);
+    const raw = String(node.cardValue ?? node.value ?? "—").trim();
+    return { value: /^(?:\d[\d,]*(?:\/\d[\d,]*)?|—)$/.test(raw) ? raw : "—", unit, note };
+  }
+
   function globalSchedulerLineageModel(runs, stages, attemptRuns = runs) {
     const date = state.newsSelectedDate || newsRunDate(runs[0]);
     const model = window.CmhkResearchDiagram.build(
       legacySchedulerLineageModel(runs, stages, attemptRuns), state.researchArchitecture, date,
+      window.CmhkNewsDeliveryHistory.canvasWidth,
     );
+    window.CmhkNewsDeliveryHistory.decorate(model, date);
+    model.nodes.forEach((node) => { node.card = newsLineageCardContent(node); });
     const nodes = new Map(model.nodes.map((node) => [node.key, node]));
     const assessments = activeLineageRouteAssessments(date);
     model.edges = model.edges.map(([from, to, label, kind, line]) => [from, to, label, kind,
@@ -1819,9 +1848,21 @@
     };
     const strategicHealth = combinedRunHealth(runs);
     const strategicTriggered = attemptRuns.length > 0;
-    const strategicTriggerHealth = strategicTriggered
-      ? { key: "healthy", label: "已启动" }
-      : { key: "unknown", label: "无记录" };
+    const completedStrategicRuns = runs.filter((run) => strategicNewsRunRank(run) >= 3);
+    const activeStrategicRun = runs.find((run) => strategicNewsRunRank(run) === 2);
+    const chronologicalStrategicRuns = [...runs].sort((left, right) => (
+      String(left?.started_at_hkt || "").localeCompare(String(right?.started_at_hkt || ""))
+    ));
+    const activeStrategicRunNumber = activeStrategicRun
+      ? Math.max(1, chronologicalStrategicRuns.indexOf(activeStrategicRun) + 1)
+      : 0;
+    const strategicTriggerHealth = activeStrategicRun
+      ? { key: "running", label: "运行中" }
+      : completedStrategicRuns.length
+        ? { key: "healthy", label: "已完成" }
+        : strategicTriggered
+          ? { key: "warning", label: "未完成" }
+          : { key: "unknown", label: "无记录" };
     const mainHealth = runHealth(mainRun);
     const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
     const selectionRunHealth = combinedRunHealth(selectionRuns);
@@ -1831,6 +1872,16 @@
     const strategicDedupeHealth = newsStageHealth(stages.find((stage) => stage.key === "dedupe"), strategicHealth);
     const strategicOutputHealth = newsStageHealth(stages.find((stage) => stage.key === "push"), strategicHealth);
     const currentStrategicStage = strategicHealth.key === "running" ? activeNewsStage(stages) : null;
+    const strategicTriggerValue = strategicTriggered
+      ? (completedStrategicRuns.length || activeStrategicRun ? `已完成 ${completedStrategicRuns.length} 次` : "尚未完成")
+      : "—";
+    const strategicTriggerNote = activeStrategicRun
+      ? `正在进行第 ${activeStrategicRunNumber} 次 · 已完成 ${completedStrategicRuns.length} 次${currentStrategicStage ? ` · 后续执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}` : ""}`
+      : completedStrategicRuns.length
+        ? `当天任务均已完成 · 共 ${attemptRuns.length} 次任务尝试`
+        : strategicTriggered
+          ? `${attemptRuns.length} 次任务尝试尚未完成`
+          : "当天没有触发成功的任务归档";
     const currentStrategicNodeKey = activeNewsStageNodeKey(currentStrategicStage?.key);
     const preciseStrategicHealth = (nodeKey, fallbackHealth) => currentStrategicNodeKey === nodeKey
       ? { key: "running", label: "运行中" }
@@ -2014,12 +2065,12 @@
       || previousReferenceLegacyCapped;
     const previousReferenceRunCount = Number((sourceDiscoverySummary.previous_day_news_runs || []).length);
     const nodes = [
-      { key: "strategic", label: "03:00 / 14:00 定时启动器", value: strategicTriggered ? "已启动" : "—", unit: "", note: currentStrategicStage ? `启动已完成 · 后续执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}` : strategicTriggered ? `启动已完成 · ${attemptRuns.length} 次任务尝试` : "当天没有触发成功的任务归档", health: strategicTriggerHealth, variant: "crawler", position: [18, 52], details: ["这个节点只负责到点启动后续新闻任务，本身不搜索网页、不审核新闻，也不保存新闻", "启动成功后即显示绿色“已启动”；下游任务的运行或异常状态由对应节点单独显示", "同一时段重试只由最终权威批次参与统计；所有任务尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻任务"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻任务归档" },
+      { key: "strategic", label: "03:00 / 14:00 定时启动器", value: strategicTriggerValue, cardValue: strategicTriggered ? number(completedStrategicRuns.length) : "—", unit: "", note: strategicTriggerNote, health: strategicTriggerHealth, variant: "crawler", position: [18, 52], details: ["这个节点只负责到点启动后续新闻任务，本身不搜索网页、不审核新闻，也不保存新闻", "任务进行中显示当前第几次，权威批次完成后累计显示当天已完成次数；下游任务的具体阶段或异常由对应节点单独显示", "同一时段重试只由最终权威批次参与完成次数统计；所有任务尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻任务"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻任务归档" },
       { key: "news-search", label: "按关键词搜索公开网页", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条候选新闻链接", note: preciseStrategicNote("news-search", `监控关键词＋固定页面 · ${runs.length} 个权威批次`), health: preciseStrategicHealth("news-search", strategicSearchHealth), variant: "source", position: [295, 52], details: [`按监控关键词搜索公开网页，并补充读取固定页面来源`, `实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条新闻线索`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下新闻线索发现日志" },
       { key: "news-ai", label: "AI 新闻相关性审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条相关新闻通过审核", note: preciseStrategicNote("news-ai", `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`), health: preciseStrategicHealth("news-ai", strategicAiHealth), variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条新闻`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条新闻`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下新闻 AI 审核日志" },
       { key: "news-dedupe", label: "历史新闻重复检查", value: number(strategicDedupe.lost), unit: "条历史重复新闻", note: preciseStrategicNote("news-dedupe", `去重后留下 ${number(strategicDedupe.value)} 条新闻`), health: preciseStrategicHealth("news-dedupe", strategicDedupeHealth), variant: "gate", position: [849, 52], details: [`当天确认 ${number(strategicDedupe.lost)} 条重复新闻`, `当天去重后保留 ${number(strategicDedupe.value)} 条新闻`], evidence: strategicDedupe.evidence || "当天未留下新闻历史去重日志" },
       { key: "news-output", label: "新增战略新闻保存与归档", value: number(strategicDedupe.value), unit: "条新增战略新闻", note: preciseStrategicNote("news-output", "写入飞书新闻审核表＋本地任务归档"), health: preciseStrategicHealth("news-output", strategicOutputHealth), variant: "output", position: [1126, 52], details: [`当天新增 ${number(strategicDedupe.value)} 条战略新闻`, "逐条写入飞书新闻审核表并逐格回读，同时保存到本地 strategy_briefing/runs 任务归档", `当天识别 ${number(strategicDedupe.lost)} 条历史重复新闻；重复项不写入新增归档`], evidence: (stages.find((stage) => stage.key === "push") || {}).evidence || newsRun.progress_detail || "当天未留下新闻写入与通知日志" },
-      { key: "news-selection-agent", label: "AI 滚动栏与周报初筛", value: selectionNodeValue, unit: "", note: selectionNodeNote, health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`AI逐条判断每条新增新闻是否适合滚动栏、战略周报，两个字段分别给出接受/不接受`, `权威新闻批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `AI初筛纳入周报 ${number(selectionSummary.weeklyAccepted)} 条新闻；纳入滚动栏 ${number(selectionSummary.appAccepted)} 条新闻`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
+      { key: "news-selection-agent", label: "AI 滚动栏与周报初筛", value: selectionNodeValue, cardValue: selectionRuns.length ? number(selectionSummary.weeklyAccepted) : "—", unit: "", note: selectionNodeNote, health: selectionHealth, variant: "ai", dualMetric: true, position: [1392, 92], details: selectionRuns.length ? [`AI逐条判断每条新增新闻是否适合滚动栏、战略周报，两个字段分别给出接受/不接受`, `权威新闻批次 ${number(selectionRuns.length)} 个；运行尝试 ${number(selectionAttemptRuns.length)} 次；按批次业务日期 ${selectedDate} 归档，成功回读覆盖同批失败尝试`, `AI初筛纳入周报 ${number(selectionSummary.weeklyAccepted)} 条新闻；纳入滚动栏 ${number(selectionSummary.appAccepted)} 条新闻`, `飞书机器人验证 ${number(selectionSummary.verifiedCells)} 格；本次新写 ${number(selectionSummary.newCells)} 格，写前已有 ${number(selectionSummary.alreadyAppliedCells)} 格；逐格回读${selectionSummary.verified ? "全部通过" : "存在未核对项"}`] : ["所选日期没有新闻自动初筛运行记录"], evidence: selectionAttemptRuns.map((run) => `${run.crawl_run_id}｜${run.progress_detail || run.status_detail || "未记录进度"}`).join("\n") || "当天未留下新闻自动初筛日志" },
       { key: "app-result", label: "滚动栏新闻最终接受结果", value: reviewResults.available ? number(reviewResults.appRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.appMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.appHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "app", position: [1668, 24], result: true, reviewRows: reviewResults.appRows, details: [reviewResults.cached ? "新闻审核表读取短暂失败，按最近完整快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.appMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.appHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", `${number(reviewResults.appSyncedRows.length)} 条新闻同步状态为“已纳入”`], evidence: reviewEvidence(reviewResults.appRows, "纳入滚动栏") },
       { key: "weekly-result", label: "周报新闻最终接受结果", value: reviewResults.available ? number(reviewResults.weeklyRows.length) : "—", unit: "条新闻", note: reviewResults.available ? `${reviewResults.cached ? "最近完整快照 · " : ""}机器 ${number(reviewResults.weeklyMachineRows.length)} 条新闻 · 人工 ${number(reviewResults.weeklyHumanRows.length)} 条新闻` : "新闻审核表暂时不可用", health: reviewResults.available ? { key: "healthy", label: reviewResults.cached ? "快照" : "正常" } : { key: "warning", label: "警告" }, variant: "report", position: [1668, 184], result: true, reviewRows: reviewResults.weeklyRows, details: [reviewResults.cached ? "新闻审核表读取短暂失败，按最近完整快照统计当天结果" : "按新闻审核表检索日期统计当天结果", `机器纳入 ${number(reviewResults.weeklyMachineRows.length)} 条新闻；人工纳入 ${number(reviewResults.weeklyHumanRows.length)} 条新闻`, "机器只按已验证的新闻自动初筛操作者统计，其余接受结果计为人工", "生成周报时继续校验新闻发布时间、链接与重复项"], evidence: reviewEvidence(reviewResults.weeklyRows, "纳入周报") },
       { key: "previous-news", label: "前一日两轮新闻合并参考", value: number(previousReferenceCount), unit: "条去重新闻参考", note: previousReferenceTruncated ? `03:00/14:00合并去重 · 输入上限 ${number(previousReferenceLimit)} 条` : `${number(previousReferenceRunCount)} 个权威批次合并后按URL/标题去重`, health: sourceDiscoveryHealth, variant: "history", compact: true, position: [70, 270], details: [`只读取前一日最后两个已完成的权威新闻批次（通常为03:00、14:00）`, `把两批“公开网页发现＋候选新闻”合并，再按URL；没有URL时按标题去重`, previousReferenceLegacyCapped ? `该历史归档触及 ${number(previousReferenceLimit)} 条输入上限；当时没有保存去重后的完整总数，因此300不是长期累计，也不能解释为刚好只有300条` : previousReferenceTruncated ? `去重后实际共有 ${number(previousReferenceUniqueTotal)} 条；为控制01:00任务输入量，只带入前 ${number(previousReferenceLimit)} 条，所以卡片显示 ${number(previousReferenceCount)} 条` : `两批合并去重后共有 ${number(previousReferenceCount)} 条，没有把同一链接重复累计`, "这些新闻只给01:00补缺搜索提供方向，不直接成为数据库数据"], evidence: (sourceDiscoverySummary.previous_day_news_runs || []).join("\n") || "当天未读取到前一日战略新闻归档" },
@@ -2158,6 +2209,9 @@
     const source = box(from);
     const target = box(to);
     if (!source || !target) return "";
+    if (kind === "news-subscription") {
+      return `M ${source.x + source.w / 2} ${source.y} V 20 H ${target.x + target.w / 2} V ${target.y}`;
+    }
     if (kind === "research-fan" || kind === "research-join") {
       const sx = source.x + source.w / 2;
       const sy = source.y + source.h;
@@ -3039,6 +3093,10 @@
 
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
+    if (nodeKey === "news-subscription") {
+      window.CmhkNewsDeliveryHistory.open(state.newsSelectedDate);
+      return;
+    }
     if (nodeKey.startsWith("research-")) {
       const selectedDate = state.newsSelectedDate;
       const dialog = document.querySelector("#newsLineageDialog");
@@ -3284,7 +3342,7 @@
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" data-news-lineage-lane data-x="${lane.position[0]}" data-y="${lane.position[1]}" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.value)}${esc(node.unit || "")}，${esc(node.note || "")}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health">${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}</b><span>${esc(node.label)}</span><strong>${esc(node.value)}<small>${esc(node.unit || "")}</small></strong><em>${esc(node.note || "")}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.card.value)}${esc(node.card.unit)}，${esc(node.card.note)}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health" title="${esc(node.health?.label || "无记录")}">${lineageStatusIcon(node.health?.key || "unknown")}状态</b><span>${esc(node.label)}</span><strong>${esc(node.card.value)}<small>${esc(node.card.unit)}</small></strong><em>${esc(node.card.note)}</em></button>`).join("")}</div>
             </div>
             </div>
           </div>
@@ -3378,24 +3436,25 @@
       element.className = `news-lineage-node is-health-${node.health?.key || "unknown"}${node.variant ? ` is-${node.variant}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}`;
       element.dataset.health = node.health?.key || "unknown";
       element.dataset.newsLineagePurpose = node.purpose || "未说明";
-      element.setAttribute("aria-label", `${node.label}，作用：${node.purpose || "未说明"}，健康状态${node.health?.label || "无记录"}，${node.value}${node.unit || ""}，${node.note || ""}，点击查看整理详情`);
+      element.setAttribute("aria-label", `${node.label}，作用：${node.purpose || "未说明"}，健康状态${node.health?.label || "无记录"}，${node.card.value}${node.card.unit}，${node.card.note}，点击查看整理详情`);
       const health = element.querySelector(".news-lineage-health");
       const label = element.querySelector(":scope > span");
       const value = element.querySelector(":scope > strong");
       const note = element.querySelector(":scope > em");
-      if (health && health.textContent !== (node.health?.label || "无记录")) {
-        health.innerHTML = `${lineageStatusIcon(node.health?.key || "unknown")}${esc(node.health?.label || "无记录")}`;
+      if (health) {
+        health.title = node.health?.label || "无记录";
+        health.innerHTML = `${lineageStatusIcon(node.health?.key || "unknown")}状态`;
       }
       if (label) label.textContent = node.label;
       if (value) {
-        value.textContent = node.value;
-        if (node.unit) {
+        value.textContent = node.card.value;
+        if (node.card.unit) {
           const unit = document.createElement("small");
-          unit.textContent = node.unit;
+          unit.textContent = node.card.unit;
           value.appendChild(unit);
         }
       }
-      if (note) note.textContent = node.note || "";
+      if (note) note.textContent = node.card.note;
     });
 
     lineage.edges.forEach(([, , label, kind, line], index) => {
@@ -3424,6 +3483,7 @@
     state.newsLiveRefreshInFlight = true;
     try {
       const requests = [
+        ["newsDeliveries", `/api/subscriptions/news-deliveries?date=${encodeURIComponent(state.newsSelectedDate)}`],
         ["research", `/api/news-research?date=${encodeURIComponent(state.newsSelectedDate)}`],
         ["status", "/api/status"],
         ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
@@ -3453,6 +3513,7 @@
         } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
         else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
         else if (key === "fixedSourceSummary") state.fixedSourceSummary = payload;
+        else if (key === "newsDeliveries") window.CmhkNewsDeliveryHistory.setSummary(payload);
         else if (key === "research" && payload.date === state.newsSelectedDate) state.researchArchitecture = payload;
         else if (key === "scheduler") state.schedulerOverview = payload;
         else if (key === "intelligence") state.executiveIntelligence = payload;
@@ -3666,11 +3727,21 @@
     const feedback = document.querySelector("#faultActionFeedback");
     if (!feedback) return;
     const current = state.faultFeedback;
+    window.clearTimeout(state.faultFeedbackTimer);
+    state.faultFeedbackTimer = 0;
     feedback.hidden = !current;
     feedback.className = `fault-action-feedback${current ? ` is-${current.tone || "info"}` : ""}`;
     feedback.setAttribute("role", current?.tone === "error" ? "alert" : "status");
     feedback.setAttribute("aria-live", current?.tone === "error" ? "assertive" : "polite");
-    feedback.innerHTML = current ? `<i aria-hidden="true"></i><span><strong>${esc(current.title)}</strong><small>${esc(current.detail)}</small></span>` : "";
+    feedback.innerHTML = current ? `<i aria-hidden="true"></i><span><strong>${esc(current.title)}</strong><small>${esc(current.detail)}</small></span><button type="button" data-dismiss-fault-feedback aria-label="关闭提示" title="关闭提示">×</button>` : "";
+    if (current && current.tone !== "progress") {
+      const shownFeedback = current;
+      state.faultFeedbackTimer = window.setTimeout(() => {
+        if (state.faultFeedback !== shownFeedback) return;
+        state.faultFeedback = null;
+        renderFaultFeedback();
+      }, current.tone === "error" ? 8000 : 5000);
+    }
   }
 
   function faultStatus(task) {
@@ -4016,6 +4087,10 @@
       expandPreview.title = expanded ? "还原预览" : "放大预览";
     }
     if (event.target.closest("[data-refresh-fault]")) refreshFaultData();
+    if (event.target.closest("[data-dismiss-fault-feedback]")) {
+      state.faultFeedback = null;
+      renderFaultFeedback();
+    }
     if (event.target.closest("[data-download-alert-report]")) {
       const period = document.querySelector("[data-alert-report-period]")?.value || "daily";
       window.location.assign(`/api/alert-report.pdf?period=${encodeURIComponent(period)}`);
@@ -4101,6 +4176,7 @@
       const selected = selectedNewsRuns();
       markWorkspaceModulesDirty("news");
       loadNewsResearch(state.newsSelectedDate);
+      window.CmhkNewsDeliveryHistory.load(state.newsSelectedDate).then(() => markWorkspaceModulesDirty("news"));
       loadNewsRuns(selected.map((run) => run.crawl_run_id));
       return;
     }
@@ -4182,6 +4258,7 @@
     }
     else if (key === "monitoringKeywords") { state.monitoringKeywords = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "fixedSourceSummary") { state.fixedSourceSummary = payload || {}; markWorkspaceModulesDirty("news"); }
+    else if (key === "newsDeliveries") { markWorkspaceModulesDirty("news"); }
     else if (key === "research") {
       if (state.newsSelectedDate && payload?.date !== state.newsSelectedDate) return;
       state.researchArchitecture = payload || {}; markWorkspaceModulesDirty("news");
@@ -4267,6 +4344,7 @@
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
       ["monitoringKeywords", "news", () => fetch("/api/news-monitoring-keywords", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`monitoring keywords ${response.status}`)))],
       ["research", "news", () => fetch(`/api/news-research?date=${encodeURIComponent(state.newsSelectedDate || "")}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`research ${response.status}`)))],
+      ["newsDeliveries", "news", () => window.CmhkNewsDeliveryHistory.load(state.newsSelectedDate || "").then(() => ({}))],
       ["fixedSourceSummary", "news", () => fetch("/api/fixed-source-summary", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`fixed source summary ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],

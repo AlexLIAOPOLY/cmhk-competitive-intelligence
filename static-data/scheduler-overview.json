@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-11T05:58:39+08:00",
+  "checked_at_hkt": "2026-09-11T12:31:33+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -38,7 +38,7 @@
   ],
   "strategic_monitor": {
     "enabled": true,
-    "status": "degraded",
+    "status": "active",
     "chat_name": "揭榜-竞争对手与行业情报监测AI应用",
     "sheet_url": "",
     "scan_times": [
@@ -46,10 +46,10 @@
       "14:00"
     ],
     "next_scan_at": "2026-09-11T14:00:00+08:00",
-    "next_group_check_at": "2026-09-11T06:00:00+08:00",
+    "next_group_check_at": "2026-09-11T13:00:00+08:00",
     "last_scan_at": "2026-09-11T05:23:38+08:00",
-    "last_group_check_at": "2026-09-11T05:33:51+08:00",
-    "last_cycle_at": "2026-09-11T05:53:53+08:00",
+    "last_group_check_at": "2026-09-11T12:00:21+08:00",
+    "last_cycle_at": "2026-09-11T12:31:30+08:00",
     "latest_scan_slot": {
       "slot": "2026-09-11@03:00",
       "status": "completed",
@@ -60,7 +60,7 @@
     },
     "last_candidate_count": 179,
     "feishu_identity": "bot",
-    "last_error": "2026-09-11@03:00 新闻自动初筛未完成：模型决策尚未通过完整性校验",
+    "last_error": "",
     "active_task_kind": "",
     "active_task_id": "",
     "active_phase": "",
@@ -3207,7 +3207,7 @@
       "backend_pid": 55409,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 656 条，AI保留 243 条，历史重复 64 条，新增 179 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+      "progress_detail": "主扫描及原群通知已完成；后置选材已完成写入与逐格回读，完成回执已同步。",
       "heartbeat_at_hkt": "2026-09-11T05:29:00+08:00",
       "started_at_hkt": "2026-09-11T03:00:09+08:00",
       "completed_at_hkt": "2026-09-11T05:29:00+08:00",
@@ -3218,14 +3218,14 @@
         "stream_log": "agent_knowledge/crawl_run_logs/runs/20260911_030009_655083.jsonl"
       },
       "stream_log": {
-        "bytes": 100438,
-        "lines": 567
+        "bytes": 100674,
+        "lines": 568
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "主扫描、AI审核、历史去重、飞书候选写入和群通知已完成；发现 656 条，AI保留 243 条，历史重复 64 条，新增 179 条。后置选材未完成，已进入独立自动续写队列；不会重跑爬虫或重复发群消息。",
+      "status_detail": "主扫描及原群通知已完成；后置选材已完成写入与逐格回读，完成回执已同步。",
       "failure_stage": "",
       "operational_summary": {
         "slot": "2026-09-11@03:00",
@@ -3241,10 +3241,16 @@
           "om_x100b6505b0f8bca0b323870067656f6"
         ],
         "notification_destination_count": 2,
-        "selection_agent_status": "retry_pending",
-        "selection_agent_changed": 0
+        "selection_agent_status": "completed",
+        "selection_agent_changed": 358,
+        "selection_agent_error": "",
+        "selection_agent_attempts": 19,
+        "selection_agent_next_retry_at": "",
+        "selection_agent_recovered": true,
+        "selection_agent_recovery_task_run_id": "20260911_114843_737238",
+        "selection_agent_recovered_at": "2026-09-11T11:50:36+08:00"
       },
-      "amended_at_hkt": "2026-09-11T05:23:47+08:00"
+      "amended_at_hkt": "2026-09-11T12:07:35+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260910_073905_947611",

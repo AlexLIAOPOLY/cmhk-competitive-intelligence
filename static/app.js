@@ -1300,6 +1300,7 @@ function renderStrategicOverview(rawItems, rawCandidateItems = []) {
 function renderCollectionOverview(status) {
   const visuals = status.visuals || {};
   const todayNewsRounds = Array.isArray(visuals.todayNewsRounds) ? visuals.todayNewsRounds : [];
+  const newsScanTimes = Array.isArray(visuals.newsScanTimes) ? visuals.newsScanTimes : [];
   const newsFunnel = visuals.newsFunnel || {};
   const latestRoundDate = todayNewsRounds
     .map((round) => String(round.key || "").match(/^\d{4}-\d{2}-\d{2}/)?.[0] || "")
@@ -1337,7 +1338,7 @@ function renderCollectionOverview(status) {
       JSON.stringify(round.categories || []),
       JSON.stringify(round.impacts || []),
     ].join(":"))
-    .join("|");
+    .join("|") + "|" + JSON.stringify(newsScanTimes);
   if (assetHost.dataset.signature === signature) return;
   assetHost.dataset.signature = signature;
 
@@ -1348,6 +1349,7 @@ function renderCollectionOverview(status) {
       color: "#178dca",
       colors: ["#b8def0", "#7fc5e4", "#48a9d5", "#178dca"],
       round: todayNewsRounds.find((round) => round.label === "上午") || null,
+      scheduledTime: newsScanTimes.find((slot) => slot.label === "上午")?.time || "",
     },
     {
       key: "afternoon",
@@ -1355,6 +1357,7 @@ function renderCollectionOverview(status) {
       color: "#8b6fd6",
       colors: ["#ded7f6", "#c6b9ed", "#a891e2", "#8b6fd6"],
       round: todayNewsRounds.find((round) => round.label === "下午") || null,
+      scheduledTime: newsScanTimes.find((slot) => slot.label === "下午")?.time || "",
     },
   ];
   const renderRoundComparison = () => {
@@ -1379,7 +1382,7 @@ function renderCollectionOverview(status) {
           <div class="daily-scan-series">
             ${roundSeries.map((series) => `
               <span class="${statusClass(series)}" style="--series-color:${series.color}">
-                <i></i><b>${series.label}</b><time>${escapeHtml(series.round?.time || (series.key === "morning" ? "09:00" : "15:00"))}</time>
+                <i></i><b>${series.label}</b><time>${escapeHtml(series.round?.time || series.scheduledTime || "—")}</time>
                 <em>${escapeHtml(series.round?.status || "待运行")}</em>
               </span>
             `).join("")}

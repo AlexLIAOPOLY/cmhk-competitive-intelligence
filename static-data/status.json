@@ -260,7 +260,111 @@
           }
         ]
       },
-      "todayNewsRounds": [],
+      "todayNewsRounds": [
+        {
+          "key": "2026-09-11-03-00",
+          "label": "上午",
+          "time": "03:00",
+          "status": "已完成",
+          "discovered": 656,
+          "confirmed": 643,
+          "historyDuplicates": 64,
+          "newCount": 179,
+          "note": "",
+          "categories": [
+            {
+              "label": "行业动态",
+              "value": 64
+            },
+            {
+              "label": "竞对动态",
+              "value": 38
+            },
+            {
+              "label": "网络与技术",
+              "value": 33
+            },
+            {
+              "label": "其他",
+              "value": 44
+            }
+          ],
+          "impacts": [
+            {
+              "label": "产品与定价",
+              "value": 34
+            },
+            {
+              "label": "收入与需求",
+              "value": 27
+            },
+            {
+              "label": "供应韧性",
+              "value": 25
+            },
+            {
+              "label": "竞争格局",
+              "value": 24
+            },
+            {
+              "label": "资本配置",
+              "value": 20
+            },
+            {
+              "label": "网络与运营",
+              "value": 17
+            },
+            {
+              "label": "成本与效率",
+              "value": 13
+            },
+            {
+              "label": "客户与渠道",
+              "value": 11
+            },
+            {
+              "label": "合规与牌照",
+              "value": 8
+            }
+          ],
+          "stages": [
+            {
+              "key": "discovered",
+              "label": "检索发现",
+              "value": 656,
+              "detail": "固定监控与 Agentic Search 汇总的候选新闻。"
+            },
+            {
+              "key": "confirmed",
+              "label": "AI确认",
+              "value": 643,
+              "detail": "AI 结合竞对、政策及战略相关性完成审核。"
+            },
+            {
+              "key": "deduplicated",
+              "label": "历史去重",
+              "value": 579,
+              "detail": "与历史记录比对，排除 64 条重复事件。"
+            },
+            {
+              "key": "new",
+              "label": "新增入库",
+              "value": 179,
+              "detail": "已写入飞书、纳入今日信息资产的新增记录。"
+            }
+          ]
+        }
+      ],
+      "newsScanTimes": [
+        {
+          "label": "上午",
+          "time": "03:00"
+        },
+        {
+          "label": "下午",
+          "time": "14:00"
+        }
+      ],
       "entities": [
         {
           "label": "HKT",
@@ -298,8 +402,8 @@
       "outputs": [
         {
           "name": "9月10日运营商业绩摘要 (4).docx",
-          "mtime": 1789040113.5237663,
-          "mtimeText": "2026-09-10 19:35:13",
+          "mtime": 1789089294.1212862,
+          "mtimeText": "2026-09-11 09:14:54",
           "audio": true
         },
         {
@@ -363,9 +467,9 @@
         "path_str": "9月10日运营商业绩摘要 (4).docx",
         "note": "",
         "reportType": "carrier-performance",
-        "size": 27373,
-        "mtime": 1789040113.5237663,
-        "mtimeText": "2026-09-10 19:35:13",
+        "size": 26396,
+        "mtime": 1789089294.1212862,
+        "mtimeText": "2026-09-11 09:14:54",
         "url": "",
         "audio": null
       },
