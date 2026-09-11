@@ -11,6 +11,19 @@ from cmhk.intelligence import news_review_sheet
 from cmhk.intelligence import news_selection_agent as agent
 
 
+def _sse_response(payload):
+    """Serve the chat fixture over the actual SDK streaming transport."""
+    import httpx
+    payload = dict(payload)
+    payload["object"] = "chat.completion.chunk"
+    payload["choices"] = [
+        {**{k: v for k, v in choice.items() if k != "message"}, "delta": choice["message"]}
+        for choice in payload["choices"]
+    ]
+    return httpx.Response(200, headers={"content-type": "text/event-stream"},
+                          content="data: " + json.dumps(payload) + "\n\ndata: [DONE]\n\n")
+
+
 def _row(
     *,
     title: str,
@@ -779,9 +792,8 @@ class NewsSelectionAgentTests(unittest.TestCase):
                 def respond(request):
                     requests.append(json.loads(request.content))
                     first = len(requests) == 1
-                    return httpx.Response(
-                        200,
-                        json={
+                    return _sse_response(
+                        {
                             "id": "test",
                             "object": "chat.completion",
                             "created": 1,
@@ -2048,7 +2060,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                 return httpx.Response(403, json={"error": {"message": "model access denied"}})
             batch = json.loads(body["messages"][1]["content"])["current_candidates"]
             payload, _ = self.invoke([], batch)
-            return httpx.Response(200, json={
+            return _sse_response({
                 "id": "test", "object": "chat.completion", "created": 0,
                 "model": "working", "choices": [{"index": 0, "finish_reason": "stop",
                 "message": {"role": "assistant", "content": json.dumps(payload)}}],

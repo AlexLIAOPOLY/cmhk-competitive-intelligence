@@ -11,6 +11,7 @@ from unittest.mock import patch
 
 import executive_intelligence_pipeline as pipeline
 from ai_key_rotation import APIKeyPoolUnavailable
+from tests.ai_stream_fixture import sse_response
 
 
 def evidence_fixture():
@@ -42,9 +43,7 @@ def summary_fixture(scope):
 
 
 def response(candidate):
-    return io.BytesIO(json.dumps({"choices": [{"finish_reason": "stop", "message": {
-        "content": json.dumps({"items": [candidate]}, ensure_ascii=False),
-    }}]}, ensure_ascii=False).encode())
+    return sse_response({"items": [candidate]})
 
 
 class ExecutiveAIRecoveryTests(unittest.TestCase):
@@ -278,7 +277,7 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
     def test_manual_focus_uses_backup_after_key_pool_cooldown(self):
         focus = evidence_fixture()["domains"][0]["focuses"][0]
         answer = summary_fixture({"domains": [{"id": "local", "focuses": [focus]}]})["focuses"][0]
-        reply = io.BytesIO(json.dumps({"choices": [{"finish_reason": "stop", "message": {"content": json.dumps(answer)}}]}).encode())
+        reply = sse_response(answer, model="backup")
         with patch.object(pipeline, "open_llm_request", side_effect=[APIKeyPoolUnavailable(60, 1), reply]) as request:
             result = pipeline.generate_model_focus_insight("local", focus)
         self.assertEqual(result["model"], "backup")
@@ -295,6 +294,8 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
             body = json.loads(req.data)
             bodies.append(body)
             self.assertEqual(body["cache"], {"no-cache": True, "no-store": True})
+            self.assertIs(body["stream"], True)
+            self.assertEqual(req.get_header("Accept"), "text/event-stream")
             marker = req.get_header("X-request-id")
             self.assertTrue(body["messages"][0]["content"].startswith(marker))
             self.assertTrue(body["messages"][1]["content"].startswith(marker))
@@ -303,9 +304,7 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
             self.assertEqual(req.get_header("Pragma"), "no-cache")
             prefix = body["messages"][1]["content"][:90]
             candidate = cached_prefixes.setdefault(prefix, invalid if len(bodies) == 1 else valid)
-            return io.BytesIO(json.dumps({"choices": [{"finish_reason": "stop", "message": {
-                "content": json.dumps(candidate, ensure_ascii=False),
-            }}]}).encode())
+            return sse_response(candidate)
 
         with patch.object(pipeline, "open_llm_request", side_effect=request):
             result = pipeline.generate_model_focus_insight("local", focus)
@@ -328,15 +327,26 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
         self.assertFalse(pipeline._has_deep_interpretation("HKT的经营造血为14234.0百万港元。"))
         self.assertIn("行动建议", pipeline._focus_gate_error("local", "ebitda", analysis + "建议优先扩张。", focus))
 
+    def test_partial_stream_is_discarded_before_whole_request_retry(self):
+        focus = evidence_fixture()["domains"][0]["focuses"][0]
+        valid = summary_fixture({"domains": [{"id": "local", "focuses": [focus]}]})["focuses"][0]
+        with patch.object(pipeline, "open_llm_request", side_effect=[
+            sse_response("污染历史草稿999", model="primary", done=False),
+            sse_response(valid, model="backup"),
+        ]) as request:
+            result = pipeline.generate_model_focus_insight("local", focus)
+        self.assertEqual(request.call_count, 2)
+        self.assertEqual(result["model"], "backup")
+        self.assertEqual(result["focus"]["analysis"], valid["analysis"])
+        self.assertNotIn("999", result["focus"]["analysis"])
+
     def test_manual_focus_retries_title_rejected_by_publication(self):
         focus = evidence_fixture()["domains"][0]["focuses"][0]
         focus["id"] = "revenue"
         valid = summary_fixture({"domains": [{"id": "local", "focuses": [focus]}]})["focuses"][0]
         valid["headline"] = "客户基础分化"
         invalid = {**valid, "headline": "营收规模不同"}
-        replies = [io.BytesIO(json.dumps({"choices": [{"finish_reason": "stop", "message": {
-            "content": json.dumps(item, ensure_ascii=False),
-        }}]}).encode()) for item in (invalid, valid)]
+        replies = [sse_response(item) for item in (invalid, valid)]
         with patch.object(pipeline, "open_llm_request", side_effect=replies) as request:
             result = pipeline.generate_model_focus_insight("local", focus)
         self.assertEqual(request.call_count, 2)
@@ -390,9 +400,7 @@ class DiscoveryIncrementalEvidenceTests(unittest.TestCase):
             body = json.loads(req.data)
             scope = json.loads(body["messages"][1]["content"].split("输入：\n", 1)[1])
             seen.append(scope)
-            return io.BytesIO(json.dumps({"choices": [{"finish_reason": "stop", "message": {
-                "content": json.dumps({"items": discoveries}, ensure_ascii=False),
-            }}]}).encode())
+            return sse_response({"items": discoveries})
 
         def validate(raw, scope):
             self.assertEqual(scope, seen[0])

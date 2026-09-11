@@ -1,4 +1,3 @@
-import io
 import json
 import tempfile
 import unittest
@@ -11,6 +10,7 @@ from data_curation.research_model import ResearchChatDeepSeek
 from ai_rate_limit import RateLimitedChatDeepSeek
 from ai_key_rotation import APIKeyPoolUnavailable
 import executive_intelligence_pipeline as pipeline
+from tests.ai_stream_fixture import sse_response
 
 
 class RecoveryTests(unittest.TestCase):
@@ -197,9 +197,9 @@ class RecoveryTests(unittest.TestCase):
             calls.append(domain)
             if domain == 'cloud' and fail:
                 raise TimeoutError('temporary timeout')
-            return io.BytesIO(json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps({'items':[
+            return sse_response({'items':[
                 {'domain':domain, 'headline':'经营结构', 'analysis':'市场存在差异', 'risk':'口径不同', 'focuses':[], 'source_urls':[]}
-            ]})}}]}).encode())
+            ]}, model=body['model'])
         with tempfile.TemporaryDirectory() as td:
             checkpoint = Path(td) / 'ai.json'
             with (patch('ai_config.load_ai_config', return_value={'api_key':'test'}),

@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import tempfile
 import unittest
+from tests.ai_stream_fixture import sse_response, sse_payload_response
 from datetime import datetime
 from pathlib import Path
 from unittest import mock
@@ -139,13 +140,13 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_manual_discovery_uses_two_explicit_numeric_anchors_per_pair(self):
         evidence = pipeline._analysis_input_snapshot()
         expected = {
-            ("mainland", "local"): {"10501.9亿元", "36553百万港元"},
-            ("local", "international"): {"36553百万港元", "47031.9百万美元"},
-            ("local", "mainland"): {"36553百万港元", "10501.9亿元"},
-            ("international", "cloud"): {"47031.9百万美元", "128725百万美元"},
-            ("mainland", "cloud"): {"10501.9亿元", "128725百万美元"},
+            ("mainland", "local"): {"10501.87亿元", "36553百万港元"},
+            ("local", "international"): {"36553百万港元", "47031.92百万美元"},
+            ("local", "mainland"): {"36553百万港元", "10501.87亿元"},
+            ("international", "cloud"): {"47031.92百万美元", "128725百万美元"},
+            ("mainland", "cloud"): {"10501.87亿元", "128725百万美元"},
             ("local", "cloud"): {"36553百万港元", "128725百万美元"},
-            ("mainland", "international"): {"10501.9亿元", "47031.9百万美元"},
+            ("mainland", "international"): {"10501.87亿元", "47031.92百万美元"},
         }
         for pair, values in expected.items():
             scoped = pipeline._manual_discovery_evidence(evidence, *pair)
@@ -165,9 +166,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         responses = []
         for content in (cached, fresh):
             response = mock.MagicMock()
-            response.__enter__.return_value.read.return_value = json.dumps({
+            response = sse_payload_response({
+                "model": "GLM",
                 "choices": [{"message": {"content": content}}]
-            }).encode("utf-8")
+            })
             responses.append(response)
 
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -220,7 +222,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         discoveries = pipeline._deterministic_discoveries(evidence)  # Test fixture only.
         fixture = {"summaries": [], "discoveries": discoveries}
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({"choices": [{"message": {"content": ""}}]}).encode()
+        response = sse_payload_response({"choices": [{"message": {"content": ""}}]})
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "analysis.json"
             path.write_text("{}")
@@ -275,11 +277,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         }, ensure_ascii=False)
 
         def response(*_args, **_kwargs):
-            result = mock.MagicMock()
-            result.__enter__.return_value.read.return_value = json.dumps({
-                "choices": [{"message": {"content": content}}]
-            }).encode("utf-8")
-            return result
+            return sse_response(content, model="DeepSeek-V4-Pro")
 
         with (
             patch("ai_config.load_ai_config", return_value={
@@ -326,9 +324,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "analysis": "HKBN 27个产品与HGC 4个产品形成差距，说明去重后产品选择并非均匀分布。",
         }, ensure_ascii=False)
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": content}}]
-        }).encode("utf-8")
+        })
         with (
             patch("ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
@@ -368,9 +366,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         responses = []
         for content in (leaked, replacement):
             response = mock.MagicMock()
-            response.__enter__.return_value.read.return_value = json.dumps({
+            response = sse_payload_response({
                 "choices": [{"message": {"content": content}}]
-            }).encode("utf-8")
+            })
             responses.append(response)
         with (
             patch("ai_config.load_ai_config", return_value={
@@ -415,9 +413,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         responses = []
         for content in (same_meaning, new_boundary):
             response = mock.MagicMock()
-            response.__enter__.return_value.read.return_value = json.dumps({
+            response = sse_payload_response({
                 "choices": [{"message": {"content": content}}]
-            }).encode("utf-8")
+            })
             responses.append(response)
         with (
             patch("ai_config.load_ai_config", return_value={
@@ -440,9 +438,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_current_local_scale_refresh_rejects_invalid_ai_without_repair(self):
         focus = {"id": "scale", "metric": {"value": 10}, "items": []}
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": ""}}]
-        }).encode()
+        })
         with (
             patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
             patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
@@ -476,9 +474,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         responses = []
         for content in (duplicate, replacement):
             response = mock.MagicMock()
-            response.__enter__.return_value.read.return_value = json.dumps({
+            response = sse_payload_response({
+                "model": "GLM",
                 "choices": [{"message": {"content": content}}]
-            }).encode("utf-8")
+            })
             responses.append(response)
         with (
             patch("ai_config.load_ai_config", return_value={
@@ -502,9 +501,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "analysis": "HKT FY2025营收36553百万港元，3HK为5448百万港元；这表明HKT经营资源底盘更厚，3HK资源容错较窄，但营收不等同盈利能力。",
         }, ensure_ascii=False)
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": content}}]
-        }).encode("utf-8")
+        })
         with (
             patch("ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
@@ -555,9 +554,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "analysis": fresh_analysis,
         }, ensure_ascii=False)
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": content}}]
-        }).encode("utf-8")
+        })
 
         with (
             patch("ai_config.load_ai_config", return_value={
@@ -575,9 +574,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_macro_service_regeneration_fails_without_template_fallback(self):
         focus = {"id": "service", "metric": {"value": 10}, "items": []}
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": ""}}]
-        }).encode()
+        })
         with (
             patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
             patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
@@ -592,9 +591,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_international_growth_empty_model_output_fails_without_template_judgement(self):
         focus = {"id": "growth", "metric": {"value": 10}, "items": []}
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": ""}}]
-        }).encode()
+        })
         with (
             patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
             patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
@@ -1917,9 +1916,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             )
         ]
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
+                "model": "GLM",
             "choices": [{"message": {"content": json.dumps(discoveries, ensure_ascii=False)}}]
-        }, ensure_ascii=False).encode("utf-8")
+        })
         with (
             patch("ai_config.load_ai_config", return_value={
                 "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
@@ -1978,9 +1978,9 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             )
         ]
         response = mock.MagicMock()
-        response.__enter__.return_value.read.return_value = json.dumps({
+        response = sse_payload_response({
             "choices": [{"message": {"content": json.dumps(discoveries, ensure_ascii=False)}}]
-        }, ensure_ascii=False).encode("utf-8")
+        })
         with (
             patch("ai_config.load_ai_config", return_value={
                 "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",

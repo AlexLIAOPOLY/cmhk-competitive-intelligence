@@ -18,6 +18,7 @@ import re
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
+from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Callable
 from uuid import uuid4
@@ -27,7 +28,7 @@ from cmhk.data.daily_financial_promotion import promote_daily_financial_facts
 from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
 from cmhk.data_releases import default_release_root, publish_quarterly_release_task
 
-from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
+from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, read_chat_completion_sse, unwrap_items_payload
 from ai_key_rotation import APIKeyPoolUnavailable, open_llm_request
 from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY, model_generated_only
 
@@ -86,9 +87,10 @@ def _model_request(config, api_key, body, request_id=None):
     request_id = request_id or uuid4().hex
     return urllib.request.Request(
         f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions?request_id={request_id}",
-        data=json.dumps(_uncached_model_body(body, request_id), ensure_ascii=False).encode("utf-8"),
+        data=json.dumps(_uncached_model_body({**body, "stream": True}, request_id), ensure_ascii=False).encode("utf-8"),
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
-                 "Cache-Control": "no-cache, no-store", "Pragma": "no-cache", "X-Request-ID": request_id},
+                 "Cache-Control": "no-cache, no-store", "Pragma": "no-cache", "X-Request-ID": request_id,
+                 "Accept": "text/event-stream"},
         method="POST",
     )
 
@@ -124,9 +126,13 @@ def _write_model_attempt_trace(path, scope, model, started, payload, error, conf
             message = message.replace(key, "[redacted]")
     message = re.sub(r"(?i)Bearer\s+\S+", "Bearer [redacted]", message)
     choices = payload.get("choices") or []
+    stream_diagnostics = payload.get("stream_diagnostics") or getattr(error, "stream_diagnostics", {})
     record = {
         "ts": _now(), "scope": scope, "requested_model": model,
-        "reported_model": payload.get("model"),
+        "reported_model": payload.get("model") or stream_diagnostics.get("reported_model"),
+        "response_id": payload.get("id") or stream_diagnostics.get("response_id"),
+        "created": payload.get("created") or stream_diagnostics.get("created"),
+        "stream": stream_diagnostics,
         "elapsed_seconds": round(time.monotonic() - started, 3),
         "finish_reasons": [choice.get("finish_reason") for choice in choices],
         "gate_error": message[:1200], "ok": not bool(error),
@@ -863,13 +869,38 @@ def _pin_scoped_model_identity(raw: Any, domain_id: str, focus_id: str = "") -> 
 
 
 def _numeric_tokens(value: Any) -> set[str]:
-    tokens = set()
-    for token in re.findall(r"(?<![\d.])[-+]?\d+(?:\.\d+)?", json.dumps(value, ensure_ascii=False)):
+    tokens: set[str] = set()
+    for token in re.findall(r"(?<![\d.])[-+]?\d(?:[\d,.]*\d)?(?:[eE][-+]?\d+)?", json.dumps(value, ensure_ascii=False)):
+        if not re.fullmatch(r"[-+]?(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d+)?(?:[eE][-+]?\d+)?", token):
+            tokens.add("invalid-number:" + token)
+            continue
         try:
-            tokens.add(f"{float(token):g}")
-        except ValueError:
-            pass
+            number = Decimal(token.replace(",", ""))
+            if abs(number.adjusted()) > 1000:
+                tokens.add("out-of-range-number:" + token)
+                continue
+            normalized = format(number, "f")
+            if "." in normalized:
+                normalized = normalized.rstrip("0").rstrip(".")
+            tokens.add("0" if not number else normalized)
+        except InvalidOperation:
+            tokens.add("invalid-number:" + token)
     return tokens
+
+
+def _unsupported_causal_terms(text: str) -> tuple[str, ...]:
+    """An inability to infer applies only before a cause in the same clause."""
+    terms = ("导致", "造成", "推动", "带来", "源于", "驱动")
+    clauses = re.split(r"[。！？!?；;，\n]|(?<!\d),|,(?!\d)|"
+                       r"(?=但是|然而|不过|反而|而是|实际上|事实上|因此|所以|但|却)", text)
+    negation = re.compile(r"(?:无法|不能)(?:仅|只)?(?:据此|由此|直接|就此)?"
+                          r"(?:判断|推断|认定|断定|确认|证明|建立)|不代表")
+    unsupported = set()
+    for clause in clauses:
+        for term in terms:
+            if any(not negation.search(clause[:match.start()]) for match in re.finditer(term, clause)):
+                unsupported.add(term)
+    return tuple(term for term in terms if term in unsupported)
 
 
 def _focus_value_tokens(focus: dict[str, Any]) -> set[str]:
@@ -1055,10 +1086,7 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
         return f"AI分析分类含行动建议而非数据洞察：{domain}.{focus_id}"
     if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and "不能纳入这一判断" in analysis:
         return f"AI分析引用有效竞对数值后又排除该竞对，判断自相矛盾：{domain}.{focus_id}"
-    unsupported_causal = tuple(
-        term for term in ("导致", "造成", "推动", "带来", "源于", "驱动")
-        if term in analysis and not any(boundary in analysis for boundary in ("不能判断", "无法判断", "不能建立", "不代表"))
-    )
+    unsupported_causal = _unsupported_causal_terms(analysis)
     if unsupported_causal:
         return f"AI分析分类使用了未经证据支持的因果词{unsupported_causal}：{domain}.{focus_id}"
     focus_numbers = _focus_value_tokens(evidence_focus)
@@ -1114,7 +1142,7 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
                     continue
                 value_match = re.search(
                     r"[-+]?\d[\d,]*(?:\.\d+)?",
-                    str(component.get("value") or ""),
+                    str(component.get("value") if component.get("value") is not None else ""),
                 )
                 if value_match:
                     normalized_value = value_match.group().replace(",", "")
@@ -1911,7 +1939,7 @@ def _display_number(value: Any) -> str:
         number = float(value)
     except (TypeError, ValueError):
         return str(value or "")
-    return str(int(number)) if number.is_integer() else f"{number:g}"
+    return str(int(number)) if number.is_integer() else str(number)
 
 
 def _ranked_focus_items(focus: dict[str, Any]) -> list[dict[str, Any]]:
@@ -2603,7 +2631,7 @@ def generate_model_focus_insight(
                 request, timeout=75, config=config, requested_key=api_key, model=model,
                 open_func=urlopen_with_local_proxy_fallback,
             ) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+                payload = read_chat_completion_sse(response)
             parsed = load_json_response(
                 final_chat_message_text(payload, operation="单指标AI分析"), operation="单指标AI分析",
             )
@@ -2630,7 +2658,8 @@ def generate_model_focus_insight(
             if set(urls) - allowed_urls:
                 raise ValueError("AI引用了当前证据之外的来源")
             return {
-                "generated_at_hkt": _now(), "model": model,
+                "generated_at_hkt": _now(), "model": payload["model"], "requested_model": model,
+                "response_id": payload["id"], "stream_diagnostics": payload["stream_diagnostics"],
                 "focus": {"id": focus_id, "headline": headline, "analysis": analysis,
                           "risk": str(parsed.get("risk") or ""), "source_urls": urls, "origin": "ai"},
             }
@@ -2638,6 +2667,170 @@ def generate_model_focus_insight(
             last_error = exc
             messages.append({"role": "user", "content": f"上次未通过校验：{exc}。请重新生成，不改变证据。"})
     raise ValueError(f"AI指标分析未生成，原结果未修改：{last_error}")
+
+def _scope_patch_options(candidate: dict[str, Any], scope: dict[str, Any]) -> dict[str, Any]:
+    """Expose only invalid, existing fields of a structurally complete focus."""
+    domain = scope["domains"][0]
+    focuses = candidate.get("focuses") or []
+    if candidate.get("domain") != domain["id"] or len(focuses) != 1 or len(domain.get("focuses") or []) != 1:
+        return {}
+    focus, evidence_focus = focuses[0], domain["focuses"][0]
+    if focus.get("id") != evidence_focus.get("id"):
+        return {}
+    entities = focus.get("entities") or []
+    by_name = {e["name"]: e for e in evidence_focus.get("items") or []}
+    if len(entities) != len(by_name) or {e.get("name") for e in entities if isinstance(e, dict)} != set(by_name):
+        return {}
+    required = {"headline", "analysis", "risk", "source_urls"}
+    if not required.issubset(candidate) or not required.issubset(focus) or any(
+        not (required | {"evidence_labels"}).issubset(e) for e in entities
+    ):
+        return {}
+    options: dict[str, Any] = {}
+
+    def add(path, obj, field, error, **context):
+        if error and field in obj:
+            options[path] = {"error": str(error), "current": obj[field],
+                             "type": "array" if field in ("source_urls", "evidence_labels") else "string",
+                             "must_change": True, **context}
+            if isinstance(obj[field], str):
+                options[path]["current_characters"] = len(obj[field])
+            if path == "/focuses/0/analysis":
+                options[path].update(max_characters=MAX_FOCUS_INSIGHT_CHARS,
+                    target_characters=[60, 85], max_sentences=MAX_FOCUS_INSIGHT_SENTENCES,
+                    content_selection="保留原稿中同期间可比的两家公司原值及经营关系；其余事实已在实体明细，不在正文重复。")
+            elif path == "/focuses/0/headline":
+                options[path].update(max_characters=28)
+
+    def text_fields(obj, prefix, allowed):
+        for field in ("headline", "analysis", "risk"):
+            value = obj.get(field)
+            if not isinstance(value, str) or not value.strip():
+                add(prefix + "/" + field, obj, field, "必填文字为空或类型错误")
+            elif _numeric_tokens(value) - _numeric_tokens(allowed):
+                add(prefix + "/" + field, obj, field, "含本字段证据之外的数字或期间")
+
+    text_fields(candidate, "", scope)
+    text_fields(focus, "/focuses/0", scope)
+    headline = str(focus.get("headline") or "")
+    add("/focuses/0/headline", focus, "headline",
+        _focus_headline_gate_error(domain["id"], focus["id"], headline)
+        or ("标题照抄指标名称" if headline and re.sub(r"\s+", "", headline) == re.sub(r"\s+", "", str(evidence_focus.get("label") or "")) else ""))
+    add("/focuses/0/analysis", focus, "analysis",
+        _focus_gate_error(domain["id"], focus["id"], str(focus.get("analysis") or ""), evidence_focus))
+    domain_urls = set().union(*_evidence_urls_by_domain(scope).values())
+    for obj, prefix, urls in [(candidate, "", domain_urls), (focus, "/focuses/0", domain_urls)]:
+        value = obj.get("source_urls")
+        if not isinstance(value, list) or any(not isinstance(u, str) or u not in urls for u in value):
+            add(prefix + "/source_urls", obj, "source_urls", "引用未知来源", allowed_values=sorted(urls))
+    for index, entity in enumerate(entities):
+        source = by_name[entity["name"]]
+        prefix = f"/focuses/0/entities/{index}"
+        text_fields(entity, prefix, source)
+        if any(phrase in str(entity.get("analysis") or "") for phrase in
+               ("按排名", "图中排序", "同一视图", "便于比较", "数据库内", "此视图", "不代表经营排名")):
+            add(prefix + "/analysis", entity, "analysis", "实体分析含界面说明，缺少本实体事实")
+        labels = entity.get("evidence_labels")
+        allowed = [str(c["label"]) for c in source.get("components") or [] if isinstance(c, dict) and c.get("label")]
+        if not isinstance(labels, list) or any(not isinstance(label, str) for label in labels):
+            add(prefix + "/evidence_labels", entity, "evidence_labels", "引用标签必须为字符串数组", entity=entity["name"], allowed_values=allowed)
+        elif set(_canonical_entity_labels(labels, source)[0]) - set(allowed):
+            add(prefix + "/evidence_labels", entity, "evidence_labels", "引用了该实体allowed_evidence_labels以外的标签", entity=entity["name"], allowed_values=allowed)
+        urls = {str(source.get("source_url") or "")} - {""}
+        if not isinstance(entity.get("source_urls"), list) or any(not isinstance(u, str) or u not in urls for u in entity["source_urls"]):
+            add(prefix + "/source_urls", entity, "source_urls", "引用了其他实体或未知来源", entity=entity["name"], allowed_values=sorted(urls))
+    return options
+
+
+def _apply_scope_model_patch(candidate, patch, options):
+    if not isinstance(patch, dict) or set(patch) != {"patches"} or not isinstance(patch["patches"], list) or not patch["patches"]:
+        raise ValueError("局部AI修订必须返回非空patches数组")
+    result = json.loads(json.dumps(candidate, ensure_ascii=False))
+    seen = set()
+    for item in patch["patches"]:
+        if not isinstance(item, dict) or set(item) != {"path", "value"}:
+            raise ValueError("局部AI修订字段协议错误")
+        path, value = item["path"], item["value"]
+        if not isinstance(path, str) or path not in options or path in seen:
+            raise ValueError("局部AI修订包含未知、跨实体或重复路径")
+        seen.add(path)
+        expected = options[path]["type"]
+        if (expected == "string" and not isinstance(value, str)) or (
+            expected == "array" and (not isinstance(value, list) or any(not isinstance(v, str) for v in value))
+        ):
+            raise ValueError("局部AI修订值类型错误")
+        if value == options[path]["current"]:
+            raise ValueError(f"局部AI修订照抄了仍有错误的字段：{path}")
+        target = result
+        parts = path.lstrip("/").split("/")
+        for part in parts[:-1]:
+            target = target[int(part)] if isinstance(target, list) else target[part]
+        if parts[-1] not in target:
+            raise ValueError("局部AI修订不得添加未提供字段")
+        target[parts[-1]] = value
+    if seen != set(options):
+        raise ValueError(f"局部AI修订遗漏错误字段：{sorted(set(options) - seen)}")
+    return result
+
+
+def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=None):
+    from ai_rate_limit import wait_for_internal_ai_slot
+    from network_utils import urlopen_with_local_proxy_fallback
+
+    model = _executive_model_route()[0]
+    api_key = str(config.get("api_key") or "")
+    messages = [
+        {"role": "system", "content": (
+            "你是事实约束下的分析修订员。本次只修正列出的错误字段，不重新生成完整分析。"
+            "只返回JSON对象{patches:[{path,value}]}。path必须逐字选自allowed_patches；"
+            "不要修改未列出的字段、实体身份或输入证据。每个value必须由你依据原证据重新生成。"
+            "必须逐一修正全部allowed_patches字段，禁止照抄仍有错误的current值。"
+            "过长正文必须由你改写为60至85字，英文、数字和标点每个字符均计数，一至两句；"
+            "输出前自行核对字符数。正文只保留原稿中同期间可比的两家公司原值及经营关系，"
+            "其他事实已经保留在完整实体明细，不要重复全部公司的数值；无法比较时保留真实口径边界。"
+            "引用数组只选该路径提供的allowed_values；无需明细引用时可以明确返回[]。"
+            + FOCUS_EVIDENCE_CONTRACT
+            + "本次局部修订的字数目标以每个allowed_patches字段的target_characters为准，必须真正改正列出的错误。"
+        )},
+        {"role": "user", "content": json.dumps({"task": "repair_only_invalid_fields_v1",
+            "allowed_patches": options, "original_draft": candidate,
+            "evidence": _model_prompt_evidence(scope)}, ensure_ascii=False)},
+    ]
+    request = _model_request(config, api_key, prepare_structured_chat_body({
+        **dict(config.get("extra_parameters") or {}), "model": model, "messages": messages,
+        "temperature": 0.1, "max_tokens": 4000,
+    }))
+    wait_for_internal_ai_slot("executive-intelligence-local-patch")
+    started, payload, error = time.monotonic(), {}, None
+    try:
+        with open_llm_request(request, timeout=90, config=config, requested_key=api_key, model=model,
+                              open_func=urlopen_with_local_proxy_fallback) as response:
+            payload = read_chat_completion_sse(response)
+        patch = load_json_response(final_chat_message_text(payload, operation="局部AI修订"), operation="局部AI修订")
+        actual_model = str(payload.get("model") or "")
+        if not actual_model:
+            raise ValueError("局部AI修订未声明实际返回模型")
+        patched = _apply_scope_model_patch(candidate, patch, options)
+        domain = scope["domains"][0]
+        validated = _validate_model_summaries([patched], scope, expected_domains={domain["id"]},
+            expected_focus_ids_by_domain={domain["id"]: {f["id"] for f in domain["focuses"]}})[0]
+        return validated, {"requested_model": model, "reported_model": actual_model, "patches": patch["patches"],
+                           "response_id": payload["id"], "created": payload["created"],
+                           "stream": payload["stream_diagnostics"], "response_hash": payload["stream_diagnostics"]["response_hash"],
+                           "before_hash": _content_hash(candidate), "after_hash": _content_hash(validated), "full_gate": "passed"}
+    except Exception as exc:
+        error = exc
+        exc.model_patch_attempt = {
+            "requested_model": model, "reported_model": payload.get("model"),
+            "response": payload, "response_hash": _content_hash(payload),
+            "elapsed_seconds": round(time.monotonic() - started, 3),
+            "before_hash": _content_hash(candidate), "full_gate": "failed",
+        }
+        raise
+    finally:
+        domain = scope["domains"][0]
+        _trace_model_attempt(trace_path, f"{domain['id']}.{domain['focuses'][0]['id']}.patch", model, started, payload, error, config)
+
 
 def generate_model_domain_summaries(
     evidence: dict[str, Any] | None = None,
@@ -2694,6 +2887,10 @@ def generate_model_domain_summaries(
     checkpoint = _read_json(checkpoint_path, {}) if checkpoint_path else {}
     if not isinstance(checkpoint, dict):
         checkpoint = {}
+    draft_path = checkpoint_path.with_suffix(".drafts.json") if checkpoint_path else None
+    drafts = _read_json(draft_path, {}) if draft_path else {}
+    if not isinstance(drafts, dict):
+        drafts = {}
 
     def cache_key(scope):
         return _content_hash({"format": INSIGHT_FORMAT_VERSION, "checkpoint_protocol": 2, "scope": scope})
@@ -2714,13 +2911,88 @@ def generate_model_domain_summaries(
         used_models.update(entry["model"].split("+"))
         return result[0]
 
-    def save(scope, candidate, model):
+    def save(scope, candidate, model, patch_audit=None):
         candidate = validate_scope(scope, [candidate])[0]
         if checkpoint_path:
+            previous = checkpoint.get(cache_key(scope), {})
+            if not patch_audit and isinstance(previous, dict) and previous.get("summaries") == [candidate]:
+                patch_audit = previous.get("patch_audit")
             checkpoint[cache_key(scope)] = {"model": model, "summaries": [candidate], "generated_at_hkt": _now()}
+            if patch_audit:
+                checkpoint[cache_key(scope)]["patch_audit"] = patch_audit
             _atomic_write_json(checkpoint_path, checkpoint)
 
-    def save_valid_focus_parts(domain_scope, candidate, model):
+    def persist_drafts():
+        if draft_path:
+            from ai_config import api_key_candidates
+            encoded = json.dumps(drafts, ensure_ascii=False)
+            for route in ("", *_executive_model_route()):
+                for secret in api_key_candidates(config, model=route):
+                    if secret:
+                        encoded = encoded.replace(json.dumps(secret, ensure_ascii=False)[1:-1], "[redacted]")
+            encoded = re.sub(r"(?i)Bearer\s+[^\s\"\\]+", "Bearer [redacted]", encoded)
+            _atomic_write_json(draft_path, json.loads(encoded))
+
+    def scoped_draft(scope, candidate):
+        if not isinstance(candidate, dict):
+            return None
+        target = scope["domains"][0]["focuses"][0]["id"]
+        matches = [f for f in candidate.get("focuses") or [] if isinstance(f, dict) and f.get("id") == target]
+        if len(matches) != 1:
+            return candidate
+        focus = matches[0]
+        return {"domain": scope["domains"][0]["id"], "focuses": [focus],
+                **{key: focus.get(key) for key in ("headline", "analysis", "risk", "source_urls")}}
+
+    def stash_draft(scope, candidate, requested, reported, error):
+        if not draft_path or not isinstance(candidate, dict):
+            return
+        candidate = scoped_draft(scope, candidate)
+        try:
+            options = _scope_patch_options(candidate, scope)
+        except (ValueError, TypeError, KeyError, AttributeError):
+            options = {}
+        entry = drafts.setdefault(cache_key(scope), {"evidence_hash": _content_hash(scope), "candidates": []})
+        entry["candidates"].append({"candidate": json.loads(json.dumps(candidate, ensure_ascii=False)),
+            "candidate_hash": _content_hash(candidate), "requested_model": requested, "reported_model": reported,
+            "error": str(error), "eligible_fields": options, "recorded_at_hkt": _now()})
+        persist_drafts()
+
+    def patch_spent(scope):
+        return bool((drafts.get(cache_key(scope), {}).get("repair") or {}).get("attempted"))
+
+    def repair_scope_once(scope):
+        entry = drafts.get(cache_key(scope), {})
+        if not entry or not draft_path:
+            return None
+        if patch_spent(scope):
+            raise ValueError("该scope同证据的局部AI修订已执行，保留失败草稿等待明确处理：" + str(entry["repair"].get("error") or entry["repair"].get("status")))
+        eligible = [item for item in entry.get("candidates") or [] if item.get("eligible_fields") and item.get("reported_model")]
+        if not eligible:
+            return None
+        selected = min(reversed(eligible), key=lambda item: len(item["eligible_fields"]))
+        candidate = selected["candidate"]
+        repair = {"protocol": 1, "attempted": True, "status": "running", "started_at_hkt": _now(),
+                  "source_requested_model": selected["requested_model"], "source_reported_model": selected["reported_model"],
+                  "before_hash": selected["candidate_hash"]}
+        entry["repair"] = repair
+        persist_drafts()  # Reserve the one repair before network activity.
+        try:
+            repaired, audit = _request_scope_model_patch(scope, candidate, selected["eligible_fields"], config,
+                                                        trace_path=attempt_trace_path)
+            repair.update(audit, status="passed", completed_at_hkt=_now())
+            models = "+".join(sorted({selected["reported_model"], audit["reported_model"]}))
+            save(scope, repaired, models, patch_audit=repair)
+            used_models.update(models.split("+"))
+            return repaired, models
+        except Exception as exc:
+            repair.update(getattr(exc, "model_patch_attempt", {}))
+            repair.update(status="failed", error=str(exc), completed_at_hkt=_now())
+            raise
+        finally:
+            persist_drafts()
+
+    def save_valid_focus_parts(domain_scope, candidate, model, requested=None, reported=None, raw_candidate=None):
         if not checkpoint_path:
             return 0
         saved = 0
@@ -2737,7 +3009,8 @@ def generate_model_domain_summaries(
                       **{key: focus.get(key) for key in ("headline", "analysis", "risk", "source_urls")}}
             try:
                 save(scope, single, model)
-            except (ValueError, TypeError, AttributeError):
+            except (ValueError, TypeError, AttributeError) as exc:
+                stash_draft(scope, raw_candidate or candidate, requested or model, reported, exc)
                 continue
             saved += 1
         return saved
@@ -2766,14 +3039,14 @@ def generate_model_domain_summaries(
                 model=str(body.get("model") or ""),
                 open_func=urlopen_with_local_proxy_fallback,
             ) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+                payload = read_chat_completion_sse(response)
         except urllib.error.HTTPError as exc:
             if exc.code == 429 or exc.code >= 500:
                 last_error = exc
                 continue
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
-        except (APIKeyPoolUnavailable, TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, ValueError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             continue
         try:
@@ -2782,14 +3055,11 @@ def generate_model_domain_summaries(
                 load_json_response(content, operation="17项AI洞察"), operation="17项AI洞察"
             )
             summaries = _validate_model_summaries(
-                _repair_model_summaries(
-                    _drop_unsupported_numeric_clauses(raw_summaries, evidence),
-                    evidence,
-                ),
+                raw_summaries,
                 evidence,
                 expected_domains=validation_domains,
             )
-            used_models.add(str(body["model"]))
+            used_models.add(str(payload["model"]))
             break
         except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
@@ -2840,8 +3110,11 @@ def generate_model_domain_summaries(
             domain_error: Exception | None = None
             has_focus_checkpoint = any(checkpoint.get(cache_key({"domains": [{**domain_evidence, "focuses": [f]}]}))
                                        for f in domain_evidence.get("focuses") or [])
+            has_focus_checkpoint = has_focus_checkpoint or any(
+                patch_spent({"domains": [{**domain_evidence, "focuses": [f]}]}) for f in domain_evidence.get("focuses") or [])
             for domain_attempt in range(0 if has_focus_checkpoint else 3):
                 candidate = None
+                raw_domain_candidate = None
                 domain_payload = {}
                 attempt_error = None
                 body["model"] = _executive_model_route()[min(domain_attempt, len(_executive_model_route()) - 1)]
@@ -2857,7 +3130,7 @@ def generate_model_domain_summaries(
                         model=str(body.get("model") or ""),
                         open_func=urlopen_with_local_proxy_fallback,
                     ) as response:
-                        domain_payload = json.loads(response.read().decode("utf-8"))
+                        domain_payload = read_chat_completion_sse(response)
                     domain_content = final_chat_message_text(
                         domain_payload, operation=f"{domain_id}领域AI洞察"
                     )
@@ -2867,14 +3140,8 @@ def generate_model_domain_summaries(
                     )
                     if len(parsed) != 1 or not isinstance(parsed[0], dict):
                         raise ValueError("必须返回只含一个领域对象的items数组")
-                    candidate = _drop_unsupported_numeric_clauses(
-                        _pin_scoped_model_identity([parsed[0]], domain_id),
-                        {"domains": [domain_evidence]},
-                    )
-                    candidate = _repair_model_summaries(
-                        candidate,
-                        {"domains": [domain_evidence]},
-                    )[0]
+                    raw_domain_candidate = _pin_scoped_model_identity([parsed[0]], domain_id)[0]
+                    candidate = json.loads(json.dumps(raw_domain_candidate, ensure_ascii=False))
                     returned_focus_ids = {
                         str(focus.get("id") or "")
                         for focus in candidate.get("focuses") or []
@@ -2915,13 +3182,16 @@ def generate_model_domain_summaries(
                         if isinstance(focus, dict) and str(focus.get("id") or "") in expected_focus_ids
                     ]
                     domain_summary = validate_scope(domain_scope, [candidate])[0]
-                    used_models.add(str(body["model"]))
-                    domain_models.add(str(body["model"]))
+                    actual_model = str(domain_payload.get("model") or body["model"])
+                    used_models.add(actual_model)
+                    domain_models.add(actual_model)
                     break
                 except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                     domain_error = exc
                     attempt_error = exc
-                    if candidate and save_valid_focus_parts(domain_scope, candidate, str(body["model"])):
+                    if candidate and save_valid_focus_parts(domain_scope, candidate,
+                            str(domain_payload.get("model") or body["model"]), str(body["model"]),
+                            domain_payload.get("model"), raw_domain_candidate):
                         break
                     if domain_attempt < 2:
                         domain_messages.append({
@@ -2949,6 +3219,10 @@ def generate_model_domain_summaries(
                         if domain_fields is None:
                             domain_fields = {k: restored.get(k) for k in ("domain", "headline", "analysis", "risk", "source_urls")}
                         focus_parts.extend(restored["focuses"])
+                        continue
+                    if patch_spent(focus_scope):
+                        scope_errors.append(f"AI分析修订额度已使用：{domain_id}.{focus_id}: {drafts[cache_key(focus_scope)]['repair'].get('error') or '请核查修订审计'}")
+                        domain_focus_failed = True
                         continue
                     expected_names = {
                         str(entity.get("name") or "") for entity in focus_evidence.get("items") or []
@@ -2983,6 +3257,7 @@ def generate_model_domain_summaries(
                     focus_error: Exception | None = None
                     focus_models = _executive_model_route()
                     for focus_attempt, focus_model in enumerate(focus_models):
+                        raw_focus_candidate = None
                         focus_payload = {}
                         attempt_error = None
                         request = _model_request(config, api_key, {**body, "model": focus_model, "messages": focus_messages})
@@ -2997,7 +3272,7 @@ def generate_model_domain_summaries(
                                 model=focus_model,
                                 open_func=urlopen_with_local_proxy_fallback,
                             ) as response:
-                                focus_payload = json.loads(response.read().decode("utf-8"))
+                                focus_payload = read_chat_completion_sse(response)
                             focus_content = final_chat_message_text(
                                 focus_payload, operation=f"{domain_id}.{focus_id} AI洞察"
                             )
@@ -3009,14 +3284,8 @@ def generate_model_domain_summaries(
                             )
                             if len(parsed) != 1 or not isinstance(parsed[0], dict):
                                 raise ValueError("必须返回只含一个领域对象的items数组")
-                            candidate = _drop_unsupported_numeric_clauses(
-                                _pin_scoped_model_identity([parsed[0]], domain_id, focus_id),
-                                {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]},
-                            )
-                            candidate = _repair_model_summaries(
-                                candidate,
-                                {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]},
-                            )[0]
+                            raw_focus_candidate = _pin_scoped_model_identity([parsed[0]], domain_id, focus_id)[0]
+                            candidate = json.loads(json.dumps(raw_focus_candidate, ensure_ascii=False))
                             returned_focuses = [
                                 focus for focus in candidate.get("focuses") or []
                                 if isinstance(focus, dict) and str(focus.get("id") or "") == focus_id
@@ -3040,13 +3309,15 @@ def generate_model_domain_summaries(
                             candidate["domain"] = domain_id
                             candidate["focuses"] = returned_focuses
                             focus_candidate = validate_scope(focus_scope, [candidate])[0]
-                            used_models.add(focus_model)
-                            domain_models.add(focus_model)
-                            save(focus_scope, focus_candidate, focus_model)
+                            actual_model = str(focus_payload.get("model") or focus_model)
+                            used_models.add(actual_model)
+                            domain_models.add(actual_model)
+                            save(focus_scope, focus_candidate, actual_model)
                             break
                         except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                             focus_error = exc
                             attempt_error = exc
+                            stash_draft(focus_scope, raw_focus_candidate, focus_model, focus_payload.get("model"), exc)
                             if focus_attempt + 1 < len(focus_models):
                                 focus_messages.append({
                                     "role": "user",
@@ -3060,6 +3331,14 @@ def generate_model_domain_summaries(
                         finally:
                             _trace_model_attempt(attempt_trace_path, f"{domain_id}.{focus_id}", focus_model,
                                                  attempt_started, focus_payload, attempt_error, config)
+                    if focus_candidate is None and not isinstance(focus_error, APIKeyPoolUnavailable):
+                        try:
+                            repaired = repair_scope_once(focus_scope)
+                            if repaired:
+                                focus_candidate, repaired_models = repaired
+                                domain_models.update(repaired_models.split("+"))
+                        except (APIKeyPoolUnavailable, ValueError, RuntimeError, TimeoutError, urllib.error.URLError) as exc:
+                            focus_error = exc
                     if focus_candidate is None:
                         scope_errors.append(
                             f"AI分析按分类重试仍未通过：{domain_id}.{focus_id}: {focus_error}; 领域错误：{domain_error}"
@@ -3083,10 +3362,7 @@ def generate_model_domain_summaries(
         if scope_errors:
             raise ValueError("；".join(scope_errors))
         summaries = _validate_model_summaries(
-            _repair_model_summaries(
-                _drop_unsupported_numeric_clauses(per_domain_summaries, evidence),
-                evidence,
-            ),
+            per_domain_summaries,
             evidence,
             expected_domains=validation_domains,
         )
@@ -3247,13 +3523,13 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                 model=discovery_model,
                 open_func=urlopen_with_local_proxy_fallback,
             ) as response:
-                payload = json.loads(response.read().decode("utf-8"))
+                payload = read_chat_completion_sse(response)
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             last_error = RuntimeError(f"内网模型 HTTP {exc.code}: {detail}")
             _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model, attempt_started, payload, last_error, config)
             continue
-        except (APIKeyPoolUnavailable, TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, ValueError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model, attempt_started, payload, exc, config)
             continue
@@ -3270,7 +3546,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
             )
             discoveries = _validate_model_discoveries(depth_repaired, prompt_evidence)
             evidence_repair_count = current_repair_count
-            used_model = discovery_model
+            used_model = payload["model"]
             break
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = exc
@@ -3473,7 +3749,7 @@ def regenerate_model_discovery(
                 model=model,
                 open_func=urlopen_with_local_proxy_fallback,
             ) as response:
-                response_payload = json.loads(response.read().decode("utf-8"))
+                response_payload = read_chat_completion_sse(response)
             parsed = load_json_response(
                 final_chat_message_text(response_payload, operation="跨库AI发现重生成"),
                 operation="跨库AI发现重生成",
@@ -3518,7 +3794,7 @@ def regenerate_model_discovery(
             candidate = [dict(item) for item in discoveries]
             candidate[index] = parsed
             replacement = _validate_model_discoveries(candidate, evidence)[index]
-            used_model = model
+            used_model = response_payload["model"]
             break
         except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc

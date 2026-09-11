@@ -24,7 +24,7 @@ except ImportError:  # pragma: no cover - deployment fallback
     OpenCC = None
 
 from ai_config import api_key_candidates, load_ai_config
-from ai_key_rotation import is_key_unavailable_error
+from ai_key_rotation import is_key_unavailable_error, mark_api_key_unavailable
 from ai_rate_limit import RateLimitedChatDeepSeek
 from ai_response_compat import deepseek_nonthinking_parameters
 from cmhk.intelligence.agent_harness import (
@@ -64,6 +64,34 @@ class ChatDeepSeek(RateLimitedChatDeepSeek):
 
     def _keys(self) -> list[str]:
         return [self.openai_api_key.get_secret_value()]
+
+    def _handle_attempt_error(self, api_key, error, index, keys, attempt, *, emitted=False):
+        # The durable news ledger owns retries, including failures before the
+        # first token. SDK and rate-limiter retries must not multiply one entry.
+        if is_key_unavailable_error(error):
+            mark_api_key_unavailable(api_key, error, model=str(self.model_name or ""))
+        raise error
+
+    def _convert_chunk_to_generation_chunk(self, chunk, *args, **kwargs):
+        result = super()._convert_chunk_to_generation_chunk(chunk, *args, **kwargs)
+        if result is not None and chunk.get("id"):
+            result.message.id = str(chunk["id"])
+        return result
+
+    def _stream(self, *args, **kwargs):
+        response_id = None
+        finish_reason = None
+        for chunk in super()._stream(*args, **kwargs):
+            chunk_id = chunk.message.id
+            if response_id and chunk_id and chunk_id != response_id:
+                raise TruncatedModelOutput("新闻流式响应 ID 中途改变；本次未提交任何记录")
+            response_id = response_id or chunk_id
+            info = chunk.generation_info or {}
+            if info.get("finish_reason"):
+                finish_reason = info["finish_reason"]
+            yield chunk
+        if finish_reason != "stop":
+            raise TruncatedModelOutput("新闻流式响应未正常完成；本次未提交任何记录")
 
 
 class _ModelRoundLimit(RuntimeError):
@@ -1418,7 +1446,10 @@ def _invoke_langchain_transport(
             '{"event":"主体+本次动作+产品或项目","news_ids":["本事件全部候选ID"],'
             '"app":{"accept_id":"代表ID或null","reason":"APP独立理由","evidence":"代表标题或摘要原文",'
             '"impact":"直接业务价值","signal":"事实类型","confidence":0.8},'
-            '"weekly":{"accept_id":null,"reason":"周报独立理由","confidence":0.9}}。'
+            '"weekly":{"accept_id":"代表ID或null","reason":"周报独立理由","evidence":"代表标题或摘要原文",'
+            '"impact":"独立管理决策价值","signal":"事实类型","confidence":0.9}}。'
+            "APP和weekly结构对等；两字段非null时都必须独立生成evidence、impact、signal，"
+            "不能因APP已有完整字段而省略weekly字段，程序不会填补事实与价值理由。"
             "所有候选恰好分组一次，单独事件也要成组。同次合作签约的简称/全称、"
             "同次产品发布的发布会/方案/功能/市场预测分别报道，仍是同一事件；"
             "新增细节用来选最完整代表，不能借新增细节把同一事件拆成多条。"
@@ -1446,6 +1477,11 @@ def _invoke_langchain_transport(
     user_prompt = json.dumps(
         {
             "request_id": request_id,
+            **({"acceptance_review_required_fields": {
+                "app": ["accept_id", "reason", "evidence", "impact", "signal", "confidence"],
+                "weekly": ["accept_id", "reason", "evidence", "impact", "signal", "confidence"],
+                "condition": "每字段accept_id非null时必须全部独立生成；null时仍须reason和confidence",
+            }} if acceptance_review is not None else {}),
             "required_candidate_ids": required_candidate_ids,
             "current_candidates": targets,
             "instruction": (
@@ -1502,7 +1538,9 @@ def _invoke_langchain_transport(
             api_base=_text(config.get("base_url"), 500),
             extra_body=structured_options,
             temperature=0.1,
-            disable_streaming=True,
+            streaming=True,
+            disable_streaming=False,
+            cache=False,
             include_response_headers=True,
             max_retries=0,
             timeout=max(MODEL_REQUEST_TIMEOUT, 240) if evidence_review else MODEL_REQUEST_TIMEOUT,

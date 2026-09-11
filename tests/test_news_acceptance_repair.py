@@ -176,15 +176,46 @@ class DiagnosticMigrationTests(unittest.TestCase):
         self.assertEqual(call.call_count, 1)
 
     def test_failed_migration_is_never_reawarded_even_after_revision_changes(self):
+        self.checkpoint['same:repair']['diagnostic_revision'] = 2
         invalid = dict(event_groups=self.payload['event_groups'][:1])
         call = Mock(return_value=(invalid, 'same-model'))
-        for revision in (2, 2, 3):
+        for revision in (3, 3, 4):
             with patch.object(repair, 'DIAGNOSTIC_REVISION', revision):
                 with self.assertRaises(agent.NewsSelectionQualityBlocked):
                     self.run_repair(call)
         self.assertEqual(call.call_count, 1)
         self.assertEqual(self.checkpoint['same:repair']['requests'], 4)
         self.assertEqual(self.checkpoint['same:repair']['attempt_history'][:3], self.old['attempt_history'])
+
+    def test_revision_two_weekly_schema_has_one_migration_with_original_ledger(self):
+        self.checkpoint['same:repair']['diagnostic_revision'] = 2
+        before = copy.deepcopy(self.checkpoint['same:repair'])
+        call = Mock(return_value=(self.valid_pair, 'streamed-model'))
+        result, _ = self.run_repair(call)
+        state = self.checkpoint['same:repair']
+        migration = state['diagnostic_migration']
+        self.assertEqual((migration['from_revision'], migration['to_revision']), (2, 3))
+        self.assertEqual(migration['requests_before'], 3)
+        self.assertEqual(migration['scope_attempts_before'], before['scope_attempts'])
+        self.assertEqual(migration['news_attempts_before'], before['news_attempts'])
+        self.assertEqual(state['attempt_history'][:3], before['attempt_history'])
+        self.assertEqual(state['requests'], 4)
+        agent._normalized_acceptance_review(result, self.targets, self.provisional)
+        self.run_repair(call)
+        self.assertEqual(call.call_count, 1)
+
+    def test_already_validated_migration_checkpoint_is_unchanged_with_cached_payload(self):
+        valid = copy.deepcopy(self.payload)
+        valid['event_groups'][0] = self.valid_pair['event_groups'][0]
+        self.checkpoint['same:repair'].update(draft=valid, diagnostic_revision=2,
+            blocked=False, status='validated', requests=4,
+            diagnostic_migration={'used': True, 'from_revision': 1, 'to_revision': 2})
+        self.args['cached'] = {'payload': valid, 'model': 'prior-model'}
+        before = copy.deepcopy(self.checkpoint)
+        call = Mock()
+        self.run_repair(call)
+        self.assertEqual(self.checkpoint, before)
+        call.assert_not_called()
 
     def test_network_failure_consumes_migration_before_inference(self):
         call = Mock(side_effect=ConnectionError('interrupted'))
@@ -196,7 +227,7 @@ class DiagnosticMigrationTests(unittest.TestCase):
         self.assertEqual(self.checkpoint['same:repair']['requests'], 4)
 
     def test_total_budget_and_current_diagnostics_cannot_be_bypassed(self):
-        for changes in ({'requests':12}, {'diagnostic_revision':2}, {'attempt_history':[]}):
+        for changes in ({'requests':12}, {'diagnostic_revision':repair.DIAGNOSTIC_REVISION}, {'attempt_history':[]}):
             with self.subTest(changes=changes):
                 self.checkpoint['same:repair'] = dict(copy.deepcopy(self.old), **changes)
                 call = Mock()

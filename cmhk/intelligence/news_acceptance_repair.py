@@ -7,7 +7,7 @@ import json
 
 MAX_REQUESTS = 12
 MAX_SCOPE_REQUESTS = 3
-DIAGNOSTIC_REVISION = 2
+DIAGNOSTIC_REVISION = 3
 
 
 def _partition(payload, ids):

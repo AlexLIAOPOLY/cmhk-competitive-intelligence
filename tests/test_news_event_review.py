@@ -40,6 +40,32 @@ class EventRepresentativeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, '双重结论歧义'):
             self.normalize(ambiguous)
 
+    def test_actual_acceptance_prompt_has_symmetric_app_and_weekly_fact_schema(self):
+        import json
+        from types import SimpleNamespace
+        from unittest.mock import Mock,patch
+        model=Mock()
+        model.invoke.return_value=SimpleNamespace(content='{"event_groups":[]}',response_metadata={'finish_reason':'stop'})
+        token=agent._MODEL_SESSION.set({'calls':0,'preferences':True,'acceptance_review':self.provisional})
+        try:
+            with (patch.object(agent,'load_ai_config',return_value={'base_url':'https://example.com/v1'}),
+                  patch.object(agent,'_model_routes',return_value=[('deepseek-v4-free','test-key')]),
+                  patch.object(agent,'ChatDeepSeek',return_value=model)):
+                agent._invoke_langchain_transport([],self.targets)
+        finally:
+            agent._MODEL_SESSION.reset(token)
+        prompt=model.invoke.call_args.args[0][0].content
+        schema,_=json.JSONDecoder().raw_decode(prompt[prompt.index('{"event":'):])
+        required={'accept_id','reason','evidence','impact','signal','confidence'}
+        self.assertEqual(set(schema['app']),required)
+        self.assertEqual(set(schema['weekly']),required)
+        self.assertIn('程序不会填补事实与价值理由',prompt)
+        user_text=model.invoke.call_args.args[0][1].content
+        contract=json.loads(user_text)['acceptance_review_required_fields']
+        self.assertEqual(set(contract['app']),required)
+        self.assertEqual(set(contract['weekly']),required)
+        self.assertLess(user_text.index('acceptance_review_required_fields'),user_text.index('current_candidates'))
+
     def test_unknown_outside_group_and_ambiguous_representatives_are_rejected(self):
         for value in ('UNKNOWN', [t['news_id'] for t in self.targets], '', 'null'):
             with self.subTest(value=value):
