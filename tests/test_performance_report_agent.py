@@ -6,13 +6,42 @@ from pathlib import Path
 from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
-from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt, compact_table_value, assess_field
+from cmhk.reporting.performance_agent import build_model, FIELDS, fresh_rows, publication_date, trusted_source, field_text, field_excerpt, compact_table_value, assess_field, previous_opinion_sources, revision_pack
 from generate_carrier_performance_report import valid_ai_performance_field
 
 NOW = datetime(2026, 9, 10, tzinfo=ZoneInfo('Asia/Hong_Kong'))
 
 
 class PerformanceAgentTests(unittest.TestCase):
+    def test_prior_reviewed_opinion_url_is_reopened_and_expired_page_rejected(self):
+        url = 'https://www.hkt.com/comment'
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            audit = root / 'var/performance_reports/20260909-accepted/audit.json'
+            audit.parent.mkdir(parents=True)
+            audit.write_text(json.dumps({'generatedAt': '2026-09-09T12:00:00+08:00', 'companies': [
+                {'company': 'HKT', 'fields': {'broker': {'accepted': True, 'sources': [url]}}}]}))
+            self.assertEqual(previous_opinion_sources(root, 'HKT', today=NOW.date())[0]['url'], url)
+            opened = []
+            def reader(u):
+                opened.append(u)
+                return {'opened': True, 'publication_date': '2020-01-01', 'text': 'HKT Trust old opinion'}
+            result = build_model(root, ['HKT'], now=NOW, baseline_loader=lambda _: {'companies': {}, 'sources': []},
+                search_client=lambda *a: {'results': []}, page_reader=reader,
+                ai_client=lambda _: ({'companies': []}, 'test'), validator=valid_ai_performance_field, progress=lambda _: None)
+            self.assertIn(url, opened)
+            self.assertFalse(result['researchAudit']['companies'][0]['fields']['broker']['accepted'])
+
+    def test_revision_cannot_reuse_rejected_market_numbers_or_other_field_evidence(self):
+        pack = {'company': 'i-CABLE', 'asOf': '2026-09-11', 'missing': ['market'],
+                'evidence': {'market': 'old quote', 'profit': 'profit 999'},
+                'web_research': {'results': [{'field': 'market', 'text': '2026-09-11 0.0630'},
+                                           {'field': 'profit', 'text': 'profit 999'}]}}
+        fixed = revision_pack(pack, {'market': '出现事实包之外的数字'})
+        self.assertEqual(fixed['evidence'], {'market': ''})
+        self.assertEqual(len(fixed['web_research']['results']), 1)
+        self.assertNotIn('previousDraft', fixed)
+
     def setUp(self):
         profile = patch('cmhk.reporting.performance_agent.company_profile', return_value={
             'official_hosts': ['hkt.com'], 'seed_urls': []})

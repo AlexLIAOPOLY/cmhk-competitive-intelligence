@@ -284,8 +284,9 @@ def test_urllib_stream_body_is_never_replayed():
 
 def test_bad_request_is_not_retried_or_cooled():
     invoke = mock.Mock(side_effect=_http_error(400, {"error": "invalid schema"}))
-    with pytest.raises(urllib.error.HTTPError):
+    with pytest.raises(urllib.error.HTTPError) as caught:
         ai_key_rotation.open_llm_request(_request(), timeout=10, config=POOL, open_func=invoke)
+    assert json.loads(caught.value.read()) == {"error": "invalid schema"}
     assert invoke.call_count == 1
     assert ai_key_rotation.ordered_api_keys(POOL) == POOL["api_keys"]
 
@@ -300,6 +301,14 @@ def test_retry_after_does_not_overrun_deadline():
                                             deadline_monotonic=ai_key_rotation.time.monotonic() + 2)
     sleep.assert_not_called()
     assert invoke.call_count == 1
+
+
+def test_asr_deployment_outage_does_not_disable_text_models():
+    error = _http_error(429, {'error': {'message': 'No deployments available for selected model'}})
+    ai_key_rotation.mark_api_key_unavailable(POOL['api_keys'][0], error, model='Qwen3ASR',
+        raw_body=b'No deployments available for selected model')
+    assert ai_key_rotation.api_key_retry_after(POOL['api_keys'][0], model='Qwen3ASR') > 0
+    assert ai_key_rotation.api_key_retry_after(POOL['api_keys'][0], model='DeepSeek-V4-Pro') == 0
 
 
 def _model():

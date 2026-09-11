@@ -150,6 +150,8 @@ def key_failure_reason(error: BaseException, *, status_code: int | None = None, 
         return "budget"
     if any(marker in text for marker in ("key_model_access_denied", "team_model_access_denied", "not allowed to access model", "can only access models", "model access denied", "model_access_denied")):
         return "model_access"
+    if status == 429 and 'no deployments available' in text:
+        return 'model_unavailable'
     if status == 429 or any(marker in text for marker in ("rate limit", "rate_limit", "too many requests")):
         return "rate_limit"
     if status == 401 or any(marker in text for marker in ("invalid api key", "authentication")):
@@ -182,10 +184,10 @@ def mark_api_key_unavailable(api_key: str, error: BaseException | None = None, *
     if not api_key:
         return
     reason = key_failure_reason(error, raw_body=raw_body) if error else "unavailable"
-    cooldown = 60.0 if reason == "rate_limit" else _cooldown_seconds()
+    cooldown = 60.0 if reason in {"rate_limit", "model_unavailable"} else _cooldown_seconds()
     if error is not None:
         cooldown = max(retry_after_seconds(error), 1.0) if reason == "rate_limit" and retry_after_seconds(error) else max(cooldown, retry_after_seconds(error))
-    route = _route_id(api_key, model if reason == "model_access" else "")
+    route = _route_id(api_key, model if reason in {"model_access", "model_unavailable"} else "")
     now = time.time()
     with _health_state() as state:
         previous = state.get(route, {})
@@ -193,7 +195,7 @@ def mark_api_key_unavailable(api_key: str, error: BaseException | None = None, *
                         "reason": reason, "status": _status_code(error) if error else None,
                         "failed_at": now, "failures": int(previous.get("failures", 0)) + 1}
     logging.warning("内部模型 Key[%s] %s，冷却 %.0f 秒；后续请求跳过此路由。", _fingerprint(api_key),
-                    {"budget": "额度不足", "rate_limit": "请求限流", "model_access": "模型权限不足", "authentication": "鉴权失败"}.get(reason, "暂不可用"), cooldown)
+                    {"budget": "额度不足", "rate_limit": "请求限流", "model_access": "模型权限不足", "model_unavailable": "该模型服务暂不可用", "authentication": "鉴权失败"}.get(reason, "暂不可用"), cooldown)
 
 
 def is_transient_llm_error(error: BaseException) -> bool:
@@ -351,12 +353,16 @@ def open_llm_request(request: urllib.request.Request, *, timeout: float,
                 raw_body = b""
                 if isinstance(exc, urllib.error.HTTPError):
                     raw_body = exc.read()
-                    exc.fp = io.BytesIO(raw_body)
+                    # HTTPError caches delegated read methods. Replacing fp alone
+                    # leaves callers reading the exhausted original stream.
+                    exc = urllib.error.HTTPError(
+                        exc.url, exc.code, exc.reason, exc.headers, io.BytesIO(raw_body),
+                    )
                 if is_key_unavailable_error(exc, raw_body=raw_body):
                     mark_api_key_unavailable(api_key, exc, model=model, raw_body=raw_body)
                     break
                 if not is_transient_llm_error(exc) or attempt >= min(2, max_transport_retries):
-                    raise
+                    raise exc
                 delay = transport_retry_delay(exc, attempt)
                 if time.monotonic() + delay >= deadline:
                     raise TimeoutError("内部模型重试已达到本轮时间上限") from exc

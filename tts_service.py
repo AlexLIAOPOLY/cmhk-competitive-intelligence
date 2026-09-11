@@ -8,6 +8,7 @@ import sys
 import tempfile
 import time
 import json
+import hashlib
 import uuid
 from difflib import SequenceMatcher
 from urllib.request import urlretrieve
@@ -412,7 +413,13 @@ def _internal_asr_timing_payload(audio_path: Path) -> dict:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="ignore")[:600]
+        if 'No space left on device' in detail:
+            raise RuntimeError('公司内网语音识别服务器磁盘空间不足，需服务端清理后继续字幕对齐') from exc
         raise RuntimeError(f"公司内网语音对齐返回 HTTP {exc.code}: {detail}") from exc
+
+
+class AudioContentIncomplete(RuntimeError):
+    """The waveform itself must be regenerated, rather than realigned."""
 
 
 def _verify_complete_spoken_text(display_text: str, asr_text: str) -> dict:
@@ -425,7 +432,7 @@ def _verify_complete_spoken_text(display_text: str, asr_text: str) -> dict:
     coverage = matched / max(1, len(expected))
     tail_coverage = tail_matched / max(1, len(expected) - tail_start)
     if not expected or coverage < 0.88 or tail_coverage < 0.80:
-        raise RuntimeError("业绩语音未完整播出文稿或结尾，已阻止发布并等待重试")
+        raise AudioContentIncomplete("业绩语音未完整播出文稿或结尾，已阻止发布并等待重试")
     return {"matchedTextFraction": round(coverage, 4), "endingMatchedFraction": round(tail_coverage, 4)}
 
 
@@ -448,7 +455,7 @@ def _write_internal_asr_subtitle_timings(
         expected, _ = _alignment_char_positions(transcript)
         timed, _ = _alignment_char_positions("".join(cue["text"] for cue in cues))
         if timed != expected:
-            raise RuntimeError("业绩语音有未对齐的完整句子，已阻止发布并等待重试")
+            raise AudioContentIncomplete("业绩语音有未对齐的完整句子，已阻止发布并等待重试")
     duration = float(result.get("duration") or cues[-1]["end"])
     payload = {
         "version": 2,
@@ -1558,17 +1565,33 @@ def _synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
     if audio_info_for_report(report_path).get("exists") and not force:
         return {"ok": True, "created": False, "backend": "cached", "summary": "", "audio": audio_info_for_report(report_path)}
 
-    summary = build_audio_summary(report_path)
+    from data_curation.storage import atomic_write_json
+    fingerprint = hashlib.sha256(report_path.read_bytes()).hexdigest()
+    pending_dir = AUDIO_DIR / '.pending'
+    pending_dir.mkdir(exist_ok=True)
+    output_path = pending_dir / audio_path_for_report_ext(report_path, '.mp3').name
+    checkpoint_path = output_path.with_suffix('.json')
+    try:
+        checkpoint = json.loads(checkpoint_path.read_text(encoding='utf-8'))
+        reusable = (checkpoint.get('report_sha256') == fingerprint and output_path.exists()
+                    and checkpoint.get('audio_sha256') == hashlib.sha256(output_path.read_bytes()).hexdigest()
+                    and bool(checkpoint.get('summary')))
+    except (OSError, ValueError):
+        checkpoint, reusable = {}, False
+    if not reusable:
+        checkpoint_path.unlink(missing_ok=True)
+        output_path.unlink(missing_ok=True)
+    summary = checkpoint['summary'] if reusable else build_audio_summary(report_path)
     tts_text = prepare_tts_text(summary)
     performance_report = "业绩摘要" in report_path.name or "运营商及香港主要竞对关键业绩摘要" in _source_text(report_path)
     backend = "internal"
     last_error = ""
     try:
         delete_audio_for_report(report_path)
-        used = None
-        output_path = audio_path_for_report_ext(report_path, ".wav")
-        output_path = audio_path_for_report_ext(report_path, ".mp3")
-        if performance_report:
+        used = checkpoint.get('backend') if reusable else None
+        if reusable:
+            pass
+        elif performance_report:
             used = _synthesize_with_internal_tts(tts_text, output_path, chunk_chars=360)
         else:
             used = _synthesize_with_internal_tts(tts_text, output_path)
@@ -1598,21 +1621,28 @@ def _synthesize_report_audio(report_path: Path, force: bool = False) -> dict:
             "audio": {"exists": False},
         }
 
+    atomic_write_json(checkpoint_path, {'report_sha256': fingerprint, 'summary': summary,
+        'audio_sha256': hashlib.sha256(output_path.read_bytes()).hexdigest(), 'backend': used})
     try:
         timing_payload = _write_internal_asr_subtitle_timings(
             output_path, summary, require_complete=performance_report,
         )
     except Exception as exc:
-        if output_path.exists():
+        if isinstance(exc, AudioContentIncomplete):
             output_path.unlink()
-        subtitle_timing_path_for_report(report_path).unlink(missing_ok=True)
+            checkpoint_path.unlink(missing_ok=True)
+        output_path.with_suffix('.timings.json').unlink(missing_ok=True)
         return {
             "ok": False,
             "error": f"音频已生成，但真实字幕时间轴生成失败：{exc}",
             "summary": summary,
             "audio": {"exists": False},
+            "resumeStage": 'synthesis' if isinstance(exc, AudioContentIncomplete) else 'subtitle_alignment',
         }
 
+    output_path.replace(audio_path_for_report_ext(report_path, '.mp3'))
+    output_path.with_suffix('.timings.json').replace(subtitle_timing_path_for_report(report_path))
+    checkpoint_path.unlink(missing_ok=True)
     txt_path = audio_path_for_report_ext(report_path, ".txt")
     txt_path.write_text(summary, encoding="utf-8")
 

@@ -20,9 +20,10 @@ def generate_report_audio(report_path: Path, *, synthesize=None, progress=print)
         except Exception as exc:
             result = {"ok": False, "error": str(exc)}
         if attempt == 0:
-            progress("[语音重试] 首次生成未完成，自动重试一次。", flush=True)
+            progress("[语音重试] 音频已保存，继续重试字幕对齐。" if result.get('resumeStage') == 'subtitle_alignment'
+                     else "[语音重试] 首次生成未完成，自动重试一次。", flush=True)
     # Keep the machine handoff small: no full transcript in the process stream.
-    result = {key: result[key] for key in ("ok", "error", "audio", "backend", "created") if key in result}
+    result = {key: result[key] for key in ("ok", "error", "audio", "backend", "created", "resumeStage") if key in result}
     if isinstance(result.get("audio"), dict):
         result["audio"] = {k: v for k, v in result["audio"].items() if k not in {"summary", "subtitleCues", "spokenText"}}
     result["report_path"] = str(report_path.resolve())

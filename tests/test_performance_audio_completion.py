@@ -9,6 +9,49 @@ import tts_service as tts
 
 
 class PerformanceAudioCompletionTests(unittest.TestCase):
+    def test_alignment_recovery_reuses_waveform_only_for_the_same_document(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(tts, 'AUDIO_DIR', Path(tmp)), \
+             patch.object(tts, '_source_text', return_value='业绩摘要'), \
+             patch.object(tts, 'build_audio_summary', return_value='香港电讯企业业务保持增长。' * 30) as summary, \
+             patch.object(tts, '_audio_duration_seconds', return_value=180):
+            report = Path(tmp) / '业绩摘要.docx'
+            report.write_bytes(b'first')
+            def synth(text, output, **kwargs):
+                output.write_bytes(b'complete waveform')
+                return 'internal-tts'
+            def align(output, *args, **kwargs):
+                output.with_suffix('.timings.json').write_text('{}')
+                return {}
+            with patch.object(tts, '_synthesize_with_internal_tts', side_effect=synth) as worker, \
+                 patch.object(tts, '_write_internal_asr_subtitle_timings', side_effect=RuntimeError('HTTP 400')):
+                self.assertFalse(tts.synthesize_report_audio(report)['ok'])
+                self.assertFalse(tts.audio_info_for_report(report)['exists'])
+                self.assertEqual(tts.synthesize_report_audio(report)['resumeStage'], 'subtitle_alignment')
+                self.assertEqual(worker.call_count, 1)
+                self.assertEqual(summary.call_count, 1)
+                report.write_bytes(b'revised')
+                self.assertFalse(tts.synthesize_report_audio(report)['ok'])
+                self.assertEqual(worker.call_count, 2)
+                with patch.object(tts, '_write_internal_asr_subtitle_timings', side_effect=align):
+                    self.assertTrue(tts.synthesize_report_audio(report)['ok'])
+                self.assertEqual(worker.call_count, 2)
+                self.assertTrue(tts.audio_info_for_report(report)['exists'])
+
+    def test_incomplete_waveform_is_not_retained_for_alignment_retry(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(tts, 'AUDIO_DIR', Path(tmp)), \
+             patch.object(tts, 'build_audio_summary', return_value='香港电讯企业业务保持增长。' * 30), \
+             patch.object(tts, '_audio_duration_seconds', return_value=180):
+            report = Path(tmp) / '业绩摘要.docx'
+            report.write_bytes(b'first')
+            def synth(text, output, **kwargs):
+                output.write_bytes(b'incomplete waveform')
+                return 'internal-tts'
+            with patch.object(tts, '_synthesize_with_internal_tts', side_effect=synth) as worker, \
+                 patch.object(tts, '_write_internal_asr_subtitle_timings', side_effect=tts.AudioContentIncomplete('未完整播出')):
+                self.assertEqual(tts.synthesize_report_audio(report)['resumeStage'], 'synthesis')
+                tts.synthesize_report_audio(report)
+                self.assertEqual(worker.call_count, 2)
+
     def test_long_prefix_cannot_pass_when_final_company_and_views_are_missing(self):
         text = "香港电讯业绩增长，数码通维持派息。" * 20 + "最后是香港宽频和有线宽频的表现，以及机构对企业转型的判断。"
         with self.assertRaisesRegex(RuntimeError, "未完整播出"):

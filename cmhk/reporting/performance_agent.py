@@ -80,6 +80,28 @@ def report_search(query: str, limit: int = 3) -> dict:
     return {"results": rows, "provider": provider, "error": "" if rows else "本次搜索未返回可用结果"}
 
 
+def previous_opinion_sources(root: Path, company: str, *, today) -> list[dict]:
+    """Reuse reviewed URLs as discovery hints; always reopen and recheck them."""
+    found = {}
+    for path in sorted((root / 'var/performance_reports').glob('*/audit.json'), reverse=True)[:40]:
+        try:
+            audit = json.loads(path.read_text(encoding='utf-8'))
+            date = datetime.fromisoformat(audit['generatedAt']).date()
+            if not 0 <= (today - date).days <= 180:
+                continue
+            for item in audit.get('companies', []):
+                state = item.get('fields', {}).get('broker', {})
+                if item.get('company') != company or not state.get('accepted'):
+                    continue
+                for url in state.get('sources', []):
+                    if trusted_source(company, url, 'broker'):
+                        found.setdefault(url, {'url': url, 'title': company + ' 已核验公开观点入口',
+                                               'discovery': 'previous_report_url'})
+        except (OSError, ValueError, KeyError, TypeError):
+            continue
+    return list(found.values())[:4]
+
+
 def save_json(path: Path, value: dict) -> None:
     temporary = path.with_suffix(path.suffix + ".tmp")
     temporary.write_text(json.dumps(value, ensure_ascii=False, indent=2), encoding="utf-8")
@@ -271,6 +293,9 @@ def research_missing_fields(packs: list[dict], *, today, search_client, page_rea
         else:
             for url in market_source_urls(row["company"], row["field"]):
                 row["results"].append({"url": url, "title": row["company"] + " 公开市场资料", "snippet": ""})
+            if row['field'] == 'broker':
+                pack = next(pack for pack in packs if pack['company'] == row['company'])
+                row['results'].extend(pack.get('previousOpinionSources', []))
         row["results"] = [r for r in row["results"] if trusted_source(row["company"], r["url"], row["field"])]
     urls = list(dict.fromkeys(str(r["url"]) for row in rows for r in row.get("results", [])))
     progress(f"[业绩摘要 Agent] 已筛除无关公司，读取 {len(urls)} 篇原文并检查日期。")
@@ -392,11 +417,21 @@ def assess_field(pack: dict, result: dict, field: str, validator):
         metric = r'收入|收益|revenue' if field == 'revenue' else r'EBITDA|净利|淨利|溢利|亏损|虧損'
         if not re.search(metric, text, re.I) or not re.search(r'\d[\d,.]*\s*(?:[百千万亿]+)?(?:港元|美元|元|HKD|RMB|CNY|USD)', text, re.I):
             valid, reason = False, '缺少该主体收入或利润的金额，不能以增长率或客户数替代'
-    if field in pack["missing"] and not matched:
+    if field in pack['missing'] and str(candidate).strip() in {'', '-'}:
+        valid, reason = False, '本次已读原文未提供可核实的对应字段'
+    elif field in pack["missing"] and not matched:
         valid, reason = False, "补查内容未引用对应公司的原文"
     if field in {"revenue", "profit", "capex", "dividend"} and field not in pack["missing"]:
         valid, text, reason = True, pack["evidence"][field], "采用数据库原值"
     return valid, text, reason, matched
+
+
+def revision_pack(pack: dict, feedback: dict) -> dict:
+    """Isolate failed fields so unrelated facts and rejected drafts cannot anchor a repair."""
+    return {'company': pack['company'], 'asOf': pack['asOf'],
+            'evidence': {f: pack['evidence'].get(f, '') if f not in pack['missing'] else '' for f in feedback},
+            'missing': list(feedback), 'revisionFeedback': feedback,
+            'web_research': {'results': [page for page in pack['web_research']['results'] if page['field'] in feedback]}}
 
 
 def compact_table_value(text: str, field: str) -> str:
@@ -456,7 +491,8 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
         metrics = baseline["companies"].get(ALIASES.get(company, company), {})
         rows = {field: latest_rows(metrics, field) for field in FIELDS}
         packs.append({"company": company, "asOf": clock.date().isoformat(), "evidence": {f: field_text(r) for f, r in rows.items()},
-                      "database": rows, "missing": [f for f, r in rows.items() if not fresh_rows(r, f, clock.date())]})
+                      "database": rows, "missing": [f for f, r in rows.items() if not fresh_rows(r, f, clock.date())],
+                      "previousOpinionSources": previous_opinion_sources(root, company, today=clock.date())})
     searches = research_missing_fields(packs, today=clock.date(), search_client=search_client,
                                       page_reader=page_reader, progress=progress)
     save_json(run_dir / "searches.json", {"searches": searches})
@@ -501,7 +537,7 @@ def build_model(root: Path, companies: list[str], *, ai_client, validator, progr
                     feedback[field] = reason
             if feedback:
                 progress(f"[业绩摘要 Agent] 复核 {pack['company']} 的 {len(feedback)} 个字段，按原文修正。")
-                retry_pack = {**editor_batch[0], "previousDraft": draft, "revisionFeedback": feedback}
+                retry_pack = revision_pack(pack, feedback)
                 try:
                     response, _model = ai_client([retry_pack])
                     revised = next((item for item in response.get("companies", []) if item.get("company") == pack["company"]), {})
