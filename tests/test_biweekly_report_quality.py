@@ -1187,8 +1187,17 @@ class QualitySidecarTests(unittest.TestCase):
         item["rawDetail"] = item["title"]
         model = make_model(item)
 
-        with self.assertRaisesRegex(ValueError, "已停止发布"):
+        with (
+            tempfile.TemporaryDirectory() as temp_dir,
+            patch.object(report, "WEEKLY_LLM_CACHE", Path(temp_dir) / "cache.json"),
+            patch.object(report, "WEEKLY_AI_QUALITY_AUDIT", Path(temp_dir) / "audit.json"),
+            patch.object(report, "_call_weekly_writer_llm", return_value={"items": []}) as writer,
+            patch.object(report, "research_weekly_model_online", side_effect=RuntimeError("offline")) as research,
+            self.assertRaisesRegex(ValueError, "已停止发布"),
+        ):
             report.prepare_human_template_content(model, progress=lambda _message: None)
+        self.assertEqual(writer.call_count, 2)
+        self.assertEqual(research.call_count, 1)
 
     def test_build_weekly_model_recovers_from_untouched_selected_copy(self) -> None:
         item = make_item("W001", 1, title="测试主体公布新业务")

@@ -5,6 +5,7 @@ import hashlib
 import json
 import os
 import re
+import tempfile
 import urllib.error
 import urllib.request
 from copy import deepcopy
@@ -1608,7 +1609,13 @@ def weekly_writer_fact_package(item: dict) -> list[dict]:
 
     headline = clean_text(item.get("originalTitle") or item.get("title"), 180)
     matched_result_count = 0
-    for result in research.get("results") or []:
+    # Complete matching articles must not lose both slots to thin snippets.
+    ranked_results = sorted(
+        [result for result in research.get("results") or [] if isinstance(result, dict)],
+        key=lambda result: len(clean_text(result.get("content"))),
+        reverse=True,
+    )
+    for result in ranked_results:
         if not isinstance(result, dict):
             continue
         if _headline_evidence_overlap(headline, result.get("title")) < 0.25:
@@ -1651,17 +1658,68 @@ def weekly_reviewer_web_evidence(item: dict) -> dict:
     }
 
 
+def _weekly_draft_checkpoint_path(item: dict) -> Path:
+    locked = {
+        "version": "weekly-draft-v1",
+        "writerPrompt": WEEKLY_WRITER_PROMPT_VERSION,
+        "humanExamples": weekly_human_examples_sha256(),
+        "model": load_ai_config(include_key=False).get("model"),
+        "title": item.get("originalTitle") or item.get("title"),
+        "eventAt": item.get("eventAt"),
+        "sourceName": item.get("sourceName"),
+        "facts": weekly_writer_fact_package(item),
+        "evidence": weekly_reviewer_web_evidence(item),
+    }
+    digest = hashlib.sha256(json.dumps(locked, ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+    return WEEKLY_LLM_CACHE.parent / "validated_item_drafts" / f"{digest}.json"
+
+
+def _load_weekly_draft_checkpoint(item: dict) -> dict | None:
+    try:
+        candidate = json.loads(_weekly_draft_checkpoint_path(item).read_text(encoding="utf-8"))
+        if isinstance(candidate, dict) and _valid_weekly_writer_result(candidate, item):
+            return _usable_one_pass_weekly_result(candidate, item)
+    except (OSError, ValueError, TypeError):
+        pass
+    return None
+
+
+def _save_weekly_draft_checkpoint(item: dict, *, progress=print) -> None:
+    candidate = {"status": "ok", "title": item.get("title"), "detail": item.get("detail")}
+    if not _valid_weekly_writer_result(candidate, item):
+        return
+    temp_path = None
+    try:
+        path = _weekly_draft_checkpoint_path(item)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.NamedTemporaryFile(mode="w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+            temp_path = Path(handle.name)
+            json.dump(candidate, handle, ensure_ascii=False)
+        temp_path.replace(path)
+    except OSError as exc:
+        progress(f"[周报缓存] 本条正文已保留，断点缓存暂未写入：{clean_text(exc, 180)}")
+    finally:
+        if temp_path is not None:
+            temp_path.unlink(missing_ok=True)
+
+
 def write_weekly_items_once(items: list[dict], progress=print) -> list[dict]:
     """Give each selected article one focused write; keep the source copy on failure."""
     written = [dict(item) for item in items]
     config = load_ai_config(include_key=True)
     model = clean_text(config.get("model") or "deepseek-v4")
     progress(
-        f"[周报 3/7] 正在由{model}逐篇撰写{len(written)}条正文；每篇只写一次，"
-        "已写好的内容不会反复重跑。"
+        f"[周报 3/7] 正在由{model}逐篇撰写{len(written)}条正文；"
+        "合格正文保存断点，未通过的条目留待定向补写。"
     )
     for index, item in enumerate(written, start=1):
         item.setdefault("originalTitle", simplified_chinese(item.get("title"), 180))
+        cached = _load_weekly_draft_checkpoint(item)
+        if cached:
+            item.update(cached)
+            item["writerStatus"] = "validated_cache_recovery"
+            progress(f"[周报 3/7] W{index:03d}已恢复同一证据下的合格正文。")
+            continue
         payload = {
             "id": f"W{index:03d}",
             "section": item.get("section") or "",
@@ -1693,11 +1751,13 @@ def write_weekly_items_once(items: list[dict], progress=print) -> list[dict]:
         if selected:
             item.update(selected)
             item["writerStatus"] = "llm_one_pass"
+            _save_weekly_draft_checkpoint(item, progress=progress)
         else:
             item["title"] = deterministic_evidence_weekly_title(item)
             item["detail"] = best_available_weekly_detail(item)
             item["writerStatus"] = "evidence_copy_after_writer_note"
-        progress(f"[周报 3/7] W{index:03d}完成。")
+        outcome = "正文通过" if selected else "正文待补写，已保留证据"
+        progress(f"[周报 3/7] W{index:03d}{outcome}。")
     return written
 
 
@@ -1723,7 +1783,7 @@ def edit_weekly_items_once(items: list[dict], progress=print) -> tuple[list[dict
         )
     progress(
         f"[周报 5/7] 正在对{len(edited)}条内容做一次整稿编辑；编辑只润色可改之处，"
-        "不会触发多轮拦截或令整份周报失败。"
+        "合格正文保留，质量未通过的条目将单独补写。"
     )
     response_items: list[dict] = []
     editor_error = ""
@@ -4572,6 +4632,9 @@ def best_available_weekly_detail(item: dict) -> str:
 
 def cached_weekly_writer_result(item: dict) -> dict | None:
     """Recover a previously validated dense draft without trusting stale free text."""
+    checkpoint = _load_weekly_draft_checkpoint(item)
+    if checkpoint:
+        return checkpoint
     cache_key = clean_text(item.get("_weeklyWriterCacheKey"))
     if not cache_key or not WEEKLY_LLM_CACHE.exists():
         return None
@@ -4732,6 +4795,9 @@ def finalize_weekly_limited_model(model: dict) -> dict:
             item["reviewDecision"] = "evidence_repair"
             item["reviewStatus"] = "evidence_repaired"
             item["reviewReason"] = "生成链路受限，已依据锁定信息完成确定性重建和程序化校验"
+            if item.get("writerStatus") == "llm_targeted_repair":
+                item["reviewStatus"] = "programmatically_validated"
+                item["reviewReason"] = "AI定向补写后通过正文、同一事件及锁定数字校验"
             toc.append(
                 {
                     "index": global_index,
@@ -4961,9 +5027,15 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
             f"本期仅找到{len(initial_items)}条合格候选，少于最低{minimum_items}条；"
             "应继续补搜和修复数据，不能生成内容过少的周报。"
         )
-    reviewed_model = research_weekly_model_online(model, progress=progress)
+    reviewed_model = deepcopy(research_weekly_model_online(model, progress=progress))
+    model["_weeklyRecoveryModel"] = deepcopy(reviewed_model)
     flattened = [item for section in reviewed_model.get("sections") or [] for item in section.get("items") or []]
     written_items = write_weekly_items_once(flattened, progress=progress)
+    recovery = deepcopy(reviewed_model)
+    written_by_position = iter(deepcopy(written_items))
+    for section in recovery.get("sections") or []:
+        section["items"] = [next(written_by_position) for _ in section.get("items") or []]
+    model["_weeklyRecoveryModel"] = recovery
     reviewed_items, audit = edit_weekly_items_once(written_items, progress=progress)
     evidence_repair_count = int(audit.get("evidenceRepairCount") or 0)
     if evidence_repair_count:
@@ -5139,7 +5211,7 @@ def apply_weekly_ai_review(model: dict, progress=print) -> dict:
         f"本期计划统计区间为{planned_range.get('start') or '-'}至{planned_range.get('end') or '-'}；"
         f"本次{period_status}版实际纳入{range_value.get('start') or '-'}至{range_value.get('end') or '-'}"
         "具有明确公开发布时间和直达正文的内容。系统先准备人工选中原文和联网证据，"
-        "再逐篇一次写作、最后一次整稿编辑；编辑意见不触发多轮重写或整份报告失败。"
+        "再逐篇写作、整稿编辑；合格正文保存断点，质量未通过的条目最多定向补写两轮。"
     )
     WEEKLY_USAGE_AUDIT.write_text(json.dumps(usage, ensure_ascii=False, indent=2), encoding="utf-8")
     return normalize_weekly_model_simplified(reviewed_model)
@@ -5158,13 +5230,12 @@ def build_weekly_model(results: list[dict], period: WeeklyPeriod | None = None) 
         )
     recovery_model = deepcopy(model)
     try:
-        # AI research/review is intentionally isolated from the accepted source
-        # model. Failed retries may mutate their working items; recovery must
-        # always start from the untouched Feishu-selected body.
+        # Recover the latest completed stage, isolated from mutable AI drafts.
         reviewed = apply_weekly_ai_review(
             model,
             progress=lambda message: print(message, flush=True),
         )
+        model.pop("_weeklyRecoveryModel", None)
         if model.get("generationMode") == "limited":
             reviewed["generationMode"] = "limited"
             reviewed["generationLimitations"] = deepcopy(model.get("generationLimitations") or [])
@@ -5173,7 +5244,7 @@ def build_weekly_model(results: list[dict], period: WeeklyPeriod | None = None) 
         reviewed.setdefault("generationLimitations", [])
         return reviewed
     except Exception as exc:
-        model = recovery_model
+        model = model.pop("_weeklyRecoveryModel", recovery_model)
         record_weekly_limitation(
             model,
             "research_or_review",
@@ -5310,9 +5381,95 @@ def validate_human_template_content(model: dict) -> None:
         raise ValueError("周报人工模板正文门禁失败：\n" + "\n".join(errors))
 
 
+def repair_weekly_thin_items(model: dict, *, progress=print) -> dict:
+    """Repair only unresolved bodies, with two attempts and one evidence refresh."""
+    items = [item for section in model.get("sections") or [] for item in section.get("items") or []]
+    attempts = model.setdefault("humanTemplateRepairAttempts", [])
+    for round_number in (1, 2):
+        pending = [item for item in items if human_template_item_errors(item)]
+        if not pending:
+            break
+        progress(f"[周报 6/7] 第{round_number}/2轮定向补写{len(pending)}条，保留其余合格正文。")
+        if round_number == 2:
+            subset = {
+                "sections": [{"name": "待补写", "items": deepcopy(pending)}],
+                "sources": deepcopy(model.get("sources") or []),
+            }
+            try:
+                refreshed = research_weekly_model_online(subset, progress=progress)
+                fresh_items = [item for section in refreshed.get("sections") or [] for item in section.get("items") or []]
+                if len(fresh_items) != len(pending):
+                    raise ValueError("补搜条目数量不一致")
+                for item, fresh in zip(pending, fresh_items):
+                    if (item.get("originalTitle") or item.get("title")) != (fresh.get("originalTitle") or fresh.get("title")):
+                        raise ValueError("补搜条目身份不一致")
+                model["sources"] = refreshed["sources"]
+                for item, fresh in zip(pending, fresh_items):
+                    previous = item.get("webResearch") or {}
+                    research = deepcopy(fresh.get("webResearch") or {})
+                    for key in ("lockedSourceEvidence", "supplementalEvidence"):
+                        if not research.get(key) and previous.get(key):
+                            research[key] = deepcopy(previous[key])
+                    by_url = {}
+                    for result in [*(previous.get("results") or []), *(research.get("results") or [])]:
+                        if not isinstance(result, dict):
+                            continue
+                        url = clean_text(result.get("url"))
+                        old = by_url.get(url)
+                        if old is None or len(clean_text(result.get("content"))) > len(clean_text(old.get("content"))):
+                            by_url[url] = deepcopy(result)
+                    research["results"] = list(by_url.values())
+                    item["webResearch"] = research
+                    item["sourceIds"] = list(dict.fromkeys([*(item.get("sourceIds") or []), *(fresh.get("sourceIds") or [])]))
+            except Exception as exc:
+                progress(f"[周报 6/7] 补搜暂未完成，保留已有完整证据继续补写：{clean_text(exc, 200)}")
+
+        def repair_one(item: dict) -> tuple[dict | None, str]:
+            payload = {
+                "id": item["id"],
+                "section": item.get("section"),
+                "source_name": item.get("sourceName"),
+                "event_date": item.get("eventAt"),
+                "existing_title": item.get("originalTitle") or item.get("title"),
+                "facts": weekly_writer_fact_package(item),
+                "repair_feedback": human_template_item_errors(item),
+                "previous_draft": item.get("detail"),
+                "instruction": "依据事实包补足至少两句完整事实，展开关键数字、范围、对象、进展或结果；旧稿仅供纠错，不是新增事实来源。素材不足时返回insufficient，禁止凑字数或编造。",
+            }
+            try:
+                response = _call_weekly_writer_llm([payload])
+                for candidate in response.get("items") or []:
+                    if not isinstance(candidate, dict) or clean_text(candidate.get("id")) not in {"", item["id"]}:
+                        continue
+                    normalized = _normalized_weekly_writer_result(candidate, item)
+                    if normalized and _usable_one_pass_weekly_result(normalized, item):
+                        return normalized, ""
+                return None, "补写结果仍未通过正文及锁定数字校验"
+            except Exception as exc:
+                return None, clean_text(exc, 300)
+
+        with ThreadPoolExecutor(max_workers=min(WEEKLY_WRITER_RETRY_WORKERS, len(pending))) as executor:
+            futures = {executor.submit(repair_one, deepcopy(item)): item for item in pending}
+            for future in as_completed(futures):
+                item = futures[future]
+                candidate, error = future.result()
+                attempts.append({"id": item["id"], "round": round_number, "status": "passed" if candidate else "pending", "error": error})
+                if candidate:
+                    item.update({"title": candidate["title"], "detail": candidate["detail"]})
+                    item["writerStatus"] = "llm_targeted_repair"
+                    item["reviewDecision"] = "evidence_repair"
+                    item["reviewStatus"] = "programmatically_validated"
+                    item["reviewReason"] = "AI定向补写后通过正文、同一事件及锁定数字校验"
+                    item["reviewIssues"] = []
+                    _save_weekly_draft_checkpoint(item, progress=progress)
+                progress(f"[周报 6/7] {item['id']}补写{'通过' if candidate else '待恢复：' + error}。")
+    return model
+
+
 def prepare_human_template_content(model: dict, *, progress=print) -> dict:
     """Repair thin bodies and refuse to publish anything unlike the human samples."""
     model = finalize_weekly_limited_model(model)
+    model = repair_weekly_thin_items(model, progress=progress)
     warnings = []
     for section in model.get("sections") or []:
         for item in section.get("items") or []:
@@ -5332,18 +5489,30 @@ def prepare_human_template_content(model: dict, *, progress=print) -> dict:
         record_weekly_limitation(
             model,
             "human_template_content",
-            f"{len(warnings)}条正文在缓存恢复和锁定证据重建后仍有质量提醒",
+            f"{len(warnings)}条正文在缓存恢复、证据补搜及两轮定向补写后仍不合格",
             impact="本次正式周报停止输出，避免把明显机器稿写入Word",
-            action="继续补足原始正文并重写，全部达到人工样本读感后再发布",
+            action="合格正文已保存断点；补足待修条目的原文后可继续生成",
             progress=progress,
         )
+        model = finalize_weekly_limited_model(model)
+        model["reviewAudit"]["repairAttempts"] = deepcopy(model["humanTemplateRepairAttempts"])
+        model["reviewAudit"]["reviewStatus"] = "blocked"
+        try:
+            WEEKLY_AI_QUALITY_AUDIT.parent.mkdir(parents=True, exist_ok=True)
+            WEEKLY_AI_QUALITY_AUDIT.write_text(json.dumps(model["reviewAudit"], ensure_ascii=False, indent=2), encoding="utf-8")
+        except OSError as exc:
+            progress(f"[周报质量审计] 待修清单写入失败：{clean_text(exc, 180)}")
         raise ValueError(
             "仍有正文不像人工样本，已停止发布："
             + "；".join(
                 f"{warning['id']} {warning['title']} ({'、'.join(warning['errors'])})"
                 for warning in warnings
             )
-        )
+        ) from None
+    model["humanTemplateQualityWarnings"] = []
+    model = finalize_weekly_limited_model(model)
+    model["reviewAudit"]["repairAttempts"] = deepcopy(model["humanTemplateRepairAttempts"])
+    validate_human_template_content(model)
     return model
 
 
@@ -5722,6 +5891,7 @@ def write_weekly_quality_sidecar(docx_path: Path, audit: dict, model: dict | Non
             or ((model or {}).get("humanTemplateQualityWarnings") if model else [])
             or []
         ),
+        "repairAttempts": deepcopy(audit.get("repairAttempts") or (model or {}).get("humanTemplateRepairAttempts") or []),
         "reviewerModel": audit.get("reviewerModel") or audit.get("reviewModel") or "",
         "reviewPromptVersion": audit.get("reviewPromptVersion") or WEEKLY_REVIEW_PROMPT_VERSION,
         "webSearch": audit.get("webSearch") or {},
@@ -6061,9 +6231,8 @@ def main() -> None:
         model = normalize_weekly_model_simplified(model)
 
     # Keep the human-reference body contract fail-closed for every published
-    # item. Limited mode first restores validated cache/evidence text; a single
-    # irreparable item is quarantined in the quality audit instead of crashing
-    # the entire report or leaking a thin paragraph into Word.
+    # item. Restore validated drafts, then make bounded, targeted repairs.
+    # Keep all selected items; never silently drop an irreparable article.
     try:
         validate_human_template_content(model)
     except Exception as exc:
@@ -6072,9 +6241,10 @@ def main() -> None:
             "human_template_recovery",
             exc,
             impact="部分正文需要从合格缓存或锁定证据恢复",
-            action="逐条恢复并复验；仍不合格的条目只写入质量审计",
+            action="恢复合格正文，仅对待修条目补搜和补写，最多两轮",
         )
         model = prepare_human_template_content(model)
+        validate_report_model(model)
 
     print("\n--- 报告内容统计 ---")
     for section in model["sections"]:
