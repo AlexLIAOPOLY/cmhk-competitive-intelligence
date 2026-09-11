@@ -71,8 +71,13 @@ def schedule(summary, directory, reference):
     if cancelled(summary):
         return {**prior, "status": "cancelled", "next_retry_at": ""}
     if not phase:
-        return {**prior, "status": "completed" if summary.get("publication", {}).get("status") == "completed" else "needs_review",
-                "next_retry_at": "", "error": error}
+        result = {**prior, "status": "completed" if summary.get("publication", {}).get("status") == "completed" else "needs_review",
+                  "next_retry_at": "", "error": error}
+        if (summary.get("publication", {}).get("status") == "error"
+                and summary.get("final_review", {}).get("status") == "completed"):
+            # A terminal publication failure must not inherit the earlier review retry phase.
+            result["phase"] = "publication"
+        return result
     attempts = int(prior.get("attempts", 0))
     exhausted = attempts >= MAX_ATTEMPTS
     return {**prior, "status": "exhausted" if exhausted else "retry_pending", "phase": phase,

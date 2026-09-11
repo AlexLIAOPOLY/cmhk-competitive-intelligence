@@ -58,6 +58,41 @@ class RecoveryTests(unittest.TestCase):
             summary['recovery'] = {'status':'interrupted','attempts':2}
             self.assertEqual(recovery.schedule(summary, Path(td), datetime.now(daily.HKT))['status'], 'completed')
 
+    def test_failed_publication_validation_replaces_stale_review_phase_without_retry(self):
+        with tempfile.TemporaryDirectory() as td:
+            now = datetime(2026, 9, 11, 11, tzinfo=daily.HKT)
+            error = 'AI分析分类缺少输入数值证据：international.net_profit'
+            summary = {
+                'status': 'partial',
+                'final_review': {'status': 'completed'},
+                'publication': {'status': 'error', 'result_status': 'failed_validation',
+                                'error': '', 'model_analysis': {'error': error}},
+                'recovery': {'status': 'running', 'phase': 'final_review', 'attempts': 4,
+                             'max_attempts': 6, 'next_retry_at': ''},
+            }
+            result = recovery.schedule(summary, Path(td), now)
+            self.assertEqual(result, {
+                'status': 'needs_review', 'phase': 'publication', 'attempts': 4,
+                'max_attempts': 6, 'next_retry_at': '', 'error': error,
+            })
+            summary['recovery'] = result
+            self.assertFalse(recovery.due(summary, now))
+            self.assertFalse(recovery.due(summary, now + timedelta(days=1)))
+            self.assertEqual(recovery.schedule(summary, Path(td), now + timedelta(days=1)), result)
+
+    def test_unfinished_final_review_error_keeps_review_phase(self):
+        with tempfile.TemporaryDirectory() as td:
+            summary = {
+                'final_review': {'status': 'error'},
+                'publication': {'status': 'error', 'error': '最终审核资料存在口径冲突'},
+                'recovery': {'status': 'running', 'phase': 'final_review', 'attempts': 4},
+            }
+            result = recovery.schedule(summary, Path(td), datetime.now(daily.HKT))
+            self.assertEqual(result['status'], 'needs_review')
+            self.assertEqual(result['phase'], 'final_review')
+            self.assertEqual(result['attempts'], 4)
+            self.assertEqual(result['next_retry_at'], '')
+
     def test_dead_worker_is_delayed_then_resumed_with_the_same_budget(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

@@ -196,6 +196,80 @@ class ZeroAcceptanceReviewTests(unittest.TestCase):
         for text in ('app','weekly','reason','evidence'):
             self.assertIn(text,str(caught.exception))
 
+    def test_actual_zero_review_prompt_has_complete_evidence_schema_only(self):
+        from types import SimpleNamespace
+        model=mock.Mock()
+        model.invoke.return_value=SimpleNamespace(content='{"decisions":[]}',response_metadata={'finish_reason':'stop'})
+        token=agent._MODEL_SESSION.set({'calls':0,'preferences':True,'zero_acceptance_review':1})
+        try:
+            with (mock.patch.object(agent,'load_ai_config',return_value={'base_url':'https://example.com/v1'}),
+                  mock.patch.object(agent,'_model_routes',return_value=[('deepseek-v4-free','test-key')]),
+                  mock.patch.object(agent,'ChatDeepSeek',return_value=model)):
+                agent._invoke_langchain_transport([],self.targets)
+        finally:
+            agent._MODEL_SESSION.reset(token)
+        system=model.invoke.call_args.args[0][0].content
+        self.assertEqual(system.count('格式示例'),1)
+        schema,_=json.JSONDecoder().raw_decode(system[system.index('{"decisions":'):])
+        example=schema['decisions'][0]
+        self.assertTrue({'app_reason','weekly_reason','app_evidence','weekly_evidence'} <= set(example))
+        self.assertIn('程序不会补齐',system)
+        user=json.loads(model.invoke.call_args.args[0][1].content)
+        self.assertEqual(user['required_candidate_ids'],[t['news_id'] for t in self.targets])
+
+    def test_cjk_layout_equivalence_returns_original_span_without_loosening_facts(self):
+        positive=[
+            ('第三届论坛在香 港大学举办。','第三届论坛在香港大学举办。'),
+            ('\ufeff9月9日，第三届论坛在香\n港大学举办。','9月9日，第三届论坛在香港大学举办。'),
+            ('第三届论坛在香港大学举办','第三届论坛在香 港大学举办。'),
+        ]
+        for source,quote in positive:
+            with self.subTest(source=source):
+                span=agent._source_quote(quote,[source])
+                self.assertIn(span,source)
+                self.assertIn('香',span)
+                if '香 港' in source:
+                    self.assertIn('香 港',span)
+        for source,quote in [
+            ('新平台New York正式上线','新平台NewYork正式上线'),
+            ('本季度营收10 0亿元','本季度营收100亿元'),
+            ('工业项目在香、港地区举办','工业项目在香港地区举办'),
+            ('香港工业项目投资100亿元','香港工业项目投资1000亿元'),
+            ('第三届论坛在香港大学举办','第三届论坛在香港医院举办'),
+        ]:
+            with self.subTest(source=source):
+                self.assertNotIn(agent._source_quote(quote,[source]),source)
+
+    def test_blocked_layout_draft_is_revalidated_without_http_or_counter_changes(self):
+        targets=[dict(self.targets[0],title='第三届论坛在香 港大学举办。')]
+        token=agent._MODEL_SESSION.set({'zero_acceptance_review':1})
+        try:
+            raw,model=self.transport([],targets)
+            for field in ('app','weekly'):
+                raw['decisions'][0][field+'_evidence']='第三届论坛在香港大学举办。'
+            old_history=[{'request':i,'response':copy.deepcopy(raw)} for i in (1,2,3)]
+            state=dict(blocked=True,status='needs_review',requests=3,draft=raw,model=model,
+                       last_error='旧来源空白比对失败',attempt_history=copy.deepcopy(old_history))
+            progress={'requests':16,'repairs':8,'batches':{'old':state}}
+            with mock.patch.object(agent,'_invoke_langchain') as invoke:
+                result,_=agent._review_zero_batch([],targets,progress=progress,batch_key='old',
+                    save=lambda:None,session=agent._MODEL_SESSION.get())
+                agent._review_zero_batch([],targets,progress=progress,batch_key='old',
+                    save=lambda:None,session=agent._MODEL_SESSION.get())
+                invoke.assert_not_called()
+            self.assertEqual(state['requests'],3)
+            self.assertEqual(progress['requests'],16)
+            self.assertEqual(progress['repairs'],8)
+            self.assertEqual(state['attempt_history'],old_history)
+            self.assertEqual(len(state['validation_audit']),1)
+            self.assertEqual(state['validation_audit'][0]['http_requests'],0)
+            self.assertFalse(state['blocked'])
+            proof=agent._normalized_zero_acceptance_review(result,targets)[0]['zero_acceptance_review']['weekly']
+            self.assertEqual(proof['evidence'],'第三届论坛在香港大学举办。')
+            self.assertEqual(proof['source_evidence'],targets[0]['title'])
+        finally:
+            agent._MODEL_SESSION.reset(token)
+
     def test_normal_chunks_do_not_consume_stage_repair_allowance(self):
         self.targets=[dict(self.targets[0],news_id=f'N-{i}') for i in range(179)]
         payload={'decisions':[dict(news_id=t['news_id'],app_status='不接受',weekly_status='不接受',
