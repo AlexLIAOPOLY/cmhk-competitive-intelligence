@@ -184,6 +184,19 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                        "properties": {"decisions": {"type": "array", "minItems": len(candidates),
                            "maxItems": len(candidates), "items": {"type": "object",
                                "additionalProperties": False, "properties": fields, "required": list(fields)}}}}}}
+        single_response = len(candidates) == 1
+        if single_response:
+            fields['duplicate_of']['enum'] = ['', *[item['id'] for item in inputs['history']]]
+            fields['evidence']['enum'] = _evidence_options(candidates)
+            fields['matched_evidence']['enum'] = _evidence_options(inputs['history'])
+            response_format = {'type': 'json_schema', 'json_schema': {
+                'name': 'personal_news_event_dedupe_single', 'strict': True, 'schema': {
+                    'type': 'object', 'additionalProperties': False,
+                    'properties': fields, 'required': list(fields)}}}
+            system = PROMPT.split('输出JSON')[0] + (
+                '\n本次只有一个candidate，输出单个对象，字段id、duplicate_of、reason、evidence、matched_evidence。'
+                '禁止输出decisions数组或转义后的JSON字符串。id必须是' + candidates[0]['id'] + '。'
+                '重复引用必须原样选择schema内的证据选项，禁止改写字词、空格和引号；不重复时两个证据字段为空。')
         prompt = encoded
         deadline = time.monotonic() + 180
         from strategic_briefing import AIInvalidStructuredResponse, AIUnstructuredResponse
@@ -192,6 +205,8 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
             try:
                 result = model_call(system, prompt, max_tokens=max(8000, len(candidates) * 900),
                                     response_format=response_format, deadline_monotonic=deadline)
+                if single_response and isinstance(result, dict) and 'id' in result:
+                    result = {'decisions': [result]}
                 decisions = _validate(result, inputs["candidates"], inputs["history"])
                 break
             except (ValueError, AIInvalidStructuredResponse, AIUnstructuredResponse) as exc:
@@ -215,6 +230,19 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                     {"validation_error": str(exc), "rejected_output": result}, ensure_ascii=False)
         _save_review(target, inputs, result)
     return decisions
+
+
+def _evidence_options(items: list[dict]) -> list[str]:
+    """Exact source spans for strict decoding, without editing source wording."""
+    options = ['']
+    for item in items:
+        for field in ('title', 'summary', 'source_summary', 'snippet'):
+            value = str(item.get(field) or '')
+            for part in [value, *re.split(r'[。！？；\n]', value)]:
+                part = part.strip()[:80]
+                if len(part) >= 6 and part not in options:
+                    options.append(part)
+    return options
 
 
 def _checkpoint_valid_rows(inputs: dict, result: Any, runtime_root: Path) -> None:
@@ -250,9 +278,16 @@ def _review_history_chunks(inputs: dict, runtime_root: Path, *, model_call: Call
     reviews of every history partition; each partition is independently cached.
     Retain the individual model verdicts as the aggregation's audit trail.
     """
+    def title_terms(item):
+        return set(re.findall(r'(?=([0-9a-z\u3400-\u9fff]{2}))', normalized_text(item.get('title'))))
+    terms = title_terms(inputs['candidates'][0])
+    chunks = [inputs['history'][start:start + HISTORY_REVIEW_SIZE]
+              for start in range(0, len(inputs['history']), HISTORY_REVIEW_SIZE)]
+    # Order comparisons only: every partition remains mandatory for a keep
+    # verdict. Stable partition contents preserve completed review checkpoints.
+    chunks.sort(key=lambda chunk: max(len(terms & title_terms(item)) for item in chunk), reverse=True)
     reviews = []
-    for start in range(0, len(inputs['history']), HISTORY_REVIEW_SIZE):
-        history = inputs['history'][start:start + HISTORY_REVIEW_SIZE]
+    for history in chunks:
         row = _review_inputs({**inputs, 'history': history}, runtime_root, model_call=model_call)[0]
         reviews.append({'history_ids': [item['id'] for item in history], 'decision': row})
         if row['duplicate_of']:

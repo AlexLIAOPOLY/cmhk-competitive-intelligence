@@ -154,7 +154,7 @@ class EventDedupeTests(unittest.TestCase):
         self.assertEqual(deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)[0], [MEETING, DISTINCT])
         self.assertEqual(seen, [MEETING["title"], DISTINCT["title"], DISTINCT["title"]])
 
-    def test_long_history_checks_later_partitions_before_retaining_news(self):
+    def test_long_history_prioritizes_related_partition_without_changing_reference_ids(self):
         history = [{"title": f"独立业务{i}", "summary": f"第{i}家企业公布新的业务进展。"}
                    for i in range(17)] + [MEETING]
         calls = []
@@ -170,8 +170,8 @@ class EventDedupeTests(unittest.TestCase):
         kept, audit = deduplicate_events([REWRITE], history, self.root, model_call=model)
         self.assertEqual(kept, [])
         self.assertEqual(audit[0]['duplicate_of'], 'h17')
-        self.assertEqual([h['title'] for p in calls for h in p['history']], [h['title'] for h in history])
-        self.assertEqual(len(audit[0]['history_reviews']), 3)
+        self.assertEqual([h['title'] for p in calls for h in p['history']], [h['title'] for h in history[16:]])
+        self.assertEqual(len(audit[0]['history_reviews']), 1)
 
     def test_long_history_failure_resumes_without_sending_or_repeating_passed_partitions(self):
         history = [{"title": f"独立业务{i}", "summary": f"第{i}家企业公布新的业务进展。"}
@@ -223,6 +223,21 @@ class EventDedupeTests(unittest.TestCase):
         self.assertEqual(len(calls), 3)
         self.assertEqual(calls[-1]['candidates'][0]['title'], DISTINCT['title'])
         self.assertEqual([i['title'] for i in calls[-1]['history']], [MEETING['title'], REWRITE['title']])
+
+    def test_single_decision_preserves_exact_quotes_and_rejects_rewritten_evidence(self):
+        item = {'title': 'GTI“网智融合”分论坛在香港举办', 'summary': '本次论坛探讨网智融合技术的应用。'}
+        old = {'title': '香港举办GTI网智融合论坛', 'summary': 'GTI网智融合分论坛在香港举行。'}
+        wrong = {'id': 'c0', 'duplicate_of': 'h0', 'reason': '同一次GTI分论坛',
+                 'evidence': 'GTI「网智融合」分论坛在香港举办', 'matched_evidence': old['title']}
+        corrected = {**wrong, 'evidence': item['title']}
+        model = mock.Mock(side_effect=[wrong, corrected])
+        kept, _ = deduplicate_events([item], [old], self.root, model_call=model)
+        self.assertEqual(kept, [])
+        self.assertEqual(model.call_count, 2)
+        schema = model.call_args.kwargs['response_format']['json_schema']
+        self.assertEqual(schema['name'], 'personal_news_event_dedupe_single')
+        self.assertIn(item['title'], schema['schema']['properties']['evidence']['enum'])
+        self.assertNotIn(wrong['evidence'], schema['schema']['properties']['evidence']['enum'])
 
 
 class DeliveryGuardTests(unittest.TestCase):
