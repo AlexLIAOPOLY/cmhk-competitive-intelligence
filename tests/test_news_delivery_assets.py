@@ -15,6 +15,7 @@ from cmhk.services.news_delivery_assets import (
 )
 from cmhk.services.news_digest_editor import prepare_digest
 from cmhk.services.news_push_skill import skill_contract
+from cmhk.services.news_image_quality import NewsImageUnavailable
 from cmhk.services.subscriptions import encode_strategic_news_digest, strategic_news_card
 
 
@@ -33,9 +34,25 @@ class NewsAssetTests(unittest.TestCase):
         return prepare_news_assets(items or [self.item], self.service, profile=profile,
                                    fallback_image_key='img_original_banner')
 
+    def metadata(self):
+        return {'news_url': self.item['source_url'], 'image_candidates': [{
+            'url': 'https://publisher.example/photo.jpg', 'origin': 'article-body',
+            'page_url': self.item['source_url'], 'context': self.item['title']}]}
+
+    def image_network(self):
+        output = io.BytesIO()
+        Image.new('RGB', (320, 240)).save(output, 'PNG')
+        patcher = patch('cmhk.services.news_delivery_assets.fetch', return_value=(output.getvalue(), '', 'image/png'))
+        patcher.start()
+        self.addCleanup(patcher.stop)
+        patcher = patch('cmhk.services.news_delivery_assets.review_image', return_value={
+            'accepted': True, 'relation': 'event', 'sha256': 'a' * 64})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
     def test_source_link_and_image_cache_are_reused_without_doc_or_message_creation(self):
-        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=lambda url: {
-                'news_url': self.item['source_url'], 'image_urls': ['https://publisher.example/photo.jpg']}) as metadata, \
+        self.image_network()
+        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=lambda url: self.metadata()) as metadata, \
                 patch('cmhk.services.news_delivery_assets.upload_image', return_value='img_real_photo') as upload:
             first = self.prepare()
             second = self.prepare()
@@ -75,27 +92,23 @@ class NewsAssetTests(unittest.TestCase):
                 verify_public_host('private.example', 443, client)
 
     def test_failed_metadata_can_recover_photo_on_next_preparation(self):
-        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=httpx.ConnectError('unavailable')):
-            self.assertEqual(self.prepare()[0]['image_kind'], 'none')
-        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
-                'news_url': self.item['source_url'], 'image_urls': ['https://publisher.example/photo.jpg']}), \
+        self.image_network()
+        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=httpx.ConnectError('unavailable')), \
+                patch('cmhk.services.news_delivery_assets.search_image_candidates', return_value=[]):
+            with self.assertRaises(NewsImageUnavailable):
+                self.prepare()
+        with patch('cmhk.services.news_delivery_assets.time.time', return_value=9_999_999_999), \
+                patch('cmhk.services.news_delivery_assets.source_metadata', return_value=self.metadata()), \
                 patch('cmhk.services.news_delivery_assets.upload_image', return_value='img_recovered'):
             self.assertEqual(self.prepare()[0]['image_kind'], 'source')
 
-    def test_missing_publisher_photo_omits_thumbnail_and_keeps_original(self):
-        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=httpx.ConnectError('unavailable')):
-            ready = self.prepare()
-        self.assertEqual(ready[0]['image_kind'], 'none')
-        card = strategic_news_card(title='CMHK战略下午茶', body=encode_strategic_news_digest(ready),
-                                   image_key='img_original_banner')
-        text = json.dumps(card, ensure_ascii=False)
-        self.assertNotIn('栏目配图', text)
-        self.assertEqual(text.count('img_original_banner'), 1)
-        self.assertEqual(text.count('80px 80px'), 0)
-        self.assertIn(self.item['source_url'], text)
-        self.assertNotIn('docx/', text)
-        self.assertNotIn('今日核心看点', text)
-        self.assertNotIn('subtitle', card['header'])
+    def test_missing_publisher_photo_requires_search_and_stays_pending_if_empty(self):
+        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=httpx.ConnectError('unavailable')), \
+                patch('cmhk.services.news_delivery_assets.search_image_candidates', return_value=[]) as search:
+            with self.assertRaises(NewsImageUnavailable):
+                self.prepare()
+        search.assert_called_once()
+        self.service._lark.assert_not_called()
 
     def test_cached_section_image_cannot_be_reused_in_article_rows(self):
         for kind in ['section', 'source']:
@@ -118,8 +131,8 @@ class NewsAssetTests(unittest.TestCase):
         self.assertEqual(encoded.count('80px 80px'), 1)
 
     def test_image_upload_failure_does_not_become_success_and_retry_reuses_source(self):
-        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
-                'news_url': self.item['source_url'], 'image_urls': ['https://publisher.example/a.png']}) as metadata, \
+        self.image_network()
+        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value=self.metadata()) as metadata, \
                 patch('cmhk.services.news_delivery_assets.upload_image', side_effect=RuntimeError('upload failed')):
             with self.assertRaisesRegex(RuntimeError, 'upload failed'):
                 self.prepare()

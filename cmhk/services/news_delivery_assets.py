@@ -3,20 +3,22 @@ from __future__ import annotations
 
 import fcntl
 import hashlib
-import io
 import ipaddress
 import json
 import re
 import socket
 import subprocess
 import sys
+import time
 import uuid
 from pathlib import Path
 from urllib.parse import urljoin, urlsplit
 
 import httpx
-from bs4 import BeautifulSoup
-from PIL import Image
+from cmhk.services.news_image_quality import (
+    NewsImageUnavailable, extract_candidates, policy_key, rank_candidates,
+    require_reviewed_images, review_image, search_image_candidates, validate_image,
+)
 
 
 def fingerprint(value) -> str:
@@ -126,28 +128,14 @@ def source_metadata(url: str) -> dict:
     data, final_url, content_type = fetch(url)
     if 'html' not in content_type:
         return {'news_url': final_url, 'image_urls': []}
-    page = BeautifulSoup(data, 'html.parser')
-    images = []
-    for selector in ('meta[property="og:image"]', 'meta[name="twitter:image"]'):
-        for element in page.select(selector):
-            if element.get('content'):
-                images.append(urljoin(final_url, element['content']))
-    description = page.select_one('meta[property="og:description"], meta[name="description"]')
-    # Existing reviewed source excerpts remain the authority. Live page content
-    # is not used to silently replace them with navigation, ads or related news.
-    return {'news_url': final_url, 'image_urls': list(dict.fromkeys(images)),
-            'source_description': description.get('content', '')[:2000] if description else ''}
+    return extract_candidates(data, final_url)
 
 
-def upload_image(service, url: str, cache: Path, profile: str) -> str:
-    data, _, _ = fetch(url, max_bytes=8_000_000)
-    with Image.open(io.BytesIO(data)) as picture:
-        if min(picture.size) < 100 or max(picture.size) > 12000:
-            raise ValueError('新闻配图尺寸不合适')
-        suffix = {'JPEG': '.jpg', 'PNG': '.png', 'WEBP': '.webp', 'GIF': '.gif'}.get(picture.format)
-        picture.verify()
-    if not suffix:
-        raise ValueError('新闻配图格式不支持')
+def upload_image(service, url: str, cache: Path, profile: str, *, data: bytes | None = None) -> str:
+    # Upload the exact bytes that passed visual review, never a fresh remote copy.
+    if data is None:
+        data, _, _ = fetch(url, max_bytes=8_000_000)
+    suffix = validate_image(data)
     digest = hashlib.sha256(data).hexdigest()
     target = cache / 'uploads' / (fingerprint([profile, digest]) + '.json')
     cached = load(target)
@@ -172,12 +160,14 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
     ready = []
     for item in items:
         original = str(item.get('source_url') or item.get('url') or '')
-        key = fingerprint([original, item.get('published_at'), profile])
+        key = fingerprint([policy_key(), original, item.get('published_at'), profile,
+                           item.get('title'), item.get('summary'), item.get('source_summary')])
         with (cache / (key + '.lock')).open('a') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX)
             target = cache / (key + '.json')
             asset = load(target)
-            if not asset.get('news_url') or asset.get('metadata_unavailable'):
+            if not asset.get('news_url') or (not asset.get('image_key') and
+                    time.time() - asset.get('fetched_at', 0) > 600):
                 direct = resolve_source(original, cache)
                 try:
                     asset = source_metadata(direct)
@@ -185,28 +175,54 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
                     # A publisher may restrict machine downloads while its public
                     # article is readable in the user's browser. Keep its direct URL.
                     asset = {'news_url': direct, 'image_urls': [], 'metadata_unavailable': True}
+                asset['fetched_at'] = time.time()
                 save(target, asset)
             article_url(asset['news_url'])
             if not asset.get('image_key'):
-                candidates = list(dict.fromkeys([
-                    *[str(item.get(field)) for field in ('image_source_url', 'image_url') if item.get(field)],
-                    *asset.get('image_urls', []),
-                ]))
-                for image_url in candidates[:3]:
-                    try:
-                        asset['image_key'] = upload_image(service, image_url, cache, profile)
-                        asset['image_source_url'] = image_url
-                        break
-                    except (httpx.HTTPError, OSError, ValueError):
+                deadline = time.monotonic() + 360
+                attempts = []
+                seen = set()
+                def candidates():
+                    yield from rank_candidates(asset.get('image_candidates', []), item)[:6]
+                    # No acceptable article image: the agent searches event and subject keywords.
+                    yield from search_image_candidates({**item, 'news_url': asset['news_url']}, cache, deadline=deadline)
+                for candidate in candidates():
+                    if time.monotonic() >= deadline:
+                        raise NewsImageUnavailable('新闻配图本轮时间已用完，已保存进度等待继续')
+                    image_url = candidate['url']
+                    if image_url in seen:
                         continue
+                    seen.add(image_url)
+                    try:
+                        data, _, _ = fetch(image_url, max_bytes=8_000_000)
+                        validate_image(data)
+                    except (httpx.HTTPError, OSError, ValueError):
+                        attempts.append({'image_url': image_url, 'status': 'download_or_format_failed'})
+                        asset['image_attempts'] = attempts
+                        save(target, asset)
+                        continue
+                    # A model outage is not evidence against this picture. Stop
+                    # this attempt and recover later instead of hammering every candidate.
+                    review = review_image(item, candidate, data, cache, deadline=deadline)
+                    attempts.append({'image_url': image_url, 'review': review})
+                    asset['image_attempts'] = attempts
+                    save(target, asset)
+                    if not review['accepted']:
+                        continue
+                    image_key = upload_image(service, image_url, cache, profile, data=data)
+                    if image_key == fallback_image_key:
+                        continue
+                    asset.update({'image_key': image_key, 'image_source_url': image_url,
+                                  'image_page_url': candidate['page_url'], 'image_sha256': review['sha256'],
+                                  'image_kind': 'source' if review['relation'] == 'event' else 'related',
+                                  'image_review_status': 'accepted', 'image_policy_key': policy_key(),
+                                  'image_review': review})
+                    break
                 # Transport/API upload failures are not swallowed: retry before IM.
                 save(target, asset)
-            image_key = str(asset.get('image_key') or '')
-            if image_key == fallback_image_key or not asset.get('image_source_url'):
-                image_key = ''
-            if image_key and not re.fullmatch(r'img_[A-Za-z0-9_-]+', image_key):
-                raise ValueError('新闻原图标识无效，保留批次重试')
-            ready.append({**item, 'news_url': asset['news_url'], 'image_key': image_key,
-                          'image_kind': 'source' if image_key else 'none',
-                          'image_source_url': asset.get('image_source_url', '')})
+            result = {**item, 'news_url': asset['news_url'], **{field: asset.get(field, '') for field in (
+                'image_key', 'image_source_url', 'image_page_url', 'image_sha256', 'image_kind',
+                'image_review_status', 'image_policy_key', 'image_review')}}
+            require_reviewed_images([result], fallback_image_key)
+            ready.append(result)
     return ready

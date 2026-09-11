@@ -10,6 +10,7 @@ from zoneinfo import ZoneInfo
 
 from cmhk.services.news_delivery_dedupe import deduplicate_events
 from cmhk.services.news_delivery_assets import prepare_news_assets
+from cmhk.services.news_image_quality import policy_key, require_reviewed_images
 from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract
 from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news
 
@@ -19,7 +20,7 @@ class NewsNotPrepared(RuntimeError):
 
 
 def preparation_key(*, body: str, title: str, history: list[dict], send_day: str, context: str = "") -> str:
-    encoded = json.dumps([POLICY_VERSION, TEMPLATE_VERSION, skill_contract()[1], context, body, title, send_day, sorted(
+    encoded = json.dumps([POLICY_VERSION, TEMPLATE_VERSION, policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
         json.dumps(item, ensure_ascii=False, sort_keys=True) for item in history
     )], ensure_ascii=False)
     return hashlib.sha256(encoded.encode()).hexdigest()
@@ -84,6 +85,7 @@ def delivered_history(db, *, open_id: str, batch_id: str, logical_day: str, send
 
 def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
     from cmhk.services.subscriptions import NEWS_DIGEST_PREFIX, strategic_news_card
+    require_reviewed_images(items, banner)
     groups = [items[start:start + 10] for start in range(0, len(items), 10)] or [[]]
     while True:
         pages = []
@@ -205,7 +207,9 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                      json.dumps(card, ensure_ascii=False), json.dumps({"input_count": input_count, "eligible_count": len(candidates),
                      "selection_policy": POLICY_VERSION, "template_version": TEMPLATE_VERSION,
                      "skill_hash": skill_contract()[1],
-                     "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind")} for item in prepared_items],
+                     "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind",
+                         "image_source_url", "image_page_url", "image_sha256", "image_policy_key",
+                         "image_review_status", "image_review")} for item in prepared_items],
                      "selected_count": len(selected), "history_count": len(history), "decisions": decisions,
                      "preparation_key": key, "prepared_at": prepared_at}, ensure_ascii=False), prepared_at),
                 )
