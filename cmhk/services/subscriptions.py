@@ -548,7 +548,7 @@ def subscription_entry_card(
                             ],
                         },
                         {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块；竞对动态入选后优先展示。只选今天或昨天发布的新闻，排除近期已发内容，不足设定条数就少发。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
-                        {"tag": "markdown", "content": "**战略新闻频率**"},
+                        {"tag": "markdown", "content": "**战略新闻频率**\n<font color='grey'>选择每天一次时，只在上午推送，并使用下方第一次时间。</font>"},
                         {
                             "tag": "select_static",
                             "name": "news_frequency",

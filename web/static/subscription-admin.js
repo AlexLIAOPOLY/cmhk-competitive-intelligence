@@ -108,6 +108,18 @@
     });
     row.dataset.filterServices = Array.from(serviceSet).join(" ");
     row.dataset.filterFrequency = visibility.news ? row.querySelector("[data-subscriber-news-frequency]")?.value || "once_daily" : "";
+    syncNewsDeliveryTimeDisplay(row, visibility.news);
+  }
+
+  function syncNewsDeliveryTimeDisplay(row, newsEnabled = true) {
+    const frequency = row.querySelector("[data-subscriber-news-frequency]")?.value || "once_daily";
+    const afternoonInput = row.querySelector('[data-subscriber-news-time="1"]');
+    const afternoonPlaceholder = row.querySelector("[data-subscriber-news-time-afternoon-empty]");
+    if (!afternoonInput || !afternoonPlaceholder) return;
+    const morningOnly = frequency === "once_daily";
+    afternoonInput.hidden = morningOnly;
+    afternoonInput.disabled = !newsEnabled || morningOnly;
+    afternoonPlaceholder.hidden = !morningOnly;
   }
 
   function normalizedPreferenceSnapshot(item = {}) {
@@ -172,7 +184,7 @@
       <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-frequency${hasNews ? "" : " disabled"}>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-limit aria-label="每次新闻条数"${hasNews ? "" : " disabled"}>${newsItemLimitOptions(item.news_item_limit)}</select>`, "未订阅新闻")}</td>
-      <td>${conditionalSetting("news", hasNews, `<div class="news-delivery-times" aria-label="${esc(item.display_name)}的个人期待收到信息时间"><input data-subscriber-news-time="0" type="time" min="08:00" max="11:59" title="香港时间，上午08:00至11:59" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[0])}" aria-label="第一次期待收到时间"${hasNews ? "" : " disabled"}><input data-subscriber-news-time="1" type="time" title="香港时间，不早于14:00；仅每天两次使用" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[1])}" aria-label="第二次期待收到时间"${hasNews ? "" : " disabled"}></div>`, "未订阅新闻")}</td>
+      <td>${conditionalSetting("news", hasNews, `<div class="news-delivery-times" aria-label="${esc(item.display_name)}的个人期待收到信息时间"><input data-subscriber-news-time="0" type="time" min="08:00" max="11:59" title="香港时间，上午08:00至11:59" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[0])}" aria-label="第一次期待收到时间"${hasNews ? "" : " disabled"}><input data-subscriber-news-time="1" type="time" title="香港时间，不早于14:00；仅每天两次使用" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[1])}" aria-label="第二次期待收到时间"${hasNews ? "" : " disabled"}><span class="news-delivery-time-not-applicable" data-subscriber-news-time-afternoon-empty aria-label="下午不推送" hidden>—</span></div>`, "未订阅新闻")}</td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td class="subscriber-action-cell"><button class="icon-button${differsFromDefault ? " is-different" : ""}" type="button" data-reset-subscriber data-default-different="${differsFromDefault}" aria-label="${differsFromDefault ? `恢复 ${esc(item.display_name)} 的默认选项（当前设置与默认不同）` : `${esc(item.display_name)} 当前已是默认选项`}" title="${differsFromDefault ? "当前设置与默认订阅不同，点击恢复" : "当前设置与默认订阅一致"}">${icon("refresh")}</button></td>
       <td class="subscriber-action-cell"><button class="button compact-save" type="button" data-save-subscriber>保存${subscriberDrafts.has(item.open_id) ? " *" : ""}</button></td>

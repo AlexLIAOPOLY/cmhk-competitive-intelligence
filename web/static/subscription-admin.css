@@ -154,6 +154,8 @@ h1 { color: #eff6f8; font-size: 18px; font-weight: 650; line-height: 1.25; }
 .subscriber-dependent-setting { display: flex; align-items: center; gap: 5px; }
 .news-delivery-times { display: grid; grid-template-columns: repeat(2, minmax(92px, 1fr)); gap: 6px; }
 .news-delivery-times input { min-width: 92px; }
+.news-delivery-time-not-applicable { display: grid; min-width: 92px; min-height: 28px; place-items: center; color: #8faab3; }
+.news-delivery-time-not-applicable[hidden] { display: none; }
 .subscriber-dependent-setting[hidden], .subscriber-setting-empty[hidden] { display: none; }
 .subscriber-setting-empty { min-width: 76px; min-height: 28px; color: #66848e; font-size: 9px; white-space: nowrap; }
 .subscriber-action-cell { text-align: center; white-space: nowrap; }

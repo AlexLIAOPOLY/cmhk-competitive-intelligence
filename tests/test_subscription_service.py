@@ -194,7 +194,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**定期推送日期（后台设置）**\n**战略双周报：**每月 5、20 日 08:45（香港时间）\n**运营商业绩摘要：**每月 10、25 日 09:30（香港时间）", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
+            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**定期推送日期（后台设置）**\n**战略双周报：**每月 5、20 日 08:45（香港时间）\n**运营商业绩摘要：**每月 10、25 日 09:30（香港时间）", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**\n<font color='grey'>选择每天一次时，只在上午推送，并使用下方第一次时间。</font>", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
