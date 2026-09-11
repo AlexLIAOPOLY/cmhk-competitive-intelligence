@@ -4,6 +4,7 @@ import copy
 import io
 import json
 import tempfile
+import time
 import unittest
 from pathlib import Path
 from unittest.mock import patch
@@ -88,9 +89,110 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
             checkpoint = Path(td) / "ai.json"
             result = pipeline.generate_model_domain_summaries(evidence, checkpoint_path=checkpoint)
             self.assertEqual(call.call_count, 2)
-            self.assertEqual(result["model"], "backup")
+            self.assertEqual(result["model"], "primary")
             self.assertEqual(result["summaries"], [valid])
             self.assertNotIn("unprovided label", checkpoint.read_text())
+            # The valid second focus is kept from the failed domain response;
+            # only the first focus is sent to the model again.
+            second_prompt = json.loads(call.call_args_list[1].args[0].data)["messages"][1]["content"]
+            second_scope = json.loads(second_prompt.split("输入：\n", 1)[1])
+            self.assertEqual([f["id"] for f in second_scope["domains"][0]["focuses"]], ["custom_a"])
+
+    def test_salvaged_domain_focus_is_durable_when_other_focus_still_fails(self):
+        evidence = evidence_fixture()
+        candidate = summary_fixture(evidence)
+        candidate["focuses"][0]["entities"][0]["evidence_labels"] = ["wrong-label"]
+        with tempfile.TemporaryDirectory() as td:
+            checkpoint = Path(td) / "ai.json"
+            with patch.object(pipeline, "open_llm_request", side_effect=[
+                response(candidate), APIKeyPoolUnavailable(60, 1), APIKeyPoolUnavailable(60, 1),
+            ]) as request:
+                with self.assertRaisesRegex(ValueError, "custom_a"):
+                    pipeline.generate_model_domain_summaries(evidence, checkpoint_path=checkpoint)
+            self.assertEqual(request.call_count, 3)
+            persisted = json.loads(checkpoint.read_text())
+            self.assertEqual(len(persisted), 1)
+            self.assertEqual(next(iter(persisted.values()))["summaries"][0]["focuses"][0]["id"], "custom_b")
+            with patch.object(pipeline, "open_llm_request", return_value=response(summary_fixture(evidence))) as request:
+                pipeline.generate_model_domain_summaries(evidence, checkpoint_path=checkpoint)
+            self.assertEqual(request.call_count, 1)
+
+    def test_entity_allowed_labels_are_explicit_and_wrong_entity_remains_rejected(self):
+        evidence = evidence_fixture()
+        focus = evidence["domains"][0]["focuses"][0]
+        focus["items"][0]["components"] = [{"label": "甲公司原值", "value": 10}]
+        focus["items"][1]["components"] = [{"label": "乙公司原值", "value": 20}]
+        prompt = pipeline._model_prompt_evidence(evidence)
+        self.assertEqual(prompt["domains"][0]["focuses"][0]["items"][0]["allowed_evidence_labels"], ["甲公司原值"])
+        self.assertNotIn("allowed_evidence_labels", focus["items"][0])
+        candidate = summary_fixture(evidence)
+        candidate["focuses"][0]["entities"][0]["evidence_labels"] = ["乙公司原值"]
+        with self.assertRaisesRegex(ValueError, "未知明细"):
+            pipeline._validate_model_summaries([candidate], evidence)
+
+    def test_headline_judgement_matrix(self):
+        accepted = ["HKT营收底盘最厚，资源承载力与规模优势显著", "HKT EBITDA经营造血基础更强",
+                    "净利润差距扩大再投资缓冲层次", "HKT收入底盘显著领先同业"]
+        rejected = ["营收", "EBITDA", "FY2026净利润", "营收规模不同", "最新营收披露",
+                    "营收数据入库完成", "营收底盘最厚，数据维护完成", "营收披露完整度最高"]
+        for headline in accepted:
+            with self.subTest(headline=headline):
+                self.assertEqual(pipeline._focus_headline_gate_error("local", "revenue", headline), "")
+        for headline in rejected:
+            with self.subTest(headline=headline):
+                self.assertIn("战略判断", pipeline._focus_headline_gate_error("local", "revenue", headline))
+
+    def test_attempt_trace_redacts_keys_and_keeps_model_gate_metadata(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "attempts.jsonl"
+            config = {"api_key": "test-secret-never-save"}
+            payload = {"model": "reported-model", "choices": [{"finish_reason": "stop", "message": {"content": "private model prose"}}]}
+            pipeline._trace_model_attempt(path, "local.revenue", "requested-model", time.monotonic(), payload,
+                                          ValueError("AI分析拒绝 test-secret-never-save Bearer another-secret"), config)
+            text = path.read_text()
+            self.assertNotIn("test-secret-never-save", text)
+            self.assertNotIn("another-secret", text)
+            self.assertNotIn("private model prose", text)
+            item = json.loads(text)
+            self.assertEqual(item["reported_model"], "reported-model")
+            self.assertEqual(item["requested_model"], "requested-model")
+            self.assertEqual(item["finish_reasons"], ["stop"])
+            self.assertEqual(len(item["response_hash"]), 64)
+            self.assertFalse(item["ok"])
+        with patch.object(pipeline, "_write_model_attempt_trace", side_effect=OSError("read-only filesystem")):
+            pipeline._trace_model_attempt(Path("unused"), "local", "model", 0, {}, None, {})
+
+    def test_exact_entity_address_maps_only_unique_matching_value_unit(self):
+        evidence = evidence_fixture()
+        entity = evidence["domains"][0]["focuses"][0]["items"][0]
+        entity.update(detail="甲公司本期原文说明", components=[{"label": "甲公司原值", "value": 10, "unit": "项"}])
+        raw = summary_fixture(evidence)
+        raw["focuses"][0]["entities"][0]["evidence_labels"] = [entity["detail"]]
+        original = copy.deepcopy(raw)
+        validated = pipeline._validate_model_summaries([raw], evidence)
+        result = validated[0]["focuses"][0]["entities"][0]
+        self.assertEqual(result["evidence_labels"], ["甲公司原值"])
+        self.assertEqual(result["submitted_evidence_labels"], [entity["detail"]])
+        self.assertEqual(result["evidence_label_identity_mappings"][0]["value"], 10)
+        self.assertEqual(raw, original)
+        self.assertEqual(pipeline._validate_model_summaries(validated, evidence), validated)
+        for damage in ("two_matches", "unit", "value", "wrong_entity", "unknown", "source", "period", "forged_audit"):
+            with self.subTest(damage=damage):
+                broken_evidence = copy.deepcopy(evidence)
+                broken = copy.deepcopy(raw)
+                target = broken_evidence["domains"][0]["focuses"][0]["items"][0]
+                output = broken["focuses"][0]["entities"][0]
+                if damage == "two_matches": target["components"].append({"label": "另一明细", "value": 10, "unit": "项"})
+                elif damage == "unit": target["components"][0]["unit"] = "户"
+                elif damage == "value": target["components"][0]["value"] = 11
+                elif damage == "wrong_entity": output["evidence_labels"] = ["乙公司本期原文说明"]
+                elif damage == "unknown": output["evidence_labels"] = ["未知引用"]
+                elif damage == "source": output["source_urls"] = ["https://outside.test/fact"]
+                elif damage == "period": output["analysis"] = "甲公司FY2099为10项。"
+                else:
+                    output.update(evidence_labels=["甲公司原值"], submitted_evidence_labels=["未知引用"])
+                with self.assertRaises(ValueError):
+                    pipeline._validate_model_summaries([broken], broken_evidence)
 
     def test_failed_first_focus_does_not_block_later_focus_and_domain_checkpoints(self):
         evidence = evidence_fixture()
@@ -193,7 +295,13 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
             body = json.loads(req.data)
             bodies.append(body)
             self.assertEqual(body["cache"], {"no-cache": True, "no-store": True})
-            prefix = body["messages"][0]["content"][:90]
+            marker = req.get_header("X-request-id")
+            self.assertTrue(body["messages"][0]["content"].startswith(marker))
+            self.assertTrue(body["messages"][1]["content"].startswith(marker))
+            self.assertTrue(req.full_url.endswith("request_id=" + marker))
+            self.assertEqual(req.get_header("Cache-control"), "no-cache, no-store")
+            self.assertEqual(req.get_header("Pragma"), "no-cache")
+            prefix = body["messages"][1]["content"][:90]
             candidate = cached_prefixes.setdefault(prefix, invalid if len(bodies) == 1 else valid)
             return io.BytesIO(json.dumps({"choices": [{"finish_reason": "stop", "message": {
                 "content": json.dumps(candidate, ensure_ascii=False),
@@ -204,7 +312,8 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
         self.assertEqual(len(bodies), 2)
         self.assertEqual(result["focus"]["analysis"], valid["analysis"])
         self.assertIn("上次未通过校验", bodies[1]["messages"][-1]["content"])
-        self.assertEqual(bodies[0]["messages"][1], bodies[1]["messages"][1])
+        self.assertEqual(bodies[0]["messages"][1]["content"].split("\n", 2)[2],
+                         bodies[1]["messages"][1]["content"].split("\n", 2)[2])
         self.assertNotIn(bodies[0]["messages"][0]["content"].splitlines()[0], bodies[1]["messages"][0]["content"])
 
     def test_ebitda_operating_cash_generation_dimension_retains_other_gates(self):

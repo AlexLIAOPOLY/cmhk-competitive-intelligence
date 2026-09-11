@@ -7,6 +7,7 @@ import json
 
 MAX_REQUESTS = 12
 MAX_SCOPE_REQUESTS = 3
+DIAGNOSTIC_REVISION = 2
 
 
 def _partition(payload, ids):
@@ -79,15 +80,25 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
         save()
         raise blocked_error("接受复核已停止自动重试：" + reason)
 
-    if state.get("blocked"):
+    # This one-time migration repairs old incomplete diagnostics, not the budget.
+    # Keep the original checkpoint and every previous counter/history entry.
+    old_revision = int(state.get("diagnostic_revision", 1))
+    diagnostic_recovery = bool(
+        state.get("blocked") and old_revision < DIAGNOSTIC_REVISION
+        and not state.get("diagnostic_migration")
+        and isinstance(draft, dict) and "decisions" not in draft
+        and _partition(draft, ids) and state.get("attempt_history")
+    )
+    if state.get("blocked") and not diagnostic_recovery:
         block(state.get("last_error") or "同一输入的修复次数已用尽")
+    state["diagnostic_revision"] = DIAGNOSTIC_REVISION
     try:
         while True:
             error = state.get("last_error", "")
             if draft is not None:
                 try:
                     validate(draft, targets, provisional)
-                    state.update(status="validated", draft=draft, model=model, last_error="")
+                    state.update(status="validated", blocked=False, draft=draft, model=model, last_error="")
                     save()
                     return draft, model
                 except ValueError as exc:
@@ -100,14 +111,28 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
             scope_attempts = state.setdefault("scope_attempts", {})
             news_attempts = state.setdefault("news_attempts", {})
             if (int(state.get("requests", 0)) >= MAX_REQUESTS
-                    or int(scope_attempts.get(scope_key, 0)) >= MAX_SCOPE_REQUESTS
-                    or any(int(news_attempts.get(n, 0)) >= MAX_SCOPE_REQUESTS for n in scope)):
+                    or (state.get("diagnostic_migration") and not diagnostic_recovery)
+                    or (not diagnostic_recovery and (
+                        int(scope_attempts.get(scope_key, 0)) >= MAX_SCOPE_REQUESTS
+                        or any(int(news_attempts.get(n, 0)) >= MAX_SCOPE_REQUESTS for n in scope)))):
                 block(error or "接受复核未返回完整结果")
+            migration_request = diagnostic_recovery
+            if migration_request:
+                state["diagnostic_migration"] = {
+                    "used": True, "from_revision": old_revision,
+                    "to_revision": DIAGNOSTIC_REVISION,
+                    "requests_before": int(state.get("requests", 0)),
+                    "scope_attempts_before": dict(scope_attempts),
+                    "news_attempts_before": dict(news_attempts),
+                    "history_length_before": len(state["attempt_history"]),
+                    "scope": sorted(scope),
+                }
+                diagnostic_recovery = False
             scope_attempts[scope_key] = int(scope_attempts.get(scope_key, 0)) + 1
             for news_id in scope:
                 news_attempts[news_id] = int(news_attempts.get(news_id, 0)) + 1
             state.update(requests=int(state.get("requests", 0)) + 1,
-                         status="repairing" if draft else "reviewing", last_error=error,
+                         status="repairing" if draft else "reviewing", blocked=False, last_error=error,
                          validation_issues=issues)
             save()  # Crashes and network failures cannot reset the call budget.
             subset = [t for t in targets if t["news_id"] in scope]
@@ -118,6 +143,8 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
             } if draft is not None else None
             session["quality_feedback"] = (
                 f"{prior_feedback or ''} 具体校验问题：{error}。本次只复核所给候选。"
+                "只核对原文事实、独立字段依据和事件重复，不重复学习已完成的初筛偏好；"
+                "初筛结果只是接受上限，正式监控竞对身份不能替代具体事实。"
                 "同场大会的不同产品、投资计划和独立项目必须分别分组。"
                 "同一具体事件每个字段只能接受一个代表，其他重复项不接受并指向代表；"
                 "acceptance_review_repair包含未通过校验的草稿和逐组错误，不是已确认结论。"
@@ -130,10 +157,12 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
                 session["request_callback"](
                     f"接受复核局部修复：{error}；仅复核 {len(subset)} 条，"
                     f"合并处理 {len(issues)} 个问题组，保留其他组；"
-                    f"本范围第 {scope_attempts[scope_key]}/{MAX_SCOPE_REQUESTS} 次。")
-            replacement, replacement_model = invoke(examples, subset)
+                    + ("旧诊断草稿唯一一次追加恢复。" if migration_request else
+                       f"本范围第 {scope_attempts[scope_key]}/{MAX_SCOPE_REQUESTS} 次。"))
+            replacement, replacement_model = invoke([] if draft is not None else examples, subset)
             state.setdefault("attempt_history", []).append({
                 "request": state["requests"], "scope": sorted(scope), "validation_issues": issues,
+                "diagnostic_revision": DIAGNOSTIC_REVISION,
                 "model": replacement_model, "response": json.loads(json.dumps(replacement, ensure_ascii=False)),
                 "transport": dict(session.get("last_response_evidence") or {}),
             })

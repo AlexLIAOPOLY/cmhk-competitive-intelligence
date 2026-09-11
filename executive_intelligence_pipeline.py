@@ -54,9 +54,9 @@ FOCUS_EVIDENCE_CONTRACT = (
     "其余事实保留在实体明细或风险字段，不必在正文重复每家公司。"
     "绝对金额的规模差不能用于推断运营效率或经营质量差异。"
     "focus标题写有证据的经营判断，使用收入底盘、经营造血、客户基础等对应的经营含义；"
-    "标题禁止出现FY、财年、营收、EBITDA、净利润、后付费用户、云收入、云利润、资本开支、"
-    "金额、绝对值、序列、入库、披露、口径、数据、待补、重新判断、按三来源。"
-    "这些指标名和比较边界保留在正文及风险中，不要把缺失值转成虚构判断。"
+    "标题可以出现指标名，但必须同时给出明确的经营比较或关系判断，不能只是指标名或数据维护说明。"
+    "不要把缺失值转成虚构判断。实体evidence_labels只能原样选自该实体allowed_evidence_labels，"
+    "该数组严格来自components.label；不需明细绑定时返回[]，不能引用detail说明或其他实体标签。"
 )
 
 
@@ -73,7 +73,73 @@ def _uncached_model_body(body: dict[str, Any], request_id: str | None = None) ->
         messages[0]["content"] = marker + str(messages[0].get("content") or "")
     else:
         messages.insert(0, {"role": "system", "content": marker})
+    for message in messages:
+        if message.get("role") == "user":
+            message["content"] = marker + str(message.get("content") or "")
+            break
     return fresh
+
+
+def _model_request(config, api_key, body, request_id=None):
+    from ai_config import INTERNAL_AI_BASE_URL
+
+    request_id = request_id or uuid4().hex
+    return urllib.request.Request(
+        f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions?request_id={request_id}",
+        data=json.dumps(_uncached_model_body(body, request_id), ensure_ascii=False).encode("utf-8"),
+        headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
+                 "Cache-Control": "no-cache, no-store", "Pragma": "no-cache", "X-Request-ID": request_id},
+        method="POST",
+    )
+
+
+def _model_prompt_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
+    prompt = json.loads(json.dumps(evidence, ensure_ascii=False))
+    for domain in prompt.get("domains") or []:
+        for focus in domain.get("focuses") or []:
+            for entity in focus.get("items") or []:
+                entity["allowed_evidence_labels"] = [
+                    component["label"] for component in entity.get("components") or []
+                    if isinstance(component, dict) and component.get("label")
+                ]
+    return prompt
+
+
+def _trace_model_attempt(path, scope, model, started, payload, error, config):
+    try:
+        _write_model_attempt_trace(path, scope, model, started, payload, error, config)
+    except Exception:
+        # Diagnostics must never turn accepted model output into a failed run.
+        return
+
+
+def _write_model_attempt_trace(path, scope, model, started, payload, error, config):
+    if path is None:
+        return
+    from ai_config import api_key_candidates
+
+    message = str(error or "")
+    for key in api_key_candidates(config, model=model):
+        if key:
+            message = message.replace(key, "[redacted]")
+    message = re.sub(r"(?i)Bearer\s+\S+", "Bearer [redacted]", message)
+    choices = payload.get("choices") or []
+    record = {
+        "ts": _now(), "scope": scope, "requested_model": model,
+        "reported_model": payload.get("model"),
+        "elapsed_seconds": round(time.monotonic() - started, 3),
+        "finish_reasons": [choice.get("finish_reason") for choice in choices],
+        "gate_error": message[:1200], "ok": not bool(error),
+        "response_hash": _content_hash([choice.get("message") for choice in choices]) if choices else "",
+    }
+    path.parent.mkdir(parents=True, exist_ok=True)
+    encoded = json.dumps(record, ensure_ascii=False)
+    for key in api_key_candidates(config, model=model):
+        if key:
+            encoded = encoded.replace(key, "[redacted]")
+    with path.open("a", encoding="utf-8") as handle:
+        fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
+        handle.write(encoded + "\n")
 
 
 FOCUS_RELATION_FEW_SHOTS = (
@@ -950,8 +1016,16 @@ def _strategic_focus_headline(
 
 
 def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str:
+    normalized = headline.replace("营收", "收入")
+    operating_judgement = (
+        any(term in normalized for term in (*_OVERVIEW_STRATEGIC_MEANING_TERMS, "客户基础", "经营规模", "资源承载"))
+        and any(term in normalized for term in (*_ANALYTICAL_JUDGEMENT_TERMS, *_DEEP_RELATION_MARKERS))
+        and not _contains_action_advice(headline)
+    )
+    administrative = any(term in headline for term in ("入库", "数据维护", "待补", "重新判断", "按三来源", "披露完整", "披露更新"))
     if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and (
-        not headline or any(term in headline for term in _OVERVIEW_DIRECT_HEADLINE_TERMS)
+        not headline or administrative
+        or (any(term in headline for term in _OVERVIEW_DIRECT_HEADLINE_TERMS) and not operating_judgement)
     ):
         return f"AI分析标题缺少战略判断：{domain}.{focus_id}"
     if (domain, focus_id) == ("local", "financials") and any(
@@ -1422,6 +1496,27 @@ def _repair_model_summaries(raw: Any, evidence: dict[str, Any]) -> Any:
     """Preserve model prose. Validation failures must go back to the model."""
     return json.loads(json.dumps(raw, ensure_ascii=False))
 
+def _canonical_entity_labels(labels, entity):
+    """Resolve an exact entity evidence address, never infer or drop a label."""
+    components = [c for c in entity.get("components") or [] if isinstance(c, dict)]
+    allowed = {str(c.get("label") or "") for c in components}
+    matches = [c for c in components if c.get("label")
+               and entity.get("value") not in (None, "", "-")
+               and entity.get("unit") not in (None, "")
+               and c.get("value") == entity.get("value")
+               and c.get("unit") == entity.get("unit")]
+    canonical, mappings = [], []
+    for submitted in labels:
+        label = submitted
+        if label not in allowed and label and label == entity.get("detail") and len(matches) == 1:
+            label = str(matches[0]["label"])
+            mappings.append({"submitted": submitted, "canonical": label,
+                             "basis": "exact_entity_detail_and_unique_value_unit",
+                             "value": entity["value"], "unit": entity["unit"]})
+        canonical.append(label)
+    return canonical, mappings
+
+
 def _validate_model_summaries(
     raw: Any,
     evidence: dict[str, Any],
@@ -1560,6 +1655,15 @@ def _validate_model_summaries(
                         "evidence_labels": [str(label) for label in raw_entity.get("evidence_labels") or []],
                         "source_urls": [str(url) for url in raw_entity.get("source_urls") or []],
                     }
+                    submitted_labels = [str(label) for label in raw_entity.get(
+                        "submitted_evidence_labels", entity_summary["evidence_labels"]) or []]
+                    canonical_labels, identity_mappings = _canonical_entity_labels(submitted_labels, evidence_entities[name])
+                    if "submitted_evidence_labels" in raw_entity and canonical_labels != entity_summary["evidence_labels"]:
+                        raise ValueError(f"AI分析实体引用身份审计不一致：{domain}.{focus_id}.{name}")
+                    entity_summary["evidence_labels"] = canonical_labels
+                    if identity_mappings:
+                        entity_summary["submitted_evidence_labels"] = submitted_labels
+                        entity_summary["evidence_label_identity_mappings"] = identity_mappings
                     if not entity_summary["headline"] or not entity_summary["analysis"] or not entity_summary["risk"]:
                         raise ValueError(f"AI分析实体字段不完整：{domain}.{focus_id}.{name}")
                     if any(phrase in entity_summary["analysis"] for phrase in filler_phrases):
@@ -2492,13 +2596,7 @@ def generate_model_focus_insight(
             **dict(config.get("extra_parameters") or {}), "model": model,
             "messages": messages, "temperature": temperature, "max_tokens": 4000,
         })
-        request = urllib.request.Request(
-            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions?request_id={request_id}",
-            data=json.dumps(_uncached_model_body(body, request_id), ensure_ascii=False).encode("utf-8"),
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
-                     "Cache-Control": "no-cache, no-store", "Pragma": "no-cache",
-                     "X-Request-ID": request_id}, method="POST",
-        )
+        request = _model_request(config, api_key, body, request_id)
         wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")
         try:
             with open_llm_request(
@@ -2577,7 +2675,7 @@ def generate_model_domain_summaries(
         "domain, headline, analysis, risk, source_urls, focuses；focuses每项字段严格为"
         "id, headline, analysis, risk, source_urls, entities；entities每项字段严格为"
         "name, headline, analysis, risk, evidence_labels, source_urls。不要Markdown。输入：\n"
-        + json.dumps(evidence, ensure_ascii=False)
+        + json.dumps(_model_prompt_evidence(evidence), ensure_ascii=False)
     )
     messages = [
         {"role": "system", "content": system_prompt},
@@ -2621,6 +2719,30 @@ def generate_model_domain_summaries(
         if checkpoint_path:
             checkpoint[cache_key(scope)] = {"model": model, "summaries": [candidate], "generated_at_hkt": _now()}
             _atomic_write_json(checkpoint_path, checkpoint)
+
+    def save_valid_focus_parts(domain_scope, candidate, model):
+        if not checkpoint_path:
+            return 0
+        saved = 0
+        for focus_evidence in domain_scope["domains"][0].get("focuses") or []:
+            matches = [f for f in candidate.get("focuses") or []
+                       if isinstance(f, dict) and f.get("id") == focus_evidence.get("id")]
+            if len(matches) != 1:
+                continue
+            focus = matches[0]
+            scope = {"domains": [{**domain_scope["domains"][0], "focuses": [focus_evidence]}]}
+            # The scope envelope uses this focus's model prose verbatim; other
+            # focus claims from the domain overview are outside this checkpoint.
+            single = {"domain": domain_scope["domains"][0]["id"], "focuses": [focus],
+                      **{key: focus.get(key) for key in ("headline", "analysis", "risk", "source_urls")}}
+            try:
+                save(scope, single, model)
+            except (ValueError, TypeError, AttributeError):
+                continue
+            saved += 1
+        return saved
+
+    attempt_trace_path = checkpoint_path.with_suffix(".attempts.jsonl") if checkpoint_path else None
     entity_count = sum(
         len(focus.get("items") or [])
         for domain in evidence.get("domains") or []
@@ -2633,12 +2755,7 @@ def generate_model_domain_summaries(
         content = ""
         body["model"] = _executive_model_route()[min(attempt, len(_executive_model_route()) - 1)]
         body["messages"] = messages
-        request = urllib.request.Request(
-            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps(_uncached_model_body(body), ensure_ascii=False).encode("utf-8"),
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            method="POST",
-        )
+        request = _model_request(config, api_key, body)
         wait_for_internal_ai_slot("executive-intelligence-analysis")
         try:
             with open_llm_request(
@@ -2715,7 +2832,7 @@ def generate_model_domain_summaries(
                     "content": (
                         f"只分析 {domain_id} 这一个领域，返回JSON对象{{\"items\":[单个领域对象]}}。"
                         "必须逐一返回输入中的全部focus id及其全部实体。字段协议不变。输入：\n"
-                        + json.dumps({"domains": [domain_evidence]}, ensure_ascii=False)
+                        + json.dumps(_model_prompt_evidence({"domains": [domain_evidence]}), ensure_ascii=False)
                     ),
                 },
             ]
@@ -2724,14 +2841,13 @@ def generate_model_domain_summaries(
             has_focus_checkpoint = any(checkpoint.get(cache_key({"domains": [{**domain_evidence, "focuses": [f]}]}))
                                        for f in domain_evidence.get("focuses") or [])
             for domain_attempt in range(0 if has_focus_checkpoint else 3):
+                candidate = None
+                domain_payload = {}
+                attempt_error = None
                 body["model"] = _executive_model_route()[min(domain_attempt, len(_executive_model_route()) - 1)]
-                request = urllib.request.Request(
-                    f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-                    data=json.dumps(_uncached_model_body({**body, "messages": domain_messages}), ensure_ascii=False).encode("utf-8"),
-                    headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                    method="POST",
-                )
+                request = _model_request(config, api_key, {**body, "messages": domain_messages})
                 wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}")
+                attempt_started = time.monotonic()
                 try:
                     with open_llm_request(
                         request,
@@ -2804,6 +2920,9 @@ def generate_model_domain_summaries(
                     break
                 except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                     domain_error = exc
+                    attempt_error = exc
+                    if candidate and save_valid_focus_parts(domain_scope, candidate, str(body["model"])):
+                        break
                     if domain_attempt < 2:
                         domain_messages.append({
                             "role": "user",
@@ -2814,6 +2933,9 @@ def generate_model_domain_summaries(
                                 "不要只复述高低增减或解释指标用途。仍只返回JSON对象{\"items\":[单个领域对象]}。"
                             ),
                         })
+                finally:
+                    _trace_model_attempt(attempt_trace_path, domain_id, str(body["model"]),
+                                         attempt_started, domain_payload, attempt_error, config)
             if domain_summary is None:
                 focus_parts: list[dict[str, Any]] = []
                 domain_fields: dict[str, Any] | None = None
@@ -2853,7 +2975,7 @@ def generate_model_domain_summaries(
                                 f"实体name必须完整且原样等于：{json.dumps(sorted(expected_names), ensure_ascii=False)}。"
                                 "items固定结构为：[{domain,headline,analysis,risk,source_urls,focuses:[{id,headline,analysis,risk,"
                                 "source_urls,entities:[{name,headline,analysis,risk,evidence_labels,source_urls}]}]}]。输入：\n"
-                                + json.dumps({"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}, ensure_ascii=False)
+                                + json.dumps(_model_prompt_evidence({"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}), ensure_ascii=False)
                             ),
                         },
                     ]
@@ -2861,13 +2983,11 @@ def generate_model_domain_summaries(
                     focus_error: Exception | None = None
                     focus_models = _executive_model_route()
                     for focus_attempt, focus_model in enumerate(focus_models):
-                        request = urllib.request.Request(
-                            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-                            data=json.dumps(_uncached_model_body({**body, "model": focus_model, "messages": focus_messages}), ensure_ascii=False).encode("utf-8"),
-                            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-                            method="POST",
-                        )
+                        focus_payload = {}
+                        attempt_error = None
+                        request = _model_request(config, api_key, {**body, "model": focus_model, "messages": focus_messages})
                         wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}-{focus_id}")
+                        attempt_started = time.monotonic()
                         try:
                             with open_llm_request(
                                 request,
@@ -2926,6 +3046,7 @@ def generate_model_domain_summaries(
                             break
                         except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                             focus_error = exc
+                            attempt_error = exc
                             if focus_attempt + 1 < len(focus_models):
                                 focus_messages.append({
                                     "role": "user",
@@ -2936,6 +3057,9 @@ def generate_model_domain_summaries(
                                         "也不能只复述高低增减或指标定义。只返回合法JSON对象{\"items\":[单个领域对象]}。"
                                     ),
                                 })
+                        finally:
+                            _trace_model_attempt(attempt_trace_path, f"{domain_id}.{focus_id}", focus_model,
+                                                 attempt_started, focus_payload, attempt_error, config)
                     if focus_candidate is None:
                         scope_errors.append(
                             f"AI分析按分类重试仍未通过：{domain_id}.{focus_id}: {focus_error}; 领域错误：{domain_error}"
@@ -3057,7 +3181,7 @@ def _manual_discovery_evidence(
     }
 
 
-def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[str, Any]:
+def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attempt_trace_path: Path | None = None) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
     from network_utils import urlopen_with_local_proxy_fallback
@@ -3109,13 +3233,11 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
     for attempt, discovery_model in enumerate(discovery_models):
         body["model"] = discovery_model
         body["messages"] = messages
-        request = urllib.request.Request(
-            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps(_uncached_model_body(body), ensure_ascii=False).encode("utf-8"),
-            headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
-            method="POST",
-        )
+        request = _model_request(config, api_key, body)
         wait_for_internal_ai_slot("executive-intelligence-discoveries")
+        attempt_started = time.monotonic()
+        payload = {}
+        attempt_error = None
         try:
             with open_llm_request(
                 request,
@@ -3129,9 +3251,11 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         except urllib.error.HTTPError as exc:
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             last_error = RuntimeError(f"内网模型 HTTP {exc.code}: {detail}")
+            _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model, attempt_started, payload, last_error, config)
             continue
         except (APIKeyPoolUnavailable, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
+            _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model, attempt_started, payload, exc, config)
             continue
         try:
             content = final_chat_message_text(payload, operation="跨库AI发现")
@@ -3150,6 +3274,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
             break
         except (ValueError, json.JSONDecodeError) as exc:
             last_error = exc
+            attempt_error = exc
             if attempt + 1 < len(discovery_models):
                 messages.extend([
                     {"role": "assistant", "content": content},
@@ -3164,6 +3289,9 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
                         ),
                     },
                 ])
+        finally:
+            _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model,
+                                 attempt_started, payload, attempt_error, config)
     if discoveries is None:
         raise ValueError(f"AI跨库发现连续三次未通过门禁：{last_error}")
     return {
@@ -3328,24 +3456,13 @@ def regenerate_model_discovery(
                 f"本次必须从“{angle}”形成与最近版本不同的新判断。"
             ),
         }]
-        request = urllib.request.Request(
-            f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps(_uncached_model_body(prepare_structured_chat_body({
+        request = _model_request(config, api_key, prepare_structured_chat_body({
                 **dict(config.get("extra_parameters") or {}),
                 "model": model,
                 "messages": request_messages,
                 "temperature": 0.25 if attempt == 0 else 0.55,
                 "max_tokens": 520,
-            }), request_id), ensure_ascii=False).encode("utf-8"),
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-                "Cache-Control": "no-cache, no-store",
-                "Pragma": "no-cache",
-                "X-Request-ID": request_id,
-            },
-            method="POST",
-        )
+            }), request_id)
         wait_for_internal_ai_slot(f"executive-intelligence-discovery-{index}")
         try:
             with open_llm_request(
@@ -3484,7 +3601,8 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, check
             return {**previous, "summaries": summaries, "discoveries": discoveries, "reused": True}
     generated = (generate_model_domain_summaries(evidence, checkpoint_path=checkpoint_path)
                  if checkpoint_path else generate_model_domain_summaries(evidence))
-    discoveries = generate_model_discoveries(evidence)
+    discoveries = (generate_model_discoveries(evidence, attempt_trace_path=checkpoint_path.with_suffix(".attempts.jsonl"))
+                   if checkpoint_path else generate_model_discoveries(evidence))
     bundle = {
         **generated,
         "summaries": _validate_model_summaries(generated["summaries"], evidence),

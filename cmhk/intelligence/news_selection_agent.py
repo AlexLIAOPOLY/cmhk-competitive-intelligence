@@ -1840,6 +1840,7 @@ def _normalized_acceptance_review(
                 raise ValueError(f"同一事件同字段重复接受 {field}: {'、'.join(accepted)}")
     if set(group_by_id) != set(reviewed):
         raise ValueError("接受复核事件分组遗漏候选")
+    errors = []
     for item in decisions:
         news_id = item["news_id"]
         raw, before = raw_by_id[news_id], initial[news_id]
@@ -1853,26 +1854,38 @@ def _normalized_acceptance_review(
                 continue
             if before.get(f"{field}_status") != "接受":
                 if item[f"{field}_status"] != before.get(f"{field}_status"):
-                    raise ValueError(f"接受复核不得升级原不接受字段 {news_id}/{field}")
+                    errors.append(f"接受复核不得升级原不接受字段 {news_id}/{field}")
                 continue
             reason = _simplified(raw.get(f"{field}_reason"), 500)
             evidence = _simplified(raw.get(f"{field}_evidence"), 220)
             impact = _simplified(raw.get(f"{field}_impact"), 500)
             signal = _text(raw.get(f"{field}_signal"), 40)
             duplicate_of = _text(raw.get(f"{field}_duplicate_of"), 80)
+            source_evidence = evidence
+            if evidence and not any(evidence in source for source in evidence_sources):
+                # Only a source-backed terminal sentence mark is equivalent;
+                # retain the submitted quote and never alter interior text/numbers.
+                terminal_normalized = evidence.rstrip("。.")
+                if len(terminal_normalized) >= 8 and any(terminal_normalized in source for source in evidence_sources):
+                    source_evidence = terminal_normalized
             if not reason:
-                raise ValueError(f"接受复核缺少独立字段理由 {news_id}/{field}")
+                errors.append(f"接受复核缺少独立字段理由reason {news_id}/{field}")
             if item[f"{field}_status"] == "接受":
-                if len(evidence) < 8 or not any(evidence in source for source in evidence_sources) or not impact:
-                    raise ValueError(f"接受复核缺少可回溯的原文事实与业务价值 {news_id}/{field}")
+                if len(source_evidence) < 8 or not any(source_evidence in source for source in evidence_sources):
+                    errors.append(f"接受复核缺少可回溯的原文事实evidence {news_id}/{field}："
+                                  "该字段必须逐字摘录所选代表标题或摘要至少8字，不能拼接、改字或省略引用")
+                if not impact:
+                    errors.append(f"接受复核缺少独立业务价值impact {news_id}/{field}："
+                                  "APP说明资讯影响，周报说明管理决策价值，不能只给另一字段的依据")
                 if duplicate_of:
-                    raise ValueError(f"重复新闻不得同时接受 {news_id}/{field}")
+                    errors.append(f"重复新闻不得同时接受 {news_id}/{field}")
                 if signal not in {"产品资费", "网络项目", "具体合作", "政策标准", "经营指标", "行业研究"}:
-                    raise ValueError(f"接受复核缺少具体事实类型 {news_id}/{field}")
+                    errors.append(f"接受复核缺少具体事实类型signal {news_id}/{field}")
                 if signal == "经营指标" and not _has_quantified_metric(evidence):
-                    raise ValueError(
+                    errors.append(
                         f"经营指标接受依据缺少实际指标数值 {news_id}/{field}："
                         "须逐字引用指标名称及其数值；年份、月份、5G等技术名称不算数值。"
+                        "预计、计划、目标不等于已经实现的指标。"
                         "仅称上市、评级、发布财报或走势不够；其他事实类型也须有原文事实，"
                         "否则该字段不接受，不得补造数字。"
                     )
@@ -1884,13 +1897,16 @@ def _normalized_acceptance_review(
                     or initial.get(duplicate_of, {}).get(f"{field}_status") != "接受"
                     or group_by_id.get(duplicate_of) != group_by_id[news_id]
                 ):
-                    raise ValueError(f"重复新闻缺少同字段已接受代表 {news_id}/{field}")
+                    errors.append(f"重复新闻缺少同字段已接受代表 {news_id}/{field}")
             review[field] = {
                 "initial_status": "接受", "final_status": item[f"{field}_status"],
                 "reason": reason, "evidence": evidence, "impact": impact,
                 "duplicate_of": duplicate_of, "signal": signal,
+                "source_evidence": source_evidence,
             }
         item["acceptance_review"] = review
+    if errors:
+        raise ValueError("；".join(errors))
     return decisions
 
 

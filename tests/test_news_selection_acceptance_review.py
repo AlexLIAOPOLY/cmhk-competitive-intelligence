@@ -59,7 +59,7 @@ class AcceptanceReviewTests(unittest.TestCase):
     def test_fabricated_evidence_and_missing_field_reason_fail_closed(self):
         for key, value, error in [
             ("app_evidence", "政府已批准运营商加价", "原文事实"),
-            ("app_impact", "", "原文事实"),
+            ("app_impact", "", "业务价值"),
             ("app_reason", "", "独立字段理由"),
         ]:
             with self.subTest(key=key):
@@ -91,6 +91,7 @@ class AcceptanceReviewTests(unittest.TestCase):
             '香港医疗健康板块成交量增长超过6倍。',
             '企业获得31亿美元银团贷款用于已签约项目。',
             '本季经营收入达2026万元，同比增长12%。',
+            '公司营收增长，增幅达到12%。',
         ):
             with self.subTest(evidence=evidence):
                 targets = copy.deepcopy(self.targets)

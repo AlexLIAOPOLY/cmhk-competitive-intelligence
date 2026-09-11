@@ -9,6 +9,8 @@ from unittest.mock import Mock, patch
 from cmhk.intelligence import news_selection_agent as agent
 from cmhk.intelligence.news_acceptance_repair import repair_review
 from tests import test_news_selection_acceptance_review as acceptance_fixture
+from tests import test_news_event_review as event_fixture
+from cmhk.intelligence import news_acceptance_repair as repair
 import strategic_briefing as briefing
 
 
@@ -123,6 +125,93 @@ class RepairTests(unittest.TestCase):
                 repair_review([], self.targets, self.primary, **args)
         self.assertEqual(call.call_count, 3)
         self.assertNotIn('payload', checkpoint['r:repair'])
+
+
+class DiagnosticMigrationTests(unittest.TestCase):
+    def setUp(self):
+        event_fixture.EventRepresentativeTests.setUp(self)
+        self.valid_pair = copy.deepcopy(self.payload)
+        good = copy.deepcopy(self.payload['event_groups'][0])
+        good.update(event='独立已验证事件', news_ids=['GOOD'])
+        good['app']['accept_id'] = 'GOOD'
+        self.payload['event_groups'].append(good)
+        self.targets.append(dict(self.targets[0], news_id='GOOD'))
+        self.provisional.append(dict(news_id='GOOD', app_status='接受', weekly_status='不接受'))
+        self.payload['event_groups'][0]['app']['evidence'] = '不是实际原文的错误引用'
+        self.old = dict(blocked=True, status='needs_review', requests=3,
+            scope_attempts={'original-scope': 3},
+            news_attempts={t['news_id']: 1 if t['news_id']=='GOOD' else 3 for t in self.targets},
+            draft=copy.deepcopy(self.payload), model='old-model', last_error='旧诊断只含首个错误',
+            attempt_history=[dict(request=i, response=copy.deepcopy(self.payload)) for i in (1,2,3)])
+        self.checkpoint = {'same:repair': copy.deepcopy(self.old)}
+        self.session = {'acceptance_review': self.provisional, 'quality_feedback': '原反馈'}
+        self.args = dict(cached={}, checkpoint=self.checkpoint, checkpoint_key='same',
+            checkpoint_callback=None, session=self.session,
+            validate=agent._normalized_acceptance_review, blocked_error=agent.NewsSelectionQualityBlocked)
+
+    def run_repair(self, invoke):
+        return repair_review(['old preference examples'], self.targets, self.provisional,
+                             invoke=invoke, **self.args)
+
+    def test_old_blocked_draft_gets_one_durable_repair_and_keeps_good_group(self):
+        def invoke(examples, subset):
+            self.assertEqual(examples, [])
+            self.assertEqual({t['news_id'] for t in subset}, {t['news_id'] for t in self.targets[:2]})
+            state = self.checkpoint['same:repair']
+            self.assertEqual(state['requests'], 4)
+            self.assertTrue(state['diagnostic_migration']['used'])
+            self.assertEqual(state['attempt_history'], self.old['attempt_history'])
+            return self.valid_pair, 'new-model'
+        call = Mock(side_effect=invoke)
+        result, _ = self.run_repair(call)
+        state = self.checkpoint['same:repair']
+        self.assertEqual(state['attempt_history'][:3], self.old['attempt_history'])
+        self.assertEqual(state['scope_attempts']['original-scope'], 3)
+        self.assertEqual(state['news_attempts']['GOOD'], 1)
+        self.assertTrue(all(state['news_attempts'][t['news_id']]==4 for t in self.targets[:2]))
+        self.assertEqual(result['event_groups'][0], self.payload['event_groups'][1])
+        self.assertEqual(state['diagnostic_revision'], repair.DIAGNOSTIC_REVISION)
+        self.assertFalse(state['blocked'])
+        self.run_repair(call)
+        self.assertEqual(call.call_count, 1)
+
+    def test_failed_migration_is_never_reawarded_even_after_revision_changes(self):
+        invalid = dict(event_groups=self.payload['event_groups'][:1])
+        call = Mock(return_value=(invalid, 'same-model'))
+        for revision in (2, 2, 3):
+            with patch.object(repair, 'DIAGNOSTIC_REVISION', revision):
+                with self.assertRaises(agent.NewsSelectionQualityBlocked):
+                    self.run_repair(call)
+        self.assertEqual(call.call_count, 1)
+        self.assertEqual(self.checkpoint['same:repair']['requests'], 4)
+        self.assertEqual(self.checkpoint['same:repair']['attempt_history'][:3], self.old['attempt_history'])
+
+    def test_network_failure_consumes_migration_before_inference(self):
+        call = Mock(side_effect=ConnectionError('interrupted'))
+        with self.assertRaises(ConnectionError):
+            self.run_repair(call)
+        with self.assertRaises(agent.NewsSelectionQualityBlocked):
+            self.run_repair(call)
+        self.assertEqual(call.call_count, 1)
+        self.assertEqual(self.checkpoint['same:repair']['requests'], 4)
+
+    def test_total_budget_and_current_diagnostics_cannot_be_bypassed(self):
+        for changes in ({'requests':12}, {'diagnostic_revision':2}, {'attempt_history':[]}):
+            with self.subTest(changes=changes):
+                self.checkpoint['same:repair'] = dict(copy.deepcopy(self.old), **changes)
+                call = Mock()
+                with self.assertRaises(agent.NewsSelectionQualityBlocked):
+                    self.run_repair(call)
+                call.assert_not_called()
+
+    def test_existing_draft_is_validated_before_consuming_any_allowance(self):
+        self.checkpoint['same:repair']['draft']['event_groups'][0] = self.valid_pair['event_groups'][0]
+        call = Mock()
+        self.run_repair(call)
+        call.assert_not_called()
+        self.assertEqual(self.checkpoint['same:repair']['requests'], 3)
+        self.assertNotIn('diagnostic_migration', self.checkpoint['same:repair'])
+        self.assertFalse(self.checkpoint['same:repair']['blocked'])
 
 
 class ExhaustedStateTests(unittest.TestCase):

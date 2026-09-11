@@ -70,6 +70,28 @@ class EventRepresentativeTests(unittest.TestCase):
         payload['event_groups'][0]['app']['accept_id'] = None
         self.assertEqual([r['app_status'] for r in self.normalize(payload)], ['不接受', '不接受'])
 
+    def test_terminal_punctuation_is_equivalent_but_original_quote_is_kept(self):
+        payload = copy.deepcopy(self.payload)
+        submitted = self.targets[0]['summary'].rstrip('。') + '..'
+        payload['event_groups'][0]['app']['evidence'] = submitted
+        proof = self.normalize(payload)[0]['acceptance_review']['app']
+        self.assertEqual(proof['evidence'], submitted)
+        self.assertEqual(proof['source_evidence'], self.targets[0]['summary'].rstrip('。'))
+        payload['event_groups'][0]['app']['evidence'] = submitted.replace('免费', '收费')
+        with self.assertRaisesRegex(ValueError, '原文事实'):
+            self.normalize(payload)
+
+    def test_all_field_errors_are_reported_before_any_repair_request(self):
+        payload = copy.deepcopy(self.payload)
+        payload['event_groups'][0]['app']['signal'] = '经营指标'
+        payload['event_groups'][0]['weekly'] = dict(accept_id=self.targets[0]['news_id'], reason='管理判断')
+        provisional = [dict(p, weekly_status='接受') for p in self.provisional]
+        with self.assertRaises(ValueError) as caught:
+            self.normalize(payload, provisional=provisional)
+        message = str(caught.exception)
+        for text in ('实际指标数值', '/app', '/weekly', 'evidence', 'impact', 'signal'):
+            self.assertIn(text, message)
+
     def test_event_raw_drafts_repair_only_invalid_group_and_keep_attempt_evidence(self):
         targets = copy.deepcopy(self.targets)
         targets.append(dict(self.targets[0], news_id='INDEPENDENT'))
