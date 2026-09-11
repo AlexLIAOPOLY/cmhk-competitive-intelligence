@@ -1507,11 +1507,8 @@
   }
 
   function selectionRunBatchKey(run) {
-    const parentRunId = linkedParentRunId(run);
-    const candidateCount = Number(run?.operational_summary?.candidate_count || 0);
-    if (parentRunId && candidateCount > 0) {
-      return `parent:${parentRunId}|candidates:${candidateCount}`;
-    }
+    // Failed attempts may have no candidate_count. Prefer the stable batch ID
+    // so their verified recovery is not counted as a different, healthy batch.
     const explicit = String(
       run?.idempotency_key
       || run?.operational_summary?.idempotency_key
@@ -1520,7 +1517,13 @@
     if (explicit) return explicit;
     const scopeKey = String(run?.scope || "")
       .match(/爬虫后选材[（(]([^）)]+)[）)]/)?.[1];
-    return String(scopeKey || linkedParentRunId(run) || run?.crawl_run_id || "").trim();
+    if (scopeKey) return scopeKey.trim();
+    const parentRunId = linkedParentRunId(run);
+    const candidateCount = Number(run?.operational_summary?.candidate_count || 0);
+    if (parentRunId && candidateCount > 0) {
+      return `parent:${parentRunId}|candidates:${candidateCount}`;
+    }
+    return String(parentRunId || run?.crawl_run_id || "").trim();
   }
 
   function selectionRunBusinessDate(run) {

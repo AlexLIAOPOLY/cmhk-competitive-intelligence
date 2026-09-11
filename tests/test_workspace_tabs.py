@@ -1,4 +1,6 @@
 from pathlib import Path
+import shutil
+import subprocess
 import unittest
 
 
@@ -607,6 +609,48 @@ class WorkspaceTabsTests(unittest.TestCase):
         self.assertIn("页面不会编造链接、关键词或数据", SCRIPT)
         self.assertIn(".news-lineage-io-flow", STYLE)
         self.assertIn(".news-lineage-first-preview", STYLE)
+
+    def test_recovered_selection_batch_health_uses_stable_scope_with_failure_history(self):
+        node = shutil.which("node")
+        if node is None:
+            self.skipTest("Node.js required for the production aggregation regression")
+        helpers = SCRIPT[SCRIPT.index("  function linkedParentRunId(run)"):SCRIPT.index("  function dailyNewsReviewResults(date)")]
+        health = SCRIPT[SCRIPT.index("  function newsSelectionReviewHealth("):SCRIPT.index("  function executiveDomainFactsForDate(")]
+        run_health = SCRIPT[SCRIPT.index("    const runHealth = (run)"):SCRIPT.index("    const strategicHealth = combinedRunHealth(runs)")]
+        program = r'''
+const assert = require('node:assert/strict');
+const state = {crawlRuns: []};
+const newsRunDate = (run) => String(run?.started_at_hkt || '').slice(0,10);
+''' + helpers + health + run_health + r'''
+const base = {task_kind:'news-selection-agent',parent_crawl_run_id:'20260911_030009_655083',scope:'爬虫后选材（2026-09-11@03:00）',started_at_hkt:'2026-09-11T05:23:47+08:00'};
+const failed = Array.from({length:19},(_,i) => ({...base,crawl_run_id:`failed-${i}`,run_status:'failed',progress_detail:`保留历史错误${i}`}));
+const completed = {...base,crawl_run_id:'20260911_114843_737238',run_status:'completed',completed_at_hkt:'2026-09-11T11:50:36+08:00',operational_summary:{candidate_count:179,readback_verified:true,verified_field_count:358,weekly_accepted_count:11}};
+state.crawlRuns = [...failed,completed];
+const original = JSON.stringify(state.crawlRuns);
+let authoritative = authoritativeSelectionRunsForDate('2026-09-11');
+assert.deepEqual(authoritative.map(r=>r.crawl_run_id),[completed.crawl_run_id]);
+assert.equal(selectionRunBatchKey(failed[0]),selectionRunBatchKey(completed));
+assert.equal(authoritative.reduce((n,r)=>n+r.operational_summary.verified_field_count,0),358);
+assert.equal(newsSelectionReviewHealth({available:false,cached:true},state.crawlRuns,combinedRunHealth(authoritative)).key,'healthy');
+assert.equal(selectionAttemptRunsForDate('2026-09-11').length,20);
+assert.equal(JSON.stringify(state.crawlRuns),original);
+state.crawlRuns = [completed,...failed];
+assert.deepEqual(authoritativeSelectionRunsForDate('2026-09-11').map(r=>r.crawl_run_id),[completed.crawl_run_id]);
+state.crawlRuns = [...failed,{...completed,operational_summary:{candidate_count:179,readback_verified:false}}];
+assert.equal(combinedRunHealth(authoritativeSelectionRunsForDate('2026-09-11')).key,'critical');
+const afternoon = {...failed[0],crawl_run_id:'afternoon',scope:'爬虫后选材（2026-09-11@14:00）'};
+const manual = {...completed,crawl_run_id:'manual',scope:'爬虫后选材（2026-09-11@review-distinct）'};
+state.crawlRuns = [completed,...failed,afternoon,manual];
+authoritative = authoritativeSelectionRunsForDate('2026-09-11');
+assert.equal(authoritative.length,3);
+assert.equal(combinedRunHealth(authoritative).key,'critical');
+assert.ok(authoritative.some(r=>r.crawl_run_id==='afternoon'));
+assert.ok(authoritative.some(r=>r.crawl_run_id==='manual'));
+assert.equal(selectionRunBusinessDate({...completed,completed_at_hkt:'2026-09-12T01:00:00+08:00'}),'2026-09-11');
+assert.equal(selectionRunBatchKey({...completed,idempotency_key:'explicit-batch'}),'explicit-batch');
+'''
+        result = subprocess.run([node, "-e", program], capture_output=True, text=True, timeout=15)
+        self.assertEqual(result.returncode, 0, result.stderr)
 
     def test_news_selection_summary_distinguishes_verified_and_new_writes(self):
         self.assertIn("function selectionRunBatchKey(run)", SCRIPT)
