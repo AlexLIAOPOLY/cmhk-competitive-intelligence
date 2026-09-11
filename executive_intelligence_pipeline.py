@@ -31,6 +31,7 @@ from cmhk.data_releases import default_release_root, publish_quarterly_release_t
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, read_chat_completion_sse, unwrap_items_payload
 from ai_key_rotation import APIKeyPoolUnavailable, open_llm_request
 from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY, model_generated_only
+from executive_intelligence_prompts import STRATEGIC_PROMPT_VERSION, STRATEGIC_WRITING_GUIDE
 
 
 ROOT = Path(__file__).resolve().parent
@@ -45,19 +46,12 @@ PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
 INSIGHT_FORMAT_VERSION = "strategic_operating_judgement_v9"
 
 FOCUS_EVIDENCE_CONTRACT = (
-    "标题、正文和风险中的数值必须逐字来自输入；禁止自行计算倍数、合计、差额、占比或增速，"
-    "也不要把精确值改写成输入未提供的约数。"
-    "分析正文须把数值连到有边界的判断：包含比较判断（如差距、不同、集中）、"
-    "证据连接词（如表明、反映、说明、显示）、经营维度（如结构、口径、客户、收入）"
-    "和关系或边界（如并非、不等于、不能、范围、层次）。"
-    "只选择当前证据支持的关系，不为满足措辞制造因果或遗漏比较边界。"
-    "正文目标80至100字，硬上限120字（数字、英文和标点均计入）；只选两至三个可比数值，"
-    "其余事实保留在实体明细或风险字段，不必在正文重复每家公司。"
-    "绝对金额的规模差不能用于推断运营效率或经营质量差异。"
-    "focus标题写有证据的经营判断，使用收入底盘、经营造血、客户基础等对应的经营含义；"
-    "标题可以出现指标名，但必须同时给出明确的经营比较或关系判断，不能只是指标名或数据维护说明。"
-    "不要把缺失值转成虚构判断。实体evidence_labels只能原样选自该实体allowed_evidence_labels，"
-    "该数组严格来自components.label；不需明细绑定时返回[]，不能引用detail说明或其他实体标签。"
+    "数字、公司、期间、单位和来源采用本次输入原值，不自行换汇、估算或补写原因。"
+    "标题写具体经营判断，正文选最有解释力的事实，简短说明它的业务含义；"
+    "缺少直接可比金额时可解释各自经营状态，不必把口径说明写成主结论。"
+    "正文以一至两句、80至110字为写作目标，风险字段补充真正影响判断的限制。"
+    "实体evidence_labels只能原样选自allowed_evidence_labels，不需明细引用时返回[]。"
+    + STRATEGIC_WRITING_GUIDE
 )
 
 
@@ -1171,8 +1165,6 @@ def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus:
             return f"财务战略解读与已校验的同期间比较矛盾：{domain}.{focus_id}"
         if re.search(r"披露|发布|数量|密度|完整度", analysis):
             return f"财务战略解读不得以发布时间或披露数量代替经营指标：{domain}.{focus_id}"
-    if not _has_deep_interpretation(analysis):
-        return f"AI分析分类缺少结构、驱动或可比性解释：{domain}.{focus_id}"
     restriction_phrases = (
         "缺失值不估算", "缺失数据不估算", "只比较已结构化", "仅比较已结构化",
         "用于判断", "用于识别", "用于展示", "展示可分析", "此处比较", "聚焦云业务",
@@ -2009,8 +2001,6 @@ def _validate_model_discoveries(raw: Any, evidence: dict[str, Any], *, require_c
         if allowed_numbers:
             if not (_numeric_tokens(combined_text) & allowed_numbers):
                 raise ValueError("AI跨库发现缺少输入数值证据")
-            if not _has_deep_interpretation(combined_text):
-                raise ValueError("AI跨库发现缺少结构、驱动或跨领域关系解释")
         unknown_urls = set(discovery["source_urls"]) - allowed_urls
         if unknown_urls:
             raise ValueError(f"AI跨库发现引用了输入之外的来源：{sorted(unknown_urls)}")
@@ -2815,7 +2805,7 @@ def generate_model_focus_insight(
             "你是电信竞争情报分析员。只分析指定指标，使用输入的公司、数值、期间、单位和来源。"
             "给出有边界的经营或竞争关系判断，不把相关当因果，不猜数字。"
             "正文一至两句、120字内；引用具体数值并解释其经营含义，不写行动建议。"
-            "缺少可比证据时明确比较边界，不能强行排序或编造关系。"
+            "缺少可比证据时解释各自经营状态，比较限制简短放在risk，不强行排序。"
             "返回JSON对象{headline,analysis,risk,source_urls}；标题28字内，不照抄指标名。"
             "请依据当前证据重新推导，不复用最近的分析或标题。"
             + FOCUS_EVIDENCE_CONTRACT
@@ -3086,14 +3076,14 @@ def generate_model_domain_summaries(
         raise RuntimeError("未配置内网模型密钥")
     system_prompt = (
         "你是电信竞争情报分析员。只使用输入的公司、数值、单位、原始财年、口径和来源。"
-        "按领域和focus组织分析：点名具体企业、引用当前数值，解释有证据支持的经营意义、结构或可比性边界；"
+        "按领域和focus组织分析：点名具体企业、引用当前数值，解释有证据支持的经营意义；"
         "不要只复述排名，不把相关性当因果，不写行动建议，不编造数字、来源或缺失值。"
         "每个领域返回headline、analysis、risk、source_urls和focuses。每个focus返回id、headline、"
         "analysis、risk、source_urls、entities。每个实体返回name、headline、analysis、risk、"
         "evidence_labels、source_urls。必须覆盖输入的全部focus和实体，不额外添加。"
         "focus正文一至两句、120字内，标题28字内且是经营判断；实体正文只需准确说明本实体事实和口径。"
         "同币种、同期间才比较金额。用户总数与后付费客户、云分部与公司整体不能混作同一指标。"
-        "所有标题与正文由你生成；若结果不完整或不可信，程序会拒绝并请求你修正，不会代写。"
+        "所有标题与正文由你依据事实生成，程序不会代写。"
         "source_urls和evidence_labels仅从对应输入中原样选择。仅返回JSON对象{\"items\":[领域对象]}。"
         + FOCUS_EVIDENCE_CONTRACT
     )
@@ -3129,7 +3119,7 @@ def generate_model_domain_summaries(
         drafts = {}
 
     def cache_key(scope):
-        return _content_hash({"format": INSIGHT_FORMAT_VERSION, "checkpoint_protocol": 2, "scope": scope})
+        return _content_hash({"format": INSIGHT_FORMAT_VERSION, "prompt_version": STRATEGIC_PROMPT_VERSION, "checkpoint_protocol": 2, "scope": scope})
 
     def validate_scope(scope, candidates):
         return _validate_model_summaries(candidates, scope,
@@ -3571,7 +3561,7 @@ def generate_model_domain_summaries(
                                 "不强迫单个实体推导经营含义。evidence_labels如使用，只能原样选自该实体components.label。"
                                 "focus.headline必须由你生成，为28字内的经营判断，不能照抄指标名称。"
                                 "focus.analysis必须用一至两句、总长不超过120字，引用输入具体数值并解释结构、驱动、"
-                                "集中度、口径可比性或市场阶段；禁止行动建议与数字复述。"
+                                "集中度或市场阶段；比较限制可放在risk，正文解释经营含义。"
                                 "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图等界面说明。"
                                 + FOCUS_EVIDENCE_CONTRACT
                             ),
@@ -3718,7 +3708,6 @@ def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
                 "id": focus.get("id"),
                 "title": focus.get("title"),
                 "metric": focus.get("metric"),
-                "insight": focus.get("insight"),
                 "items": [
                     {
                         "name": item.get("name"),
@@ -3726,16 +3715,17 @@ def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
                         "unit": item.get("unit"),
                         "period": item.get("period"),
                         "grain": item.get("grain"),
+                        "detail": item.get("detail"),
+                        "trend": item.get("trend"),
                         "source_url": item.get("source_url"),
                     }
-                    for item in (focus.get("items") or [])[:4]
+                    for item in (focus.get("items") or [])
                     if isinstance(item, dict)
                 ],
             })
         domains.append({
             "id": domain.get("id"),
             "title": domain.get("title"),
-            "deterministic_insight": domain.get("deterministic_insight"),
             "focuses": compact_focuses,
             "research_comparison_scope": domain.get("research_comparison_scope"),
             "agent_verified_facts": json.loads(json.dumps([
@@ -3743,53 +3733,16 @@ def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
                 if isinstance(fact, dict)
             ][:40], ensure_ascii=False)),
         })
-    return {"domains": domains, "relations": list(evidence.get("relations") or [])[:4]}
+    return {"domains": domains}
 
 
 def _manual_discovery_evidence(
     evidence: dict[str, Any], source_domain: str, target_domain: str
 ) -> dict[str, Any]:
-    """Give manual regeneration two explicit numeric anchors instead of both full domains."""
-    focus_map = {
-        (str(domain.get("id") or ""), str(focus.get("id") or "")): focus
-        for domain in evidence.get("domains") or []
-        for focus in domain.get("focuses") or []
-        if isinstance(focus, dict)
-    }
-    selected = ((source_domain, "revenue"), (target_domain, "revenue"))
-    anchors: list[dict[str, Any]] = []
-    for domain_id, focus_id in selected:
-        focus = focus_map.get((domain_id, focus_id)) or {}
-        metric = focus.get("metric") if isinstance(focus.get("metric"), dict) else {}
-        items = [item for item in focus.get("items") or [] if isinstance(item, dict)]
-        raw_value = metric.get("value")
-        unit = str(metric.get("unit") or "")
-        label = str(metric.get("label") or focus.get("title") or focus_id)
-        source_url = next(
-            (str(item.get("source_url") or "") for item in items if str(item.get("source_url") or "")),
-            "",
-        )
-        value = f"{_display_number(raw_value)}{unit}"
-        anchors.append({
-            "domain": domain_id,
-            "focus": focus_id,
-            "label": label,
-            "value": value,
-            "source_url": source_url,
-        })
-    required_lens = {
-        frozenset(("local", "international")): "比较本地市场深耕与跨国规模经营，解释两者所处竞争层次。",
-        frozenset(("local", "mainland")): "比较本地精细经营与内地规模经营，解释两者所处竞争层次。",
-        frozenset(("international", "cloud")): "判断传统运营商与云业务所处阶段是否分层，不把规模差直接等同经营效率。",
-        frozenset(("mainland", "cloud")): "区分内地运营商连接底盘与全球云业务规模，解释两类生态竞争边界。",
-        frozenset(("local", "cloud")): "区分香港运营商整体财务与全球云分部收入，解释主体、币种和范围边界。",
-        frozenset(("mainland", "international")): "区分内地与跨国运营商的主体、币种和市场范围，不能用绝对金额直接判断经营质量。",
-    }.get(frozenset((source_domain, target_domain)), "解释两项指标的口径和市场阶段边界。")
-    return {
-        "required_values": [item["value"] for item in anchors],
-        "required_lens": required_lens,
-        "evidence": anchors,
-    }
+    """Let the model choose relevant facts from both domains, as in batch generation."""
+    scoped = {"domains": [domain for domain in evidence.get("domains") or []
+                          if domain.get("id") in {source_domain, target_domain}]}
+    return _compact_discovery_evidence(scoped)
 
 
 def _discovery_patch_options(candidate, evidence):
@@ -3883,12 +3836,9 @@ def _repair_saved_discoveries(entry, evidence, config, persist, trace_path):
             "只修正列出的失败跨库发现，其他条目必须保持原样。只返回JSON对象{patches:[{index,title,detail,source_urls}]}。"
             "index只能来自allowed_items；保留from/to身份，每个失败条目都要真正纠错。标题目标28字内，正文目标80至110字、最多两句。"
             "每条只能使用facts中明确的公司、指标、原值、单位、期间与精确source_url，禁止引用同域其他公司或其他指标来源。"
-            "所有事实值保留原币，禁止自己换汇或计算差額。指标、币种、期间、集团/业务范围不同时只能陈述比较边界，"
-            "明确说明不能直接比较或排名，不得在标题或其他从句又宣称差距、梯队、领先、客户价值分化。"
-            "客户数不是ARPU，利润不是利润率，不能用不同指标推断后者差距。横截面数据不能支持脱钩。"
-            "禁止主要来自、源自、驱动等未经证据支持的原因归纳，不得猜市场结构、客户需求或定价导致差距。"
-            "依据真实口径解释边界，可用不同、表明、口径、不能直接比较自然连接证据与关系；不要为了词表拼造原因。"
-            "若来源与事实未绑定，选择有精确来源的其他事实；不能补写不存在的事实。")},
+            "所有事实值保留原币，不自行换汇。纠正事实引用时，保留原有且有证据支持的经营判断，"
+            "比较限制简短说明，不要把整条分析改成口径说明。"
+            + STRATEGIC_WRITING_GUIDE)},
             {"role": "user", "content": json.dumps({"task": "repair_failed_discoveries_v1", "allowed_items": options,
                 "previous_error": history[-2].get("error") if len(history) > 1 else None}, ensure_ascii=False)}]
         request = _model_request(config, config["api_key"], prepare_structured_chat_body({
@@ -3945,10 +3895,10 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     saved = _read_json(draft_path, {}) if draft_path else {}
     if not isinstance(saved, dict):
         saved = {}
-    evidence_hash = _content_hash({"schema": "four_discoveries_v1", "evidence": prompt_evidence})
+    evidence_hash = _content_hash({"schema": "four_discoveries_v1", "prompt_version": STRATEGIC_PROMPT_VERSION, "evidence": prompt_evidence})
     if evidence_hash not in saved:
         previous_compact = _compact_discovery_evidence(_previous_annual_source_evidence(evidence))
-        previous_hash = _content_hash({"schema": "four_discoveries_v1", "evidence": previous_compact})
+        previous_hash = _content_hash({"schema": "four_discoveries_v1", "prompt_version": STRATEGIC_PROMPT_VERSION, "evidence": previous_compact})
         if previous_hash != evidence_hash and previous_hash in saved:
             saved[evidence_hash] = json.loads(json.dumps(saved[previous_hash], ensure_ascii=False))
             saved[evidence_hash]["source_migration"] = {"previous_evidence_hash": previous_hash, "current_evidence_hash": evidence_hash,
@@ -4005,18 +3955,11 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     system_prompt = (
         "你是电信竞争情报分析员。从local、international、mainland、cloud四个战略总览数据域中提炼恰好四条跨库发现。"
         "每条必须联系两个不同领域，四条不得重复同一领域组合，且四个领域都要被覆盖。"
-        "不要逐库摘要，不要写论文，不要复述发生了什么；标题写数据关系结论，detail只解释背后的结构、驱动、"
-        "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
-        "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
-        "不得把规模差距解释成客户需求、效率或投入驱动；证据无法建立因果时明确保留推断边界。"
-        "agent_verified_facts是独立正式披露，必须保留各自period和grain；季度、半年事实不能替代全年金额比较。"
-        "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
-        "每条detail应包含有证据支持的比较或边界判断（如不同、不可直接比较）、一个分析维度词"
-        "（如结构、口径、效率、盈利、客户、资本）和一个深层关系词"
-        "（如并非、不等同、不能直接比较、范围不同）。禁止主要来自、驱动、脱钩等无证据因果或时间关系。"
-        "不同指标、币种、期间或主体范围不能比较大小、排名或推断ARPU/利润率差距；明确说明不能直接比较及具体边界。"
-        "每个原值引用其公司、指标和期间的精确source_url，不能使用同域任意URL。"
-        "source_urls必须分别包含两个领域在输入中原样提供的来源。只返回JSON对象，顶层字段只能是items数组。"
+        "从两域中自行选择有解释力的事实，标题写具体经营判断，detail用事实解释竞争、盈利、客户或投入的含义。"
+        "只使用输入中的数字、公司、期间、单位和来源，不把相关性当因果，不自行换汇或补写缺失事实。"
+        "不同币种、期间、指标或业务范围不能直接排名；如涉及这类金额，简短交代限制，同时解释证据支持的经营状态。"
+        "每条引用两个领域所用事实的精确source_url。只返回JSON对象，顶层字段是items数组。"
+        + STRATEGIC_WRITING_GUIDE
     )
     user_prompt = (
         "请返回{\"items\":[四条发现]}，每项字段严格为from,to,title,detail,kind,source_urls。"
@@ -4124,11 +4067,9 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                     {
                         "role": "user",
                         "content": (
-                            f"上一版未通过跨库门禁：{exc}。请改成有数字锚点的深层数据关系结论，只解释结构、驱动、"
-                            "集中度、口径或市场阶段；每条detail必须含表明、说明、意味着、并非、而非或不能等同之一，"
-                            "依据所用事实解释具体结构或口径边界；不同指标、币种、期间或主体范围时明确不能直接比较，"
-                            "不得再写高低、差距、梯队或客户价值领先，不用主要来自、驱动或脱钩归因；每个值绑定其精确来源。"
-                            "不写发生了什么，不提建议或下一步；仍只返回{\"items\":[四条发现]}。"
+                            f"请修正上一版的问题：{exc}。保留有证据支持的经营判断，修正事实或格式问题。"
+                            "仍按前述样例写法，由事实解释业务含义，必要的比较限制简短交代。"
+                            "只返回{\"items\":[四条发现]}。"
                         ),
                     },
                 ])
@@ -4192,16 +4133,12 @@ def regenerate_model_discovery(
                 "你是电信竞争情报分析员。只重新生成指定两个领域的一条跨库发现。"
                 "只返回JSON对象{from,to,title,detail,kind,source_urls}。from和to必须保持输入顺序；"
                 "title必须是一句有战略含义的判断、不超过28字，detail不超过110字，kind写AI综合研判。"
-                "detail必须逐字包含required_values中的两个值，且两个领域各一个；解释竞争层次、经营结构、"
-                "口径边界或市场阶段，以及这组比较对理解竞争格局意味着什么；"
-                "禁止建议、应、需、优先、关注、评估、验证等行动话术。"
-                "detail必须遵守required_lens；detail必须包含“表明、反映、说明”三者之一且只用一个即可；"
-                "关系判断可使用分层、差距、不同、并非、不等于、重合、错位、边界等最贴合证据的词。"
-                "不要使用‘脱钩’、‘结构性差异’或任何驱动因果话术，也不要连续堆叠多个解释连接词。"
-                "required_lens已经给出可解释边界；不得进一步猜测增速或差距为何发生，不得补写AI、算力、基站共享、"
-                "套餐组合、客户需求等输入中没有的驱动因素。"
-                "source_urls必须逐字使用evidence中两个领域各自的source_url，不得新增数字、来源或伪造因果。"
-                "必须依据证据重新推导一条判断，不得复述输入指令或请求编号。"
+                "从两域指标中自行选择能支持经营判断的事实，两域各引用具体数值及其公司、期间、单位。"
+                "可重新选择指标和企业，不局限于上一条分析的事实或角度。"
+                "数字和来源只取自当前输入，不自行换汇，不把相关性当因果。"
+                "不同口径不能直接排名；必要限制简短说明，主体解释事实的经营含义。"
+                "source_urls使用所选事实的精确source_url。"
+                + STRATEGIC_WRITING_GUIDE
             ),
         },
         {
@@ -4236,68 +4173,16 @@ def regenerate_model_discovery(
         if str(value or "").strip()
     ][-12:]
     current_text = "".join(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
-    comparison_history = [*relation_history, current_text]
     fallback_used = False
     report("正在生成新的跨库判断")
-    regeneration_angles_by_pair = {
-        ("mainland", "local"): (
-            "内地与香港运营主体属于不同市场范围",
-            "人民币与港元绝对金额不能直接混排",
-            "集团范围与本地运营主体存在披露边界",
-            "收入规模不等于经营质量",
-        ),
-        ("international", "cloud"): (
-            "传统运营商与云业务处于不同增长阶段",
-            "两类市场增速分层但不等于经营效率差距",
-            "企业范围与业务范围不同，数值只作阶段对照",
-            "低个位数增长与高双位数增长形成阶段梯队",
-        ),
-        ("local", "cloud"): (
-            "香港公司整体与全球云分部属于不同口径",
-            "公司营收不等于云业务收入",
-            "本地市场范围与全球业务范围不能直接换算",
-            "港元与美元绝对金额只能说明各自规模",
-        ),
-        ("mainland", "international"): (
-            "内地移动用户与国际后付费口径属于不同层面",
-            "用户总量不能替代客户价值判断",
-            "集团营收与后付费客户指标不能混排",
-            "披露缺口限制跨市场客户质量比较",
-        ),
-        ("local", "international"): (
-            "本地市场深耕与跨国规模经营的竞争层次",
-            "规模优势为何不等同经营质量",
-            "不同市场范围对应的战略定位",
-            "资源体量与竞争边界的关系",
-        ),
-        ("local", "mainland"): (
-            "本地精细经营与内地规模经营的竞争层次",
-            "规模优势为何不等同经营质量",
-            "不同市场范围对应的战略定位",
-            "资源体量与竞争边界的关系",
-        ),
-        ("mainland", "cloud"): (
-            "连接底盘与云业务规模对应的生态层次",
-            "运营商规模为何不等同云竞争质量",
-            "两类主体的竞争边界",
-            "资源体量与生态位置的关系",
-        ),
-    }
-    regeneration_angles = regeneration_angles_by_pair.get(
-        (source_domain, target_domain),
-        regeneration_angles_by_pair.get(
-            (target_domain, source_domain),
-            ("口径边界", "市场阶段", "范围差异", "竞争层次"),
-        ),
-    )
     for attempt, model in enumerate(models):
         request_id = f"relation-{index}-{uuid4().hex}"
-        angle = regeneration_angles[(regeneration_count - 1 + attempt) % len(regeneration_angles)]
         request_messages = [*messages, {
             "role": "user",
             "content": (
                 f"本次重生成请求编号：{request_id}。该编号只用于隔离缓存，不属于证据，不得写入答案。"
-                f"本次必须从“{angle}”形成与最近版本不同的新判断。"
+                "依据当前事实重新判断，选择最有解释力的角度，不为求不同而编造结论。"
+                f"上一条文案供避免照抄：{json.dumps(current, ensure_ascii=False)}"
             ),
         }]
         request = _model_request(config, api_key, prepare_structured_chat_body({
@@ -4305,7 +4190,7 @@ def regenerate_model_discovery(
                 "model": model,
                 "messages": request_messages,
                 "temperature": 0.25 if attempt == 0 else 0.55,
-                "max_tokens": 520,
+                "max_tokens": 2000,
             }), request_id)
         try:
             with open_llm_request(
@@ -4328,37 +4213,10 @@ def regenerate_model_discovery(
                 raise ValueError("模型未返回单项跨库洞察对象")
             if str(parsed.get("from") or "") != source_domain or str(parsed.get("to") or "") != target_domain:
                 raise ValueError("模型改变了跨库领域组合")
-            unsupported_driver_terms = (
-                "驱动", "脱钩", "结构性差异", "需求扩张", "供给扩张", "集中度",
-                "AI扩张", "AI需求", "算力需求", "基础设施规模化", "基站共享", "存量基站",
-                "客户需求", "套餐组合", "站址扩张", "基建空间",
-            )
-            leaked_drivers = [term for term in unsupported_driver_terms if term in str(parsed.get("detail") or "")]
-            if leaked_drivers:
-                raise ValueError(f"模型补写了输入之外的驱动因素：{leaked_drivers}")
-            detail = str(parsed.get("detail") or "")
-            missing_required_values = [value for value in scoped_evidence["required_values"] if value not in detail]
-            if missing_required_values:
-                raise ValueError(f"模型未逐字引用两个当前数值：{missing_required_values}")
             current_signature = tuple(re.sub(r"\s+", "", str(current.get(key) or "")) for key in ("title", "detail"))
             parsed_signature = tuple(re.sub(r"\s+", "", str(parsed.get(key) or "")) for key in ("title", "detail"))
             if parsed_signature == current_signature:
                 raise ValueError("模型返回了与当前跨库洞察完全相同的结果")
-            parsed_text = "".join(parsed_signature)
-            parsed_title = re.sub(r"\s+", "", str(parsed.get("title") or ""))
-            if max(
-                (
-                    difflib.SequenceMatcher(None, re.sub(r"\s+", "", title), parsed_title).ratio()
-                    for title in relation_title_history
-                ),
-                default=0.0,
-            ) >= 0.94:
-                raise ValueError("模型返回的跨库标题与最近版本过于相似")
-            if max(
-                (difflib.SequenceMatcher(None, previous_text, parsed_text).ratio() for previous_text in comparison_history),
-                default=0.0,
-            ) >= 0.82:
-                raise ValueError("模型返回的跨库判断与最近版本语义过于相似")
             candidate = [dict(item) for item in discoveries]
             candidate[index] = parsed
             replacement = _validate_model_discoveries(candidate, evidence)[index]
@@ -4368,7 +4226,7 @@ def regenerate_model_discovery(
             last_error = exc
             messages.append({
                 "role": "user",
-                "content": f"上一版未通过门禁：{exc}。保持领域组合，换一个数据关系角度，只返回合法JSON对象。",
+                "content": f"请修正上一版的问题：{exc}。保持领域组合和真实事实，只返回合法JSON对象。",
             })
     if replacement is None:
         raise ValueError(f"AI本次未返回有效跨库分析，原结果未修改：{last_error}")

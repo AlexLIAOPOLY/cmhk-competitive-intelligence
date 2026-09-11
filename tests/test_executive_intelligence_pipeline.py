@@ -151,24 +151,46 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             'list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
             source,
         )
-        self.assertIn('detail必须包含“表明、反映、说明”三者之一且只用一个即可', source)
+        self.assertNotIn('detail必须包含“表明、反映、说明”三者之一且只用一个即可', source)
 
-    def test_manual_discovery_uses_two_explicit_numeric_anchors_per_pair(self):
-        evidence = pipeline._analysis_input_snapshot()
-        expected = {
-            ("mainland", "local"): {"10501.87亿元", "36553百万港元"},
-            ("local", "international"): {"36553百万港元", "47031.92百万美元"},
-            ("local", "mainland"): {"36553百万港元", "10501.87亿元"},
-            ("international", "cloud"): {"47031.92百万美元", "128725百万美元"},
-            ("mainland", "cloud"): {"10501.87亿元", "128725百万美元"},
-            ("local", "cloud"): {"36553百万港元", "128725百万美元"},
-            ("mainland", "international"): {"10501.87亿元", "47031.92百万美元"},
-        }
-        for pair, values in expected.items():
-            scoped = pipeline._manual_discovery_evidence(evidence, *pair)
-            self.assertEqual(set(scoped["required_values"]), values)
-            self.assertEqual({item["domain"] for item in scoped["evidence"]}, set(pair))
-            self.assertTrue(all(item["source_url"].startswith("http") for item in scoped["evidence"]))
+    def test_manual_discovery_can_choose_any_focus_without_old_copy_or_fixed_lens(self):
+        evidence = {"domains": [
+            {"id": domain, "deterministic_insight": "旧结论", "focuses": [
+                {"id": focus_id, "insight": "旧正文", "items": [
+                    {"name": f"企业{index}", "value": index, "unit": "亿元", "period": "FY2025",
+                     "source_url": f"https://example.test/{domain}/{focus_id}/{index}",
+                     "trend": [{"period": "FY2024", "value": index + 1}]}
+                    for index in range(6)]}
+                for focus_id in ("revenue", "profit", "investment")]}
+            for domain in pipeline.UI_DOMAIN_IDS], "relations": [{"title": "旧关系"}]}
+        before = json.dumps(evidence, ensure_ascii=False)
+        scoped = pipeline._manual_discovery_evidence(evidence, "local", "cloud")
+        self.assertEqual({d["id"] for d in scoped["domains"]}, {"local", "cloud"})
+        self.assertEqual([f["id"] for f in scoped["domains"][0]["focuses"]],
+                         ["revenue", "profit", "investment"])
+        self.assertEqual(len(scoped["domains"][1]["focuses"][0]["items"]), 6)
+        self.assertTrue(scoped["domains"][1]["focuses"][0]["items"][0]["trend"])
+        self.assertNotIn("旧", json.dumps(scoped, ensure_ascii=False))
+        self.assertNotIn("required_lens", scoped)
+        self.assertNotIn("required_values", scoped)
+        self.assertEqual(json.dumps(evidence, ensure_ascii=False), before)
+
+    def test_strategy_copy_does_not_need_prescribed_connector_words(self):
+        focus = {"items": [{"name": "甲", "value": 10, "unit": "亿元"}]}
+        self.assertEqual(pipeline._focus_gate_error(
+            "local", "revenue", "甲公司收入10亿元，本地客户业务构成其经营基础。", focus), "")
+        evidence = {"domains": [{"id": domain, "focuses": [{"id": "net_profit", "items": [
+            {"name": name, "value": value, "unit": "亿元", "period": "FY2025",
+             "source_url": f"https://example.test/{domain}"}]}]}
+            for domain, name, value in (("local", "甲", -10), ("mainland", "乙", 20))]}
+        item = {"from": "local", "to": "mainland", "title": "甲亏损修复与乙盈利积累并存",
+                "detail": "甲FY2025净利润-10亿元，乙FY2025净利润20亿元，甲面临盈利修复，乙已形成盈利积累。",
+                "source_urls": ["https://example.test/local", "https://example.test/mainland"]}
+        result = pipeline._validate_model_discoveries([item], evidence, require_complete=False)
+        self.assertEqual(result[0]["detail"], item["detail"])
+        with self.assertRaisesRegex(ValueError, "输入之外的数字"):
+            pipeline._validate_model_discoveries([{**item, "detail": item["detail"].replace("20亿元", "999亿元")}],
+                                                 evidence, require_complete=False)
 
     def test_manual_discovery_regeneration_bypasses_cache_and_retries_identical_result(self):
         discoveries = [
@@ -220,8 +242,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         request_ids = [item.get_header("X-request-id") for item in requests]
         self.assertNotEqual(request_ids[0], request_ids[1])
         self.assertIn(request_ids[0], bodies[0]["messages"][-1]["content"])
-        self.assertIn("内地移动用户与国际后付费口径属于不同层面", bodies[0]["messages"][-1]["content"])
-        self.assertIn("用户总量不能替代客户价值判断", bodies[1]["messages"][-1]["content"])
+        self.assertIn("虚构教学样例", bodies[0]["messages"][0]["content"])
+        self.assertIn("从两域指标中自行选择", bodies[0]["messages"][0]["content"])
+        self.assertNotIn("本次必须从", bodies[0]["messages"][-1]["content"])
+        self.assertIn("虚构教学样例", bodies[1]["messages"][0]["content"])
         self.assertEqual(requests[0].get_header("Cache-control"), "no-cache, no-store")
         self.assertEqual(request.call_args_list[0].kwargs["timeout"], 12)
         self.assertEqual(result["title"], "新标题")
@@ -273,7 +297,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             self.assertLessEqual(len(fallback["title"]), 28)
             self.assertTrue(any(term in fallback["title"] for term in ("经营", "竞争", "业务", "生态")))
             scoped = pipeline._manual_discovery_evidence(evidence, source_domain, target_domain)
-            self.assertTrue(all(value in fallback["detail"] for value in scoped["required_values"]))
+            self.assertTrue(pipeline._numeric_tokens(fallback["detail"]) & pipeline._numeric_tokens(scoped))
             titles.append(fallback["title"])
         self.assertEqual(len(set(titles)), 4)
 
@@ -404,7 +428,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertEqual(request.call_count, 2)
         self.assertNotIn("赛道", result["focus"]["analysis"])
 
-    def test_current_local_scale_refresh_requires_a_distinct_supported_angle(self):
+    def test_current_local_scale_refresh_keeps_model_judgement_without_forcing_boundary_copy(self):
         focus = {
             "id": "scale",
             "label": "在售方案组合",
@@ -443,13 +467,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             result = pipeline.generate_model_focus_insight("local", focus)
 
         first_prompt = json.loads(request.call_args_list[0].args[0].data.decode("utf-8"))["messages"][1]["content"]
-        retry_prompt = json.loads(request.call_args_list[1].args[0].data.decode("utf-8"))["messages"][-1]["content"]
         self.assertIn('"value": 84', first_prompt)
         self.assertIn('"record_count": 59', first_prompt)
-        self.assertIn("未通过校验", retry_prompt)
-        self.assertEqual(request.call_count, 2)
-        self.assertIn("不能等同", result["focus"]["analysis"])
-        self.assertNotIn("头部三家集中度", result["focus"]["analysis"])
+        self.assertEqual(request.call_count, 1)
+        self.assertEqual(result["focus"]["analysis"], json.loads(same_meaning)["analysis"])
 
     def test_current_local_scale_refresh_rejects_invalid_ai_without_repair(self):
         focus = {"id": "scale", "metric": {"value": 10}, "items": []}
@@ -741,7 +762,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         source = Path(pipeline.__file__).read_text(encoding="utf-8")
 
         self.assertIn('manual_discovery_regeneration_title_history', source)
-        self.assertIn("跨库标题与最近版本过于相似", source)
+        self.assertNotIn("跨库标题与最近版本过于相似", source)
 
     def test_cloud_profit_gate_rejects_derived_sample_count(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -1526,7 +1547,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         self.assertIn("行动建议", pipeline._focus_gate_error("macro", "market", subtle_advice, evidence_focus))
 
         shallow = "移动连接3428.5万显示用户规模领先，市场分化明显。"
-        self.assertIn("结构、驱动或可比性", pipeline._focus_gate_error("macro", "market", shallow, evidence_focus))
+        self.assertEqual(pipeline._focus_gate_error("macro", "market", shallow, evidence_focus), "")
 
     def test_focus_gate_accepts_not_equal_as_a_comparability_explanation(self):
         evidence_focus = {
@@ -1913,8 +1934,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
 
         shallow = [dict(item) for item in discoveries]
         shallow[0] = {**shallow[0], "detail": "两域均为10项，数据显示存在差异。"}
-        with self.assertRaisesRegex(ValueError, "结构、驱动或跨领域关系"):
-            pipeline._validate_model_discoveries(shallow, evidence)
+        self.assertEqual(pipeline._validate_model_discoveries(shallow, evidence)[0]["detail"],
+                         shallow[0]["detail"])
 
     def test_discovery_generation_rotates_model_after_timeout(self):
         evidence = {
