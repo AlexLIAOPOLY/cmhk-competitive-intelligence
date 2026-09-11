@@ -488,6 +488,10 @@ class ProjectMonitorTests(unittest.TestCase):
         )
         selected_route = interrupted or (candidates[0] if candidates else None)
         return {
+            "fault_verdict": "confirmed_fault",
+            "fault_verdict_reason": "错误证据证明本轮任务已经失败。",
+            "fault_evidence_refs": ["error"],
+            "confirmed_facts": [incident["error"]],
             "severity": incident["severity"],
             "severity_reason": "定時任務或外部寫入可能漏跑，屬需要即時處理的生產錯誤。",
             "fault_cause": "根據現有錯誤證據，爬蟲進程以非零狀態退出。",
@@ -1675,6 +1679,106 @@ class ProjectMonitorTests(unittest.TestCase):
         self.assertEqual(self.runner.send_calls(), [])
         self.assertEqual(result["active_incidents"][0]["diagnosis_status"], "failed_waiting_retry")
 
+    def test_unconfirmed_review_stays_local_across_cycles_and_restart(self):
+        for verdict in ("needs_verification", "not_fault"):
+            with self.subTest(verdict=verdict):
+                def review(incident):
+                    payload = self._ai(incident)
+                    payload.update(fault_verdict=verdict, fault_evidence_refs=[], confirmed_facts=[])
+                    return payload
+
+                monitor = self._monitor(enabled=True, ai=review)
+                monitor.state = {}
+                monitor.collect_issues = lambda: [self._issue(monitor)]
+                result = monitor.run_cycle()
+                calls = self.ai_calls
+                self.now += timedelta(minutes=6)
+                monitor.run_cycle()
+                reloaded = self._monitor(enabled=True, ai=review)
+                reloaded.collect_issues = lambda: [self._issue(reloaded)]
+                reloaded.run_cycle()
+                self.assertEqual(self.ai_calls, calls)
+                self.assertEqual(self.runner.send_calls(), [])
+                self.assertEqual(result["active_incidents"][0]["fault_verdict"], verdict)
+                record = next(iter(reloaded.state["incidents"].values()))
+                self.assertIn("未发送", reloaded._ledger_notification_status(record))
+                with self.assertRaises(RuntimeError):
+                    reloaded._send_to_target(record, reloaded.alert_targets[0])
+
+    def test_new_evidence_rechecks_unconfirmed_review_then_sends_once(self):
+        def review(incident):
+            payload = self._ai(incident)
+            if not incident.get("evidence"):
+                payload.update(fault_verdict="needs_verification", fault_evidence_refs=[], confirmed_facts=[])
+            return payload
+
+        monitor = self._monitor(enabled=True, ai=review)
+        issue = self._issue(monitor)
+        monitor.collect_issues = lambda: [issue]
+        monitor.run_cycle()
+        self.assertEqual(self.runner.send_calls(), [])
+        issue["evidence"] = ["任务已失败，worker退出码1，产物未生成"]
+        monitor.run_cycle()
+        monitor.run_cycle()
+        self.assertEqual(self.ai_calls, 2)
+        self.assertEqual(len(self.runner.send_calls()), 1)
+
+    def test_missing_or_invalid_confirmation_cannot_send(self):
+        mutations = [
+            {"fault_verdict": None}, {"fault_verdict": True},
+            {"fault_verdict_reason": ""}, {"fault_evidence_refs": []},
+            {"fault_evidence_refs": ["evidence:999"]},
+            {"fault_evidence_refs": "error"}, {"confirmed_facts": []},
+        ]
+        for mutation in mutations:
+            with self.subTest(mutation=mutation):
+                monitor = self._monitor(enabled=True)
+                incident = self._issue(monitor)
+                payload = self._ai(incident)
+                payload.update(mutation)
+                with self.assertRaises(ValueError):
+                    monitor._validate_diagnosis(payload, model="test", incident=incident)
+        self.assertEqual(self.runner.send_calls(), [])
+
+    def test_old_cached_diagnosis_must_be_reconfirmed_before_sending(self):
+        monitor = self._monitor(enabled=True)
+        _, active = monitor._upsert_incidents([self._issue(monitor)])
+        record = active[0]
+        record["diagnosis"] = monitor._validate_diagnosis(self._ai(record), model="old", incident=record)
+        record["diagnosis"].pop("fault_confirmation_version")
+        record["diagnosis_attempts"] = project_monitor.AI_DIAGNOSIS_MAX_ATTEMPTS
+        record["diagnosis_retry_policy_version"] = project_monitor.AI_DIAGNOSIS_RETRY_POLICY_VERSION
+        with self.assertRaises(RuntimeError):
+            monitor._send_to_target(record, monitor.alert_targets[0])
+        calls = self.ai_calls
+        monitor._deliver_incident(record)
+        self.assertEqual(self.ai_calls, calls + 1)
+        self.assertEqual(len(self.runner.send_calls()), 1)
+
+    def test_changed_evidence_invalidates_confirmation_at_final_send_gate(self):
+        monitor = self._monitor(enabled=True)
+        _, active = monitor._upsert_incidents([self._issue(monitor)])
+        record = active[0]
+        monitor._ensure_ai_diagnosis(record)
+        record["evidence"] = ["新证据：任务正在重试，结果待定"]
+        with self.assertRaises(RuntimeError):
+            monitor._send_to_target(record, monitor.alert_targets[0])
+        self.assertEqual(self.runner.send_calls(), [])
+
+    def test_pending_readback_does_not_require_new_confirmation_or_resend(self):
+        self.runner.fail_readback = True
+        monitor = self._monitor(enabled=True)
+        monitor.collect_issues = lambda: [self._issue(monitor)]
+        monitor.run_cycle()
+        record = next(iter(monitor.state["incidents"].values()))
+        record["diagnosis"].pop("fault_confirmation_version")
+        calls = self.ai_calls
+        self.runner.fail_readback = False
+        monitor.run_cycle()
+        self.assertEqual(self.ai_calls, calls)
+        self.assertEqual(len(self.runner.send_calls()), 1)
+        self.assertEqual(record["delivery"][INCIDENT_CHAT_ID]["state"], "verified")
+
     def test_ui_runtime_alert_also_fails_closed_if_ai_is_the_failure(self):
         def failing_ai(_incident):
             raise RuntimeError("AI unavailable")
@@ -1814,6 +1918,10 @@ class ProjectMonitorTests(unittest.TestCase):
             if self.ai_calls == 1:
                 raise RuntimeError("temporary AI failure")
             return {
+                "fault_verdict": "confirmed_fault",
+                "fault_verdict_reason": "任务以失败状态退出。",
+                "fault_evidence_refs": ["error"],
+                "confirmed_facts": [incident["error"]],
                 "severity": incident["severity"],
                 "severity_reason": "該錯誤已令本輪任務失敗，需要處理。",
                 "fault_cause": "根據現有證據，背景任務執行時發生錯誤。",
