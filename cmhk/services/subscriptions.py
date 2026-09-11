@@ -4149,12 +4149,13 @@ class SubscriptionService:
                             seen_keys.update(_news_identity_keys(legacy_item))
 
                     from cmhk.services.news_delivery_guard import delivered_history
-                    from cmhk.services.news_delivery_selection import original_crawl_pool, select_recent_news
+                    from cmhk.services.news_delivery_selection import fresh_news, original_crawl_pool, select_recent_news
                     selection_day = max(crawl_date, due_at[:10])
                     history = delivered_history(db, open_id=open_id, batch_id=batch_id,
                                                 logical_day=crawl_date, send_day=selection_day)
                     candidates = _deduplicate_news_items(
-                        clean_items + original_crawl_pool(db, content_ref), excluded_keys=seen_keys)
+                        fresh_news(clean_items + original_crawl_pool(db, content_ref), selection_day),
+                        excluded_keys=seen_keys)
                     recipient_items = select_recent_news(
                         candidates, news_categories, limit=news_item_limit, history=history,
                         send_day=selection_day, seed=f"{open_id}:{crawl_date}:{content_ref}")
