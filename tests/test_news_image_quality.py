@@ -255,9 +255,10 @@ class NewsImageQualityTests(unittest.TestCase):
 
     def test_search_uses_publisher_english_slug_before_translated_keywords(self):
         item = {**self.item, 'source_url': 'https://news.example/news/pccw-global-and-harmony-tech-innovation-sign-mou/'}
-        with patch('strategic_briefing._call_internal_ai', return_value={'queries': ['PCCW 上和科技', '上和科技 圖片']}) as model:
+        with patch('strategic_briefing._call_internal_ai_transport', return_value={'queries': ['PCCW 上和科技', '上和科技 圖片', 'PCCW 辦公樓']}) as model:
             queries = search_queries(item)
         self.assertEqual(queries[0], 'pccw global and harmony tech innovation sign mou')
+        self.assertIn('PCCW 辦公樓', queries)
         self.assertIn(item['source_url'], model.call_args.args[1])
 
     def test_interrupted_image_search_resumes_remaining_pages_without_searching_again(self):
@@ -273,11 +274,34 @@ class NewsImageQualityTests(unittest.TestCase):
             first = search_image_candidates(self.item, self.root)
             self.assertEqual(next(first)['url'], self.candidate['url'])
             first.close()  # Simulate a restart while visual review is in progress.
+            state_path = next((self.root / 'searches').glob('*.json'))
+            state = json.loads(state_path.read_text())
+            state['searched_at'] = 1  # Long outage must not erase partial work.
+            save(state_path, state)
             resumed = list(search_image_candidates(self.item, self.root))
             self.assertEqual([row['url'] for row in resumed], [self.candidate['url'], second['url']])
             self.assertEqual(metadata.call_count, 2)
             search.assert_called_once()
             queries.assert_called_once()
+
+    def test_exhausted_search_refreshes_keywords_instead_of_repeating_forever(self):
+        key = fingerprint(['source-keywords-search-v3', policy_key(), self.item['title'], self.item['summary']])
+        save(self.root / 'searches' / (key + '.json'), {
+            'queries': ['old event search'], 'searched_at': 1, 'complete': True, 'candidates': []})
+        with patch('cmhk.services.news_image_quality.search_queries', return_value=['specific company building']) as queries, \
+                patch('ddgs.DDGS') as engine, \
+                patch('cmhk.reporting.web_research.public_web_search', return_value={'results': []}):
+            engine.return_value.__enter__.return_value.images.return_value = []
+            self.assertEqual(list(search_image_candidates(self.item, self.root)), [])
+        queries.assert_called_once_with(self.item, previous_queries=['old event search'])
+
+    def test_invalid_keyword_output_is_not_cached_as_a_successful_model_decision(self):
+        with patch('strategic_briefing._call_internal_ai_transport', side_effect=[
+                {'queries': 'invalid'}, {'queries': ['specific company office']}]) as model:
+            with self.assertRaises(NewsImageUnavailable):
+                search_queries(self.item)
+            self.assertEqual(search_queries(self.item), ['specific company office'])
+            self.assertEqual(model.call_count, 2)
 
     def test_search_deadline_retains_query_checkpoint_and_never_claims_an_image(self):
         with patch('cmhk.services.news_image_quality.search_queries', return_value=['specific entities']), \
