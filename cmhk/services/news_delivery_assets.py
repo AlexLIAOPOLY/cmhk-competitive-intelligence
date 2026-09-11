@@ -169,12 +169,19 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
             if not asset.get('news_url') or (not asset.get('image_key') and
                     time.time() - asset.get('fetched_at', 0) > 600):
                 direct = resolve_source(original, cache)
+                previous = asset
                 try:
                     asset = source_metadata(direct)
                 except (httpx.HTTPError, OSError, ValueError):
                     # A publisher may restrict machine downloads while its public
                     # article is readable in the user's browser. Keep its direct URL.
                     asset = {'news_url': direct, 'image_urls': [], 'metadata_unavailable': True}
+                if previous.get('news_url') == asset.get('news_url'):
+                    # A metadata refresh must preserve discovered candidates.
+                    # They still require current visual and independent reviews.
+                    candidates = {c['url']: c for c in previous.get('image_candidates', [])}
+                    candidates.update({c['url']: c for c in asset.get('image_candidates', [])})
+                    asset['image_candidates'] = list(candidates.values())
                 asset['fetched_at'] = time.time()
                 save(target, asset)
             article_url(asset['news_url'])

@@ -24,6 +24,8 @@ history 是该接收人同日已经收到的新闻，candidates 是拟发新闻�
 商务部就同一次AI模型蒸馏争议的回应与反制表态，只保留一条。
 只有新增已发生事实构成新的进展（如从拟议到获批、正式实施、新一期数据），才可再次保留；
 同一公司/地点/行业的不同事件必须保留，例如口岸海关会议和路面防滑工程不能合并。
+例如北部都会区已建设八百公顷与未来十年提供十五万公营房屋，是不同指标及动作；
+除非原始资料证明属于同一次发布事件，不能仅凭同一区域建设主题就合并。
 对每个candidate输出一项decision，不得遗漏。duplicate_of 只能是 history 的id或更早candidate的id；
 没有同事件则用空字符串。重复判断须附两边资料中可逐字找到的事实摘录，每段6至80字，理由不超过100字。
 解释共同主体、动作和事件，不复制整篇资料或逐个罗列不相关的历史。
@@ -167,6 +169,10 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
             model_call = _call_internal_ai_transport
         fields = {name: {"type": "string"} for name in
                   ("id", "duplicate_of", "reason", "evidence", "matched_evidence")}
+        fields['id']['enum'] = [item['id'] for item in candidates]
+        system = PROMPT + '\n本次 decisions 必须恰好包含以下编号与标题，每项一次：' + json.dumps(
+            [{'id': item['id'], 'title': item['title']} for item in candidates], ensure_ascii=False)
+        system += '\n只有上述 candidates 是待审核项。history 全部仅用于比对，禁止为 history 输出 decision，禁止沿用其他批次的编号。'
         response_format = {"type": "json_schema", "json_schema": {
             "name": "personal_news_event_dedupe", "strict": True,
             "schema": {"type": "object", "additionalProperties": False, "required": ["decisions"],
@@ -176,7 +182,7 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
         prompt = encoded
         deadline = time.monotonic() + 180
         for attempt in range(2):
-            result = model_call(PROMPT, prompt, max_tokens=max(8000, len(candidates) * 900),
+            result = model_call(system, prompt, max_tokens=max(8000, len(candidates) * 900),
                                 response_format=response_format, deadline_monotonic=deadline)
             try:
                 decisions = _validate(result, inputs["candidates"], inputs["history"])

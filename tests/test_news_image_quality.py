@@ -188,6 +188,24 @@ class NewsImageQualityTests(unittest.TestCase):
                 prepare_news_assets([{**self.item, 'image_url': self.candidate['url']}], service, profile='test', fallback_image_key='')
         upload.assert_not_called()
 
+    def test_metadata_refresh_preserves_candidates_but_requires_actual_review(self):
+        service = SimpleNamespace(runtime_root=self.root, _lark=Mock())
+        cache = self.root / 'var/subscriptions/news-assets'
+        key = fingerprint([policy_key(), self.item['source_url'], self.item['published_at'], 'test',
+                           self.item['title'], self.item['summary'], self.item.get('source_summary')])
+        save(cache / (key + '.json'), {'news_url': self.item['source_url'], 'fetched_at': 1,
+                                      'image_candidates': [self.candidate]})
+        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
+                'news_url': self.item['source_url'], 'image_candidates': []}), \
+                patch('cmhk.services.news_delivery_assets.fetch', return_value=(self.data, '', 'image/png')), \
+                patch('cmhk.services.news_image_quality._vision_call', return_value=self.verdict) as visual, \
+                patch('cmhk.services.news_delivery_assets.search_image_candidates') as search, \
+                patch('cmhk.services.news_delivery_assets.upload_image', return_value='img_verified'):
+            result = prepare_news_assets([self.item], service, profile='test', fallback_image_key='')[0]
+        visual.assert_called_once()
+        search.assert_not_called()
+        self.assertEqual(result['image_source_url'], self.candidate['url'])
+
     def test_image_search_resolves_source_page_and_does_not_trust_search_thumbnail(self):
         with patch('cmhk.services.news_image_quality.search_queries', return_value=['HKBN Bocloud agreement photo']), \
                 patch('ddgs.DDGS') as engine, \
