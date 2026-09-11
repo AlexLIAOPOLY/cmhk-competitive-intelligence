@@ -2,6 +2,82 @@
   "ok": true,
   "incidents": [
     {
+      "incident_id": "c05a6bd3267b77f4f94fc8c5",
+      "task_id": "incident:c05a6bd3267b77f4f94fc8c5",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
+      "suggestions": [
+        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
+        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
+      ],
+      "occurred_at_hkt": "2026-09-11T12:55:37+08:00",
+      "started_at_hkt": "2026-09-11T12:55:37+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:55:37+08:00",
+      "completed_at_hkt": "2026-09-11T12:55:47+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "19678448fa00115a0c17a807",
+      "task_id": "incident:19678448fa00115a0c17a807",
+      "title": "主项目Web后台",
+      "kind": "web-app",
+      "kind_label": "主项目Web后台",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "证据已确认，等待LLM结案",
+      "severity": "P1",
+      "severity_label": "紧急",
+      "summary": "Web后台日志出现未处理异常",
+      "impact": "已确认：至少一个请求、后台线程或战略监视周期可能中断。推断：若异常持续，可能导致服务降级、任务失败或数据不一致。",
+      "suggestions": [
+        "",
+        "关联 /api/task-runs 接口日志，确认该时间点是否有任务执行失败或状态异常。",
+        "根据堆栈信息修复根因（如代码缺陷或依赖问题），并在测试环境验证修复后，再部署到生产环境。",
+        "修复后监控 web_app.stderr.log 和任务运行状态，确保无新异常出现。"
+      ],
+      "occurred_at_hkt": "2026-09-11T12:34:31+08:00",
+      "started_at_hkt": "2026-09-11T12:32:36+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:34:31+08:00",
+      "completed_at_hkt": "2026-09-11T12:38:33+08:00",
+      "handled_at_hkt": ""
+    },
+    {
+      "incident_id": "409266de38bbd1fe66ac664c",
+      "task_id": "incident:409266de38bbd1fe66ac664c",
+      "title": "主项目后台任务",
+      "kind": "web-app",
+      "kind_label": "主项目后台任务",
+      "scope": "web-app",
+      "incident_status": "resolved",
+      "run_status": "completed",
+      "phase": "恢复证据已确认",
+      "severity": "P3",
+      "severity_label": "中",
+      "summary": "主项目后台日志出现业务处理错误",
+      "impact": "已确认：至少一个候选、去重、AI审核或后台处理步骤可能进入回退、延期或失败状态。推断：若该错误未自动恢复，可能影响相关任务的最终完成状态。",
+      "suggestions": [
+        "",
+        "根据日志时间关联对应任务归档记录，确认受影响的候选ID及处理步骤，判断是否已自动回退或需人工介入。",
+        "若条目进入待恢复队列，保留已有处理结果，仅对失败步骤进行恢复操作。",
+        "恢复完成后验证任务归档状态，确保相关业务处理步骤已成功完成。"
+      ],
+      "occurred_at_hkt": "2026-09-11T12:34:31+08:00",
+      "started_at_hkt": "2026-09-11T12:32:36+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:34:31+08:00",
+      "completed_at_hkt": "2026-09-11T12:35:03+08:00",
+      "handled_at_hkt": ""
+    },
+    {
       "incident_id": "9c5a8c8b4efe5d841a2f3a84",
       "task_id": "incident:9c5a8c8b4efe5d841a2f3a84",
       "title": "四库资料研究与更新",
@@ -597,7 +673,7 @@
       ],
       "occurred_at_hkt": "2026-09-11T10:01:06+08:00",
       "started_at_hkt": "2026-09-11T10:02:12+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -623,7 +699,7 @@
       ],
       "occurred_at_hkt": "2026-09-11T09:58:38+08:00",
       "started_at_hkt": "2026-09-11T10:01:28+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -649,7 +725,7 @@
       ],
       "occurred_at_hkt": "2026-09-11T09:57:39+08:00",
       "started_at_hkt": "2026-09-11T09:59:01+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -675,7 +751,7 @@
       ],
       "occurred_at_hkt": "2026-09-11T09:57:24+08:00",
       "started_at_hkt": "2026-09-11T09:57:38+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -1019,7 +1095,7 @@
       ],
       "occurred_at_hkt": "2026-09-11T08:57:25+08:00",
       "started_at_hkt": "2026-09-11T08:57:34+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2905,7 +2981,7 @@
       ],
       "occurred_at_hkt": "2026-09-10T18:29:45+08:00",
       "started_at_hkt": "2026-09-10T18:30:08+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2957,7 +3033,7 @@
       ],
       "occurred_at_hkt": "2026-09-10T18:05:44+08:00",
       "started_at_hkt": "2026-09-10T18:11:20+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -2983,7 +3059,7 @@
       ],
       "occurred_at_hkt": "2026-09-10T18:05:07+08:00",
       "started_at_hkt": "2026-09-10T18:05:36+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -3009,7 +3085,7 @@
       ],
       "occurred_at_hkt": "2026-09-10T17:59:50+08:00",
       "started_at_hkt": "2026-09-10T18:00:06+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:02+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:02+08:00",
       "completed_at_hkt": "",
       "handled_at_hkt": ""
     },
@@ -12498,78 +12574,6 @@
       "started_at_hkt": "2026-09-06T14:32:06+08:00",
       "heartbeat_at_hkt": "2026-09-06T14:35:03+08:00",
       "completed_at_hkt": "2026-09-06T14:36:17+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "2f95e1e260b345533c06f523",
-      "task_id": "incident:2f95e1e260b345533c06f523",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-09-06T14:02:08+08:00",
-      "started_at_hkt": "2026-09-06T14:02:08+08:00",
-      "heartbeat_at_hkt": "2026-09-06T14:02:08+08:00",
-      "completed_at_hkt": "2026-09-06T14:02:38+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "cca4f0765661444b3f1f55d9",
-      "task_id": "incident:cca4f0765661444b3f1f55d9",
-      "title": "主项目后台任务",
-      "kind": "web-app",
-      "kind_label": "主项目后台任务",
-      "scope": "web-app",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P3",
-      "severity_label": "中",
-      "summary": "主项目后台日志出现业务处理错误",
-      "impact": "至少一个候选、去重、AI审核或后台处理步骤进入回退、延期或失败；整体任务是否完成需结合任务归档判断。",
-      "suggestions": [
-        "按日志时间关联对应任务归档、候选ID和最终完成状态，区分已回退成功与最终失败。",
-        "若条目进入待恢复队列，保留已有结果并只恢复失败步骤；完成后验证任务归档。"
-      ],
-      "occurred_at_hkt": "2026-09-06T13:59:32+08:00",
-      "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T13:59:32+08:00",
-      "completed_at_hkt": "2026-09-06T14:00:11+08:00",
-      "handled_at_hkt": ""
-    },
-    {
-      "incident_id": "49e97770aba96bba5f87240f",
-      "task_id": "incident:49e97770aba96bba5f87240f",
-      "title": "Feishu媒体指标定时汇总 10:00",
-      "kind": "feishu-media-metrics",
-      "kind_label": "Feishu媒体指标定时汇总 10:00",
-      "scope": "feishu-media-metrics",
-      "incident_status": "resolved",
-      "run_status": "completed",
-      "phase": "证据已确认，等待LLM结案",
-      "severity": "P2",
-      "severity_label": "高",
-      "summary": "Feishu媒体指标定时汇总超过宽限期仍未完成",
-      "impact": "该时段媒体发布阅读与互动指标没有按计划汇总，项目数据本身和主爬虫仍可继续运行。",
-      "suggestions": [
-        "检查媒体指标 daemon 的 launchd 状态、stderr、飞书读取和消息回读错误。",
-        "先核对目标群是否已经收到该时段报告；确认未发送后再做有界恢复，避免重复消息。"
-      ],
-      "occurred_at_hkt": "2026-09-06T10:20:00+08:00",
-      "started_at_hkt": "2026-09-06T13:59:32+08:00",
-      "heartbeat_at_hkt": "2026-09-06T14:01:07+08:00",
-      "completed_at_hkt": "2026-09-06T14:01:38+08:00",
       "handled_at_hkt": ""
     }
   ],

@@ -457,8 +457,44 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+          "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
           "verification_count": 6,
+          "source_url_aliases": [
+            "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+          ],
+          "source_urls": [
+            "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+            "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+            "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+            "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+            "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+            "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+          ],
+          "annual_source_components": [
+            {
+              "period": "H1 2025",
+              "value": 2216.0,
+              "unit": "millions HKD",
+              "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+              "source_urls": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf"
+              ]
+            },
+            {
+              "period": "H2 2025",
+              "value": 3232.0,
+              "unit": "millions HKD",
+              "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+              "source_urls": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+              ]
+            }
+          ],
           "trend": [
             {
               "label": "FY2016",
@@ -1081,8 +1117,44 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+              "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
+              "source_urls": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "H1 2025",
+                  "value": 2216.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf"
+                  ]
+                },
+                {
+                  "period": "H2 2025",
+                  "value": 3232.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+                  ]
+                }
+              ],
               "trend": [
                 {
                   "label": "FY2016",
@@ -1221,7 +1293,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             }
@@ -1234,7 +1318,7 @@
             "source_urls": [
               "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
             ],
             "entities": [
               {
@@ -1280,8 +1364,34 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "canonical": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           }
@@ -1738,8 +1848,44 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+              "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
+              "source_urls": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "H1 2025",
+                  "value": 771.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf"
+                  ]
+                },
+                {
+                  "period": "H2 2025",
+                  "value": 737.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+                  ]
+                }
+              ],
               "trend": [
                 {
                   "label": "FY2016",
@@ -1878,7 +2024,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             }
@@ -1891,7 +2049,7 @@
             "source_urls": [
               "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
             ],
             "entities": [
               {
@@ -1935,8 +2093,34 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "canonical": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           }
@@ -2071,8 +2255,43 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+              ],
+              "source_urls": [
+                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0209/2026020900404.pdf",
+                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
+                "https://www.hkt.com/api-service/assets/e-2025_Annual_Report.pdf",
+                "https://www.hkt.com/api-service/assets/c01-2025_Annual_Results.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "H1 2025",
+                  "value": 2070.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                  "source_urls": [
+                    "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0209/2026020900404.pdf"
+                  ]
+                },
+                {
+                  "period": "H2 2025",
+                  "value": 3216.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
+                  "source_urls": [
+                    "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
+                    "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0209/2026020900404.pdf"
+                  ]
+                }
+              ],
               "trend": [
                 {
                   "label": "FY2016",
@@ -2197,7 +2416,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -2403,8 +2634,44 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+              "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
+              "source_urls": [
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "H1 2025",
+                  "value": 6.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf"
+                  ]
+                },
+                {
+                  "period": "H2 2025",
+                  "value": -31.0,
+                  "unit": "millions HKD",
+                  "source_url": "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                  "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ir2025/analysis.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/cashflows.pdf",
+                    "https://www.hthkh.com/en/ir/reports/ar2025/financialposition.pdf"
+                  ]
+                }
+              ],
               "trend": [
                 {
                   "label": "FY2016",
@@ -2535,7 +2802,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             }
@@ -2546,9 +2825,9 @@
             "analysis": "HKT FY2025净利润5286.0百万港元，3HK为-25.0百万港元，差距显著。CMHK 2026首7月累计583.2百万港元，SmarTone FY2026为524.742百万港元，但期间不同，不能直接比较。",
             "risk": "各公司财年与期间不一致，CMHK为累计值，SmarTone为原币披露，直接比较可能误导。",
             "source_urls": [
-              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
               "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
             ],
             "entities": [
               {
@@ -2560,7 +2839,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -2582,7 +2873,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -2596,6 +2899,27 @@
                 "source_urls": [
                   "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf"
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "canonical": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
+              },
+              {
+                "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "canonical": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           }
@@ -3152,11 +3476,15 @@
         },
         {
           "label": "3HK",
-          "url": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+          "url": "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
         },
         {
           "label": "HKT",
-          "url": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+          "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+        },
+        {
+          "label": "3HK",
+          "url": "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
         },
         {
           "label": "HKT",
@@ -3440,7 +3768,8 @@
         "source_urls": [
           "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
           "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-          "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+          "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+          "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
         ],
         "focuses": [
           {
@@ -3451,7 +3780,7 @@
             "source_urls": [
               "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
             ],
             "entities": [
               {
@@ -3497,8 +3826,34 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "canonical": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           },
@@ -3510,7 +3865,7 @@
             "source_urls": [
               "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
               "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
             ],
             "entities": [
               {
@@ -3554,8 +3909,34 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+              "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "canonical": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           },
@@ -3565,9 +3946,9 @@
             "analysis": "HKT FY2025净利润5286.0百万港元，3HK为-25.0百万港元，差距显著。CMHK 2026首7月累计583.2百万港元，SmarTone FY2026为524.742百万港元，但期间不同，不能直接比较。",
             "risk": "各公司财年与期间不一致，CMHK为累计值，SmarTone为原币披露，直接比较可能误导。",
             "source_urls": [
-              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
               "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf",
-              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
             ],
             "entities": [
               {
@@ -3579,7 +3960,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                    "canonical": [
+                      "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -3601,7 +3994,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -3615,6 +4020,27 @@
                 "source_urls": [
                   "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf"
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+              "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf",
+              "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "canonical": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
+              },
+              {
+                "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                "canonical": [
+                  "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           },
@@ -3672,6 +4098,21 @@
                 ]
               }
             ]
+          }
+        ],
+        "submitted_source_urls": [
+          "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+          "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+          "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+        ],
+        "source_identity_mappings": [
+          {
+            "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+            "canonical": [
+              "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+              "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+            ],
+            "basis": "verified_annual_component_source_correction"
           }
         ]
       },
@@ -10921,8 +11362,67 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+          "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
           "verification_count": 8,
+          "source_url_aliases": [
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+          ],
+          "source_urls": [
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+            "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+            "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html",
+            "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+            "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+            "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+            "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+            "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523"
+          ],
+          "annual_source_components": [
+            {
+              "period": "Q1 2025",
+              "value": 263760.0,
+              "unit": "millions CNY",
+              "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "source_urls": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html"
+              ]
+            },
+            {
+              "period": "Q2 2025",
+              "value": 280009.0,
+              "unit": "millions CNY",
+              "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+              "source_urls": [
+                "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+              ]
+            },
+            {
+              "period": "Q3 2025",
+              "value": 250897.0,
+              "unit": "millions CNY",
+              "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+              "source_urls": [
+                "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf"
+              ]
+            },
+            {
+              "period": "Q4 2025",
+              "value": 255521.0,
+              "unit": "millions CNY",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+              "source_urls": [
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf"
+              ]
+            }
+          ],
           "verification_status": "official_three_distinct_sources_verified",
           "trend": [
             {
@@ -11085,8 +11585,62 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+          "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
           "verification_count": 6,
+          "source_url_aliases": [
+            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+          ],
+          "source_urls": [
+            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+            "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+            "https://www.chinatelecom-h.com/sc/ir/reports.php",
+            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+            "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+          ],
+          "annual_source_components": [
+            {
+              "period": "Q1 2025",
+              "value": 135498.0,
+              "unit": "millions CNY",
+              "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                "https://www.chinatelecom-h.com/sc/ir/reports.php"
+              ]
+            },
+            {
+              "period": "Q2 2025",
+              "value": 135971.0,
+              "unit": "millions CNY",
+              "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf"
+              ]
+            },
+            {
+              "period": "Q3 2025",
+              "value": 125529.0,
+              "unit": "millions CNY",
+              "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf"
+              ]
+            },
+            {
+              "period": "Q4 2025",
+              "value": 132602.0,
+              "unit": "millions CNY",
+              "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+              ]
+            }
+          ],
           "verification_status": "official_three_distinct_sources_verified",
           "trend": [
             {
@@ -11247,8 +11801,44 @@
             }
           ],
           "component_count": 1,
-          "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+          "source_url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
           "verification_count": 6,
+          "source_url_aliases": [
+            "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+          ],
+          "source_urls": [
+            "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf",
+            "https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050",
+            "https://doc.irasia.com/listco/hk/chinaunicom/interim/2025/intc.pdf",
+            "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+            "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+          ],
+          "annual_source_components": [
+            {
+              "period": "H1 2025",
+              "value": 200200.0,
+              "unit": "millions CNY",
+              "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+              "source_urls": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf",
+                "https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050",
+                "https://doc.irasia.com/listco/hk/chinaunicom/interim/2025/intc.pdf"
+              ]
+            },
+            {
+              "period": "H2 2025",
+              "value": 192023.0,
+              "unit": "millions CNY",
+              "source_url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+              "source_urls": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+              ]
+            }
+          ],
           "verification_status": "official_three_distinct_sources_verified",
           "trend": [
             {
@@ -11420,8 +12010,67 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
               "verification_count": 8,
+              "source_url_aliases": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+              ],
+              "source_urls": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html",
+                "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "Q1 2025",
+                  "value": 263760.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                  "source_urls": [
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                    "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html"
+                  ]
+                },
+                {
+                  "period": "Q2 2025",
+                  "value": 280009.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ]
+                },
+                {
+                  "period": "Q3 2025",
+                  "value": 250897.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf"
+                  ]
+                },
+                {
+                  "period": "Q4 2025",
+                  "value": 255521.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                  "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                    "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -11576,7 +12225,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -11596,8 +12257,62 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+              ],
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                "https://www.chinatelecom-h.com/sc/ir/reports.php",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "Q1 2025",
+                  "value": 135498.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                    "https://www.chinatelecom-h.com/sc/ir/reports.php"
+                  ]
+                },
+                {
+                  "period": "Q2 2025",
+                  "value": 135971.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf"
+                  ]
+                },
+                {
+                  "period": "Q3 2025",
+                  "value": 125529.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf"
+                  ]
+                },
+                {
+                  "period": "Q4 2025",
+                  "value": 132602.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -11750,7 +12465,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -11770,8 +12497,44 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+              "source_url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+              ],
+              "source_urls": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf",
+                "https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050",
+                "https://doc.irasia.com/listco/hk/chinaunicom/interim/2025/intc.pdf",
+                "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "H1 2025",
+                  "value": 200200.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                  "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf",
+                    "https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050",
+                    "https://doc.irasia.com/listco/hk/chinaunicom/interim/2025/intc.pdf"
+                  ]
+                },
+                {
+                  "period": "H2 2025",
+                  "value": 192023.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                  "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -11920,7 +12683,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "canonical": [
+                      "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             }
@@ -11931,9 +12706,9 @@
             "analysis": "中国移动FY2025营收10501.87亿元，中国电信5296.00亿元，中国联通3922.23亿元，三者差距明显，反映经营资源底盘分层，但规模不等同效率。",
             "risk": "营收绝对值差异不直接反映经营效率或质量，需结合成本、利润等指标综合判断。",
             "source_urls": [
-              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+              "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+              "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+              "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
             ],
             "entities": [
               {
@@ -11945,7 +12720,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -11957,7 +12744,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -11969,8 +12768,48 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "canonical": [
+                      "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "canonical": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
+              },
+              {
+                "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "canonical": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
+              },
+              {
+                "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                "canonical": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           }
@@ -12004,8 +12843,67 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
               "verification_count": 8,
+              "source_url_aliases": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+              ],
+              "source_urls": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html",
+                "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "Q1 2025",
+                  "value": 80700.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                  "source_urls": [
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                    "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html"
+                  ]
+                },
+                {
+                  "period": "Q2 2025",
+                  "value": 105258.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ]
+                },
+                {
+                  "period": "Q3 2025",
+                  "value": 79438.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf"
+                  ]
+                },
+                {
+                  "period": "Q4 2025",
+                  "value": 73535.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                  "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                    "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -12160,7 +13058,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -12180,8 +13090,62 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+              ],
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                "https://www.chinatelecom-h.com/sc/ir/reports.php",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "Q1 2025",
+                  "value": 36700.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                    "https://www.chinatelecom-h.com/sc/ir/reports.php"
+                  ]
+                },
+                {
+                  "period": "Q2 2025",
+                  "value": 43888.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf"
+                  ]
+                },
+                {
+                  "period": "Q3 2025",
+                  "value": 35012.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf"
+                  ]
+                },
+                {
+                  "period": "Q4 2025",
+                  "value": 28272.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -12334,7 +13298,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -12522,7 +13498,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -12534,7 +13522,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -12581,8 +13581,67 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
               "verification_count": 8,
+              "source_url_aliases": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+              ],
+              "source_urls": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html",
+                "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "Q1 2025",
+                  "value": 30631.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                  "source_urls": [
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "https://vip.stock.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=10931075&stockid=600941",
+                    "https://data.eastmoney.com/notices/detail/600941/AN202504221660555817.html"
+                  ]
+                },
+                {
+                  "period": "Q2 2025",
+                  "value": 53604.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf",
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ]
+                },
+                {
+                  "period": "Q3 2025",
+                  "value": 31118.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                  "source_urls": [
+                    "https://www.chinamobileltd.com/en/ir/operation_q.php?year=2025",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/0829/2025082901049.pdf"
+                  ]
+                },
+                {
+                  "period": "Q4 2025",
+                  "value": 21742.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                  "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                    "https://www.marketscreener.com/news/china-mobile-2025-annual-results-presentation-hk-shares-ce7e51dadb8bf523",
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2025/1020/2025102001101.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -12737,7 +13796,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -12757,8 +13828,62 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+              ],
+              "source_urls": [
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                "https://www.chinatelecom-h.com/sc/ir/reports.php",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "Q1 2025",
+                  "value": 8864.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "https://doc.irasia.com/listco/cn/chinatelecom/announcement/sca250426c.pdf",
+                    "https://www.chinatelecom-h.com/sc/ir/reports.php"
+                  ]
+                },
+                {
+                  "period": "Q2 2025",
+                  "value": 14153.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf"
+                  ]
+                },
+                {
+                  "period": "Q3 2025",
+                  "value": 7756.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int.pdf",
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf"
+                  ]
+                },
+                {
+                  "period": "Q4 2025",
+                  "value": 2412.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                  "source_urls": [
+                    "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int3q.pdf",
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -12911,7 +14036,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             },
@@ -12931,8 +14068,44 @@
                 }
               ],
               "component_count": 1,
-              "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+              "source_url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
               "verification_count": 6,
+              "source_url_aliases": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+              ],
+              "source_urls": [
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf",
+                "https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050",
+                "https://doc.irasia.com/listco/hk/chinaunicom/interim/2025/intc.pdf",
+                "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+              ],
+              "annual_source_components": [
+                {
+                  "period": "H1 2025",
+                  "value": 14480.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                  "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-18/600050_20250418_RJH7.pdf",
+                    "https://money.finance.sina.com.cn/corp/view/vCB_AllBulletinDetail.php?id=11294714&stockid=600050",
+                    "https://doc.irasia.com/listco/hk/chinaunicom/interim/2025/intc.pdf"
+                  ]
+                },
+                {
+                  "period": "H2 2025",
+                  "value": 6336.0,
+                  "unit": "millions CNY",
+                  "source_url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                  "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf",
+                    "https://www.chinaunicom.com.hk/en/ir/reports/ar2025.pdf"
+                  ]
+                }
+              ],
               "verification_status": "official_three_distinct_sources_verified",
               "trend": [
                 {
@@ -13081,7 +14254,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "canonical": [
+                      "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             }
@@ -13102,7 +14287,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13114,7 +14311,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13126,7 +14335,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "canonical": [
+                      "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             ]
@@ -13684,23 +14905,19 @@
       "sources": [
         {
           "label": "中国移动",
-          "url": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
-        },
-        {
-          "label": "中国电信",
-          "url": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
-        },
-        {
-          "label": "中国联通",
-          "url": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
-        },
-        {
-          "label": "中国移动",
-          "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
+          "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
         },
         {
           "label": "中国电信",
           "url": "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+        },
+        {
+          "label": "中国联通",
+          "url": "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+        },
+        {
+          "label": "中国移动",
+          "url": "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
         },
         {
           "label": "中国联通",
@@ -13846,9 +15063,9 @@
         "analysis": "中国移动FY2025营收10501.87亿元，中国电信5296.00亿元，中国联通3922.23亿元，三者差距明显，反映经营资源底盘分层，但规模不等同效率。",
         "risk": "营收绝对值差异不直接反映经营效率或质量，需结合成本、利润等指标综合判断。",
         "source_urls": [
-          "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-          "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-          "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+          "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+          "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+          "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
         ],
         "focuses": [
           {
@@ -13857,9 +15074,9 @@
             "analysis": "中国移动FY2025营收10501.87亿元，中国电信5296.00亿元，中国联通3922.23亿元，三者差距明显，反映经营资源底盘分层，但规模不等同效率。",
             "risk": "营收绝对值差异不直接反映经营效率或质量，需结合成本、利润等指标综合判断。",
             "source_urls": [
-              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+              "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+              "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+              "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
             ],
             "entities": [
               {
@@ -13871,7 +15088,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13883,7 +15112,19 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13895,8 +15136,48 @@
                   "营收"
                 ],
                 "source_urls": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "canonical": [
+                      "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
+              }
+            ],
+            "submitted_source_urls": [
+              "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+            ],
+            "source_identity_mappings": [
+              {
+                "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "canonical": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
+              },
+              {
+                "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "canonical": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
+              },
+              {
+                "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                "canonical": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "basis": "verified_annual_component_source_correction"
               }
             ]
           },
@@ -13916,7 +15197,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13928,7 +15221,19 @@
                   "EBITDA"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13961,7 +15266,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                    "canonical": [
+                      "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13973,7 +15290,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                    "canonical": [
+                      "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               },
               {
@@ -13985,7 +15314,19 @@
                   "净利润"
                 ],
                 "source_urls": [
+                  "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                ],
+                "submitted_source_urls": [
                   "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                ],
+                "source_identity_mappings": [
+                  {
+                    "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                    "canonical": [
+                      "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                    ],
+                    "basis": "verified_annual_component_source_correction"
+                  }
                 ]
               }
             ]
@@ -14038,6 +15379,34 @@
                 ]
               }
             ]
+          }
+        ],
+        "submitted_source_urls": [
+          "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+          "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+          "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+        ],
+        "source_identity_mappings": [
+          {
+            "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+            "canonical": [
+              "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+            ],
+            "basis": "verified_annual_component_source_correction"
+          },
+          {
+            "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+            "canonical": [
+              "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+            ],
+            "basis": "verified_annual_component_source_correction"
+          },
+          {
+            "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+            "canonical": [
+              "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+            ],
+            "basis": "verified_annual_component_source_correction"
           }
         ]
       },
@@ -18532,32 +19901,32 @@
     {
       "from": "local",
       "to": "mainland",
-      "title": "本地与内地利润池规模梯队分化",
-      "detail": "HKT FY2025净利润为5286.0百万港元，中国移动FY2025净利润为1370.95亿元，差距表明两域盈利梯队分化，主要来自市场结构与利润口径差异，并非同一量级的盈利水平。",
+      "title": "本地与内地净利润指标与币种不同",
+      "detail": "HKT FY2025净利润为5286.0百万港元，中国移动FY2025净利润为1370.95亿元，两者分别以港元和人民币列示，且业务范围不同，不能直接比较或排名。",
       "kind": "AI综合研判",
       "source_urls": [
-        "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-        "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
+        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
       ],
       "origin": "ai"
     },
     {
       "from": "international",
       "to": "cloud",
-      "title": "国际运营商与云厂商资本开支分化",
-      "detail": "NTT DOCOMO FY2025资本开支为5729.73百万美元，AWS FY2024集团资本开支为77658.0百万美元，差距表明两域资本投入梯队分化，主要来自基础设施结构差异，并非同一口径的云业务投入。",
+      "title": "国际运营商与云厂商资本开支比较边界",
+      "detail": "NTT DOCOMO FY2025资本开支为5729.73百万美元，Google FY2024集团资本开支为52535.0百万美元，两者期间与业务范围不同，不能直接比较或推断投入高低。",
       "kind": "AI综合研判",
       "source_urls": [
         "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
-        "https://ir.aboutamazon.com/quarterly-results/default.aspx"
+        "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm"
       ],
       "origin": "ai"
     },
     {
       "from": "mainland",
       "to": "international",
-      "title": "内地与国际移动ARPU差距显著",
-      "detail": "中国移动FY2025移动客户数为10.05亿户，NTT DOCOMO FY2025移动ARPU为26.46美元/月，客户规模与ARPU差距表明两域客户价值结构分化，主要来自市场阶段与定价口径差异，并非客户规模可等同。",
+      "title": "内地客户数与海外ARPU不可直接比较",
+      "detail": "中国移动FY2025移动客户数为10.05亿户，NTT DOCOMO FY2025移动ARPU为26.46美元/月，客户规模与每用户收入为不同指标，不能直接比较或推断客户价值分化。",
       "kind": "AI综合研判",
       "source_urls": [
         "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
@@ -18568,8 +19937,8 @@
     {
       "from": "cloud",
       "to": "local",
-      "title": "云厂商与本地运营商营收规模脱钩",
-      "detail": "AWS FY2025云收入为128725.0百万美元，HKT FY2025营收为36553.0百万港元，差距表明两域营收规模脱钩，主要来自业务结构差异，并非同一市场的经营效率比较。",
+      "title": "云厂商与本地运营商营收币种不同",
+      "detail": "AWS FY2025云收入为128725.0百万美元，HKT FY2025营收为36553.0百万港元，两者分别以美元和港元列示，且业务范围不同，不能直接比较或推断经营效率。",
       "kind": "AI综合研判",
       "source_urls": [
         "https://ir.aboutamazon.com/quarterly-results/default.aspx",
@@ -18590,7 +19959,7 @@
   "refresh": {
     "ok": false,
     "status": "running",
-    "started_at_hkt": "2026-09-11T12:30:58+08:00",
+    "started_at_hkt": "2026-09-11T12:59:50+08:00",
     "agent_run_id": "research_20260911",
     "dry_run": false,
     "task_run_id": "20260911_030003_928545",
@@ -18625,7 +19994,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-11T12:30:58+08:00"
+    "last_checked_at_hkt": "2026-09-11T12:59:50+08:00"
   },
   "ai": {
     "agent_run_id": "research_20260911",
@@ -18638,7 +20007,7 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-11T12:30:59+08:00",
+      "generated_at_hkt": "2026-09-11T12:59:51+08:00",
       "model": "DeepSeek-V4-Pro+GLM+Qwen3-30B-A3B-Instruct-2507+deepseek-v4-free",
       "summaries": [
         {
@@ -18649,7 +20018,8 @@
           "source_urls": [
             "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
             "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-            "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+            "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+            "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
           ],
           "focuses": [
             {
@@ -18660,7 +20030,7 @@
               "source_urls": [
                 "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
                 "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
               ],
               "entities": [
                 {
@@ -18706,8 +20076,34 @@
                     "营收"
                   ],
                   "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                      "canonical": [
+                        "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
+                }
+              ],
+              "submitted_source_urls": [
+                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
+              "source_identity_mappings": [
+                {
+                  "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                  "canonical": [
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
                 }
               ]
             },
@@ -18719,7 +20115,7 @@
               "source_urls": [
                 "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
                 "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
-                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
               ],
               "entities": [
                 {
@@ -18763,8 +20159,34 @@
                     "EBITDA"
                   ],
                   "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                      "canonical": [
+                        "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
+                }
+              ],
+              "submitted_source_urls": [
+                "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+                "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
+              "source_identity_mappings": [
+                {
+                  "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                  "canonical": [
+                    "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
                 }
               ]
             },
@@ -18774,9 +20196,9 @@
               "analysis": "HKT FY2025净利润5286.0百万港元，3HK为-25.0百万港元，差距显著。CMHK 2026首7月累计583.2百万港元，SmarTone FY2026为524.742百万港元，但期间不同，不能直接比较。",
               "risk": "各公司财年与期间不一致，CMHK为累计值，SmarTone为原币披露，直接比较可能误导。",
               "source_urls": [
-                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
                 "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf",
-                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
               ],
               "entities": [
                 {
@@ -18788,7 +20210,19 @@
                     "净利润"
                   ],
                   "source_urls": [
+                    "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                      "canonical": [
+                        "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -18810,7 +20244,19 @@
                     "净利润"
                   ],
                   "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                      "canonical": [
+                        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -18824,6 +20270,27 @@
                   "source_urls": [
                     "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf"
                   ]
+                }
+              ],
+              "submitted_source_urls": [
+                "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                "https://www.smartoneholdings.com/about/investor/major_announcements/2026/09/2026_09_03_1042.pdf",
+                "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+              ],
+              "source_identity_mappings": [
+                {
+                  "submitted": "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
+                  "canonical": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
+                },
+                {
+                  "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+                  "canonical": [
+                    "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
                 }
               ]
             },
@@ -18881,6 +20348,21 @@
                   ]
                 }
               ]
+            }
+          ],
+          "submitted_source_urls": [
+            "https://www.hkt.com/api-service/assets/e-2026.02.09_(2025_Annual_Results_Announcement).pdf",
+            "https://www.smartoneholdings.com/about/investor/financial_reports/english/2024_2025_interim.pdf",
+            "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf"
+          ],
+          "source_identity_mappings": [
+            {
+              "submitted": "https://www.hthkh.com/en/ir/reports/ir2025/highlights.pdf",
+              "canonical": [
+                "https://www.hthkh.com/en/ir/reports/ar2025/analysis.pdf",
+                "https://www.hthkh.com/en/ir/reports/ar2025/highlights.pdf"
+              ],
+              "basis": "verified_annual_component_source_correction"
             }
           ]
         },
@@ -19169,9 +20651,9 @@
           "analysis": "中国移动FY2025营收10501.87亿元，中国电信5296.00亿元，中国联通3922.23亿元，三者差距明显，反映经营资源底盘分层，但规模不等同效率。",
           "risk": "营收绝对值差异不直接反映经营效率或质量，需结合成本、利润等指标综合判断。",
           "source_urls": [
-            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-            "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+            "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+            "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+            "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
           ],
           "focuses": [
             {
@@ -19180,9 +20662,9 @@
               "analysis": "中国移动FY2025营收10501.87亿元，中国电信5296.00亿元，中国联通3922.23亿元，三者差距明显，反映经营资源底盘分层，但规模不等同效率。",
               "risk": "营收绝对值差异不直接反映经营效率或质量，需结合成本、利润等指标综合判断。",
               "source_urls": [
-                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
-                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
-                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf",
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf",
+                "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
               ],
               "entities": [
                 {
@@ -19194,7 +20676,19 @@
                     "营收"
                   ],
                   "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                      "canonical": [
+                        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -19206,7 +20700,19 @@
                     "营收"
                   ],
                   "source_urls": [
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                      "canonical": [
+                        "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -19218,8 +20724,48 @@
                     "营收"
                   ],
                   "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                      "canonical": [
+                        "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
+                }
+              ],
+              "submitted_source_urls": [
+                "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+              ],
+              "source_identity_mappings": [
+                {
+                  "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                  "canonical": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
+                },
+                {
+                  "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                  "canonical": [
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
+                },
+                {
+                  "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                  "canonical": [
+                    "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                  ],
+                  "basis": "verified_annual_component_source_correction"
                 }
               ]
             },
@@ -19239,7 +20785,19 @@
                     "EBITDA"
                   ],
                   "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                      "canonical": [
+                        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -19251,7 +20809,19 @@
                     "EBITDA"
                   ],
                   "source_urls": [
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                      "canonical": [
+                        "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -19284,7 +20854,19 @@
                     "净利润"
                   ],
                   "source_urls": [
+                    "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+                      "canonical": [
+                        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -19296,7 +20878,19 @@
                     "净利润"
                   ],
                   "source_urls": [
+                    "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+                      "canonical": [
+                        "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 },
                 {
@@ -19308,7 +20902,19 @@
                     "净利润"
                   ],
                   "source_urls": [
+                    "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                  ],
+                  "submitted_source_urls": [
                     "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+                  ],
+                  "source_identity_mappings": [
+                    {
+                      "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+                      "canonical": [
+                        "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+                      ],
+                      "basis": "verified_annual_component_source_correction"
+                    }
                   ]
                 }
               ]
@@ -19361,6 +20967,34 @@
                   ]
                 }
               ]
+            }
+          ],
+          "submitted_source_urls": [
+            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+            "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+            "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf"
+          ],
+          "source_identity_mappings": [
+            {
+              "submitted": "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf",
+              "canonical": [
+                "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+              ],
+              "basis": "verified_annual_component_source_correction"
+            },
+            {
+              "submitted": "https://doc.irasia.com/listco/hk/chinatelecom/interim/2025/int1q.pdf",
+              "canonical": [
+                "https://www.chinatelecom-h.com/en/media/press/p260324.pdf"
+              ],
+              "basis": "verified_annual_component_source_correction"
+            },
+            {
+              "submitted": "https://www.chinaunicom.com.hk/en/ir/reports/ir2025.pdf",
+              "canonical": [
+                "https://www.chinaunicom.com.hk/en/media/press/p260319.pdf"
+              ],
+              "basis": "verified_annual_component_source_correction"
             }
           ]
         },
@@ -19727,30 +21361,30 @@
         {
           "from": "local",
           "to": "mainland",
-          "title": "本地与内地利润池规模梯队分化",
-          "detail": "HKT FY2025净利润为5286.0百万港元，中国移动FY2025净利润为1370.95亿元，差距表明两域盈利梯队分化，主要来自市场结构与利润口径差异，并非同一量级的盈利水平。",
+          "title": "本地与内地净利润指标与币种不同",
+          "detail": "HKT FY2025净利润为5286.0百万港元，中国移动FY2025净利润为1370.95亿元，两者分别以港元和人民币列示，且业务范围不同，不能直接比较或排名。",
           "kind": "AI综合研判",
           "source_urls": [
-            "https://www.hkexnews.hk/listedco/listconews/sehk/2025/0904/2025090400705.pdf",
-            "https://static.sse.com.cn/disclosure/listedinfo/announcement/c/new/2025-04-23/600941_20250423_97Z1.pdf"
+            "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0401/2026040101820.pdf",
+            "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
           ]
         },
         {
           "from": "international",
           "to": "cloud",
-          "title": "国际运营商与云厂商资本开支分化",
-          "detail": "NTT DOCOMO FY2025资本开支为5729.73百万美元，AWS FY2024集团资本开支为77658.0百万美元，差距表明两域资本投入梯队分化，主要来自基础设施结构差异，并非同一口径的云业务投入。",
+          "title": "国际运营商与云厂商资本开支比较边界",
+          "detail": "NTT DOCOMO FY2025资本开支为5729.73百万美元，Google FY2024集团资本开支为52535.0百万美元，两者期间与业务范围不同，不能直接比较或推断投入高低。",
           "kind": "AI综合研判",
           "source_urls": [
             "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
-            "https://ir.aboutamazon.com/quarterly-results/default.aspx"
+            "https://www.sec.gov/Archives/edgar/data/1652044/000165204425000014/goog-20241231.htm"
           ]
         },
         {
           "from": "mainland",
           "to": "international",
-          "title": "内地与国际移动ARPU差距显著",
-          "detail": "中国移动FY2025移动客户数为10.05亿户，NTT DOCOMO FY2025移动ARPU为26.46美元/月，客户规模与ARPU差距表明两域客户价值结构分化，主要来自市场阶段与定价口径差异，并非客户规模可等同。",
+          "title": "内地客户数与海外ARPU不可直接比较",
+          "detail": "中国移动FY2025移动客户数为10.05亿户，NTT DOCOMO FY2025移动ARPU为26.46美元/月，客户规模与每用户收入为不同指标，不能直接比较或推断客户价值分化。",
           "kind": "AI综合研判",
           "source_urls": [
             "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf",
@@ -19760,8 +21394,8 @@
         {
           "from": "cloud",
           "to": "local",
-          "title": "云厂商与本地运营商营收规模脱钩",
-          "detail": "AWS FY2025云收入为128725.0百万美元，HKT FY2025营收为36553.0百万港元，差距表明两域营收规模脱钩，主要来自业务结构差异，并非同一市场的经营效率比较。",
+          "title": "云厂商与本地运营商营收币种不同",
+          "detail": "AWS FY2025云收入为128725.0百万美元，HKT FY2025营收为36553.0百万港元，两者分别以美元和港元列示，且业务范围不同，不能直接比较或推断经营效率。",
           "kind": "AI综合研判",
           "source_urls": [
             "https://ir.aboutamazon.com/quarterly-results/default.aspx",
@@ -19769,15 +21403,15 @@
           ]
         }
       ],
-      "discovery_model": "deepseek-v4-free",
-      "discovery_generated_at_hkt": "2026-09-11T12:31:21+08:00",
+      "discovery_model": "DeepSeek-V4-Pro+deepseek-v4-free",
+      "discovery_generated_at_hkt": "2026-09-11T12:59:51+08:00",
       "generation_policy": "model_generated_only_v1",
       "discovery_fallback_used": false,
-      "evidence_hash": "54415f1add376bacdd45c539efb80fcb29784dc11c5dea9eedace4748a5f06f0",
+      "evidence_hash": "f84ecfab42e7757000c7d50403529f7cb2aa80208f085843149c540b3af4ef05",
       "insight_format": "strategic_operating_judgement_v9",
       "reused": false
     },
-    "evidence_hash": "54415f1add376bacdd45c539efb80fcb29784dc11c5dea9eedace4748a5f06f0",
+    "evidence_hash": "f84ecfab42e7757000c7d50403529f7cb2aa80208f085843149c540b3af4ef05",
     "model_analysis_fresh": true,
     "discoveries_generated": true
   },

@@ -3,7 +3,7 @@
   "events": [
     {
       "id": "event-001",
-      "at": "2026-09-11T04:31:23+00:00",
+      "at": "2026-09-11T04:59:52+00:00",
       "actor_id": "member-001",
       "actor_name": "本地管理员",
       "actor_role": "ADMIN",
@@ -17,12 +17,12 @@
     },
     {
       "id": "event-002",
-      "at": "2026-09-11T04:05:47+00:00",
-      "actor_id": "",
-      "actor_name": "新闻自动初筛机器人",
-      "actor_role": "SYSTEM",
-      "action": "news_review.update",
-      "target": "BYK3u",
+      "at": "2026-09-11T04:31:23+00:00",
+      "actor_id": "member-001",
+      "actor_name": "本地管理员",
+      "actor_role": "ADMIN",
+      "action": "auth.dev_login",
+      "target": "local-admin",
       "target_type": "record",
       "target_label": "操作记录",
       "target_member_id": "",
@@ -2257,7 +2257,7 @@
     },
     {
       "id": "event-162",
-      "at": "2026-09-11T03:51:20+00:00",
+      "at": "2026-09-11T04:05:47+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",
@@ -2789,7 +2789,7 @@
     },
     {
       "id": "event-200",
-      "at": "2026-09-11T03:50:34+00:00",
+      "at": "2026-09-11T03:51:20+00:00",
       "actor_id": "",
       "actor_name": "新闻自动初筛机器人",
       "actor_role": "SYSTEM",

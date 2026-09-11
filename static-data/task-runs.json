@@ -480,9 +480,9 @@
       "progress_detail": "四库与19项AI洞察均已通过（含4条顶部跨库研判），正在重建主页数据源、发布GitHub.io并读取公开版本验证。",
       "status_detail": "",
       "started_at_hkt": "2026-09-11T03:00:03+08:00",
-      "heartbeat_at_hkt": "2026-09-11T12:31:21+08:00",
+      "heartbeat_at_hkt": "2026-09-11T12:59:51+08:00",
       "completed_at_hkt": "",
-      "duration_ms": 223240,
+      "duration_ms": 240056,
       "retry_index": 0
     },
     {
