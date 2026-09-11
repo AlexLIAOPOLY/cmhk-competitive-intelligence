@@ -7,7 +7,7 @@ from cmhk.services.news_digest_editor import prepare_digest
 
 
 class NewsDigestEditorTests(unittest.TestCase):
-    def test_recipient_subset_reuses_exact_source_prose_and_generates_only_its_overview(self):
+    def test_recipient_subset_reuses_exact_source_prose_without_another_model_call(self):
         overview = '运营商推出面向企业的新套餐，产品竞争进一步聚焦企业服务。具体定价与客户采用情况仍需持续观察。'
         prose = {'summary': '运营商公布面向企业客户的新套餐，首批服务对象为制造企业。',
                  'analysis': '企业套餐可能带来差异化服务竞争，需跟踪价格、服务范围及客户采用情况，尚不能判断收入影响。'}
@@ -15,7 +15,6 @@ class NewsDigestEditorTests(unittest.TestCase):
                  {'title': '企业套餐乙', 'source_summary': '已核实事件乙'}]
         model = Mock(side_effect=[
             {'overview': overview, 'items': [{**prose, 'id': '0'}, {**prose, 'id': '1'}]},
-            {'overview': overview},
             {'overview': overview, 'items': [{**prose, 'id': '0'}]},
         ])
         with tempfile.TemporaryDirectory() as directory:
@@ -23,12 +22,12 @@ class NewsDigestEditorTests(unittest.TestCase):
             prepare_digest(items, root, model_call=model)
             selected = prepare_digest([items[1]], root, model_call=model)
             self.assertEqual(selected['items'][0]['digest_summary'], prose['summary'])
-            self.assertEqual(json.loads(model.call_args.args[1])[0]['title'], '企业套餐乙')
-            self.assertEqual(model.call_args.kwargs['response_format']['json_schema']['name'], 'personal_news_overview')
+            self.assertEqual(model.call_count, 1)
+            self.assertNotIn('overview', selected)
             # Equal title with corrected source evidence must be fully re-edited.
             prepare_digest([{**items[1], 'source_summary': '更正后的事实'}], root, model_call=model)
             self.assertEqual(model.call_args.kwargs['response_format']['json_schema']['name'], 'personal_news_editor')
-            self.assertEqual(model.call_count, 3)
+            self.assertEqual(model.call_count, 2)
 
     def test_truncated_output_retries_with_larger_budget_before_caching(self):
         from cmhk.intelligence.agent_harness import TruncatedModelOutput

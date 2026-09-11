@@ -775,7 +775,6 @@ def strategic_news_card(
 ) -> dict[str, Any]:
     """Build the direct-message card used for personal strategic-news subscriptions."""
     clean_title = re.sub(r"\s+", " ", str(title or "CMHK战略订阅")).strip()[:120] or "CMHK战略订阅"
-    date_label = str(published_at or _now_hkt())[:16].replace("T", " ")
     elements: list[dict[str, Any]] = []
     if IMAGE_KEY_RE.fullmatch(str(image_key or "")):
         elements.append({
@@ -793,21 +792,8 @@ def strategic_news_card(
         digest = parsed if isinstance(parsed, dict) else {}
         raw_items = digest.get("items", []) if digest else parsed
         items = [item for item in raw_items if isinstance(item, dict)] if isinstance(raw_items, list) else []
-        overview = str(digest.get("overview") or "").strip()
-        if not overview:
-            overview = " ".join(str(item.get("summary") or "").strip().rstrip("。") + "。"
-                                for item in items[:3] if item.get("summary"))
-        if overview and not re.match(r"1\.\s", overview):
-            points = [part.strip() + "。" for part in overview.split("。") if part.strip()]
-            if len(points) > 4:
-                points = points[:3] + ["".join(points[3:])]
-            overview = "\n".join(f"{number}. {point}" for number, point in enumerate(points, 1))
-        # Emphasize only the short lead theme, never the whole numbered paragraph.
-        overview = re.sub(r"(?m)^(\d+\.\s+)([^*：\n]{1,24})：", r"\1**\2**：", overview)
-        elements.append({
-            "tag": "markdown", "content": "**今日核心看点**", "text_size": "heading-2",
-        })
-        elements.append({"tag": "markdown", "content": overview or "暂无可展示的新闻综述。"})
+        if not items:
+            elements.append({'tag': 'markdown', 'content': '本轮暂无未向你推送的新事件。'})
         grouped: dict[str, list[dict[str, Any]]] = {}
         for item in items:
             grouped.setdefault(str(item.get("category") or "战略动态").strip() or "战略动态", []).append(item)
@@ -835,23 +821,38 @@ def strategic_news_card(
                     published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone(HKT).strftime("%m月%d日 %H:%M")
                 except ValueError:
                     published_text = published[:16] or "时间待核"
-                url = str(item.get("source_url") or item.get("url") or "").strip()
-                group_elements.append({"tag": "markdown", "text_size": "heading-3",
-                                       "content": f"<font color='blue'>**{item_title}**</font>"})
-                group_elements.append({"tag": "markdown",
-                                       "content": f"**新闻简介：** {summary or '现有材料暂无详细简介。'}"})
-                interpretation = str(item.get("digest_analysis") or item.get("inclusion_reason") or "").strip()
-                group_elements.append({"tag": "markdown",
-                                       "content": f"**AI解读：** {interpretation[:400] or '现有资料不足以判断具体业务影响。'}"})
-                source_link = f"[{source}]({url})" if url.startswith(("http://", "https://")) else source
-                group_elements.append({"tag": "markdown", "text_size": "notation",
-                                       "content": f"{source_link} · <font color='grey'>{published_text}</font>"})
-                for evidence in item.get("supporting_sources", [])[:2]:
-                    evidence_url = str(evidence.get("url") or "")
-                    if evidence_url.startswith(("https://", "http://")):
-                        label = str(evidence.get("label") or "补充来源")
-                        group_elements.append({"tag": "markdown", "text_size": "notation",
-                                               "content": f"[{label}]({evidence_url})"})
+                from cmhk.services.news_delivery_assets import article_url
+                import html
+                def prose(value):
+                    return re.sub(r"([\\*\[\]`])", r"\\\1", html.escape(value, quote=False))
+                url = article_url(item.get('news_url') or item.get('source_url') or item.get('url'))
+                thumbnail = str(item.get('image_key') or image_key)
+                if not IMAGE_KEY_RE.fullmatch(thumbnail):
+                    raise ValueError('新闻卡片缺少有效配图')
+                if item.get('image_kind') == 'section':
+                    source += ' · 栏目配图'
+                group_elements.append({
+                    'tag': 'interactive_container', 'width': 'fill', 'has_border': False,
+                    'padding': '8px 0px',
+                    'behaviors': [{'type': 'open_url', 'default_url': url}],
+                    'elements': [{'tag': 'column_set', 'flex_mode': 'none', 'horizontal_spacing': '12px',
+                        'columns': [
+                            {'tag': 'column', 'width': 'weighted', 'weight': 1, 'vertical_spacing': '8px',
+                             'elements': [
+                                 {'tag': 'markdown', 'text_size': 'heading-3',
+                                  'content': f"<font color='blue'>**{prose(item_title)}**</font>"},
+                                 {'tag': 'markdown', 'content': prose(summary)},
+                                 {'tag': 'markdown', 'text_size': 'notation',
+                                  'content': f"<font color='grey'>{prose(source)} · {published_text}</font>"},
+                             ]},
+                            {'tag': 'column', 'width': '80px', 'vertical_align': 'top', 'elements': [
+                                {'tag': 'img', 'img_key': thumbnail,
+                                 'alt': {'tag': 'plain_text', 'content': item_title},
+                                 'scale_type': 'crop_center', 'size': '80px 80px',
+                                 'corner_radius': '4px', 'preview': False},
+                            ]},
+                        ]}],
+                })
             elements.append({"tag": "column_set", "flex_mode": "none", "columns": [{
                 "tag": "column", "width": "weighted", "weight": 1,
                 "background_style": f"{color}-50", "padding": "12px", "vertical_spacing": "8px",
@@ -881,7 +882,6 @@ def strategic_news_card(
         "header": {
             "template": "blue",
             "title": {"tag": "plain_text", "content": clean_title},
-            "subtitle": {"tag": "plain_text", "content": f"截至 {date_label} · 香港时间"},
         },
         "body": {"direction": "vertical", "padding": "12px", "vertical_spacing": "12px", "elements": elements},
     }
@@ -3534,7 +3534,7 @@ class SubscriptionService:
         ).hexdigest()[:32]
         payload = self._lark([
             "lark-cli", "im", "+messages-send", *target_args,
-            "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False),
+            "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False, separators=(",", ":")),
             "--idempotency-key", key, "--as", "bot", "--profile", source_profile, "--format", "json",
         ])
         message_id = self._message_id(payload)
@@ -3581,7 +3581,7 @@ class SubscriptionService:
             card = without_markdown_bold_markers(card)
         payload = self._lark([
             "lark-cli", "im", "+messages-send", "--user-id", open_id,
-            "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False),
+            "--msg-type", "interactive", "--content", json.dumps(card, ensure_ascii=False, separators=(",", ":")),
             "--idempotency-key", idempotency_key[:50], "--as", "bot",
             "--profile", profile or self.delivery_profile, "--format", "json",
         ])

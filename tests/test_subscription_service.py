@@ -75,6 +75,10 @@ class FakeLark:
 
 class SubscriptionServiceTests(unittest.TestCase):
     def setUp(self):
+        from tests.news_push_fixtures import prepared_assets
+        assets = mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=prepared_assets)
+        assets.start()
+        self.addCleanup(assets.stop)
         from cmhk.services.news_delivery_dedupe import exact_unique
         dedupe = mock.patch("cmhk.services.news_delivery_guard.deduplicate_events",
                             side_effect=lambda items, history, root: (exact_unique(items, history), []))
@@ -770,7 +774,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         card = json.loads(send_call[send_call.index("--content") + 1])
         self.assertEqual(card["schema"], "2.0")
         self.assertEqual(card["header"]["title"]["content"], "真实新闻")
-        self.assertIn("经审核的新闻正文", card["body"]["elements"][0]["content"])
+        self.assertIn("经审核的新闻正文", json.dumps(card, ensure_ascii=False))
 
     def test_delivery_summary_returns_complete_history_by_default(self):
         with closing(self.service._connect()) as db, db:
@@ -801,35 +805,36 @@ class SubscriptionServiceTests(unittest.TestCase):
             published_at="2026-08-19T10:00:00+08:00",
             image_key="img_v3_morning_tea_v2",
         )
-        self.assertEqual(card["header"]["subtitle"]["content"], "截至 2026-08-19 10:00 · 香港时间")
+        self.assertNotIn("subtitle", card["header"])
         self.assertEqual(card["schema"], "2.0")
         self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_morning_tea_v2")
         text = json.dumps(card, ensure_ascii=False)
-        self.assertIn("今日核心看点", text)
+        self.assertNotIn("今日核心看点", text)
         self.assertNotIn("今日关键信号", text)
         self.assertNotIn("重点涉及", text)
         self.assertNotIn("01｜", text)
         self.assertNotIn("06｜", text)
         self.assertIn("新闻 6", text)
         self.assertNotIn("###", text)
-        self.assertIn("新闻简介：", text)
-        self.assertIn("AI解读：", text)
-        self.assertIn("**新闻简介：**", text)
-        self.assertIn("**AI解读：**", text)
-        group = next(e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set")
-        self.assertEqual(sum(e["tag"] == "hr" for e in group["elements"]), 5)
-        self.assertEqual(sum(e.get("text_size") == "heading-3" for e in group["elements"]), 6)
-        overview = card["body"]["elements"][2]["content"]
-        self.assertTrue(overview.startswith("1. "))
-        self.assertIn("\n2. ", overview)
+        self.assertNotIn('AI解读', text)
+        self.assertNotIn('feishu.cn/docx', text)
+        group = next(e['columns'][0] for e in card['body']['elements'] if e['tag'] == 'column_set')
+        rows = [e for e in group['elements'] if e['tag'] == 'interactive_container']
+        self.assertEqual(len(rows), 6)
+        for index, row in enumerate(rows, 1):
+            self.assertEqual(row['behaviors'][0]['default_url'], f'https://example.test/{index}')
+            columns = row['elements'][0]['columns']
+            self.assertEqual(columns[0]['elements'][1]['content'], f'摘要 {index}')
+            self.assertFalse(columns[1]['elements'][0]['preview'])
+        self.assertEqual(sum(e['tag'] == 'hr' for e in group['elements']), 5)
 
     def test_strategic_news_card_groups_categories_with_distinct_backgrounds(self):
         card = strategic_news_card(
             title="CMHK战略下午茶订阅｜2026年08月22日",
             body=encode_strategic_news_digest([
-                {"title": "竞对新闻", "category": "竞对动态", "region": "香港本地"},
-                {"title": "政策新闻", "category": "政策监管", "region": "香港本地"},
-                {"title": "产品新闻", "category": "市场/产品类", "region": "国际/行业"},
+                {"source_url":"https://publisher.example/1", "image_key":"img_test", "title": "竞对新闻", "category": "竞对动态", "region": "香港本地"},
+                {"source_url":"https://publisher.example/2", "image_key":"img_test", "title": "政策新闻", "category": "政策监管", "region": "香港本地"},
+                {"source_url":"https://publisher.example/3", "image_key":"img_test", "title": "产品新闻", "category": "市场/产品类", "region": "国际/行业"},
             ]),
         )
         groups = [e["columns"][0] for e in card["body"]["elements"] if e["tag"] == "column_set" and "background_style" in e["columns"][0]]
@@ -1192,8 +1197,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         card = json.loads(send[send.index("--content") + 1])
         self.assertEqual(card["header"]["title"]["content"], "CMHK战略早茶订阅｜2099年01月01日")
         sent_text = json.dumps(card, ensure_ascii=False)
-        self.assertIn("**新闻简介：**", sent_text)
-        self.assertIn("**AI解读：**", sent_text)
+        self.assertIn("interactive_container", sent_text)
+        self.assertNotIn("AI解读", sent_text)
 
         next_day = self.service.dispatch_news_after_crawl(
             crawl_slot="2099-01-02@03:00",

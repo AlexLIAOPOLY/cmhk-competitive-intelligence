@@ -102,6 +102,10 @@ class EventDedupeTests(unittest.TestCase):
 
 class DeliveryGuardTests(unittest.TestCase):
     def setUp(self):
+        from tests.news_push_fixtures import prepared_assets
+        assets = mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=prepared_assets)
+        assets.start()
+        self.addCleanup(assets.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)

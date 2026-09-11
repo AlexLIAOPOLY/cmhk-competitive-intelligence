@@ -86,7 +86,7 @@ class NewsFooterTests(unittest.TestCase):
         self.assertEqual(self.active_services(), {'news'})
         card = self.last_card()
         self.assertEqual(card['header']['title']['content'], '✓ 取消订阅成功')
-        self.assertEqual(card['body']['elements'][0]['content'], '**已取消：**战略双周报\n\n**仍保留：**战略新闻')
+        self.assertEqual(card['body']['elements'][0]['content'], '已取消：战略双周报\n\n仍保留：战略新闻')
 
     def test_cancel_multiple_and_all_are_persisted(self):
         for scope, selected, remaining in [('selected', ['weekly', 'news'], {'performance'}), ('all', None, set())]:

@@ -22,3 +22,4 @@ torch==2.7.0
 torchaudio==2.7.0
 sherpa-onnx==1.13.2
 soundfile==0.13.1
+googlenewsdecoder==0.1.7

@@ -33,7 +33,7 @@ def _card_text(value):
         return []
     if value.get("tag") in {"markdown", "plain_text", "lark_md"}:
         return [str(value["content"])] if value.get("content") else []
-    return [text for key in ("body", "elements", "columns", "text", "header", "title")
+    return [text for key in ("body", "elements", "columns", "text", "header", "title", "cards")
             if key in value for text in _card_text(value[key])]
 
 

@@ -9,6 +9,8 @@ from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from cmhk.services.news_delivery_dedupe import deduplicate_events
+from cmhk.services.news_delivery_assets import prepare_news_assets
+from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract
 from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news
 
 
@@ -16,11 +18,20 @@ class NewsNotPrepared(RuntimeError):
     """The sending lane must never wait for model work."""
 
 
-def preparation_key(*, body: str, title: str, history: list[dict], send_day: str) -> str:
-    encoded = json.dumps([POLICY_VERSION, body, title, send_day, sorted(
+def preparation_key(*, body: str, title: str, history: list[dict], send_day: str, context: str = "") -> str:
+    encoded = json.dumps([POLICY_VERSION, TEMPLATE_VERSION, skill_contract()[1], context, body, title, send_day, sorted(
         json.dumps(item, ensure_ascii=False, sort_keys=True) for item in history
     )], ensure_ascii=False)
     return hashlib.sha256(encoded.encode()).hexdigest()
+
+
+def recipient_contract(service, open_id: str, profile: str) -> str:
+    with closing(service._connect()) as db:
+        recipient = db.execute('SELECT news_categories,news_item_limit,frequency,news_delivery_times '
+                               'FROM subscribers WHERE open_id=?', (open_id,)).fetchone()
+    return json.dumps([profile, dict(recipient) if recipient else {},
+                       (service.config.get('subscriptions') or {}).get('news_image_keys') or {}],
+                      ensure_ascii=False, sort_keys=True)
 
 
 def prepared_for(service, row, *, send_day: str) -> bool:
@@ -36,7 +47,8 @@ def prepared_for(service, row, *, send_day: str) -> bool:
             return False
         history = delivered_history(db, open_id=row['open_id'], batch_id=row['batch_id'],
                                     logical_day=receipt['logical_day'], send_day=send_day)
-    key = preparation_key(body=row['body'], title=row['title'], history=history, send_day=send_day)
+    key = preparation_key(body=row['body'], title=row['title'], history=history, send_day=send_day,
+                          context=recipient_contract(service, row['open_id'], service.delivery_profile))
     try:
         return json.loads(receipt['audit_json']).get('preparation_key') == key
     except (ValueError, TypeError, AttributeError):
@@ -70,6 +82,25 @@ def delivered_history(db, *, open_id: str, batch_id: str, logical_day: str, send
     return items
 
 
+def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
+    from cmhk.services.subscriptions import NEWS_DIGEST_PREFIX, strategic_news_card
+    groups = [items[start:start + 10] for start in range(0, len(items), 10)] or [[]]
+    while True:
+        pages = []
+        for index, group in enumerate(groups):
+            label = title if len(groups) == 1 else f'{title}（{index + 1}/{len(groups)}）'
+            page = strategic_news_card(title=label, body=NEWS_DIGEST_PREFIX + json.dumps({'items': group}, ensure_ascii=False), image_key=banner)
+            if len(json.dumps(page, ensure_ascii=False, separators=(',', ':')).encode()) > 30000:
+                if len(group) < 2:
+                    raise ValueError('单条新闻超过卡片大小上限，保留批次重试')
+                middle = len(group) // 2
+                groups[index:index + 1] = [group[:middle], group[middle:]]
+                break
+            pages.append(page)
+        else:
+            return pages[0] if len(pages) == 1 else {'cards': pages}
+
+
 def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: str,
                  batch_id: str, profile: str, prepare_only: bool = False,
                  prepared_only: bool = False) -> list[str]:
@@ -100,14 +131,17 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             if prepare_only:
                 return []
             # A readback failure must retry verification, never send the card again.
-            service._verify_message(receipt["message_id"], profile=profile)
+            message_ids = json.loads(receipt['audit_json']).get('message_ids') or [str(receipt['message_id'])]
+            for message_id in message_ids:
+                service._verify_message(message_id, profile=profile)
             with closing(service._connect()) as db, db:
                 db.execute("UPDATE news_delivery_receipts SET status='verified', updated_at=? WHERE open_id=? AND batch_id=?",
                            (now, open_id, batch_id))
-            return [str(receipt["message_id"])]
+            return message_ids
         if uncertain:
             raise RuntimeError("该接收人有待确认的新闻发送，请先恢复原消息回执")
-        key = preparation_key(body=body, title=title, history=history, send_day=send_day)
+        key = preparation_key(body=body, title=title, history=history, send_day=send_day,
+                              context=recipient_contract(service, open_id, profile))
         ready = (receipt and receipt['status'] == 'prepared'
                  and json.loads(receipt['audit_json']).get('preparation_key') == key)
         if receipt and (receipt["status"] == "sending" or ready):
@@ -142,17 +176,22 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
                 )
             selected, decisions = deduplicate_events(candidates, history, service.runtime_root)
+            subscriptions = service.config.get('subscriptions') or {}
+            image_keys = subscriptions.get('news_image_keys') or {}
+            period = 'afternoon' if '下午茶' in title else 'morning'
+            banner = str(image_keys.get(period) or '')
+            prepared_items = []
             if selected and structured:
-                prepared = prepare_digest(selected, service.runtime_root)
+                assets = prepare_news_assets(selected, service, profile=profile, fallback_image_key=banner)
+                prepared = prepare_digest(assets, service.runtime_root)
+                prepared_items = prepared['items']
                 rendered_body = NEWS_DIGEST_PREFIX + json.dumps(prepared, ensure_ascii=False)
             elif selected:
                 rendered_body = body
             else:
-                rendered_body = NEWS_DIGEST_PREFIX + json.dumps({"items": [], "overview": "本轮暂无未向你推送的新事件。"}, ensure_ascii=False)
-            subscriptions = service.config.get("subscriptions") or {}
-            image_keys = subscriptions.get("news_image_keys") or {}
-            period = "afternoon" if "下午茶" in title else "morning" if "早茶" in title else ""
-            card = strategic_news_card(title=title, body=rendered_body, image_key=str(image_keys.get(period) or ""))
+                rendered_body = NEWS_DIGEST_PREFIX + json.dumps({'items': []}, ensure_ascii=False)
+            card = (build_card_pages(title=title, items=prepared_items, banner=banner) if structured
+                    else strategic_news_card(title=title, body=rendered_body, image_key=banner))
             prepared_at = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
             with closing(service._connect()) as db, db:
                 db.execute(
@@ -164,7 +203,9 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                            status='prepared',updated_at=excluded.updated_at""",
                     (open_id, batch_id, logical_day, send_day, json.dumps(selected, ensure_ascii=False),
                      json.dumps(card, ensure_ascii=False), json.dumps({"input_count": input_count, "eligible_count": len(candidates),
-                     "selection_policy": POLICY_VERSION,
+                     "selection_policy": POLICY_VERSION, "template_version": TEMPLATE_VERSION,
+                     "skill_hash": skill_contract()[1],
+                     "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind")} for item in prepared_items],
                      "selected_count": len(selected), "history_count": len(history), "decisions": decisions,
                      "preparation_key": key, "prepared_at": prepared_at}, ensure_ascii=False), prepared_at),
                 )
@@ -173,15 +214,32 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
         with closing(service._connect()) as db, db:
             db.execute("UPDATE news_delivery_receipts SET status='sending',updated_at=? WHERE open_id=? AND batch_id=?",
                        (now, open_id, batch_id))
-        message_id = service._send_interactive_card(open_id, card, idempotency_key=f"{batch_id}-n-{open_id[-6:]}",
-                                                    profile=profile, preserve_markdown_bold=True)
-        # Persist the external receipt before any fallible readback operation.
-        sent_at = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
+        pages = card.get('cards') or [card]
+        with closing(service._connect()) as db:
+            audit = json.loads(db.execute('SELECT audit_json FROM news_delivery_receipts WHERE open_id=? AND batch_id=?',
+                                         (open_id, batch_id)).fetchone()[0])
+        message_ids = audit.get('message_ids') or []
+        for index, page in enumerate(pages):
+            if index < len(message_ids):
+                continue
+            # Keep the historic first-page key, and distinct short keys thereafter.
+            token = f'{batch_id}-n-{open_id[-6:]}' if index == 0 else hashlib.sha256(
+                f'{batch_id}:{open_id}:page:{index}'.encode()).hexdigest()[:40]
+            message_id = service._send_interactive_card(open_id, page, idempotency_key=token,
+                                                       profile=profile, preserve_markdown_bold=True)
+            message_ids.append(message_id)
+            audit['message_ids'] = message_ids
+            with closing(service._connect()) as db, db:
+                db.execute('UPDATE news_delivery_receipts SET audit_json=?,updated_at=? WHERE open_id=? AND batch_id=?',
+                           (json.dumps(audit, ensure_ascii=False), now, open_id, batch_id))
+        # Persist all external receipts before any fallible readback operation.
+        sent_at = datetime.now(ZoneInfo('Asia/Hong_Kong')).isoformat(timespec='seconds')
         with closing(service._connect()) as db, db:
             db.execute("UPDATE news_delivery_receipts SET status='sent',message_id=?,send_day=?,updated_at=? WHERE open_id=? AND batch_id=?",
-                       (message_id, sent_at[:10], sent_at, open_id, batch_id))
-        service._verify_message(message_id, profile=profile)
+                       (message_ids[0], sent_at[:10], sent_at, open_id, batch_id))
+        for message_id in message_ids:
+            service._verify_message(message_id, profile=profile)
         with closing(service._connect()) as db, db:
             db.execute("UPDATE news_delivery_receipts SET status='verified',updated_at=? WHERE open_id=? AND batch_id=?",
                        (now, open_id, batch_id))
-        return [message_id]
+        return message_ids

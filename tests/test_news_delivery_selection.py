@@ -53,6 +53,10 @@ class SelectionTests(unittest.TestCase):
 
 class DeliverySelectionTests(unittest.TestCase):
     def setUp(self):
+        from tests.news_push_fixtures import prepared_assets
+        assets = mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=prepared_assets)
+        assets.start()
+        self.addCleanup(assets.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.service = SubscriptionService(runtime_root=Path(self.temp.name))
@@ -106,7 +110,7 @@ class DeliverySelectionTests(unittest.TestCase):
             row = dict(db.execute("SELECT p.*,d.batch_id FROM pending_subscription_deliveries p JOIN deliveries d ON d.id=p.delivery_id").fetchone())
         row["body"] = encode_strategic_news_digest([old])
         args = {k: row[k] for k in ["open_id", "content_ref", "title", "body", "batch_id"]}
-        deliver_news(self.service, **args, profile="test", prepare_only=True)
+        deliver_news(self.service, **args, profile=self.service.delivery_profile, prepare_only=True)
         self.send.assert_not_called()
         with self.service._connect() as db:
             receipt = db.execute("SELECT items_json,audit_json FROM news_delivery_receipts").fetchone()

@@ -14,7 +14,7 @@ from pathlib import Path
 from cmhk.services.news_delivery_guard import deliver_news, prepared_for
 from cmhk.services.subscriptions import HKT, SubscriptionService
 
-PREPARATION_LEAD_MINUTES = 30
+from cmhk.services.news_push_skill import PREPARATION_LEAD_MINUTES, TEMPLATE_VERSION, skill_contract
 POLL_SECONDS = 1
 
 
@@ -77,12 +77,11 @@ class SubscriptionDeliveryWorker:
             allowed = enabled and recipient and not morning_only
             ready = not news or prepared_for(self.service, row, send_day=now.date().isoformat())
             ready_count += int(news and ready)
-            # Start on the day of delivery as soon as the reviewed crawl is queued.
-            # Thirty minutes is the latest preparation window, not a reason to idle
-            # for hours while already-reviewed source material is available.
-            upcoming = due.date() <= now.date() or due - now <= timedelta(minutes=PREPARATION_LEAD_MINUTES)
+            # Preparation starts one hour before each recipient's due time.
+            # A reviewed batch queued late starts immediately, preserving due_at.
+            upcoming = due - now <= timedelta(minutes=PREPARATION_LEAD_MINUTES)
             if news and allowed and not ready and upcoming:
-                late_unprepared += int(due - now <= timedelta(minutes=PREPARATION_LEAD_MINUTES))
+                late_unprepared += int(is_due)
                 if (identifier not in self.preparing and identifier not in self.sending
                         and len(self.preparing) < 3
                         and self.retry_after.get(identifier, 0) <= time.monotonic()):
@@ -95,7 +94,8 @@ class SubscriptionDeliveryWorker:
         self.state = {
             'status': 'running', 'pid': os.getpid(), 'checked_at': current,
             'poll_seconds': POLL_SECONDS, 'preparation_lead_minutes': PREPARATION_LEAD_MINUTES,
-            'prepare_as_soon_as_queued': True, 'queued_count': len(rows),
+            'prepare_as_soon_as_queued': False, 'template_version': TEMPLATE_VERSION,
+            'skill_hash': skill_contract()[1], 'queued_count': len(rows),
             'prepared_count': ready_count, 'due_count': due_count,
             'preparing_count': len(self.preparing), 'sending_count': len(self.sending),
             'deadline_unprepared_count': late_unprepared,

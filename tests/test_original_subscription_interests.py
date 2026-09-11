@@ -53,18 +53,18 @@ class OriginalInterestTests(unittest.TestCase):
                 for time, label, due in [('03:00', '晨间扫描', '08:00'), ('14:00', '午后扫描', '18:30')]:
                     slot = f'2099-01-{day:02}@{time}'
                     items = [
-                        {'title': f'{slot}-{category}', 'category': category}
+                        {'title': f'{slot}-{category}', 'category': category, 'published_at': f'2099-01-{day:02}T06:00:00+08:00'}
                         for category in original
                     ]
-                    result = self.service.dispatch_news_after_crawl(crawl_slot=slot, slot_label=label, items=items)
+                    result = self.service.dispatch_news_after_crawl(crawl_slot=slot, slot_label=label, items=items, completed_at=f'2099-01-{day:02}T{time}:00+08:00')
                     selected = result['results'][0]['push_news_categories']
                     self.assertEqual(len(selected), 4)
                     self.assertEqual(result['results'][0]['news_categories'], original)
-                    self.service.flush_due(now=datetime.fromisoformat(f'2099-01-{day:02}T{due}:00+08:00'))
+                    self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat(f'2099-01-{day:02}T{due}:00+08:00'))
                     body = json.loads(deliver.call_args.kwargs['body'].removeprefix('CMHK_NEWS_DIGEST_V1\n'))
                     self.assertEqual({item['category'] for item in body}, set(selected))
                     count = deliver.call_count
-                    repeat = self.service.dispatch_news_after_crawl(crawl_slot=slot, slot_label=label, items=items)
+                    repeat = self.service.dispatch_news_after_crawl(crawl_slot=slot, slot_label=label, items=items, completed_at=f'2099-01-{day:02}T{time}:00+08:00')
                     self.assertEqual(repeat['skipped_count'], 1)
                     self.assertEqual(deliver.call_count, count)
                     samples.add(tuple(selected))

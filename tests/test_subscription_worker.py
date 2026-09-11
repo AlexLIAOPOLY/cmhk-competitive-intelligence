@@ -26,6 +26,10 @@ class InlinePool:
 
 class SubscriptionClockTests(unittest.TestCase):
     def setUp(self):
+        from tests.news_push_fixtures import prepared_assets
+        assets = mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=prepared_assets)
+        assets.start()
+        self.addCleanup(assets.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -67,22 +71,27 @@ class SubscriptionClockTests(unittest.TestCase):
             guard_clock.now.return_value = send_clock.now.return_value = now
             return self.worker.tick(now=now)
 
-    def test_prepare_early_then_send_at_each_personal_time_without_ai(self):
+    def test_prepare_exactly_one_hour_before_each_person_then_send_without_ai(self):
         self.tick('05:24:00')
-        self.send.assert_not_called()
-        self.verify.assert_not_called()
+        self.tick('06:59:59')
         with sqlite3.connect(self.service.db_path) as db:
-            self.assertEqual(db.execute("select count(*) from news_delivery_receipts where status='prepared'").fetchone()[0], 2)
-        with mock.patch('cmhk.services.news_delivery_guard.deduplicate_events', side_effect=AssertionError('AI at send time')), \
-                mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=AssertionError('AI at send time')):
-            self.tick('07:59:59')
-            self.send.assert_not_called()
-            self.tick('08:00:00')
-            self.assertEqual(self.send.call_count, 1)
+            self.assertEqual(db.execute('select count(*) from news_delivery_receipts').fetchone()[0], 0)
+        self.tick('07:00:00')
+        self.send.assert_not_called()
+        with sqlite3.connect(self.service.db_path) as db:
+            self.assertEqual(db.execute("select open_id from news_delivery_receipts where status='prepared'").fetchall(), [('ou_one',)])
+        self.tick('07:59:59')
+        self.send.assert_not_called()
+        # At 08:00 one person's sending lane and another's preparation coexist.
+        self.tick('08:00:00')
+        self.assertEqual(self.send.call_count, 1)
+        with mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=AssertionError('AI at send time')):
             self.tick('08:59:59')
             self.assertEqual(self.send.call_count, 1)
             self.tick('09:00:00')
             self.assertEqual(self.send.call_count, 2)
+        self.assertEqual(self.worker.state['preparation_lead_minutes'], 60)
+        self.assertFalse(self.worker.state['prepare_as_soon_as_queued'])
 
     def test_persisted_preparation_survives_restart(self):
         self.tick('07:30:00')
@@ -93,6 +102,46 @@ class SubscriptionClockTests(unittest.TestCase):
                 mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=AssertionError('restarted AI')):
             self.tick('08:00:00')
         self.assertEqual(self.send.call_count, 1)
+
+    def test_new_template_invalidates_only_unsent_preparations(self):
+        self.tick('07:00:00')
+        with mock.patch('cmhk.services.news_delivery_guard.TEMPLATE_VERSION', 'next-version'), \
+                mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=TimeoutError('must rebuild')):
+            self.tick('07:10:00')
+            self.tick('07:10:01')
+        self.assertTrue(self.worker.state['preparation_errors'])
+        self.send.assert_not_called()
+
+    def test_preference_change_rebuilds_prepared_card_before_sending(self):
+        self.tick('07:00:00')
+        self.service.save_subscriptions('ou_one', '甲', ['news'], frequency='twice_daily',
+                                        news_categories=['政策监管'], news_delivery_times=['08:00', '18:30'])
+        self.tick('07:20:00')
+        self.tick('08:00:00')
+        with sqlite3.connect(self.service.db_path) as db:
+            row = db.execute("select items_json from news_delivery_receipts where open_id='ou_one'").fetchone()
+        self.assertEqual(json.loads(row[0]), [])
+        self.assertEqual(self.send.call_count, 1)
+
+    def test_late_material_prepares_immediately_then_sends_once(self):
+        self.tick('08:20:00')
+        self.send.assert_not_called()
+        self.tick('08:20:01')
+        self.assertEqual(self.send.call_count, 1)
+        self.tick('08:20:02')
+        self.tick('08:20:03')
+        self.assertEqual(self.send.call_count, 1)
+
+    def test_once_daily_afternoon_queue_is_cancelled_without_preparing(self):
+        with sqlite3.connect(self.service.db_path) as db:
+            db.execute("update pending_subscription_deliveries set content_ref='strategic-crawl:2026-09-11@14:00',"
+                       "due_at='2026-09-11T18:30:00+08:00' where open_id='ou_two'")
+            db.execute("delete from pending_subscription_deliveries where open_id='ou_one'")
+        with mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets') as assets:
+            self.tick('17:30:00')
+            self.tick('18:30:00')
+        assets.assert_not_called()
+        self.send.assert_not_called()
 
     def test_default_due_flush_never_starts_ai_for_unprepared_card(self):
         with mock.patch('cmhk.services.news_delivery_guard.deduplicate_events') as model:
@@ -152,9 +201,9 @@ class SubscriptionClockTests(unittest.TestCase):
             self.worker.preparers.shutdown()
 
     def test_one_slow_recipient_does_not_delay_another_due_card(self):
-        self.tick('07:30:00')
         with sqlite3.connect(self.service.db_path) as db:
             db.execute("update pending_subscription_deliveries set due_at='2026-09-11T08:00:00+08:00'")
+        self.tick('07:30:00')
         from concurrent.futures import ThreadPoolExecutor
         self.worker.senders = ThreadPoolExecutor(max_workers=8)
         entered, release, second_sent = threading.Event(), threading.Event(), threading.Event()
