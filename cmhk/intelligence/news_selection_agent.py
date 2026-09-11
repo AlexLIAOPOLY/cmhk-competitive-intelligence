@@ -1253,6 +1253,7 @@ def _invoke_langchain(
     targets: list[dict[str, Any]],
 ) -> tuple[dict[str, Any], str]:
     def execute(attempt: int) -> list[Any]:
+        attempt += int((_MODEL_SESSION.get() or {}).get("zero_acceptance_batch_attempt", 0))
         token = _HARNESS_RECOVERY.set(attempt)
         try:
             # Preserve membership and validation order while changing the
@@ -1291,10 +1292,12 @@ def _invoke_langchain(
                   "acceptance_review_repair": (_MODEL_SESSION.get() or {}).get("acceptance_review_repair"),
                   "acceptance_review_protocol": ACCEPTANCE_REVIEW_PROTOCOL if (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None else None,
                   "zero_acceptance_review": (_MODEL_SESSION.get() or {}).get("zero_acceptance_review"),
+                  "zero_acceptance_review_repair": (_MODEL_SESSION.get() or {}).get("zero_acceptance_review_repair"),
                   "profile": (_MODEL_SESSION.get() or {}).get("profile"),
                   "preferences": (_MODEL_SESSION.get() or {}).get("preferences", False),
                   "model": public_config.get("model"), "base_url": public_config.get("base_url")},
         execute=execute,
+        max_attempts=1 if (_MODEL_SESSION.get() or {}).get("zero_acceptance_review") else 3,
     )
     return result[0], result[1]
 
@@ -1395,6 +1398,8 @@ def _invoke_langchain_transport(
             "国际对标运营商的具体资费、产品、网络和经营数据可以有明确对标价值；"
             "如发现原批次遗漏的合格内容，应接受，后续另行做接受证据与重复事件复核。"
             "非待审核字段保持原值。不得引用候选以外事实。"
+            "zero_acceptance_review_repair如有内容，是尚未验证的本批草稿和全部字段错误；"
+            "逐项修正独立reason与逐字evidence，不能照抄错误引用，也不能编造候选之外的内容。"
         )
     if acceptance_review is not None:
         system_prompt += (
@@ -1464,6 +1469,7 @@ def _invoke_langchain_transport(
             "learned_preferences": learned_preferences,
             "provisional_decisions": acceptance_review,
             "acceptance_review_repair": (session or {}).get("acceptance_review_repair"),
+            "zero_acceptance_review_repair": (session or {}).get("zero_acceptance_review_repair"),
         },
         ensure_ascii=False,
     )
@@ -1680,17 +1686,28 @@ def _normalized_decisions(
     return decisions
 
 
+def _source_quote(evidence: str, sources: list[str]) -> str:
+    """Match only exact source text or an equivalent terminal sentence mark."""
+    if evidence and not any(evidence in source for source in sources):
+        terminal_normalized = evidence.rstrip("。.")
+        if len(terminal_normalized) >= 8 and any(terminal_normalized in source for source in sources):
+            return terminal_normalized
+    return evidence
+
+
 def _has_zero_acceptance_evidence(item: dict[str, Any], field: str) -> bool:
     review = item.get("zero_acceptance_review") or {}
     proof = review.get(field) or {}
     evidence = _simplified(proof.get("evidence"), 220)
+    sources = [_simplified(item.get(key), 1000) for key in ("title", "summary")]
+    source_evidence = _source_quote(evidence, sources)
     return bool(
         review.get("protocol") == ZERO_ACCEPTANCE_REVIEW_PROTOCOL
         and review.get("model")
         and proof.get("status") in VALID_STATUSES
         and _text(proof.get("reason"), 500)
-        and len(evidence) >= 8
-        and any(evidence in _simplified(item.get(key), 1000) for key in ("title", "summary"))
+        and len(source_evidence) >= 8
+        and any(source_evidence in source for source in sources)
     )
 
 
@@ -1699,6 +1716,7 @@ def _normalized_zero_acceptance_review(
 ) -> list[dict[str, Any]]:
     decisions = _normalized_decisions(payload, targets)
     raw_by_id = {item["news_id"]: item for item in payload["decisions"]}
+    errors = []
     for item in decisions:
         proof: dict[str, Any] = {"protocol": ZERO_ACCEPTANCE_REVIEW_PROTOCOL}
         raw = raw_by_id[item["news_id"]]
@@ -1707,13 +1725,71 @@ def _normalized_zero_acceptance_review(
                 continue
             reason = _simplified(raw.get(f"{field}_reason"), 500)
             evidence = _simplified(raw.get(f"{field}_evidence"), 220)
-            if not reason or len(evidence) < 8 or not any(
-                evidence in _simplified(item.get(key), 1000) for key in ("title", "summary")
-            ):
-                raise ValueError(f"零入选复核缺少独立理由或原文事实 {item['news_id']}/{field}")
-            proof[field] = {"status": item[f"{field}_status"], "reason": reason, "evidence": evidence}
+            sources = [_simplified(item.get(key), 1000) for key in ("title", "summary")]
+            source_evidence = _source_quote(evidence, sources)
+            if not reason:
+                errors.append(f"零入选复核缺少独立字段理由reason {item['news_id']}/{field}")
+            if len(source_evidence) < 8 or not any(source_evidence in source for source in sources):
+                errors.append(f"零入选复核原文事实evidence不匹配 {item['news_id']}/{field}："
+                              "必须逐字摘录该新闻标题或摘要至少8字，不能遗漏、拼接、改字或引用其他新闻")
+            proof[field] = {"status": item[f"{field}_status"], "reason": reason, "evidence": evidence,
+                            "source_evidence": source_evidence}
         item["zero_acceptance_review"] = proof
+    if errors:
+        raise ValueError("；".join(errors))
     return decisions
+
+
+def _review_zero_batch(examples, batch, *, progress, batch_key, save, session):
+    """Each normal chunk plus at most two repairs; stage repairs stay bounded."""
+    from .news_acceptance_repair import MAX_REQUESTS, MAX_SCOPE_REQUESTS
+    state = progress.setdefault("batches", {}).setdefault(batch_key, {})
+    if state.get("payload"):
+        _normalized_zero_acceptance_review(state["payload"], batch)
+        return state["payload"], state["model"]
+    while True:
+        requests = int(state.get("requests", 0))
+        if (state.get("blocked") or requests >= MAX_SCOPE_REQUESTS
+                or (requests and int(progress.get("repairs", 0)) >= MAX_REQUESTS)):
+            state.update(blocked=True, status="needs_review")
+            save()
+            raise NewsSelectionQualityBlocked("零入选复核已停止自动重试：" + state.get("last_error", "修复预算已用尽"))
+        state["requests"] = requests + 1
+        progress["requests"] = int(progress.get("requests", 0)) + 1
+        if requests:
+            progress["repairs"] = int(progress.get("repairs", 0)) + 1
+        state["status"] = "reviewing"
+        save()  # Interrupted requests consume their attempt, never successful chunks.
+        session["zero_acceptance_batch_attempt"] = requests
+        session["zero_acceptance_review_repair"] = {
+            "validation_error": state.get("last_error", ""),
+            "unvalidated_draft": state.get("draft"),
+        } if requests else None
+        if requests and session.get("request_callback"):
+            session["request_callback"](f"零入选当前批错误修复 {requests}/{MAX_SCOPE_REQUESTS - 1}：{state.get('last_error', '')}")
+        raw, model = None, ""
+        try:
+            raw, model = _invoke_langchain(examples, batch)
+            _normalized_zero_acceptance_review(raw, batch)
+        except (ValueError, TruncatedModelOutput) as exc:
+            raw = getattr(exc, "payload", raw)
+            model = getattr(exc, "model", model)
+            error = str(exc.__cause__ or exc)
+            state.update(status="invalid", draft=raw, model=model, last_error=error)
+            state.setdefault("attempt_history", []).append({"request":state["requests"],
+                "error":error, "response":raw, "model":model,
+                "transport":dict(session.get("last_response_evidence") or {})})
+            save()
+            continue
+        except Exception as exc:
+            state.update(status="interrupted", last_error=type(exc).__name__)
+            save()
+            raise
+        state.update(status="validated", last_error="", payload=raw, model=model)
+        state.setdefault("attempt_history", []).append({"request":state["requests"],
+            "response":raw, "model":model, "transport":dict(session.get("last_response_evidence") or {})})
+        save()
+        return raw, model
 
 
 def _review_zero_acceptances(
@@ -1745,7 +1821,8 @@ def _review_zero_acceptances(
     session = _MODEL_SESSION.get()
     if session is None:
         raise RuntimeError("零入选复核必须运行于持久化筛选会话")
-    prior = {key: session.pop(key, None) for key in ("profile", "quality_feedback", "preferences")}
+    prior = {key: session.pop(key, None) for key in ("profile", "quality_feedback", "preferences",
+                                                   "zero_acceptance_review_repair", "zero_acceptance_batch_attempt")}
     session["preferences"] = True
     session["zero_acceptance_review"] = ZERO_ACCEPTANCE_REVIEW_PROTOCOL
     try:
@@ -1756,7 +1833,39 @@ def _review_zero_acceptances(
         if cached.get("payload"):
             review_payload, model = cached["payload"], cached["model"]
         else:
-            review_payload, model = _invoke_langchain(examples, review_targets)
+            # Evidence and field reasons are much larger than the initial
+            # classification. Reuse its bounded batch size, preserving every
+            # successful chunk before the next model request can fail.
+            batch_size = min(30, max(MODEL_BATCH_SIZE, math.ceil(len(review_targets) / 10)))
+            batches = [review_targets[i:i + batch_size] for i in range(0, len(review_targets), batch_size)]
+            progress_key = key + ":progress"
+            progress = dict((checkpoint or {}).get(progress_key, {}))
+            progress["batch_count"] = len(batches)
+            def save_progress():
+                if checkpoint is not None:
+                    checkpoint[progress_key] = progress
+                    if checkpoint_callback:
+                        checkpoint_callback(0, 0, 0)
+            review_rows, models = [], []
+            for index, batch in enumerate(batches, 1):
+                batch_key = f"zero-acceptance-review:{ZERO_ACCEPTANCE_REVIEW_PROTOCOL}:" + _model_checkpoint_key(examples, batch)
+                batch_cached = (checkpoint or {}).get(batch_key, {})
+                if batch_cached.get("payload"):
+                    batch_payload, batch_model = batch_cached["payload"], batch_cached["model"]
+                else:
+                    if session.get("request_callback"):
+                        session["request_callback"](f"零入选复核第 {index}/{len(batches)} 批，共 {len(batch)} 条；其他已完成批次保留。")
+                    batch_payload, batch_model = _review_zero_batch(examples, batch,
+                        progress=progress, batch_key=batch_key, save=save_progress, session=session)
+                normalized_batch = _normalized_zero_acceptance_review(batch_payload, batch)
+                if checkpoint is not None and not batch_cached.get("payload"):
+                    checkpoint[batch_key] = {"payload": batch_payload, "model": batch_model}
+                    if checkpoint_callback:
+                        checkpoint_callback(index, len(batches), len(normalized_batch))
+                review_rows.extend(batch_payload["decisions"])
+                if batch_model not in models:
+                    models.append(batch_model)
+            review_payload, model = {"decisions": review_rows}, ", ".join(models)
         reviewed = _normalized_zero_acceptance_review(review_payload, review_targets)
         if checkpoint is not None and not cached.get("payload"):
             checkpoint[key] = {"payload": review_payload, "model": model}
@@ -1861,13 +1970,7 @@ def _normalized_acceptance_review(
             impact = _simplified(raw.get(f"{field}_impact"), 500)
             signal = _text(raw.get(f"{field}_signal"), 40)
             duplicate_of = _text(raw.get(f"{field}_duplicate_of"), 80)
-            source_evidence = evidence
-            if evidence and not any(evidence in source for source in evidence_sources):
-                # Only a source-backed terminal sentence mark is equivalent;
-                # retain the submitted quote and never alter interior text/numbers.
-                terminal_normalized = evidence.rstrip("。.")
-                if len(terminal_normalized) >= 8 and any(terminal_normalized in source for source in evidence_sources):
-                    source_evidence = terminal_normalized
+            source_evidence = _source_quote(evidence, evidence_sources)
             if not reason:
                 errors.append(f"接受复核缺少独立字段理由reason {news_id}/{field}")
             if item[f"{field}_status"] == "接受":
