@@ -57,6 +57,14 @@ class NewsImageQualityTests(unittest.TestCase):
         self.assertEqual(result['image_candidates'][0]['origin'], 'share-metadata')
         self.assertNotIn('image_key', result)
 
+    def test_tencent_rich_article_extracts_real_body_photos_and_keeps_ad_filter(self):
+        page = b'''<div class="rich_media_content"><div class="nd-img">
+        <img data-src="/event.jpg" src="/placeholder.png"></div><p>Signing ceremony</p>
+        <div class="ad-slot"><img src="/unrelated.jpg"></div></div>'''
+        result = extract_candidates(page, self.item['source_url'])
+        self.assertEqual(result['image_urls'], ['https://publisher.example/event.jpg'])
+        self.assertIn('Signing ceremony', result['image_candidates'][0]['context'])
+
     def test_other_article_thumbnail_inside_main_is_excluded_but_full_image_link_remains(self):
         page = '''<main><a href="/news/another-article"><picture><img src="/misleading.jpg"></picture></a>
         <figure><a href="/full.jpg"><img src="/thumbnail.jpg"></a></figure>
@@ -76,7 +84,21 @@ class NewsImageQualityTests(unittest.TestCase):
             self.assertEqual(call.call_count, 2)
             with patch('cmhk.services.news_image_quality.policy_key', return_value='new-policy'):
                 review_image(self.item, self.candidate, self.data, self.root)
+            self.assertEqual(call.call_count, 2)
+            with patch('cmhk.services.news_image_quality.policy_key', return_value='new-visual-policy'), \
+                    patch('cmhk.services.news_image_quality.visual_policy_key', return_value='new-visual-policy'):
+                review_image(self.item, self.candidate, self.data, self.root)
             self.assertEqual(call.call_count, 3)
+
+    def test_independent_policy_change_rechecks_identity_but_reuses_visual_observations(self):
+        with patch('cmhk.services.news_image_quality._vision_call', return_value=self.verdict) as visual, \
+                patch('cmhk.services.news_image_quality._identity_review', side_effect=[
+                    {'accepted': True, 'reason': '旧复核'}, {'accepted': False, 'reason': '新版发现主体冲突'}]) as identity:
+            self.assertTrue(review_image(self.item, self.candidate, self.data, self.root)['accepted'])
+            with patch('cmhk.services.news_image_quality.policy_key', return_value='changed-independent'):
+                self.assertFalse(review_image(self.item, self.candidate, self.data, self.root)['accepted'])
+            self.assertEqual(visual.call_count, 1)
+            self.assertEqual(identity.call_count, 2)
 
     def test_independent_identity_check_overrules_confident_wrong_partner(self):
         with patch('cmhk.services.news_image_quality._vision_call', return_value={
