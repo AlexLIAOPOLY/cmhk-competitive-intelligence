@@ -1,0 +1,21 @@
+{
+  "provenance": {
+    "run_id": "research_20260911",
+    "ts": "2026-09-11T03:01:19+08:00",
+    "event": "metric_saved",
+    "company": "Singtel",
+    "metric": "收入",
+    "note": "Historical saved submit_metric fields; tests split these arguments into synthetic SDK SSE chunks. Not a captured wire response."
+  },
+  "tool_name": "submit_metric",
+  "arguments": {
+    "status": "verified",
+    "value": "14,261",
+    "period": "Financial Year ended March 2026",
+    "unit": "S$ million",
+    "source_url": "https://www.singtel.com/about-us/investor-relations/financial-summary",
+    "quote": "Financial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds",
+    "context_quote": "Financial Summary Investor Relations Financial Summary Financial Summary Income Statement (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Operating Revenue 14,261 14,146 14,128 14,624 15,339 EBITDA 3,848 3,792 3,597 3,686 3,767 OpCo EBIT (1) 1,504 1,381 1,153 1,112 1,045 Share of associates' pre-tax profits (2) 2,887 2,499 2,338 2,287 2,136 Underlying net profit (3) 2,769 2,470 2,261 2,053 1,923 Net profit 5,606 4,017 795 2,225 1,949 Exchange rate (A$ against S$) (4) 0.853 0.873 0.884 0.940 0.997 Cash Flow (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Free cash flow (5) 2,439 2,476 2,569 2,613 3,081 Optus 679 569 324 346 767 Optus (A$ million) 796 647 356 342 776 Singtel and other subsidiaries 637 663 973 875 858 Associates' dividends (net of withholding tax) 1,122 1,245 1,271 1,392 1,456 Cash capital expenditure 2,482 2,133 2,150 2,162 2,217 Capital recycling proceeds 3,933 1,854 1,370 2,783 2,078 Balance Sheet (S$ million) Financial Year ended March 2026 2025 2024 2023 2022 Total assets 50,697 46,783 46,199 46,530 49,131 Shareholders' funds",
+    "reason": "FY2026 Operating Revenue 14,261 S$ million 比库内最新FY2025的14,146更新一个财年。"
+  }
+}

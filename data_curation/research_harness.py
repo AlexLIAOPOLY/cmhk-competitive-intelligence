@@ -182,6 +182,7 @@ class ResearchHarness:
             elapsed_ms = round((time.monotonic() - started) * 1000)
             for message in response.result:
                 metadata = getattr(message, "response_metadata", {}) or {}
+                stream_audit = metadata.get("research_stream_audit") or {}
                 self.emit("model_response", "模型响应完整性检查", {
                     "company": self.current.get("company"), "metric": self.current.get("metric"),
                     "requested_max_tokens": allowance,
@@ -189,6 +190,10 @@ class ResearchHarness:
                     "finish_reason": metadata.get("finish_reason"),
                     "requested_model": getattr(request.model, "model_name", ""),
                     "response_model": metadata.get("model_name") or metadata.get("model") or "",
+                    "stream_response_id": stream_audit.get("response_id", ""),
+                    "stream_response_model": stream_audit.get("model", ""),
+                    "stream_finish_reason": stream_audit.get("finish_reason", ""),
+                    "stream_content_sha256": stream_audit.get("content_sha256", ""),
                     "tool_choice": request.tool_choice,
                     "usage": getattr(message, "usage_metadata", None),
                     "invalid_tool_calls": len(getattr(message, "invalid_tool_calls", []) or [])})

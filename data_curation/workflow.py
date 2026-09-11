@@ -2568,6 +2568,7 @@ def _build_supervisor_model(*, max_tokens: int | None = None, max_retries: int =
         extra_body=deepseek_nonthinking_parameters(config.get("extra_parameters") or {}),
         temperature=0,
         timeout=120,
+        streaming=True,
         max_retries=max_retries,
         **({"max_tokens": max_tokens} if max_tokens is not None else {}),
     )

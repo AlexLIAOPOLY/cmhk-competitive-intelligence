@@ -3022,27 +3022,43 @@ def fixed_source_summary() -> dict:
 
 
 def build_today_news_rounds(today_key: str = "") -> list[dict]:
-    day = str(today_key or "").strip() or datetime.now().astimezone().strftime("%Y-%m-%d")
+    from strategic_briefing import HKT, SCAN_TIMES
+
+    today = datetime.now(HKT).strftime("%Y-%m-%d")
+    day = str(today_key or "").strip() or today
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", day):
         return []
+    archives: dict[str, dict] = {}
+    for path in STRATEGIC_BRIEFING_RUNS_DIR.glob(f"{day}@??-??.json"):
+        match = re.fullmatch(rf"{re.escape(day)}@([0-2]\d)-([0-5]\d)\.json", path.name)
+        if not match or int(match.group(1)) > 23:
+            continue
+        scan_time = f"{match.group(1)}:{match.group(2)}"
+        try:
+            candidate = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if (isinstance(candidate, dict) and isinstance(candidate.get("review_sheet"), dict)
+                and candidate.get("slot", f"{day}@{scan_time}") == f"{day}@{scan_time}"):
+            archives[scan_time] = candidate
     rounds: list[dict] = []
-    for hour, label in (("09", "上午"), ("15", "下午")):
-        paths = sorted(
-            STRATEGIC_BRIEFING_RUNS_DIR.glob(f"{day}@{hour}-*.json"),
-            key=lambda path: path.stat().st_mtime,
-            reverse=True,
-        )
-        payload: dict = {}
-        for path in paths:
-            try:
-                candidate = json.loads(path.read_text(encoding="utf-8"))
-            except (OSError, json.JSONDecodeError):
-                continue
-            if isinstance(candidate, dict) and isinstance(candidate.get("review_sheet"), dict):
-                payload = candidate
-                break
+    used_slots: set[str] = set()
+    for configured in SCAN_TIMES:
+        scan_time = configured.strftime("%H:%M")
+        morning = configured.hour < 12
+        label = "上午" if morning else "下午"
+        payload = archives.get(scan_time, {})
+        # Historical archives retain their original scheduled time. Old 09/15
+        # runs must neither replace today's configured slots nor be relabelled.
+        if not payload and day < today:
+            historical = sorted(t for t in archives if t not in used_slots
+                                and (int(t[:2]) < 12) == morning)
+            if historical:
+                scan_time = historical[0]
+                payload = archives[scan_time]
         if not payload:
             continue
+        used_slots.add(scan_time)
         review_sheet = payload.get("review_sheet") or {}
         dashboard_summary = payload.get("dashboard_summary") or {}
         news_discovery = payload.get("news_discovery") or {}
@@ -3110,9 +3126,9 @@ def build_today_news_rounds(today_key: str = "") -> list[dict]:
         ]
         rounds.append(
             {
-                "key": f"{day}-{hour}",
+                "key": f"{day}-{scan_time.replace(':', '-')}",
                 "label": label,
-                "time": f"{hour}:00",
+                "time": scan_time,
                 "status": status,
                 "discovered": discovered,
                 "confirmed": confirmed,
