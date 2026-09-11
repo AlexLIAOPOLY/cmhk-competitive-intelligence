@@ -159,6 +159,35 @@ class NewsImageQualityTests(unittest.TestCase):
                     check_thumbnail_columns(child)
         check_thumbnail_columns(card)
 
+    def test_rejected_picture_variants_do_not_repeat_visual_review_before_search(self):
+        service = SimpleNamespace(runtime_root=self.root, _lark=Mock())
+        original = {**self.candidate, 'url': 'https://publisher.example/wp-content/uploads/2026/09/wrong.jpg'}
+        variants = [original, {**original, 'url': original['url'].replace('.jpg', '-1200x900.jpg')}]
+        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
+                'news_url': self.item['source_url'], 'image_candidates': variants}), \
+                patch('cmhk.services.news_delivery_assets.search_image_candidates', return_value=[self.candidate]), \
+                patch('cmhk.services.news_delivery_assets.fetch', return_value=(self.data, '', 'image/png')) as fetch, \
+                patch('cmhk.services.news_image_quality._vision_call', side_effect=[
+                    {**self.verdict, 'relation': 'reject'}, self.verdict]) as visual, \
+                patch('cmhk.services.news_delivery_assets.upload_image', return_value='img_verified'):
+            result = prepare_news_assets([self.item], service, profile='test', fallback_image_key='')[0]
+        self.assertEqual(result['image_source_url'], self.candidate['url'])
+        self.assertEqual(visual.call_count, 2)
+        self.assertEqual(fetch.call_count, 2)
+
+    def test_failed_download_still_tries_other_size_of_same_picture(self):
+        service = SimpleNamespace(runtime_root=self.root, _lark=Mock())
+        first = {**self.candidate, 'url': 'https://publisher.example/wp-content/uploads/2026/09/photo.jpg'}
+        second = {**first, 'url': first['url'].replace('.jpg', '-1200x900.jpg')}
+        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
+                'news_url': self.item['source_url'], 'image_candidates': [first, second]}), \
+                patch('cmhk.services.news_delivery_assets.fetch', side_effect=[OSError('original unavailable'), (self.data, '', 'image/png')]), \
+                patch('cmhk.services.news_image_quality._vision_call', return_value=self.verdict) as visual, \
+                patch('cmhk.services.news_delivery_assets.upload_image', return_value='img_verified'):
+            result = prepare_news_assets([self.item], service, profile='test', fallback_image_key='')[0]
+        self.assertEqual(result['image_source_url'], second['url'])
+        visual.assert_called_once()
+
     def test_rejected_original_uses_next_picture_before_keyword_search(self):
         service = SimpleNamespace(runtime_root=self.root, _lark=Mock())
         candidates = [self.candidate, {**self.candidate, 'url': 'https://publisher.example/real.png'}]

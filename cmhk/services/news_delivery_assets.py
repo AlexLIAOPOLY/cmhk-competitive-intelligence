@@ -154,6 +154,14 @@ def upload_image(service, url: str, cache: Path, profile: str, *, data: bytes | 
     return key
 
 
+def _image_family(url: str) -> str:
+    parts = urlsplit(url)
+    if '/wp-content/uploads/' in parts.path:
+        path = re.sub(r'-\d+x\d+(?=\.(?:jpg|jpeg|png|webp)$)', '', parts.path, flags=re.I)
+        return parts._replace(path=path).geturl()
+    return url
+
+
 def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_image_key: str) -> list[dict]:
     cache = service.runtime_root / 'var/subscriptions/news-assets'
     cache.mkdir(parents=True, exist_ok=True)
@@ -189,6 +197,7 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
                 deadline = time.monotonic() + 360
                 attempts = []
                 seen = set()
+                rejected_families = set()
                 def candidates():
                     yield from rank_candidates(asset.get('image_candidates', []), item)[:6]
                     # No acceptable article image: the agent searches event and subject keywords.
@@ -200,6 +209,12 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
                     if image_url in seen:
                         continue
                     seen.add(image_url)
+                    family = (candidate['page_url'], _image_family(image_url))
+                    if family in rejected_families:
+                        attempts.append({'image_url': image_url, 'status': 'same_rejected_picture_variant'})
+                        asset['image_attempts'] = attempts
+                        save(target, asset)
+                        continue
                     try:
                         data, _, _ = fetch(image_url, max_bytes=8_000_000)
                         validate_image(data)
@@ -215,6 +230,10 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
                     asset['image_attempts'] = attempts
                     save(target, asset)
                     if not review['accepted']:
+                        # A rejected WordPress photo often reappears in many
+                        # sizes. Try another subject image, not the same photo.
+                        # Download/model failures never populate this set.
+                        rejected_families.add(family)
                         continue
                     image_key = upload_image(service, image_url, cache, profile, data=data)
                     if image_key == fallback_image_key:
