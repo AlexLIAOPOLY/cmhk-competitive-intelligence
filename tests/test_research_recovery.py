@@ -35,6 +35,51 @@ class RecoveryTests(unittest.TestCase):
             summary = {'publication': {'status':'error','error':'审核资料存在口径冲突'}}
             self.assertEqual(recovery.schedule(summary, Path(td), datetime.now(daily.HKT))['status'], 'needs_review')
 
+    def test_dead_worker_is_delayed_then_resumed_with_the_same_budget(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            directory = root / 'curation_data/research_runs/research_20260911'
+            directory.mkdir(parents=True)
+            summary = {'publication': {'status':'running'}, 'recovery': {'status':'running','attempts':2}}
+            (directory / 'manifest.json').write_text(json.dumps(summary))
+            now = datetime(2026, 9, 11, 10, tzinfo=daily.HKT)
+            with (patch.object(daily, 'running_worker', return_value=False),
+                  patch.object(daily, 'worker_python', side_effect=AssertionError('wait before restarting'))):
+                result = daily.dispatch(root, now)
+            self.assertEqual(result['recovery']['status'], 'retry_pending')
+            self.assertEqual(result['recovery']['attempts'], 2)
+            saved = json.loads((directory / 'manifest.json').read_text())
+            self.assertTrue(recovery.due(saved, now + timedelta(minutes=11)))
+
+    def test_retry_keeps_original_model_proof_rejected_by_old_preflight(self):
+        from data_curation.research_final_review import review_run
+        from data_curation.review_store import ReviewStore
+        from tests.test_research_kpi import tables
+        from tests.test_research_storage import fact
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            tables(root)
+            directory = root / 'curation_data/research_runs/research_test'
+            directory.mkdir(parents=True)
+            task = {'key':'hong-kong','title':'香港','companies':['HKT']}
+            original = fact(research_status='conflict', decision='review',
+                preflight_original={'decision':'accepted','status':'ok','research_status':'verified'},
+                write_preflight={'status':'rejected','reason':'old unit notation'})
+            summary = {'run_id':'research_test','plan':[task], 'status':'partial','final_review':{'status':'completed'}}
+            (directory / 'manifest.json').write_text(json.dumps(summary))
+            (directory / 'candidate_facts.jsonl').write_text(json.dumps(original))
+            report = {'company':'HKT','status':'partial','metrics':['收入'],'items':[{'company':'HKT','metric':'收入','status':'conflict'}],
+                      'pages':{},'review_completed':True,'reviewed_metrics':['收入']}
+            (directory / 'hong-kong.json').write_text(json.dumps({**task,'reports':[report]}))
+            store = ReviewStore(directory, {'key':'final-review'}, 'research_test', ['HKT'], 1)
+            store.save(report, evidence_changed=True)
+            store.complete()
+            result = review_run(directory, retry_errors=True, model_factory=lambda: self.fail('proof already exists'))
+            self.assertEqual(result['accepted'], 1)
+            saved = json.loads((directory / 'verified_facts.jsonl').read_text())
+            self.assertEqual(saved['evidence_hash'], original['evidence_hash'])
+            self.assertEqual(saved['value'], original['value'])
+
     def test_publication_only_retry_does_not_repeat_research(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

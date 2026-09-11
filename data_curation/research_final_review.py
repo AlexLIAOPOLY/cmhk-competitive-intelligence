@@ -147,9 +147,12 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
         agent["status"] = "completed" if all(r["status"] == "completed" for r in agent["reports"]) else "partial"
     facts = merge_results(results, summary["run_id"])
     from .research_kpi import prepare_facts, persist_preflight
-    if retry_errors and (directory / "verified_facts.jsonl").exists():
+    if retry_errors and (directory / "candidate_facts.jsonl").exists():
+        # Preflight can reject a model-verified value for notation. Do not lose
+        # that original proof when merge_results renders rejected items empty.
         retained = {(f["company"], f["metric"]): f for f in
-                    (json.loads(line) for line in (directory / "verified_facts.jsonl").read_text().splitlines() if line.strip())}
+                    (json.loads(line) for line in (directory / "candidate_facts.jsonl").read_text().splitlines() if line.strip())
+                    if f.get("decision") == "accepted" or f.get("preflight_original", {}).get("decision") == "accepted"}
         facts = [retained.get((f["company"], f["metric"]), f) for f in facts]
     facts, write_preflight = prepare_facts(directory.parent.parent.parent, facts, summary["run_id"], allow_replay=retry_errors)
     persist_preflight(directory, results, facts, write_preflight, summary, store=store)
