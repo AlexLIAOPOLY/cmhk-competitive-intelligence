@@ -148,7 +148,6 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
     --include='/coverage_report.tsv' \
     --include='/final_audit.md' \
     --include='/feishu_latest_*.json' \
-    --include='/data/reporting/report_file_metadata.json' \
     --include='/run_log*.json' \
     --include='/run_log*.tsv' \
     --include='/scheduler_state.json' \
@@ -157,6 +156,14 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
     --include='/weekly_report*.html' \
     --exclude='/*' \
     "$RUNTIME_ROOT/" "$TMP_DIR/"
+
+  # Report metadata is nested, so the root-only filter above cannot reach it.
+  # Keep rename history alongside the authoritative runtime Word library.
+  if [[ -f "$RUNTIME_ROOT/data/reporting/report_file_metadata.json" ]]; then
+    mkdir -p "$TMP_DIR/data/reporting"
+    rsync -a "$RUNTIME_ROOT/data/reporting/report_file_metadata.json" \
+      "$TMP_DIR/data/reporting/report_file_metadata.json"
+  fi
 fi
 
 CHECKPOINT_SOURCE="$ROOT/curation_data/checkpoints.sqlite"
