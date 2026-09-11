@@ -31,7 +31,7 @@ from cmhk.data_releases import default_release_root, publish_quarterly_release_t
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, read_chat_completion_sse, unwrap_items_payload
 from ai_key_rotation import APIKeyPoolUnavailable, open_llm_request
 from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY, model_generated_only
-from executive_intelligence_prompts import STRATEGIC_PROMPT_VERSION, STRATEGIC_WRITING_GUIDE
+from executive_intelligence_prompts import STRATEGIC_PROMPT_VERSION, STRATEGIC_WRITING_GUIDE, discovery_few_shot_messages
 
 
 ROOT = Path(__file__).resolve().parent
@@ -3968,6 +3968,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
     )
     messages = [
         {"role": "system", "content": system_prompt},
+        *discovery_few_shot_messages(batch=True),
         {"role": "user", "content": user_prompt},
     ]
     body = prepare_structured_chat_body({
@@ -4141,6 +4142,7 @@ def regenerate_model_discovery(
                 + STRATEGIC_WRITING_GUIDE
             ),
         },
+        *discovery_few_shot_messages(batch=False),
         {
             "role": "user",
             "content": json.dumps({"from": source_domain, "to": target_domain, **scoped_evidence}, ensure_ascii=False),
