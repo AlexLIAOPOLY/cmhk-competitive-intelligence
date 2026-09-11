@@ -200,6 +200,33 @@ class DiscoveryRecoveryTests(unittest.TestCase):
             self.assertEqual(len(state['repair_history']), 2)
             self.assertTrue(all(r['candidate'][1:] == original[1:] for r in state['repair_history']))
 
+    def test_saved_canonical_string_index_recovers_at_spent_budget_without_http(self):
+        with tempfile.TemporaryDirectory() as td:
+            trace = Path(td) / 'attempts.jsonl'; key, original = self.seed_bad_packet(trace)
+            saved = json.loads(trace.with_suffix('.discoveries.json').read_text())
+            packet = {'patches': [{'index': '0', **{k:self.items[0][k] for k in ('title','detail','source_urls')}}]}
+            history = [
+                {'status': 'failed', 'http_calls': 1},
+                {'status': 'failed', 'http_calls': 1, 'reported_model': 'actual-patch',
+                 'before_candidate': original, 'allowed_items': {'0': {}},
+                 'submitted_patch': packet,
+                 'response': {'choices': [{'message': {'content': json.dumps(packet)}, 'finish_reason': 'stop'}]}}
+            ]
+            saved[key]['repair_history'] = copy.deepcopy(history)
+            trace.with_suffix('.discoveries.json').write_text(json.dumps(saved))
+            with patch.object(pipeline, 'open_llm_request') as no_http:
+                result = pipeline.generate_model_discoveries(self.evidence, attempt_trace_path=trace)
+            no_http.assert_not_called()
+            self.assertEqual(result['discoveries'], self.items)
+            after = json.loads(trace.with_suffix('.discoveries.json').read_text())[key]
+            self.assertEqual(after['repair_history'], history)
+            self.assertEqual(after['model_route_counts'], {'primary': 1})
+            for invalid in ('00', '0.0', ' 0', '+0', '-0', '4', True, 0.0):
+                malformed = copy.deepcopy(packet)
+                malformed['patches'][0]['index'] = invalid
+                with self.subTest(index=invalid), self.assertRaises(ValueError):
+                    pipeline._apply_discovery_model_patch(original, malformed, {'0': {}})
+
     def test_received_only_bad_packet_is_repaired_without_another_full_route(self):
         with tempfile.TemporaryDirectory() as td:
             trace = Path(td) / 'attempts.jsonl'; key, original = self.seed_bad_packet(trace)

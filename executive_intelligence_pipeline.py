@@ -3819,6 +3819,10 @@ def _apply_discovery_model_patch(candidate, packet, options):
         if not isinstance(patch, dict) or set(patch) != {"index", "title", "detail", "source_urls"}:
             raise ValueError("跨库局部修订只能修改index/title/detail/source_urls")
         index = patch["index"]
+        # JSON object keys in allowed_items are strings; accept only their
+        # exact canonical index spelling, while retaining the original packet.
+        if isinstance(index, str) and re.fullmatch(r"[0-3]", index):
+            index = int(index)
         if type(index) is not int or str(index) not in options or index in seen:
             raise ValueError("跨库局部修订包含未失败条目、重复或未知位置")
         if not all(isinstance(patch[k], str) for k in ("title", "detail")) or not isinstance(patch["source_urls"], list) or any(not isinstance(u, str) for u in patch["source_urls"]):
