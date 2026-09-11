@@ -2,6 +2,7 @@ from pathlib import Path
 import subprocess
 import tempfile
 import unittest
+import os
 from unittest.mock import patch
 
 from cmhk.reporting.pdf_preview import (
@@ -53,6 +54,25 @@ class ReportPdfPreviewTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1]
         self.assertIn("libreoffice-writer", (root/"Dockerfile").read_text())
         self.assertIn("runtime: docker", (root/"render.yaml").read_text())
+
+    def test_word_fonts_are_available_to_performance_previews_only(self):
+        from cmhk.reporting.pdf_preview import _convert_with_soffice
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            configs = []
+            def convert(command, **kwargs):
+                configs.append(Path(kwargs['env']['FONTCONFIG_FILE']).read_text())
+                output = Path(command[command.index('--outdir')+1])
+                (output/(Path(command[-1]).stem+'.pdf')).write_bytes(b'%PDF-test')
+                return subprocess.CompletedProcess(command, 0, '', '')
+            with patch('cmhk.reporting.pdf_preview.sys.platform', 'darwin'), \
+                 patch.dict(os.environ, {}, clear=True), \
+                 patch('cmhk.reporting.pdf_preview.Path.is_dir', return_value=True), \
+                 patch('cmhk.reporting.pdf_preview.subprocess.run', side_effect=convert):
+                for name in ['业绩摘要', '周报']:
+                    _convert_with_soffice(root/(name+'.docx'),root/(name+'.pdf'),'test-soffice',30)
+            self.assertIn('Microsoft Word.app/Contents/Resources/DFonts', configs[0])
+            self.assertNotIn('Microsoft Word.app', configs[1])
 
 
 if __name__ == "__main__":

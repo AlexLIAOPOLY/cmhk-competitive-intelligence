@@ -72,6 +72,10 @@ def _convert_with_soffice(docx_path: Path, target: Path, soffice: str, timeout: 
             # the host's existing fonts; do not install or modify user fonts.
             from xml.sax.saxutils import escape
             font_dirs = [Path("/System/Library/Fonts"), Path("/Library/Fonts"), Path.home()/"Library/Fonts"]
+            if "业绩摘要" in docx_path.stem:
+                # Word's installed FangSong is outside macOS's system font
+                # directories. Use the existing font for this report only.
+                font_dirs.append(Path("/Applications/Microsoft Word.app/Contents/Resources/DFonts"))
             config = temp_dir / "fonts.conf"
             config.write_text('<fontconfig>' + ''.join(f'<dir>{escape(str(path))}</dir>' for path in font_dirs if path.is_dir())
                               + f'<cachedir>{escape(str(temp_dir / "font-cache"))}</cachedir></fontconfig>', encoding="utf-8")

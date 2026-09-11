@@ -237,6 +237,63 @@ class CarrierPerformanceAiEditorTests(unittest.TestCase):
         model = {"sections": [], "generationLimitations": [], "researchAudit": {"unresolved": [{"field": "broker"}]}}
         self.assertEqual(report.sanitize_performance_model(model)["generationMode"], "limited")
 
+    def test_report_removes_opening_explanation_and_keeps_template_fonts(self) -> None:
+        from docx.oxml.ns import qn
+        model = report.fallback_performance_model()
+        model['sections'] = sample_sections()
+        with TemporaryDirectory() as folder:
+            path = report.render_report(output_path=Path(folder)/'业绩摘要.docx', archive=False, model=model)
+            document = Document(path)
+        text = '\n'.join(p.text for p in document.paragraphs)
+        self.assertNotIn(model['subtitle'], text)
+        self.assertNotIn(model['intro'], text)
+        self.assertEqual(document.paragraphs[0].text, model['title'])
+        self.assertEqual(document.paragraphs[1].text, model['table_caption'])
+        self.assertEqual(document.paragraphs[0].runs[0].font.size.pt, 20)
+        for table in document.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            self.assertEqual(run.font.name, 'FangSong')
+                            self.assertEqual(run.font.size.pt, 12)
+                            self.assertEqual(run._r.rPr.rFonts.get(qn('w:eastAsia')), 'FangSong')
+        body = next(p for p in document.paragraphs if p.text.startswith('1. 派息'))
+        self.assertEqual(body.runs[1].font.size.pt, 14)
+        self.assertFalse(body.runs[1].bold)
+
+    def test_sources_leave_body_but_financial_qualifiers_and_broker_dates_remain(self) -> None:
+        cases = [
+            ("派息", "每股15.5港仙（2025年2月28日：每股15.5港仙）（含税）。（来源：公司公告（2026年4月24日））", "每股15.5港仙（2025年2月28日：每股15.5港仙）（含税）。"),
+            ("资本开支", "资本开支现金流（负值表示流出）-169百万港元。", "资本开支现金流（负值表示流出）-169百万港元。"),
+            ("市场反应", "据StockAnalysis 2026年9月10日16:08 HKT，股价4.605港元（+1.21%）。", "截至2026年9月10日16:08 HKT，股价4.605港元（+1.21%）。"),
+            ("券商观点", "摩根士丹利买入目标价14港元（2026-07-29）。（来源：经济通，2026-09-10）", "摩根士丹利买入目标价14港元（2026-07-29）。"),
+            ("战略升级", "公司发展多元化收入来源。", "公司发展多元化收入来源。"),
+        ]
+        for label, before, expected in cases:
+            with self.subTest(label=label):
+                actual = report.performance_body_without_sources(before, label)
+                self.assertEqual(actual, expected)
+                self.assertEqual(report.performance_body_without_sources(actual, label), expected)
+
+    def test_public_commentary_keeps_its_identity_without_source_furniture(self) -> None:
+        before = "据观点网2026年8月27日公开报道（非机构评级），收入2.44亿港元；该报道为公开信息整理，不构成投资建议。"
+        self.assertEqual(report.performance_body_without_sources(before, "券商观点"), "公开评论指出，收入2.44亿港元。")
+
+    def test_report_sources_remain_in_sidecar_instead_of_document(self) -> None:
+        model = report.fallback_performance_model()
+        model['sections'] = sample_sections()
+        model['sections'][0]['items'][0] += '（来源：公司业绩公告，2026年8月13日）'
+        model['researchAudit'] = {'sources': ['https://example.com/results']}
+        with TemporaryDirectory() as folder:
+            path = report.render_report(output_path=Path(folder)/'业绩摘要.docx', archive=False, model=model)
+            text = '\n'.join(p.text for p in Document(path).paragraphs)
+            audit = json.loads(path.with_suffix('.quality.json').read_text())
+        self.assertNotIn('来源：', text)
+        self.assertIn('全年每股派息0.50港元，同比增长5%。', text)
+        self.assertEqual(audit['researchAudit'], model['researchAudit'])
+        self.assertIn('来源：', audit['sourceAttributionEdits'][0]['original'])
+
     def test_generation_uses_independent_agent_without_shared_refresh(self) -> None:
         with (
             mock.patch.object(report, "refresh_feishu_mirror") as feishu,
