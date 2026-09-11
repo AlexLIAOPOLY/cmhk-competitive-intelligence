@@ -58,7 +58,9 @@ git_net -C "$TMP_DIR" push origin "$OLD_MAIN:refs/heads/$BACKUP_BRANCH"
 # Reuse identical source inodes while the temporary snapshot lives on the same
 # filesystem. This keeps the mandatory complete snapshot viable on machines
 # with a large workspace but limited free scratch space; Git still records the
-# exact bytes in its own object database before anything is pushed.
+# exact bytes in its own object database before anything is pushed. Atomic
+# writer staging files may disappear during rsync; only their final names belong
+# in a snapshot, so exclude *.tmp in both workspace and runtime copies.
 rsync -a --delete --link-dest="$ROOT" \
   --exclude '/.git/' \
   --exclude '/.venv*/' \
@@ -84,6 +86,7 @@ rsync -a --delete --link-dest="$ROOT" \
   --exclude '*.pyo' \
   --exclude '*.log' \
   --exclude '*.pid' \
+  --exclude '*.tmp' \
   --exclude '/.crawl_process.lock' \
   --exclude '/ai_config.json' \
   --exclude '/.env' \
@@ -118,6 +121,7 @@ if [[ -d "$RUNTIME_ROOT" && "$RUNTIME_ROOT" != "$ROOT" ]]; then
       --exclude '*.pyo' \
       --exclude '*.log' \
       --exclude '*.pid' \
+      --exclude '*.tmp' \
       --exclude '*.lock' \
       --exclude 'backups/' \
       --exclude 'cache_backups/' \
