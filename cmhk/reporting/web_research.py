@@ -133,7 +133,7 @@ def _search_html(query: str, limit: int, provider: str) -> list[dict[str, str]]:
     return _normalize_results(rows, limit)
 
 
-def public_web_search(query: str, limit: int = 3) -> SearchResult:
+def public_web_search(query: str, limit: int = 3, *, result_filter: Callable[[dict], bool] | None = None) -> SearchResult:
     clean_query = _clean_text(query, 260)
     bounded_limit = max(1, min(int(limit or 3), 5))
     failures: list[str] = []
@@ -146,6 +146,10 @@ def public_web_search(query: str, limit: int = 3) -> SearchResult:
     for provider, searcher in providers:
         try:
             results = searcher(clean_query, bounded_limit)
+            if results and result_filter is not None:
+                results = [result for result in results if result_filter(result)]
+                if not results:
+                    failures.append(f"{provider}:no_related_results")
         except Exception as exc:
             failures.append(f"{provider}:{type(exc).__name__}:{_clean_text(exc, 120)}")
             continue

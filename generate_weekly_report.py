@@ -2802,7 +2802,7 @@ def weekly_recovery_search_query(title: str) -> str:
     keywords = re.sub(r"【[^】]+】|新一代|宣布|推出|提出|正式|成功|奠基|跃居", " ", title)
     keywords = re.sub(r"([A-Za-z0-9][A-Za-z0-9.-]*)", r" \1 ", keywords)
     keywords = re.sub(r"[^0-9A-Za-z\u4e00-\u9fff.]+", " ", keywords)
-    return clean_text(OpenCC("s2t").convert(keywords), 220)
+    return clean_text(OpenCC("s2hk").convert(keywords), 220)
 
 
 def research_weekly_model_online(
@@ -2838,7 +2838,13 @@ def research_weekly_model_online(
             }
         )
     progress(f"[周报 4/7] 正在逐条联网搜索核实并查找可补充信息，共{len(requests)}条……")
-    rows = run_web_research(requests, search_client=search_client, limit=5, workers=4)
+    # A provider returning unrelated pages is a retrieval failure, not success.
+    # Continue to the next provider before asking the writer to use that result.
+    effective_search = search_client
+    if search_client is public_web_search:
+        def effective_search(query, limit):
+            return public_web_search(query, limit, result_filter=lambda result: _headline_evidence_overlap(query, result.get("title")) >= 0.25)
+    rows = run_web_research(requests, search_client=effective_search, limit=5, workers=4)
     rows_by_id = {clean_text(row.get("id")): row for row in rows}
     fallback_requests = []
     for request in requests:
@@ -2856,7 +2862,7 @@ def research_weekly_model_online(
         progress(f"[周报 4/7] {len(fallback_requests)}条搜索缺少相关结果，使用繁体关键词补搜。")
         fallback_rows = run_web_research(
             fallback_requests,
-            search_client=search_client,
+            search_client=effective_search,
             limit=5,
             workers=4,
         )

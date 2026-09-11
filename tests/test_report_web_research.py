@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import unittest
+from unittest.mock import patch
 
 import cmhk.reporting.web_research as research
 
@@ -9,6 +10,17 @@ run_web_research = research.run_web_research
 
 
 class ReportWebResearchTests(unittest.TestCase):
+    def test_unrelated_provider_results_fall_through_to_another_provider(self) -> None:
+        with (
+            patch.object(research, '_search_searxng', return_value=[]),
+            patch.object(research, '_search_ddgs', return_value=[{'title': 'unrelated', 'url': 'https://example.test/no'}]),
+            patch.object(research, '_search_html', return_value=[{'title': 'wanted', 'url': 'https://example.test/yes'}]) as fallback,
+        ):
+            result = research.public_web_search('query', result_filter=lambda row: row['title'] == 'wanted')
+        self.assertEqual(result['provider'], 'yahoo_html')
+        self.assertEqual(result['results'][0]['title'], 'wanted')
+        fallback.assert_called_once()
+
     def test_search_timeout_allows_slow_providers_more_time(self) -> None:
         self.assertGreaterEqual(research.REPORT_SEARCH_TIMEOUT_SECONDS, 45)
 
