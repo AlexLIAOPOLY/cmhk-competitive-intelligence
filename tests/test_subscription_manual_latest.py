@@ -28,6 +28,12 @@ class FakeSubscriptionService:
             ]
         }
 
+    def select_personal_news(self, items, *, open_id):
+        from cmhk.services.news_delivery_selection import select_recent_news
+        subscriber = next(x for x in self.list_summary()['subscribers'] if x['open_id'] == open_id)
+        return select_recent_news(items, subscriber['news_categories'], limit=subscriber['news_item_limit'],
+                                  history=[], send_day="2026-08-19", seed=open_id)
+
     def push(self, **kwargs):
         self.calls.append(kwargs)
         return {

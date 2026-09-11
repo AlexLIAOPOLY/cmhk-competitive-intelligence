@@ -547,7 +547,7 @@ def subscription_entry_card(
                                 for category, label in NEWS_CATEGORY_LABELS.items()
                             ],
                         },
-                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。超过4个时，每次新闻推送从中随机抽取4个，下次重新抽取；4个及以下按所选推送。抽中的竞对动态优先展示。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
+                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块；竞对动态入选后优先展示。只选今天或昨天发布的新闻，排除近期已发内容，不足设定条数就少发。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**战略新闻频率**"},
                         {
                             "tag": "select_static",
@@ -728,7 +728,7 @@ def subscription_confirmation_card(
                                     ],
                                 },
                                 {"tag": "markdown", "content": f"**已订阅兴趣板块**\n{categories}"},
-                                {"tag": "markdown", "content": "所选板块全部保留；超过4个时，每次新闻推送随机抽取4个，下次重新抽取。4个及以下按所选推送。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
+                                {"tag": "markdown", "content": "所选板块全部保留；每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块。只选今天或昨天发布的新闻，排除近期已发内容，不足设定条数就少发。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
                                 {"tag": "markdown", "content": f"**期待收到时间（香港）**\n{' / '.join(delivery_times)}"},
                             ],
                         }
@@ -3793,6 +3793,7 @@ class SubscriptionService:
         body: str,
         batch_id: str,
         profile: str,
+        prepared_news_only: bool = False,
     ) -> list[str]:
         report_path: Path | None = None
         if service in {"weekly", "performance"}:
@@ -3818,7 +3819,8 @@ class SubscriptionService:
             if service == "news":
                 from cmhk.services.news_delivery_guard import deliver_news
                 return deliver_news(self, open_id=open_id, content_ref=content_ref, title=title,
-                                    body=body, batch_id=batch_id, profile=profile)
+                                    body=body, batch_id=batch_id, profile=profile,
+                                    prepared_only=prepared_news_only)
             else:
                 for index, chunk in enumerate(text_chunks, start=1):
                     message_ids.append(self._send_markdown(
@@ -3854,15 +3856,16 @@ class SubscriptionService:
             ).fetchone()
         return int(row[0] if row else 0)
 
-    def flush_due(self, *, now: datetime | None = None, limit: int = 100) -> dict[str, Any]:
+    def flush_due(self, *, now: datetime | None = None, limit: int = 100,
+                  pending_id: int | None = None, prepared_news_only: bool = True) -> dict[str, Any]:
         current = (now or datetime.now(HKT)).astimezone(HKT).isoformat(timespec="seconds")
         with closing(self._connect()) as db:
             rows = db.execute(
                 """SELECT p.*, d.batch_id FROM pending_subscription_deliveries p
                    JOIN deliveries d ON d.id=p.delivery_id
-                   WHERE p.status='queued' AND p.due_at<=?
+                   WHERE p.status='queued' AND p.due_at<=? AND (? IS NULL OR p.id=?)
                    ORDER BY p.due_at, p.id LIMIT ?""",
-                (current, max(1, min(limit, 500))),
+                (current, pending_id, pending_id, max(1, min(limit, 500))),
             ).fetchall()
         results: list[dict[str, Any]] = []
         for row in rows:
@@ -3922,6 +3925,7 @@ class SubscriptionService:
                     body=str(row["body"]),
                     batch_id=str(row["batch_id"]),
                     profile=self.delivery_profile,
+                    prepared_news_only=prepared_news_only,
                 )
             except Exception as exc:
                 status = "retrying"
@@ -3939,7 +3943,10 @@ class SubscriptionService:
                         (_now_hkt(), int(row["id"])),
                     )
                 else:
-                    retry_at = ((now or datetime.now(HKT)).astimezone(HKT) + timedelta(minutes=15)).isoformat(timespec="seconds")
+                    # News preparation and transport failures must not impose a
+                    # fifteen-minute delay on a card that becomes ready meanwhile.
+                    retry_at = ((now or datetime.now(HKT)).astimezone(HKT) + timedelta(
+                        seconds=15 if service == "news" else 900)).isoformat(timespec="seconds")
                     db.execute(
                         """UPDATE pending_subscription_deliveries
                            SET status='queued', attempts=attempts+1, last_error=?, due_at=?
@@ -3978,6 +3985,21 @@ class SubscriptionService:
             "remaining_due_count": self.due_count(now=now),
             "results": results,
         }
+
+    def select_personal_news(self, items: list[dict], *, open_id: str) -> list[dict]:
+        """Manual latest-content selection uses the same short history as automatic news."""
+        from cmhk.services.news_delivery_guard import delivered_history
+        from cmhk.services.news_delivery_selection import select_recent_news
+        day = _now_hkt()[:10]
+        with closing(self._connect()) as db:
+            subscriber = db.execute(
+                "SELECT news_categories,news_item_limit FROM subscribers WHERE open_id=?", (open_id,),
+            ).fetchone()
+            if not subscriber:
+                return []
+            history = delivered_history(db, open_id=open_id, batch_id="", logical_day=day, send_day=day)
+        return select_recent_news(items, subscriber['news_categories'], limit=subscriber['news_item_limit'],
+                                  history=history, send_day=day, seed=f"{open_id}:{day}:manual")
 
     def dispatch_news_after_crawl(
         self,
@@ -4058,8 +4080,7 @@ class SubscriptionService:
             if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
                 news_item_limit = 10
             news_categories = normalize_news_categories(row["news_categories"])
-            push_news_categories = _news_categories_for_push(
-                news_categories, seed=f"{open_id}:{crawl_date}:{delivery_window}")
+            push_news_categories = []
             delivery_times = _normalize_news_delivery_times(row["news_delivery_times"])
             delivery_time = delivery_times[0] if delivery_window == "morning" else delivery_times[1]
             due_at = _news_delivery_due_at(
@@ -4127,49 +4148,17 @@ class SubscriptionService:
                         for legacy_item in _decode_strategic_news_digest(legacy_row[0]):
                             seen_keys.update(_news_identity_keys(legacy_item))
 
-                    current_candidates = _deduplicate_news_items(clean_items, excluded_keys=seen_keys)
-                    recipient_items = filter_news_by_categories(
-                        current_candidates,
-                        push_news_categories,
-                        limit=news_item_limit,
-                    )
-                    selected_keys = set().union(
-                        *(_news_identity_keys(item) for item in recipient_items),
-                    ) if recipient_items else set()
-                    if delivery_window == "afternoon" and len(recipient_items) < news_item_limit:
-                        morning_items: list[dict[str, Any]] = []
-                        for pool_row in db.execute(
-                            """SELECT item_json FROM news_crawl_item_pool
-                               WHERE crawl_date=? AND delivery_window='morning'
-                               ORDER BY sort_timestamp DESC, crawl_slot DESC""",
-                            (crawl_date,),
-                        ).fetchall():
-                            try:
-                                pool_item = json.loads(str(pool_row[0] or ""))
-                            except (TypeError, ValueError, json.JSONDecodeError):
-                                continue
-                            if isinstance(pool_item, dict):
-                                morning_items.append(pool_item)
-                        # Reconstruct the best available morning pool during a
-                        # same-day upgrade from already queued personal cards.
-                        for legacy_pool_row in db.execute(
-                            """SELECT p.body
-                               FROM pending_subscription_deliveries p
-                               JOIN news_crawl_dispatches d ON d.delivery_id=p.delivery_id
-                               WHERE d.crawl_date=? AND substr(d.crawl_slot, 12, 5)<'12:00'
-                                 AND d.status<>'cancelled'""",
-                            (crawl_date,),
-                        ).fetchall():
-                            morning_items.extend(_decode_strategic_news_digest(legacy_pool_row[0]))
-                        fallback_candidates = _deduplicate_news_items(
-                            morning_items,
-                            excluded_keys=seen_keys | selected_keys,
-                        )
-                        recipient_items.extend(filter_news_by_categories(
-                            fallback_candidates,
-                            push_news_categories,
-                            limit=news_item_limit - len(recipient_items),
-                        ))
+                    from cmhk.services.news_delivery_guard import delivered_history
+                    from cmhk.services.news_delivery_selection import original_crawl_pool, select_recent_news
+                    selection_day = max(crawl_date, due_at[:10])
+                    history = delivered_history(db, open_id=open_id, batch_id=batch_id,
+                                                logical_day=crawl_date, send_day=selection_day)
+                    candidates = _deduplicate_news_items(
+                        clean_items + original_crawl_pool(db, content_ref), excluded_keys=seen_keys)
+                    recipient_items = select_recent_news(
+                        candidates, news_categories, limit=news_item_limit, history=history,
+                        send_day=selection_day, seed=f"{open_id}:{crawl_date}:{content_ref}")
+                    push_news_categories = list(dict.fromkeys(item['category'] for item in recipient_items))
                     body = encode_strategic_news_digest(recipient_items)
                     local_item_count = sum(
                         str(item.get("region") or "").strip() == "香港本地"

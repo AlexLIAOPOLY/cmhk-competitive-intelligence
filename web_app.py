@@ -3896,12 +3896,9 @@ def push_latest_subscription_content(
         for subscriber in active:
             if "news" not in (subscriber.get("services") or []):
                 continue
-            item_limit = int(subscriber.get("news_item_limit") or 10)
             news_categories = subscriber.get("news_categories")
-            news_items = filter_news_by_categories(
-                latest_news,
-                news_categories,
-                limit=item_limit,
+            news_items = service.select_personal_news(
+                latest_news, open_id=str(subscriber.get("open_id") or ""),
             )
             result = service.push(
                 service="news",

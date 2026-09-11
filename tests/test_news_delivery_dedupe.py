@@ -12,11 +12,11 @@ from cmhk.services.subscriptions import SubscriptionService, encode_strategic_ne
 
 
 MEETING = {"news_id": "meeting-a", "title": "新皇岗口岸：香港海关与皇岗海关讨论紧急事故应对机制",
-           "summary": "香港海关与皇岗海关举行会议，讨论新皇岗口岸应对紧急事故的机制安排。", "category": "公司动态"}
+           "summary": "香港海关与皇岗海关举行会议，讨论新皇岗口岸应对紧急事故的机制安排。", "category": "公司动态", "published_at": "2026-09-10T08:00:00+08:00", "subscription_preferred": True}
 REWRITE = {"news_id": "meeting-b", "title": "新皇岗口岸：香港海关与皇岗海关讨论开通后合作安排",
-           "summary": "香港海关与皇岗海关举行工作会议，讨论新皇岗口岸开通后的双方合作安排。", "category": "公司动态"}
+           "summary": "香港海关与皇岗海关举行工作会议，讨论新皇岗口岸开通后的双方合作安排。", "category": "公司动态", "published_at": "2026-09-10T08:00:00+08:00", "subscription_preferred": True}
 DISTINCT = {"news_id": "road", "title": "新皇岗口岸路面湿滑，路政署铺设防滑物料",
-            "summary": "香港路政署正为新皇岗口岸湿滑路面铺设防滑物料。", "category": "公司动态"}
+            "summary": "香港路政署正为新皇岗口岸湿滑路面铺设防滑物料。", "category": "公司动态", "published_at": "2026-09-10T08:00:00+08:00", "subscription_preferred": True}
 
 
 def model_result(items):
@@ -105,6 +105,9 @@ class DeliveryGuardTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
+        clock = mock.patch("cmhk.services.news_delivery_guard.datetime").start()
+        clock.now.return_value = datetime.fromisoformat("2026-09-10T18:00:00+08:00")
+        self.addCleanup(mock.patch.stopall)
         self.service = SubscriptionService(runtime_root=self.root)
         self.service.save_subscriptions("ou_test123", "测试用户", ["news"], frequency="twice_daily", news_categories=["公司动态"])
         self.service.update_news_schedule(enabled=True)
@@ -187,13 +190,13 @@ class DeliveryGuardTests(unittest.TestCase):
         self.send_news("today", [MEETING, DISTINCT])
         self.assertEqual(self.receipt_items("today"), [DISTINCT])
 
-    def test_new_hong_kong_day_gets_an_independent_history(self):
+    def test_new_hong_kong_day_still_excludes_yesterdays_delivery(self):
         with mock.patch("cmhk.services.news_delivery_guard.datetime") as clock:
             clock.now.return_value = datetime.fromisoformat("2026-09-10T23:50:00+08:00")
             self.send_news("yesterday", [MEETING])
             clock.now.return_value = datetime.fromisoformat("2026-09-11T08:00:00+08:00")
             self.send_news("tomorrow", [MEETING], ref="strategic-crawl:2026-09-11@03:00")
-        self.assertEqual(self.receipt_items("tomorrow"), [MEETING])
+        self.assertEqual(self.receipt_items("tomorrow"), [])
 
     def test_existing_afternoon_first_time_is_migrated_to_morning(self):
         with sqlite3.connect(self.service.db_path) as db:

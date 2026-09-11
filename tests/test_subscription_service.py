@@ -1130,7 +1130,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         )
         self.assertEqual(next_morning["queued_count"], 1)
         self.assertEqual(next_afternoon["queued_count"], 1)
-        flushed = self.service.flush_due(now=datetime.fromisoformat("2099-01-02T19:00:00+08:00"))
+        flushed = self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-02T19:00:00+08:00"))
         self.assertEqual(flushed["verified_count"], 3)
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 3)
@@ -1152,12 +1152,12 @@ class SubscriptionServiceTests(unittest.TestCase):
 
         self.assertEqual(queued["queued_count"], 1)
         self.assertEqual(queued["results"][0]["due_at"], "2099-01-01T09:17:00+08:00")
-        before = self.service.flush_due(
+        before = self.service.flush_due(prepared_news_only=False,
             now=datetime.fromisoformat("2099-01-01T09:16:59+08:00")
         )
         self.assertEqual(before["processed_count"], 0)
         self.assertFalse(any("+messages-send" in call for call in self.lark.calls))
-        at_completion = self.service.flush_due(
+        at_completion = self.service.flush_due(prepared_news_only=False,
             now=datetime.fromisoformat("2099-01-01T09:17:00+08:00")
         )
         self.assertEqual(at_completion["verified_count"], 1)
@@ -1176,6 +1176,7 @@ class SubscriptionServiceTests(unittest.TestCase):
             items=[{
                 "title": "1月1日迟到新闻",
                 "summary": "跨日完成但仍属于原爬虫日。",
+                "published_at": "2099-01-01T12:00:00+08:00",
                 "category": "公司动态",
             }],
             completed_at="2099-01-02T00:07:00+08:00",
@@ -1183,9 +1184,9 @@ class SubscriptionServiceTests(unittest.TestCase):
 
         self.assertEqual(delayed["queued_count"], 1)
         self.assertEqual(delayed["results"][0]["due_at"], "2099-01-02T00:07:00+08:00")
-        sent = self.service.flush_due(
-            now=datetime.fromisoformat("2099-01-02T00:07:00+08:00")
-        )
+        with mock.patch("cmhk.services.news_delivery_guard.datetime") as clock:
+            clock.now.return_value = datetime.fromisoformat("2099-01-02T00:07:00+08:00")
+            sent = self.service.flush_due(prepared_news_only=False, now=clock.now.return_value)
         self.assertEqual(sent["verified_count"], 1)
         send = next(call for call in self.lark.calls if "+messages-send" in call)
         card = json.loads(send[send.index("--content") + 1])
@@ -1271,11 +1272,11 @@ class SubscriptionServiceTests(unittest.TestCase):
         by_person = {item["open_id"]: item["due_at"] for item in queued["results"]}
         self.assertEqual(by_person["ou_delivery123"], "2099-01-02T08:15:00+08:00")
         self.assertEqual(by_person["ou_second123"], "2099-01-02T09:05:00+08:00")
-        first = self.service.flush_due(
+        first = self.service.flush_due(prepared_news_only=False,
             now=datetime.fromisoformat("2099-01-02T08:15:00+08:00")
         )
         self.assertEqual(first["verified_count"], 1)
-        second = self.service.flush_due(
+        second = self.service.flush_due(prepared_news_only=False,
             now=datetime.fromisoformat("2099-01-02T09:05:00+08:00")
         )
         self.assertEqual(second["verified_count"], 1)
@@ -1300,7 +1301,7 @@ class SubscriptionServiceTests(unittest.TestCase):
 
         self.assertEqual(first["queued_count"], 1)
         self.assertEqual(shifted["skipped_count"], 1)
-        self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
+        self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
         sends = [call for call in self.lark.calls if "+messages-send" in call]
         self.assertEqual(len(sends), 1)
         card = json.loads(sends[0][sends[0].index("--content") + 1])
@@ -1357,7 +1358,7 @@ class SubscriptionServiceTests(unittest.TestCase):
                 slot_label="晨间扫描",
                 items=items,
             )
-            self.service.flush_due(now=datetime.fromisoformat("2099-01-03T08:00:00+08:00"))
+            self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-03T08:00:00+08:00"))
 
         body = deliver.call_args.kwargs["body"]
         delivered = json.loads(body.removeprefix("CMHK_NEWS_DIGEST_V1\n"))
@@ -1384,7 +1385,7 @@ class SubscriptionServiceTests(unittest.TestCase):
                 slot_label="午后扫描",
                 items=items,
             )
-            self.service.flush_due(now=datetime.fromisoformat("2099-01-04T18:30:00+08:00"))
+            self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-04T18:30:00+08:00"))
 
         delivered = json.loads(deliver.call_args.kwargs["body"].removeprefix("CMHK_NEWS_DIGEST_V1\n"))
         self.assertEqual([item["title"] for item in delivered], ["最新竞对", "最新政策", "旧竞对"])
@@ -1449,7 +1450,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.service.dispatch_news_after_crawl(
             crawl_slot="2099-01-06@03:00",
             slot_label="晨间扫描",
-            items=[{"news_id": "shared", "title": "共同新闻", "category": "公司动态"}],
+            items=[{"news_id": "shared", "title": "共同新闻", "category": "公司动态", "published_at": "2099-01-06T08:00:00+08:00"}],
         )
         self.service.save_subscriptions(
             "ou_second123", "乙", ["news"], frequency="twice_daily",
@@ -1459,8 +1460,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             crawl_slot="2099-01-06@14:00",
             slot_label="午后扫描",
             items=[
-                {"news_id": "shared", "title": "共同新闻", "category": "公司动态"},
-                {"news_id": "new", "title": "新增新闻", "category": "公司动态"},
+                {"news_id": "shared", "title": "共同新闻", "category": "公司动态", "published_at": "2099-01-06T08:00:00+08:00"},
+                {"news_id": "new", "title": "新增新闻", "category": "公司动态", "published_at": "2099-01-06T08:00:00+08:00"},
             ],
         )
 
@@ -1511,7 +1512,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         sends = [c for c in self.lark.calls if "+messages-send" in c]
         card = json.loads(sends[-1][sends[-1].index("--content")+1])
         self.assertIn("已自动调整并保存", json.dumps(card, ensure_ascii=False))
-        self.assertIn("每次新闻推送随机抽取4个", json.dumps(card, ensure_ascii=False))
+        self.assertIn("从有新内容的已选板块中挑选最多4个", json.dumps(card, ensure_ascii=False))
         for category in saved["news_category_labels"]:
             self.assertIn(category, json.dumps(card, ensure_ascii=False))
         again = self.service.handle_card_event(event)
@@ -1872,8 +1873,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             items=[{"title": "重试新闻"}],
         )
         self.assertEqual(queued["queued_count"], 1)
-        first = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
-        second = self.service.flush_due(now=datetime.fromisoformat("2099-01-01T20:00:00+08:00"))
+        first = self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
+        second = self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-01T20:00:00+08:00"))
         self.assertEqual(first["retrying_count"], 1)
         self.assertEqual(second["retrying_count"], 1)
         db = sqlite3.connect(self.service.db_path)
