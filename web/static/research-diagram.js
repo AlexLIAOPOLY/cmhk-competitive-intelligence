@@ -37,7 +37,7 @@
     return publication?.result_status === "completed_with_fallback" ? "—" : model.insights_passed ?? "—";
   };
   const aiNote = (publication) => fallbackNote(publication) || (publication?.model_analysis?.ok === false ? `AI 生成失败：${businessReason(publication.model_analysis.error || "未取得有效模型结果")}` : `AI 已生成 ${aiGeneratedCount(publication)} 项`);
-  const terms = { no_update: "库内已有", verified: "研究通过（入库另核对）", missing: "执行失败", conflict: "执行失败", not_applicable: "执行失败", error: "执行失败" };
+  const terms = { no_update: "库内已有", verified: "数据通过（入库另核对）", missing: "执行失败", conflict: "执行失败", not_applicable: "执行失败", error: "执行失败" };
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
   const childTitle = (title) => String(title || "").replace(/研究 Agent$/, "研究子 Agent");
@@ -99,7 +99,7 @@
   const itemLabel = (value) => terms[value] || "执行失败";
   const resultCounts = (reports) => {
     const items = mergeSubmissions((reports || []).flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company }))));
-    return `库内已有 ${items.filter((item) => item.status === "no_update").length} 项 · 研究通过 ${items.filter((item) => item.status === "verified").length} 项 · 执行失败 ${items.filter((item) => !["verified", "no_update"].includes(item.status)).length} 项`;
+    return `库内已有 ${items.filter((item) => item.status === "no_update").length} 项 · ${items.filter((item) => item.status === "verified").length}组数据通过 · 执行失败 ${items.filter((item) => !["verified", "no_update"].includes(item.status)).length} 项`;
   };
   const researchHealth = (actual, run) => {
     const execution = actual?.status || (run?.status === "running" ? "running" : undefined);
@@ -152,18 +152,18 @@
       const actual = agents.find((agent) => agent.key === task.key);
       const reports = actual?.reports || [];
       const done = reports.filter((report) => report.status === "completed").length;
-      add(`research-${task.key}`, childTitle(task.title), [researchX(index), 560], incremental && actual && (reports.some((report) => (report.items || []).length) || actual.status === "completed") ? reports.flatMap((report) => report.items || []).filter((item) => item.status === "verified").length : "—", run && !incremental ? "新增数据未统计" : run?.final_review?.status === "completed" ? "项研究通过" : "项研究通过·待终审", "查找负责公司的最新数据，与库内已有数据比较，仅提交新报告期或新指标", [
+      add(`research-${task.key}`, childTitle(task.title), [researchX(index), 560], incremental && actual && (reports.some((report) => (report.items || []).length) || actual.status === "completed") ? reports.flatMap((report) => report.items || []).filter((item) => item.status === "verified").length : "—", run && !incremental ? "新增数据未统计" : run?.final_review?.status === "completed" ? "组数据通过" : "组数据通过·待终审", "查找负责公司的最新数据，与库内已有数据比较，仅提交新报告期或新指标", [
         `负责 ${task.companies.length} 家公司：${task.companies.join("、")}`,
         "先查看库内最新报告期，再搜索最新业绩公告并读取原文",
         "提交公司、指标、期间、数值、单位、原文地址、引用摘录和处理结果",
-        "研究通过只表示提交了候选资料，不代表最终审核通过或数据库已写入；找不到可靠内容时写明失败原因",
+        "数据通过只表示提交了候选资料，不代表最终审核通过或数据库已写入；找不到可靠内容时写明失败原因",
         "每次只提交一个指标，已完成结果立即保存；截断响应禁止入库，传输重试不触发重新抓取",
       ], researchHealth(actual, run), { assignment: task, agent: actual, variant: "research-agent",
         note: `负责 ${task.companies.length} 家公司${incremental && actual ? ` · ${resultCounts(reports)}` : ""} · 负责公司：${task.companies.join("、")}` });
       edges.push(["research-dispatch", `research-${task.key}`, "", "research-fan", {}]);
       edges.push([`research-${task.key}`, "research-merge", "", "research-join", {}]);
     });
-    add("research-merge", "最终审核 Agent · 联网核对", [20, 820], incremental && run ? run.accepted ?? "—" : "—", incremental ? "项可入库" : "新增数据未统计", "核对原文、目标字段、期间与单位；已有和重复数据在此排除，只将可入库数据提交写入", [
+    add("research-merge", "最终审核 Agent · 联网核对", [20, 820], incremental && run ? run.accepted ?? "—" : "—", incremental ? "组数据通过" : "新增数据未统计", "核对原文、目标字段、期间与单位；已有和重复数据在此排除，只将可入库数据提交写入", [
       "比较六个研究 Agent 的新数据与库内已有数据，排除同期间已有数据和更旧的数据",
       "检查每家公司、每个指标是否有结果，并核对数值、报告期、单位和原文",
       "有可信原文支持的新数据进入更新批次；库内已有则保留，无法核实则记执行失败并说明原因",
@@ -174,7 +174,7 @@
       assignment: { key: "final-review" },
       note: data.final_reviewer ? finalReviewSummary(data) : "收齐研究结果后，继续联网补查并核对",
     });
-    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.storage_readback ? writtenCount(run.publication.storage_readback) : "—", "项已入库", "将终审确认可入库的数据写入正式指标表，逐项返回已入库或未入库；点击查看实际表格、字段、数值及原因。", [
+    add("research-update", "四库数据更新", [Math.round((canvasWidth - researchCardWidth) / 2), 820], run?.publication?.storage_readback ? writtenCount(run.publication.storage_readback) : "—", "组数据已入库", "将终审确认可入库的数据写入正式指标表，逐项返回已入库或未入库；点击查看实际表格、字段、数值及原因。", [
       "由一个更新步骤处理六个 Agent 提交的数据，防止多个研究任务同时覆盖文件",
       "库内已有、本轮重复和不具备入库条件的记录在Agent终审排除，不进入写入批次",
       "已入库必须与正式表的字段、数值、单位及来源证据一致；否则为未入库，并保留原因",
@@ -250,7 +250,7 @@
       if (state === "ready" || state === "existing") groups[state].push(item);
       else if (!state && (item.research_status || item.status) === "no_update") groups.existing.push(item);
       else if (state === "pending" || (!state && ((item.research_status || item.status) === "verified" || item.decision === "accepted"))) {
-        groups.rejected.push({ ...item, write_preflight: { ...item.write_preflight, status: "rejected", reason: "入库条件尚未核对完成，暂不可入库；不能仅凭研究通过确认可写入" } });
+        groups.rejected.push({ ...item, write_preflight: { ...item.write_preflight, status: "rejected", reason: "入库条件尚未核对完成，暂不可入库；不能仅凭数据通过确认可写入" } });
       } else groups.rejected.push(item);
     });
     return groups;
@@ -361,7 +361,7 @@
       const researchState = item.research_status || item.status;
       if (researchState === "not_applicable") return { key: "na", label: "不适用" };
       if (["running", "pending"].includes(researchState)) return { key: "pending", label: finished ? "未取得结果" : "检索中" };
-      if (researchState === "verified" || item.decision === "accepted") return { key: "ready", label: "研究通过" };
+      if (researchState === "verified" || item.decision === "accepted") return { key: "ready", label: "数据通过" };
       return { key: "rejected", label: "不可入库" };
     };
     return scoped.map((task) => {
@@ -416,7 +416,7 @@
         <label>报告类型<select data-custom-select="native" data-matrix-kind aria-label="矩阵报告类型"><option value="">全部报告期</option>${Object.entries(kindNames).map(([kind, label]) => `<option value="${kind}">${label}</option>`).join("")}</select></label>
         <button type="button" data-matrix-time-clear disabled>清除时间筛选</button><span data-matrix-time-status role="status" aria-live="polite"></span>
       </div>
-      <div class="research-matrix-legend" aria-label="矩阵结果图例">${[["written", "已入库"], ["ready", "研究通过 / 可入库"], ["existing", "库内已有"], ["rejected", "不可入库 / 未入库"], ["pending", "待检索 / 待核对 / 未取得结果"], ["na", "不适用"]].map(([key, label]) => `<span class="is-${key}"><i aria-hidden="true"></i>${label}</span>`).join("")}</div>
+      <div class="research-matrix-legend" aria-label="矩阵结果图例">${[["written", "已入库"], ["ready", "数据通过 / 可入库"], ["existing", "库内已有"], ["rejected", "不可入库 / 未入库"], ["pending", "待检索 / 待核对 / 未取得结果"], ["na", "不适用"]].map(([key, label]) => `<span class="is-${key}"><i aria-hidden="true"></i>${label}</span>`).join("")}</div>
       ${groups.length > 1 ? `<div class="research-matrix-groups" role="group" aria-label="选择研究组">${groups.map((group, index) => `<button type="button" data-matrix-group="${esc(group.key)}" aria-pressed="${index === 0}">${esc(group.title.replace(/研究子 Agent$/, ""))}</button>`).join("")}</div>` : ""}
       ${groups.map((group, index) => `<section data-matrix-panel="${esc(group.key)}" data-matrix-count="${groupCount(group)}" aria-label="${esc(group.title)}检索矩阵"${index ? " hidden" : ""}><div class="research-matrix-scroll" role="region" aria-label="公司指标矩阵，可横向滚动" tabindex="0"><table><thead><tr><th scope="col">公司 / 对象</th>${group.metrics.map((metric) => `<th scope="col">${esc(metric)}</th>`).join("") || '<th scope="col">检索指标</th>'}</tr></thead><tbody>${group.rows.map((row) => `<tr><th scope="row">${esc(row.company)}</th>${!row.cells.length ? `<td colspan="${group.metrics.length || 1}" class="research-matrix-unassigned">本轮尚未保存该公司的指标清单</td>` : group.metrics.map((metric) => {
         const cell = row.cells.find((item) => item.metric === metric);
@@ -548,7 +548,7 @@
       const state = item.write_preflight?.status || ((item.research_status || item.status) === "no_update" ? "existing" : (item.research_status || item.status) === "verified" || item.decision === "accepted" ? (final ? "pending" : "ready") : "rejected");
       (groups[state] || groups.rejected).push(item);
     });
-    const labels = { ready: final ? "可入库" : "研究通过", existing: "库内已有 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
+    const labels = { ready: final ? "可入库" : "数据通过", existing: "库内已有 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
     const descriptions = { ready: final ? "字段、期间、单位与证据已核对；实际写入结果见四库更新节点。" : "展示本Agent提交的具体指标；最终判断及写入结果分别在下游节点查看。", existing: "已在Agent阶段识别，无需重复提交四库更新。", rejected: "逐项说明未通过的原因；这些记录不进入写入批次。", pending: "已取得候选数据，但尚无正式表入库检查结果。" };
     const categories = Object.entries(groups).filter(([key]) => key !== "pending" || groups.pending.length);
     const shortLabels = { ...labels, existing: "库内已有" };
@@ -652,7 +652,7 @@
     const title = update ? `${isIncremental(run) ? "审核通过" : "历史核对通过"}的 ${run?.accepted ?? "—"} 项数据是哪几项` : node.agent ? `${node.label}：${isIncremental(run) ? "逐公司、逐指标结果" : "历史核对结果（新增未统计）"}` : `本次 ${run?.tasks ?? "—"} 项指标结果清单`;
     const main = update ? mainTableChanges(run?.publication) : null;
     const visible = update ? visibleChanges(run?.publication) : null;
-    const note = update ? `实际读取 ${items.length} 项审核档案；${main ? `原运行记录主表新增 ${main.added} 行、升级 ${main.upgraded} 行；` : "原运行主表新增或升级数量未记录；"}${visible ? `原发布时页面指标新增 ${visible.added} 项、变更 ${visible.changed} 项、删除 ${visible.removed} 项。` : "原页面数值变化未记录。"}后续修复及当前保存情况以逐项回读为准。` : `只列本节点的公司与指标；${isIncremental(run) ? "研究通过不等于已入库；失败原因逐项写明" : "历史核对结果不代表数据库缺失，也不能换算成新增数据数量"}；共 ${items.length} 项处理记录。`;
+    const note = update ? `实际读取 ${items.length} 项审核档案；${main ? `原运行记录主表新增 ${main.added} 行、升级 ${main.upgraded} 行；` : "原运行主表新增或升级数量未记录；"}${visible ? `原发布时页面指标新增 ${visible.added} 项、变更 ${visible.changed} 项、删除 ${visible.removed} 项。` : "原页面数值变化未记录。"}后续修复及当前保存情况以逐项回读为准。` : `只列本节点的公司与指标；${isIncremental(run) ? "数据通过不等于已入库；失败原因逐项写明" : "历史核对结果不代表数据库缺失，也不能换算成新增数据数量"}；共 ${items.length} 项处理记录。`;
     return section(title, note, selected.map((raw, i) => { const existing = (raw.research_status || raw.status) === "no_update"; const item = existing && raw.latest_baseline ? { ...raw, ...raw.latest_baseline, baseline: [raw.latest_baseline] } : { ...raw, baseline: raw.latest_baseline ? [raw.latest_baseline] : [] }; return `<article><strong>${i + 1}. ${esc(item.company)} · ${esc(item.metric)}</strong><p>${esc(metricValue(item))} · ${esc(item.period || "报告期未记录")} · ${esc(itemLabel(item.research_status || item.status || (item.decision === "accepted" ? "verified" : "conflict"), isIncremental(run)))}</p><p>${esc(plainText(item.reason || (item.reasons || []).join("；")))}</p>${!existing && item.baseline?.length ? `<p>库内已有：${item.baseline.map((old) => esc(`${old.period || "报告期未记录"} · ${metricValue(old)}`)).join("；")}</p>` : ""}<p>${(item.sources || [item.source_url]).filter(Boolean).map((source) => link(typeof source === "string" ? source : source.url)).join("<br>")}</p></article>`; }));
   }
   function searchHistory(node, agents, events) {

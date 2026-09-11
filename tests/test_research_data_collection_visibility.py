@@ -58,8 +58,10 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}, {'metric': 'EBITDA', 'status': 'no_update'}])
         node = next(n for n in result['nodes'] if n['key'] == 'research-asia')
         self.assertEqual(node['value'], 1)
-        self.assertEqual(node['unit'], '项研究通过·待终审')
+        self.assertEqual(node['unit'], '组数据通过·待终审')
         self.assertIn('库内已有 1 项', node['note'])
+        self.assertIn('1组数据通过', node['note'])
+        self.assertNotIn('研究通过', str(result))
         self.assertIn('本Agent指标与判断', result['detail'])
         self.assertLess(result['detail'].index('research-decisions'), result['detail'].index('这个节点如何处理'))
 
@@ -72,7 +74,7 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         }
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}], publication=publication)
         update = next(n for n in result['nodes'] if n['key'] == 'research-update')
-        self.assertEqual(update['unit'], '项已入库')
+        self.assertEqual(update['unit'], '组数据已入库')
         self.assertEqual(update['value'], '—')
         self.assertNotEqual(update['health']['key'], 'healthy')
         self.assertIn('尚未执行正式表回读', update['note'])
@@ -83,10 +85,20 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         result = self.render(items=[{'metric': 'Revenue', 'status': 'verified'}])
         review = next(n for n in result['nodes'] if n['key'] == 'research-merge')
         self.assertEqual(review['value'], 1)
-        self.assertEqual(review['unit'], '项可入库')
+        self.assertEqual(review['unit'], '组数据通过')
+
+    def test_database_update_card_reads_as_a_complete_three_group_sentence(self):
+        check = {'accepted': 3, 'ok': True, 'items': [
+            {'main_table': {'status': 'written'}},
+            {'main_table': {'status': 'saved'}},
+            {'main_table': {'status': 'written'}},
+        ]}
+        result = self.render(accepted=3, publication={'status': 'completed', 'storage_readback': check})
+        update = next(n for n in result['nodes'] if n['key'] == 'research-update')
+        self.assertEqual(f"{update['value']}{update['unit']}", '3组数据已入库')
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=32', (ROOT / 'web/static/index.html').read_text())
+        self.assertIn('/static/research-diagram.js?v=33', (ROOT / 'web/static/index.html').read_text())
 
     def test_saved_materials_explain_all_destinations_and_tooltip_explains_role(self):
         receipts = [{'readback_verified': True, 'main_table': {'status': state}}
