@@ -9,7 +9,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-from cmhk.reporting.report_naming import performance_output_path, rename_report_bundle
+from cmhk.reporting.report_naming import performance_output_path, rename_report_bundle, report_display_name
 from cmhk.reporting.pdf_preview import pdf_preview_path
 import tts_service as tts
 
@@ -118,3 +118,53 @@ class ReportNamingTests(unittest.TestCase):
         plan = plan_renames(self.root)
         self.assertEqual(plan[0]['generatedAt'], '')
         self.assertEqual(plan[0]['new'], '9月10日运营商业绩摘要（原始稿）.docx')
+
+    def test_reader_names_omit_automatic_identifiers_but_keep_custom_names(self):
+        for name in [self.old.name, self.new.name, '9月10日运营商业绩摘要（原始稿）.docx',
+                     '9月10日运营商业绩摘要（19时35分13秒）-abcdef.docx']:
+            self.assertEqual(report_display_name(name), '9月10日运营商业绩摘要.docx')
+        for name in ['9月10日运营商业绩摘要（董事会用稿）.docx', '9月10日周报 (2).docx']:
+            self.assertEqual(report_display_name(name), name)
+        self.assertEqual(report_display_name('9月10日运营商业绩摘要（19时35分13秒）（编辑稿）.docx'),
+                         '9月10日运营商业绩摘要（编辑稿）.docx')
+
+    def test_saving_a_note_with_short_name_keeps_original_version_path(self):
+        import web_app
+        with (patch.object(web_app, 'ROOT', self.root),
+              patch.object(web_app, 'build_status', return_value={})):
+            web_app.update_report_file({'path': self.old.name, 'name': report_display_name(self.old.name), 'note': '保留这版'})
+        self.assertTrue(self.old.exists())
+        self.assertFalse((self.root / report_display_name(self.old.name)).exists())
+        metadata = json.loads((self.root / 'data/reporting/report_file_metadata.json').read_text())
+        self.assertEqual(metadata[self.old.name]['note'], '保留这版')
+
+    def test_download_has_short_name_and_exact_selected_version_bytes(self):
+        import http.client
+        import threading
+        from http.server import ThreadingHTTPServer
+        from urllib.parse import unquote
+        from web_app import AppHandler
+        report = self.old
+
+        class Handler(AppHandler):
+            def do_GET(self):
+                self.serve_file(report, download=True)
+
+            def log_message(self, *args):
+                pass
+
+        server = ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+        worker = threading.Thread(target=server.serve_forever, daemon=True)
+        worker.start()
+        connection = http.client.HTTPConnection(*server.server_address, timeout=5)
+        try:
+            connection.request('GET', '/outputs/selected-history.docx')
+            response = connection.getresponse()
+            self.assertEqual(response.status, 200)
+            self.assertIn("filename*=UTF-8''9月10日运营商业绩摘要.docx", unquote(response.getheader('Content-Disposition')))
+            self.assertEqual(response.read(), report.read_bytes())
+        finally:
+            connection.close()
+            server.shutdown()
+            server.server_close()
+            worker.join()

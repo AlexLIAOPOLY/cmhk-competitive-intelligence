@@ -52,6 +52,7 @@ from cmhk.agent.memory import delete_memory, load_memories
 from cmhk.agent.production import dataset_lineage, list_agent_runs
 from cmhk.reporting.charts import generated_chart_path
 from cmhk.reporting.docx_editor import load_docx_for_editor, save_editor_document, sha256_file
+from cmhk.reporting.report_naming import report_display_name
 from tts_service import (
     AUDIO_DIR,
     audio_info_for_report,
@@ -2158,7 +2159,7 @@ def file_info(path: Path, url: str = None) -> dict:
     if report_type not in {"weekly", "carrier-performance"}:
         report_type = "carrier-performance" if "业绩摘要" in path.name else "weekly"
     return {
-        "name": path.name,
+        "name": report_display_name(path.name),
         "size": stat.st_size,
         "mtime": stat.st_mtime,
         "mtimeText": time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(stat.st_mtime)),
@@ -2209,6 +2210,8 @@ def update_report_file(payload: dict) -> dict:
         new_name += ".docx"
     if not is_report_file_name(new_name):
         raise ValueError("文件名只能是 Word 文档，不能包含路径字符")
+    if new_name == report_display_name(target.name):
+        new_name = target.name
     new_note = re.sub(r"\s+", " ", str(payload.get("note") or "")).strip()[:500]
     new_target = target.with_name(new_name)
     from cmhk.reporting.report_naming import rename_report_bundle
@@ -2262,6 +2265,7 @@ def load_report_editor_payload(path_str: str) -> dict:
         preview_url = ""
     return {
         **payload,
+        "name": report_display_name(target.name),
         "path": rel_path,
         "reportType": _report_type_for_path(target, metadata),
         "isEdited": bool(metadata.get("isEdited")),
@@ -7354,7 +7358,7 @@ class AppHandler(BaseHTTPRequestHandler):
 
     @staticmethod
     def download_disposition(path: Path) -> str:
-        encoded_name = quote(path.name, safe="")
+        encoded_name = quote(report_display_name(path.name), safe="")
         fallback_name = f"weekly-report{path.suffix.lower() or '.docx'}"
         return f"attachment; filename=\"{fallback_name}\"; filename*=UTF-8''{encoded_name}"
 
