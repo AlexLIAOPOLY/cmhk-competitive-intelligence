@@ -154,6 +154,11 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
         result = json.loads(target.read_text())["model_output"]
         decisions = _validate(result, inputs["candidates"], inputs["history"])
     except (OSError, ValueError, KeyError, TypeError):
+        recovery = target.with_suffix('.single-items')
+        if len(candidates) > 1 and recovery.exists():
+            decisions = _review_individually(inputs, runtime_root, model_call=model_call)
+            _save_review(target, inputs, {"decisions": decisions})
+            return decisions
         if model_call is None:
             # Cache only AFTER event/evidence validation below. The generic AI
             # harness validates JSON shape only and could otherwise permanently
@@ -186,19 +191,34 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                         raise
                     # Repeating the same four-item request can keep returning a
                     # contradictory target. Narrow the task, never the evidence.
-                    references = list(inputs["history"])
-                    rows = []
-                    for candidate in candidates:
-                        single = {**inputs, "candidates": [candidate], "history": references}
-                        rows.extend(_review_inputs(single, runtime_root, model_call=model_call))
-                        references = [*references, candidate]
-                    result = {"decisions": rows}
-                    decisions = _validate(result, candidates, inputs["history"])
+                    recovery.touch()
+                    decisions = _review_individually(inputs, runtime_root, model_call=model_call)
+                    result = {"decisions": decisions}
                     break
                 prompt = encoded + "\n上次结果未通过校验，请重新核对所有候选。判断为不同事件时duplicate_of必须为空；判断重复时必须附两边逐字原文。不得把不同产品、不同活动合并。\n" + json.dumps(
                     {"validation_error": str(exc), "rejected_output": result}, ensure_ascii=False)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        temporary = target.with_suffix(f".{uuid.uuid4().hex}.tmp")
-        temporary.write_text(json.dumps({"inputs": inputs, "model_output": result}, ensure_ascii=False, indent=2))
-        os.replace(temporary, target)
+        _save_review(target, inputs, result)
     return decisions
+
+
+def _review_individually(inputs: dict, runtime_root: Path, *, model_call: Callable | None) -> list[dict]:
+    references = list(inputs["history"])
+    rows = []
+    for candidate in inputs["candidates"]:
+        # Keep the complete facts but make the roles unambiguous: only c0 is
+        # being reviewed now, and every earlier candidate is a history hN.
+        single = {**inputs, "candidates": [{**candidate, "id": "c0"}],
+                  "history": [{**item, "id": f"h{i}"} for i, item in enumerate(references)]}
+        row = _review_inputs(single, runtime_root, model_call=model_call)[0]
+        target = row["duplicate_of"]
+        rows.append({**row, "id": candidate["id"],
+                     "duplicate_of": references[int(target[1:])]["id"] if target else ""})
+        references = [*references, candidate]
+    return _validate({"decisions": rows}, inputs["candidates"], inputs["history"])
+
+
+def _save_review(target: Path, inputs: dict, result: dict) -> None:
+    target.parent.mkdir(parents=True, exist_ok=True)
+    temporary = target.with_suffix(f".{uuid.uuid4().hex}.tmp")
+    temporary.write_text(json.dumps({"inputs": inputs, "model_output": result}, ensure_ascii=False, indent=2))
+    os.replace(temporary, target)

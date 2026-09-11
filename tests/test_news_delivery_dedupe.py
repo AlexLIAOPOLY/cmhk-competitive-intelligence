@@ -110,14 +110,16 @@ class EventDedupeTests(unittest.TestCase):
                 return {"decisions": []}
             item = rows[0]
             decision = {"id": item["id"], "duplicate_of": "", "reason": "不同事件"}
-            if item["id"] == "c1":
-                decision.update(duplicate_of="c0", reason="同一次海关会议",
+            self.assertEqual(item["id"], "c0")
+            if item["title"] == REWRITE["title"]:
+                decision.update(duplicate_of="h1", reason="同一次海关会议",
                                 evidence=REWRITE["summary"], matched_evidence=MEETING["summary"])
             return {"decisions": [decision]}
         kept, audit = deduplicate_events([MEETING, REWRITE, DISTINCT], [prior], self.root, model_call=model)
         self.assertEqual(kept, [MEETING, DISTINCT])
         self.assertEqual(audit[1]["duplicate_of"], "c0")
-        self.assertEqual([p["id"] for p in calls[-1]["history"]], ["h0", "c0", "c1"])
+        self.assertEqual([p["id"] for p in calls[-1]["history"]], ["h0", "h1", "h2"])
+        self.assertEqual([p["title"] for p in calls[-1]["history"]], [prior["title"], MEETING["title"], REWRITE["title"]])
         self.assertEqual(len(calls), 5)
         deduplicate_events([MEETING, REWRITE, DISTINCT], [prior], self.root, model_call=model)
         self.assertEqual(len(calls), 5)
@@ -141,15 +143,16 @@ class EventDedupeTests(unittest.TestCase):
             if len(rows) > 1:
                 return {"decisions": []}
             identifier = rows[0]["id"]
-            seen.append(identifier)
-            if fail and identifier == "c1":
+            seen.append(rows[0]["title"])
+            self.assertEqual(identifier, "c0")
+            if fail and rows[0]["title"] == DISTINCT["title"]:
                 raise TimeoutError("individual review unavailable")
             return {"decisions": [{"id": identifier, "duplicate_of": "", "reason": "不同事件"}]}
         with self.assertRaises(TimeoutError):
             deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)
         fail = False
         self.assertEqual(deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)[0], [MEETING, DISTINCT])
-        self.assertEqual(seen, ["c0", "c1", "c1"])
+        self.assertEqual(seen, [MEETING["title"], DISTINCT["title"], DISTINCT["title"]])
 
 
 class DeliveryGuardTests(unittest.TestCase):
