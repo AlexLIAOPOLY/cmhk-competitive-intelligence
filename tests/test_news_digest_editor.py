@@ -70,7 +70,44 @@ class NewsDigestEditorTests(unittest.TestCase):
             root = Path(directory)
             with self.assertRaises(ValueError):
                 prepare_digest([{'title': '新闻'}], root, model_call=Mock(return_value={'overview': '太短', 'items': []}))
-            self.assertFalse((root / 'var/subscriptions/news-editor').exists())
+            self.assertEqual(list((root / 'var/subscriptions/news-editor').glob('*.json')), [])
+
+    def test_malformed_batch_regenerates_real_single_results_and_resumes_completed_items(self):
+        from strategic_briefing import AIInvalidStructuredResponse
+        articles = [{'title': name, 'source_summary': name + '的已核实事实'} for name in ('新闻甲', '新闻乙')]
+        calls, fail = [], True
+        def model(system, user, **kwargs):
+            payload = json.loads(user)
+            if 'items' in payload:
+                calls.append('batch')
+                raise AIInvalidStructuredResponse('{"items":"malformed JSON"}', 'items 应为 array')
+            article = payload['article']
+            calls.append(article['title'])
+            if fail and article['title'] == '新闻乙':
+                raise TimeoutError('second article unavailable')
+            self.assertEqual(kwargs['response_format']['json_schema']['name'], 'personal_news_editor_single')
+            return {'id': '0', 'summary': article['title'] + '公布新的企业服务方案，首批服务对象为制造企业。'}
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            with self.assertRaises(TimeoutError):
+                prepare_digest(articles, root, model_call=model)
+            fail = False
+            result = prepare_digest(articles, root, model_call=model)
+            self.assertEqual(calls, ['batch', '新闻甲', '新闻乙', '新闻乙'])
+            self.assertEqual([x['title'] for x in result['items']], ['新闻甲', '新闻乙'])
+            self.assertTrue(all(x['digest_summary'].startswith(x['title']) for x in result['items']))
+            prepare_digest(articles, root, model_call=model)
+            self.assertEqual(len(calls), 4)
+
+    def test_malformed_single_array_requires_new_valid_model_response(self):
+        from strategic_briefing import AIInvalidStructuredResponse
+        model = Mock(side_effect=[AIInvalidStructuredResponse('{"items":"broken"}', 'array required'),
+                                  {'id': '0', 'summary': '运营商公布新的企业服务方案，首批服务对象为制造企业。'}])
+        with tempfile.TemporaryDirectory() as directory:
+            result = prepare_digest([{'title': '企业服务'}], Path(directory), model_call=model)
+            self.assertEqual(result['status'], 'model_generated')
+            self.assertEqual(model.call_count, 2)
+            self.assertIn('article', json.loads(model.call_args.args[1]))
 
     def test_empty_digest_never_calls_model(self):
         model = Mock()

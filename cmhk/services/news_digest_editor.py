@@ -70,7 +70,8 @@ def _reuse_cached_items(inputs: list[dict], cache_dir: Path) -> list[dict] | Non
     return None
 
 
-def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | None = None) -> dict:
+def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | None = None,
+                   _single_response: bool = False) -> dict:
     items = payload.get('items', []) if isinstance(payload, dict) else payload
     if not isinstance(items, list) or any(not isinstance(i, dict) for i in items):
         raise ValueError('新闻推送数据格式无效')
@@ -118,6 +119,8 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
     if model_call is None:
         from strategic_briefing import _call_internal_ai
         model_call = _call_internal_ai
+    recovery = target.with_suffix('.single-items')
+    _single_response = len(items) == 1 and (_single_response or recovery.exists())
     response_format = {"type": "json_schema", "json_schema": {
         "name": "personal_news_editor", "strict": True,
         "schema": {"type": "object", "additionalProperties": False,
@@ -131,14 +134,44 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
     if reused:
         result = {'items': reused}
     else:
-        result = model_call(skill_contract()[0], json.dumps({'editorial_version': EDITOR_VERSION, 'task': '按少样本示例的字段分工重新撰写：新闻简介直接交代事件事实，不输出编辑提醒、阅读建议或材料缺失清单；不输出综述或AI解析。示例只是写法，不是本次事实。', 'items': inputs}, ensure_ascii=False),
-                        max_tokens=max(16000, len(items) * 1200),
-                        response_format=response_format,
-                        # Long personal digests can exhaust the reasoning/output
-                        # allowance. The durable harness retries truncation once
-                        # with a larger allowance; preparation runs before send time.
-                        deadline_monotonic=time.monotonic() + 360,
-                        _structured_response_retries=1)
+        from strategic_briefing import AIInvalidStructuredResponse, AIUnstructuredResponse
+        from cmhk.intelligence.agent_harness import TruncatedModelOutput
+        task = '按少样本示例的字段分工重新撰写：新闻简介直接交代事件事实，不输出编辑提醒、阅读建议或材料缺失清单；不输出综述或AI解析。示例只是写法，不是本次事实。'
+        system = skill_contract()[0]
+        payload = {'editorial_version': EDITOR_VERSION, 'task': task, 'items': inputs}
+        if _single_response:
+            response_format = {'type': 'json_schema', 'json_schema': {
+                'name': 'personal_news_editor_single', 'strict': True, 'schema': {
+                    'type': 'object', 'additionalProperties': False, 'required': ['id', 'summary'],
+                    'properties': {'id': {'type': 'string', 'enum': ['0']}, 'summary': {'type': 'string'}}}}}
+            system += '\n本次只编辑唯一一条新闻。输出单个对象，字段 id、summary。禁止输出items数组或转义后的JSON字符串。'
+            payload = {'editorial_version': EDITOR_VERSION, 'task': task, 'article': inputs[0]}
+        try:
+            if len(items) > 1 and recovery.exists():
+                raise ValueError('继续已记录的逐条编辑恢复')
+            result = model_call(system, json.dumps(payload, ensure_ascii=False),
+                                max_tokens=max(16000, len(items) * 1200), response_format=response_format,
+                                deadline_monotonic=time.monotonic() + 360, _structured_response_retries=1)
+            if _single_response:
+                result = {'items': [result]}
+            _validate(result, items)
+        except (ValueError, AIInvalidStructuredResponse, AIUnstructuredResponse, TruncatedModelOutput) as exc:
+            if isinstance(exc, ValueError) and str(exc) not in {
+                    '继续已记录的逐条编辑恢复', '新闻编辑结果无效',
+                    '新闻编辑返回条数不完整', '新闻编辑返回标识不匹配'}:
+                raise
+            if _single_response:
+                raise
+            # A live gateway returned a quoted, malformed items array repeatedly.
+            # Regenerate each source as a real model result, never repair prose or
+            # fabricate missing rows. Completed single-source results checkpoint.
+            target.parent.mkdir(parents=True, exist_ok=True)
+            recovery.touch()
+            rows = []
+            for index, item in enumerate(items):
+                one = prepare_digest([item], runtime_root, model_call=model_call, _single_response=True)
+                rows.append({'id': str(index), 'summary': one['items'][0]['digest_summary']})
+            result = {'items': rows}
     prepared = _validate(result, items)
     target.parent.mkdir(parents=True, exist_ok=True)
     temporary = target.with_suffix(f'.{uuid.uuid4().hex}.tmp')
