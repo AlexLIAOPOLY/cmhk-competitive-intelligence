@@ -16,10 +16,14 @@ class ToolModel(FakeMessagesListChatModel):
     bound_tools: list[str] = []
     requested_budgets: list[int] = []
     request_tails: list[str] = []
+    request_messages: list[list] = []
+    requested_tool_choices: list = []
 
     def _generate(self, *args, **kwargs):
         self.requested_budgets.append(kwargs.get("max_tokens"))
         self.request_tails.append(str(args[0][-1].content))
+        self.request_messages.append(args[0])
+        self.requested_tool_choices.append(kwargs.get("tool_choice"))
         return super()._generate(*args, **kwargs)
 
     def _get_ls_params(self, *args, **kwargs):
@@ -187,6 +191,26 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertIn("输出恢复请求，第1次", model.request_tails[-1])
         self.assertEqual(model.requested_budgets[-2:], [4096, 8192])
         self.assertEqual(len(saved), 1)
+
+    def test_last_retry_preserves_tool_evidence_and_uses_ordinary_tool_dispatch(self):
+        lookup = AIMessage(content="", tool_calls=[{"name":"find_evidence", "args":{
+            "terms":["needle"]}, "id":"lookup", "type":"tool_call"}],
+            response_metadata={"finish_reason":"tool_calls"})
+        bad = submission()
+        bad.response_metadata["finish_reason"] = "length"
+        model = ToolModel(responses=[lookup, lookup, lookup, lookup, bad, bad, submission()])
+        saved = []
+        harness = ResearchHarness(TASK, model, lambda *args: None, validate_fact)
+        harness.extract("HKT", "收入", {"https://hkt.com/report":{
+            "opened":True, "official":True, "text":"HKT needle: a statement without financial figures."}}, saved.append)
+        self.assertEqual(model.requested_budgets[-3:], [4096, 8192, 16384])
+        self.assertEqual(model.requested_tool_choices[-1], "auto")
+        self.assertEqual(model.bound_tools, ["submit_metric"])
+        recovered = json.loads(model.request_messages[-1][-2].content)
+        self.assertEqual(recovered['relevant_passages'], [])
+        self.assertIn('needle', recovered['consulted_passages'][0]['text'])
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0]['status'], 'missing')
 
     def test_real_deepseek_sdk_transmits_recovery_budget_and_messages(self):
         import httpx

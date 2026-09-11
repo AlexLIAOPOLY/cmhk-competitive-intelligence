@@ -46,6 +46,15 @@ class ResearchHarness:
             model.extra_body = {**(model.extra_body or {}),
                                 "cache": {"no-cache": True, "no-store": True}}
 
+        def retain_passages(passages):
+            consulted = self.current.setdefault("consulted_passages", {})
+            for passage in passages:
+                key = passage["source_url"], passage["passage_id"]
+                consulted.pop(key, None)
+                consulted[key] = passage
+            while len(consulted) > 24:
+                consulted.pop(next(iter(consulted)))
+
         @tool
         def read_evidence(source_url: str, offset: int = 0) -> dict:
             """Read at most 6000 characters of an opened official page. Use next_offset to continue."""
@@ -58,9 +67,11 @@ class ResearchHarness:
                 "company": self.current["company"], "metric": self.current["metric"],
                 "source_url": source_url, "offset": start})
             passages = self.current["passages"][source_url]
-            return {"source_url": source_url, "passages": [
+            excerpts = [
                         {"passage_id": key, "text": value["text"]} for key, value in passages.items()
-                        if start <= value["offset"] < start + 6000],
+                        if start <= value["offset"] < start + 6000]
+            retain_passages([{**excerpt, "source_url": source_url} for excerpt in excerpts])
+            return {"source_url": source_url, "passages": excerpts,
                     "next_offset": start + 6000 if start + 6000 < len(body) else None}
 
         @tool
@@ -80,8 +91,10 @@ class ResearchHarness:
             ranked.sort(key=lambda row: (-self.current.get("source_recency", {}).get(row[1], 0), -row[0], row[1], row[2]))
             self.emit("evidence_lookup", "在本轮原文中定位指标片段", {
                 "company": self.current["company"], "metric": self.current["metric"], "terms": words})
-            return [{"source_url": url, "passage_id": key, "text": text}
-                    for _, url, key, text in ranked[:8]]
+            excerpts = [{"source_url": url, "passage_id": key, "text": text}
+                        for _, url, key, text in ranked[:8]]
+            retain_passages(excerpts)
+            return excerpts
 
         @tool
         def submit_metric(status: Literal["verified", "missing", "conflict", "not_applicable", "no_update"],
@@ -140,7 +153,11 @@ class ResearchHarness:
             request = request.override(model_settings={**request.model_settings, "max_tokens": allowance})
             if request.state.get("run_model_call_count", 0) >= 4 or self.current.get("submission_required"):
                 request = request.override(tools=[submit_metric],
-                    tool_choice={"type": "function", "function": {"name": "submit_metric"}},
+                    # A compatible gateway can repeatedly truncate a forced
+                    # named-tool response. Last retry uses its ordinary tool
+                    # dispatch with the same sole tool and strict output gate.
+                    tool_choice=("auto" if self.current.get("truncation_retries", 0) >= 2 else
+                                 {"type": "function", "function": {"name": "submit_metric"}}),
                     messages=[*request.messages, HumanMessage(
                     content="本指标的查阅预算已结束。现在只调用submit_metric提交已有证据；不能确认的值提交missing并说明本轮未找到，不得编造。")])
             if self.current.get("truncation_retries"):
@@ -154,6 +171,7 @@ class ResearchHarness:
                 request = request.override(messages=[HumanMessage(content=json.dumps({
                     "company": self.current["company"], "metric": self.current["metric"],
                     "relevant_passages": self.current.get("relevant_passages", []),
+                    "consulted_passages": list(self.current.get("consulted_passages", {}).values()),
                     "last_rejected": self.current.get("last_rejected", {}),
                 }, ensure_ascii=False)), HumanMessage(content=(
                     f"输出恢复请求，第{self.current['truncation_retries']}次：上次响应未形成合格的工具提交，未保存任何记录。"
@@ -169,6 +187,9 @@ class ResearchHarness:
                     "requested_max_tokens": allowance,
                     "elapsed_ms": elapsed_ms,
                     "finish_reason": metadata.get("finish_reason"),
+                    "requested_model": getattr(request.model, "model_name", ""),
+                    "response_model": metadata.get("model_name") or metadata.get("model") or "",
+                    "tool_choice": request.tool_choice,
                     "usage": getattr(message, "usage_metadata", None),
                     "invalid_tool_calls": len(getattr(message, "invalid_tool_calls", []) or [])})
                 try:
