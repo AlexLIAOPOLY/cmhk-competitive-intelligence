@@ -204,6 +204,26 @@ class EventDedupeTests(unittest.TestCase):
         self.assertEqual(kept, [MEETING, DISTINCT])
         self.assertEqual(seen, [2, 2, 1, 1])
 
+    def test_bad_evidence_retries_only_failed_row_with_complete_reference_scope(self):
+        third = {'title': '独立AI芯片发布', 'summary': '另一家企业公布独立AI芯片产品。'}
+        calls = []
+        def model(system, user, **kwargs):
+            p = json.JSONDecoder().raw_decode(user)[0]
+            calls.append(p)
+            result = model_result(p['candidates'])
+            if len(p['candidates']) > 1:
+                result['decisions'][0].update(duplicate_of='h0', reason='同一次会议',
+                    evidence=REWRITE['summary'], matched_evidence=MEETING['summary'])
+                result['decisions'][1].update(duplicate_of='h0', reason='同一事件',
+                    evidence='原资料中没有这个事实', matched_evidence=MEETING['summary'])
+            return result
+        kept, audit = deduplicate_events([REWRITE, DISTINCT, third], [MEETING], self.root, model_call=model)
+        self.assertEqual(kept, [DISTINCT, third])
+        self.assertEqual(audit[0]['duplicate_of'], 'h0')
+        self.assertEqual(len(calls), 3)
+        self.assertEqual(calls[-1]['candidates'][0]['title'], DISTINCT['title'])
+        self.assertEqual([i['title'] for i in calls[-1]['history']], [MEETING['title'], REWRITE['title']])
+
 
 class DeliveryGuardTests(unittest.TestCase):
     def setUp(self):

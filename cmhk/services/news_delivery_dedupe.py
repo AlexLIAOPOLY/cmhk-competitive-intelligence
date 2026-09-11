@@ -201,6 +201,7 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                 rejected = target.with_suffix(f".{uuid.uuid4().hex}.rejected.json")
                 rejected.write_text(json.dumps({"inputs": inputs, "model_output": result,
                                                 "status": "rejected", "error": str(exc)}, ensure_ascii=False, indent=2))
+                _checkpoint_valid_rows(inputs, result, runtime_root)
                 if attempt:
                     if len(candidates) == 1:
                         raise
@@ -214,6 +215,32 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                     {"validation_error": str(exc), "rejected_output": result}, ensure_ascii=False)
         _save_review(target, inputs, result)
     return decisions
+
+
+def _checkpoint_valid_rows(inputs: dict, result: Any, runtime_root: Path) -> None:
+    """Keep independently valid rows when another row invalidates a batch."""
+    rows = result.get('decisions') if isinstance(result, dict) else None
+    if len(inputs['candidates']) < 2 or not isinstance(rows, list):
+        return
+    references = list(inputs['history'])
+    for candidate in inputs['candidates']:
+        matches = [row for row in rows if isinstance(row, dict) and row.get('id') == candidate['id']]
+        if len(matches) == 1:
+            try:
+                row = _validate({'decisions': matches}, [candidate], references)[0]
+            except ValueError:
+                pass
+            else:
+                single = {**inputs, 'candidates': [{**candidate, 'id': 'c0'}],
+                          'history': [{**item, 'id': f'h{i}'} for i, item in enumerate(references)]}
+                targets = {item['id']: f'h{i}' for i, item in enumerate(references)}
+                remapped = {**row, 'id': 'c0', 'duplicate_of': targets.get(row['duplicate_of'], '')}
+                _validate({'decisions': [remapped]}, single['candidates'], single['history'])
+                encoded = json.dumps(single, ensure_ascii=False, sort_keys=True)
+                key = hashlib.sha256(encoded.encode()).hexdigest()
+                _save_review(runtime_root / 'var/subscriptions/news-dedupe' / f'{key}.json',
+                             single, {'decisions': [remapped]})
+        references.append(candidate)
 
 
 def _review_history_chunks(inputs: dict, runtime_root: Path, *, model_call: Callable | None) -> list[dict]:
