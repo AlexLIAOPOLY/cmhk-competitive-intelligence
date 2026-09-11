@@ -1808,7 +1808,8 @@
     const nodes = new Map(model.nodes.map((node) => [node.key, node]));
     const assessments = activeLineageRouteAssessments(date);
     model.edges = model.edges.map(([from, to, label, kind, line]) => [from, to, label, kind,
-      from.startsWith("research-") ? newsLineageEdgeStatus(from, to, nodes, date, assessments) : line]);
+      from.startsWith("research-") || to === "news-subscription"
+        ? newsLineageEdgeStatus(from, to, nodes, date, assessments) : line]);
     return model;
   }
 
