@@ -70,7 +70,7 @@
   const permissionModule = (module) => ({ footprint: "organization", "intelligence-map": "competitor", architecture: "dashboard" }[module] || module);
   const can = (module) => allowedModules.includes(module);
   const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
-  const motionState = { queue: Promise.resolve(), knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };
+  const motionState = { pending: [], playing: false, flushTimer: 0, knownFaults: new Set(), faultBaselineReady: false, pollingTimer: 0 };
   const MOTION_TYPES = {
     task: { target: "log", kicker: "NEW TASK", icon: "↗", tone: "cyan" },
     fault: { target: "fault", kicker: "ALERT", icon: "!", tone: "red" },
@@ -124,65 +124,152 @@
     return stage;
   }
 
-  async function playWorkspaceMotion(event) {
+  async function playWorkspaceMotion(event, onPresented = () => {}) {
     const type = MOTION_TYPES[event.kind] || MOTION_TYPES.task;
     const targetName = can(event.target || type.target) ? (event.target || type.target) : type.target;
     const target = document.querySelector(`[data-workspace-tab="${targetName}"]`);
     const stage = ensureMotionStage();
     const card = document.createElement("div");
     const tone = event.tone || type.tone;
-    card.className = "workspace-motion-card";
+    card.className = `workspace-motion-card${event.count > 1 ? " is-stacked" : ""}`;
     card.dataset.tone = tone;
     card.setAttribute("role", event.kind === "fault" ? "alert" : "status");
-    card.innerHTML = `<span class="workspace-motion-icon" aria-hidden="true">${esc(type.icon)}</span><span class="workspace-motion-copy"><small>${esc(event.kicker || type.kicker)}</small><strong>${esc(event.title || "任务已创建")}</strong><em>${esc(event.detail || "已写入系统记录")}</em></span><span class="workspace-motion-tail" aria-hidden="true"></span>`;
+    card.innerHTML = `<span class="workspace-motion-icon" aria-hidden="true">${esc(type.icon)}</span><span class="workspace-motion-copy"><small>${esc(event.kicker || type.kicker)}</small><strong>${esc(event.title || "任务已创建")}</strong><em>${esc(event.detail || "已写入系统记录")}</em></span><span class="workspace-motion-tail${event.count > 1 ? " is-count" : ""}" aria-hidden="true">${event.count > 1 ? esc(event.count > 99 ? "99+" : event.count) : ""}</span>`;
     stage.appendChild(card);
     markWorkspaceSignal(targetName, tone);
+    onPresented();
 
-    if (motionPreference.matches || !card.animate) {
-      card.classList.add("is-static");
-      await wait(1100);
+    try {
+      if (motionPreference.matches || !card.animate) {
+        card.classList.add("is-static");
+        await wait(event.count > 1 ? 2600 : 1100);
+        return;
+      }
+
+      await card.animate([
+        { opacity: 0, transform: "translate3d(18px,-18px,0) scale(.62)", offset: 0 },
+        { opacity: 1, transform: "translate3d(-2px,2px,0) scale(1.075)", offset: .42 },
+        { opacity: 1, transform: "translate3d(0,0,0) scale(.975)", offset: .7 },
+        { opacity: 1, transform: "translate3d(0,0,0) scale(1)", offset: 1 },
+      ], { duration: 620, easing: "linear", fill: "forwards" }).finished;
+      await wait(event.count > 1 ? 2400 : event.kind === "fault" ? 1050 : 820);
+      card.classList.add("is-compacting");
+      await wait(210);
+
+      if (target && !motionPreference.matches) {
+        target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
+        await wait(260);
+      }
+      const cardRect = card.getBoundingClientRect();
+      const targetRect = target?.getBoundingClientRect();
+      const hasTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
+      const dx = hasTarget ? targetRect.left + targetRect.width / 2 - (cardRect.left + cardRect.width / 2) : 0;
+      const dy = hasTarget ? targetRect.top + targetRect.height / 2 - (cardRect.top + cardRect.height / 2) : -34;
+      await card.animate([
+        { opacity: 1, transform: "translate3d(0,0,0) scale(1)", borderRadius: "22px", offset: 0 },
+        { opacity: 1, transform: `translate3d(${dx * .16}px,${dy * .08}px,0) scale(.88)`, borderRadius: "24px", offset: .2 },
+        { opacity: .88, transform: `translate3d(${dx * .78}px,${dy * .7}px,0) scale(.34)`, borderRadius: "50%", offset: .72 },
+        { opacity: 0, transform: `translate3d(${dx}px,${dy}px,0) scale(.12)`, borderRadius: "50%", offset: 1 },
+      ], { duration: 720, easing: "cubic-bezier(.32,.72,0,1)", fill: "forwards" }).finished;
+      if (target) {
+        target.classList.remove("is-signal-arrival");
+        target.getBoundingClientRect();
+        target.classList.add("is-signal-arrival");
+        window.setTimeout(() => target.classList.remove("is-signal-arrival"), 760);
+      }
+    } finally {
       card.remove();
-      return;
     }
+  }
 
-    await card.animate([
-      { opacity: 0, transform: "translate3d(18px,-18px,0) scale(.62)", offset: 0 },
-      { opacity: 1, transform: "translate3d(-2px,2px,0) scale(1.075)", offset: .42 },
-      { opacity: 1, transform: "translate3d(0,0,0) scale(.975)", offset: .7 },
-      { opacity: 1, transform: "translate3d(0,0,0) scale(1)", offset: 1 },
-    ], { duration: 620, easing: "linear", fill: "forwards" }).finished;
-    await wait(event.kind === "fault" ? 1050 : 820);
-    card.classList.add("is-compacting");
-    await wait(210);
+  function faultMotionStorageKey() {
+    const user = window.CMHKAuth?.user;
+    const identity = user?.id || user?.account || user?.openId;
+    return identity ? `cmhk-presented-fault-signals-v1:${identity}` : "";
+  }
 
-    if (target && !motionPreference.matches) {
-      target.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "nearest" });
-      await wait(260);
-    }
-    const cardRect = card.getBoundingClientRect();
-    const targetRect = target?.getBoundingClientRect();
-    const hasTarget = targetRect && targetRect.width > 0 && targetRect.height > 0;
-    const dx = hasTarget ? targetRect.left + targetRect.width / 2 - (cardRect.left + cardRect.width / 2) : 0;
-    const dy = hasTarget ? targetRect.top + targetRect.height / 2 - (cardRect.top + cardRect.height / 2) : -34;
-    await card.animate([
-      { opacity: 1, transform: "translate3d(0,0,0) scale(1)", borderRadius: "22px", offset: 0 },
-      { opacity: 1, transform: `translate3d(${dx * .16}px,${dy * .08}px,0) scale(.88)`, borderRadius: "24px", offset: .2 },
-      { opacity: .88, transform: `translate3d(${dx * .78}px,${dy * .7}px,0) scale(.34)`, borderRadius: "50%", offset: .72 },
-      { opacity: 0, transform: `translate3d(${dx}px,${dy}px,0) scale(.12)`, borderRadius: "50%", offset: 1 },
-    ], { duration: 720, easing: "cubic-bezier(.32,.72,0,1)", fill: "forwards" }).finished;
-    card.remove();
-    if (target) {
-      target.classList.remove("is-signal-arrival");
-      target.getBoundingClientRect();
-      target.classList.add("is-signal-arrival");
-      window.setTimeout(() => target.classList.remove("is-signal-arrival"), 760);
+  function presentedFaultSignals() {
+    try {
+      const key = faultMotionStorageKey();
+      const stored = key ? JSON.parse(window.localStorage.getItem(key) || "[]") : [];
+      return new Set(Array.isArray(stored) ? stored.filter((id) => typeof id === "string") : []);
+    } catch (_error) { return new Set(); }
+  }
+
+  function rememberPresentedFaultSignals(events) {
+    const ids = events.map((event) => event.faultId).filter(Boolean);
+    if (!ids.length) return;
+    try {
+      const key = faultMotionStorageKey();
+      if (!key) return;
+      const seen = presentedFaultSignals();
+      ids.forEach((id) => seen.add(id));
+      // This is only popup history, never an acknowledgement or resolution.
+      window.localStorage.setItem(key, JSON.stringify([...seen].slice(-2000)));
+    } catch (_error) { /* Restricted storage still keeps in-page deduplication. */ }
+  }
+
+  function summarizeWorkspaceEvents(events) {
+    if (events.length === 1 && !events[0].backlog) return events[0];
+    const counts = { fault: 0, task: 0, subscription: 0 };
+    events.forEach((event) => { counts[event.kind] += 1; });
+    const primary = events.find((event) => event.kind === "fault" && event.tone !== "amber")
+      || events.find((event) => event.kind === "fault") || events[0];
+    const detail = [["fault", "条报警"], ["task", "项任务"], ["subscription", "条送达通知"]]
+      .filter(([kind]) => counts[kind]).map(([kind, unit]) => `${number(counts[kind])}${unit}`).join(" · ");
+    return {
+      ...primary,
+      count: events.length,
+      kicker: events.some((event) => event.backlog) ? "待查看提醒汇总" : "提醒汇总",
+      title: `已合并 ${number(events.length)} 条提醒`,
+      detail: `${detail}；详情见对应栏目`,
+    };
+  }
+
+  function scheduleWorkspaceMotion() {
+    if (motionState.playing || motionState.flushTimer || !motionState.pending.length || document.visibilityState !== "visible") return;
+    // One debounce window for task, fault and embedded subscription signals.
+    motionState.flushTimer = window.setTimeout(flushWorkspaceMotions, 600);
+  }
+
+  async function flushWorkspaceMotions() {
+    motionState.flushTimer = 0;
+    if (motionState.playing || document.visibilityState !== "visible") return;
+    const batch = motionState.pending.splice(0);
+    const presented = presentedFaultSignals();
+    const events = batch.map((item) => item.event).filter((event) => !event.faultId || !presented.has(event.faultId));
+    motionState.playing = true;
+    try {
+      if (events.length) await playWorkspaceMotion(summarizeWorkspaceEvents(events), () => rememberPresentedFaultSignals(events));
+    } catch (error) {
+      console.warn("Workspace motion unavailable", error);
+    } finally {
+      batch.forEach((item) => item.resolve());
+      motionState.playing = false;
+      scheduleWorkspaceMotion();
     }
   }
 
   function announceWorkspaceEvent(event = {}) {
-    motionState.queue = motionState.queue.catch(() => {}).then(() => playWorkspaceMotion(event)).catch((error) => console.warn("Workspace motion unavailable", error));
-    return motionState.queue;
+    const kind = Object.hasOwn(MOTION_TYPES, event.kind) ? event.kind : "task";
+    const type = MOTION_TYPES[kind];
+    const target = can(event.target || type.target) ? (event.target || type.target) : type.target;
+    if (!can(target)) return Promise.resolve();
+    markWorkspaceSignal(target, event.tone || type.tone);
+    const signal = { ...event, kind, target, backlog: Boolean(event.backlog || document.visibilityState !== "visible") };
+    return new Promise((resolve) => {
+      motionState.pending.push({ event: signal, resolve });
+      scheduleWorkspaceMotion();
+    });
   }
+
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") {
+      window.clearTimeout(motionState.flushTimer);
+      motionState.flushTimer = 0;
+      motionState.pending.forEach((item) => { item.event.backlog = true; });
+    } else scheduleWorkspaceMotion();
+  });
 
   function faultSignalKey(task) {
     return String(task.incident_id || task.alert_id || task.task_id || task.task_run_id || `${task.kind || "task"}:${task.occurred_at_hkt || task.started_at_hkt || task.error || "unknown"}`);
@@ -190,18 +277,18 @@
 
   function observeFaultSignals(tasks, { baseline = false } = {}) {
     const next = Array.isArray(tasks) ? tasks : [];
-    if (baseline || !motionState.faultBaselineReady) {
-      motionState.knownFaults = new Set(next.map(faultSignalKey));
-      motionState.faultBaselineReady = true;
-      return;
-    }
+    const backlog = baseline || !motionState.faultBaselineReady;
+    presentedFaultSignals().forEach((id) => motionState.knownFaults.add(id));
+    motionState.faultBaselineReady = true;
     const unseen = next.filter((task) => !motionState.knownFaults.has(faultSignalKey(task)) && faultStatus(task).key === "attention");
     next.forEach((task) => motionState.knownFaults.add(faultSignalKey(task)));
-    unseen.slice(0, 3).forEach((task) => {
+    unseen.forEach((task) => {
       const severity = faultSeverity(task);
       announceWorkspaceEvent({
         kind: "fault",
         target: "fault",
+        faultId: faultSignalKey(task),
+        backlog,
         tone: severity.code === "P3" ? "amber" : "red",
         kicker: severity.code ? `${severity.code} ${severity.label}` : "SYSTEM ALERT",
         title: task.title || taskLabel(task.kind),
@@ -1673,6 +1760,10 @@
       "at-risk": '<path d="M12 3 20 7v5c0 5-3.4 8-8 9-4.6-1-8-4-8-9V7l8-4Z"></path><path d="M12 8v5"></path><path d="M12 16h.01"></path>',
     };
     return `<svg class="news-lineage-status-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${paths[status] || paths.unknown}</svg>`;
+  }
+
+  function lineageHealthBadge(health) {
+    return `${lineageStatusIcon(health?.key || "unknown")}<span>${esc(health?.label || "无记录")}</span>`;
   }
 
   function activeNewsStage(stages) {
@@ -3346,7 +3437,7 @@
               ${lineage.feedbackLabel ? `<span class="news-lineage-feedback-label">${esc(lineage.feedbackLabel)}</span>` : ""}
               ${(lineage.laneLabels || []).map((lane) => `<span class="news-lineage-lane-label" data-news-lineage-lane data-x="${lane.position[0]}" data-y="${lane.position[1]}" style="transform:translate(${lane.position[0]}px,${lane.position[1]}px)">${esc(lane.label)}</span>`).join("")}
               ${(lineage.groups || []).map((group) => `<div class="news-lineage-group" style="transform:translate(${group.position[0]}px,${group.position[1]}px);width:${group.size[0]}px;height:${group.size[1]}px"><strong>${esc(group.label)}</strong>${group.note ? `<span>${esc(group.note)}</span>` : ""}</div>`).join("")}
-              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.card.value)}${esc(node.card.unit)}，${esc(node.card.note)}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health" title="${esc(node.health?.label || "无记录")}">${lineageStatusIcon(node.health?.key || "unknown")}状态</b><span>${esc(node.label)}</span><strong>${esc(node.card.value)}<small>${esc(node.card.unit)}</small></strong><em>${esc(node.card.note)}</em></button>`).join("")}</div>
+              <div class="news-lineage-nodes" role="list">${lineage.nodes.map((node) => `<button class="news-lineage-node is-health-${esc(node.health?.key || "unknown")}${node.variant ? ` is-${esc(node.variant)}` : ""}${node.primary ? " is-primary" : ""}${node.compact ? " is-compact" : ""}${node.result ? " is-result" : ""}${node.dualMetric ? " is-dual-metric" : ""}${node.key === selectedLineageNode?.key ? " is-selected" : ""}" type="button" role="listitem" data-news-lineage-node="${esc(node.key)}" data-news-lineage-purpose="${esc(node.purpose || "未说明")}" data-health="${esc(node.health?.key || "unknown")}" data-x="${node.position[0]}" data-y="${node.position[1]}" style="transform:translate(${node.position[0]}px,${node.position[1]}px)" aria-label="${esc(node.label)}，作用：${esc(node.purpose || "未说明")}，健康状态${esc(node.health?.label || "无记录")}，${esc(node.card.value)}${esc(node.card.unit)}，${esc(node.card.note)}，点击查看整理详情"><i class="news-lineage-open" aria-hidden="true">↗</i><b class="news-lineage-health" title="${esc(node.health?.label || "无记录")}">${lineageHealthBadge(node.health)}</b><span>${esc(node.label)}</span><strong>${esc(node.card.value)}<small>${esc(node.card.unit)}</small></strong><em>${esc(node.card.note)}</em></button>`).join("")}</div>
             </div>
             </div>
           </div>
@@ -3447,7 +3538,7 @@
       const note = element.querySelector(":scope > em");
       if (health) {
         health.title = node.health?.label || "无记录";
-        health.innerHTML = `${lineageStatusIcon(node.health?.key || "unknown")}状态`;
+        health.innerHTML = lineageHealthBadge(node.health);
       }
       if (label) label.textContent = node.label;
       if (value) {

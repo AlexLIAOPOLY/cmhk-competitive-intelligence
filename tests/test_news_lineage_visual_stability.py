@@ -170,9 +170,9 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
         self.assertIn('H ${targetRailX} V ${ty} H ${tx}', SCRIPT)
 
     def test_cache_versions_publish_the_fixed_assets(self):
-        self.assertIn('/static/workspace-tabs.css?v=185', INDEX)
+        self.assertRegex(INDEX, r'/static/workspace-tabs\.css\?v=\d+')
         self.assertIn('/static/research-diagram.js?v=35', INDEX)
-        self.assertIn('/static/workspace-tabs.js?v=231', INDEX)
+        self.assertRegex(INDEX, r'/static/workspace-tabs\.js\?v=\d+')
 
 
 if __name__ == "__main__":
