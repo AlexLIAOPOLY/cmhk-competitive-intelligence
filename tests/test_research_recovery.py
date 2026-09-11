@@ -14,6 +14,23 @@ import executive_intelligence_pipeline as pipeline
 
 
 class RecoveryTests(unittest.TestCase):
+    def test_incomplete_model_output_remains_pending_with_a_finite_budget(self):
+        with tempfile.TemporaryDirectory() as td:
+            directory = Path(td)
+            for reason in ['模型输出被截断；本次未提交任何记录', '工具参数不完整',
+                           '响应未正常完成', '模型未使用结构化提交工具']:
+                with self.subTest(reason=reason):
+                    (directory / 'candidate_facts.jsonl').write_text(json.dumps(
+                        {'research_status':'error', 'reasons':[reason]}))
+                    summary = {'publication':{'status':'completed'}, 'recovery':{'attempts':1}}
+                    result = recovery.schedule(summary, directory, datetime.now(daily.HKT))
+                    self.assertEqual(result['status'], 'retry_pending')
+                    self.assertEqual(result['phase'], 'final_review')
+                    summary['recovery']['attempts'] = recovery.MAX_ATTEMPTS
+                    result = recovery.schedule(summary, directory, datetime.now(daily.HKT))
+                    self.assertEqual(result['status'], 'exhausted')
+                    self.assertEqual(result['next_retry_at'], '')
+
     def test_retry_budget_delays_and_cancel_survive_restarts(self):
         with tempfile.TemporaryDirectory() as td:
             directory = Path(td)
@@ -34,6 +51,12 @@ class RecoveryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             summary = {'publication': {'status':'error','error':'审核资料存在口径冲突'}}
             self.assertEqual(recovery.schedule(summary, Path(td), datetime.now(daily.HKT))['status'], 'needs_review')
+            for error in ['URLError: name or service not known', 'HTTP Error 500: Internal Server Error', 'unexpected EOF']:
+                summary['publication']['error'] = error
+                self.assertEqual(recovery.schedule(summary, Path(td), datetime.now(daily.HKT))['status'], 'retry_pending')
+            summary['publication'] = {'status':'completed'}
+            summary['recovery'] = {'status':'interrupted','attempts':2}
+            self.assertEqual(recovery.schedule(summary, Path(td), datetime.now(daily.HKT))['status'], 'completed')
 
     def test_dead_worker_is_delayed_then_resumed_with_the_same_budget(self):
         with tempfile.TemporaryDirectory() as td:

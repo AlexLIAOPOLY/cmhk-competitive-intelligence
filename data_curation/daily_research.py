@@ -282,6 +282,8 @@ def execute(root: Path, run_id: str) -> dict:
         if recovery.cancelled(previous):
             return previous
         if previous.get("publication", {}).get("status") == "completed" and not recovery.retryable_metrics(directory):
+            previous["recovery"] = recovery.schedule(previous, directory, datetime.now(HKT))
+            atomic_write_json(manifest_path, previous)
             _finish_research_task(root, task_run_id, task_started, ok=True,
                                   detail="本轮四库资料研究、数据处理与页面发布均已完成。", summary=previous)
             return previous
@@ -308,7 +310,8 @@ def execute(root: Path, run_id: str) -> dict:
             if final_review.get("status") != "completed" or retry_metrics:
                 _task_heartbeat(root, task_run_id, "最终审核 Agent 联网核对", "六组研究结果已汇总，正在联网补查失败项并做最终审核。")
                 from .research_final_review import review_run
-                summary = review_run(directory, retry_errors=True) if retry_metrics else review_run(directory)
+                summary = (review_run(directory, retry_errors=True) if retry_metrics or previous.get("publication")
+                           else review_run(directory))
             final_review = summary.get("final_review") if isinstance(summary.get("final_review"), dict) else {}
             _append_task_detail(
                 root, task_run_id, "最终审核结果",

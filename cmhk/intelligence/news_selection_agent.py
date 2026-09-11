@@ -164,7 +164,7 @@ REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
 )
 VALID_STATUSES = {"接受", "不接受"}
 TRAINING_PROVENANCE_VERSION = "verified-human-final-actor-evidence-v6"
-ACCEPTANCE_REVIEW_PROTOCOL = 4
+ACCEPTANCE_REVIEW_PROTOCOL = 5
 ZERO_ACCEPTANCE_REVIEW_PROTOCOL = 1
 MACHINE_ACTOR_IDS = {
     "news-auto-screening-bot",
@@ -1277,6 +1277,7 @@ def _invoke_langchain(
                   "calibration": (_MODEL_SESSION.get() or {}).get("calibration"),
                   "quality_feedback": (_MODEL_SESSION.get() or {}).get("quality_feedback"),
                   "acceptance_review": (_MODEL_SESSION.get() or {}).get("acceptance_review"),
+                  "acceptance_review_repair": (_MODEL_SESSION.get() or {}).get("acceptance_review_repair"),
                   "acceptance_review_protocol": ACCEPTANCE_REVIEW_PROTOCOL if (_MODEL_SESSION.get() or {}).get("acceptance_review") is not None else None,
                   "zero_acceptance_review": (_MODEL_SESSION.get() or {}).get("zero_acceptance_review"),
                   "profile": (_MODEL_SESSION.get() or {}).get("profile"),
@@ -1395,6 +1396,8 @@ def _invoke_langchain_transport(
             "以及app_impact/weekly_impact（说明该事实的直接业务或管理决策价值）。"
             "仍接受另给app_signal/weekly_signal，只能为产品资费、网络项目、具体合作、"
             "政策标准、经营指标、行业研究之一；经营指标必须引用候选中具体数字及指标，"
+            "包括营收、用户、ARPU及CPI/PPI、出入境人次、金融资产等明确量化指标；"
+            "年份、月份和5G等技术名称中的数字不是指标数值。"
             "仅称发布财报但没提供数值不构成经营数据或经营对标依据。"
             "缺乏足够事实就不接受；不得借辅助标签或泛称可对标、影响市场补造因果。"
             "国际对标运营商的具体产品、网络方案和经营数据可以有对标价值，"
@@ -1405,6 +1408,8 @@ def _invoke_langchain_transport(
             "同一公司或技术主题不构成重复依据，无法确认同一具体事实时保持分开。"
             "重复项该字段必须不接受并输出app_duplicate_of/weekly_duplicate_of，"
             "其值是本次同字段最终接受的代表news_id；非重复用空字符串。"
+            "app_duplicate_of非空时app_status只能是不接受，weekly同理；"
+            "有重复指向却仍接受是无效结果，必须在返回前逐条检查。"
             "APP和周报分别给理由，周报须有比资讯提醒更明确的管理决策价值。"
             "reason可至100字概括两字段；不要为了任何数量或比例而保留或拒绝。"
         )
@@ -1439,6 +1444,7 @@ def _invoke_langchain_transport(
             },
             "learned_preferences": learned_preferences,
             "provisional_decisions": acceptance_review,
+            "acceptance_review_repair": (session or {}).get("acceptance_review_repair"),
         },
         ensure_ascii=False,
     )
@@ -1755,6 +1761,25 @@ def _review_zero_acceptances(
                 session.pop(key, None)
 
 
+def _has_quantified_metric(evidence: str) -> bool:
+    """Recognize business and macro measurements, excluding dates/technology labels."""
+    metric = re.search(
+        r"营收|收入|利润|营利|盈利|亏损|用户|客户|资本开支|渗透率|增长率|"
+        r"ARPU|EBITDA|Revenue|(?<![A-Za-z])(?:CPI|PPI|GDP)(?![A-Za-z])|"
+        r"消费(?:者)?物价|居民消费价格|生产者价格|生产总值|失业率|通胀率|"
+        r"就业人数|出入境|旅客|客流|进出口|外贸|货币供应|信贷余额|"
+        r"金融资产|成交量|成交额|融资|贷款|募资|签约金额|项目投资|"
+        r"资金投放|债券|点心债|出货量",
+        evidence, re.I,
+    )
+    numeric_context = re.sub(r"\d{4}[-/]\d{1,2}[-/]\d{1,2}", "", evidence)
+    numeric_context = re.sub(r"\d{1,2}\s*(?:至|到|[-~])\s*\d{1,2}\s*月", "", numeric_context)
+    numeric_context = re.sub(r"\d{1,4}\s*(?:年|月(?:份)?|日|季度)", "", numeric_context)
+    numeric_context = re.sub(r"(?<![A-Za-z0-9])(?:FY\s*\d{2,4}|Q[1-4]|[456]G(?:-A)?|Wi-Fi\s*\d+|IPv[46])(?![A-Za-z0-9])",
+                             "", numeric_context, flags=re.I)
+    return bool(metric and re.search(r"\d", numeric_context))
+
+
 def _normalized_acceptance_review(
     payload: dict[str, Any],
     targets: list[dict[str, Any]],
@@ -1817,10 +1842,13 @@ def _normalized_acceptance_review(
                     raise ValueError(f"重复新闻不得同时接受 {news_id}/{field}")
                 if signal not in {"产品资费", "网络项目", "具体合作", "政策标准", "经营指标", "行业研究"}:
                     raise ValueError(f"接受复核缺少具体事实类型 {news_id}/{field}")
-                if signal == "经营指标" and (not re.search(r"\d", evidence) or not re.search(
-                    r"营收|收入|利润|盈利|亏损|用户|客户|资本开支|渗透率|增长率|ARPU|EBITDA|Revenue", evidence, re.I
-                )):
-                    raise ValueError(f"经营指标接受依据缺少实际指标数值 {news_id}/{field}")
+                if signal == "经营指标" and not _has_quantified_metric(evidence):
+                    raise ValueError(
+                        f"经营指标接受依据缺少实际指标数值 {news_id}/{field}："
+                        "须逐字引用指标名称及其数值；年份、月份、5G等技术名称不算数值。"
+                        "仅称上市、评级、发布财报或走势不够；其他事实类型也须有原文事实，"
+                        "否则该字段不接受，不得补造数字。"
+                    )
             if duplicate_of:
                 representative = reviewed.get(duplicate_of, {})
                 if (

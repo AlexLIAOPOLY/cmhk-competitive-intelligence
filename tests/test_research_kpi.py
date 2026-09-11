@@ -43,6 +43,8 @@ class FormalResearchTests(unittest.TestCase):
             ("SoftBank", "Q1 FY2026", ("Q1 FY2026", "2026-06-30", "quarter", "2026")),
             ("BT", "First quarter to 30 June 2026", ("Q1 FY2027", "2026-06-30", "quarter", "2027")),
             ("NTT Docomo", "Three Months ended June 30, 2026", ("Q1 FY2026", "2026-06-30", "quarter", "2026")),
+            ("KDDI", "Year ended March 31, 2026", ("FY2025", "2026-03-31", "annual", "2025")),
+            ("NTT", "Year Ended March 31, 2026", ("FY2025", "2026-03-31", "annual", "2025")),
             ("SmarTone", "Six months ended December 31, 2025", ("H1 FY2026", "2025-12-31", "half_year", "2026")),
         ]:
             self.assertEqual(formal_period(company, period), expected)
@@ -52,7 +54,7 @@ class FormalResearchTests(unittest.TestCase):
     def test_operating_scopes_do_not_merge_or_convert_to_financial_millions(self):
         cases = [
             (dict(metric="客户数/用户数", company="中国移动", value="10.11 亿户", unit="亿户"), "subscribers", 1011000000, "subscribers"),
-            (dict(metric="后付费用户数", company="SmarTone", period="For the year ended 30 June 2026", value="3.1", unit="million postpaid customers"), "postpaid_subscribers", 3100000, "subscribers"),
+            (dict(metric="后付费用户数", company="SmarTone", period="For the year ended 30 June 2026", value="3.1", unit="million postpaid customers", basis="Mobile postpaid customer number (million) 3.1"), "postpaid_subscribers", 3100000, "subscribers"),
             (dict(metric="站址数", company="中国铁塔", value="2,172 千", unit="千"), "tower_sites", 2172000, "sites"),
             (dict(metric="ARPU", company="SK Telecom", value="29,098 KRW", unit="KRW", reasons=["excluding MVNO"]), "mobile_arpu_excluding_mvno", 29098, "KRW"),
             (dict(metric="ARPU", company="Telefonica", value="91.1 €", unit="€", reasons=["Telefónica España"]), "spain_arpu", 91.1, "EUR"),
@@ -65,6 +67,37 @@ class FormalResearchTests(unittest.TestCase):
             self.assertEqual((row["metric_key"], row["value"], row["unit"]), (key, value, unit))
         for update in [dict(metric="EBITDA或经营利润"), dict(metric="家宽套餐", value="1G至50G", unit="G"), dict(source_tier="media")]:
             self.assertIsNone(normalize_fact(fact(**update))[0])
+
+    def test_arpu_value_keeps_its_own_business_scope_in_multi_metric_source(self):
+        basis = ("Both our broadband and postpaid mobile churn remained stable. "
+                 "Consumer ARPU of £40.9 in broadband, down 2% year-on-year; "
+                 "£19.7 in postpaid mobile, up 2% year-on-year.")
+        row, _, error = normalize_fact(fact(company="BT", period="First quarter to 30 June 2026",
+            metric="ARPU", value="£40.9", unit="£", basis=basis,
+            reasons=["Consumer broadband ARPU £40.9 in FY27 Q1."]))
+        self.assertFalse(error)
+        self.assertEqual((row["metric_key"], row["value"], row["period"]), ("consumer_broadband_arpu", 40.9, "Q1 FY2027"))
+        tim = fact(company="TIM", metric="ARPU", value="32.4", unit="€/month",
+            basis="Fixed Consumer ARPU (€/month) (1) 32.4 32.0 30.7 Mobile lines at period end 15,076")
+        self.assertEqual(normalize_fact(tim)[0]["metric_key"], "fixed_consumer_arpu")
+        postpaid = fact(metric="ARPU", value="56.20", unit="AUD",
+            basis="Postpaid handheld services revenue increased 3.4 per cent to $5,991 million with a 3.8 per cent ARPU increase to $56.20.")
+        self.assertEqual(normalize_fact(postpaid)[0]["metric_key"], "postpaid_mobile_arpu")
+        contradictory = fact(metric="ARPU", value="32.4", unit="EUR",
+            basis="Fixed Consumer ARPU (€/month) 32.4; Mobile postpaid ARPU 32.4")
+        self.assertIn("多个业务口径", normalize_fact(contradictory)[2])
+
+    def test_stacked_total_is_not_a_postpaid_subscriber_number(self):
+        stacked = fact(company="SmarTone", metric="后付费用户数", period="For the year ended 30 June 2026",
+            value="3.1 million", unit="million", basis="Customer Number (‘M) 2.7 3.1 3.1 Mobile Postpaid Prepaid & Others Postpaid +2% YoY")
+        self.assertIn("堆叠图", normalize_fact(stacked)[2])
+        self.assertIsNone(normalize_fact({**stacked, "basis": "Postpaid grew 2%; total customers 3.1 million"})[0])
+
+    def test_organic_revenue_keeps_its_accounting_basis(self):
+        value = fact(company="TIM", value="6.8 billion euros", unit="billion euros",
+            basis="ORGANIC RESULTS FOR THE FIRST HALF OF 2026 Group total revenues amounted to 6.8 billion euros.")
+        row = normalize_fact(value)[0]
+        self.assertEqual((row["metric_key"], row["value"]), ("organic_revenue", 6800))
 
     def test_existing_aliases_conflicts_and_rerun_are_resolved_before_writer(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -160,6 +193,34 @@ class FormalResearchTests(unittest.TestCase):
             self.assertTrue((Path(result["backup_path"]) / "research-archive/manifest.json").exists())
             self.assertEqual([i["write_preflight"]["status"] for i in load_review(directory)["reports"][0]["items"]], ["ready", "duplicate", "rejected"])
             self.assertEqual(repair(root, "research_test", apply=True)["main_table"]["added_rows"], 0)
+
+    def test_repair_reads_newer_archive_only_after_all_worker_locks(self):
+        import fcntl
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            tables(root)
+            directory = root / "curation_data/research_runs/research_test"
+            directory.mkdir(parents=True)
+            manifest = {"run_id": "research_test", "architecture": "six_research_agents_v1",
+                        "status": "completed", "accepted": 1, "plan": []}
+            old = fact(id="old", research_status="verified")
+            fresh = fact(id="new", metric="净利润", value="HKD 300 million", research_status="verified")
+            (directory / "manifest.json").write_text(json.dumps(manifest))
+            (directory / "verified_facts.jsonl").write_text(json.dumps(old))
+            real_flock = fcntl.flock
+            acquired = []
+            def acquire(lock, operation):
+                real_flock(lock, operation)
+                acquired.append(lock.name)
+                if len(acquired) == 3:
+                    # A preceding worker has finished between invocation and lock acquisition.
+                    (directory / "manifest.json").write_text(json.dumps({**manifest, "accepted": 2, "worker_revision": "new"}))
+                    (directory / "verified_facts.jsonl").write_text('\n'.join(json.dumps(f) for f in (old, fresh)))
+            with patch("data_curation.repair_research_storage.fcntl.flock", side_effect=acquire):
+                result = repair(root, "research_test", apply=True)
+            self.assertEqual(result["readback"]["written"], 2)
+            saved = json.loads((directory / "manifest.json").read_text())
+            self.assertEqual((saved["worker_revision"], saved["accepted"]), ("new", 2))
 
 
 if __name__ == "__main__":

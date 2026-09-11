@@ -15,6 +15,10 @@ def recoverable(error):
         "配置路由暂不可用", "apikeypoolunavailable", "budget", "rate limit", "rate_limit",
         "限流", "timeout", "timed out", "connection", "暂时", "暂不可用", "429", "502", "503", "504",
         "预筛选未命中", "仍无法读取可信来源", "模型未调用submit_metric",
+        "urlerror", "urlopen error", "temporary failure", "temporarily unavailable",
+        "nodename nor servname", "name or service not known", "network is unreachable",
+        "remote end closed", "broken pipe", "unexpected eof", "http error 500", "http 500",
+        "truncatedmodeloutput", "模型输出被截断", "工具参数不完整", "响应未正常完成", "未使用结构化提交工具",
     ))
 
 
@@ -44,11 +48,11 @@ def failure(summary, directory):
     if pending:
         return "final_review", f"{pending} 项临时故障或未完成语义核对，保留成功指标后续跑"
     publication = summary.get("publication") or {}
+    if publication.get("status") == "completed":
+        return "", ""
     if (summary.get("recovery") or {}).get("status") == "interrupted" or publication.get("status") == "running":
         phase = "final_review" if summary.get("final_review", {}).get("status") == "running" else "publication"
         return phase, "工作进程中断，保留检查点恢复未完成阶段"
-    if publication.get("status") == "completed":
-        return "", ""
     error = publication.get("error") or publication.get("model_analysis", {}).get("error") or ""
     if recoverable(error) or publication.get("result_status") == "refresh_already_running":
         return "publication", error or "另一发布任务正在执行"

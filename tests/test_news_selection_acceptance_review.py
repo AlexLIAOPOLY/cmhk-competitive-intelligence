@@ -82,6 +82,45 @@ class AcceptanceReviewTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, error):
                     agent._normalized_acceptance_review(payload, self.targets, self.primary)
 
+    def test_real_macro_and_business_values_keep_the_same_source_evidence_gate(self):
+        for evidence in (
+            '2026年8月CPI同比上涨0.8%，PPI同比上涨3.8%。',
+            '本地生产总值按年增长3.1%，反映本地经济增长。',
+            '今年1至8月累计查验出入境人员4.99亿人次，同比上升8.7%。',
+            '境外主体持有境内人民币金融资产已超11万亿元。',
+            '香港医疗健康板块成交量增长超过6倍。',
+            '企业获得31亿美元银团贷款用于已签约项目。',
+            '本季经营收入达2026万元，同比增长12%。',
+        ):
+            with self.subTest(evidence=evidence):
+                targets = copy.deepcopy(self.targets)
+                targets[0]['summary'] = evidence
+                payload = self.review_payload()
+                payload['decisions'][0].update(app_signal='经营指标', app_evidence=evidence)
+                agent._normalized_acceptance_review(payload, targets, self.primary)
+                targets[0]['summary'] = '来源未披露这些指标数值。'
+                with self.assertRaisesRegex(ValueError, '原文事实'):
+                    agent._normalized_acceptance_review(payload, targets, self.primary)
+
+    def test_dates_technology_labels_and_filing_announcements_are_not_metric_values(self):
+        for evidence in (
+            '运营商公布2026年8月份营收概况，未披露数值。',
+            '运营商公布115年8月营运绩效数据，未披露指标数值。',
+            '运营商公布2026年8月份营利概况，受惠5G升级与资费推展。',
+            '2026年8月CPI与PPI走势受市场关注，尚未发布实际数值。',
+            'CPI报告2026-09-10发布，未披露实际数值。',
+            '运营商ARPU持续上升，正考虑资费调整。',
+            '瑞银上调运营商评级至买入，目标价7.10港元。',
+            '月之暗面拟在上海和香港双重上市，以扩大融资渠道。',
+        ):
+            with self.subTest(evidence=evidence):
+                targets = copy.deepcopy(self.targets)
+                targets[0]['summary'] = evidence
+                payload = self.review_payload()
+                payload['decisions'][0].update(app_signal='经营指标', app_evidence=evidence)
+                with self.assertRaisesRegex(ValueError, '实际指标数值'):
+                    agent._normalized_acceptance_review(payload, targets, self.primary)
+
     def test_reviewer_cannot_upgrade_reject_or_point_to_rejected_duplicate(self):
         payload = self.review_payload()
         payload["decisions"][0]["weekly_status"] = "接受"

@@ -133,6 +133,10 @@ class SixAgentPipelineTests(unittest.TestCase):
             self.assertEqual(snapshot["insight_items"], [])
             model["agent_run_id"] = run.name
             analysis.write_text(json.dumps(model))
+            self.assertEqual(research_snapshot(root, "2026-09-05")["insight_items"], [])
+            model["model_analysis"].update(generation_policy="model_generated_only_v1",
+                                           model="test-model", discovery_model="test-model")
+            analysis.write_text(json.dumps(model))
             self.assertEqual(len(research_snapshot(root, "2026-09-05")["insight_items"]), 2)
 
     def test_six_agent_four_library_upsert_keeps_missing_and_historical_values(self):

@@ -115,6 +115,52 @@ def formal_period(company, raw):
     return label, f"{year:04d}-{month:02d}-{calendar.monthrange(year, month)[1]}", "annual" if grain == "year" else "half_year" if grain == "half" else grain, str(label.replace("FY", "").split()[-1])
 
 
+def _arpu_scope(value, basis):
+    """Bind an operating definition to this value, not another KPI in its paragraph."""
+    values = re.findall(NUMBER, str(value))
+    if len(values) != 1:
+        return None, ""
+    token = re.escape(values[0])
+    scopes = set()
+    for clause in re.split(r"[;；\n]|(?<=[.!?])\s+(?=[A-Z])", basis):
+        for occurrence in re.finditer(r"(?<![\d.])" + token + r"(?!\d|\.\d)", clause):
+            # ARPU tables can include a unit and a footnote before the figure.
+            preceding = clause[max(0, occurrence.start() - 180):occurrence.start()]
+            labels = list(re.finditer(r"\bARPU\b", preceding, re.I))
+            if not labels or len(preceding) - labels[-1].end() > 65:
+                continue
+            label = preceding[:labels[-1].start()]
+            after = clause[occurrence.end():occurrence.end() + 45]
+            if re.search(r"Fixed\s+Consumer\s*$", label, re.I):
+                scopes.add("fixed_consumer_arpu")
+            elif (re.search(r"Consumer\s+broadband\s*$", label, re.I)
+                  or re.search(r"Consumer\s*$", label, re.I) and re.match(r"\s+in\s+broadband\b", after, re.I)):
+                scopes.add("consumer_broadband_arpu")
+            elif re.search(r"(?:postpaid\s+(?:mobile|handheld)|mobile\s+postpaid)[^;]{0,150}$", label, re.I):
+                scopes.add("postpaid_mobile_arpu")
+            elif re.search(r"Mobile\s*$", label, re.I):
+                scopes.add("mobile_arpu")
+    labels = {"fixed_consumer_arpu": "固定消费者ARPU", "consumer_broadband_arpu": "消费者宽带ARPU",
+              "postpaid_mobile_arpu": "后付费移动ARPU", "mobile_arpu": "移动ARPU"}
+    if len(scopes) > 1:
+        return None, "同一ARPU数值对应多个业务口径，须补充具体表格行证据"
+    key = next(iter(scopes), None)
+    return (key, labels[key]) if key else None, ""
+
+
+def _postpaid_count_supported(value, basis):
+    # A stacked chart's total is not the postpaid component. Require a direct
+    # postpaid count label before its value; a legend after a total is insufficient.
+    values = re.findall(NUMBER, str(value))
+    if len(values) != 1:
+        return False
+    token = re.escape(values[0])
+    return bool(re.search(r"(?:postpaid\s+(?:mobile\s+)?(?:customers?|subscribers?|SIOs?|customer\s+number)|"
+                          r"(?:mobile\s+)?postpaid\s+(?:customer\s+number|customer\s+base)|后付费(?:移动)?(?:用户|客户)数?)"
+                          r"\s*(?:\([^)]{1,30}\)\s*)?(?:of|at|was|were|reached|为|达到|達到|:|：)?\s*"
+                          + token + r"(?!\d|\.\d)", basis, re.I))
+
+
 def normalize_fact(fact):
     """Return (formal row, destination, error). Never guess an amount or a scope."""
     from .research_plan import ASSIGNMENTS
@@ -164,14 +210,24 @@ def normalize_fact(fact):
     # Keep regional, postpaid and aggregate operating definitions in distinct fields.
     explanation = " ".join(fact.get("reasons") or [])
     if kind == "arpu":
-        if re.search(r"postpaid.*(?:ARPU|mobile)|ARPU.*postpaid", explanation + " " + basis, re.I):
-            mapped = ("postpaid_mobile_arpu", "后付费移动ARPU")
+        scoped, scope_error = _arpu_scope(fact.get("value"), basis)
+        if scope_error:
+            return None, destination, scope_error
+        if scoped:
+            mapped = scoped
         elif "excluding MVNO" in explanation:
             mapped = ("mobile_arpu_excluding_mvno", "移动ARPU（不含MVNO）")
         elif re.search(r"Telef[oó]nica Espa[nñ]a", explanation, re.I):
             mapped = ("spain_arpu", "西班牙业务ARPU")
         elif re.search(r"Mobile ARPU", explanation, re.I):
             mapped = ("mobile_arpu", "移动ARPU")
+    if mapped[0] == "postpaid_subscribers" and not _postpaid_count_supported(fact.get("value"), basis):
+        return None, destination, "后付费用户数缺少与该绝对值直接对应的原文行；总客户数或混合堆叠图不能当作后付费用户数"
+    raw_numbers = re.findall(NUMBER, str(fact.get("value", "")))
+    if (mapped[0] == "revenue" and len(raw_numbers) == 1
+            and re.search(r"ORGANIC RESULTS[^\n]{0,100}Group total revenues\s+(?:amounted to|of)\s+"
+                          + re.escape(raw_numbers[0]) + r"(?!\d|\.\d)", basis, re.I)):
+        mapped = ("organic_revenue", "收入（有机口径）")
     if kind == "count" and mapped[0] == "subscribers":
         if re.search(r"stc KSA.s mobile subscribers", basis, re.I):
             mapped = ("ksa_mobile_subscribers", "沙特业务移动用户数")

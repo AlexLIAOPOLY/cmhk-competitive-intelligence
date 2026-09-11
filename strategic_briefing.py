@@ -935,6 +935,34 @@ def _sync_selection_recovery(path, archive, entry, *, status, error):
     entry["outcome_synchronized"] = not sync_errors
 
 
+def _reconcile_completed_selection_recovery(path, archive, entry):
+    """Finish local receipts after a successful write; never invoke the model again."""
+    from cmhk.intelligence import news_review_sheet
+    result = archive["selection_agent"]
+    parent = _clean_text(archive.get("task_run_id"), 120) or _selection_recovery_parent_run_id(archive["slot"])
+    synchronized = True
+    if parent:
+        try:
+            amend_operational_crawl_run(parent, summary_updates={
+                "selection_agent_status": "completed", "selection_agent_error": "",
+                "selection_agent_next_retry_at": "", "selection_agent_recovered": True,
+                "selection_agent_attempts": int(entry.get("attempts") or 0),
+                "selection_agent_recovery_task_run_id": result.get("task_run_id") or "",
+                "selection_agent_changed": int(result.get("changed_count") or 0),
+            })
+        except Exception as exc:
+            synchronized = False
+            logging.warning("已完成选材的父任务回执待同步：%s", type(exc).__name__)
+    try:
+        news_review_sheet.complete_selection_batch(archive["slot"], result)
+    except Exception as exc:
+        synchronized = False
+        logging.warning("已完成选材的队列回执待同步：%s", type(exc).__name__)
+    entry.update(status="completed", error="", next_retry_at="", outcome_synchronized=synchronized)
+    archive["selection_agent_recovery"]["outcome_synchronized"] = synchronized
+    _atomic_write_json(path, archive)
+
+
 def _recover_pending_selection_agents(
     now: datetime,
     state: dict[str, Any],
@@ -963,6 +991,12 @@ def _recover_pending_selection_agents(
         if not slot_key or not isinstance(selection, dict):
             continue
         terminal_status = str(selection.get("status") or "")
+        if terminal_status == "completed" and (archive.get("selection_agent_recovery") or {}).get("status") == "completed":
+            completed_entry = dict(retry_state.get(slot_key) or {})
+            if not completed_entry.get("outcome_synchronized"):
+                _reconcile_completed_selection_recovery(path, archive, completed_entry)
+                retry_state[slot_key] = completed_entry
+            continue
         if not force and terminal_status in {"needs_review", "exhausted"}:
             terminal_entry = dict(retry_state.get(slot_key) or {})
             if not terminal_entry.get("outcome_synchronized"):
@@ -1056,6 +1090,7 @@ def _recover_pending_selection_agents(
                 "no_notification_replay": True,
             }
             _atomic_write_json(path, archive)
+            outcome_synchronized = True
             if parent_crawl_run_id:
                 try:
                     amend_operational_crawl_run(
@@ -1067,6 +1102,9 @@ def _recover_pending_selection_agents(
                         ),
                         summary_updates={
                             "selection_agent_status": "completed",
+                            "selection_agent_error": "",
+                            "selection_agent_next_retry_at": "",
+                            "selection_agent_attempts": attempts,
                             "selection_agent_changed": int(
                                 result.get("changed_count") or 0
                             ),
@@ -1095,6 +1133,7 @@ def _recover_pending_selection_agents(
                         },
                     )
                 except Exception:
+                    outcome_synchronized = False
                     logging.exception("主爬虫任务摘要未能追加选材恢复证据")
             entry.update(
                 {
@@ -1109,7 +1148,11 @@ def _recover_pending_selection_agents(
 
                 news_review_sheet.complete_selection_batch(slot_key, result)
             except Exception:
+                outcome_synchronized = False
                 logging.exception("选材恢复完成后未能核销通用待选批次")
+            entry["outcome_synchronized"] = outcome_synchronized
+            archive["selection_agent_recovery"]["outcome_synchronized"] = outcome_synchronized
+            _atomic_write_json(path, archive)
             recovery = {
                 "slot": slot_key,
                 "status": "completed",

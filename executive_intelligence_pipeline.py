@@ -43,6 +43,15 @@ WATCHDOG_STATE_PATH = STATE_DIR / "watchdog.json"
 PAGES_PUBLISH_SCRIPT = ROOT / "scripts" / "publish_executive_dashboard_pages.py"
 INSIGHT_FORMAT_VERSION = "strategic_operating_judgement_v9"
 
+FOCUS_EVIDENCE_CONTRACT = (
+    "标题、正文和风险中的数值必须逐字来自输入；禁止自行计算倍数、合计、差额、占比或增速，"
+    "也不要把精确值改写成输入未提供的约数。"
+    "分析正文须把数值连到有边界的判断：包含比较判断（如差距、不同、集中）、"
+    "证据连接词（如表明、反映、说明、显示）、经营维度（如结构、口径、客户、收入）"
+    "和关系或边界（如并非、不等于、不能、范围、层次）。"
+    "只选择当前证据支持的关系，不为满足措辞制造因果或遗漏比较边界。"
+)
+
 FOCUS_RELATION_FEW_SHOTS = (
     "少样本示范（学习判断方式，不要照抄句式）：\n"
     "反例：HKBN有27个产品、3HK有24个、SmarTone有21个，说明三家产品较多。"
@@ -1714,8 +1723,6 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
                         continue
                     kept.append(clause)
                 cleaned_focus[field] = "".join(kept).strip()
-                if not cleaned_focus[field]:
-                    cleaned_focus[field] = str(cleaned.get(field) or "").strip()
             cleaned_entities: list[Any] = []
             for entity in cleaned_focus.get("entities") or []:
                 if not isinstance(entity, dict):
@@ -1747,14 +1754,9 @@ def _drop_unsupported_numeric_clauses(raw: Any, evidence: dict[str, Any]) -> Any
                 cleaned_entity["analysis"] = re.sub(
                     r"(?i)components\s*具体包含[:：]?", "具体包含：", cleaned_entity["analysis"]
                 )
-                if not cleaned_entity["headline"]:
-                    cleaned_entity["headline"] = f"{cleaned_entity.get('name') or '该对象'}结构已更新"
-                if not cleaned_entity["analysis"]:
-                    cleaned_entity["analysis"] = str(
-                        entity_evidence.get("analysis") or entity_evidence.get("detail") or "当前没有足够明细形成判断。"
-                    )
-                if not cleaned_entity["risk"]:
-                    cleaned_entity["risk"] = "缺失、重复或异口径记录不作推算。"
+                # Empty fields must fail validation and return to the model.
+                # Copying source prose or inserting stock sentences would mark
+                # deterministic text as an AI-generated analysis.
                 cleaned_entities.append(cleaned_entity)
             if "entities" in cleaned_focus:
                 cleaned_focus["entities"] = cleaned_entities
@@ -2441,6 +2443,7 @@ def generate_model_focus_insight(
             "缺少可比证据时明确比较边界，不能强行排序或编造关系。"
             "返回JSON对象{headline,analysis,risk,source_urls}；标题28字内，不照抄指标名。"
             "请依据当前证据重新推导，不复用最近的分析或标题。"
+            + FOCUS_EVIDENCE_CONTRACT
         )},
         {"role": "user", "content": json.dumps({
             "domain": domain_id, "focus": evidence,
@@ -2497,7 +2500,7 @@ def generate_model_focus_insight(
                 "focus": {"id": focus_id, "headline": headline, "analysis": analysis,
                           "risk": str(parsed.get("risk") or ""), "source_urls": urls, "origin": "ai"},
             }
-        except (ValueError, TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, ValueError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             messages.append({"role": "user", "content": f"上次未通过校验：{exc}。请重新生成，不改变证据。"})
     raise ValueError(f"AI指标分析未生成，原结果未修改：{last_error}")
@@ -2529,6 +2532,7 @@ def generate_model_domain_summaries(
         "同币种、同期间才比较金额。用户总数与后付费客户、云分部与公司整体不能混作同一指标。"
         "所有标题与正文由你生成；若结果不完整或不可信，程序会拒绝并请求你修正，不会代写。"
         "source_urls和evidence_labels仅从对应输入中原样选择。仅返回JSON对象{\"items\":[领域对象]}。"
+        + FOCUS_EVIDENCE_CONTRACT
     )
     requested_domain_ids = [str(domain.get("id") or "") for domain in evidence.get("domains") or []]
     validation_domains = set(requested_domain_ids) if allow_partial_domains else None
@@ -2554,24 +2558,30 @@ def generate_model_domain_summaries(
     last_error: Exception | None = None
     used_models: set[str] = set()
     checkpoint = _read_json(checkpoint_path, {}) if checkpoint_path else {}
+    if not isinstance(checkpoint, dict):
+        checkpoint = {}
 
     def cache_key(scope):
-        return _content_hash({"format": INSIGHT_FORMAT_VERSION, "scope": scope})
+        return _content_hash({"format": INSIGHT_FORMAT_VERSION, "checkpoint_protocol": 2, "scope": scope})
+
+    def validate_scope(scope, candidates):
+        return _validate_model_summaries(candidates, scope,
+            expected_domains={d["id"] for d in scope["domains"]},
+            expected_focus_ids_by_domain={d["id"]: {f["id"] for f in d.get("focuses", [])} for d in scope["domains"]})
 
     def cached(scope):
         entry = checkpoint.get(cache_key(scope), {})
-        if not entry.get("model") or not entry.get("summaries"):
+        if not isinstance(entry, dict) or not isinstance(entry.get("model"), str) or not entry.get("model") or not entry.get("summaries"):
             return None
         try:
-            result = _validate_model_summaries(entry["summaries"], scope,
-                expected_domains={d["id"] for d in scope["domains"]},
-                expected_focus_ids_by_domain={d["id"]: {f["id"] for f in d.get("focuses", [])} for d in scope["domains"]})
-        except ValueError:
+            result = validate_scope(scope, entry["summaries"])
+        except (ValueError, TypeError, AttributeError):
             return None
-        used_models.add(entry["model"])
+        used_models.update(entry["model"].split("+"))
         return result[0]
 
     def save(scope, candidate, model):
+        candidate = validate_scope(scope, [candidate])[0]
         if checkpoint_path:
             checkpoint[cache_key(scope)] = {"model": model, "summaries": [candidate], "generated_at_hkt": _now()}
             _atomic_write_json(checkpoint_path, checkpoint)
@@ -2649,6 +2659,7 @@ def generate_model_domain_summaries(
         # checked explicitly without asking the model to hold all views at once.
         per_domain_summaries: list[dict[str, Any]] = []
         for domain_evidence in evidence.get("domains") or []:
+            domain_models: set[str] = set()
             domain_id = str(domain_evidence.get("id") or "")
             domain_scope = {"domains": [domain_evidence]}
             restored = cached(domain_scope)
@@ -2750,8 +2761,9 @@ def generate_model_domain_summaries(
                         focus for focus in candidate.get("focuses") or []
                         if isinstance(focus, dict) and str(focus.get("id") or "") in expected_focus_ids
                     ]
-                    domain_summary = candidate
+                    domain_summary = validate_scope(domain_scope, [candidate])[0]
                     used_models.add(str(body["model"]))
+                    domain_models.add(str(body["model"]))
                     break
                 except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                     domain_error = exc
@@ -2773,6 +2785,7 @@ def generate_model_domain_summaries(
                     focus_scope = {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}
                     restored = cached(focus_scope)
                     if restored is not None:
+                        domain_models.update(checkpoint[cache_key(focus_scope)]["model"].split("+"))
                         if domain_fields is None:
                             domain_fields = {k: restored.get(k) for k in ("domain", "headline", "analysis", "risk", "source_urls")}
                         focus_parts.extend(restored["focuses"])
@@ -2788,9 +2801,11 @@ def generate_model_domain_summaries(
                                 "你是电信竞争情报分析员。只返回合法JSON对象，顶层字段只能是items数组，不要解释。只能使用输入证据。"
                                 "逐一覆盖items中的全部实体，name必须原样；实体只需准确陈述事实、期间、单位和口径，"
                                 "不强迫单个实体推导经营含义。evidence_labels如使用，只能原样选自该实体components.label。"
+                                "focus.headline必须由你生成，为28字内的经营判断，不能照抄指标名称。"
                                 "focus.analysis必须用一至两句、总长不超过120字，引用输入具体数值并解释结构、驱动、"
                                 "集中度、口径可比性或市场阶段；禁止行动建议与数字复述。"
                                 "禁止写按排名、图中排序、同一视图、便于比较、数据库内、此视图等界面说明。"
+                                + FOCUS_EVIDENCE_CONTRACT
                             ),
                         },
                         {
@@ -2798,7 +2813,7 @@ def generate_model_domain_summaries(
                             "content": (
                                 f"只分析 {domain_id}.{focus_id} 这一个分类，返回JSON对象{{\"items\":[只含一个focus的领域对象]}}。"
                                 f"实体name必须完整且原样等于：{json.dumps(sorted(expected_names), ensure_ascii=False)}。"
-                                "items固定结构为：[{domain,headline,analysis,risk,source_urls,focuses:[{id,analysis,risk,"
+                                "items固定结构为：[{domain,headline,analysis,risk,source_urls,focuses:[{id,headline,analysis,risk,"
                                 "source_urls,entities:[{name,headline,analysis,risk,evidence_labels,source_urls}]}]}]。输入：\n"
                                 + json.dumps({"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}, ensure_ascii=False)
                             ),
@@ -2864,10 +2879,11 @@ def generate_model_domain_summaries(
                             )
                             if focus_gate_error:
                                 raise ValueError(focus_gate_error)
-                            focus_candidate = candidate
-                            focus_candidate["domain"] = domain_id
-                            focus_candidate["focuses"] = returned_focuses
+                            candidate["domain"] = domain_id
+                            candidate["focuses"] = returned_focuses
+                            focus_candidate = validate_scope(focus_scope, [candidate])[0]
                             used_models.add(focus_model)
+                            domain_models.add(focus_model)
                             save(focus_scope, focus_candidate, focus_model)
                             break
                         except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
@@ -2895,7 +2911,7 @@ def generate_model_domain_summaries(
                 if not focus_parts:
                     raise ValueError(f"AI分析未生成：{domain_id}: {domain_error}")
                 domain_summary = {**(domain_fields or {"domain": domain_id}), "focuses": focus_parts}
-            save(domain_scope, domain_summary, "+".join(sorted(used_models)))
+            save(domain_scope, domain_summary, "+".join(sorted(domain_models)))
             per_domain_summaries.append(domain_summary)
         summaries = _validate_model_summaries(
             _repair_model_summaries(
