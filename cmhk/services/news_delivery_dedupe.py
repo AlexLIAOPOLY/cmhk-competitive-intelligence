@@ -102,7 +102,8 @@ def _validate(result: Any, candidates: list[dict], history: list[dict]) -> list[
             # reason explicitly said these were different plans and must remain.
             # Evidence quotations alone do not make that contradictory verdict valid.
             reason = normalized_text(row["reason"])
-            if re.search(r"不(?:应|能|可|该)合并|不构成(?:同一事件|重复)|属于不同事件|"
+            if re.search(r"不(?:应|能|可|该)合并|不构成(?:同一事件|重复)|属于不同[^。；]{0,8}事件|判为不同事件|"
+                         r"不确定[^。；]{0,24}保留|报道的具体事实不同|"
                          r"不同(?:的)?(?:产品|服务计划|产品线)|保留\s*c\d|"
                          r"different (?:events|products)|not (?:a )?duplicate", reason):
                 raise ValueError(f"个人新闻事件去重结论与理由矛盾：{item['id']}")
@@ -135,6 +136,17 @@ def deduplicate_events(items: list[dict], history: list[dict], runtime_root: Pat
         return selected, audit
     inputs = {"version": VERSION, "candidates": [_evidence(x, f"c{i}") for i, x in enumerate(candidates)],
               "history": [_evidence(x, f"h{i}") for i, x in enumerate(prior)]}
+    decisions = _review_inputs(inputs, runtime_root, model_call=model_call)
+    return [item for item, decision in zip(candidates, decisions) if not decision["duplicate_of"]], decisions
+
+
+def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | None = None) -> list[dict]:
+    """Validate batches, then narrow persistent semantic failures to single items.
+
+    Single-item reviews retain every history entry and preceding candidate alias.
+    Successful subreviews checkpoint independently, so a retry resumes its work.
+    """
+    candidates = inputs["candidates"]
     encoded = json.dumps(inputs, ensure_ascii=False, sort_keys=True)
     key = hashlib.sha256(encoded.encode()).hexdigest()
     target = runtime_root / "var/subscriptions/news-dedupe" / f"{key}.json"
@@ -170,11 +182,23 @@ def deduplicate_events(items: list[dict], history: list[dict], runtime_root: Pat
                 rejected.write_text(json.dumps({"inputs": inputs, "model_output": result,
                                                 "status": "rejected", "error": str(exc)}, ensure_ascii=False, indent=2))
                 if attempt:
-                    raise
+                    if len(candidates) == 1:
+                        raise
+                    # Repeating the same four-item request can keep returning a
+                    # contradictory target. Narrow the task, never the evidence.
+                    references = list(inputs["history"])
+                    rows = []
+                    for candidate in candidates:
+                        single = {**inputs, "candidates": [candidate], "history": references}
+                        rows.extend(_review_inputs(single, runtime_root, model_call=model_call))
+                        references = [*references, candidate]
+                    result = {"decisions": rows}
+                    decisions = _validate(result, candidates, inputs["history"])
+                    break
                 prompt = encoded + "\n上次结果未通过校验，请重新核对所有候选。判断为不同事件时duplicate_of必须为空；判断重复时必须附两边逐字原文。不得把不同产品、不同活动合并。\n" + json.dumps(
                     {"validation_error": str(exc), "rejected_output": result}, ensure_ascii=False)
         target.parent.mkdir(parents=True, exist_ok=True)
         temporary = target.with_suffix(f".{uuid.uuid4().hex}.tmp")
         temporary.write_text(json.dumps({"inputs": inputs, "model_output": result}, ensure_ascii=False, indent=2))
         os.replace(temporary, target)
-    return [item for item, decision in zip(candidates, decisions) if not decision["duplicate_of"]], decisions
+    return decisions

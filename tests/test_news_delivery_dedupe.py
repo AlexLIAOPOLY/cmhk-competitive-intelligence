@@ -99,6 +99,58 @@ class EventDedupeTests(unittest.TestCase):
         self.assertEqual(deduplicate_events([DISTINCT], [MEETING], self.root, model_call=model)[0], [DISTINCT])
         self.assertEqual(model.call_count, 2)
 
+    def test_failed_batch_narrows_to_single_items_with_full_history_and_aliases(self):
+        calls = []
+        prior = {"title": "另一家企业的新产品", "summary": "另一家企业发布全新产品。"}
+        def model(system, user, **kwargs):
+            payload = json.JSONDecoder().raw_decode(user)[0]
+            calls.append(payload)
+            rows = payload["candidates"]
+            if len(rows) > 1:
+                return {"decisions": []}
+            item = rows[0]
+            decision = {"id": item["id"], "duplicate_of": "", "reason": "不同事件"}
+            if item["id"] == "c1":
+                decision.update(duplicate_of="c0", reason="同一次海关会议",
+                                evidence=REWRITE["summary"], matched_evidence=MEETING["summary"])
+            return {"decisions": [decision]}
+        kept, audit = deduplicate_events([MEETING, REWRITE, DISTINCT], [prior], self.root, model_call=model)
+        self.assertEqual(kept, [MEETING, DISTINCT])
+        self.assertEqual(audit[1]["duplicate_of"], "c0")
+        self.assertEqual([p["id"] for p in calls[-1]["history"]], ["h0", "c0", "c1"])
+        self.assertEqual(len(calls), 5)
+        deduplicate_events([MEETING, REWRITE, DISTINCT], [prior], self.root, model_call=model)
+        self.assertEqual(len(calls), 5)
+
+    def test_uncertain_or_different_event_reason_cannot_delete_a_story(self):
+        for reason in ("两条报道的具体事实不同，故判为不同事件。", "不确定是否相同，保留。"):
+            with self.subTest(reason=reason), tempfile.TemporaryDirectory() as root:
+                wrong = model_result([DISTINCT])
+                wrong["decisions"][0].update(duplicate_of="h0", reason=reason,
+                    evidence=DISTINCT["summary"], matched_evidence=MEETING["summary"])
+                model = mock.Mock(side_effect=[wrong, model_result([DISTINCT])])
+                self.assertEqual(deduplicate_events([DISTINCT], [MEETING], Path(root), model_call=model)[0], [DISTINCT])
+                self.assertEqual(model.call_count, 2)
+
+    def test_single_item_recovery_checkpoints_completed_work_and_still_fails_closed(self):
+        seen = []
+        fail = True
+        def model(system, user, **kwargs):
+            payload = json.JSONDecoder().raw_decode(user)[0]
+            rows = payload["candidates"]
+            if len(rows) > 1:
+                return {"decisions": []}
+            identifier = rows[0]["id"]
+            seen.append(identifier)
+            if fail and identifier == "c1":
+                raise TimeoutError("individual review unavailable")
+            return {"decisions": [{"id": identifier, "duplicate_of": "", "reason": "不同事件"}]}
+        with self.assertRaises(TimeoutError):
+            deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)
+        fail = False
+        self.assertEqual(deduplicate_events([MEETING, DISTINCT], [], self.root, model_call=model)[0], [MEETING, DISTINCT])
+        self.assertEqual(seen, ["c0", "c1", "c1"])
+
 
 class DeliveryGuardTests(unittest.TestCase):
     def setUp(self):
