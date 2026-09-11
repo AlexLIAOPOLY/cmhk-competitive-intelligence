@@ -1960,7 +1960,9 @@ def dispatch_subscription_queue(*, dry_run: bool = False) -> dict[str, object]:
         service = SubscriptionService(runtime_root=ROOT)
         if dry_run:
             return {"ok": True, "dry_run": True, "due_count": service.due_count()}
-        return {"ok": True, **service.flush_due()}
+        from cmhk.services.subscription_worker import start_subscription_worker
+        worker = start_subscription_worker(ROOT)
+        return {"ok": True, "independent_worker": True, **worker.state}
     except Exception as exc:
         logging.exception("订阅频率派发失败")
         return {"ok": False, "error": str(exc)[:900]}
@@ -2172,6 +2174,8 @@ def main() -> None:
         return
     _SCHEDULER_HEARTBEAT = SchedulerHeartbeat()
     _SCHEDULER_HEARTBEAT.start()
+    from cmhk.services.subscription_worker import start_subscription_worker
+    start_subscription_worker(ROOT)
     logging.info("飞书频率调度器启动，时区 Asia/Hong_Kong，每 %s 秒检查一次", POLL_SECONDS)
     while True:
         try:

@@ -1145,18 +1145,18 @@ class FinancialResultScheduleTests(unittest.TestCase):
 
 
 class SubscriptionDispatchScheduleTests(unittest.TestCase):
-    def test_frequency_scheduler_flushes_due_subscription_queue(self) -> None:
-        with mock.patch("cmhk.services.subscriptions.SubscriptionService") as service_class:
-            service_class.return_value.flush_due.return_value = {
-                "processed_count": 2,
-                "verified_count": 2,
-            }
+    def test_frequency_scheduler_keeps_delivery_on_an_independent_clock(self) -> None:
+        with mock.patch("cmhk.services.subscriptions.SubscriptionService") as service_class, \
+                mock.patch("cmhk.services.subscription_worker.start_subscription_worker") as start:
+            start.return_value.state = {"status": "running", "prepared_count": 2}
             result = scheduler.dispatch_subscription_queue()
 
         self.assertTrue(result["ok"])
-        self.assertEqual(result["processed_count"], 2)
+        self.assertTrue(result["independent_worker"])
+        self.assertEqual(result["prepared_count"], 2)
         service_class.assert_called_once_with(runtime_root=scheduler.ROOT)
-        service_class.return_value.flush_due.assert_called_once_with()
+        service_class.return_value.flush_due.assert_not_called()
+        start.assert_called_once_with(scheduler.ROOT)
 
     def test_subscription_dispatch_failure_does_not_raise_into_crawler_cycle(self) -> None:
         with mock.patch("cmhk.services.subscriptions.SubscriptionService", side_effect=RuntimeError("offline")):
