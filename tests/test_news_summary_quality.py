@@ -118,3 +118,22 @@ class SummaryQualityTests(unittest.TestCase):
         with patch('strategic_briefing._call_internal_ai', return_value=REVIEW):
             self.assertEqual(prepare_digest([self.source], self.root, model_call=editor)['items'][0]['digest_summary'], SUMMARY)
         editor.assert_called_once()
+
+    def test_complete_single_envelope_preserves_real_prose_and_requires_fact_review(self):
+        from strategic_briefing import AIInvalidStructuredResponse
+        output = {'items': [{'id': '0', 'summary': SUMMARY}]}
+        editor = Mock(side_effect=AIInvalidStructuredResponse(json.dumps(output, ensure_ascii=False), 'missing id, summary'))
+        with patch('strategic_briefing._call_internal_ai', return_value=REVIEW) as reviewer:
+            result = prepare_digest([self.source], self.root, model_call=editor, _single_response=True)
+        self.assertEqual(result['items'][0]['digest_summary'], SUMMARY)
+        self.assertEqual(result['summary_reviews'], [REVIEW])
+        reviewer.assert_called_once()
+
+    def test_incomplete_or_wrong_single_envelope_cannot_be_salvaged(self):
+        from strategic_briefing import AIInvalidStructuredResponse
+        for content in ['{"items":', json.dumps({'items': json.dumps([{'id': '0', 'summary': SUMMARY}])}),
+                        json.dumps({'items': [{'id': 'wrong', 'summary': SUMMARY}]}),
+                        json.dumps({'items': [{'id': '0', 'summary': SUMMARY}, {'id': '1', 'summary': SUMMARY}]})]:
+            with self.subTest(content=content), self.assertRaises(AIInvalidStructuredResponse):
+                prepare_digest([self.source], self.root,
+                    model_call=Mock(side_effect=AIInvalidStructuredResponse(content, 'wrong envelope')), _single_response=True)

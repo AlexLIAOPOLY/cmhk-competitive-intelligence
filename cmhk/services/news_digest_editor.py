@@ -161,9 +161,27 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
             if len(items) > 1 and recovery.exists():
                 raise ValueError('继续已记录的逐条编辑恢复')
             for attempt in range(2 if _single_response else 1):
-                result = model_call(system, json.dumps(payload, ensure_ascii=False),
-                                    max_tokens=max(16000, len(items) * 1200), response_format=response_format,
-                                    deadline_monotonic=time.monotonic() + 360, _structured_response_retries=1)
+                try:
+                    result = model_call(system, json.dumps(payload, ensure_ascii=False),
+                                        max_tokens=max(16000, len(items) * 1200), response_format=response_format,
+                                        deadline_monotonic=time.monotonic() + 360, _structured_response_retries=1)
+                except AIInvalidStructuredResponse as exc:
+                    # Some gateways retain the skill's items envelope even when
+                    # asked for a single object. Accept only a complete one-row
+                    # JSON object, preserving every byte of model-written prose.
+                    # Truncated/stringified arrays and wrong IDs still fail.
+                    try:
+                        wrapped = json.loads(exc.content)
+                        if (not _single_response or not isinstance(wrapped, dict)
+                                or set(wrapped) != {'items'} or not isinstance(wrapped['items'], list)
+                                or len(wrapped['items']) != 1 or not isinstance(wrapped['items'][0], dict)
+                                or set(wrapped['items'][0]) != {'id', 'summary'}
+                                or wrapped['items'][0]['id'] != '0'
+                                or not isinstance(wrapped['items'][0]['summary'], str)):
+                            raise ValueError('not a complete single response')
+                        result = wrapped['items'][0]
+                    except (ValueError, KeyError, TypeError):
+                        raise exc
                 if _single_response:
                     result = {'items': [result]}
                 try:
