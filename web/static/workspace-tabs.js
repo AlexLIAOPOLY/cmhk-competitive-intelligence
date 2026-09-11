@@ -1774,6 +1774,7 @@
     const model = window.CmhkResearchDiagram.build(
       legacySchedulerLineageModel(runs, stages, attemptRuns), state.researchArchitecture, date,
     );
+    window.CmhkNewsDeliveryHistory.decorate(model, date);
     const nodes = new Map(model.nodes.map((node) => [node.key, node]));
     const assessments = activeLineageRouteAssessments(date);
     model.edges = model.edges.map(([from, to, label, kind, line]) => [from, to, label, kind,
@@ -2181,6 +2182,9 @@
     const source = box(from);
     const target = box(to);
     if (!source || !target) return "";
+    if (kind === "news-subscription") {
+      return `M ${source.x + source.w / 2} ${source.y} V 20 H ${target.x + target.w / 2} V ${target.y}`;
+    }
     if (kind === "research-fan" || kind === "research-join") {
       const sx = source.x + source.w / 2;
       const sy = source.y + source.h;
@@ -3062,6 +3066,10 @@
 
   async function openActualNewsLineageDetail(nodeKey) {
     state.newsSelectedStage = nodeKey;
+    if (nodeKey === "news-subscription") {
+      window.CmhkNewsDeliveryHistory.open(state.newsSelectedDate);
+      return;
+    }
     if (nodeKey.startsWith("research-")) {
       const selectedDate = state.newsSelectedDate;
       const dialog = document.querySelector("#newsLineageDialog");
@@ -3447,6 +3455,7 @@
     state.newsLiveRefreshInFlight = true;
     try {
       const requests = [
+        ["newsDeliveries", `/api/subscriptions/news-deliveries?date=${encodeURIComponent(state.newsSelectedDate)}`],
         ["research", `/api/news-research?date=${encodeURIComponent(state.newsSelectedDate)}`],
         ["status", "/api/status"],
         ["newsRuns", "/api/crawl-runs?taskKind=strategic-news&limit=365"],
@@ -3476,6 +3485,7 @@
         } else if (key === "newsRuns") state.newsRuns = (payload.runs || []).filter((run) => run.task_kind === "strategic-news");
         else if (key === "crawlRuns") state.crawlRuns = payload.runs || [];
         else if (key === "fixedSourceSummary") state.fixedSourceSummary = payload;
+        else if (key === "newsDeliveries") window.CmhkNewsDeliveryHistory.setSummary(payload);
         else if (key === "research" && payload.date === state.newsSelectedDate) state.researchArchitecture = payload;
         else if (key === "scheduler") state.schedulerOverview = payload;
         else if (key === "intelligence") state.executiveIntelligence = payload;
@@ -4138,6 +4148,7 @@
       const selected = selectedNewsRuns();
       markWorkspaceModulesDirty("news");
       loadNewsResearch(state.newsSelectedDate);
+      window.CmhkNewsDeliveryHistory.load(state.newsSelectedDate).then(() => markWorkspaceModulesDirty("news"));
       loadNewsRuns(selected.map((run) => run.crawl_run_id));
       return;
     }
@@ -4219,6 +4230,7 @@
     }
     else if (key === "monitoringKeywords") { state.monitoringKeywords = payload || {}; markWorkspaceModulesDirty("news"); }
     else if (key === "fixedSourceSummary") { state.fixedSourceSummary = payload || {}; markWorkspaceModulesDirty("news"); }
+    else if (key === "newsDeliveries") { markWorkspaceModulesDirty("news"); }
     else if (key === "research") {
       if (state.newsSelectedDate && payload?.date !== state.newsSelectedDate) return;
       state.researchArchitecture = payload || {}; markWorkspaceModulesDirty("news");
@@ -4304,6 +4316,7 @@
       ["crawlRuns", "log", () => fetch("/api/crawl-runs?limit=500", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`crawl runs ${response.status}`)))],
       ["monitoringKeywords", "news", () => fetch("/api/news-monitoring-keywords", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`monitoring keywords ${response.status}`)))],
       ["research", "news", () => fetch(`/api/news-research?date=${encodeURIComponent(state.newsSelectedDate || "")}`, { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`research ${response.status}`)))],
+      ["newsDeliveries", "news", () => window.CmhkNewsDeliveryHistory.load(state.newsSelectedDate || "").then(() => ({}))],
       ["fixedSourceSummary", "news", () => fetch("/api/fixed-source-summary", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`fixed source summary ${response.status}`)))],
       ["scheduler", "monitoring", () => fetch("/api/scheduler-overview", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`scheduler overview ${response.status}`)))],
       ["intelligence", "dashboard", () => fetch("/api/executive-intelligence", { cache: "no-store" }).then((response) => response.ok ? response.json() : Promise.reject(new Error(`executive intelligence ${response.status}`)))],

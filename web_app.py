@@ -7519,6 +7519,27 @@ class AppHandler(BaseHTTPRequestHandler):
             except Exception as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, status=500)
             return
+        if path == "/api/subscriptions/news-deliveries":
+            if not is_loopback_client(str(self.client_address[0])):
+                json_response(self, {"ok": False, "error": "个人推送记录仅允许本机管理端访问"}, status=403)
+                return
+            try:
+                from cmhk.services.news_delivery_history import news_delivery_history
+                params = parse_qs(parsed.query)
+                delivery_id = int(params["id"][0]) if params.get("id") else None
+                result = news_delivery_history(
+                    ROOT / "var" / "subscriptions" / "subscriptions.sqlite3",
+                    selected_date=str((params.get("date") or [""])[0]), delivery_id=delivery_id,
+                )
+                json_response(self, result)
+            except ValueError:
+                json_response(self, {"ok": False, "error": "请使用有效日期或推送记录编号"}, status=400)
+            except LookupError as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, status=404)
+            except Exception:
+                logging.exception("news delivery history read failed")
+                json_response(self, {"ok": False, "error": "个人推送记录暂时无法读取，请稍后重试"}, status=500)
+            return
         if path == "/api/subscriptions/push-status":
             if not is_loopback_client(str(self.client_address[0])):
                 json_response(self, {"ok": False, "error": "订阅管理后台仅允许本机访问"}, status=403)
