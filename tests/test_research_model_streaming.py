@@ -52,7 +52,10 @@ def quota_isolation():
     with ExitStack() as stack:
         stack.enter_context(patch.object(RateLimitedChatDeepSeek, "_keys", return_value=["fixture-key"]))
         stack.enter_context(patch("ai_rate_limit.api_key_retry_after", return_value=0))
-        reserve = stack.enter_context(patch("ai_rate_limit.wait_for_internal_ai_slot"))
+        from ai_dispatch import model_call, async_model_call
+        reserve = stack.enter_context(patch("ai_rate_limit.model_call", wraps=model_call))
+        async_reserve = stack.enter_context(patch("ai_rate_limit.async_model_call", wraps=async_model_call))
+        reserve.async_reserve = async_reserve
         stack.enter_context(patch("data_curation.research_model.configured_research_models", return_value=["primary", "backup"]))
         yield reserve
 
@@ -210,7 +213,7 @@ class ResearchModelStreamingTests(unittest.TestCase):
             self.assertEqual(len(requests), 1)
             self.assertEqual(result.tool_calls[0]["args"], HISTORICAL["arguments"])
             self.assertEqual(result.response_metadata["research_stream_audit"]["response_id"], "actual-response-1")
-            reserve.assert_called_once_with("langchain-astream")
+            reserve.async_reserve.assert_called_once_with("langchain-astream")
         asyncio.run(run())
 
     def test_factory_enables_sdk_streaming_and_preserves_request_budget(self):

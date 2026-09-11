@@ -214,9 +214,11 @@ def generate_market_news_insights(
         try:
             if stream_callback:
                 stream_callback({"type": "status", "message": "内部AI正在分析已审核新闻"})
-            wait_for_internal_ai_slot("market-news-insights")
             with open_llm_request(request, timeout=90, config=config,
-                                  requested_key=api_key, model=model) as response:
+                                  requested_key=api_key, model=model, operation="market-news-insights",
+                                  wait_callback=(lambda remaining: stream_callback({
+                                      "type": "status", "message": "AI 请求较多，本次洞察仍在排队，请稍候",
+                                  })) if stream_callback else None) as response:
                 upstream = json.loads(response.read().decode("utf-8"))
         finally:
             reset_internal_ai_priority(priority)
@@ -226,7 +228,10 @@ def generate_market_news_insights(
 
     insights = run_durable_agent(namespace="market-news-insights", directory=cache_path(root).parent / "harness",
         identity={"revision": revision, "prompt": PROMPT_VERSION, "nonce": nonce, "model": model, "base_url": base_url},
-        execute=execute)
+        execute=execute, lock_timeout=180,
+        wait_callback=(lambda remaining: stream_callback({
+            "type": "status", "message": "相同新闻的 AI 洞察正在生成，完成后自动显示",
+        })) if stream_callback else None)
     generated_at = datetime.now().astimezone().isoformat(timespec="seconds")
     result = {
         "ok": True,

@@ -1394,7 +1394,6 @@ def _call_weekly_writer_llm(items: list[dict]) -> dict:
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("weekly-report-writer")
         with open_llm_request(
             request,
             timeout=WEEKLY_WRITER_TIMEOUT_SECONDS,
@@ -1402,6 +1401,7 @@ def _call_weekly_writer_llm(items: list[dict]) -> dict:
             requested_key=api_key,
             model=model,
             open_func=urlopen_with_local_proxy_fallback,
+            operation="weekly-report-writer",
         ) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -2172,7 +2172,6 @@ def _call_weekly_quality_reviewer_llm(items: list[dict]) -> dict:
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("weekly-report-reviewer")
         with open_llm_request(
             request,
             timeout=WEEKLY_REVIEW_TIMEOUT_SECONDS,
@@ -2180,6 +2179,7 @@ def _call_weekly_quality_reviewer_llm(items: list[dict]) -> dict:
             requested_key=api_key,
             model=model,
             open_func=urlopen_with_local_proxy_fallback,
+            operation="weekly-report-reviewer",
         ) as response:
             payload = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:

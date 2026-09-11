@@ -37,6 +37,8 @@ from cmhk.crawl.run_registry import (
     start_crawl_run,
 )
 from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
+from contextvars import copy_context
+from ai_dispatch import AIQueueBusy, AIRequestCancelled, WAIT_CALLBACK, capacity_status, request_context
 from ai_key_rotation import open_llm_request
 from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from cmhk.data.company_metrics import build_company_metrics_payload
@@ -120,7 +122,6 @@ NEWS_REVIEW_SCREENER_MONITOR_STARTED = False
 CRAWL_PIPELINE_LOCK = threading.Lock()
 CRAWL_PIPELINE_STATE: dict[str, object] = {}
 INTELLIGENCE_INSIGHT_REFRESH_LOCK = threading.Lock()
-MARKET_NEWS_INSIGHT_LOCK = threading.Lock()
 SCHEDULER_OVERVIEW_LOCK = threading.Lock()
 SCHEDULER_OVERVIEW_CACHE: dict[str, object] = {}
 SCHEDULER_OVERVIEW_CACHE_SECONDS = 90
@@ -196,7 +197,8 @@ class ChatStreamSession:
 
     def start(self) -> None:
         threading.Thread(
-            target=self._run,
+            target=copy_context().run,
+            args=(self._run,),
             name=f"chat-stream-{self.request_id[:32]}",
             daemon=True,
         ).start()
@@ -213,6 +215,9 @@ class ChatStreamSession:
 
     def _run(self) -> None:
         saw_done = False
+        wait_token = WAIT_CALLBACK.set(lambda remaining: self._append({
+            "type": "status", "text": "AI 请求较多，仍在排队，请稍候。",
+        }))
         try:
             for event in self.producer_factory():
                 normalized = dict(event or {})
@@ -224,6 +229,7 @@ class ChatStreamSession:
             logging.exception("chat stream producer failed for %s", self.request_id)
             self._append({"type": "error", "text": str(exc)})
         finally:
+            WAIT_CALLBACK.reset(wait_token)
             if not saw_done:
                 self._append({"type": "done"})
 
@@ -680,13 +686,13 @@ def analyze_chat_image(payload: dict) -> dict:
         headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
         method="POST",
     )
-    wait_for_internal_ai_slot("chat-image-analyze")
     with open_llm_request(
         request,
         timeout=90,
         config=config,
         requested_key=api_key,
         model=model,
+        operation="chat-image-analyze",
     ) as response:
         result = json.loads(response.read().decode("utf-8"))
     from ai_response_compat import final_chat_message_text
@@ -958,30 +964,20 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         for attempt in range(2 if stream_callback else 1):
             content_parts: list[str] = []
             try:
-                wait_for_internal_ai_slot(
-                    "competitor-insight",
-                    wait_callback=(
-                        lambda remaining: stream_callback(
-                            {
-                                "type": "status",
-                                "stage": "queue",
-                                "message": f"AI 繁忙，已为本次洞察保留队列（约 {max(1, round(remaining))} 秒）",
-                            }
-                        )
-                        if stream_callback
-                        else None
-                    ),
-                )
-                if stream_callback:
-                    stream_callback({"type": "status", "stage": "generating", "message": "AI 已连接，正在生成结果"})
                 with open_llm_request(
                     request,
                     timeout=90 if stream_callback else 60,
                     config=config,
                     requested_key=api_key,
                     model=model,
+                    operation="competitor-insight",
+                    wait_callback=(lambda remaining: stream_callback({
+                        "type": "status", "stage": "queue",
+                        "message": "AI 请求较多，本次洞察仍在排队，请稍候",
+                    })) if stream_callback else None,
                 ) as response:
                     if stream_callback:
+                        stream_callback({"type": "status", "stage": "generating", "message": "AI 已连接，正在生成结果"})
                         reasoning_started = False
                         non_sse_parts: list[bytes] = []
                         for raw_line in response:
@@ -1045,6 +1041,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                                 config=config,
                                 requested_key=api_key,
                                 model=model,
+                                operation="competitor-insight",
                             ) as fallback_response:
                                 fallback_result = json.loads(fallback_response.read().decode("utf-8"))
                             from ai_response_compat import final_chat_message_text
@@ -1062,6 +1059,8 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                         raw_content = final_chat_message_text(result, operation="竞争指标AI洞察")
                 break
             except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
+                if isinstance(exc, AIQueueBusy):
+                    raise
                 retryable_http = not isinstance(exc, urllib.error.HTTPError) or exc.code in {429, 500, 502, 503, 504}
                 if attempt == 0 and stream_callback and not content_parts and retryable_http:
                     logging.warning("competitor insight upstream interrupted before content; retrying once: %s", exc)
@@ -1175,13 +1174,13 @@ def transcribe_chat_audio(payload: dict) -> dict:
         },
         method="POST",
     )
-    wait_for_internal_ai_slot("chat-audio-transcription")
     with open_llm_request(
         request,
         timeout=90,
         config=config,
         requested_key=api_key,
         model=CHAT_STT_MODEL,
+        operation="chat-audio-transcription",
     ) as response:
         result = json.loads(response.read().decode("utf-8"))
     transcript = str(result.get("text") or result.get("transcript") or "").strip()
@@ -1387,13 +1386,13 @@ def generate_chat_thread_title(first_user: str) -> str:
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("chat-thread-title")
         with open_llm_request(
             req,
             timeout=12,
             config=config,
             requested_key=api_key,
             model=model,
+            operation="chat-thread-title",
         ) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
         content = str(payload.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
@@ -4095,6 +4094,11 @@ def start_subscription_push_job(
         daemon=True,
     ).start()
     return dict(job)
+
+
+def write_interactive_sse(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+    if not write_sse(handler, payload):
+        raise AIRequestCancelled("浏览器已取消本次 AI 请求")
 
 
 def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> bool:
@@ -7223,7 +7227,7 @@ _ORIGINAL_WRITE_SSE = write_sse
 _ORIGINAL_STREAM_REPORT_GENERATION = stream_report_generation
 
 
-def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> None:
+def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> bool:
     observe_task_progress(handler, payload)
     task_id = str(getattr(handler, "_general_task_run_id", "") or "")
     if task_id and isinstance(payload, dict):
@@ -7236,7 +7240,7 @@ def write_sse(handler: BaseHTTPRequestHandler, payload: dict) -> None:
             append_general_task_log(task_id, "任务完成。" if ok else "任务失败：" + (detail or "未提供原因"))
             finish_general_task_run(task_id, ok, detail)
             handler._general_task_finished = True
-    _ORIGINAL_WRITE_SSE(handler, payload)
+    return _ORIGINAL_WRITE_SSE(handler, payload)
 
 
 def stream_report_generation(handler: BaseHTTPRequestHandler, script_name: str, report_kind: str) -> None:
@@ -7372,6 +7376,11 @@ def start_audio_generation_task(target: Path, force: bool = True) -> tuple[dict,
     return _task_public_record(task), True
 
 
+class AppHTTPServer(ThreadingHTTPServer):
+    # The stdlib's small connection backlog drops bursts before AI can queue.
+    request_queue_size = 128
+
+
 class AppHandler(BaseHTTPRequestHandler):
     server_version = "WeeklyReportUI/1.0"
 
@@ -7476,6 +7485,9 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if path == "/api/status":
             json_response(self, {"ok": True, "status": build_status()})
+            return
+        if path == "/api/ai-capacity":
+            json_response(self, {"ok": True, "capacity": capacity_status()})
             return
         if path == "/api/health":
             json_response(self, {"ok": True, "status": build_status()})
@@ -7973,6 +7985,11 @@ class AppHandler(BaseHTTPRequestHandler):
             return
         if parsed.path.startswith("/api/") and not AUTH.authorize_api(self, parsed.path, "POST"):
             return
+        actor = AUTH.current_actor(self) or {}
+        with request_context(str(actor.get("id") or "anonymous")):
+            return self._authorized_post(parsed)
+
+    def _authorized_post(self, parsed):
         if parsed.path == "/api/project-incidents/resolve":
             actor = AUTH.current_actor(self)
             if not actor:
@@ -8071,10 +8088,6 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_header("Content-Encoding", "identity")
             self.send_header("Connection", "close")
             self.end_headers()
-            if not MARKET_NEWS_INSIGHT_LOCK.acquire(blocking=False):
-                write_sse(self, {"type": "error", "error": "AI情报洞察正在生成，请稍后再试"})
-                self.close_connection = True
-                return
             try:
                 from cmhk.intelligence.market_news_insights import generate_market_news_insights
 
@@ -8083,16 +8096,17 @@ class AppHandler(BaseHTTPRequestHandler):
                     force=bool(payload.get("force")),
                     requested_revision=str(payload.get("evidenceHash") or ""),
                     generation_nonce=str(payload.get("generationNonce") or "")[:160],
-                    stream_callback=lambda event: write_sse(self, event),
+                    stream_callback=lambda event: write_interactive_sse(self, event),
                 )
                 write_sse(self, {"type": "done", **result})
             except ValueError as exc:
                 write_sse(self, {"type": "error", "status": 409, "error": str(exc)})
+            except AIRequestCancelled:
+                pass
             except Exception as exc:
                 logging.error("UI_RUNTIME_INCIDENT market-news-ai-insight: %s: %s", type(exc).__name__, exc)
-                write_sse(self, {"type": "error", "status": 503, "error": str(exc)})
-            finally:
-                MARKET_NEWS_INSIGHT_LOCK.release()
+                write_sse(self, {"type": "error", "status": getattr(exc, "status_code", 503),
+                                 "retryable": isinstance(exc, AIQueueBusy), "error": str(exc)})
             self.close_connection = True
             return
         if parsed.path == "/api/competitor-insight-stream":
@@ -8109,15 +8123,18 @@ class AppHandler(BaseHTTPRequestHandler):
             self.send_header("Connection", "close")
             self.end_headers()
             try:
-                result = generate_competitor_insight(payload, stream_callback=lambda event: write_sse(self, event))
+                result = generate_competitor_insight(payload, stream_callback=lambda event: write_interactive_sse(self, event))
                 record_ui_runtime_incident(
                     "competitor-ai-insight",
                     status="resolved",
                     context={"request_id": payload.get("requestId") or "", "metric": (payload.get("metric") or {}).get("key") or ""},
                 )
                 write_sse(self, {"type": "done", "ok": True, **result})
+            except AIQueueBusy as exc:
+                write_sse(self, {"type": "error", "ok": False, "status": 429,
+                                 "retryable": True, "retryAfter": exc.retry_after, "error": str(exc)})
             except Exception as exc:
-                if isinstance(exc, (BrokenPipeError, ConnectionResetError)):
+                if isinstance(exc, (AIRequestCancelled, BrokenPipeError, ConnectionResetError)):
                     self.close_connection = True
                     return
                 logging.error("UI_RUNTIME_INCIDENT competitor-ai-insight: %s: %s", type(exc).__name__, exc)
@@ -9105,13 +9122,13 @@ class AppHandler(BaseHTTPRequestHandler):
                     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                     method="POST",
                 )
-                wait_for_internal_ai_slot("ai-settings-test")
                 with open_llm_request(
                     request,
                     timeout=45,
                     config=config,
                     requested_key=api_key,
                     model=model,
+                    operation="ai-settings-test",
                 ) as response:
                     response.read()
                 result = {
@@ -9468,7 +9485,7 @@ def main() -> None:
     start_news_review_screener_monitor()
     port = int(os.environ.get("PORT", "8765"))
     host = os.environ.get("HOST", "0.0.0.0")
-    server = ThreadingHTTPServer((host, port), AppHandler)
+    server = AppHTTPServer((host, port), AppHandler)
     print(f"Weekly report UI: http://{host}:{port}", flush=True)
     access_urls = intranet_access_urls(port, host=host)
     if access_urls:

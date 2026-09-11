@@ -1914,7 +1914,6 @@ def call_deepseek(
     items: list[Any] = []
     for structured_attempt in range(2):
         try:
-            wait_for_internal_ai_slot("company-metrics-normalization")
             with open_llm_request(
                 req,
                 timeout=180,
@@ -1922,6 +1921,7 @@ def call_deepseek(
                 requested_key=api_key,
                 model=model,
                 open_func=urlopen_with_local_proxy_fallback,
+                operation="company-metrics-normalization",
             ) as resp:
                 payload = json.loads(resp.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:

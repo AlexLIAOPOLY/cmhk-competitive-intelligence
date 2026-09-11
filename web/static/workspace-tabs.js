@@ -1277,9 +1277,12 @@
     const delays = [5, 15, 30, 60, 120, 300];
     const attempt = ++state.competitorInsightRetryAttempt;
     const delay = delays[Math.min(attempt - 1, delays.length - 1)];
-    card.querySelector("[data-competitor-insight-badge]").textContent = "AUTO HEAL";
-    setCompetitorInsightStatus(card, `AI 生成失败，已告警 · ${delay} 秒后自动恢复（第 ${attempt} 次）`);
-    console.warn("Competitor insight recovery scheduled", error);
+    const queued = error?.status === 429 && error?.retryable;
+    card.querySelector("[data-competitor-insight-badge]").textContent = queued ? "QUEUED" : "AUTO HEAL";
+    setCompetitorInsightStatus(card, queued
+      ? `AI 请求较多 · ${delay} 秒后自动重试，请稍候`
+      : `AI 生成失败，已告警 · ${delay} 秒后自动恢复（第 ${attempt} 次）`);
+    if (!queued) console.warn("Competitor insight recovery scheduled", error);
     window.clearTimeout(state.competitorInsightRetryTimer);
     state.competitorInsightRetryTimer = window.setTimeout(() => {
       state.competitorInsightRetryTimer = null;
@@ -1328,7 +1331,9 @@
             state.competitorInsightRetryTimer = null;
             settleCompetitorInsight(card, { mode: "ai", strategicIndicator: event.strategicIndicator, strategicHighlights: event.strategicHighlights, insight: event.insight, insights: event.insights });
           } else if (event.type === "error") {
-            throw new Error(event.error || "AI生成失败");
+            throw Object.assign(new Error(event.error || "AI生成失败"), {
+              status: event.status, retryable: event.retryable,
+            });
           }
         }
         if (done) break;
@@ -1345,7 +1350,8 @@
           strategicHighlights: partialSignal.highlights,
           insight: generated,
           insights: partial,
-          status: partial.length ? "本次生成提前结束，已保留 AI 返回内容；故障已告警" : "AI 生成失败，已告警并启动自动恢复",
+          status: error?.status === 429 && error?.retryable ? "AI 请求较多，正在等待重试"
+            : partial.length ? "本次生成提前结束，已保留 AI 返回内容；故障已告警" : "AI 生成失败，已告警并启动自动恢复",
         });
         scheduleCompetitorInsightRecovery(payload, requestId, card, error);
       }

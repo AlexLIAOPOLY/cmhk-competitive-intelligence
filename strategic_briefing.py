@@ -28,6 +28,7 @@ from ai_key_rotation import (
     mark_api_key_unavailable, APIKeyPoolUnavailable, is_transient_llm_error,
 )
 from ai_rate_limit import wait_for_internal_ai_slot
+from ai_dispatch import model_call
 from ai_response_compat import load_json_response
 from cmhk.intelligence.agent_harness import (
     TruncatedModelOutput, assert_finish_reason, run_durable_agent,
@@ -3966,20 +3967,17 @@ def _call_internal_ai_transport(
             try:
                 if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
                     raise TimeoutError("AI逐条补审已达到30分钟上限")
-                wait_for_internal_ai_slot(
-                    "strategic-news-review",
-                    deadline_monotonic=deadline_monotonic,
-                )
-                request_timeout = timeout_seconds
-                if deadline_monotonic is not None:
-                    remaining = deadline_monotonic - time.monotonic()
-                    if remaining <= 0:
-                        raise TimeoutError("AI逐条补审已达到30分钟上限")
-                    request_timeout = max(0.25, min(timeout_seconds, remaining))
-                with opener.open(request, timeout=request_timeout) as response:
-                    payload = json.loads(
-                        response.read().decode("utf-8", errors="ignore")
-                    )
+                with model_call("strategic-news-review", deadline_monotonic=deadline_monotonic):
+                    request_timeout = timeout_seconds
+                    if deadline_monotonic is not None:
+                        remaining = deadline_monotonic - time.monotonic()
+                        if remaining <= 0:
+                            raise TimeoutError("AI逐条补审已达到30分钟上限")
+                        request_timeout = max(0.25, min(timeout_seconds, remaining))
+                    with opener.open(request, timeout=request_timeout) as response:
+                        payload = json.loads(
+                            response.read().decode("utf-8", errors="ignore")
+                        )
                 request_succeeded = True
                 break
             except HTTPError as exc:

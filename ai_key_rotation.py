@@ -13,6 +13,7 @@ import threading
 import time
 import urllib.error
 import urllib.request
+import weakref
 from contextlib import contextmanager
 from datetime import timezone
 from email.utils import parsedate_to_datetime
@@ -20,6 +21,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from ai_config import api_key_candidates, load_ai_config
+from ai_dispatch import AIQueueBusy, model_call
 
 _STATE_LOCK = threading.RLock()
 # Kept for compatibility; authoritative cooldowns live in the shared state file.
@@ -238,12 +240,68 @@ class _BufferedResponse(io.BytesIO):
         return self.headers
 
 
+class _LeasedResponse:
+    """Keep streaming/audio capacity until consumption or explicit close."""
+    def __init__(self, response, lease):
+        self._response = response
+        self._context_response = None
+        self._release = weakref.finalize(self, lease.__exit__, None, None, None)
+
+    def __getattr__(self, name):
+        return getattr(self._response, name)
+
+    def __enter__(self):
+        self._context_response = self._response
+        try:
+            self._response = self._response.__enter__()
+        except BaseException:
+            self._context_response = None
+            self.close()
+            raise
+        return self
+
+    def __exit__(self, *args):
+        self.close()
+
+    def close(self):
+        if self._release.alive:
+            try:
+                if self._context_response is not None:
+                    self._context_response.__exit__(None, None, None)
+                else:
+                    close = getattr(self._response, "close", None)
+                    if close:
+                        close()
+                    else:
+                        self._response.__exit__(None, None, None)
+            finally:
+                self._release()
+
+    def read(self, *args, **kwargs):
+        try:
+            value = self._response.read(*args, **kwargs)
+            if not value or (not args and not kwargs) or args == (-1,):
+                self.close()
+            return value
+        except BaseException:
+            self.close()
+            raise
+
+    def __iter__(self):
+        try:
+            yield from self._response
+        finally:
+            self.close()
+
+
 def open_llm_request(request: urllib.request.Request, *, timeout: float,
                      config: dict[str, Any] | None = None, requested_key: Any = "", model: str = "",
                      opener: Any = None, open_func: Callable[..., Any] | None = None,
                      deadline_monotonic: float | None = None,
+                     queue_deadline_monotonic: float | None = None,
                      max_transport_retries: int = MAX_TRANSPORT_RETRIES,
-                     buffer_response: bool | None = None):
+                     buffer_response: bool | None = None,
+                     operation: str = "internal-model", wait_callback=None):
     """Rotate unavailable keys; retry interrupted inference before exposing output.
 
     Streaming bodies are returned untouched: a partial stream is never replayed or
@@ -262,28 +320,34 @@ def open_llm_request(request: urllib.request.Request, *, timeout: float,
         buffer_response = bool(buffer_response)
     # Existing timeout is a per-attempt socket timeout. Bound extra transport work.
     deadline = deadline_monotonic if deadline_monotonic is not None else time.monotonic() + timeout * (1 + min(2, max_transport_retries))
-    sent_requests = 0
     for api_key in keys:
         # A different worker may have marked a key since this request was queued.
         if api_key_retry_after(api_key, model=model) > 0:
             continue
         for attempt in range(max(0, min(2, max_transport_retries)) + 1):
-            if sent_requests:
-                # The caller reserved the first request; every rotation/retry must
-                # also consume capacity instead of amplifying gateway rate limits.
-                from ai_rate_limit import wait_for_internal_ai_slot
-                wait_for_internal_ai_slot("internal-model-retry", deadline_monotonic=deadline)
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise TimeoutError("内部模型重试已达到本轮时间上限")
+            lease = model_call(operation, deadline_monotonic=min(deadline, queue_deadline_monotonic or float("inf")), wait_callback=wait_callback)
+            leased = False
             try:
-                sent_requests += 1
+                lease.__enter__()
+                leased = True
+                remaining = deadline - time.monotonic()
+                if remaining <= 0:
+                    raise TimeoutError("内部模型重试已达到本轮时间上限")
                 response = open_request(_clone_request(request, api_key), timeout=min(timeout, remaining))
                 if not buffer_response:
-                    return response
+                    result = _LeasedResponse(response, lease)
+                    leased = False  # The response now owns release, through EOF.
+                    return result
                 with response as opened:
                     return _BufferedResponse(opened.read(), opened)
             except Exception as exc:
+                # Release before recovery/backoff, so failures never occupy a
+                # slot needed by another user. Queue pressure is not key failure.
+                if leased:
+                    lease.__exit__(None, None, None)
+                    leased = False
+                if isinstance(exc, AIQueueBusy):
+                    raise
                 raw_body = b""
                 if isinstance(exc, urllib.error.HTTPError):
                     raw_body = exc.read()
@@ -298,6 +362,9 @@ def open_llm_request(request: urllib.request.Request, *, timeout: float,
                     raise TimeoutError("内部模型重试已达到本轮时间上限") from exc
                 logging.warning("内部模型连接暂时中断（%s），%.1f 秒后重试 %s/%s。", type(exc).__name__, delay, attempt + 1, min(2, max_transport_retries))
                 time.sleep(delay)
+            finally:
+                if leased:
+                    lease.__exit__(None, None, None)
     # Re-read shared cooldowns, including the final key and concurrent failures.
     available_key_routes([(model, key) for key in keys])
     raise APIKeyPoolUnavailable(1, len(keys))

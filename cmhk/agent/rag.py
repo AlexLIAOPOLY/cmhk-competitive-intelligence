@@ -2514,13 +2514,13 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("rag-answer")
         with open_llm_request(
             req,
             timeout=90,
             config=config,
             requested_key=api_key,
             model=model,
+            operation="rag-answer",
         ) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -2641,13 +2641,13 @@ def stream_llm_with_rag(question: str):
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("rag-stream")
         with open_llm_request(
             req,
             timeout=120,
             config=config,
             requested_key=api_key,
             model=model,
+            operation="rag-stream",
         ) as resp:
             for raw in resp:
                 line = raw.decode("utf-8", errors="ignore").strip()

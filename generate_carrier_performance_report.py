@@ -1038,7 +1038,6 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("carrier-performance-editor")
         started = time.monotonic()
         with open_llm_request(
             request,
@@ -1049,6 +1048,7 @@ def call_performance_editor_llm(fact_packs: list[dict]) -> tuple[dict, str]:
             requested_key=api_key,
             model=model,
             open_func=urlopen_with_local_proxy_fallback,
+            operation="carrier-performance-editor",
         ) as response:
             chunks = []
             while True:

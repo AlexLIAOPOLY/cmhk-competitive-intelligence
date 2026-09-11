@@ -194,7 +194,7 @@ class CompetitorInsightTests(unittest.TestCase):
             return _StreamingResponse()
 
         config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
-        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot") as wait_slot, patch(
+        with patch("web_app.load_ai_config", return_value=config), patch("ai_key_rotation.model_call", wraps=__import__("ai_dispatch").model_call) as wait_slot, patch(
             "web_app.urllib.request.urlopen", side_effect=open_request
         ):
             result = web_app.generate_competitor_insight(self.payload(), stream_callback=events.append)
@@ -202,7 +202,7 @@ class CompetitorInsightTests(unittest.TestCase):
         self.assertTrue(captured["body"]["stream"])
         self.assertEqual(captured["timeout"], 90)
         wait_kwargs = wait_slot.call_args.kwargs
-        self.assertNotIn("deadline_monotonic", wait_kwargs)
+        self.assertGreater(wait_kwargs["deadline_monotonic"], 0)
         self.assertTrue(callable(wait_kwargs["wait_callback"]))
         self.assertEqual([event["stage"] for event in events if event["type"] == "status"], ["queue", "generating", "reasoning"])
         self.assertFalse(any("内网" in str(event.get("message") or "") for event in events))
@@ -283,7 +283,7 @@ class CompetitorInsightTests(unittest.TestCase):
     def test_stream_retries_once_when_upstream_breaks_before_content(self):
         events = []
         config = {"base_url": web_app.INTERNAL_AI_BASE_URL, "api_key": "test", "model": "test-model"}
-        with patch("web_app.load_ai_config", return_value=config), patch("web_app.wait_for_internal_ai_slot") as wait_slot, patch(
+        with patch("web_app.load_ai_config", return_value=config), patch("ai_key_rotation.model_call", wraps=__import__("ai_dispatch").model_call) as wait_slot, patch(
             "web_app.urllib.request.urlopen",
             side_effect=[urllib.error.URLError("connection reset"), _StreamingResponse()],
         ) as open_request:
@@ -291,7 +291,7 @@ class CompetitorInsightTests(unittest.TestCase):
 
         self.assertEqual(open_request.call_count, 2)
         self.assertEqual(wait_slot.call_count, 2)
-        self.assertTrue(any("自动续接" in str(event.get("message") or "") for event in events))
+        self.assertEqual(__import__("ai_dispatch").capacity_status()["active"], 0)
         self.assertEqual(result["insight"], MODEL_CONTENT)
 
     def test_rejects_stale_evidence_version(self):

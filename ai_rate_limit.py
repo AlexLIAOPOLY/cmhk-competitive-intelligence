@@ -1,15 +1,9 @@
 from __future__ import annotations
 
 import asyncio
-import fcntl
-import json
 import logging
-import os
-import tempfile
 import time
 from contextlib import contextmanager
-from contextvars import ContextVar
-from pathlib import Path
 from typing import Any, Callable, Iterator
 
 from langchain_deepseek import ChatDeepSeek as _ChatDeepSeek
@@ -27,39 +21,12 @@ from ai_key_rotation import (
 )
 
 
+from ai_dispatch import AIQueueBusy, PRIORITY as _REQUEST_PRIORITY, model_call, async_model_call, wait_for_slot
+
 DEFAULT_REQUESTS_PER_MINUTE = 14
-_RESERVATION_ACTIVE: ContextVar[bool] = ContextVar(
-    "cmhk_internal_ai_reservation_active", default=False
-)
-_REQUEST_PRIORITY: ContextVar[str] = ContextVar(
-    "cmhk_internal_ai_request_priority", default="background"
-)
-
-
-def _limit() -> int:
-    return max(
-        1,
-        min(
-            15,
-            int(
-                os.environ.get(
-                    "CMHK_INTERNAL_AI_REQUESTS_PER_MINUTE",
-                    str(DEFAULT_REQUESTS_PER_MINUTE),
-                )
-            ),
-        ),
-    )
-
-
-def _state_path() -> Path:
-    configured = os.environ.get("CMHK_INTERNAL_AI_RATE_STATE_PATH", "").strip()
-    if configured:
-        return Path(configured).expanduser()
-    return Path(tempfile.gettempdir()) / "cmhk_internal_ai_rate_limit.json"
 
 
 def set_internal_ai_priority(priority: str = "interactive"):
-    """Mark a complete workflow so foreground chat keeps reserved gateway capacity."""
     return _REQUEST_PRIORITY.set(str(priority or "background"))
 
 
@@ -67,93 +34,24 @@ def reset_internal_ai_priority(token: Any) -> None:
     _REQUEST_PRIORITY.reset(token)
 
 
-def _effective_limit(total_limit: int) -> int:
-    if _REQUEST_PRIORITY.get() == "interactive":
-        return total_limit
-    reserve = max(
-        1,
-        min(
-            total_limit - 1,
-            int(os.environ.get("CMHK_INTERNAL_AI_INTERACTIVE_RESERVE", "4")),
-        ),
-    )
-    return max(1, total_limit - reserve)
-
-
-def wait_for_internal_ai_slot(
-    operation: str = "internal-model",
-    *,
-    deadline_monotonic: float | None = None,
-    wait_callback: Callable[[float], None] | None = None,
-) -> float:
-    """Reserve one request in the gateway's shared UTC calendar-minute bucket."""
-    total_wait = 0.0
-    path = _state_path()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    while True:
-        now = time.time()
-        window = int(now // 60)
-        total_limit = _limit()
-        limit = _effective_limit(total_limit)
-        with path.open("a+", encoding="utf-8") as handle:
-            fcntl.flock(handle.fileno(), fcntl.LOCK_EX)
-            handle.seek(0)
-            try:
-                state = json.load(handle)
-            except (json.JSONDecodeError, TypeError, ValueError):
-                state = {}
-            if int(state.get("window") or -1) != window:
-                state = {"window": window, "count": 0}
-            count = max(0, int(state.get("count") or 0))
-            if count < limit:
-                state["count"] = count + 1
-                state["updated_at"] = now
-                state["last_operation"] = str(operation or "internal-model")[:120]
-                handle.seek(0)
-                handle.truncate()
-                json.dump(state, handle, ensure_ascii=False)
-                handle.flush()
-                os.fsync(handle.fileno())
-                fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-                return total_wait
-            wait_seconds = max(0.25, (window + 1) * 60 - now + 0.35)
-            fcntl.flock(handle.fileno(), fcntl.LOCK_UN)
-        logging.info(
-            "内部模型全局队列已达 %s 次/分钟，%s 等待 %.2f 秒",
-            limit,
-            operation,
-            wait_seconds,
-        )
-        if (
-            deadline_monotonic is not None
-            and time.monotonic() + wait_seconds >= deadline_monotonic
-        ):
-            raise TimeoutError(f"{operation} exceeded its time budget while rate limited")
-        remaining = wait_seconds
-        while remaining > 0:
-            sleep_seconds = min(5.0, remaining) if wait_callback else remaining
-            time.sleep(sleep_seconds)
-            total_wait += sleep_seconds
-            remaining -= sleep_seconds
-            if wait_callback and remaining > 0:
-                wait_callback(remaining)
+def wait_for_internal_ai_slot(operation="internal-model", *, deadline_monotonic=None, wait_callback=None):
+    return wait_for_slot(operation, deadline_monotonic=deadline_monotonic, wait_callback=wait_callback)
 
 
 @contextmanager
 def _reserved_model_call(operation: str) -> Iterator[None]:
-    if _RESERVATION_ACTIVE.get():
+    with model_call(operation):
         yield
-        return
-    wait_for_internal_ai_slot(operation)
-    token = _RESERVATION_ACTIVE.set(True)
-    try:
-        yield
-    finally:
-        _RESERVATION_ACTIVE.reset(token)
 
 
 class RateLimitedChatDeepSeek(_ChatDeepSeek):
     """LangChain DeepSeek client sharing the same process-independent quota."""
+
+    def __init__(self, **kwargs):
+        # The shared wrapper owns retries. SDK retries inside a lease would
+        # bypass request accounting and multiply load during a gateway outage.
+        kwargs["max_retries"] = 0
+        super().__init__(**kwargs)
 
     def _keys(self) -> list[str]:
         return ordered_api_keys(
@@ -180,6 +78,8 @@ class RateLimitedChatDeepSeek(_ChatDeepSeek):
         raise APIKeyPoolUnavailable(1, len(keys))
 
     def _handle_attempt_error(self, api_key, error, index, keys, attempt, *, emitted=False):
+        if isinstance(error, AIQueueBusy):
+            raise error
         if is_key_unavailable_error(error):
             mark_api_key_unavailable(api_key, error, model=str(self.model_name or ""))
             if emitted:
@@ -241,18 +141,14 @@ class RateLimitedChatDeepSeek(_ChatDeepSeek):
             if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
                 continue
             for attempt in range(3):
-                if not _RESERVATION_ACTIVE.get():
-                    await asyncio.to_thread(wait_for_internal_ai_slot, "langchain-agenerate")
-                    token = _RESERVATION_ACTIVE.set(True)
-                else:
-                    token = None
+                lease = async_model_call("langchain-agenerate")
+                await lease.__aenter__()
                 try:
                     return await super()._agenerate(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)})
                 except Exception as exc:
                     action, delay = self._handle_attempt_error(api_key, exc, index, keys, attempt)
                 finally:
-                    if token is not None:
-                        _RESERVATION_ACTIVE.reset(token)
+                    await lease.__aexit__(None, None, None)
                 if action == "next":
                     break
                 await asyncio.sleep(delay)
@@ -265,11 +161,8 @@ class RateLimitedChatDeepSeek(_ChatDeepSeek):
                 continue
             for attempt in range(3):
                 emitted = False
-                if not _RESERVATION_ACTIVE.get():
-                    await asyncio.to_thread(wait_for_internal_ai_slot, "langchain-astream")
-                    token = _RESERVATION_ACTIVE.set(True)
-                else:
-                    token = None
+                lease = async_model_call("langchain-astream")
+                await lease.__aenter__()
                 try:
                     async for item in super()._astream(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)}):
                         emitted = True
@@ -278,8 +171,7 @@ class RateLimitedChatDeepSeek(_ChatDeepSeek):
                 except Exception as exc:
                     action, delay = self._handle_attempt_error(api_key, exc, index, keys, attempt, emitted=emitted)
                 finally:
-                    if token is not None:
-                        _RESERVATION_ACTIVE.reset(token)
+                    await lease.__aexit__(None, None, None)
                 if action == "next":
                     break
                 await asyncio.sleep(delay)

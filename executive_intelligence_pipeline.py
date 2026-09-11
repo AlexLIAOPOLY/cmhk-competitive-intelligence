@@ -2835,11 +2835,11 @@ def generate_model_focus_insight(
             "messages": messages, "temperature": temperature, "max_tokens": 4000,
         })
         request = _model_request(config, api_key, body, request_id)
-        wait_for_internal_ai_slot(f"executive-intelligence-focus-{domain_id}-{focus_id}")
         try:
             with open_llm_request(
                 request, timeout=75, config=config, requested_key=api_key, model=model,
                 open_func=urlopen_with_local_proxy_fallback,
+                operation=f"executive-intelligence-focus-{domain_id}-{focus_id}",
             ) as response:
                 payload = read_chat_completion_sse(response)
             parsed = load_json_response(
@@ -3021,7 +3021,6 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
         **dict(config.get("extra_parameters") or {}), "model": model, "messages": messages,
         "temperature": 0.1, "max_tokens": 4000,
     }))
-    wait_for_internal_ai_slot("executive-intelligence-local-patch")
     started, payload, error = time.monotonic(), {}, None
     patch, patched, http_calls = None, None, 0
 
@@ -3036,6 +3035,7 @@ def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=
 
     try:
         with open_llm_request(request, timeout=90, config=config, requested_key=api_key, model=model,
+                                  operation="executive-intelligence-local-patch",
                               open_func=single_transport, max_transport_retries=0) as response:
             payload = read_chat_completion_sse(response)
         patch = load_json_response(final_chat_message_text(payload, operation="局部AI修订"), operation="局部AI修订")
@@ -3353,7 +3353,6 @@ def generate_model_domain_summaries(
         body["model"] = _executive_model_route()[min(attempt, len(_executive_model_route()) - 1)]
         body["messages"] = messages
         request = _model_request(config, api_key, body)
-        wait_for_internal_ai_slot("executive-intelligence-analysis")
         try:
             with open_llm_request(
                 request,
@@ -3362,6 +3361,7 @@ def generate_model_domain_summaries(
                 requested_key=api_key,
                 model=str(body.get("model") or ""),
                 open_func=urlopen_with_local_proxy_fallback,
+                operation="executive-intelligence-analysis",
             ) as response:
                 payload = read_chat_completion_sse(response)
         except urllib.error.HTTPError as exc:
@@ -3443,7 +3443,6 @@ def generate_model_domain_summaries(
                 attempt_error = None
                 body["model"] = _executive_model_route()[min(domain_attempt, len(_executive_model_route()) - 1)]
                 request = _model_request(config, api_key, {**body, "messages": domain_messages})
-                wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}")
                 attempt_started = time.monotonic()
                 try:
                     with open_llm_request(
@@ -3453,6 +3452,7 @@ def generate_model_domain_summaries(
                         requested_key=api_key,
                         model=str(body.get("model") or ""),
                         open_func=urlopen_with_local_proxy_fallback,
+                        operation=f"executive-intelligence-analysis-{domain_id}",
                     ) as response:
                         domain_payload = read_chat_completion_sse(response)
                     domain_content = final_chat_message_text(
@@ -3595,7 +3595,6 @@ def generate_model_domain_summaries(
                         focus_payload = {}
                         attempt_error = None
                         request = _model_request(config, api_key, {**body, "model": focus_model, "messages": focus_messages})
-                        wait_for_internal_ai_slot(f"executive-intelligence-analysis-{domain_id}-{focus_id}")
                         attempt_started = time.monotonic()
                         try:
                             with open_llm_request(
@@ -3605,6 +3604,7 @@ def generate_model_domain_summaries(
                                 requested_key=api_key,
                                 model=focus_model,
                                 open_func=urlopen_with_local_proxy_fallback,
+                                operation=f"executive-intelligence-analysis-{domain_id}-{focus_id}",
                             ) as response:
                                 focus_payload = read_chat_completion_sse(response)
                             focus_content = final_chat_message_text(
@@ -3903,8 +3903,8 @@ def _repair_saved_discoveries(entry, evidence, config, persist, trace_path):
             persist()
             return urllib.request.urlopen(*args, **kwargs)
         try:
-            wait_for_internal_ai_slot("executive-intelligence-discovery-patch")
             with open_llm_request(request, timeout=180, config=config, requested_key=config["api_key"], model=model,
+                                      operation="executive-intelligence-discovery-patch",
                                   open_func=single_transport, max_transport_retries=0) as response:
                 payload = read_chat_completion_sse(response)
             record.update(response=payload, reported_model=payload.get("model"), response_id=payload.get("id"), response_hash=_content_hash(payload))
@@ -4048,7 +4048,6 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
         body["model"] = discovery_model
         body["messages"] = messages
         request = _model_request(config, api_key, body)
-        wait_for_internal_ai_slot("executive-intelligence-discoveries")
         attempt_started = time.monotonic()
         payload = {}
         attempt_error = None
@@ -4073,6 +4072,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
                 model=discovery_model,
                 open_func=single_transport,
                 max_transport_retries=0,
+                operation="executive-intelligence-discoveries",
             ) as response:
                 payload = read_chat_completion_sse(response)
             record.update(response=payload, reported_model=payload.get("model"), response_id=payload.get("id"),
@@ -4307,7 +4307,6 @@ def regenerate_model_discovery(
                 "temperature": 0.25 if attempt == 0 else 0.55,
                 "max_tokens": 520,
             }), request_id)
-        wait_for_internal_ai_slot(f"executive-intelligence-discovery-{index}")
         try:
             with open_llm_request(
                 request,
@@ -4316,6 +4315,7 @@ def regenerate_model_discovery(
                 requested_key=api_key,
                 model=model,
                 open_func=urlopen_with_local_proxy_fallback,
+                operation=f"executive-intelligence-discovery-{index}",
             ) as response:
                 response_payload = read_chat_completion_sse(response)
             parsed = load_json_response(

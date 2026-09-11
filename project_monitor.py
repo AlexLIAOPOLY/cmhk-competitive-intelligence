@@ -2432,7 +2432,6 @@ class ProjectMonitor:
             },
             method="POST",
         )
-        wait_for_internal_ai_slot("project-monitor-diagnosis", deadline_monotonic=time.monotonic() + 45)
         try:
             with open_llm_request(
                 request,
@@ -2441,6 +2440,8 @@ class ProjectMonitor:
                 requested_key=api_key,
                 model=model,
                 open_func=urlopen_with_local_proxy_fallback,
+                operation="project-monitor-diagnosis",
+                queue_deadline_monotonic=time.monotonic() + 45,
             ) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
@@ -2584,10 +2585,6 @@ class ProjectMonitor:
             },
             method="POST",
         )
-        wait_for_internal_ai_slot(
-            "project-monitor-route-assessment",
-            deadline_monotonic=time.monotonic() + 45,
-        )
         try:
             with open_llm_request(
                 request,
@@ -2596,6 +2593,8 @@ class ProjectMonitor:
                 requested_key=api_key,
                 model=model,
                 open_func=urlopen_with_local_proxy_fallback,
+                operation="project-monitor-route-assessment",
+                queue_deadline_monotonic=time.monotonic() + 45,
             ) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
         except urllib.error.HTTPError as exc:
@@ -2893,7 +2892,6 @@ class ProjectMonitor:
                 headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json", "Cache-Control": "no-cache, no-store", "X-Request-ID": request_id},
                 method="POST",
             )
-            wait_for_internal_ai_slot("project-monitor-resolution", deadline_monotonic=time.monotonic() + 45)
             with open_llm_request(
                 request,
                 timeout=35,
@@ -2901,6 +2899,8 @@ class ProjectMonitor:
                 requested_key=api_key,
                 model=model,
                 open_func=urlopen_with_local_proxy_fallback,
+                operation="project-monitor-resolution",
+                queue_deadline_monotonic=time.monotonic() + 45,
             ) as response:
                 response_payload = json.loads(response.read().decode("utf-8"))
             raw = final_chat_message_text(response_payload, operation="运维告警结案")

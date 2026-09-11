@@ -45,7 +45,8 @@ class _State(TypedDict, total=False):
 def run_durable_agent(*, namespace: str, identity: Any, directory: Path,
                       execute: Callable[[int], Any], max_attempts: int = 3,
                       retry_on: tuple[type[Exception], ...] = (TruncatedModelOutput,),
-                      deadline: float | None = None) -> Any:
+                      deadline: float | None = None, lock_timeout: float = 30,
+                      wait_callback: Callable[[float], Any] | None = None) -> Any:
     """Resume one content-addressed decision, without replaying external effects.
 
     ``execute`` must be inference plus validation only, never send/write operations.
@@ -80,7 +81,8 @@ def run_durable_agent(*, namespace: str, identity: Any, directory: Path,
     # A per-decision OS lock is released even by SIGKILL. Different jobs stay
     # concurrent; identical jobs cannot both consume a model and publish state.
     with (directory / f"{fingerprint}.lock").open("a") as lock:
-        lock_deadline = min(deadline or float("inf"), time.monotonic() + 30)
+        lock_deadline = min(deadline or float("inf"), time.monotonic() + max(1, min(900, lock_timeout)))
+        last_wait_notice = 0.0
         while True:
             try:
                 fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
@@ -88,6 +90,9 @@ def run_durable_agent(*, namespace: str, identity: Any, directory: Path,
             except BlockingIOError:
                 if time.monotonic() >= lock_deadline:
                     raise TimeoutError("相同 Agent 决策正在执行；保持待处理，不重复提交")
+                if wait_callback and time.monotonic() - last_wait_notice >= 5:
+                    last_wait_notice = time.monotonic()
+                    wait_callback(max(0, lock_deadline - last_wait_notice))
                 time.sleep(0.1)
         with SqliteSaver.from_conn_string(str(directory / f"{fingerprint}.sqlite")) as saver:
             app = graph.compile(checkpointer=saver)

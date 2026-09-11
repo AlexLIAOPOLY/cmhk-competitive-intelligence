@@ -404,10 +404,10 @@ def _internal_asr_timing_payload(audio_path: Path) -> dict:
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("tts-subtitle-alignment")
         with open_llm_request(
             request, timeout=180, config=config, requested_key=api_key,
             model=dict(fields)["model"], buffer_response=True,
+            operation="tts-subtitle-alignment",
         ) as response:
             return json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
@@ -659,7 +659,6 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
         method="POST",
     )
     try:
-        wait_for_internal_ai_slot("tts-summary")
         with open_llm_request(
             req,
             timeout=25,
@@ -667,6 +666,7 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
             requested_key=api_key,
             model=model,
             open_func=urlopen_with_local_proxy_fallback,
+            operation="tts-summary",
         ) as resp:
             payload = json.loads(resp.read().decode("utf-8"))
             if provider == "openai":
@@ -1393,10 +1393,10 @@ def _synthesize_with_internal_tts(
                 method="POST",
             )
             try:
-                wait_for_internal_ai_slot("tts-audio-chunk")
                 with open_llm_request(
                     request, timeout=180, config=config, requested_key=api_key,
                     model=model, buffer_response=True,
+                    operation="tts-audio-chunk",
                 ) as response:
                     audio_bytes = response.read()
             except urllib.error.HTTPError as exc:
