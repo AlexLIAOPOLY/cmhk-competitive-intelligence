@@ -518,16 +518,13 @@ def delete_audio_for_report(report_path: Path) -> None:
 
 
 def rename_audio_for_report(old_report_path: Path, new_report_path: Path) -> None:
+    from cmhk.reporting.report_naming import audio_rename_pairs
     AUDIO_DIR.mkdir(exist_ok=True)
-    for old_audio in audio_paths_for_report(old_report_path) + [
-        audio_path_for_report_ext(old_report_path, ".txt"),
-        subtitle_timing_path_for_report(old_report_path),
-    ]:
-        if not old_audio.exists():
-            continue
-        new_audio = audio_path_for_report_ext(new_report_path, old_audio.suffix)
-        if new_audio.exists() and new_audio != old_audio:
-            new_audio.unlink()
+    pairs = audio_rename_pairs(old_report_path, new_report_path, AUDIO_DIR)
+    for _, target in pairs:
+        if target.exists():
+            raise ValueError(f'同名音频附件已存在：{target.name}')
+    for old_audio, new_audio in pairs:
         old_audio.rename(new_audio)
 
 

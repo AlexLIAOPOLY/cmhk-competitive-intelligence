@@ -1933,7 +1933,18 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       ${selectColumn}<span>文件名</span><span>说明</span><span>更新时间</span><span>操作</span>
     </div>
   `;
+  const latestByDate = new Map();
+  if (type === "performance") {
+    files.forEach((file) => {
+      const day = String(file.name).match(/^\d+月\d+日/)?.[0];
+      const current = latestByDate.get(day);
+      if (day && (!current || file.mtime > current.mtime)) latestByDate.set(day, file);
+    });
+  }
   files.forEach((file) => {
+    const day = String(file.name).match(/^\d+月\d+日/)?.[0];
+    const latestBadge = type === "performance" && latestByDate.get(day) === file
+      ? '<span class="report-edited-badge">当日最新</span> ' : '';
     const typeInfo = fileType(file.name);
     const safePath = escapeHtml(file.path_str);
     const unread = isReportUnread(file);
@@ -1954,7 +1965,7 @@ function renderOutputTable(target, files, emptyTitle, emptyHint, type) {
       <div class="file-row ${typeInfo.className} ${tableTone} ${state.multiSelect ? "with-select" : ""} ${checked ? "is-selected" : ""} ${unread ? "has-new-report" : ""}" data-path="${safePath}" data-report-name="${escapeHtml(file.name)}" data-report-type="${escapeHtml(file.reportType)}">
         ${state.multiSelect ? `<span class="select-cell"><input type="checkbox" class="file-checkbox" data-path="${safePath}" ${checked} aria-label="选择 ${escapeHtml(file.name)}"></span>` : ""}
         <span class="file-name-cell">${pushChoice}${typeInfo.icon}<i class="report-file-new-dot" aria-label="新报告，尚未查看" ${unread ? "" : "hidden"}></i><span class="file-name-editable" data-path="${safePath}" title="单击预览，双击编辑文件名与备注">${escapeHtml(file.name)}</span></span>
-        <span>${fileDescription(file)}</span>
+        <span>${latestBadge}${fileDescription(file)}</span>
         <span class="time-cell">${file.mtimeText}</span>
         <span class="action-cell">
           <button type="button" class="row-icon-button edit-report-button" data-path="${safePath}" title="编辑正文" aria-label="编辑正文 ${escapeHtml(file.name)}">${iconSvg("edit")}</button>

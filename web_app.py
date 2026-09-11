@@ -2211,40 +2211,8 @@ def update_report_file(payload: dict) -> dict:
         raise ValueError("文件名只能是 Word 文档，不能包含路径字符")
     new_note = re.sub(r"\s+", " ", str(payload.get("note") or "")).strip()[:500]
     new_target = target.with_name(new_name)
-    if new_target != target and new_target.exists():
-        raise ValueError("同名文件已存在")
-    old_quality = quality_sidecar_for_report(target)
-    new_quality = quality_sidecar_for_report(new_target)
-    if new_target != target and new_quality.exists():
-        raise ValueError("同名质量审计文件已存在")
-
-    metadata = load_report_metadata()
-    old_rel = str(target.relative_to(ROOT))
-    if new_target != target:
-        target.rename(new_target)
-        if old_quality.exists():
-            old_quality.rename(new_quality)
-            try:
-                quality_payload = json.loads(new_quality.read_text(encoding="utf-8"))
-                if isinstance(quality_payload, dict):
-                    quality_payload["reportFile"] = new_target.name
-                    new_quality.write_text(
-                        json.dumps(quality_payload, ensure_ascii=False, indent=2),
-                        encoding="utf-8",
-                    )
-            except Exception:
-                pass
-        rename_audio_for_report(target, new_target)
-        existing = metadata.pop(old_rel, {})
-    else:
-        existing = metadata.get(old_rel, {})
-    new_rel = str(new_target.relative_to(ROOT))
-    if not isinstance(existing, dict):
-        existing = {}
-    existing["note"] = new_note
-    existing["updatedAt"] = time.strftime("%Y-%m-%d %H:%M:%S")
-    metadata[new_rel] = existing
-    save_report_metadata(metadata)
+    from cmhk.reporting.report_naming import rename_report_bundle
+    rename_report_bundle(ROOT, target, new_target, note=new_note)
     return build_status()
 
 

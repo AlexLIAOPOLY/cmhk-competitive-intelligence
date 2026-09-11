@@ -114,17 +114,8 @@ _SIMPLIFIED_CHINESE_CONVERTER = OpenCC("t2s")
 
 
 def dated_output_path(now: datetime | None = None) -> Path:
-    value = now or datetime.now(ZoneInfo("Asia/Hong_Kong"))
-    base_name = f"{value.month}月{value.day}日运营商业绩摘要"
-    candidate = ROOT / f"{base_name}.docx"
-    if not candidate.exists():
-        return candidate
-    counter = 1
-    while True:
-        candidate = ROOT / f"{base_name} ({counter}).docx"
-        if not candidate.exists():
-            return candidate
-        counter += 1
+    from cmhk.reporting.report_naming import performance_output_path
+    return performance_output_path(ROOT, now)
 
 
 def remove_paragraph(paragraph) -> None:
