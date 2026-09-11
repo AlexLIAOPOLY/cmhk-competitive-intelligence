@@ -14,7 +14,7 @@ from urllib.request import ProxyHandler, Request, build_opener
 from bs4 import BeautifulSoup
 from PIL import Image
 
-IMAGE_POLICY_VERSION = 'news-image-review-v5-context-evidence'
+IMAGE_POLICY_VERSION = 'news-image-review-v6-context-scope'
 VISUAL_POLICY_VERSION = 'news-image-visual-review-v5-context-evidence'
 BAD_IMAGE = re.compile(
     r'(?:^|[/_.\s-])(ads?|advert\w*|banner|logo\w*|icon\w*|favicon|'
@@ -236,6 +236,11 @@ def _identity_review(item: dict, candidate: dict, visual: dict, *, deadline: flo
         '严禁自行断言两家公司是别名、母子公司或翻译关系；尤其博云/BoCloud绝不是富通/Futong、Sunshine或MultiCloud。'
         '原图或真实主体资料照片可用，纯Logo/品牌图案、栏目封面、广告、无关拼图不能用。'
         '必须区分现场原图和相关资料图：context只核对真实主体/地点关联，不要求照片证明本次交易、评级、政策或日期。'
+        'context也可以直接对应核心行业、技术或风险；相关性不等于新闻全部关键词同时出现在图片里。'
+        '香港金融业AI代理越狱风险可用官方AI代理提示注入研究图表，不要求图中出现香港或银行，'
+        '因为它解释的是同一种技术风险，不是声称图表是香港金融统计。'
+        '香港AI就业影响分析可用可靠媒体同主题报道中的真实招聘现场，不要求照片展示失业预测数字；'
+        '这种行业分析没有声称某次具体招聘活动，因此不能仅因照片来自另一招聘现场就拒绝。'
         '例如瑞银评级新闻可用清楚标识UBS的真实办公楼照片，中国移动新闻可用中国移动真实门店照片；'
         '不得因资料照片没有评级报告、没有合作双方同框或没有本次活动字样而拒绝这类照片。'
         '官方技术图解或研究图表可作context，须直接对应新闻核心技术/风险，有明确出处，'
