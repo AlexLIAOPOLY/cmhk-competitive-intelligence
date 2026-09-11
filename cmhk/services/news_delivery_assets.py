@@ -57,15 +57,35 @@ def article_url(value: str) -> str:
     return value
 
 
+def verify_public_host(host: str, port: int, client) -> None:
+    addresses = [ipaddress.ip_address(row[4][0]) for row in socket.getaddrinfo(host, port)]
+    if addresses and all(address.is_global for address in addresses):
+        return
+    # Local proxy DNS uses this reserved benchmark range as virtual routing IPs.
+    # Check real A and AAAA records via HTTPS before allowing the public request.
+    virtual = ipaddress.ip_network('198.18.0.0/15')
+    if not addresses or any(not address.is_global and address not in virtual for address in addresses):
+        raise ValueError('新闻资源不是公网地址')
+    public = []
+    for record_type in ('A', 'AAAA'):
+        response = client.get('https://dns.google/resolve', params={'name': host, 'type': record_type})
+        response.raise_for_status()
+        result = response.json()
+        if result.get('Status') != 0:
+            raise ValueError('新闻资源公网解析失败')
+        public.extend(ipaddress.ip_address(row['data']) for row in result.get('Answer', [])
+                      if row.get('type') in (1, 28))
+    if not public or any(not address.is_global for address in public):
+        raise ValueError('新闻资源不是公网地址')
+
+
 def fetch(url: str, *, max_bytes=6_000_000) -> tuple[bytes, str, str]:
     # Validate every redirect before a network request; publisher HTML is untrusted.
     with httpx.Client(timeout=httpx.Timeout(15, connect=8), follow_redirects=False,
                       headers={'User-Agent': 'Mozilla/5.0 CMHK-NewsReader/1.0'}) as client:
         for _ in range(5):
             parsed = urlsplit(article_url(url))
-            addresses = socket.getaddrinfo(parsed.hostname, parsed.port or (443 if parsed.scheme == 'https' else 80))
-            if not addresses or any(not ipaddress.ip_address(row[4][0]).is_global for row in addresses):
-                raise ValueError('新闻资源不是公网地址')
+            verify_public_host(parsed.hostname, parsed.port or (443 if parsed.scheme == 'https' else 80), client)
             with client.stream('GET', url) as response:
                 if response.is_redirect:
                     url = urljoin(url, response.headers['location'])
@@ -137,7 +157,8 @@ def upload_image(service, url: str, cache: Path, profile: str) -> str:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
     result = service._lark(['lark-cli', 'im', 'images', 'create', '--as', 'bot', '--profile', profile,
-                           '--data', json.dumps({'image_type': 'message'}), '--file', str(path)], timeout=60)
+                           '--data', json.dumps({'image_type': 'message'}), '--file',
+                           str(path.relative_to(service.runtime_root))], timeout=60)
     key = result.get('data', {}).get('image_key', '')
     if not re.fullmatch(r'img_[A-Za-z0-9_-]+', key):
         raise ValueError('新闻配图上传未返回有效 image_key')
@@ -156,7 +177,7 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
             fcntl.flock(lock, fcntl.LOCK_EX)
             target = cache / (key + '.json')
             asset = load(target)
-            if not asset.get('news_url'):
+            if not asset.get('news_url') or asset.get('metadata_unavailable'):
                 direct = resolve_source(original, cache)
                 try:
                     asset = source_metadata(direct)
@@ -180,10 +201,12 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
                         continue
                 # Transport/API upload failures are not swallowed: retry before IM.
                 save(target, asset)
-            image_key = asset.get('image_key') or fallback_image_key
-            if not re.fullmatch(r'img_[A-Za-z0-9_-]+', image_key):
-                raise ValueError('缺少可用新闻配图和栏目封面，保留批次重试')
+            image_key = str(asset.get('image_key') or '')
+            if image_key == fallback_image_key or not asset.get('image_source_url'):
+                image_key = ''
+            if image_key and not re.fullmatch(r'img_[A-Za-z0-9_-]+', image_key):
+                raise ValueError('新闻原图标识无效，保留批次重试')
             ready.append({**item, 'news_url': asset['news_url'], 'image_key': image_key,
-                          'image_kind': 'source' if asset.get('image_key') else 'section',
+                          'image_kind': 'source' if image_key else 'none',
                           'image_source_url': asset.get('image_source_url', '')})
     return ready

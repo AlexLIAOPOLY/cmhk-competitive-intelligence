@@ -798,6 +798,8 @@ class SubscriptionServiceTests(unittest.TestCase):
             "title": f"新闻 {index}", "summary": f"摘要 {index}", "category": "竞对动态",
             "region": "香港本地", "source": "测试来源", "published_at": "2026-08-19T09:00:00+08:00",
             "source_url": f"https://example.test/{index}",
+            "image_key": f"img_article_{index}", "image_kind": "source",
+            "image_source_url": f"https://example.test/{index}.jpg",
         } for index in range(1, 7)]
         card = strategic_news_card(
             title="  CMHK战略订阅｜6条新闻  ",

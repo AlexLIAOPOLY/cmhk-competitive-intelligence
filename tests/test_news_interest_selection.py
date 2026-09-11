@@ -44,10 +44,10 @@ class InterestSelectionTests(unittest.TestCase):
             self.assertFalse(saved['adjustments'])
             self.assertEqual(service.list_summary()['subscribers'][0]['news_categories'], saved['news_categories'])
 
-    def test_overview_only_lead_bold_and_competitor_shown_first(self):
+    def test_overview_omitted_and_competitor_shown_first(self):
         card=strategic_news_card(title='测试',body=NEWS_DIGEST_PREFIX+json.dumps({'overview':'1. 供给变化：正文保持普通字重。','items':[article('policy','政策监管'),article('comp','竞对动态')]}))
         elements=card['body']['elements']
-        self.assertTrue(any(i.get('content')=='1. **供给变化**：正文保持普通字重。' for i in elements))
+        self.assertNotIn('供给变化', json.dumps(elements, ensure_ascii=False))
         first=next(i for i in elements if i['tag']=='column_set')
         self.assertIn('竞对动态',first['columns'][0]['elements'][0]['content'])
 

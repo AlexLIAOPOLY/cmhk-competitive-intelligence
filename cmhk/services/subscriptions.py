@@ -826,11 +826,12 @@ def strategic_news_card(
                 def prose(value):
                     return re.sub(r"([\\*\[\]`])", r"\\\1", html.escape(value, quote=False))
                 url = article_url(item.get('news_url') or item.get('source_url') or item.get('url'))
-                thumbnail = str(item.get('image_key') or image_key)
-                if not IMAGE_KEY_RE.fullmatch(thumbnail):
-                    raise ValueError('新闻卡片缺少有效配图')
-                if item.get('image_kind') == 'section':
-                    source += ' · 栏目配图'
+                thumbnail = str(item.get('image_key') or '')
+                if (thumbnail == image_key or item.get('image_kind') != 'source'
+                        or not item.get('image_source_url')):
+                    thumbnail = ''
+                if thumbnail and not IMAGE_KEY_RE.fullmatch(thumbnail):
+                    raise ValueError('新闻原图标识无效')
                 group_elements.append({
                     'tag': 'interactive_container', 'width': 'fill', 'has_border': False,
                     'padding': '8px 0px',
@@ -853,6 +854,8 @@ def strategic_news_card(
                             ]},
                         ]}],
                 })
+                if not thumbnail:
+                    group_elements[-1]['elements'][0]['columns'].pop()
             elements.append({"tag": "column_set", "flex_mode": "none", "columns": [{
                 "tag": "column", "width": "weighted", "weight": 1,
                 "background_style": f"{color}-50", "padding": "12px", "vertical_spacing": "8px",

@@ -11,7 +11,7 @@ import httpx
 from PIL import Image
 
 from cmhk.services.news_delivery_assets import (
-    article_url, prepare_news_assets, resolve_source, source_metadata, upload_image,
+    article_url, prepare_news_assets, resolve_source, source_metadata, upload_image, verify_public_host,
 )
 from cmhk.services.news_digest_editor import prepare_digest
 from cmhk.services.news_push_skill import skill_contract
@@ -50,18 +50,72 @@ class NewsAssetTests(unittest.TestCase):
             self.assertEqual(upload.call_count, 2)
         self.service._lark.assert_not_called()
 
-    def test_missing_publisher_photo_is_explicitly_labelled_and_keeps_original(self):
+    def test_proxy_virtual_dns_requires_real_public_a_and_aaaa_records(self):
+        client = Mock()
+        client.get.return_value.json.side_effect = [
+            {'Status': 0, 'Answer': [{'type': 1, 'data': '104.18.26.58'}]},
+            {'Status': 0, 'Answer': [{'type': 28, 'data': '2606:4700::6812:1a3a'}]},
+        ]
+        with patch('cmhk.services.news_delivery_assets.socket.getaddrinfo', return_value=[
+                (None, None, None, None, ('198.18.0.109', 443))]):
+            verify_public_host('www.stheadline.com', 443, client)
+        self.assertEqual(client.get.call_count, 2)
+
+    def test_private_dns_and_private_public_resolver_answers_remain_blocked(self):
+        client = Mock()
+        for address in ('127.0.0.1', '10.0.0.1', '::1'):
+            with patch('cmhk.services.news_delivery_assets.socket.getaddrinfo', return_value=[
+                    (None, None, None, None, (address, 443))]), self.assertRaises(ValueError):
+                verify_public_host('private.example', 443, client)
+        client.get.assert_not_called()
+        for answers in ([], [{'type': 1, 'data': '10.0.0.1'}], [{'type': 28, 'data': '::1'}]):
+            client.get.return_value.json.return_value = {'Status': 0, 'Answer': answers}
+            with patch('cmhk.services.news_delivery_assets.socket.getaddrinfo', return_value=[
+                    (None, None, None, None, ('198.18.0.109', 443))]), self.assertRaises(ValueError):
+                verify_public_host('private.example', 443, client)
+
+    def test_failed_metadata_can_recover_photo_on_next_preparation(self):
+        with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=httpx.ConnectError('unavailable')):
+            self.assertEqual(self.prepare()[0]['image_kind'], 'none')
+        with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
+                'news_url': self.item['source_url'], 'image_urls': ['https://publisher.example/photo.jpg']}), \
+                patch('cmhk.services.news_delivery_assets.upload_image', return_value='img_recovered'):
+            self.assertEqual(self.prepare()[0]['image_kind'], 'source')
+
+    def test_missing_publisher_photo_omits_thumbnail_and_keeps_original(self):
         with patch('cmhk.services.news_delivery_assets.source_metadata', side_effect=httpx.ConnectError('unavailable')):
             ready = self.prepare()
-        self.assertEqual(ready[0]['image_kind'], 'section')
+        self.assertEqual(ready[0]['image_kind'], 'none')
         card = strategic_news_card(title='CMHK战略下午茶', body=encode_strategic_news_digest(ready),
                                    image_key='img_original_banner')
         text = json.dumps(card, ensure_ascii=False)
-        self.assertIn('栏目配图', text)
+        self.assertNotIn('栏目配图', text)
+        self.assertEqual(text.count('img_original_banner'), 1)
+        self.assertEqual(text.count('80px 80px'), 0)
         self.assertIn(self.item['source_url'], text)
         self.assertNotIn('docx/', text)
         self.assertNotIn('今日核心看点', text)
         self.assertNotIn('subtitle', card['header'])
+
+    def test_cached_section_image_cannot_be_reused_in_article_rows(self):
+        for kind in ['section', 'source']:
+            items = [{**self.item, 'image_key': 'img_original_banner', 'image_kind': kind,
+                      'image_source_url': 'https://publisher.example/old-cover.png'}] * 3
+            card = strategic_news_card(title='战略下午茶', body=encode_strategic_news_digest(items),
+                                       image_key='img_original_banner')
+            encoded = json.dumps(card, ensure_ascii=False)
+            self.assertEqual(encoded.count('img_original_banner'), 1)
+            self.assertEqual(encoded.count('80px 80px'), 0)
+
+    def test_real_article_photo_is_retained_beside_article(self):
+        item = {**self.item, 'image_key': 'img_article', 'image_kind': 'source',
+                'image_source_url': 'https://publisher.example/photo.jpg'}
+        card = strategic_news_card(title='战略下午茶', body=encode_strategic_news_digest([item]),
+                                   image_key='img_original_banner')
+        encoded = json.dumps(card, ensure_ascii=False)
+        self.assertEqual(encoded.count('img_article'), 1)
+        self.assertEqual(encoded.count('img_original_banner'), 1)
+        self.assertEqual(encoded.count('80px 80px'), 1)
 
     def test_image_upload_failure_does_not_become_success_and_retry_reuses_source(self):
         with patch('cmhk.services.news_delivery_assets.source_metadata', return_value={
@@ -117,6 +171,10 @@ class NewsAssetTests(unittest.TestCase):
             upload_image(self.service, self.item['source_url'], self.root, 'sender')
         self.service._lark.assert_called_once()
         self.assertIn('images', self.service._lark.call_args.args[0])
+        argv = self.service._lark.call_args.args[0]
+        relative_file = Path(argv[argv.index('--file') + 1])
+        self.assertFalse(relative_file.is_absolute())
+        self.assertTrue((self.service.runtime_root / relative_file).is_file())
 
     def test_editor_actually_consumes_skill_and_returns_summary_without_overview(self):
         model = Mock(return_value={'items': [{'id': '0', 'summary': self.item['summary']}]})
