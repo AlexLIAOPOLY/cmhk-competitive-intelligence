@@ -6286,7 +6286,7 @@ def main() -> None:
             impact="部分正文需要从合格缓存或锁定证据恢复",
             action="恢复合格正文，仅对待修条目补搜和补写，最多两轮",
         )
-        model = prepare_human_template_content(model)
+        model = prepare_human_template_content(model, progress=lambda message: print(message, flush=True))
         validate_report_model(model)
 
     print("\n--- 报告内容统计 ---")

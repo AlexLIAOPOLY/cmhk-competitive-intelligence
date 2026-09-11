@@ -181,6 +181,25 @@
       "title": "香港电讯参与GenA.I.沙盒 开发AI代理身份验证方案",
       "sourceUrl": "https://hkt.com/about-hkt/press-release/hkt-to-participate-in-gen-ai-sandbox-to-develop-ai-agent-identity-verification/",
       "detail": "香港电讯旗下HKT Payment获选参与GenA.I.沙盒++，将就AI代理启动的付款、钱包增值、个人转账及跨机构交易开展身份登记和验证试点。公司与红枣科技合作开发以去中心化身份识别及可验证凭证为基础的「Agentic ID」框架，把每个AI代理绑定至已验证个人或企业主体，并以零知识证明在不披露数据的情况下完成验证，降低冒认和未授权操作风险，同时建立更清晰的交易审计记录。"
+    },
+    {
+      "title": "联通云8.0发布“六算协同”体系：运营商如何重塑AI时代算力底座?",
+      "sourceUrl": "https://www.hstong.com/news/detail/26091018265383144",
+      "sourcePublishedAt": "2026-09-10",
+      "verifiedAt": "2026-09-11",
+      "verification": "公开会议报道逐条核对，保留原人工选材日期；属于核实事实，不标记为AI生成",
+      "detail": "联通发布智算云8.0，以算电、算网、算芯、算模、算安和算数六方面协同构建AI基础设施。“联通星罗”承担全域算网调度，适配30余种国产芯片并汇集300多个主流模型。联通同时推进资源运营和Agent+Token+AI云算力的经营模式，向伙伴开放算力供给、词元运营及行业应用能力。"
+    },
+    {
+      "title": "香港宽频企业方案与博云国际达成战略合作 推动AI Agent方案",
+      "sourceUrl": "https://www.etnet.com.hk/www/tc/forex/news-article/20260910538",
+      "corroboratingSourceUrls": [
+        "https://hk.linkedin.com/company/hkbnes"
+      ],
+      "sourcePublishedAt": "2026-09-10",
+      "verifiedAt": "2026-09-11",
+      "verification": "经济通原文与香港宽频企业方案公司说明交叉核对；属于核实事实，不标记为AI生成",
+      "detail": "香港宽频企业方案与博云国际签署合作备忘录，合作将结合双方的产品研发、技术及市场资源。双方把AI智能体、代理式AI、多智能体协作和企业级解决方案作为重点，推动相关服务在香港、澳门及区域市场落地；后续合作范围将随市场需求和技术发展调整。"
     }
   ]
 }
