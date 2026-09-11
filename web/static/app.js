@@ -1917,7 +1917,7 @@ const expandedReportHistory = new Set();
 function performanceReportGroups(files) {
   const groups = new Map();
   [...files].sort((a, b) => b.mtime - a.mtime).forEach((file) => {
-    const match = String(file.name).match(/^(\d+月\d+日运营商业绩摘要)(?:（编辑稿(?:\s+\d+)?）)?\.docx$/);
+    const match = String(file.name).match(/^(\d+月\d+日(?:运营商|香港竞对)业绩摘要)(?:（编辑稿(?:\s+\d+)?）)?\.docx$/);
     const key = match ? `${String(file.mtimeText).slice(0, 4)}:${match[1]}` : file.path_str;
     if (!groups.has(key)) groups.set(key, { key, files: [] });
     groups.get(key).files.push(file);

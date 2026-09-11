@@ -15,7 +15,7 @@ import uuid
 def report_display_name(name: str) -> str:
     """Keep storage identities out of reader-facing titles and downloads."""
     match = re.fullmatch(
-        r'(\d+月\d+日运营商业绩摘要)'
+        r'(\d+月\d+日(?:运营商|香港竞对)业绩摘要)'
         r'(?:（(?:\d{2}时\d{2}分\d{2}秒|原始稿)(?:-[0-9a-f]{6})?）(?:-[0-9a-f]{6})?| \(\d+\))?'
         r'(（编辑稿(?:\s+\d+)?）)?\.docx', name)
     return f'{match[1]}{match[2] or ""}.docx' if match else name

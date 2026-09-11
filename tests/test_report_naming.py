@@ -127,6 +127,7 @@ class ReportNamingTests(unittest.TestCase):
             self.assertEqual(report_display_name(name), name)
         self.assertEqual(report_display_name('9月10日运营商业绩摘要（19时35分13秒）（编辑稿）.docx'),
                          '9月10日运营商业绩摘要（编辑稿）.docx')
+        self.assertEqual(report_display_name('6月1日香港竞对业绩摘要（14时59分52秒）.docx'), '6月1日香港竞对业绩摘要.docx')
 
     def test_saving_a_note_with_short_name_keeps_original_version_path(self):
         import web_app

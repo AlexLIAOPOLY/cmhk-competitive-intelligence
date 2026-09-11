@@ -3742,7 +3742,7 @@
       const active = row.dataset.path === path;
       row.classList.toggle("is-previewing", active);
       row.setAttribute("aria-pressed", String(active));
-      row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.path || ""}`);
+      row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.reportName || row.dataset.path || ""}`);
     });
   }
 
@@ -4252,7 +4252,7 @@
       row.tabIndex = 0;
       row.setAttribute("role", "button");
       row.setAttribute("aria-pressed", String(active));
-      row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.path || ""}`);
+      row.setAttribute("aria-label", `${active ? "取消预览" : "预览报告"} ${row.dataset.reportName || row.dataset.path || ""}`);
     });
   });
 
