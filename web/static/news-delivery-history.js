@@ -12,7 +12,7 @@
   async function request(params) {
     const response = await fetch(`/api/subscriptions/news-deliveries?${new URLSearchParams(params)}`, { cache: "no-store", signal: AbortSignal.timeout(15000) });
     const payload = await response.json();
-    if (!response.ok || !payload.ok) throw new Error(payload.error || `推送记录读取失败（${response.status}）`);
+    if (!response.ok || !payload.ok) throw new Error(payload.error || payload.message || `推送记录读取失败（${response.status}）`);
     return payload;
   }
   function setSummary(payload) { if (payload?.ok && payload.date) snapshots.set(payload.date, payload); }
@@ -44,6 +44,7 @@
     return `<dl class="news-delivery-facts">${field("任务日期", item.task_date)}${field("创建时间", time(item.created_at))}${field(item.retry_count ? "最近排期 / 重试时间" : "排期时间", time(item.due_at))}${field("发送完成时间", time(item.delivered_at))}${field("回执确认时间", time(item.verified_at))}${field("重试次数", String(item.retry_count))}${field("推送批次", item.batch_id)}${field("消息回执", item.message_ids.join("\n"))}</dl>
       ${item.error ? `<p class="news-delivery-error">${esc(item.status_group === "verified" ? "历史错误" : "失败 / 重试原因")}：${esc(item.error)}</p>` : ""}
       <h4>${esc(contentLabel)}${news.length ? ` · ${news.length} 条` : ""}</h4>
+      ${archived && news.length ? '<p class="news-delivery-muted">下列为入选新闻及来源；最终推送文案见下方保存的完整卡片文字。</p>' : ""}
       ${archived && !news.length ? "<p>该卡片未包含新闻条目，可能是本轮没有新的可推送事件；以保存的卡片文字为准。</p>" : ""}
       ${!archived ? "<p class=\"news-delivery-muted\">历史消息的发送状态来自推送台账；候选新闻不能用来确认最终卡片内容。</p>" : ""}
       <ol class="news-delivery-news">${news.map((entry) => {
