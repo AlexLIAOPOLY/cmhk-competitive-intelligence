@@ -2,6 +2,706 @@
   "ok": true,
   "runs": [
     {
+      "crawl_run_id": "20260912_070955_786709",
+      "trigger": "新闻自动初筛",
+      "scope": "爬虫后选材（2026-09-12@03:00）",
+      "task_kind": "news-selection-agent",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "新闻自动初筛完成；处理 223 条，验证 446 格，本次新写 446 格，已有 0 格；逐格回读通过。",
+      "status_detail": "新闻自动初筛完成；处理 223 条，验证 446 格，本次新写 446 格，已有 0 格；逐格回读通过。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-12T07:27:53+08:00",
+      "started_at_hkt": "2026-09-12T07:09:55+08:00",
+      "completed_at_hkt": "2026-09-12T07:27:53+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 1078145,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "status": "completed",
+        "candidate_count": 223,
+        "changed_count": 446,
+        "newly_written_count": 446,
+        "already_applied_count": 0,
+        "verified_field_count": 446,
+        "app_accepted_count": 8,
+        "weekly_accepted_count": 5,
+        "deferred_field_count": 0,
+        "superseded_field_count": 0,
+        "training_provenance_version": "verified-human-final-actor-evidence-v6",
+        "training_stats": {
+          "training_provenance_version": "verified-human-final-actor-evidence-v6",
+          "human_example_count": 106,
+          "verified_human_row_count_before_limit": 106,
+          "verified_human_field_count": 166,
+          "human_correction_field_count": 152,
+          "machine_history_excluded_field_count": 3882,
+          "unknown_history_excluded_field_count": 589,
+          "stale_history_excluded_field_count": 137,
+          "source_app_accept_count": 11,
+          "source_app_reject_count": 85,
+          "source_weekly_accept_count": 9,
+          "source_weekly_reject_count": 61,
+          "app_accept_count": 11,
+          "app_reject_count": 24,
+          "weekly_accept_count": 9,
+          "weekly_reject_count": 24,
+          "balanced_human_example_count": 68
+        },
+        "human_example_count": 106,
+        "balanced_human_example_count": 68,
+        "human_correction_count": 152,
+        "model": "deepseek-v4-free",
+        "decision_models": [
+          "deepseek-v4-free"
+        ],
+        "decision_source_counts": {
+          "deepseek-v4-free": 223
+        },
+        "mixed_decision_sources": false,
+        "skill_path": "agent_knowledge/news_selection_agent/SKILL.md",
+        "audit_path": "agent_knowledge/news_selection_agent/decisions.jsonl",
+        "readback_verified": true,
+        "operation_audit_count": 446,
+        "decision_audit_count": 223,
+        "resumed_from_plan": false,
+        "recovered_decision_count": 0,
+        "published_count": 79,
+        "published_provenance_refreshed": true,
+        "writer_identity": "bot",
+        "writer_profile": "cli_a9575e70ae799cb2",
+        "skill_migrated": false,
+        "task_run_id": "20260912_070955_786709",
+        "model_request_count": 15,
+        "model_request_limit": 0
+      }
+    },
+    {
+      "crawl_run_id": "20260912_030043_443148",
+      "trigger": "四库资料研究与更新",
+      "scope": "六 Agent 最新资料研究（2026-09-12T03:00:00+08:00）",
+      "task_kind": "four-database-research",
+      "run_status": "running",
+      "phase": "生成AI洞察",
+      "progress_detail": "正在根据四库最新通过事实生成AI洞察，并对15个关注点及4条顶部跨库研判逐一执行深层解释、简洁度与事实门禁。",
+      "status_detail": "",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-12T07:18:38+08:00",
+      "started_at_hkt": "2026-09-12T03:00:43+08:00",
+      "completed_at_hkt": "",
+      "duration_ms": 14910323,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "agent_run_id": "research_20260912",
+        "accepted": 10,
+        "review": 95,
+        "recovery": {
+          "status": "retry_pending",
+          "phase": "final_review",
+          "attempts": 0,
+          "max_attempts": 6,
+          "error": "1 项临时故障或未完成语义核对，保留成功指标后续跑",
+          "next_retry_at": "2026-09-12T07:11:13.839015+08:00"
+        },
+        "retryable_metrics": 1,
+        "publication": {
+          "status": "error",
+          "task_run_id": "20260912_030043_443148",
+          "completed_at": "2026-09-12T07:09:13+08:00",
+          "database_updated": true,
+          "storage_readback": {
+            "schema_version": 2,
+            "policy": "formal_kpi_binary_v1",
+            "checked_at": "2026-09-12T06:39:10+08:00",
+            "accepted": 10,
+            "written": 10,
+            "not_written": 0,
+            "records_read": 10,
+            "confirmed": 10,
+            "missing": 0,
+            "main_missing": 0,
+            "ok": true,
+            "errors": [],
+            "items": [
+              {
+                "id": "f7a23c1b236c08ffc5a2c4c8",
+                "company": "中国电信",
+                "metric": "移动客户数",
+                "period": "2026 First Half",
+                "domain": "mainland",
+                "destination": "内地运营商正式指标表",
+                "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "442.43 Million",
+                "unit": "Million",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "中国电信",
+                  "period": "H1 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "subscribers",
+                  "metric_zh": "用户数（原文口径）",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 442430000,
+                  "candidate_value": 442430000,
+                  "unit": "subscribers",
+                  "source_url": "https://www.chinatelecom-h.com/en/media/press/p260820.pdf",
+                  "row_key": {
+                    "subject": "中国电信",
+                    "period": "H1 2026",
+                    "metric_key": "subscribers"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "21400014970d1a612b20642b",
+                "company": "中国联通",
+                "metric": "净利润",
+                "period": "six months ended 30 June 2026",
+                "domain": "mainland",
+                "destination": "内地运营商正式指标表",
+                "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "9,468 RMB millions",
+                "unit": "RMB millions",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "中国联通",
+                  "period": "H1 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "net_income",
+                  "metric_zh": "净利润",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 9468,
+                  "candidate_value": 9468,
+                  "unit": "millions CNY",
+                  "source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0818/2026081800335.pdf",
+                  "row_key": {
+                    "subject": "中国联通",
+                    "period": "H1 2026",
+                    "metric_key": "net_income"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "708dda622bdc2d7865820508",
+                "company": "中国铁塔",
+                "metric": "收入",
+                "period": "1H 2026",
+                "domain": "mainland",
+                "destination": "内地运营商正式指标表",
+                "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "48,693 RMB million",
+                "unit": "RMB million",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "中国铁塔",
+                  "period": "H1 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "revenue",
+                  "metric_zh": "营业收入",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 48693,
+                  "candidate_value": 48693,
+                  "unit": "millions CNY",
+                  "source_url": "https://ir.china-tower.com/en/ir/presentation/pre260811.pdf",
+                  "row_key": {
+                    "subject": "中国铁塔",
+                    "period": "H1 2026",
+                    "metric_key": "revenue"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "8afbbe2d26a1fdd133199d79",
+                "company": "SoftBank",
+                "metric": "收入",
+                "period": "the first quarter (April - June 2026, Q1) of the fiscal year ending March 31, 2027 (FY2026)",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "1,814.7 billion JPY",
+                "unit": "JPY billion",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "SoftBank",
+                  "period": "Q1 FY2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "revenue",
+                  "metric_zh": "营业收入",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 1814700,
+                  "candidate_value": 1814700,
+                  "unit": "millions JPY",
+                  "source_url": "https://www.softbank.jp/en/sbnews/entry/20260804_01",
+                  "row_key": {
+                    "subject": "SoftBank",
+                    "period": "Q1 FY2026",
+                    "metric_key": "revenue"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "1c2409f5fcabc1d378677adf",
+                "company": "NTT",
+                "metric": "收入",
+                "period": "Three months ended June 30, 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "3,617,707 Millions of yen",
+                "unit": "Millions of yen",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "NTT",
+                  "period": "Q1 FY2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "revenue",
+                  "metric_zh": "营业收入",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 3617707,
+                  "candidate_value": 3617707,
+                  "unit": "millions JPY",
+                  "source_url": "https://group.ntt/en/ir/library/results/2026/pdf/fy2026q1kessan0806e.pdf",
+                  "row_key": {
+                    "subject": "NTT",
+                    "period": "Q1 FY2026",
+                    "metric_key": "revenue"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "6fa562c327aeebbdc05cb15c",
+                "company": "NTT",
+                "metric": "净利润",
+                "period": "Three months ended June 30, 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "274,830 Millions of yen",
+                "unit": "Millions of yen",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "NTT",
+                  "period": "Q1 FY2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "net_income",
+                  "metric_zh": "净利润",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 274830,
+                  "candidate_value": 274830,
+                  "unit": "millions JPY",
+                  "source_url": "https://group.ntt/en/ir/library/results/2026/pdf/fy2026q1kessan0806e.pdf",
+                  "row_key": {
+                    "subject": "NTT",
+                    "period": "Q1 FY2026",
+                    "metric_key": "net_income"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "bd7323821c1e9dc490c40b57",
+                "company": "Orange",
+                "metric": "净利润",
+                "period": "first half of 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "€3.6 billion",
+                "unit": "€ billion",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "Orange",
+                  "period": "H1 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "net_income",
+                  "metric_zh": "净利润",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 3600,
+                  "candidate_value": 3600,
+                  "unit": "millions EUR",
+                  "source_url": "https://investisseurs-individuels.orange.com/en/",
+                  "row_key": {
+                    "subject": "Orange",
+                    "period": "H1 2026",
+                    "metric_key": "net_income"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "57504e5c8b995b8ab43ac015",
+                "company": "Orange",
+                "metric": "收入",
+                "period": "first half of 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "€20.9 billion",
+                "unit": "€ billion",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "Orange",
+                  "period": "H1 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "revenue",
+                  "metric_zh": "营业收入",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 20900,
+                  "candidate_value": 20900,
+                  "unit": "millions EUR",
+                  "source_url": "https://investisseurs-individuels.orange.com/en/news/list",
+                  "row_key": {
+                    "subject": "Orange",
+                    "period": "H1 2026",
+                    "metric_key": "revenue"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "f84ac24e886dae7ea9de9fd0",
+                "company": "TIM",
+                "metric": "净利润",
+                "period": "second quarter of 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "88 million euros",
+                "unit": "million euros",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "TIM",
+                  "period": "Q2 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "net_income",
+                  "metric_zh": "净利润",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 88,
+                  "candidate_value": 88,
+                  "unit": "millions EUR",
+                  "source_url": "https://www.gruppotim.it/content/dam/gt/investitori/report/Half%20Year%20Financial%20Report%20at%20June%2030,%202026.pdf",
+                  "row_key": {
+                    "subject": "TIM",
+                    "period": "Q2 2026",
+                    "metric_key": "net_income"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              },
+              {
+                "id": "d3c3259e7fbeab6b857a7348",
+                "company": "e&",
+                "metric": "ARPU",
+                "period": "Q2 2026",
+                "domain": "international",
+                "destination": "国际运营商正式指标表",
+                "evidence_path": "agent_knowledge/global_top5_operators_2016_2025/agent_verified_facts.json",
+                "evidence_saved": true,
+                "value": "72 AED",
+                "unit": "AED",
+                "main_table": {
+                  "status": "written",
+                  "reason": "正式表中的数值、单位和来源证据已回读确认",
+                  "subject": "e&",
+                  "period": "Q2 2026",
+                  "period_end": "2026-06-30",
+                  "metric_key": "mobile_arpu",
+                  "metric_zh": "移动ARPU",
+                  "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                  "current_value": 72,
+                  "candidate_value": 72,
+                  "unit": "AED",
+                  "source_url": "https://www.eand.com/content/dam/eand/assets/docs/financial-quarterly-presentations/2026/group-results-presentations-q2-2026.pdf",
+                  "row_key": {
+                    "subject": "e&",
+                    "period": "Q2 2026",
+                    "metric_key": "mobile_arpu"
+                  }
+                },
+                "status": "written",
+                "readback_verified": true,
+                "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+                "reason": "正式表中的数值、单位和来源证据已回读确认"
+              }
+            ],
+            "domain_counts": {
+              "local": 0,
+              "international": 7,
+              "mainland": 3,
+              "cloud": 0
+            }
+          },
+          "insights": 0,
+          "model_analysis": {
+            "ok": false,
+            "error": "AI分析按分类重试仍未通过：local.revenue: 内部模型 1 个配置路由暂不可用，约 600 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：local.ebitda: 内部模型 3 个配置路由暂不可用，约 51 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：local.net_profit: 内部模型 3 个配置路由暂不可用，约 470 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：local.postpaid: 内部模型 3 个配置路由暂不可用，约 419 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：international.revenue: 内部模型 3 个配置路由暂不可用，约 209 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析实体出现输入之外的数字：international.revenue.NTT DOCOMO.['431.52']；AI分析按分类重试仍未通过：international.net_profit: 内部模型 3 个配置路由暂不可用，约 59 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析实体出现输入之外的数字：international.revenue.NTT DOCOMO.['431.52']；AI分析按分类重试仍未通过：international.capex: 内部模型 1 个配置路由暂不可用，约 600 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析实体出现输入之外的数字：international.revenue.NTT DOCOMO.['431.52']；AI分析按分类重试仍未通过：mainland.ebitda: 内部模型 3 个配置路由暂不可用，约 438 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析标题缺少战略判断：mainland.ebitda；AI分析按分类重试仍未通过：mainland.postpaid: 内部模型 3 个配置路由暂不可用，约 402 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析标题缺少战略判断：mainland.ebitda；AI分析按分类重试仍未通过：cloud.revenue: 内部模型 3 个配置路由暂不可用，约 150 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 239 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：cloud.profit: 内部模型 3 个配置路由暂不可用，约 67 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 239 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：cloud.investment: 内部模型 1 个配置路由暂不可用，约 600 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 239 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。",
+            "fallback_preserved": true,
+            "focuses_expected": 15,
+            "discoveries_expected": 4,
+            "insights_expected": 19,
+            "insights_passed": 0
+          },
+          "domains": {
+            "local": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 161,
+                "path": "",
+                "latest_period": "",
+                "quality": "passed",
+                "verified_rows": 161,
+                "financial_reports": 5,
+                "latest_financial_period": "H1 2026",
+                "latest_financial_publication_date": "2026-08-27"
+              },
+              "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
+              "agent_fact_update": {
+                "facts": 42,
+                "submitted_facts": 0,
+                "inserted_facts": 0,
+                "confirmed_facts": 0,
+                "changed": false,
+                "published": false
+              },
+              "database_changed": false
+            },
+            "international": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 3136,
+                "path": "",
+                "latest_period": "Jun '26 Jun 30, 2026",
+                "quality": "passed",
+                "verified_rows": 2750
+              },
+              "note": "本次仅验证现有数据库，未执行联网重建。",
+              "agent_fact_update": {
+                "facts": 46,
+                "submitted_facts": 7,
+                "inserted_facts": 7,
+                "confirmed_facts": 7,
+                "changed": true,
+                "published": true
+              },
+              "database_changed": true
+            },
+            "cloud": {
+              "ok": true,
+              "changed": false,
+              "validation": {
+                "rows": 430,
+                "path": "",
+                "latest_period": "2025",
+                "quality": "passed",
+                "verified_rows": 171
+              },
+              "note": "本次仅验证现有数据库，未执行联网重建。",
+              "agent_fact_update": {
+                "facts": 14,
+                "submitted_facts": 0,
+                "inserted_facts": 0,
+                "confirmed_facts": 0,
+                "changed": false,
+                "published": false
+              },
+              "database_changed": false
+            },
+            "macro": {
+              "ok": true,
+              "changed": false,
+              "promoted": false,
+              "validation": {
+                "rows": 7778,
+                "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-2q1yw6ct/dataset/macro_policy_metrics.json",
+                "latest_period": "2026-08-31",
+                "quality": "passed",
+                "verified_rows": 7775
+              },
+              "stdout_tail": "wrote 7778 rows to /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-2q1yw6ct/dataset\n",
+              "completed_at_hkt": "2026-09-12T06:39:10+08:00",
+              "run_id": "research_20260912",
+              "live_refresh": true,
+              "readback_hash": "ee3ceda172feab38ed58967a6f58845798375f0c5c53bd73eaa273d5e14eb293"
+            },
+            "mainland": {
+              "ok": true,
+              "changed": true,
+              "daily_main_database_promotion": {
+                "ok": true,
+                "changed": true,
+                "dry_run": false,
+                "added_rows": 10,
+                "candidates": 10,
+                "written": 10,
+                "not_written": 0,
+                "failures": [],
+                "tables": {
+                  "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json": {
+                    "added_rows": 10,
+                    "candidates": 10,
+                    "rows": 3136
+                  }
+                }
+              },
+              "agent_fact_update": {
+                "facts": 26,
+                "submitted_facts": 3,
+                "inserted_facts": 3,
+                "confirmed_facts": 3,
+                "changed": true,
+                "published": true
+              },
+              "database_changed": true
+            }
+          },
+          "changes": {
+            "baseline_available": true,
+            "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+            "changed": 0,
+            "added": 0,
+            "removed": 1,
+            "domains": {
+              "local": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              },
+              "international": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 1
+              },
+              "mainland": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              },
+              "cloud": {
+                "baseline_available": true,
+                "changed": 0,
+                "added": 0,
+                "removed": 0
+              }
+            },
+            "items": []
+          },
+          "pages": {
+            "ok": false,
+            "skipped": true,
+            "reason": "core_gate_failed"
+          },
+          "error": "",
+          "result_status": "failed_validation"
+        },
+        "model_analysis": {
+          "ok": false,
+          "error": "AI分析按分类重试仍未通过：local.revenue: 内部模型 1 个配置路由暂不可用，约 600 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：local.ebitda: 内部模型 3 个配置路由暂不可用，约 51 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：local.net_profit: 内部模型 3 个配置路由暂不可用，约 470 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：local.postpaid: 内部模型 3 个配置路由暂不可用，约 419 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 74 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：international.revenue: 内部模型 3 个配置路由暂不可用，约 209 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析实体出现输入之外的数字：international.revenue.NTT DOCOMO.['431.52']；AI分析按分类重试仍未通过：international.net_profit: 内部模型 3 个配置路由暂不可用，约 59 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析实体出现输入之外的数字：international.revenue.NTT DOCOMO.['431.52']；AI分析按分类重试仍未通过：international.capex: 内部模型 1 个配置路由暂不可用，约 600 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析实体出现输入之外的数字：international.revenue.NTT DOCOMO.['431.52']；AI分析按分类重试仍未通过：mainland.ebitda: 内部模型 3 个配置路由暂不可用，约 438 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析标题缺少战略判断：mainland.ebitda；AI分析按分类重试仍未通过：mainland.postpaid: 内部模型 3 个配置路由暂不可用，约 402 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：AI分析标题缺少战略判断：mainland.ebitda；AI分析按分类重试仍未通过：cloud.revenue: 内部模型 3 个配置路由暂不可用，约 150 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 239 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：cloud.profit: 内部模型 3 个配置路由暂不可用，约 67 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 239 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。；AI分析按分类重试仍未通过：cloud.investment: 内部模型 1 个配置路由暂不可用，约 600 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。; 领域错误：内部模型 3 个配置路由暂不可用，约 239 秒后可重试；请保留当前任务进度。原因可能为额度、限流或权限，请以各 Key 记录为准。",
+          "fallback_preserved": true,
+          "focuses_expected": 15,
+          "discoveries_expected": 4,
+          "insights_expected": 19,
+          "insights_passed": 0
+        },
+        "pages_publish": {
+          "ok": false,
+          "skipped": true,
+          "reason": "core_gate_failed"
+        }
+      }
+    },
+    {
+      "crawl_run_id": "20260912_030013_226210",
+      "trigger": "战略新闻定时爬虫",
+      "scope": "晨间扫描（2026-09-12@03:00）",
+      "task_kind": "strategic-news",
+      "run_status": "completed",
+      "phase": "已完成",
+      "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 683 条，AI保留 256 条，历史重复 33 条，新增 223 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 683 条，AI保留 256 条，历史重复 33 条，新增 223 条。",
+      "failure_stage": "",
+      "heartbeat_at_hkt": "2026-09-12T07:27:54+08:00",
+      "started_at_hkt": "2026-09-12T03:00:13+08:00",
+      "completed_at_hkt": "2026-09-12T07:27:54+08:00",
+      "crawl_return_code": 0,
+      "duration_ms": 16061169,
+      "final_audit": {},
+      "curation": {},
+      "operational_summary": {
+        "slot": "2026-09-12@03:00",
+        "discovered": 683,
+        "ai_retained": 256,
+        "history_duplicates": 33,
+        "new_count": 223,
+        "readback_verified": true,
+        "notification_status": "sent",
+        "message_id": "om_x100b657ceae76ca0b49b3b015ada4aa",
+        "message_ids": [
+          "om_x100b657ceae76ca0b49b3b015ada4aa",
+          "om_x100b657ceaf518a0b3d536b131dbf84"
+        ],
+        "notification_destination_count": 2,
+        "selection_agent_status": "completed",
+        "selection_agent_changed": 446
+      }
+    },
+    {
       "crawl_run_id": "20260911_142422_741596",
       "trigger": "新闻自动初筛",
       "scope": "爬虫后选材（2026-09-11@14:00）",
@@ -305199,54 +305899,6 @@
           "online_votes": 141
         }
       }
-    },
-    {
-      "crawl_run_id": "20260721_175819_523178",
-      "trigger": "定时爬虫",
-      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第13行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第21行、第22行、第24行、第25行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-07-21T18:08:13+08:00；最后进度：}",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-07-21T18:08:13+08:00；最后进度：}",
-      "heartbeat_at_hkt": "2026-07-21T18:08:13+08:00",
-      "started_at_hkt": "2026-07-21T17:58:19+08:00",
-      "completed_at_hkt": "2026-07-21T18:08:13+08:00",
-      "crawl_return_code": -1,
-      "duration_ms": 594386,
-      "final_audit": {},
-      "curation": {}
-    },
-    {
-      "crawl_run_id": "20260721_175401_009424",
-      "trigger": "定时爬虫",
-      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第13行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第21行、第22行、第24行、第25行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-07-21T17:54:01+08:00；最后进度：已建立任务记录，但没有可识别的进度事件",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-07-21T17:54:01+08:00；最后进度：已建立任务记录，但没有可识别的进度事件",
-      "heartbeat_at_hkt": "2026-07-21T17:54:01+08:00",
-      "started_at_hkt": "2026-07-21T17:54:01+08:00",
-      "completed_at_hkt": "2026-07-21T17:54:01+08:00",
-      "crawl_return_code": -1,
-      "duration_ms": 13,
-      "final_audit": {},
-      "curation": {}
-    },
-    {
-      "crawl_run_id": "20260721_174858_302619",
-      "trigger": "定时爬虫",
-      "scope": "定时指定行（第2行、第3行、第4行、第5行、第6行、第7行、第8行、第9行、第10行、第11行、第12行、第13行、第14行、第15行、第16行、第17行、第18行、第19行、第20行、第21行、第22行、第24行、第25行、第26行、第27行、第28行、第29行、第31行、第32行、第33行）",
-      "run_status": "failed",
-      "phase": "已中断",
-      "progress_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-07-21T17:48:58+08:00；最后进度：已建立任务记录，但没有可识别的进度事件",
-      "status_detail": "后台服务已重新启动，原爬虫进程已不存在；最后活动：2026-07-21T17:48:58+08:00；最后进度：已建立任务记录，但没有可识别的进度事件",
-      "heartbeat_at_hkt": "2026-07-21T17:48:58+08:00",
-      "started_at_hkt": "2026-07-21T17:48:58+08:00",
-      "completed_at_hkt": "2026-07-21T17:48:58+08:00",
-      "crawl_return_code": -1,
-      "duration_ms": 304,
-      "final_audit": {},
-      "curation": {}
     }
   ],
   "total": 500,
