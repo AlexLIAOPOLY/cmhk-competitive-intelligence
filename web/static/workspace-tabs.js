@@ -1819,9 +1819,21 @@
     };
     const strategicHealth = combinedRunHealth(runs);
     const strategicTriggered = attemptRuns.length > 0;
-    const strategicTriggerHealth = strategicTriggered
-      ? { key: "healthy", label: "已启动" }
-      : { key: "unknown", label: "无记录" };
+    const completedStrategicRuns = runs.filter((run) => strategicNewsRunRank(run) >= 3);
+    const activeStrategicRun = runs.find((run) => strategicNewsRunRank(run) === 2);
+    const chronologicalStrategicRuns = [...runs].sort((left, right) => (
+      String(left?.started_at_hkt || "").localeCompare(String(right?.started_at_hkt || ""))
+    ));
+    const activeStrategicRunNumber = activeStrategicRun
+      ? Math.max(1, chronologicalStrategicRuns.indexOf(activeStrategicRun) + 1)
+      : 0;
+    const strategicTriggerHealth = activeStrategicRun
+      ? { key: "running", label: "运行中" }
+      : completedStrategicRuns.length
+        ? { key: "healthy", label: "已完成" }
+        : strategicTriggered
+          ? { key: "warning", label: "未完成" }
+          : { key: "unknown", label: "无记录" };
     const mainHealth = runHealth(mainRun);
     const sourceDiscoveryHealth = runHealth(sourceDiscoveryRun);
     const selectionRunHealth = combinedRunHealth(selectionRuns);
@@ -1831,6 +1843,16 @@
     const strategicDedupeHealth = newsStageHealth(stages.find((stage) => stage.key === "dedupe"), strategicHealth);
     const strategicOutputHealth = newsStageHealth(stages.find((stage) => stage.key === "push"), strategicHealth);
     const currentStrategicStage = strategicHealth.key === "running" ? activeNewsStage(stages) : null;
+    const strategicTriggerValue = strategicTriggered
+      ? (completedStrategicRuns.length || activeStrategicRun ? `已完成 ${completedStrategicRuns.length} 次` : "尚未完成")
+      : "—";
+    const strategicTriggerNote = activeStrategicRun
+      ? `正在进行第 ${activeStrategicRunNumber} 次 · 已完成 ${completedStrategicRuns.length} 次${currentStrategicStage ? ` · 后续执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}` : ""}`
+      : completedStrategicRuns.length
+        ? `当天任务均已完成 · 共 ${attemptRuns.length} 次任务尝试`
+        : strategicTriggered
+          ? `${attemptRuns.length} 次任务尝试尚未完成`
+          : "当天没有触发成功的任务归档";
     const currentStrategicNodeKey = activeNewsStageNodeKey(currentStrategicStage?.key);
     const preciseStrategicHealth = (nodeKey, fallbackHealth) => currentStrategicNodeKey === nodeKey
       ? { key: "running", label: "运行中" }
@@ -2014,7 +2036,7 @@
       || previousReferenceLegacyCapped;
     const previousReferenceRunCount = Number((sourceDiscoverySummary.previous_day_news_runs || []).length);
     const nodes = [
-      { key: "strategic", label: "03:00 / 14:00 定时启动器", value: strategicTriggered ? "已启动" : "—", unit: "", note: currentStrategicStage ? `启动已完成 · 后续执行：${activeNewsStageNodeLabel(currentStrategicStage.key)}` : strategicTriggered ? `启动已完成 · ${attemptRuns.length} 次任务尝试` : "当天没有触发成功的任务归档", health: strategicTriggerHealth, variant: "crawler", position: [18, 52], details: ["这个节点只负责到点启动后续新闻任务，本身不搜索网页、不审核新闻，也不保存新闻", "启动成功后即显示绿色“已启动”；下游任务的运行或异常状态由对应节点单独显示", "同一时段重试只由最终权威批次参与统计；所有任务尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻任务"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻任务归档" },
+      { key: "strategic", label: "03:00 / 14:00 定时启动器", value: strategicTriggerValue, unit: "", note: strategicTriggerNote, health: strategicTriggerHealth, variant: "crawler", position: [18, 52], details: ["这个节点只负责到点启动后续新闻任务，本身不搜索网页、不审核新闻，也不保存新闻", "任务进行中显示当前第几次，权威批次完成后累计显示当天已完成次数；下游任务的具体阶段或异常由对应节点单独显示", "同一时段重试只由最终权威批次参与完成次数统计；所有任务尝试仍保留在此处供追溯", ...attemptRuns.map((run) => `${newsRunTime(run)} · ${run.scope || "战略新闻任务"} · ${run.run_status || "未记录状态"}`)], evidence: attemptRuns.map((run) => run.progress_detail || run.status_detail || run.scope).filter(Boolean).join("\n") || "当天没有战略新闻任务归档" },
       { key: "news-search", label: "按关键词搜索公开网页", value: number((stages.find((stage) => stage.key === "search") || {}).value), unit: "条候选新闻链接", note: preciseStrategicNote("news-search", `监控关键词＋固定页面 · ${runs.length} 个权威批次`), health: preciseStrategicHealth("news-search", strategicSearchHealth), variant: "source", position: [295, 52], details: [`按监控关键词搜索公开网页，并补充读取固定页面来源`, `实际发现 ${number((stages.find((stage) => stage.key === "search") || {}).value)} 条新闻线索`, ...((stages.find((stage) => stage.key === "search") || {}).details || [])], evidence: (stages.find((stage) => stage.key === "search") || {}).evidence || "当天未留下新闻线索发现日志" },
       { key: "news-ai", label: "AI 新闻相关性审核", value: number((stages.find((stage) => stage.key === "ai") || {}).value), unit: "条相关新闻通过审核", note: preciseStrategicNote("news-ai", `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`), health: preciseStrategicHealth("news-ai", strategicAiHealth), variant: "ai", position: [572, 52], details: [`实际输入 ${number(Number((stages.find((stage) => stage.key === "ai") || {}).value || 0) + Number((stages.find((stage) => stage.key === "ai") || {}).lost || 0))} 条新闻`, `实际纳入 ${number((stages.find((stage) => stage.key === "ai") || {}).value)} 条新闻`, `实际排除 ${number((stages.find((stage) => stage.key === "ai") || {}).lost)} 条新闻`], evidence: (stages.find((stage) => stage.key === "ai") || {}).evidence || "当天未留下新闻 AI 审核日志" },
       { key: "news-dedupe", label: "历史新闻重复检查", value: number(strategicDedupe.lost), unit: "条历史重复新闻", note: preciseStrategicNote("news-dedupe", `去重后留下 ${number(strategicDedupe.value)} 条新闻`), health: preciseStrategicHealth("news-dedupe", strategicDedupeHealth), variant: "gate", position: [849, 52], details: [`当天确认 ${number(strategicDedupe.lost)} 条重复新闻`, `当天去重后保留 ${number(strategicDedupe.value)} 条新闻`], evidence: strategicDedupe.evidence || "当天未留下新闻历史去重日志" },
