@@ -1,0 +1,46 @@
+/* Match the report player's surfaces and controls to the CMHK workspace. */
+.audio-player-global {
+  color-scheme: dark;
+  width: min(680px, calc(100vw - 32px));
+  max-width: 680px;
+  bottom: max(18px, env(safe-area-inset-bottom));
+  padding: 16px 18px;
+  background: #0e2b37;
+  color: #d7e8ed;
+  border: 1px solid #315566;
+  border-radius: 12px;
+  box-shadow: 0 12px 38px #00121b99;
+  backdrop-filter: none;
+  transition: transform 160ms ease, opacity 160ms ease;
+}
+.audio-player-global .audio-info { color: #d7e8ed; padding: 0 38px; min-height: 38px; font-size: 14px; }
+.audio-player-global .audio-btn, .audio-player-global .subtitle-toggle-btn { color: #b6d1db; min-width: 36px; min-height: 36px; border-radius: 7px; }
+.audio-player-global .subtitle-toggle-btn { left: 0; }
+.audio-player-global .audio-btn:hover, .audio-player-global .subtitle-toggle-btn:hover { background: #1b4250; color: #83d7e3; }
+.audio-player-global button:focus-visible, .audio-player-global input:focus-visible { outline: 2px solid #7dd9e4; outline-offset: 3px; }
+.audio-player-global #audioPlayPauseBtn { width: 44px; height: 44px; background: #67d1df; color: #08212b; box-shadow: none; border-radius: 9px; }
+.audio-player-global #audioPlayPauseBtn svg { fill: #08212b; }
+.audio-player-global #audioPlayPauseBtn:hover { background: #90e2eb; transform: none; box-shadow: none; }
+.audio-player-global .audio-time { color: #b6d1db; font-variant-numeric: tabular-nums; }
+.audio-player-global .soundwave span { background: #67d1df; }
+.audio-player-global .audio-progress { accent-color: #67d1df; background: #294b59; }
+.audio-player-global .audio-progress::-webkit-slider-thumb { background: #67d1df; box-shadow: none; }
+.audio-player-global .audio-progress::-moz-range-thumb { background: #67d1df; border: 0; }
+.audio-player-global .audio-subtitle { background: #08212b; border: 1px solid #254956; box-shadow: none; border-radius: 8px; padding: 12px 16px; max-height: 136px; mask-image: none; -webkit-mask-image: none; }
+.audio-player-global .subtitle-line { color: #a3bdc8; font-size: 14px; line-height: 1.65; }
+.audio-player-global .subtitle-line.is-past { color: #93b2bf; }
+.audio-player-global .subtitle-line.is-active { color: #e5f3f6; font-size: 14px; font-weight: 600; transform: none; text-shadow: none; }
+.audio-player-global .subtitle-line.is-active .subtitle-line-text { color: #e5f3f6; background: none; }
+.audio-player-global .subtitle-token, .audio-player-global .subtitle-token-gap { color: #a3bdc8; }
+.audio-player-global .subtitle-token.is-past { color: #e5f3f6; }
+.audio-player-global .subtitle-token.is-active { color: #83e0eb; background: none; }
+@media (max-width: 520px) {
+  .audio-player-global { width: calc(100vw - 20px); padding: 12px; bottom: max(10px, env(safe-area-inset-bottom)); }
+  .audio-player-global .audio-controls { gap: 8px; }
+  .audio-player-global .audio-time { font-size: 12px; }
+  .audio-player-global .audio-info { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .audio-player-global, .audio-player-global * { transition: none !important; scroll-behavior: auto !important; }
+  .audio-player-global .soundwave span { animation: none; }
+}
