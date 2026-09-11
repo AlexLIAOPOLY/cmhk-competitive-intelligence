@@ -690,7 +690,8 @@ class CardActionHandler:
             raise RuntimeError("原订阅卡片缺少可更新的内容区")
 
         paused = str(result.get("status") or "") == "subscription_paused"
-        title = "订阅已暂停" if paused else "订阅已生效"
+        preference_updated = str(result.get("feedback_kind") or "") == "preference_updated"
+        title = "订阅已暂停" if paused else "兴趣偏好已更新" if preference_updated else "订阅已生效"
         if paused:
             status_text = "**订阅已暂停**\n\n所有战略情报推送已暂停，重新选择并提交即可恢复。"
         else:
@@ -703,7 +704,7 @@ class CardActionHandler:
                 for item in result.get("services") or []
             )
             status_text = (
-                f"**订阅已生效**\n\n"
+                f"**{'兴趣偏好已更新' if preference_updated else '订阅已生效'}**\n\n"
                 f"订阅内容：{labels}\n\n"
                 f"报告形式：{str(result.get('report_mode_label') or '')}\n\n"
                 f"战略新闻：{str(result.get('news_frequency_label') or result.get('frequency_label') or '')}"

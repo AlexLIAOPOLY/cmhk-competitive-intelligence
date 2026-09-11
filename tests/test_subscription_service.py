@@ -103,6 +103,10 @@ class SubscriptionServiceTests(unittest.TestCase):
                     "cli_test": "img_v3_confirmation_test",
                     "org_test": "img_v3_confirmation_test",
                 },
+                "preference_updated_image_keys": {
+                    "cli_test": "img_v3_preferences_updated_test",
+                    "org_test": "img_v3_preferences_updated_test",
+                },
                 "news_image_keys": {
                     "morning": "img_v3_morning_tea_v2",
                     "afternoon": "img_v3_afternoon_tea_v2",
@@ -308,6 +312,47 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_confirmation_test")
         self.assertIn("每天两次 · 最新 15 条", json.dumps(card, ensure_ascii=False))
         self.assertNotIn("**", json.dumps(card, ensure_ascii=False))
+
+    def test_preference_update_callback_sends_distinct_feedback_card(self):
+        self.service.publish_entry_card(target_id="oc_test123", target_type="chat")
+        event = {
+            "type": "card.action.trigger",
+            "action_tag": "button",
+            "operator_id": "ou_callback123",
+            "chat_id": "oc_test123",
+            "message_id": "om_test123",
+        }
+        first = self.service.handle_card_event({
+            **event,
+            "event_id": "event-preference-initial",
+            "form_value": json.dumps({
+                "services": ["news"],
+                "news_categories": ["竞对动态"],
+                "news_frequency": "once_daily",
+                "news_item_limit": "10",
+            }),
+        })
+        self.assertEqual(first["feedback_kind"], "subscription_started")
+        self.lark.calls.clear()
+
+        updated = self.service.handle_card_event({
+            **event,
+            "event_id": "event-preference-updated",
+            "form_value": json.dumps({
+                "services": ["news"],
+                "news_categories": ["政策监管", "宏观与国际"],
+                "news_frequency": "twice_daily",
+                "news_item_limit": "15",
+            }),
+        })
+
+        self.assertEqual(updated["feedback_kind"], "preference_updated")
+        send_call = next(call for call in self.lark.calls if "+messages-send" in call)
+        card = json.loads(send_call[send_call.index("--content") + 1])
+        self.assertEqual(card["header"]["title"]["content"], "兴趣偏好已更新")
+        self.assertEqual(card["header"]["text_tag_list"][0]["text"]["content"], "已更新")
+        self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_preferences_updated_test")
+        self.assertIn("修改成功", json.dumps(card, ensure_ascii=False))
 
     def test_news_delivery_uses_per_subscriber_schedule_without_global_pause(self):
         self.assertTrue(self.service.strategic_news_schedule_snapshot()["enabled"])

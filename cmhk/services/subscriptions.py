@@ -626,6 +626,7 @@ def subscription_entry_card(
 def subscription_confirmation_card(
     *,
     image_key: str = "",
+    is_preference_update: bool = False,
     display_name: str,
     service_labels: str,
     report_mode_label: str,
@@ -646,12 +647,20 @@ def subscription_confirmation_card(
     except (TypeError, ValueError):
         item_limit = 10
     delivery_times = _normalize_news_delivery_times(news_delivery_times)
+    title = "兴趣偏好已更新" if is_preference_update else "订阅已生效"
+    subtitle = "新的战略情报偏好已保存" if is_preference_update else "战略情报偏好已保存"
+    tag_text = "已更新" if is_preference_update else "已开启"
+    lead = (
+        f"**{name}，修改成功**\n后续内容将按以下最新偏好发送给你。"
+        if is_preference_update
+        else f"**{name}，设置完成**\n后续内容将按以下偏好发送给你。"
+    )
     return {
         "schema": "2.0",
         "config": {
             "update_multi": True,
             "width_mode": "default",
-            "summary": {"content": f"订阅已生效 · {services}"},
+            "summary": {"content": f"{title} · {services}"},
             "style": {
                 "text_size": {
                     "body": {"default": "normal", "pc": "normal", "mobile": "normal"},
@@ -660,13 +669,13 @@ def subscription_confirmation_card(
             },
         },
         "header": {
-            "title": {"tag": "plain_text", "content": "订阅已生效"},
-            "subtitle": {"tag": "plain_text", "content": "战略情报偏好已保存"},
+            "title": {"tag": "plain_text", "content": title},
+            "subtitle": {"tag": "plain_text", "content": subtitle},
             "template": "green",
             "text_tag_list": [
                 {
                     "tag": "text_tag",
-                    "text": {"tag": "plain_text", "content": "已开启"},
+                    "text": {"tag": "plain_text", "content": tag_text},
                     "color": "green",
                 }
             ],
@@ -693,7 +702,7 @@ def subscription_confirmation_card(
                 ),
                 {
                     "tag": "markdown",
-                    "content": f"**{name}，设置完成**\n后续内容将按以下偏好发送给你。",
+                    "content": lead,
                 },
                 {
                     "tag": "column_set",
@@ -1940,13 +1949,21 @@ class SubscriptionService:
             if isinstance(subscriptions_config.get("confirmation_image_keys"), dict)
             else {}
         )
+        preference_updated_keys = (
+            subscriptions_config.get("preference_updated_image_keys")
+            if isinstance(subscriptions_config.get("preference_updated_image_keys"), dict)
+            else {}
+        )
+        is_preference_update = not bool(saved.get("preference_submission_initial"))
+        selected_image_keys = preference_updated_keys if is_preference_update else confirmation_keys
         confirmation_image_key = str(
-            confirmation_keys.get(source_profile) or confirmation_keys.get("default") or ""
+            selected_image_keys.get(source_profile) or selected_image_keys.get("default") or ""
         )
         confirmation = self._send_interactive_card(
             identity["callback_open_id"],
             subscription_confirmation_card(
                 image_key=confirmation_image_key,
+                is_preference_update=is_preference_update,
                 display_name=identity["display_name"],
                 service_labels=labels,
                 report_mode_label=saved["report_mode_label"],
@@ -1961,6 +1978,7 @@ class SubscriptionService:
         )
         self._verify_message(confirmation, profile=source_profile)
         saved["confirmation_message_id"] = confirmation
+        saved["feedback_kind"] = "preference_updated" if is_preference_update else "subscription_started"
         return {"status": "subscription_saved", "source_profile": source_profile, **saved}
 
     def list_summary(self, *, delivery_limit: int | None = None) -> dict[str, Any]:

@@ -491,6 +491,27 @@ class CardActionHandlerTests(unittest.TestCase):
         status = self._find_element(card, "subscriptionStatus")
         self.assertIn("所有战略情报推送已暂停", status["content"])
 
+    def test_preference_update_card_shows_specific_feedback(self):
+        event = {
+            "card_content": json.dumps(
+                subscription_entry_card(image_key="img_v3_subscription_poster"),
+                ensure_ascii=False,
+            )
+        }
+        card = self.handler._subscription_status_card(
+            event,
+            {
+                "status": "subscription_saved",
+                "feedback_kind": "preference_updated",
+                "services": ["news"],
+                "report_mode_label": "仅 PDF",
+                "news_frequency_label": "每天两次",
+            },
+        )
+        self.assertEqual(card["header"]["title"]["content"], "兴趣偏好已更新")
+        status = self._find_element(card, "subscriptionStatus")
+        self.assertIn("兴趣偏好已更新", status["content"])
+
 
 if __name__ == "__main__":
     unittest.main()
