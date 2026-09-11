@@ -28,7 +28,7 @@ from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_F
 from cmhk.data_releases import default_release_root, publish_quarterly_release_task
 
 from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, unwrap_items_payload
-from ai_key_rotation import open_llm_request
+from ai_key_rotation import APIKeyPoolUnavailable, open_llm_request
 from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY, model_generated_only
 
 
@@ -163,7 +163,8 @@ def _executive_model_route() -> list[str]:
         os.environ.get("CMHK_EXECUTIVE_AI_MODEL", "").strip()
         or DEFAULT_EXECUTIVE_AI_MODEL
     )
-    return list(dict.fromkeys([primary, *EXECUTIVE_AI_FALLBACK_MODELS]))
+    from data_curation.research_model import configured_research_models
+    return list(dict.fromkeys([*configured_research_models(primary), *EXECUTIVE_AI_FALLBACK_MODELS]))
 
 LOCAL_PATH = ROOT / "agent_knowledge/hk_competitor_product_tariffs/current_plans.json"
 INTERNATIONAL_DIR = ROOT / "agent_knowledge/quarterly_competitor_metrics_2026-06-18"
@@ -2506,6 +2507,7 @@ def generate_model_domain_summaries(
     *,
     temperature: float = 0.0,
     allow_partial_domains: bool = False,
+    checkpoint_path: Path | None = None,
 ) -> dict[str, Any]:
     from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     from ai_rate_limit import wait_for_internal_ai_slot
@@ -2551,6 +2553,28 @@ def generate_model_domain_summaries(
     summaries: list[dict[str, Any]] | None = None
     last_error: Exception | None = None
     used_models: set[str] = set()
+    checkpoint = _read_json(checkpoint_path, {}) if checkpoint_path else {}
+
+    def cache_key(scope):
+        return _content_hash({"format": INSIGHT_FORMAT_VERSION, "scope": scope})
+
+    def cached(scope):
+        entry = checkpoint.get(cache_key(scope), {})
+        if not entry.get("model") or not entry.get("summaries"):
+            return None
+        try:
+            result = _validate_model_summaries(entry["summaries"], scope,
+                expected_domains={d["id"] for d in scope["domains"]},
+                expected_focus_ids_by_domain={d["id"]: {f["id"] for f in d.get("focuses", [])} for d in scope["domains"]})
+        except ValueError:
+            return None
+        used_models.add(entry["model"])
+        return result[0]
+
+    def save(scope, candidate, model):
+        if checkpoint_path:
+            checkpoint[cache_key(scope)] = {"model": model, "summaries": [candidate], "generated_at_hkt": _now()}
+            _atomic_write_json(checkpoint_path, checkpoint)
     entity_count = sum(
         len(focus.get("items") or [])
         for domain in evidence.get("domains") or []
@@ -2558,9 +2582,10 @@ def generate_model_domain_summaries(
     )
     # Large all-domain payloads can exceed the internal gateway response window.
     # Split them by domain immediately; each response remains independently gated.
-    primary_attempts = 0 if entity_count > 40 else 3
+    primary_attempts = 0 if entity_count > 40 or checkpoint_path else 3
     for attempt in range(primary_attempts):
         content = ""
+        body["model"] = _executive_model_route()[min(attempt, len(_executive_model_route()) - 1)]
         body["messages"] = messages
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
@@ -2585,7 +2610,7 @@ def generate_model_domain_summaries(
                 continue
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             raise RuntimeError(f"内网模型 HTTP {exc.code}: {detail}") from exc
-        except (TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             continue
         try:
@@ -2603,7 +2628,7 @@ def generate_model_domain_summaries(
             )
             used_models.add(str(body["model"]))
             break
-        except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             if attempt + 1 < primary_attempts:
                 messages.extend(
@@ -2625,6 +2650,11 @@ def generate_model_domain_summaries(
         per_domain_summaries: list[dict[str, Any]] = []
         for domain_evidence in evidence.get("domains") or []:
             domain_id = str(domain_evidence.get("id") or "")
+            domain_scope = {"domains": [domain_evidence]}
+            restored = cached(domain_scope)
+            if restored is not None:
+                per_domain_summaries.append(restored)
+                continue
             expected_focus_ids = {
                 str(focus.get("id") or "")
                 for focus in domain_evidence.get("focuses") or []
@@ -2643,7 +2673,10 @@ def generate_model_domain_summaries(
             ]
             domain_summary: dict[str, Any] | None = None
             domain_error: Exception | None = None
-            for domain_attempt in range(3):
+            has_focus_checkpoint = any(checkpoint.get(cache_key({"domains": [{**domain_evidence, "focuses": [f]}]}))
+                                       for f in domain_evidence.get("focuses") or [])
+            for domain_attempt in range(0 if has_focus_checkpoint else 3):
+                body["model"] = _executive_model_route()[min(domain_attempt, len(_executive_model_route()) - 1)]
                 request = urllib.request.Request(
                     f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
                     data=json.dumps({**body, "messages": domain_messages}, ensure_ascii=False).encode("utf-8"),
@@ -2720,7 +2753,7 @@ def generate_model_domain_summaries(
                     domain_summary = candidate
                     used_models.add(str(body["model"]))
                     break
-                except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
+                except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                     domain_error = exc
                     if domain_attempt < 2:
                         domain_messages.append({
@@ -2737,6 +2770,13 @@ def generate_model_domain_summaries(
                 domain_fields: dict[str, Any] | None = None
                 for focus_evidence in domain_evidence.get("focuses") or []:
                     focus_id = str(focus_evidence.get("id") or "")
+                    focus_scope = {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}
+                    restored = cached(focus_scope)
+                    if restored is not None:
+                        if domain_fields is None:
+                            domain_fields = {k: restored.get(k) for k in ("domain", "headline", "analysis", "risk", "source_urls")}
+                        focus_parts.extend(restored["focuses"])
+                        continue
                     expected_names = {
                         str(entity.get("name") or "") for entity in focus_evidence.get("items") or []
                         if str(entity.get("name") or "")
@@ -2828,8 +2868,9 @@ def generate_model_domain_summaries(
                             focus_candidate["domain"] = domain_id
                             focus_candidate["focuses"] = returned_focuses
                             used_models.add(focus_model)
+                            save(focus_scope, focus_candidate, focus_model)
                             break
-                        except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
+                        except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
                             focus_error = exc
                             if focus_attempt + 1 < len(focus_models):
                                 focus_messages.append({
@@ -2851,7 +2892,10 @@ def generate_model_domain_summaries(
                             for key in ("domain", "headline", "analysis", "risk", "source_urls")
                         }
                     focus_parts.extend(focus_candidate["focuses"])
+                if not focus_parts:
+                    raise ValueError(f"AI分析未生成：{domain_id}: {domain_error}")
                 domain_summary = {**(domain_fields or {"domain": domain_id}), "focuses": focus_parts}
+            save(domain_scope, domain_summary, "+".join(sorted(used_models)))
             per_domain_summaries.append(domain_summary)
         summaries = _validate_model_summaries(
             _repair_model_summaries(
@@ -3017,7 +3061,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
             detail = exc.read().decode("utf-8", errors="ignore")[:800]
             last_error = RuntimeError(f"内网模型 HTTP {exc.code}: {detail}")
             continue
-        except (TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             continue
         try:
@@ -3290,7 +3334,7 @@ def regenerate_model_discovery(
             replacement = _validate_model_discoveries(candidate, evidence)[index]
             used_model = model
             break
-        except (ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
+        except (APIKeyPoolUnavailable, ValueError, json.JSONDecodeError, TimeoutError, urllib.error.URLError) as exc:
             last_error = exc
             messages.append({
                 "role": "user",
@@ -3354,7 +3398,7 @@ def regenerate_model_discovery(
     }
 
 
-def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any]) -> dict[str, Any]:
+def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, checkpoint_path: Path | None = None) -> dict[str, Any]:
     """Build atomically; a failed model never replaces the last persisted bundle."""
     evidence_hash = _content_hash(evidence)
     if (
@@ -3369,7 +3413,8 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any]) -> dict[
             pass
         else:
             return {**previous, "summaries": summaries, "discoveries": discoveries, "reused": True}
-    generated = generate_model_domain_summaries(evidence)
+    generated = (generate_model_domain_summaries(evidence, checkpoint_path=checkpoint_path)
+                 if checkpoint_path else generate_model_domain_summaries(evidence))
     discoveries = generate_model_discoveries(evidence)
     bundle = {
         **generated,
@@ -3390,7 +3435,8 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any]) -> dict[
 
 def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
     analysis = _read_json(path, {}) or {}
-    generated = _ai_only_bundle(_analysis_input_snapshot(), analysis.get("model_analysis") or {})
+    generated = _ai_only_bundle(_analysis_input_snapshot(), analysis.get("model_analysis") or {},
+                                checkpoint_path=path.with_suffix(".model-checkpoints.json"))
     analysis["model_analysis"] = generated
     _atomic_write_json(path, analysis)
     return {"ok": True, **generated}
@@ -3785,6 +3831,25 @@ def _refresh_builder_domain(
         }
 
 
+def refresh_research_macro(run_id: str, *, dry_run: bool = False, task_run_id: str = "") -> dict:
+    """One live macro refresh per research run; resume only while readback matches."""
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", run_id):
+        raise ValueError("研究运行编号无效")
+    path = ROOT / "curation_data/research_runs" / run_id / "macro_refresh.json"
+    prior = _read_json(path, {})
+    current_hash = _content_hash(_read_json(MACRO_PATH, {}))
+    if not dry_run and prior.get("ok") and prior.get("readback_hash") == current_hash:
+        return {**prior, "reused": True}
+    _task_event(task_run_id, "宏观环境", "正在联网更新官方宏观指标，校验后写入宏观库。")
+    result = _refresh_builder_domain("macro", dry_run=dry_run, parent_task_run_id=task_run_id)
+    result.update(completed_at_hkt=_now(), run_id=run_id, live_refresh=True)
+    if not dry_run:
+        result["readback_hash"] = _content_hash(_read_json(MACRO_PATH, {}))
+        _atomic_write_json(path, result)
+    _task_event(task_run_id, "宏观环境", f"宏观联网更新完成；校验通过 {int(result.get('validation', {}).get('rows') or 0)} 条。")
+    return result
+
+
 def _publish_and_verify_github_pages() -> dict[str, Any]:
     """Publish the freshly written four-domain snapshot and require public readback."""
     if not PAGES_PUBLISH_SCRIPT.is_file():
@@ -4080,6 +4145,12 @@ def run_pipeline(
                     _task_event(task_run_id, label, f"{label}更新失败：{exc}", level="critical")
         else:
             for domain, path in (("international", INTERNATIONAL_PATH), ("cloud", CLOUD_PATH), ("macro", MACRO_PATH)):
+                if domain == "macro" and incremental_run and refresh_builders:
+                    try:
+                        state["domains"][domain] = refresh_research_macro(agent_run_id, dry_run=dry_run, task_run_id=task_run_id)
+                    except Exception as exc:
+                        state["domains"][domain] = {"ok": False, "changed": False, "error": str(exc)}
+                    continue
                 state["domains"][domain] = {
                     "ok": True,
                     "changed": False,

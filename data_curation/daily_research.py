@@ -14,6 +14,7 @@ from pathlib import Path
 from .research_plan import ARCHITECTURE_VERSION, research_plan
 from .six_agent_research import HKT, now, run_research
 from .storage import atomic_write_json
+from . import research_recovery as recovery
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -155,6 +156,8 @@ def _finish_research_task(root: Path, task_run_id: str, started: float, *, ok: b
                 "agent_run_id": summary.get("run_id", ""),
                 "accepted": summary.get("accepted", 0),
                 "review": summary.get("review", 0),
+                "recovery": summary.get("recovery", {}),
+                "retryable_metrics": recovery.retryable_metrics(root / "curation_data/research_runs" / str(summary.get("run_id", ""))),
                 "publication": publication,
                 "model_analysis": publication.get("model_analysis", {}),
                 "pages_publish": publication.get("pages", {}),
@@ -228,10 +231,19 @@ def dispatch(root: Path, reference: datetime, *, dry_run: bool = False) -> dict:
         if running_worker(int(launch.get("pid") or 0), root):
             return {**result, "ok": True, "status": "running", "pid": launch["pid"],
                     "task_run_id": launch.get("task_run_id", "")}
-        if manifest.get("publication", {}).get("status") in {"completed", "error"}:
-            return {**result, "ok": manifest["publication"]["status"] == "completed", "due": False, "status": manifest["publication"]["status"]}
+        if manifest.get("publication"):
+            if not manifest.get("recovery") or manifest["recovery"].get("status") == "running":
+                if manifest.get("recovery", {}).get("status") == "running":
+                    manifest["recovery"]["status"] = "interrupted"
+                manifest["recovery"] = recovery.schedule(manifest, directory, reference)
+                atomic_write_json(manifest_path, manifest)
+            if not recovery.due(manifest, reference):
+                return {**result, "ok": manifest["publication"].get("status") == "completed",
+                        "due": False, "status": manifest["recovery"]["status"],
+                        "recovery": manifest["recovery"]}
         executable = worker_python()
-        task = _start_research_task(root, run_id, result["scheduled_for"])
+        task = ({"crawl_run_id": launch["task_run_id"]} if manifest and launch.get("task_run_id")
+                else _start_research_task(root, run_id, result["scheduled_for"]))
         try:
             with (directory / "process.log").open("a") as log:
                 process = subprocess.Popen(
@@ -267,11 +279,20 @@ def execute(root: Path, run_id: str) -> dict:
         task_run_id = _research_task_id(root, directory, run_id)
         manifest_path = directory / "manifest.json"
         previous = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
-        if previous.get("publication", {}).get("status") == "completed":
+        if recovery.cancelled(previous):
+            return previous
+        if previous.get("publication", {}).get("status") == "completed" and not recovery.retryable_metrics(directory):
             _finish_research_task(root, task_run_id, task_started, ok=True,
                                   detail="本轮四库资料研究、数据处理与页面发布均已完成。", summary=previous)
             return previous
         summary = previous
+        registry = _live_registry(root)
+        if previous and registry is not None and task_run_id:
+            registry.resume_crawl_run(task_run_id, "恢复四库资料研究与更新", "保留已通过指标，继续失败的审核或发布阶段。")
+        if previous.get("publication"):
+            summary["recovery"] = {**summary.get("recovery", {}), "status": "running", "next_retry_at": "",
+                                   "attempts": int(summary.get("recovery", {}).get("attempts", 0)) + 1}
+            atomic_write_json(manifest_path, summary)
         try:
             _append_task_detail(
                 root, task_run_id, "执行上下文",
@@ -283,10 +304,11 @@ def execute(root: Path, run_id: str) -> dict:
                 run_id=run_id, output_dir=directory, resume=bool(previous))
             _append_research_result_details(root, task_run_id, directory, summary)
             final_review = summary.get("final_review") if isinstance(summary.get("final_review"), dict) else {}
-            if final_review.get("status") != "completed":
+            retry_metrics = final_review.get("status") == "completed" and bool(recovery.retryable_metrics(directory))
+            if final_review.get("status") != "completed" or retry_metrics:
                 _task_heartbeat(root, task_run_id, "最终审核 Agent 联网核对", "六组研究结果已汇总，正在联网补查失败项并做最终审核。")
                 from .research_final_review import review_run
-                summary = review_run(directory)
+                summary = review_run(directory, retry_errors=True) if retry_metrics else review_run(directory)
             final_review = summary.get("final_review") if isinstance(summary.get("final_review"), dict) else {}
             _append_task_detail(
                 root, task_run_id, "最终审核结果",
@@ -295,11 +317,13 @@ def execute(root: Path, run_id: str) -> dict:
                 f"待处理或未通过 {int(summary.get('review') or 0)} 项；"
                 f"完成时间：{final_review.get('completed_at') or '未记录'}。",
             )
-            if summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted"):
+            if (summary.get("architecture") != ARCHITECTURE_VERSION
+                    and summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted")):
                 summary["publication"] = {"status": "partial" if summary.get("review") else "completed", "completed_at": now(),
                     "database_updated": False, "insights": 0,
                     "result_status": "needs_review" if summary.get("review") else "no_new_disclosures",
                     "note": "本轮未形成可写入的新披露，保留现有数据库和页面；待处理或失败记录见研究结果，未重复生成洞察。"}
+                summary["recovery"] = recovery.schedule(summary, directory, datetime.now(HKT))
                 atomic_write_json(manifest_path, summary)
                 _append_task_detail(root, task_run_id, "发布判定", summary["publication"]["note"])
                 _finish_research_task(root, task_run_id, task_started, ok=not bool(summary.get("review")),
@@ -320,19 +344,25 @@ def execute(root: Path, run_id: str) -> dict:
             summary["publication"] = {
                 "status": "completed" if result.get("ok") and not result.get("skipped") else "error",
                 "task_run_id": task_run_id, "completed_at": now(),
-                "database_updated": bool(result.get("storage_readback", {}).get("ok")),
+                "database_updated": bool(summary.get("accepted") and result.get("storage_readback", {}).get("ok")),
                 "storage_readback": result.get("storage_readback", {}),
                 "insights": result.get("model_analysis", {}).get("insights_passed", 0),
                 "model_analysis": result.get("model_analysis", {}),
                 "domains": result.get("domains", {}), "changes": result.get("ui_value_changes", {}),
                 "pages": result.get("pages_publish", {}), "error": result.get("error", ""),
-                "result_status": result.get("status", ""),
+                "result_status": result.get("reason") if result.get("skipped") else result.get("status", ""),
             }
         except Exception as exc:
             summary["publication"] = {"status": "error", "completed_at": now(), "error": str(exc)[:1000]}
             _append_task_detail(root, task_run_id, "任务异常", f"执行链路异常：{str(exc)[:1000]}")
+        summary["recovery"] = recovery.schedule(summary, directory, datetime.now(HKT))
+        if summary["recovery"]["status"] == "retry_pending":
+            _append_task_detail(root, task_run_id, "断点恢复计划",
+                                f"{summary['recovery']['error']}；下次 {summary['recovery']['next_retry_at']}；"
+                                f"已恢复 {summary['recovery']['attempts']}/{recovery.MAX_ATTEMPTS} 次，已成功指标不重抓。")
         atomic_write_json(manifest_path, summary)
-        publication_ok = summary.get("publication", {}).get("status") == "completed"
+        publication_ok = (summary.get("publication", {}).get("status") == "completed"
+                          and summary["recovery"]["status"] == "completed")
         _append_task_detail(
             root, task_run_id, "任务完成" if publication_ok else "任务失败",
             (
@@ -343,7 +373,8 @@ def execute(root: Path, run_id: str) -> dict:
         _finish_research_task(
             root, task_run_id, task_started, ok=publication_ok,
             detail=("本轮四库资料研究、数据处理与页面发布均已完成。" if publication_ok
-                    else "研究任务已结束，但四库写入或页面发布失败；请查看任务日志。"),
+                    else (f"本轮保留成功阶段，等待 {summary['recovery']['next_retry_at']} 自动恢复：{summary['recovery']['error']}"
+                          if summary["recovery"]["status"] == "retry_pending" else "本轮未全部完成，已停止自动重试；具体原因见分阶段日志。")),
             summary=summary,
         )
         return summary

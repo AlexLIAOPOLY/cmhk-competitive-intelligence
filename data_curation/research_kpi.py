@@ -20,31 +20,37 @@ FISCAL_END = {"SmarTone": 6, "HKBN": 8, "Singtel": 3, "Telstra": 6,
               "BT": 3, "Vodafone": 3, "Bharti Airtel": 3, "Reliance Jio": 3,
               "Microsoft Azure": 6, "Oracle Cloud": 5, "Alibaba Cloud": 3}
 NUMBER = r"\d+(?:,\d{3})*(?:\.\d+)?"
-CURRENCY = r"Hong Kong dollars?|Australian dollars?|Billions of yen|yen|HKD|HK\$|USD|US\$|RMB|CNY|SGD|S\$|AUD|A\$|JPY|KRW|EUR|GBP|INR|AED|SAR|€|£"
-SCALE = r"trillions?|billions?|millions?|\bbil\b|\bbn\b|\bm\b|百万|百萬|亿元|億港元"
+CURRENCY = r"euros?|Hong Kong dollars?|Australian dollars?|Billions of yen|yen|HKD|HK\$|USD|US\$|RMB|CNY|SGD|S\$|AUD|A\$|JPY|KRW|EUR|GBP|INR|AED|SAR|€|£"
+SCALE = r"trillions?|billions?|millions?|thousands?|\bbil\b|\bbn\b|\bm\b|百万|百萬|亿元|億港元"
 
 
 def _currency(token):
     key = token.lower()
     return {"hk$": "HKD", "us$": "USD", "s$": "SGD", "a$": "AUD", "rmb": "CNY",
-            "€": "EUR", "£": "GBP", "yen": "JPY", "billions of yen": "JPY",
+            "€": "EUR", "euro": "EUR", "euros": "EUR", "£": "GBP", "yen": "JPY", "billions of yen": "JPY",
             "hong kong dollars": "HKD", "hong kong dollar": "HKD",
             "australian dollars": "AUD", "australian dollar": "AUD"}.get(key, token.upper())
 
 
 def exact_amount(value, unit, *, per_customer=False):
-    text = str(value) + " " + str(unit)
-    # "Billions of yen" encodes currency AND magnitude.
-    text = re.sub("Billions of yen", "JPY billion", text, flags=re.I)
+    # Unit aliases carry the same source meaning; never discard bounds or ranges.
+    unit_text = str(unit)
+    unit_text = re.sub(r"\((Hong Kong dollars?|Australian dollars?)\)", r"\1", unit_text, flags=re.I)
+    text = str(value) + " " + unit_text
+    text = re.sub(r"\((Hong Kong dollars?|Australian dollars?)\)", r"\1", text, flags=re.I)
+    text = re.sub(r"(trillions?|billions?|millions?|thousands?) of yen", r"JPY \1", text, flags=re.I)
+    text = re.sub(r"\$[’']?000\b", "$ thousand", text)
+    if per_customer:
+        text = re.sub(r"(?:/|per\s+)(?:month|customer|subscriber|user)s?\b", "", text, flags=re.I)
     text = re.sub(r"([£$])m\b", r"\1 million", text, flags=re.I)
     codes = {_currency(t) for t in re.findall(CURRENCY, text, re.I)}
     scales = re.findall(SCALE, text, re.I)
     if per_customer and scales:
         return None  # ARPU requires a per-customer currency amount, not financial millions.
-    multipliers = {1000000 if s.lower().startswith("trillion") else 1000 if s.lower().startswith("bil") or s.lower() == "bn" else 100 if s in {"亿元", "億港元"} else 1 for s in scales}
+    multipliers = {1000000 if s.lower().startswith("trillion") else 1000 if s.lower().startswith("bil") or s.lower() == "bn" else 100 if s in {"亿元", "億港元"} else Decimal("0.001") if s.lower().startswith("thousand") else 1 for s in scales}
     if per_customer and not scales:
         multipliers = {1}
-    numbers = re.findall(NUMBER, str(value))
+    numbers = re.findall(NUMBER, re.sub(r"\$[’']?000\b", "$ thousand", str(value)))
     remainder = re.sub(CURRENCY, "", text, flags=re.I)
     remainder = re.sub(SCALE, "", remainder, flags=re.I)
     remainder = re.sub(NUMBER, "", remainder).strip()
@@ -66,6 +72,10 @@ def formal_period(company, raw):
     end_month = FISCAL_END.get(company, 12)
     # Explicit native FY/Q labels require an explicit company fiscal adapter.
     fiscal_q = re.search(r"FY\s*(20\d{2})\s*[/ -]\s*(?:Q([1-4])|([1-4])Q)", text, re.I)
+    if not fiscal_q:
+        reverse_q = re.search(r"Q([1-4])\s+FY\s*(20\d{2})", text, re.I)
+        if reverse_q:
+            fiscal_q = re.search(r"FY(20\d{2})/Q([1-4])()", f"FY{reverse_q[2]}/Q{reverse_q[1]}")
     if fiscal_q and company in FISCAL_END:
         year, q = int(fiscal_q[1]), int(fiscal_q[2] or fiscal_q[3])
         # Japanese issuers label the fiscal year by its starting calendar year.
@@ -77,7 +87,7 @@ def formal_period(company, raw):
     if not rank:
         return None
     year, month, grain = rank
-    explicit_end = bool(re.search(r"ended|ending|截至|止年度|\d{4}-\d{2}-\d{2}", text, re.I))
+    explicit_end = bool(re.search(r"ended|ending|\bto\s+\d{1,2}\s+\w+\s+20\d{2}|截至|止年度|\d{4}-\d{2}-\d{2}", text, re.I))
     if company in FISCAL_END and grain != "year" and not explicit_end:
         return None
     if company in FISCAL_END and grain == "year":
@@ -137,6 +147,8 @@ def normalize_fact(fact):
         mapped, kind = ("arpu", "ARPU（原文口径）"), "arpu"
     elif metric in {"客户数/用户数", "用户数", "客户数", "移动客户数"}:
         mapped, kind = ("subscribers", "用户数（原文口径）"), "count"
+    elif metric == "后付费用户数":
+        mapped, kind = ("postpaid_subscribers", "后付费用户数"), "count"
     elif metric == "站址数":
         mapped, kind = ("tower_sites", "站址数"), "count"
     elif metric == "Open RAN" and re.search(r"of wireless traffic|无线流量", basis, re.I):
@@ -185,9 +197,9 @@ def normalize_fact(fact):
             return None, destination, "数值不是可独立写入的精确单值"
         remainder = re.sub(NUMBER, "", value + " " + unit)
         if kind == "count":
-            scale_tokens = re.findall(r"million|billion|thousand|千|万|百萬|百万", value + " " + unit, re.I)
-            scales = {1000000 if s.lower() in {"million", "百萬", "百万"} else 1000000000 if s.lower() == "billion" else 10000 if s == "万" else 1000 for s in scale_tokens}
-            remainder = re.sub(r"million|billion|thousand|subscribers?|customers?|sites?|人|户|戶|个|千|万|百萬|百万", "", remainder, flags=re.I).strip()
+            scale_tokens = re.findall(r"millions?|billions?|thousands?|百萬|百万|千|万|亿|億", value + " " + unit, re.I)
+            scales = {1000000 if s.lower().rstrip("s") in {"million", "百萬", "百万"} else 1000000000 if s.lower().rstrip("s") == "billion" else 100000000 if s in {"亿", "億"} else 10000 if s == "万" else 1000 for s in scale_tokens}
+            remainder = re.sub(r"millions?|billions?|thousands?|mobile|post[- ]?paid|subscribers?|customers?|sites?|人|户|戶|个|百萬|百万|千|万|亿|億", "", remainder, flags=re.I).strip()
             if remainder or len(scales) > 1:
                 return None, destination, "用户数或站址数的数量级/单位不明确"
             number = Decimal(numbers[0].replace(",", "")) * next(iter(scales), 1)

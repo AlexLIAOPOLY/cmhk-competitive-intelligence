@@ -878,7 +878,7 @@ def _remaining_selection_agent_error(
         selection = archive.get("selection_agent")
         if not isinstance(selection, dict):
             continue
-        if str(selection.get("status") or "") not in {"failed", "retry_pending", "needs_review"}:
+        if str(selection.get("status") or "") not in {"failed", "retry_pending", "needs_review", "exhausted"}:
             continue
         completed_at = _crawl_record_time(archive, "completed_at", "scanned_at")
         if completed_at is not None and completed_at < cutoff:
@@ -887,6 +887,52 @@ def _remaining_selection_agent_error(
         error = _clean_text(selection.get("error"), 600) or "待自动续写"
         return f"{slot_key} 新闻自动初筛未完成：{error}"
     return ""
+
+
+def _sync_selection_recovery(path, archive, entry, *, status, error):
+    """One recovery outcome across the scan, parent task, and generic queue."""
+    terminal = status in {"needs_review", "exhausted"}
+    entry.update(status=status, error=error)
+    if terminal:
+        entry["next_retry_at"] = ""
+    selection = dict(archive.get("selection_agent") or {})
+    selection.update(status=status, error=error, readback_verified=False,
+                     next_retry_at=entry.get("next_retry_at", ""))
+    archive["selection_agent"] = selection
+    review = archive.get("review_sheet") or {}
+    review["selection_agent"] = selection
+    archive["review_sheet"] = review
+    archive["selection_agent_recovery"] = {
+        **entry, "no_crawl_replay": True, "no_notification_replay": True,
+    }
+    _atomic_write_json(path, archive)
+    parent = _clean_text(archive.get("task_run_id"), 120) or _selection_recovery_parent_run_id(archive["slot"])
+    sync_errors = []
+    if parent:
+        try:
+            amend_operational_crawl_run(
+                parent,
+                progress_detail=("主扫描及原群通知已完成；后置选材" +
+                    ("已停止自动重试，需处理：" if terminal else "等待续写：") + error),
+                summary_updates={"selection_agent_status": status,
+                                 "selection_agent_error": error,
+                                 "selection_agent_attempts": int(entry.get("attempts") or 0),
+                                 "selection_agent_next_retry_at": entry.get("next_retry_at", "")},
+            )
+        except Exception as exc:
+            sync_errors.append(type(exc).__name__)
+            logging.warning("选材父任务状态暂未同步；下轮只补状态：%s", type(exc).__name__)
+
+    if terminal:
+        from cmhk.intelligence import news_review_sheet
+        # This also finds legacy exhausted batches; fail is an idempotent local state update.
+        try:
+            news_review_sheet.fail_selection_batch(archive["slot"], error, exhausted=True,
+                                                   attempted_at=entry.get("last_attempt_at", ""), record_attempt=False)
+        except Exception as exc:
+            sync_errors.append(type(exc).__name__)
+            logging.warning("选材恢复队列状态暂未同步；下轮只补状态：%s", type(exc).__name__)
+    entry["outcome_synchronized"] = not sync_errors
 
 
 def _recover_pending_selection_agents(
@@ -916,9 +962,17 @@ def _recover_pending_selection_agents(
         selection = archive.get("selection_agent")
         if not slot_key or not isinstance(selection, dict):
             continue
+        terminal_status = str(selection.get("status") or "")
+        if not force and terminal_status in {"needs_review", "exhausted"}:
+            terminal_entry = dict(retry_state.get(slot_key) or {})
+            if not terminal_entry.get("outcome_synchronized"):
+                _sync_selection_recovery(path, archive, terminal_entry, status=terminal_status,
+                                         error=str(selection.get("error") or "需要处理"))
+                retry_state[slot_key] = terminal_entry
+            continue
         allowed_statuses = {"pending", "failed", "retry_pending"}
         if force:
-            allowed_statuses.add("needs_review")
+            allowed_statuses.update({"needs_review", "exhausted"})
         if str(selection.get("status") or "") not in allowed_statuses:
             continue
         completed_at = _crawl_record_time(
@@ -943,11 +997,10 @@ def _recover_pending_selection_agents(
         entry = dict(entry) if isinstance(entry, dict) else {}
         attempts = int(entry.get("attempts") or 0)
         if not force and attempts >= SELECTION_RECOVERY_MAX_ATTEMPTS:
-            entry["status"] = "exhausted"
+            error = f"{slot_key} 选材自动续写已达 {attempts} 次上限，已停止；" + str(entry.get("error") or "需检查")
+            _sync_selection_recovery(path, archive, entry, status="exhausted", error=error)
             retry_state[slot_key] = entry
-            state["last_selection_agent_error"] = (
-                f"{slot_key} 选材自动续写已达 {attempts} 次上限，需人工检查"
-            )
+            state["last_selection_agent_error"] = error
             continue
         last_attempt_at = _crawl_record_time(entry, "last_attempt_at")
         if (
@@ -1048,20 +1101,13 @@ def _recover_pending_selection_agents(
                     "status": "completed",
                     "completed_at": _now_iso(finished_at),
                     "task_run_id": result.get("task_run_id") or "",
-                    "error": "",
+                    "error": "", "next_retry_at": "",
                 }
             )
             try:
                 from cmhk.intelligence import news_review_sheet
 
-                queued_keys = {
-                    _clean_text(batch.get("idempotency_key"), 120)
-                    for batch in news_review_sheet.pending_selection_batches(
-                        limit=None
-                    )
-                }
-                if slot_key in queued_keys:
-                    news_review_sheet.complete_selection_batch(slot_key, result)
+                news_review_sheet.complete_selection_batch(slot_key, result)
             except Exception:
                 logging.exception("选材恢复完成后未能核销通用待选批次")
             recovery = {
@@ -1104,7 +1150,7 @@ def _recover_pending_selection_agents(
                 "no_crawl_replay": True,
                 "no_notification_replay": True,
             }
-            _atomic_write_json(path, archive)
+            _sync_selection_recovery(path, archive, entry, status=recovery_status, error=error)
             recovery = {
                 "slot": slot_key,
                 "status": recovery_status,
@@ -1151,7 +1197,7 @@ def _recover_pending_review_selection_batches(
             and archive.get("slot") == candidate_key
             and isinstance(archive_selection, dict)
             and str(archive_selection.get("status") or "")
-            in {"failed", "retry_pending", "needs_review"}
+            in {"failed", "retry_pending", "needs_review", "exhausted"}
         ):
             # Scan-owned batches are retried by _recover_pending_selection_agents,
             # which also amends the parent archive and task. Letting this generic

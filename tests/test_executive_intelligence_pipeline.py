@@ -125,10 +125,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_four_database_model_route_prefers_v4_pro(self):
         source = Path(pipeline.__file__).read_text(encoding="utf-8")
 
-        self.assertEqual(
-            pipeline._executive_model_route(),
-            ["DeepSeek-V4-Pro", "GLM", "Qwen3-30B-A3B-Instruct-2507"],
-        )
+        with patch("ai_config.load_ai_config", return_value={}):
+            self.assertEqual(pipeline._executive_model_route(),
+                             ["DeepSeek-V4-Pro", "GLM", "Qwen3-30B-A3B-Instruct-2507"])
+        with patch("ai_config.load_ai_config", return_value={"model_api_keys": {"deepseek-v4-free": ["masked"]}}):
+            self.assertEqual(pipeline._executive_model_route()[:2], ["DeepSeek-V4-Pro", "deepseek-v4-free"])
         self.assertNotIn(
             'list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
             source,
@@ -1989,7 +1990,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         ):
             with self.assertRaisesRegex(ValueError, "跨库发现"):
                 pipeline.generate_model_discoveries(evidence)
-        self.assertEqual(open_url.call_count, len(pipeline._executive_model_route()))
+        self.assertEqual(open_url.call_count, 3)  # The fixture config has no model-specific backup routes.
 
     def test_discovery_depth_preservation_replaces_only_shallow_detail(self):
         evidence = pipeline._analysis_input_snapshot()
@@ -2064,7 +2065,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 }),
             ):
                 result = pipeline.publish_model_domain_summaries(path)
-        regenerate.assert_called_once_with(evidence)
+        regenerate.assert_called_once_with(evidence, checkpoint_path=path.with_suffix(".model-checkpoints.json"))
         self.assertFalse(result["reused"])
         self.assertEqual(result["evidence_hash"], pipeline._content_hash(evidence))
 

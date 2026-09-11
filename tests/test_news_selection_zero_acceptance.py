@@ -122,7 +122,7 @@ class ZeroAcceptanceReviewTests(unittest.TestCase):
                 payload['decisions'][0]['app_status'] = '接受'
             return payload, model
         with mock.patch.object(agent, '_invoke_langchain_transport', side_effect=recover):
-            with self.assertRaises(ValueError):
+            with self.assertRaises(agent.NewsSelectionQualityBlocked):
                 self.run_review({})
 
 

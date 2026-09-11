@@ -2556,11 +2556,12 @@ def plan_gaps(state: CurationState) -> dict[str, Any]:
 
 
 def _build_supervisor_model(*, max_tokens: int | None = None, max_retries: int = 1) -> ChatDeepSeek:
+    from .research_model import ResearchChatDeepSeek
     config = load_ai_config(include_key=True)
     api_key = str(config.get("api_key") or "").strip()
     if not api_key:
         raise RuntimeError("未配置 DeepSeek API Key")
-    return ChatDeepSeek(
+    return ResearchChatDeepSeek(
         model=str(config.get("model") or "deepseek-v4"),
         api_key=api_key,
         base_url=str(config.get("base_url") or INTERNAL_AI_BASE_URL).rstrip("/"),

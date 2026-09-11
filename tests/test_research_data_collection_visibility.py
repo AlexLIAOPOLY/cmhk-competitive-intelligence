@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 @unittest.skipUnless(shutil.which('node'), 'Node.js required for diagram behavior tests')
 class ResearchDataCollectionVisibilityTests(unittest.TestCase):
-    def render(self, incremental=True, state='completed', items=None, publication=None, accepted=None):
+    def render(self, incremental=True, state='completed', items=None, publication=None, accepted=None, recovery=None):
         items = items if items is not None else [{'metric': 'Revenue', 'status': 'missing'}]
         accepted = sum(item.get('status') == 'verified' for item in items) if accepted is None else accepted
         snapshot = {'date': '2026-09-07', 'plan': [{'key': 'asia', 'title': '亚太运营商研究 Agent', 'companies': ['Singtel'], 'purpose': '任务'}],
@@ -17,6 +17,7 @@ class ResearchDataCollectionVisibilityTests(unittest.TestCase):
                     'agents': [{'key': 'asia', 'status': state, 'reports': [{'company': 'Singtel', 'status': state, 'metrics': ['Revenue'], 'items': items}]}]}
         if incremental:
             snapshot['run']['research_policy'] = 'latest_disclosure_incremental_v1'
+        snapshot['run']['recovery'] = recovery
         script = '''const fs=require('fs');global.window={};eval(fs.readFileSync('web/static/research-diagram.js','utf8'));
 const s=JSON.parse(process.argv[1]);const m=window.CmhkResearchDiagram.build({nodes:[],edges:[]},s,s.date);
 console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.detail(m.nodes.find(n=>n.key==='research-asia'),s,s.date)}));'''
@@ -46,6 +47,17 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertEqual(node['health']['key'], 'unknown')
         # A saved empty pending report is not a completed search.
         self.assertEqual(node['value'], '—')
+
+    def test_recovery_and_exhaustion_are_visible_on_the_failed_stage(self):
+        result = self.render(recovery={'status':'retry_pending','phase':'final_review','attempts':2,
+            'next_retry_at':'2026-09-11T10:30:00+08:00','error':'模型暂不可用'})
+        node = next(n for n in result['nodes'] if n['key'] == 'research-merge')
+        self.assertEqual(node['health']['label'], '等待恢复')
+        self.assertIn('10:30:00', node['note'])
+        result = self.render(recovery={'status':'exhausted','phase':'publication','attempts':6})
+        node = next(n for n in result['nodes'] if n['key'] == 'research-publish')
+        self.assertEqual(node['health']['label'], '已停止自动重试')
+        self.assertNotIn('下次', node['note'])
 
     def test_error_and_conflict_are_not_silently_no_update(self):
         for status, health in [('error', 'critical'), ('conflict', 'warning')]:

@@ -447,8 +447,9 @@ def fail_selection_batch(
     *,
     exhausted: bool = False,
     attempted_at: str = "",
+    record_attempt: bool = True,
 ) -> None:
-    """Keep one post-write batch durable for a later selector retry."""
+    """Keep one post-write batch durable; reconciliation does not invent attempts."""
     with _LOCK:
         state = _read_json(STATE_PATH, {})
         if not isinstance(state, dict):
@@ -465,7 +466,8 @@ def fail_selection_batch(
                 "status": "exhausted" if exhausted else "retry_pending",
                 "updated_at": attempt_time,
                 "last_attempt_at": attempt_time,
-                "attempt_count": int(batch.get("attempt_count") or 0) + 1,
+                "attempt_count": int(batch.get("attempt_count") or 0) + int(record_attempt),
+                "next_retry_at": "" if exhausted else batch.get("next_retry_at", ""),
                 "last_error": _text(error, 700),
             }
         )

@@ -84,6 +84,9 @@ def _reconcile_run_status(root: Path, directory: Path, manifest: dict) -> tuple[
     cancelled = bool(publication.get("cancelled_by_user")) or str((task or {}).get("failure_stage") or "") == "user_cancelled"
     terminal_task = str((task or {}).get("run_status") or "") in {"completed", "failed", "error", "cutoff", "cancelled"}
     terminal_publication = str(publication.get("status") or "") in {"completed", "failed", "error", "cancelled"}
+    # A previous publication error remains archived while failed metrics resume.
+    if (manifest.get("recovery") or {}).get("status") == "running" and (task or {}).get("run_status") == "running" and not cancelled:
+        terminal_publication = False
     if str(final_review.get("status") or "") == "running" and (terminal_task or terminal_publication):
         final_review = dict(final_review)
         final_review["recorded_status"] = "running"

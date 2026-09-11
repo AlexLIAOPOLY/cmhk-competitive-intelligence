@@ -15,21 +15,21 @@ from .research_plan import company_metric_plan, frontend_metric_plan, restrict_r
 from .review_store import ReviewStore, load_company
 
 
-def review_run(directory: Path, *, model_factory=None, collector=None, harness_factory=None, workers: int = 3) -> dict:
+def review_run(directory: Path, *, model_factory=None, collector=None, harness_factory=None, workers: int = 3, retry_errors: bool = False) -> dict:
     if not 1 <= workers <= 3:
         raise ValueError("最终审核并发数必须为1至3")
     with (directory / "final-review.lock").open("a") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         return _review_run(directory, model_factory=model_factory, collector=collector,
-                           harness_factory=harness_factory, workers=workers)
+                           harness_factory=harness_factory, workers=workers, retry_errors=retry_errors)
 
 
-def _review_run(directory: Path, *, model_factory, collector, harness_factory, workers: int) -> dict:
+def _review_run(directory: Path, *, model_factory, collector, harness_factory, workers: int, retry_errors=False) -> dict:
     from . import workflow as w
     from .research_harness import ResearchHarness
 
     summary = json.loads((directory / "manifest.json").read_text())
-    if summary.get("final_review", {}).get("status") == "completed":
+    if summary.get("final_review", {}).get("status") == "completed" and not retry_errors:
         return summary
     collector = collector or collect_sources
     harness_factory = harness_factory or ResearchHarness
@@ -68,6 +68,15 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             report["reviewed_metrics"] = []
             store.save(report, evidence_changed=True)
         restrict_report_metrics(report, company_metric_plan(company, metric_plan), reopen_missing=False)
+        if retry_errors:
+            from .research_recovery import recoverable
+            reopen = {i["metric"] for i in report.get("items", [])
+                      if i.get("status") == "error" and recoverable(i.get("reason", ""))}
+            if reopen:
+                report["review_completed"] = False
+                report["reviewed_metrics"] = [m for m in report.get("reviewed_metrics", []) if m not in reopen]
+                if not any(p.get("opened") and p.get("official") for p in report.get("pages", {}).values()):
+                    report["review_search_completed"] = False
         if report.get("review_completed"):
             store.save(report)
             return report
@@ -84,7 +93,7 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             newest = lambda rows: max((period_key(row.get("period")) or (0, 0, "") for row in rows), default=(0, 0, ""))
             if item.get("status") == "no_update" and (not current_rows or newest([item, *old_rows]) > newest(current_rows)):
                 item.update(status="conflict", value="", reason="库内未找到该指标相应期间的正式记录，最终审核须继续补查，不能标记库内已有")
-            if item.get("status") == "verified":
+            if item.get("status") == "verified" and not retry_errors:
                 report["items"][position] = compare_candidate(
                     validate_fact(item, company, report["metrics"], report["pages"]), report["baseline"])
         metrics = [i["metric"] for i in report["items"] if i.get("status") not in {"verified", "no_update", "not_applicable"}]
@@ -115,11 +124,10 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             try:
                 if not any(p.get("opened") and p.get("official") for p in report["pages"].values()):
                     raise RuntimeError("最终审核仍无法读取可信来源；不能确认该指标最新内容")
+                # Lexical screening guides discovery; it cannot decide that a semantic metric is absent.
                 if not page_mentions_metric(metric, report["pages"]):
-                    save({"company": company, "metric": metric, "status": "error", "value": "",
-                          "reason": "最终审核已读取公司原文，但预筛选未命中该指标用语，尚未完成语义核对；不能据此判断没有公开资料，原有数据保留"})
-                else:
-                    worker_harness().extract(company, metric, report["pages"], save, baseline=report.get("baseline", {}))
+                    emit("semantic_review", f"{company}：{metric}转入原文语义核对", {"company": company, "metric": metric})
+                worker_harness().extract(company, metric, report["pages"], save, baseline=report.get("baseline", {}))
             except Exception as exc:
                 if metric not in report["reviewed_metrics"]:
                     save({"company": company, "metric": metric, "status": "error", "value": "", "reason": str(exc)[:500]})
@@ -139,10 +147,16 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
         agent["status"] = "completed" if all(r["status"] == "completed" for r in agent["reports"]) else "partial"
     facts = merge_results(results, summary["run_id"])
     from .research_kpi import prepare_facts, persist_preflight
-    facts, write_preflight = prepare_facts(directory.parent.parent.parent, facts, summary["run_id"])
+    if retry_errors and (directory / "verified_facts.jsonl").exists():
+        retained = {(f["company"], f["metric"]): f for f in
+                    (json.loads(line) for line in (directory / "verified_facts.jsonl").read_text().splitlines() if line.strip())}
+        facts = [retained.get((f["company"], f["metric"]), f) for f in facts]
+    facts, write_preflight = prepare_facts(directory.parent.parent.parent, facts, summary["run_id"], allow_replay=retry_errors)
     persist_preflight(directory, results, facts, write_preflight, summary, store=store)
     store.complete()
+    from .research_recovery import retryable_metrics
+    summary["retryable_metrics"] = retryable_metrics(directory)
     summary["completed_at"] = now()
-    summary["final_review"].update(status="completed", completed_at=now())
+    summary["final_review"].update(status="completed", completed_at=now(), retryable_metrics=summary["retryable_metrics"])
     atomic_write_json(directory / "manifest.json", summary)
     return summary

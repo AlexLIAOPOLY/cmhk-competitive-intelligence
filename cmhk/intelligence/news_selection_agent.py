@@ -164,7 +164,7 @@ REVIEW_SNAPSHOT_LOCK_TIMEOUT_SECONDS = max(
 )
 VALID_STATUSES = {"接受", "不接受"}
 TRAINING_PROVENANCE_VERSION = "verified-human-final-actor-evidence-v6"
-ACCEPTANCE_REVIEW_PROTOCOL = 3
+ACCEPTANCE_REVIEW_PROTOCOL = 4
 ZERO_ACCEPTANCE_REVIEW_PROTOCOL = 1
 MACHINE_ACTOR_IDS = {
     "news-auto-screening-bot",
@@ -1225,8 +1225,8 @@ def _model_routes() -> list[tuple[str, str]]:
 class _IncompleteModelDecision(ValueError):
     """Transient output for bounded repair, never a completed harness result."""
 
-    def __init__(self, payload: dict[str, Any], model: str):
-        super().__init__("模型决策尚未通过完整性校验")
+    def __init__(self, payload: dict[str, Any], model: str, reason: str = ""):
+        super().__init__("模型决策尚未通过完整性校验" + (f"：{reason}" if reason else ""))
         self.payload, self.model = payload, model
 
 
@@ -1262,7 +1262,7 @@ def _invoke_langchain(
             except ValueError as exc:
                 if not isinstance(payload, dict) or not isinstance(payload.get("decisions"), list):
                     raise
-                raise _IncompleteModelDecision(payload, model) from exc
+                raise _IncompleteModelDecision(payload, model, str(exc)) from exc
             # The batch layer still applies distribution and write/readback
             # gates. Incomplete candidate sets must not become durable hits.
             return [payload, model]
@@ -1401,6 +1401,8 @@ def _invoke_langchain_transport(
             "不得只因其在海外而否决；地域、技术标签本身也不能构成接受。"
             "同一事件不同媒体/标题/片段合并，每个字段只保留事实最完整的一条；"
             "相同主体但不同时间/产品/独立实质进展不应合并。"
+            "同一大会不是一个事件：投资规划、不同产品套餐、不同合同项目须分别成组；"
+            "同一公司或技术主题不构成重复依据，无法确认同一具体事实时保持分开。"
             "重复项该字段必须不接受并输出app_duplicate_of/weekly_duplicate_of，"
             "其值是本次同字段最终接受的代表news_id；非重复用空字符串。"
             "APP和周报分别给理由，周报须有比资讯提醒更明确的管理决策价值。"
@@ -1870,22 +1872,15 @@ def _review_acceptances(
     try:
         if session.get("request_callback"):
             session["request_callback"](f"对全部分批拟接受的 {len(candidates)} 条进行事实、独立字段理由及同事件重复复核。")
-        for repair in range(2):
-            try:
-                if cached.get("payload"):
-                    review_payload, reviewer_model = cached["payload"], cached["model"]
-                else:
-                    review_payload, reviewer_model = _invoke_langchain(examples, review_targets)
-                reviewed = _normalized_acceptance_review(review_payload, review_targets, provisional)
-                break
-            except ValueError as exc:
-                if repair:
-                    raise
-                cached = {}
-                session["quality_feedback"] = (
-                    f"{prior_feedback or ''} 接受复核校验未通过：{exc.__cause__ or exc}。"
-                    "请重新检查事件分组、代表项和独立事实依据；不得按配额调整接受数。"
-                )
+        from .news_acceptance_repair import repair_review
+        review_payload, reviewer_model = repair_review(
+            examples, review_targets, provisional, cached=cached,
+            checkpoint=checkpoint, checkpoint_key=review_key,
+            checkpoint_callback=checkpoint_callback, session=session,
+            invoke=_invoke_repairable, validate=_normalized_acceptance_review,
+            blocked_error=NewsSelectionQualityBlocked,
+        )
+        reviewed = _normalized_acceptance_review(review_payload, review_targets, provisional)
         if checkpoint is not None and not cached.get("payload"):
             checkpoint[review_key] = {"payload": review_payload, "model": reviewer_model}
             if checkpoint_callback:

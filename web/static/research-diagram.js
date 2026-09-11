@@ -218,6 +218,13 @@
         node.health = { key: "warning", label: "未更新·含失败项" };
         node.note = "本次未形成可写入的新数据；执行失败原因见结果明细";
       }
+      const recovery = run?.recovery;
+      const recoveryNode = recovery?.phase === "final_review" ? "research-merge" : "research-publish";
+      if (recovery && node.key === recoveryNode && ["retry_pending", "running", "exhausted", "needs_review"].includes(recovery.status)) {
+        const label = { retry_pending: "等待恢复", running: "恢复中", exhausted: "已停止自动重试", needs_review: "待处理" }[recovery.status];
+        node.health = { key: recovery.status === "running" ? "running" : "warning", label };
+        node.note = `${label} · ${recovery.error || "保留成功结果，继续未完成阶段"}${recovery.next_retry_at ? ` · 下次 ${recovery.next_retry_at}` : ""} · 已恢复 ${recovery.attempts || 0}/${recovery.max_attempts || 6} 次`;
+      }
     });
     return { nodes, edges, canvasSize: [canvasWidth, 1040], laneLabels: [
       { label: "战略新闻采集与初筛", position: [18, 22] },

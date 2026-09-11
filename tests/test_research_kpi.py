@@ -23,9 +23,14 @@ class FormalResearchTests(unittest.TestCase):
         for value, unit, expected in [("5,606 S$ million", "S$ million", (5606, "SGD")),
                                       ("197.0 Billions of yen", "Billions of yen", (197000, "JPY")),
                                       ("19,654 £m", "£m", (19654, "GBP")),
+                                      ("14,409,121", "Millions of yen", (14409121, "JPY")),
+                                      ("524,742", "$000 (Hong Kong dollars)", (524.742, "HKD")),
+                                      ("6.8", "billion euros", (6800, "EUR")),
                                       ("0 USD million", "USD million", (0, "USD"))]:
             self.assertEqual(exact_amount(value, unit), expected)
         self.assertEqual(exact_amount("$220 Hong Kong dollars", "Hong Kong dollars", per_customer=True), (220, "HKD"))
+        self.assertEqual(exact_amount("32.4", "€/month", per_customer=True), (32.4, "EUR"))
+        self.assertEqual(exact_amount("40.9", "GBP per month", per_customer=True), (40.9, "GBP"))
         self.assertIsNone(exact_amount("HKD 220 million", "HKD million", per_customer=True))
         for value in ["surpassed $100 billion USD billions", "USD 20-30 million", "22,937 $m", "USD 12,34 million", "USD 2 million billion", "USD 10 million EUR"]:
             self.assertIsNone(exact_amount(value, ""), value)
@@ -35,6 +40,8 @@ class FormalResearchTests(unittest.TestCase):
             ("SmarTone", "For the year ended 30 June 2026", ("FY2026", "2026-06-30", "annual", "2026")),
             ("BT", "Year ended 31 March 2026", ("FY2026", "2026-03-31", "annual", "2026")),
             ("NTT Docomo", "FY2026/1Q", ("Q1 FY2026", "2026-06-30", "quarter", "2026")),
+            ("SoftBank", "Q1 FY2026", ("Q1 FY2026", "2026-06-30", "quarter", "2026")),
+            ("BT", "First quarter to 30 June 2026", ("Q1 FY2027", "2026-06-30", "quarter", "2027")),
             ("NTT Docomo", "Three Months ended June 30, 2026", ("Q1 FY2026", "2026-06-30", "quarter", "2026")),
             ("SmarTone", "Six months ended December 31, 2025", ("H1 FY2026", "2025-12-31", "half_year", "2026")),
         ]:
@@ -44,6 +51,8 @@ class FormalResearchTests(unittest.TestCase):
 
     def test_operating_scopes_do_not_merge_or_convert_to_financial_millions(self):
         cases = [
+            (dict(metric="客户数/用户数", company="中国移动", value="10.11 亿户", unit="亿户"), "subscribers", 1011000000, "subscribers"),
+            (dict(metric="后付费用户数", company="SmarTone", period="For the year ended 30 June 2026", value="3.1", unit="million postpaid customers"), "postpaid_subscribers", 3100000, "subscribers"),
             (dict(metric="站址数", company="中国铁塔", value="2,172 千", unit="千"), "tower_sites", 2172000, "sites"),
             (dict(metric="ARPU", company="SK Telecom", value="29,098 KRW", unit="KRW", reasons=["excluding MVNO"]), "mobile_arpu_excluding_mvno", 29098, "KRW"),
             (dict(metric="ARPU", company="Telefonica", value="91.1 €", unit="€", reasons=["Telefónica España"]), "spain_arpu", 91.1, "EUR"),

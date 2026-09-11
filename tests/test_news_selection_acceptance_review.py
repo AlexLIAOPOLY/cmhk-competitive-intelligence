@@ -110,9 +110,9 @@ class AcceptanceReviewTests(unittest.TestCase):
             return {"decisions": [x for x in self.primary if x["news_id"] in ids]}, "primary-model"
         checkpoint = {}
         with mock.patch.object(agent, "_invoke_langchain_transport", side_effect=invoke):
-            with self.assertRaises(agent._IncompleteModelDecision):
+            with self.assertRaises(agent.NewsSelectionQualityBlocked):
                 agent._invoke_langchain_batches([], self.targets, review_acceptances=True, checkpoint=checkpoint)
-        self.assertFalse(any(key.startswith("acceptance-review:") for key in checkpoint))
+        self.assertFalse(any(key.startswith("acceptance-review:") and value.get("payload") for key, value in checkpoint.items()))
 
     def test_corrected_run_keeps_old_audit_and_records_new_version_once(self):
         path = agent.STATE_PATH.parent / "decisions.jsonl"
