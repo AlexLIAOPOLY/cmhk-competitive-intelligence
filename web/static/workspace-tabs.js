@@ -1863,7 +1863,7 @@
       : "飞书固定链接数量暂不可用";
   }
 
-  // Card copy is a fixed template. Runtime messages belong in node details.
+  // Research cards retain their original assignment and outcome wording.
   // Both initial rendering and live patches consume this same presentation.
   function newsLineageCardContent(node) {
     const templates = {
@@ -1876,14 +1876,10 @@
       "app-result": ["条新闻", "汇总滚动栏最终审核结果"],
       "weekly-result": ["条新闻", "汇总周报最终审核结果"],
       "news-subscription": ["位接收人", "按个人订阅排期推送新闻"],
-      "research-dispatch": ["个研究 Agent", "分配公司与指标研究任务"],
-      "research-merge": ["组数据通过", "联网核对原文，排除已有与重复数据"],
-      "research-update": ["组数据已入库", "写入正式指标表并逐项回读"],
-      "research-publish": ["项AI生成", "生成数据分析并更新页面"],
     };
-    const [unit, note] = templates[node.key] || (node.research
-      ? ["组数据通过", "查找负责公司的最新数据，提交终审"]
-      : ["项", "点击查看本节点处理详情"]);
+    const [unit, note] = node.research
+      ? [String(node.unit || ""), String(node.note || "")]
+      : templates[node.key] || ["项", "点击查看本节点处理详情"];
     const raw = String(node.cardValue ?? node.value ?? "—").trim();
     return { value: /^(?:\d[\d,]*(?:\/\d[\d,]*)?|—)$/.test(raw) ? raw : "—", unit, note };
   }
@@ -3406,6 +3402,10 @@
     // The live refresh applies the latest state after the user closes it.
     if (panel?.querySelector("#newsLineageDialog")?.open) return;
     const viewSnapshot = preserveView ? newsViewSnapshot(panel) : null;
+    const researchNoteScrolls = new Map(Array.from(panel.querySelectorAll(".is-research-agent, .is-research-step"), (card) => {
+      const note = card.querySelector(":scope > em");
+      return [card.dataset.newsLineageNode, { text: note?.textContent, top: note?.scrollTop || 0 }];
+    }));
     const attemptRuns = selectedNewsRuns();
     const runs = authoritativeStrategicNewsRuns(attemptRuns);
     const run = runs[0] || null;
@@ -3448,6 +3448,11 @@
       </section>
     </div>`;
     bindNewsLineageInteractions(panel);
+    panel.querySelectorAll(".is-research-agent, .is-research-step").forEach((card) => {
+      const previous = researchNoteScrolls.get(card.dataset.newsLineageNode);
+      const note = card.querySelector(":scope > em");
+      if (note && previous?.text === note.textContent) note.scrollTop = previous.top;
+    });
     restoreNewsView(panel, viewSnapshot);
   }
 
@@ -3549,7 +3554,7 @@
           value.appendChild(unit);
         }
       }
-      if (note) note.textContent = node.card.note;
+      if (note && note.textContent !== node.card.note) note.textContent = node.card.note;
     });
 
     lineage.edges.forEach(([, , label, kind, line], index) => {

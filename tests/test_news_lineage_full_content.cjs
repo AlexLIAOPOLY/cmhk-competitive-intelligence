@@ -5,10 +5,10 @@ const vm = require('node:vm');
 const source = fs.readFileSync(require('node:path').join(__dirname, '../web/static/workspace-tabs.js'), 'utf8');
 const extract = (name, next) => source.slice(source.indexOf(`  function ${name}(`), source.indexOf(`  function ${next}(`));
 
-test('card copy stays fixed across retries while numeric results can change', () => {
+test('news card copy stays fixed across retries while numeric results can change', () => {
   const context = vm.createContext({});
   vm.runInContext(extract('newsLineageCardContent', 'globalSchedulerLineageModel'), context);
-  for (const key of ['strategic','news-search','news-ai','news-dedupe','news-output','news-selection-agent','app-result','weekly-result','news-subscription','research-dispatch','research-hong-kong','research-merge','research-update','research-publish']) {
+  for (const key of ['strategic','news-search','news-ai','news-dedupe','news-output','news-selection-agent','app-result','weekly-result','news-subscription']) {
     const node = {key, research:key.startsWith('research-'), value:11, unit:'动态单位', note:'正常', health:{label:'已完成'}};
     const before = context.newsLineageCardContent(node);
     const after = context.newsLineageCardContent({...node, value:999999, unit:'异常单位', note:'恢复失败原因'.repeat(20000), health:{label:'恢复中'}});

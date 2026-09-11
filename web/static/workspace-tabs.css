@@ -2101,11 +2101,12 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .news-lineage.is-global .news-lineage-node.is-research-agent,
 .news-lineage.is-global .news-lineage-node.is-research-step {
   --lineage-card-height: 180px; width: 250px; padding: 30px 16px 16px;
+  grid-template-rows: auto auto minmax(0,1fr);
 }
 .news-lineage.is-global .news-lineage-node.is-research-agent > span,
 .news-lineage.is-global .news-lineage-node.is-research-step > span { font-size: 16px; line-height: 1.5; }
-.news-lineage.is-global .news-lineage-node.is-research-agent > em,
-.news-lineage.is-global .news-lineage-node.is-research-step > em { line-height: 1.6; font-size: 12px; }
+.news-lineage.is-global .news-lineage-node[class].is-research-agent > em,
+.news-lineage.is-global .news-lineage-node[class].is-research-step > em { display: block; -webkit-line-clamp: unset; min-height: 0; max-height: none; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; touch-action: pan-y; line-height: 1.6; font-size: 12px; }
 /* Keep the strategic-news row horizontal while preserving readable connector runs. */
 .news-lineage.is-global .news-lineage-node:is(
   [data-news-lineage-node="strategic"],
