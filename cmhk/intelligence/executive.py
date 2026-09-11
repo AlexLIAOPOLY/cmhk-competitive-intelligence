@@ -2134,6 +2134,123 @@ def _macro_domain(rows: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def _research_company_name(company: str) -> str:
+    return {"ntt docomo": "NTT DOCOMO", "ntt": "NTT Group", "softbank": "SoftBank Corp.",
+            "softbank corp.": "SoftBank Corp.", "hkt / csl / 1o1o": "HKT",
+            "3hk / hutchison": "3HK"}.get(str(company).casefold(), str(company))
+
+
+def _formal_research_updates(financial_payload: dict, cloud_payload: dict) -> list[dict]:
+    """Read the newest research evidence only when its exact formal row still matches."""
+    from data_curation.research_kpi import CARRIER_PATH, CLOUD_PATH as CLOUD_TABLE, normalize_fact, row_key, row_matches
+    from data_curation.research_storage import domain_for
+    tables = {CARRIER_PATH: financial_payload.get("rows") or [], CLOUD_TABLE: cloud_payload.get("rows") or []}
+    indexes = {path: {row_key(row, path): row for row in rows} for path, rows in tables.items()}
+    run_ids = sorted({str(row.get("daily_research_run_id") or "") for rows in tables.values() for row in rows
+                      if re.fullmatch(r"research_[A-Za-z0-9_-]+", str(row.get("daily_research_run_id") or ""))}, reverse=True)
+    if not run_ids:
+        return []
+    directory = ROOT / "curation_data/research_runs" / run_ids[0]
+    try:
+        manifest = _read_json(directory / "manifest.json")
+        facts = [json.loads(line) for line in (directory / "verified_facts.jsonl").read_text().splitlines() if line.strip()]
+        if manifest.get("run_id") != run_ids[0] or int(manifest.get("accepted") or 0) != len(facts):
+            return []
+    except (OSError, ValueError):
+        return []
+    updates = []
+    for fact in facts:
+        row, path, error = normalize_fact(fact)
+        actual = indexes[path].get(row_key(row, path)) if row else None
+        if (error or not row_matches(actual, row) or not actual.get("daily_fact_id")
+                or actual.get("daily_research_run_id") != run_ids[0]
+                or actual.get("official_source_url") != fact["sources"][0]):
+            continue
+        updates.append({"id": fact["id"], "domain": domain_for(fact),
+            "company": _research_company_name(fact["company"]), "original_company": fact["company"],
+            "metric": fact["metric"], "metric_key": row["metric_key"], "metric_label": row["metric_zh"],
+            "period": row["period"], "period_end": row["period_end"], "grain": row["grain"],
+            "value": row["value"], "unit": row["unit"], "analysis": f"{row['value']} {row['unit']}",
+            "original_value": fact["value"], "original_unit": fact["unit"],
+            "source_url": fact["sources"][0], "evidence_hash": fact["evidence_hash"],
+            "basis": fact.get("basis", ""), "research_run_id": run_ids[0],
+            "storage_verified": True, "comparison_scope": "原报告期新增事实；季度和半年不替代全年比较"})
+    return updates
+
+
+def _apply_formal_annual_updates(domains: list[dict], updates: list[dict], fx_payload: dict) -> None:
+    """Refresh existing annual items in their existing currency and entity scope."""
+    rates = {(str(r.get("currency")), int(r.get("year") or 0)): _number(r.get("local_per_usd"))
+             for r in fx_payload.get("rates") or []}
+    focus_fields = {"revenue": "revenue", "net_profit": "net_income", "ebitda": "ebitda",
+                    "capex": "capex", "mobile_arpu": "mobile_arpu"}
+    for domain in domains:
+        changed_domain = False
+        for focus in domain.get("focuses") or []:
+            target = focus_fields.get(focus.get("id"))
+            if not target:
+                continue
+            changed = False
+            for item in [*(focus.get("items") or []), *(focus.get("reference_items") or [])]:
+                matches = [u for u in updates if u["domain"] == domain["id"] and u["grain"] == "annual"
+                           and u["metric_key"] == target and u["company"] == _research_company_name(item.get("name", ""))
+                           and re.fullmatch(r"FY20\d{2}", u["period"])]
+                if not matches:
+                    continue
+                latest = max(matches, key=lambda u: u["period_end"])
+                if _period_rank(latest["period"]) < _period_rank(item.get("period", "")):
+                    continue
+                raw_value, raw_unit = latest["value"], latest["unit"]
+                native = _component("新增全年原币披露", raw_value, raw_unit, latest["period"])
+                item["latest_formal_disclosure"] = dict(latest)
+                value = None
+                if raw_unit == "millions HKD" and item.get("unit") in {"百万港元", ""} and domain["id"] == "local":
+                    value, unit, precision = raw_value, "百万港元", 1
+                elif raw_unit == "millions CNY" and item.get("unit") in {"亿元", ""} and domain["id"] == "mainland":
+                    value, unit, precision = raw_value / 100, "亿元", 2
+                elif domain["id"] == "international" and item.get("unit") in {"百万美元", "美元/月"}:
+                    currency = raw_unit.removeprefix("millions ")
+                    year = int(latest["period"][2:])
+                    rate = 1 if currency == "USD" else rates.get((currency, year))
+                    if rate and (raw_unit.startswith("millions ") or target == "mobile_arpu"):
+                        value, unit, precision = raw_value / rate, item["unit"], 2
+                    else:
+                        # An unfinished calendar year has no annual average FX rate yet.
+                        # Show the new source amount without using an older year's rate.
+                        item["components"] = [*(item.get("components") or []), native]
+                        item["component_count"] = len(item["components"])
+                        item["detail"] = str(item.get("detail") or "") + f"；新增{latest['period']}原币披露{raw_value:g} {raw_unit}，该年度平均汇率尚未入库；美元比较保留{item.get('period')}"
+                        item["source_urls"] = list(dict.fromkeys([*(item.get("source_urls") or []), latest["source_url"]]))
+                        continue
+                if value is None:
+                    continue
+                components = [native]
+                if domain["id"] == "international":
+                    components.append(_component("自然年平均汇率", rate, f"{currency}/USD", f"指标年份{year}"))
+                item.update(value=round(value, precision), unit=unit, period=latest["period"], period_end=latest["period_end"],
+                    detail=f"{latest['period']}官方全年披露；截至{latest['period_end']}",
+                    analysis=f"{latest['period']}{latest['metric_label']}为{raw_value:g} {raw_unit}；保留原生财年与指标范围。",
+                    source_url=latest["source_url"], source_urls=[latest["source_url"]], verification_count=1,
+                    verification_status="official_only", components=components, component_count=len(components), gap_status="")
+                trend = [point for point in item.get("trend") or [] if point.get("label") != latest["period"]]
+                trend.append({"label": latest["period"], "value": item["value"], "unit": unit,
+                              "source_urls": [latest["source_url"]], "verification_count": 1})
+                item["trend"] = sorted(trend, key=lambda p: _period_rank(p.get("label", "")))[-10:]
+                changed = changed_domain = True
+            if changed:
+                available = [i for i in focus.get("items") or [] if _number(i.get("value")) is not None
+                             and str(i.get("period", "")).startswith("FY")]
+                if available:
+                    lead = max(available, key=lambda i: i["value"])
+                    focus["metric"] = {"value": lead["value"], "unit": lead["unit"], "label": f"{lead['name']} {lead['period']}"}
+                focus.update(context="各公司按指标显示最新已核验全年披露；财年截止日逐项保留。",
+                             insight="最新全年原值见各公司明细；季度及半年新增事实保留原期间，不能替代全年比较。")
+        if changed_domain:
+            domain["context"] = "各指标采用最新已核验全年披露；季度及半年新增事实按原期间另列。"
+        domain["sources"] = _dedupe_sources([*(domain.get("sources") or []),
+            *[_source(u["company"], u["source_url"]) for u in updates if u["domain"] == domain["id"]]])
+
+
 def _analysis_evidence_snapshot(domains: list[dict[str, Any]]) -> dict[str, Any]:
     """Build the exact source-backed payload used to generate model summaries."""
     evidence_domains: list[dict[str, Any]] = []
@@ -2151,6 +2268,8 @@ def _analysis_evidence_snapshot(domains: list[dict[str, Any]]) -> dict[str, Any]
                             "name": item.get("name"),
                             "value": item.get("value"),
                             "unit": item.get("unit"),
+                            "period": item.get("period"),
+                            "period_end": item.get("period_end"),
                             "detail": item.get("detail"),
                             "analysis": item.get("analysis"),
                             "components": item.get("components") or [],
@@ -2171,6 +2290,7 @@ def _analysis_evidence_snapshot(domains: list[dict[str, Any]]) -> dict[str, Any]
                 "deterministic_insight": domain.get("insight"),
                 "focuses": focuses,
                 "agent_verified_facts": (domain.get("ai_analysis") or [])[:8],
+                "research_comparison_scope": "新增研究事实保留各自原报告期，季度及半年数据不替代全年比较。",
             }
         )
     return {"domains": evidence_domains, "relations": []}
@@ -2542,18 +2662,24 @@ def _build_cached(signature: tuple[int, ...]) -> dict[str, Any]:
     mainland = _requested_mainland_domain(
         financial_payload, global_payload, global_source_registry
     )
-    cloud = _cloud_domain(_read_json(CLOUD_PATH))
+    cloud_payload = _read_json(CLOUD_PATH)
+    cloud = _cloud_domain(cloud_payload)
     domains = [local, international, mainland, cloud]
     online_gap_audit = _apply_online_gap_audit(domains)
+    research_updates = _formal_research_updates(financial_payload, cloud_payload)
+    _apply_formal_annual_updates(domains, research_updates, _read_json_optional(GLOBAL_OPERATOR_FX_PATH, {}))
     ai_payload = _read_json_optional(AI_ANALYSIS_PATH, {})
     ai_domains = ai_payload.get("domains") if isinstance(ai_payload, dict) else {}
     for domain in domains:
-        ai_analysis = list((ai_domains or {}).get(domain["id"]) or [])
+        domain_updates = [u for u in research_updates if u["domain"] == domain["id"]]
+        domain["research_updates"] = domain_updates
+        domain["research_updates_note"] = "正式写入并回读确认的本轮事实，按各自原报告期列示。"
+        ai_analysis = domain_updates if research_updates else list((ai_domains or {}).get(domain["id"]) or [])
         if domain["id"] == "international":
             current_entities = {"NTT DOCOMO", "SoftBank Corp.", "SK Telecom", "Singtel"}
             ai_analysis = [
-                item for item in ai_analysis
-                if str(item.get("company") or "") in current_entities
+                dict(item, company=_research_company_name(item.get("company", ""))) for item in ai_analysis
+                if _research_company_name(item.get("company", "")) in current_entities
             ]
         domain["ai_analysis"] = ai_analysis
     domains = _reader_percent_units(domains)

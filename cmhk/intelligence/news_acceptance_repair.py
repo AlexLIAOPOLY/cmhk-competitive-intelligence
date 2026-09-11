@@ -24,24 +24,33 @@ def _invalid_groups(draft, targets, provisional, validate):
     """Collect every invalid group without altering any model decision."""
     rows = draft.get("decisions")
     ids = {t["news_id"] for t in targets}
-    if (not _partition(draft, ids) or not isinstance(rows, list)
-            or any(not isinstance(r, dict) for r in rows)):
+    event_only = "decisions" not in draft
+    if not _partition(draft, ids):
         return []
-    row_ids = [r.get("news_id") for r in rows]
-    if len(row_ids) != len(ids) or any(not isinstance(n, str) for n in row_ids) or set(row_ids) != ids:
-        return []
+    if not event_only:
+        if not isinstance(rows, list) or any(not isinstance(r, dict) for r in rows):
+            return []
+        row_ids = [r.get("news_id") for r in rows]
+        if len(row_ids) != len(ids) or any(not isinstance(n, str) for n in row_ids) or set(row_ids) != ids:
+            return []
     issues = []
     for group in draft["event_groups"]:
         members = set(group["news_ids"])
         try:
-            validate({"event_groups": [group],
-                      "decisions": [r for r in rows if r["news_id"] in members]},
+            validate(_subset_payload(draft, members),
                      [t for t in targets if t["news_id"] in members],
                      [p for p in provisional if p["news_id"] in members])
         except ValueError as exc:
             issues.append({"news_ids": list(group["news_ids"]),
                            "error": str(exc.__cause__ or exc)})
     return issues
+
+
+def _subset_payload(payload, members):
+    subset = {"event_groups": [g for g in payload["event_groups"] if members.intersection(g["news_ids"])]}
+    if "decisions" in payload:
+        subset["decisions"] = [r for r in payload["decisions"] if r["news_id"] in members]
+    return subset
 
 
 def repair_review(examples, targets, provisional, *, cached, checkpoint,
@@ -105,10 +114,7 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
             session["acceptance_review"] = [t for t in provisional if t["news_id"] in scope]
             session["acceptance_review_repair"] = {
                 "validation_issues": issues or [{"news_ids": sorted(scope), "error": error}],
-                "unvalidated_draft": {
-                    "event_groups": [g for g in draft["event_groups"] if scope.intersection(g["news_ids"])],
-                    "decisions": [r for r in draft["decisions"] if r["news_id"] in scope],
-                } if issues else draft,
+                "unvalidated_draft": _subset_payload(draft, scope) if issues else draft,
             } if draft is not None else None
             session["quality_feedback"] = (
                 f"{prior_feedback or ''} 具体校验问题：{error}。本次只复核所给候选。"
@@ -117,9 +123,8 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
                 "acceptance_review_repair包含未通过校验的草稿和逐组错误，不是已确认结论。"
                 "逐条修正后重新输出完整的本范围结果，不能照抄原拟接受状态。"
                 "每个问题组同时检查APP和周报两字段，不能只修正首个报错字段。"
-                "字段不接受且同组没有该字段的接受代表时，duplicate_of必须为空。"
-                "若app_duplicate_of非空，app_status必须是不接受；weekly同理。"
-                "先选代表再填写逐条状态，检查两者完全一致。不能确认重复则分开；不得凑数量。"
+                "本次每个事件的app/weekly对象只返回唯一accept_id或JSON null，不返回逐条状态或duplicate_of。"
+                "无合格代表必须选null；不能确认重复则分开；不得凑数量。"
             ) if draft is not None else prior_feedback
             if session.get("request_callback") and draft is not None:
                 session["request_callback"](
@@ -127,22 +132,32 @@ def repair_review(examples, targets, provisional, *, cached, checkpoint,
                     f"合并处理 {len(issues)} 个问题组，保留其他组；"
                     f"本范围第 {scope_attempts[scope_key]}/{MAX_SCOPE_REQUESTS} 次。")
             replacement, replacement_model = invoke(examples, subset)
+            state.setdefault("attempt_history", []).append({
+                "request": state["requests"], "scope": sorted(scope), "validation_issues": issues,
+                "model": replacement_model, "response": json.loads(json.dumps(replacement, ensure_ascii=False)),
+                "transport": dict(session.get("last_response_evidence") or {}),
+            })
+            save()
             if scope == ids:
                 draft, model = replacement, replacement_model
             elif _partition(replacement, scope):
-                rows = replacement.get("decisions", [])
-                replacement_ids = [r.get("news_id") for r in rows if isinstance(r, dict)] if isinstance(rows, list) else []
-                if (len(replacement_ids) != len(scope)
-                        or any(not isinstance(n, str) for n in replacement_ids)
-                        or set(replacement_ids) != scope):
-                    state["last_error"] = error
+                if ("decisions" in replacement) != ("decisions" in draft):
+                    state["last_repair_error"] = "局部复核必须沿用本次事件代表结构，不能混入另一套逐条结论"
                     save()
                     continue
+                if "decisions" in replacement:
+                    rows = replacement["decisions"]
+                    replacement_ids = [r.get("news_id") for r in rows if isinstance(r, dict)] if isinstance(rows, list) else []
+                    if (len(replacement_ids) != len(scope)
+                            or any(not isinstance(n, str) for n in replacement_ids)
+                            or set(replacement_ids) != scope):
+                        save()
+                        continue
+                    draft = {**draft, "decisions": [r for r in draft["decisions"] if r["news_id"] not in scope]
+                             + replacement["decisions"]}
                 draft = {**draft,
                          "event_groups": [g for g in draft["event_groups"]
-                                          if not scope.intersection(g["news_ids"])] + replacement["event_groups"],
-                         "decisions": [r for r in draft["decisions"] if r["news_id"] not in scope]
-                                      + replacement["decisions"]}
+                                          if not scope.intersection(g["news_ids"])] + replacement["event_groups"]}
                 model = replacement_model
             else:
                 # An invalid replacement is never allowed to erase unrelated progress.

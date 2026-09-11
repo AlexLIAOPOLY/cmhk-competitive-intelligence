@@ -50,7 +50,31 @@ FOCUS_EVIDENCE_CONTRACT = (
     "证据连接词（如表明、反映、说明、显示）、经营维度（如结构、口径、客户、收入）"
     "和关系或边界（如并非、不等于、不能、范围、层次）。"
     "只选择当前证据支持的关系，不为满足措辞制造因果或遗漏比较边界。"
+    "正文目标80至100字，硬上限120字（数字、英文和标点均计入）；只选两至三个可比数值，"
+    "其余事实保留在实体明细或风险字段，不必在正文重复每家公司。"
+    "绝对金额的规模差不能用于推断运营效率或经营质量差异。"
+    "focus标题写有证据的经营判断，使用收入底盘、经营造血、客户基础等对应的经营含义；"
+    "标题禁止出现FY、财年、营收、EBITDA、净利润、后付费用户、云收入、云利润、资本开支、"
+    "金额、绝对值、序列、入库、披露、口径、数据、待补、重新判断、按三来源。"
+    "这些指标名和比较边界保留在正文及风险中，不要把缺失值转成虚构判断。"
 )
+
+
+def _uncached_model_body(body: dict[str, Any], request_id: str | None = None) -> dict[str, Any]:
+    """Isolate each validation attempt while retaining its evidence and feedback."""
+    fresh = json.loads(json.dumps(body, ensure_ascii=False))
+    fresh["cache"] = {"no-cache": True, "no-store": True}
+    marker = (
+        f"{request_id or uuid4().hex}\n"
+        "以上仅为本次请求隔离编号，不是证据，不得写入答案。\n"
+    )
+    messages = fresh.setdefault("messages", [])
+    if messages and messages[0].get("role") == "system":
+        messages[0]["content"] = marker + str(messages[0].get("content") or "")
+    else:
+        messages.insert(0, {"role": "system", "content": marker})
+    return fresh
+
 
 FOCUS_RELATION_FEW_SHOTS = (
     "少样本示范（学习判断方式，不要照抄句式）：\n"
@@ -818,7 +842,7 @@ _INTERPRETIVE_CONNECTORS = (
 _INTERPRETIVE_DIMENSIONS = (
     "结构", "口径", "集中", "可比", "驱动", "依赖", "饱和", "错位", "背离", "同步",
     "脱钩", "分层", "梯队", "边界", "质量", "效率", "弹性", "定价权", "产品广度",
-    "增速", "方向", "幅度", "梯度",
+    "增速", "方向", "幅度", "梯度", "经营造血",
     "分布", "阵营", "正负", "强弱", "两层",
     "记录颗粒度", "记录密度", "渗透", "变现", "盈利", "利润", "收入", "客户", "网络", "竞争", "产品类型", "产品选择", "产品数量", "购买力", "价格", "套餐", "投入", "资本", "负担", "流量", "连接", "服务", "优惠条件",
 )
@@ -923,6 +947,18 @@ def _strategic_focus_headline(
     if variants:
         return variants[variant_index % len(variants)]
     return _OVERVIEW_STRATEGIC_HEADLINES.get((domain, focus_id), str(fallback or "").strip())
+
+
+def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str:
+    if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and (
+        not headline or any(term in headline for term in _OVERVIEW_DIRECT_HEADLINE_TERMS)
+    ):
+        return f"AI分析标题缺少战略判断：{domain}.{focus_id}"
+    if (domain, focus_id) == ("local", "financials") and any(
+        term in headline for term in ("披露", "发布", "数量", "密度", "完整度", "口径", "边界")
+    ):
+        return "财务战略解读标题不得以披露或口径说明为结论：local.financials"
+    return ""
 
 
 def _focus_gate_error(domain: str, focus_id: str, analysis: str, evidence_focus: dict[str, Any]) -> str:
@@ -1475,16 +1511,9 @@ def _validate_model_summaries(
                     validated_focus["origin"] = "evidence_rule"
                 if not validated_focus["analysis"] or not validated_focus["risk"]:
                     raise ValueError(f"AI分析分类字段不完整：{domain}.{focus_id}")
-                if (domain, focus_id) in _OVERVIEW_STRATEGIC_HEADLINES and (
-                    not validated_focus["headline"]
-                    or any(term in validated_focus["headline"] for term in _OVERVIEW_DIRECT_HEADLINE_TERMS)
-                ):
-                    raise ValueError(f"AI分析标题缺少战略判断：{domain}.{focus_id}")
-                if (domain, focus_id) == ("local", "financials") and any(
-                    term in validated_focus["headline"]
-                    for term in ("披露", "发布", "数量", "密度", "完整度", "口径", "边界")
-                ):
-                    raise ValueError("财务战略解读标题不得以披露或口径说明为结论：local.financials")
+                headline_error = _focus_headline_gate_error(domain, focus_id, validated_focus["headline"])
+                if headline_error:
+                    raise ValueError(headline_error)
                 evidence_focus = next(
                     focus for focus in (evidence_by_domain.get(domain, {}).get("focuses") or [])
                     if str(focus.get("id") or "") == focus_id
@@ -2465,7 +2494,7 @@ def generate_model_focus_insight(
         })
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions?request_id={request_id}",
-            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            data=json.dumps(_uncached_model_body(body, request_id), ensure_ascii=False).encode("utf-8"),
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
                      "Cache-Control": "no-cache, no-store", "Pragma": "no-cache",
                      "X-Request-ID": request_id}, method="POST",
@@ -2486,6 +2515,9 @@ def generate_model_focus_insight(
             analysis = str(parsed.get("analysis") or "").strip()
             if not headline or len(headline) > 28:
                 raise ValueError("AI标题为空或超过28字，请由AI重新生成")
+            headline_error = _focus_headline_gate_error(domain_id, focus_id, headline)
+            if headline_error:
+                raise ValueError(headline_error)
             error = _focus_gate_error(domain_id, focus_id, analysis, focus)
             if error:
                 raise ValueError(error)
@@ -2603,7 +2635,7 @@ def generate_model_domain_summaries(
         body["messages"] = messages
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            data=json.dumps(_uncached_model_body(body), ensure_ascii=False).encode("utf-8"),
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             method="POST",
         )
@@ -2662,6 +2694,7 @@ def generate_model_domain_summaries(
         # nested focus summaries. Retry one domain at a time so every focus can be
         # checked explicitly without asking the model to hold all views at once.
         per_domain_summaries: list[dict[str, Any]] = []
+        scope_errors: list[str] = []
         for domain_evidence in evidence.get("domains") or []:
             domain_models: set[str] = set()
             domain_id = str(domain_evidence.get("id") or "")
@@ -2694,7 +2727,7 @@ def generate_model_domain_summaries(
                 body["model"] = _executive_model_route()[min(domain_attempt, len(_executive_model_route()) - 1)]
                 request = urllib.request.Request(
                     f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-                    data=json.dumps({**body, "messages": domain_messages}, ensure_ascii=False).encode("utf-8"),
+                    data=json.dumps(_uncached_model_body({**body, "messages": domain_messages}), ensure_ascii=False).encode("utf-8"),
                     headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                     method="POST",
                 )
@@ -2784,6 +2817,7 @@ def generate_model_domain_summaries(
             if domain_summary is None:
                 focus_parts: list[dict[str, Any]] = []
                 domain_fields: dict[str, Any] | None = None
+                domain_focus_failed = False
                 for focus_evidence in domain_evidence.get("focuses") or []:
                     focus_id = str(focus_evidence.get("id") or "")
                     focus_scope = {"domains": [{**domain_evidence, "focuses": [focus_evidence]}]}
@@ -2829,7 +2863,7 @@ def generate_model_domain_summaries(
                     for focus_attempt, focus_model in enumerate(focus_models):
                         request = urllib.request.Request(
                             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-                            data=json.dumps({**body, "model": focus_model, "messages": focus_messages}, ensure_ascii=False).encode("utf-8"),
+                            data=json.dumps(_uncached_model_body({**body, "model": focus_model, "messages": focus_messages}), ensure_ascii=False).encode("utf-8"),
                             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
                             method="POST",
                         )
@@ -2903,20 +2937,27 @@ def generate_model_domain_summaries(
                                     ),
                                 })
                     if focus_candidate is None:
-                        raise ValueError(
+                        scope_errors.append(
                             f"AI分析按分类重试仍未通过：{domain_id}.{focus_id}: {focus_error}; 领域错误：{domain_error}"
                         )
+                        domain_focus_failed = True
+                        continue
                     if domain_fields is None:
                         domain_fields = {
                             key: focus_candidate.get(key)
                             for key in ("domain", "headline", "analysis", "risk", "source_urls")
                         }
                     focus_parts.extend(focus_candidate["focuses"])
+                if domain_focus_failed:
+                    continue
                 if not focus_parts:
-                    raise ValueError(f"AI分析未生成：{domain_id}: {domain_error}")
+                    scope_errors.append(f"AI分析未生成：{domain_id}: {domain_error}")
+                    continue
                 domain_summary = {**(domain_fields or {"domain": domain_id}), "focuses": focus_parts}
             save(domain_scope, domain_summary, "+".join(sorted(domain_models)))
             per_domain_summaries.append(domain_summary)
+        if scope_errors:
+            raise ValueError("；".join(scope_errors))
         summaries = _validate_model_summaries(
             _repair_model_summaries(
                 _drop_unsupported_numeric_clauses(per_domain_summaries, evidence),
@@ -2933,7 +2974,7 @@ def generate_model_domain_summaries(
 
 
 def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
-    """Keep decision-level metrics and sources; omit entity/component payloads."""
+    """Keep bounded metrics and verified period facts without merging their grains."""
     domains: list[dict[str, Any]] = []
     for domain in evidence.get("domains") or []:
         compact_focuses: list[dict[str, Any]] = []
@@ -2948,6 +2989,8 @@ def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
                         "name": item.get("name"),
                         "value": item.get("value"),
                         "unit": item.get("unit"),
+                        "period": item.get("period"),
+                        "grain": item.get("grain"),
                         "source_url": item.get("source_url"),
                     }
                     for item in (focus.get("items") or [])[:4]
@@ -2959,6 +3002,11 @@ def _compact_discovery_evidence(evidence: dict[str, Any]) -> dict[str, Any]:
             "title": domain.get("title"),
             "deterministic_insight": domain.get("deterministic_insight"),
             "focuses": compact_focuses,
+            "research_comparison_scope": domain.get("research_comparison_scope"),
+            "agent_verified_facts": json.loads(json.dumps([
+                fact for fact in domain.get("agent_verified_facts") or []
+                if isinstance(fact, dict)
+            ][:40], ensure_ascii=False)),
         })
     return {"domains": domains, "relations": list(evidence.get("relations") or [])[:4]}
 
@@ -3026,6 +3074,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         "不要逐库摘要，不要写论文，不要复述发生了什么；标题写数据关系结论，detail只解释背后的结构、驱动、"
         "集中度、口径差异、市场阶段或跨领域背离。禁止建议、应、需、优先、关注、评估、验证、补齐、转向等行动话术。"
         "只能使用输入JSON里的事实、数字、期间、口径和来源；不得新增数字、伪造因果或从URL推断信息。"
+        "agent_verified_facts是独立正式披露，必须保留各自period和grain；季度、半年事实不能替代全年金额比较。"
         "每条detail必须使用表明、说明、意味着、并非、而非或不能等同中的至少一个连接词，把数字证据连到关系判断。"
         "每条detail还必须同时出现一个比较判断词（如高于、低于、差距、分化）、一个分析维度词"
         "（如结构、口径、效率、盈利、客户、资本）和一个深层关系词"
@@ -3062,7 +3111,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
         body["messages"] = messages
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps(body, ensure_ascii=False).encode("utf-8"),
+            data=json.dumps(_uncached_model_body(body), ensure_ascii=False).encode("utf-8"),
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
             method="POST",
         )
@@ -3093,9 +3142,9 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None) -> dict[s
             )
             depth_repaired, current_repair_count = _repair_discovery_depth(
                 concise,
-                evidence,
+                prompt_evidence,
             )
-            discoveries = _validate_model_discoveries(depth_repaired, evidence)
+            discoveries = _validate_model_discoveries(depth_repaired, prompt_evidence)
             evidence_repair_count = current_repair_count
             used_model = discovery_model
             break
@@ -3281,13 +3330,13 @@ def regenerate_model_discovery(
         }]
         request = urllib.request.Request(
             f"{str(config.get('base_url') or INTERNAL_AI_BASE_URL).rstrip('/')}/chat/completions",
-            data=json.dumps(prepare_structured_chat_body({
+            data=json.dumps(_uncached_model_body(prepare_structured_chat_body({
                 **dict(config.get("extra_parameters") or {}),
                 "model": model,
                 "messages": request_messages,
                 "temperature": 0.25 if attempt == 0 else 0.55,
                 "max_tokens": 520,
-            }), ensure_ascii=False).encode("utf-8"),
+            }), request_id), ensure_ascii=False).encode("utf-8"),
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",

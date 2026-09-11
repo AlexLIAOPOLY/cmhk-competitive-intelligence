@@ -312,6 +312,9 @@ class ResearchHarness:
                 item = {**self.current.get("last_rejected", {}), "company": company,
                         "metric": metric, "status": "conflict", "value": "",
                         "reason": "本指标六次模型调用预算已用尽，未形成可采信提交；保留待复核，不回抓或覆盖主库"}
+                if self.current.get("last_rejected", {}).get("reason"):
+                    item["validation_error"] = self.current["last_rejected"]["reason"]
+                    item["reason"] += "；最后校验：" + item["validation_error"]
                 self.current["submitted"] = item
                 save(item)
         if self.current["submitted"] is None:
