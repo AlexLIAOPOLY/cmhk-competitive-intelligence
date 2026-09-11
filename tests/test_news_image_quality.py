@@ -87,6 +87,15 @@ class NewsImageQualityTests(unittest.TestCase):
         self.assertFalse(result['accepted'])
         self.assertIn('富通', result['independent_review']['reason'])
 
+    def test_independent_review_outage_resumes_without_repeating_visual_work(self):
+        with patch('cmhk.services.news_image_quality._vision_call', return_value=self.verdict) as visual, \
+                patch('cmhk.services.news_image_quality._identity_review', side_effect=[
+                    NewsImageUnavailable('暂时不可用'), {'accepted': True, 'reason': '主体一致'}]):
+            with self.assertRaises(NewsImageUnavailable):
+                review_image(self.item, self.candidate, self.data, self.root)
+            self.assertTrue(review_image(self.item, self.candidate, self.data, self.root)['accepted'])
+            self.assertEqual(visual.call_count, 1)
+
     def test_model_missing_evidence_or_low_confidence_cannot_pass(self):
         for result in [{}, {**self.verdict, 'confidence': True}]:
             with self.subTest(result=result), patch('cmhk.services.news_image_quality._vision_call', return_value=result):

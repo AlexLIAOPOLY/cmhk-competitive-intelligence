@@ -244,11 +244,17 @@ def review_image(item: dict, candidate: dict, data: bytes, cache, *, deadline: f
     cached = load(path)
     if cached.get('policy_key') == policy_key():
         return cached
-    result = _vision_call(item, candidate, data, deadline=deadline)
+    visual_path = path.with_suffix('.visual.json')
+    visual = load(visual_path)
+    result = visual.get('result') if visual.get('policy_key') == policy_key() else None
+    if result is None:
+        result = _vision_call(item, candidate, data, deadline=deadline)
     if (not isinstance(result, dict) or result.get('relation') not in ('event', 'context', 'reject')
             or type(result.get('confidence')) not in (int, float) or not 0 <= result['confidence'] <= 1):
         save(path.with_suffix('.invalid.json'), {'status': 'invalid_model_output', 'result': result})
         raise NewsImageUnavailable('新闻图片看图审核格式无效，等待重试')
+    # A second-stage model outage must not discard completed visual work.
+    save(visual_path, {'result': result, 'policy_key': policy_key(), 'sha256': digest})
     missing = [k for k in ('reason', 'visible_content', 'source_evidence')
                if not isinstance(result.get(k), str) or not result[k].strip()]
     visual_accepted = not missing and result['relation'] != 'reject' and result['confidence'] >= 0.90
