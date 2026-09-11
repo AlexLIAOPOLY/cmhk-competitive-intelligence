@@ -20,6 +20,10 @@ from tests.news_push_fixtures import prepared_assets
 
 class NewsImageQualityTests(unittest.TestCase):
     def setUp(self):
+        identity = patch('cmhk.services.news_image_quality._identity_review', return_value={
+            'accepted': True, 'reason': '主体和事件独立核对一致'})
+        identity.start()
+        self.addCleanup(identity.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
@@ -73,6 +77,15 @@ class NewsImageQualityTests(unittest.TestCase):
             with patch('cmhk.services.news_image_quality.policy_key', return_value='new-policy'):
                 review_image(self.item, self.candidate, self.data, self.root)
             self.assertEqual(call.call_count, 3)
+
+    def test_independent_identity_check_overrules_confident_wrong_partner(self):
+        with patch('cmhk.services.news_image_quality._vision_call', return_value={
+                **self.verdict, 'confidence': 1, 'visible_content': 'HKBN 与 Futong 富通签约'}), \
+                patch('cmhk.services.news_image_quality._identity_review', return_value={
+                    'accepted': False, 'reason': '新闻是博云，图片却是富通，不是同一合作方'}):
+            result = review_image(self.item, self.candidate, self.data, self.root)
+        self.assertFalse(result['accepted'])
+        self.assertIn('富通', result['independent_review']['reason'])
 
     def test_model_missing_evidence_or_low_confidence_cannot_pass(self):
         for result in [{}, {**self.verdict, 'confidence': True}]:
