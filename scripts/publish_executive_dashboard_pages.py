@@ -14,8 +14,10 @@ import sys
 import tempfile
 import time
 from datetime import datetime
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote, urlsplit
 from zoneinfo import ZoneInfo
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,6 +37,7 @@ PUBLIC_STATIC_FILES = (
     "architecture-map.html",
     "architecture-map.js",
     "app.js",
+    "audio-player-theme.css",
     "auth-client.js",
     "company-data.js",
     "confirm-dialog.css",
@@ -44,6 +47,8 @@ PUBLIC_STATIC_FILES = (
     "intelligence-map.css",
     "intelligence-map.js",
     "leadership-board.css",
+    "news-delivery-history.css",
+    "news-delivery-history.js",
     "news-review-sheet.css",
     "news-review-sheet.js",
     "organization-admin.css",
@@ -880,6 +885,38 @@ def _rewrite_root_javascript(source: str) -> str:
     )
 
 
+def _validate_public_static_dependencies(destination: Path) -> None:
+    """Reject incomplete bundles before publishing, including nested HTML pages."""
+    class Dependencies(HTMLParser):
+        def __init__(self) -> None:
+            super().__init__()
+            self.references: list[str] = []
+
+        def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+            attributes = dict(attrs)
+            reference = attributes.get("src") if tag == "script" else None
+            if tag == "link" and "stylesheet" in (attributes.get("rel") or "").lower().split():
+                reference = attributes.get("href")
+            if reference:
+                self.references.append(reference)
+
+    root = destination.resolve()
+    missing = []
+    for html_path in sorted(root.rglob("*.html")):
+        parser = Dependencies()
+        parser.feed(html_path.read_text(encoding="utf-8"))
+        for reference in parser.references:
+            url = urlsplit(reference)
+            if url.scheme or url.netloc or not url.path:
+                continue
+            path = unquote(url.path)
+            asset = ((root / path.lstrip("/")) if path.startswith("/") else html_path.parent / path).resolve()
+            if not asset.is_relative_to(root) or not asset.is_file():
+                missing.append(f"{html_path.relative_to(root)}: {reference}")
+    if missing:
+        raise RuntimeError("公开静态资源缺失，停止发布：" + "; ".join(sorted(set(missing))))
+
+
 def _readonly_module_html(title: str, message: str) -> str:
     safe_title = __import__("html").escape(title)
     safe_message = __import__("html").escape(message)
@@ -1076,6 +1113,7 @@ def _build_site(
             encoding="utf-8",
         )
     (destination / ".nojekyll").touch()
+    _validate_public_static_dependencies(destination)
 
     payload = dict(snapshots["strategic-briefs.json"])
     digest = hashlib.sha256()

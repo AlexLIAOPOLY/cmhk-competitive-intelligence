@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -54,6 +56,122 @@ class DashboardPagesPublishTests(unittest.TestCase):
         source = SCRIPT_PATH.read_text(encoding="utf-8")
         self.assertIn('["/api/auth/me", {', source)
         self.assertIn('name: "公开快照"', source)
+
+    def test_public_build_rejects_missing_script_and_stylesheet_dependencies(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "static").mkdir()
+            (root / "index.html").write_text('''
+                <script src="./static/news-delivery-history.js?v=3"></script>
+                <link href="/static/audio-player-theme.css?v=1" rel="stylesheet">
+                <script src="https://cdn.example.com/remote.js"></script>
+                <link rel="stylesheet" href="//cdn.example.com/remote.css">
+                <a href="/private-page">Not a static dependency</a>
+            ''', encoding="utf-8")
+            with self.assertRaises(RuntimeError) as error:
+                publisher._validate_public_static_dependencies(root)
+            self.assertIn("index.html: ./static/news-delivery-history.js?v=3", str(error.exception))
+            self.assertIn("index.html: /static/audio-player-theme.css?v=1", str(error.exception))
+            self.assertNotIn("remote", str(error.exception))
+            self.assertNotIn("private-page", str(error.exception))
+            (root / "static/news-delivery-history.js").write_text("", encoding="utf-8")
+            (root / "static/audio-player-theme.css").write_text("", encoding="utf-8")
+            (root / "static/nested.html").write_text(
+                '<script src="./news-delivery-history.js?v=3"></script>', encoding="utf-8"
+            )
+            publisher._validate_public_static_dependencies(root)
+            (root / "static/news-delivery-history.js").unlink()
+            with self.assertRaisesRegex(RuntimeError, "static/nested.html"):
+                publisher._validate_public_static_dependencies(root)
+
+    def _assert_public_news_initialization(self, destination):
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "Node is required to verify the generated public JavaScript")
+        program = r'''
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const vm = require("node:vm");
+const root = process.argv[1];
+const html = fs.readFileSync(path.join(root, "index.html"), "utf8");
+const scripts = [...html.matchAll(/<script[^>]+src="([^"?]+)(?:\?[^"]*)?"/g)].map(m => m[1]);
+const dependencies = ["public-snapshot-bootstrap.js", "research-diagram.js", "news-delivery-history.js", "workspace-tabs.js"];
+const positions = dependencies.map(name => scripts.indexOf(`./static/${name}`));
+assert(positions.every((position, index) => position >= 0 && (!index || position > positions[index - 1])));
+globalThis.window = globalThis;
+globalThis.document = {baseURI: "https://example.com/cmhk/", readyState: "loading", addEventListener() {}};
+globalThis.location = new URL(document.baseURI);
+globalThis.addEventListener = () => {};
+globalThis.setInterval = () => 123;
+const nativeRequests = [];
+globalThis.fetch = async (input) => {
+  const url = new URL(String(input), location.href);
+  assert.equal(url.origin, location.origin);
+  assert(url.pathname.startsWith("/cmhk/"), `Unexpected network request: ${url.pathname}`);
+  nativeRequests.push(url.pathname);
+  return new Response(fs.readFileSync(path.join(root, url.pathname.slice("/cmhk/".length)), "utf8"));
+};
+for (const name of dependencies.slice(0, -1)) {
+  vm.runInThisContext(fs.readFileSync(path.join(root, "static", name), "utf8"), {filename: name});
+}
+const workspace = fs.readFileSync(path.join(root, "static/workspace-tabs.js"), "utf8");
+function actualFunction(name) {
+  const start = workspace.indexOf(`  function ${name}(`);
+  assert(start >= 0);
+  const tail = workspace.slice(start + 2);
+  const end = tail.search(/\n  (?:async )?function /);
+  assert(end > 0);
+  return tail.slice(0, end);
+}
+vm.runInThisContext(`
+  globalThis.state = { newsSelectedDate: "2026-09-11", newsRunDetails: {} };
+  function selectedNewsRuns() { return state.newsRuns; }
+  function selectionAttemptRunsForDate() { return []; }
+  function authoritativeStrategicNewsRuns(runs) { return runs; }
+  function newsRunDate() { return state.newsSelectedDate; }
+  function newsLineageCardContent(node) { return { value: node.value }; }
+  function activeLineageRouteAssessments() { return {}; }
+  function newsLineageEdgeStatus() { return {key: "unknown"}; }
+  function legacySchedulerLineageModel(runs, stages, attempts) {
+    if (runs.length || stages.length || attempts.length) throw new Error("Expected empty public task data");
+    return {nodes: ["strategic", "news-output", "news-selection-agent", "app-result", "weekly-result"]
+      .map(key => ({key, position: [0, 92], value: "—", health: {key: "unknown"}})), edges: []};
+  }
+  function can() { return true; }
+  function refreshNewsLiveData() {}
+  ${["globalSchedulerLineageModel", "newsLiveRenderSignature", "startNewsLiveRefresh"].map(actualFunction).join("\n")}
+`);
+(async () => {
+  state.newsRuns = (await (await fetch("/api/crawl-runs?taskKind=strategic-news")).json()).runs;
+  state.researchArchitecture = await (await fetch("/api/news-research?date=2026-09-11")).json();
+  assert.deepEqual(state.newsRuns, []);
+  assert.equal(state.researchArchitecture.run, null);
+  assert.deepEqual(state.researchArchitecture.agents, []);
+  const delivery = window.CmhkNewsDeliveryHistory;
+  delete window.CmhkNewsDeliveryHistory;
+  assert.throws(() => startNewsLiveRefresh(), /canvasWidth/); // The original public bundle failure.
+  window.CmhkNewsDeliveryHistory = delivery;
+  await delivery.load(state.newsSelectedDate);
+  startNewsLiveRefresh();
+  assert.equal(state.newsLivePollTimer, 123);
+  const model = globalSchedulerLineageModel([], []);
+  assert.equal(model.canvasSize[0], delivery.canvasWidth);
+  assert(model.nodes.some(node => node.key === "news-subscription"));
+  assert(model.nodes.some(node => node.key === "research-dispatch"));
+  assert(model.nodes.some(node => node.key === "news-selection-agent"));
+  assert(JSON.parse(state.newsLiveSignature).nodes.length > 5);
+  assert.deepEqual(nativeRequests, ["/cmhk/static-data/crawl-runs.json"]);
+  const denied = await fetch("/api/subscriptions/news-deliveries?date=2026-09-11");
+  assert.equal(denied.status, 403); // Personal recipient/history data remain private.
+  console.log(JSON.stringify({emptyTaskInitialization: true, originalErrorReproduced: true,
+    dependencyOrder: dependencies, canvasWidth: model.canvasSize[0], privateDeliveriesExcluded: true}));
+})().catch(error => {console.error(error); process.exitCode = 1;});
+'''
+        result = subprocess.run(
+            [node, "-e", program, str(destination)], capture_output=True, text=True, timeout=30
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue(json.loads(result.stdout)["emptyTaskInitialization"])
 
     def test_public_report_preview_is_copied_from_non_empty_local_artifact(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -883,7 +1001,7 @@ class DashboardPagesPublishTests(unittest.TestCase):
             )
             self.assertLess(
                 html.index('src="./static/workspace-tabs.js?v=public-8"'),
-                html.index('src="./static/app.js?v=325"'),
+                html.index('src="./static/app.js?v='),
             )
             self.assertNotRegex(html, r'<script(?![^>]*\bdefer\b)[^>]+src=')
             self.assertIn('data-workspace-tab="subscriptions"', html)
@@ -954,6 +1072,12 @@ class DashboardPagesPublishTests(unittest.TestCase):
             self.assertFalse((destination / "intelligence").exists())
             self.assertRegex(version, r"^[0-9a-f]{64}$")
             self.assertEqual(payload["site_version"], version)
+            self._assert_public_news_initialization(destination)
+
+            omitted_assets = tuple(name for name in publisher.PUBLIC_STATIC_FILES if name != "news-delivery-history.js")
+            with mock.patch.object(publisher, "PUBLIC_STATIC_FILES", omitted_assets):
+                with self.assertRaisesRegex(RuntimeError, "news-delivery-history.js"):
+                    publisher._build_site(Path(temp) / "incomplete-site")
 
 
 if __name__ == "__main__":
