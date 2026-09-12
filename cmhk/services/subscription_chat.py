@@ -29,6 +29,12 @@ HELP = ("你好，我可以帮你记住想看的内容。直接说‘多看AI新
 
 def request_constraint(text: str) -> dict | None:
     """Hard product limits; these guards can only decline or clarify, never write."""
+    # Exact read-only requests use the trusted sender's saved brief directly.
+    query = text.strip().rstrip('。.!！?？').strip()
+    noun = r"(?:个人)?(?:阅读要求|阅读说明|阅读偏好|兴趣偏好|偏好|喜好|skill)"
+    if (re.fullmatch(r"(?:请|麻烦|帮我)?(?:看看|看下|看一下|查看|查询|展示|显示|列出)(?:我)?(?:当前|现在)?(?:的)?" + noun, query, re.I)
+            or re.fullmatch(r"(?:我)?(?:当前|现在)?(?:的)?" + noun + r"(?:是什么|有哪些)", query, re.I)):
+        return {"intent": "show", "changes": [], "question": ""}
     if re.fullmatch(r"\s*(?:好的?|行|可以|确认|没问题|就这样|对的)[。!！\s]*", text):
         return {"intent": "confirm", "changes": [], "question": ""}
     if re.search(r"(?:不要|别|先不|无需)(?:做任何)?(?:修改|更改|调整)(?=$|[，,。.!！；;\s])|(?:只|仅仅)(?:是)?(?:举个例子|举例|举一个例子)", text):
@@ -161,17 +167,28 @@ def interpret(text: str, current: dict, context: list) -> dict:
     )
     config = load_ai_config(include_key=True)
     model = text_model()
+    semantic_context = [c for c in context if c.get("intent", "clarify") in {"update", "clarify"}]
+    latest_saved = next((i for i in range(len(semantic_context)-1, -1, -1)
+                         if semantic_context[i].get("intent") == "update"), 0)
+    # Old failed menus and read-only queries must not drown out the current
+    # request. The saved brief already retains every successful earlier choice.
+    semantic_context = semantic_context[latest_saved:]
     conversation = [{"text": c["text"], "intent": c.get("intent", "clarify"),
                      "question": c.get("reply", "") if c.get("intent", "clarify") == "clarify" else ""}
-                    for c in context]
+                    for c in semantic_context]
     delegated = bool(re.search(r"你(?:来)?定|你(?:来)?选|你(?:来)?安排|你看着办|随便|随机|都行", text))
     saved_topics = [t['name'] for t in current.get('news_topics', [])]
     # Bind the complete semantic context, not just an ambiguous "你定" or nonce.
     # Older/incompatible responses fail closed instead of applying another topic.
     request_context = {"本次要求": text, "本人已保存主题": saved_topics, "本人阅读要求": current.get("news_personal_skill", []),
                        "本人近期对话": conversation, "自主安排": delegated}
-    messages = [{"role": "system", "content": prompt},
-                {"role": "user", "content": json.dumps(request_context, ensure_ascii=False)}]
+    # The gateway has returned a previous request's complete result for similar
+    # late user messages. Bind the earliest prompt bytes as well as validating
+    # the full returned context; an old result can never become a saved patch.
+    request_json = json.dumps(request_context, ensure_ascii=False)
+    request_tag = hashlib.sha256(request_json.encode()).hexdigest()
+    messages = [{"role": "system", "content": f"本次独立请求标识：{request_tag}。\n" + prompt},
+                {"role": "user", "content": request_json}]
     body = prepare_structured_chat_body({"model": model, "temperature": 0.5 if delegated else 0, "max_tokens": 6000,
                                        "messages": messages})
     request = Request(config["base_url"].rstrip("/") + "/chat/completions",

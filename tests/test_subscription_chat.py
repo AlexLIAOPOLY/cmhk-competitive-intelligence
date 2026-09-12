@@ -49,6 +49,21 @@ class SubscriptionChatTests(unittest.TestCase):
         self.chat.enqueue(event or self.event(), 'testbot')
         self.assertTrue(self.chat.drain_one())
 
+    def test_saved_brief_query_works_during_model_failure_and_never_drops_edits(self):
+        from cmhk.services.subscription_chat import request_constraint
+        self.service.save_subscriptions('ou_alice', 'Alice', ['news'], news_personal_skill=['喜欢生活相关的实用内容。'])
+        before=self.get();peer=self.get('ou_bob')
+        self.model.side_effect=RuntimeError('model unavailable')
+        for i,text in enumerate(('看看我的个人阅读要求','看看我的阅读说明','看看我现在的偏好','我的阅读偏好有哪些？')):
+            self.run_event(self.event(content=text,mid=f'om_query{i}'))
+            self.assertEqual(self.job()['intent'],'show')
+            self.assertEqual(self.job()['parse_error_type'],'')
+            self.assertIn('1. 喜欢生活相关的实用内容。',self.job()['reply'])
+            self.assertNotIn('成功更新',self.job()['reply'])
+        self.model.assert_not_called()
+        self.assertEqual(self.get(),before);self.assertEqual(self.get('ou_bob'),peer)
+        self.assertIsNone(request_constraint('看看我的偏好，再增加生活内容'))
+
     def test_only_explicit_field_changes_and_named_recipient_receives_reply(self):
         before = self.get()
         bob = self.get('ou_bob')
@@ -447,12 +462,14 @@ class SubscriptionChatTests(unittest.TestCase):
             data=json.loads(json.loads(request.data)['messages'][-1]['content']);captured.append(data)
             result={'request_context':data,'intent':'help','changes':[],'question':'','reply':'明白，我可以继续帮你安排。'}
             response=MagicMock();response.__enter__.return_value.read.return_value=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps(result)}}]}).encode();return response
-        context=[{'text':'多看AI新闻','intent':'update','reply':'本人旧设置SECRET 09:30'}, {'text':'怎么选','intent':'clarify','reply':'想侧重AI产品还是应用？'}]
+        context=[{'text':'旧请求','intent':'clarify','reply':'过时的栏目菜单'}, {'text':'多看AI新闻','intent':'update','reply':'本人旧设置SECRET 09:30'}, {'text':'怎么选','intent':'clarify','reply':'想侧重AI产品还是应用？'}, {'text':'看看偏好','intent':'show','reply':'旧清单'}]
         with mock_patch('ai_config.load_ai_config',return_value={'base_url':'https://example.invalid/v1'}),mock_patch('ai_key_rotation.open_llm_request',side_effect=transport):
             interpret('你定',self.get(),context)
         self.assertNotIn('SECRET',json.dumps(captured))
         self.assertTrue(captured[0]['自主安排'])
         self.assertEqual(captured[0]['本人近期对话'][0]['text'],'多看AI新闻')
+        self.assertEqual([c['intent'] for c in captured[0]['本人近期对话']],['update','clarify'])
+        self.assertNotIn('过时的栏目菜单',json.dumps(captured,ensure_ascii=False))
 
     def test_equivalent_single_topic_object_is_accepted_but_foreign_fields_rejected(self):
         topic={'name':'量子通信','terms':['量子通信','量子密钥']}
