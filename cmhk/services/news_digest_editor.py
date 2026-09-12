@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from cmhk.services.news_push_skill import skill_contract, text_model, compatible_skill_hashes
-from cmhk.services.news_summary_quality import MAX_SUMMARY_CHARS, SummaryQualityError, enrich_source, repeats_title, review_summaries
+from cmhk.services.news_summary_quality import MAX_SUMMARY_CHARS, SourceEvidenceUnavailable, SummaryQualityError, enrich_source, repeats_title, review_summaries
 
 from cmhk.services.news_text import simplified_news_text
 
@@ -221,7 +221,7 @@ def _prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | 
                     review_summaries(inputs, result['items'], runtime_root)
                     break
                 except SummaryQualityError as exc:
-                    if attempt:
+                    if attempt or isinstance(exc, SourceEvidenceUnavailable):
                         raise
                     payload['revision_required'] = str(exc)
                     payload['rejected_summary'] = result['items'][0]['summary']

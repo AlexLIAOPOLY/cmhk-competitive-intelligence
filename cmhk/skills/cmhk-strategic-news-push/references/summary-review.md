@@ -41,4 +41,21 @@ source_quotes[0]：首批服务对象为制造企业，提供库存管理和员�
 简介：某国要求实施制裁，造成十人受伤。
 输出：{"summary_detail_index":-1,"source_quote_index":-1,"reason":"正文属于其他事件，伤亡数字没有依据。","verdict":"source_unavailable"}
 </example>
+<example>
+comparison_title：公司更换董事及提名委员会成员
+原媒体标题：公司公布董事变更及生效日
+source_quotes[0]：甲先生将于9月15日起出任董事会主席，乙先生将于同日离任。
+简介：甲先生将于9月15日起出任董事会主席，乙先生将于同日离任。
+summary_details[0]：甲先生将于9月15日起出任董事会主席
+输出：{"summary_detail_index":0,"source_quote_index":0,"reason":"推送标题没有具体人名和生效日，简介补充这两项原文事实，可以直接复述事实来源。","verdict":"accept"}
+错误判断：简介复述source_quotes[0]已有内容，因此没有新增事实。
+</example>
+<example>
+comparison_title：创新服务在香港推出
+原媒体标题：创新服务在香港推出 首批支持两所大学
+source_quotes[0]：创新服务在香港推出 首批支持两所大学
+简介：服务首批支持两所大学。
+summary_details[0]：服务首批支持两所大学
+输出：{"summary_detail_index":0,"source_quote_index":0,"reason":"首批两所大学是推送标题之外的具体对象与数量，原媒体标题可作证据。","verdict":"accept"}
+</example>
 </examples>

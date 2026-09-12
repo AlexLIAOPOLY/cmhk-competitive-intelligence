@@ -163,14 +163,14 @@ class SummaryQualityTests(unittest.TestCase):
             self.assertEqual(editor.call_count, 2)
             reviewer.assert_called_once()
 
-    def test_editor_quality_failure_never_marks_prepared_and_retry_has_reason(self):
+    def test_missing_source_never_marks_prepared_or_wastes_a_prose_retry(self):
         editor = Mock(side_effect=[{'items': [{'id': '0', 'summary': SUMMARY}]},
                                   {'id': '0', 'summary': SUMMARY}, {'id': '0', 'summary': SUMMARY}])
         with patch('strategic_briefing._call_internal_ai', return_value={'accepted': False, 'reason': '来源不足'}) as reviewer:
             with self.assertRaises(SummaryQualityError):
                 prepare_digest([{'title': TITLE}], self.root, model_call=editor)
         self.assertFalse(list((self.root / 'var/subscriptions/news-editor').glob('*.json')))
-        self.assertIn('等待补充来源', json.loads(editor.call_args.args[1])['revision_required'])
+        editor.assert_called_once()
         reviewer.assert_not_called()
 
     def test_old_editor_cache_cannot_bypass_new_quality_gate(self):
@@ -200,6 +200,8 @@ class SummaryQualityTests(unittest.TestCase):
         review_summaries([source], [{'summary': SUMMARY}], self.root, model_call=model)
         schema = model.call_args.kwargs['response_format']['json_schema']['schema']['properties']
         payload = json.loads(model.call_args.args[1])
+        self.assertEqual(payload['comparison_title'], source['title'])
+        self.assertIn('原文中出现是证据', payload['comparison_rule'])
         self.assertIn(review['source_quote'], payload['source_quotes'])
         self.assertNotIn(REVIEW['source_quote'], payload['source_quotes'])
         self.assertTrue(all(q in SUMMARY for q in payload['summary_details']))
