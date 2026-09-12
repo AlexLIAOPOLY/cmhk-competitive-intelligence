@@ -224,11 +224,19 @@ PUBLIC_SNAPSHOT_BOOTSTRAP = r'''(() => {
     document.querySelectorAll([
       "#crawlButtonSecondary", "#generateButtonSecondary", "#generatePerformanceButton",
       "#aiSettingsButton", "#composerUploadFileButton", "#composerUploadImageButton",
-      "[data-generate-report]", "[data-intelligence-insight-refresh]",
-      "[data-intelligence-relation-refresh]", "[data-refresh-fault]",
+      "[data-generate-report]", "[data-refresh-fault]",
     ].join(",")).forEach((item) => {
       item.hidden = true;
       item.setAttribute("aria-hidden", "true");
+    });
+    // These controls also contain the published insight text. Keep it visible
+    // in the read-only page while disabling regeneration.
+    document.querySelectorAll("[data-intelligence-insight-refresh], [data-intelligence-relation-refresh]").forEach((item) => {
+      item.hidden = false;
+      item.removeAttribute("aria-hidden");
+      item.disabled = true;
+      item.setAttribute("aria-disabled", "true");
+      item.setAttribute("aria-label", item.textContent.trim());
     });
     document.querySelectorAll(".strategy-ticker-footer a").forEach((item) => item.hidden = true);
     document.querySelectorAll("#subscriptionAdmin button, #subscriptionAdmin input, #subscriptionAdmin select").forEach((item) => {
