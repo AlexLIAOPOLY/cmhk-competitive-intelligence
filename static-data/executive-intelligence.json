@@ -19297,12 +19297,12 @@
     {
       "from": "international",
       "to": "mainland",
-      "title": "国际运营商资本投入规模差异显著",
-      "detail": "NTT DOCOMO FY2025资本开支5729.73百万美元，中国移动FY2025净利润1370.95亿元，两者均保持资本投入；期间和口径不同，不能直接比较金额。",
+      "title": "国际靠单客价值，内地靠客户规模",
+      "detail": "NTT DOCOMO FY2025移动ARPU 26.46美元/月，中国移动FY2025移动客户数10.05亿户，分别体现单客价值与客户体量；指标、币种和口径不同，不能直接比较或推断经营高低。",
       "kind": "AI综合研判",
       "source_urls": [
-        "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
-        "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+        "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+        "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
       ],
       "origin": "ai"
     },
@@ -19341,14 +19341,129 @@
     "verified_public_fact_count": 9
   },
   "refresh": {
-    "ok": false,
-    "status": "running",
+    "ok": true,
+    "status": "completed",
     "started_at_hkt": "2026-09-12T12:18:20+08:00",
     "agent_run_id": "research_20260912",
     "dry_run": false,
     "task_run_id": "20260912_030043_443148",
     "attempt": 1,
-    "domains": {},
+    "domains": {
+      "local": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 161,
+          "path": "",
+          "latest_period": "",
+          "quality": "passed",
+          "verified_rows": 161,
+          "financial_reports": 5,
+          "latest_financial_period": "H1 2026",
+          "latest_financial_publication_date": "2026-08-27"
+        },
+        "note": "本轮研究事实由六Agent提交并更新审核事实层；此处校验现有本地竞对主表，不重复抓取。",
+        "agent_fact_update": {
+          "facts": 9,
+          "submitted_facts": 0,
+          "inserted_facts": 0,
+          "confirmed_facts": 0,
+          "changed": false,
+          "published": false
+        },
+        "database_changed": false
+      },
+      "international": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 3079,
+          "path": "",
+          "latest_period": "Jun '26 Jun 30, 2026",
+          "quality": "passed",
+          "verified_rows": 2693
+        },
+        "note": "本次仅验证现有数据库，未执行联网重建。",
+        "agent_fact_update": {
+          "facts": 4,
+          "submitted_facts": 0,
+          "inserted_facts": 0,
+          "confirmed_facts": 0,
+          "changed": false,
+          "published": false
+        },
+        "database_changed": false
+      },
+      "cloud": {
+        "ok": true,
+        "changed": false,
+        "validation": {
+          "rows": 430,
+          "path": "",
+          "latest_period": "2025",
+          "quality": "passed",
+          "verified_rows": 171
+        },
+        "note": "本次仅验证现有数据库，未执行联网重建。",
+        "agent_fact_update": {
+          "facts": 0,
+          "submitted_facts": 0,
+          "inserted_facts": 0,
+          "confirmed_facts": 0,
+          "changed": false,
+          "published": false
+        },
+        "database_changed": false
+      },
+      "macro": {
+        "ok": true,
+        "changed": false,
+        "promoted": false,
+        "validation": {
+          "rows": 7778,
+          "path": "/var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-2q1yw6ct/dataset/macro_policy_metrics.json",
+          "latest_period": "2026-08-31",
+          "quality": "passed",
+          "verified_rows": 7775
+        },
+        "stdout_tail": "wrote 7778 rows to /var/folders/72/7jv3g1p53s5bnfg_4wh4wqwm0000gn/T/cmhk-macro-refresh-2q1yw6ct/dataset\n",
+        "completed_at_hkt": "2026-09-12T06:39:10+08:00",
+        "run_id": "research_20260912",
+        "live_refresh": true,
+        "readback_hash": "ee3ceda172feab38ed58967a6f58845798375f0c5c53bd73eaa273d5e14eb293",
+        "reused": true
+      },
+      "mainland": {
+        "ok": true,
+        "changed": false,
+        "daily_main_database_promotion": {
+          "ok": true,
+          "changed": false,
+          "dry_run": false,
+          "added_rows": 0,
+          "candidates": 3,
+          "written": 3,
+          "not_written": 0,
+          "failures": [],
+          "tables": {
+            "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json": {
+              "added_rows": 0,
+              "candidates": 3,
+              "rows": 3079
+            }
+          }
+        },
+        "agent_fact_update": {
+          "facts": 3,
+          "submitted_facts": 3,
+          "inserted_facts": 0,
+          "confirmed_facts": 3,
+          "changed": false,
+          "published": false
+        },
+        "database_changed": false
+      }
+    },
     "ui_contract": {
       "domain_ids": [
         "local",
@@ -19358,7 +19473,425 @@
       ],
       "supporting_database_ids": [
         "macro"
-      ]
+      ],
+      "focuses_expected": 15,
+      "focuses_passed": 15,
+      "discoveries_expected": 4,
+      "discoveries_passed": 4,
+      "insights_expected": 19,
+      "insights_passed": 19,
+      "summary_domain_ids": [
+        "local",
+        "international",
+        "mainland",
+        "cloud"
+      ],
+      "aligned": true
+    },
+    "news_database_signals": {
+      "available": false,
+      "required": false,
+      "reason": "research_agents_search_in_current_run"
+    },
+    "ai_analysis": {
+      "ok": true,
+      "changed": false,
+      "domain_counts": {
+        "local": 0,
+        "international": 0,
+        "mainland": 3,
+        "cloud": 0,
+        "macro": 0
+      },
+      "path": ""
+    },
+    "domain_fact_sidecars": {
+      "local": {
+        "path": "",
+        "facts": 9,
+        "submitted_facts": 0,
+        "inserted_facts": 0,
+        "already_saved_facts": 0,
+        "confirmed_facts": 0,
+        "ok": true,
+        "changed": false,
+        "published": false,
+        "items": []
+      },
+      "international": {
+        "path": "",
+        "facts": 4,
+        "submitted_facts": 0,
+        "inserted_facts": 0,
+        "already_saved_facts": 0,
+        "confirmed_facts": 0,
+        "ok": true,
+        "changed": false,
+        "published": false,
+        "items": []
+      },
+      "mainland": {
+        "path": "",
+        "facts": 3,
+        "submitted_facts": 3,
+        "inserted_facts": 0,
+        "already_saved_facts": 3,
+        "confirmed_facts": 3,
+        "ok": true,
+        "changed": false,
+        "published": false,
+        "items": [
+          {
+            "id": "16931330e8e0cccf88996afb",
+            "company": "中国联通",
+            "metric": "收入",
+            "period": "2Q2026",
+            "path": "",
+            "status": "already_saved",
+            "readback_verified": true
+          },
+          {
+            "id": "fca9f1ce5891752f2ef2a66c",
+            "company": "中国联通",
+            "metric": "EBITDA",
+            "period": "2Q2026",
+            "path": "",
+            "status": "already_saved",
+            "readback_verified": true
+          },
+          {
+            "id": "21400014970d1a612b20642b",
+            "company": "中国联通",
+            "metric": "净利润",
+            "period": "2Q2026",
+            "path": "",
+            "status": "already_saved",
+            "readback_verified": true
+          }
+        ]
+      },
+      "cloud": {
+        "path": "",
+        "facts": 0,
+        "submitted_facts": 0,
+        "inserted_facts": 0,
+        "already_saved_facts": 0,
+        "confirmed_facts": 0,
+        "ok": true,
+        "changed": false,
+        "published": false,
+        "items": []
+      }
+    },
+    "daily_main_database_promotion": {
+      "ok": true,
+      "changed": false,
+      "dry_run": false,
+      "added_rows": 0,
+      "candidates": 3,
+      "written": 3,
+      "not_written": 0,
+      "failures": [],
+      "tables": {
+        "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json": {
+          "added_rows": 0,
+          "candidates": 3,
+          "rows": 3079
+        }
+      }
+    },
+    "storage_readback": {
+      "schema_version": 2,
+      "policy": "formal_kpi_binary_v1",
+      "checked_at": "2026-09-12T12:18:22+08:00",
+      "accepted": 3,
+      "written": 3,
+      "not_written": 0,
+      "records_read": 3,
+      "confirmed": 3,
+      "missing": 0,
+      "main_missing": 0,
+      "ok": true,
+      "errors": [],
+      "items": [
+        {
+          "id": "16931330e8e0cccf88996afb",
+          "company": "中国联通",
+          "metric": "收入",
+          "period": "2Q2026",
+          "domain": "mainland",
+          "destination": "内地运营商正式指标表",
+          "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+          "evidence_saved": true,
+          "value": "98,540 RMB Millions",
+          "unit": "RMB Millions",
+          "main_table": {
+            "status": "written",
+            "reason": "正式表中的数值、单位和来源证据已回读确认",
+            "subject": "中国联通",
+            "period": "Q2 2026",
+            "period_end": "2026-06-30",
+            "metric_key": "revenue",
+            "metric_zh": "营业收入",
+            "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+            "current_value": 98540,
+            "candidate_value": 98540,
+            "unit": "millions CNY",
+            "source_url": "https://www.chinaunicom.com.hk/en/ir/highlights.php",
+            "row_key": {
+              "subject": "中国联通",
+              "period": "Q2 2026",
+              "metric_key": "revenue"
+            }
+          },
+          "status": "written",
+          "readback_verified": true,
+          "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+          "reason": "正式表中的数值、单位和来源证据已回读确认"
+        },
+        {
+          "id": "fca9f1ce5891752f2ef2a66c",
+          "company": "中国联通",
+          "metric": "EBITDA",
+          "period": "2Q2026",
+          "domain": "mainland",
+          "destination": "内地运营商正式指标表",
+          "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+          "evidence_saved": true,
+          "value": "23,085 RMB Millions",
+          "unit": "RMB Millions",
+          "main_table": {
+            "status": "written",
+            "reason": "正式表中的数值、单位和来源证据已回读确认",
+            "subject": "中国联通",
+            "period": "Q2 2026",
+            "period_end": "2026-06-30",
+            "metric_key": "ebitda",
+            "metric_zh": "EBITDA",
+            "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+            "current_value": 23085,
+            "candidate_value": 23085,
+            "unit": "millions CNY",
+            "source_url": "https://www.chinaunicom.com.hk/en/ir/highlights.php",
+            "row_key": {
+              "subject": "中国联通",
+              "period": "Q2 2026",
+              "metric_key": "ebitda"
+            }
+          },
+          "status": "written",
+          "readback_verified": true,
+          "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+          "reason": "正式表中的数值、单位和来源证据已回读确认"
+        },
+        {
+          "id": "21400014970d1a612b20642b",
+          "company": "中国联通",
+          "metric": "净利润",
+          "period": "2Q2026",
+          "domain": "mainland",
+          "destination": "内地运营商正式指标表",
+          "evidence_path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/agent_verified_facts.json",
+          "evidence_saved": true,
+          "value": "4,583 RMB Millions",
+          "unit": "RMB Millions",
+          "main_table": {
+            "status": "written",
+            "reason": "正式表中的数值、单位和来源证据已回读确认",
+            "subject": "中国联通",
+            "period": "Q2 2026",
+            "period_end": "2026-06-30",
+            "metric_key": "net_income",
+            "metric_zh": "净利润",
+            "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+            "current_value": 4583,
+            "candidate_value": 4583,
+            "unit": "millions CNY",
+            "source_url": "https://www.chinaunicom.com.hk/en/ir/highlights.php",
+            "row_key": {
+              "subject": "中国联通",
+              "period": "Q2 2026",
+              "metric_key": "net_income"
+            }
+          },
+          "status": "written",
+          "readback_verified": true,
+          "path": "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json",
+          "reason": "正式表中的数值、单位和来源证据已回读确认"
+        }
+      ],
+      "domain_counts": {
+        "local": 0,
+        "international": 0,
+        "mainland": 3,
+        "cloud": 0
+      }
+    },
+    "overview_source_recrawl": {
+      "ok": true,
+      "skipped": true,
+      "reason": "official_pages_already_read_by_research_agents"
+    },
+    "model_analysis": {
+      "ok": true,
+      "generation_policy": "model_generated_only_v1",
+      "generated_at_hkt": "2026-09-12T12:18:22+08:00",
+      "model": "DeepSeek-V4-Pro+GLM+deepseek-v4-free",
+      "domains": 4,
+      "focuses_expected": 15,
+      "focuses_passed": 15,
+      "discoveries_expected": 4,
+      "discoveries_passed": 4,
+      "insights_expected": 19,
+      "insights_passed": 19,
+      "reused": false,
+      "presentation_warnings": [
+        {
+          "code": "writing_target_exceeded",
+          "scope": "local.ebitda",
+          "field": "analysis",
+          "characters": 134,
+          "target_characters": 120,
+          "publication_max_characters": 160,
+          "model_text_preserved": true
+        },
+        {
+          "code": "writing_target_exceeded",
+          "scope": "international.revenue",
+          "field": "analysis",
+          "characters": 125,
+          "target_characters": 120,
+          "publication_max_characters": 160,
+          "model_text_preserved": true
+        },
+        {
+          "code": "headline_style_advisory",
+          "scope": "international.capex",
+          "field": "headline",
+          "message": "标题可进一步精炼经营含义；事实校验通过，正常发布",
+          "characters": 15,
+          "target_characters": 28,
+          "publication_max_characters": 36,
+          "model_text_preserved": true
+        },
+        {
+          "code": "headline_style_advisory",
+          "scope": "mainland.ebitda",
+          "field": "headline",
+          "message": "标题可进一步精炼经营含义；事实校验通过，正常发布",
+          "characters": 16,
+          "target_characters": 28,
+          "publication_max_characters": 36,
+          "model_text_preserved": true
+        },
+        {
+          "code": "headline_style_advisory",
+          "scope": "mainland.net_profit",
+          "field": "headline",
+          "message": "标题可进一步精炼经营含义；事实校验通过，正常发布",
+          "characters": 15,
+          "target_characters": 28,
+          "publication_max_characters": 36,
+          "model_text_preserved": true
+        },
+        {
+          "code": "headline_style_advisory",
+          "scope": "cloud.revenue",
+          "field": "headline",
+          "message": "标题可进一步精炼经营含义；事实校验通过，正常发布",
+          "characters": 13,
+          "target_characters": 28,
+          "publication_max_characters": 36,
+          "model_text_preserved": true
+        },
+        {
+          "code": "writing_target_exceeded",
+          "scope": "cloud.profit",
+          "field": "analysis",
+          "characters": 124,
+          "target_characters": 120,
+          "publication_max_characters": 160,
+          "model_text_preserved": true
+        }
+      ],
+      "fallback_used": false,
+      "fallback_reason": "",
+      "evidence_hash": "67d9bd6d1ac2dbe317c4582f5909d2ff287bb331bc2d00c04f1f59b1366cfa61",
+      "discovery_model": "DeepSeek-V4-Pro+Qwen3-30B-A3B-Instruct-2507",
+      "discovery_evidence_repair_count": 0,
+      "discovery_fallback_used": false,
+      "discovery_fallback_reason": ""
+    },
+    "ui_value_changes": {
+      "baseline_available": true,
+      "method": "same UI field numeric old-to-new comparison; source-page fingerprints excluded",
+      "changed": 0,
+      "added": 0,
+      "removed": 0,
+      "domains": {
+        "local": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "international": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "mainland": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        },
+        "cloud": {
+          "baseline_available": true,
+          "changed": 0,
+          "added": 0,
+          "removed": 0
+        }
+      },
+      "items": []
+    },
+    "pages_publish": {
+      "ok": true,
+      "attempts": 1,
+      "status": "published",
+      "site_version": "1e67a220794fa31d23e89cc412012848a6f01f486cf9a39cab062ca5a74248ea",
+      "item_count": 8,
+      "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+      "commit": "1860c5befccaeba0ef90550802cef5d6daf9923b",
+      "workbench_sha256": "12240c93afdadc2ae5e51011e2172d0d85485b203b44ba3b6f1c00300cef439b",
+      "snapshot_source_url": ""
+    },
+    "failed_domains": [],
+    "completed_at_hkt": "2026-09-12T12:21:04+08:00",
+    "duration_ms": 163653,
+    "fallback_preserved": false,
+    "change_summary": {
+      "database_changed_domains": [],
+      "source_content_changed_domains": [],
+      "ui_numeric_changed_domains": [],
+      "ui_verified": true
+    },
+    "feishu_detail_log": {
+      "ok": true,
+      "written": 1,
+      "skipped": 630,
+      "created": false,
+      "sheet_title": "四库爬虫明细日志",
+      "sheet_url": "",
+      "row_start": 108946,
+      "row_end": 108946,
+      "readback_verified": true,
+      "readback_reason": "live_full_event_id_readback",
+      "readback_scope": "all_live_event_ids",
+      "live_event_count": 108945,
+      "event_index_sha256": "7ddbd15d9734a4c2e3c5c8e0cc2c3e81958a7990e3d4cf2e94499240d9446a6f",
+      "write_recovered_by_readback": false
     }
   },
   "ui_contract": {
@@ -19378,7 +19911,7 @@
     "focuses_summarized": 15,
     "model_analysis_fresh": true,
     "aligned": true,
-    "last_checked_at_hkt": "2026-09-12T12:18:20+08:00"
+    "last_checked_at_hkt": "2026-09-12T12:21:04+08:00"
   },
   "ai": {
     "agent_run_id": "research_20260912",
@@ -19391,7 +19924,7 @@
       "macro": 0
     },
     "model_analysis": {
-      "generated_at_hkt": "2026-09-12T12:18:22+08:00",
+      "generated_at_hkt": "2026-09-12T12:33:21+08:00",
       "model": "DeepSeek-V4-Pro+GLM+deepseek-v4-free",
       "summaries": [
         {
@@ -20707,12 +21240,12 @@
         {
           "from": "international",
           "to": "mainland",
-          "title": "国际运营商资本投入规模差异显著",
-          "detail": "NTT DOCOMO FY2025资本开支5729.73百万美元，中国移动FY2025净利润1370.95亿元，两者均保持资本投入；期间和口径不同，不能直接比较金额。",
+          "title": "国际靠单客价值，内地靠客户规模",
+          "detail": "NTT DOCOMO FY2025移动ARPU 26.46美元/月，中国移动FY2025移动客户数10.05亿户，分别体现单客价值与客户体量；指标、币种和口径不同，不能直接比较或推断经营高低。",
           "kind": "AI综合研判",
           "source_urls": [
-            "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/presentation/260508/presentation_fy2025_4q_e.pdf",
-            "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0423/2026042300752.pdf"
+            "https://www.docomo.ne.jp/english/corporate/ir/binary/pdf/library/finance/annual/annual_e.pdf?ver=1750381212",
+            "https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf"
           ]
         },
         {
@@ -20738,13 +21271,37 @@
           ]
         }
       ],
-      "discovery_model": "DeepSeek-V4-Pro+Qwen3-30B-A3B-Instruct-2507",
-      "discovery_generated_at_hkt": "2026-09-12T12:20:04+08:00",
+      "discovery_model": "deepseek-v4-free",
+      "discovery_generated_at_hkt": "2026-09-12T12:33:21+08:00",
       "generation_policy": "model_generated_only_v1",
       "discovery_fallback_used": false,
       "evidence_hash": "67d9bd6d1ac2dbe317c4582f5909d2ff287bb331bc2d00c04f1f59b1366cfa61",
       "insight_format": "strategic_operating_judgement_v9",
-      "reused": false
+      "reused": false,
+      "manual_discovery_regeneration_counts": {
+        "international.mainland": 1
+      },
+      "manual_discovery_regeneration_history": {
+        "international.mainland": [
+          "国际运营商资本投入规模差异显著NTTDOCOMOFY2025资本开支5729.73百万美元，中国移动FY2025净利润1370.95亿元，两者均保持资本投入；期间和口径不同，不能直接比较金额。",
+          "国际靠单客价值，内地靠客户规模NTTDOCOMOFY2025移动ARPU26.46美元/月，中国移动FY2025移动客户数10.05亿户，分别体现单客价值与客户体量；指标、币种和口径不同，不能直接比较或推断经营高低。"
+        ]
+      },
+      "manual_discovery_regeneration_title_history": {
+        "international.mainland": [
+          "国际运营商资本投入规模差异显著",
+          "国际靠单客价值，内地靠客户规模"
+        ]
+      },
+      "manual_discovery_regeneration": {
+        "index": 1,
+        "from": "international",
+        "to": "mainland",
+        "generated_at_hkt": "2026-09-12T12:33:21+08:00",
+        "count": 1,
+        "fallback_used": false,
+        "fallback_reason": ""
+      }
     },
     "evidence_hash": "67d9bd6d1ac2dbe317c4582f5909d2ff287bb331bc2d00c04f1f59b1366cfa61",
     "model_analysis_fresh": true,
