@@ -3,6 +3,7 @@ import sqlite3
 import tempfile
 import threading
 import unittest
+from contextlib import nullcontext
 from concurrent.futures import Future
 from datetime import datetime
 from pathlib import Path
@@ -173,7 +174,9 @@ class SubscriptionClockTests(unittest.TestCase):
         self.send.assert_not_called()
 
     def test_late_material_prepares_immediately_then_sends_once(self):
-        self.tick('08:20:00')
+        with mock.patch('ai_dispatch.request_context', return_value=nullcontext()) as admission:
+            self.tick('08:20:00')
+        self.assertIn('interactive', [call.kwargs['priority'] for call in admission.call_args_list])
         self.send.assert_not_called()
         self.tick('08:20:01')
         self.assertEqual(self.send.call_count, 1)

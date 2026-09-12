@@ -52,11 +52,14 @@ class SubscriptionDeliveryWorker:
 
     def _prepare(self, row):
         # This operation persists the exact card, without contacting Feishu IM.
-        with preparation_window(row.get('_preparation_seconds', 600)):
-            deliver_news(self.service, open_id=row['open_id'], content_ref=row['content_ref'],
-                         title=row['title'], body=row['body'], batch_id=row['batch_id'],
-                         profile=self.service.delivery_profile, prepare_only=True,
-                         continue_preparation=row.get('_continue_preparation', False))
+        from ai_dispatch import request_context
+        with request_context('personal-news:' + row['open_id'],
+                             priority=row.get('_ai_priority', 'background')):
+            with preparation_window(row.get('_preparation_seconds', 600)):
+                deliver_news(self.service, open_id=row['open_id'], content_ref=row['content_ref'],
+                             title=row['title'], body=row['body'], batch_id=row['batch_id'],
+                             profile=self.service.delivery_profile, prepare_only=True,
+                             continue_preparation=row.get('_continue_preparation', False))
 
     def tick(self, now=None):
         now = (now or datetime.now(HKT)).astimezone(HKT)
@@ -123,6 +126,7 @@ class SubscriptionDeliveryWorker:
                         and len(self.preparing) < PREPARATION_WORKERS
                         and self.retry_after.get(identifier, 0) <= time.monotonic()):
                     work = {**row, '_continue_preparation': continue_early,
+                            '_ai_priority': 'interactive' if is_due else 'background',
                             '_preparation_seconds': min(600, max(1, (due-now).total_seconds())) if not is_due else 600}
                     self.preparing[identifier] = self.preparers.submit(self._prepare, work)
             if (is_due and (ready or (news and not allowed))
