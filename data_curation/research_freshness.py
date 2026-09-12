@@ -19,7 +19,9 @@ def metric_key(value):
                "capital_expenditures": "资本开支", "capital_expenditure": "资本开支",
                "cloud_revenue": "云收入", "capex": "资本开支", "mobile_arpu": "ARPU",
                "营业收入": "收入", "subscribers": "用户数", "tower_sites": "站址数",
-               "operating_income": "经营利润", "arpu": "ARPU"}
+               "operating_income": "经营利润", "arpu": "ARPU", "postpaid_subscribers": "后付费用户数",
+               "postpaid_connections": "后付费用户数", "mobile_subscribers": "移动客户数",
+               "group_capex": "资本开支", "cloud_operating_profit": "经营利润"}
     return aliases.get(text, text)
 
 
@@ -30,6 +32,10 @@ def period_key(value):
     if not years:
         return None
     year = int(years[-1])
+    if re.search(r"nine months|year.to.date|九个月|首三季|前三季", text):
+        return year, 9, "ytd"
+    if re.search(r"month ended|月份|20\d{2}年\d{1,2}月$", text):
+        return year, 1, "month"
     month_words = "january february march april may june july august september october november december".split()
     span = re.search(r"(january|april|july|october)\s*[-–]\s*(march|june|september|december)\s+(20\d{2})", text)
     if span and ("quarter" in text or re.search(r"\bq[1-4]\b", text)):
@@ -70,20 +76,19 @@ def load_baseline(root: Path) -> dict:
         "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json",
         "requested_overview_010304_2016_2025/annual_facts.json",
         "cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json")]
-    index = {}
-    aliases = {"3HK / Hutchison": "3HK", "HKT / csl / 1O1O": "HKT",
-               "NTT DOCOMO": "NTT Docomo", "NTT Group": "NTT", "SoftBank Corp.": "SoftBank"}
+    index, schema = {}, {}
+    from .research_contracts import canonical_company
     def visit(row, inherited=None):
         if isinstance(row, list):
             for value in row:
                 visit(value, inherited)
         elif isinstance(row, dict):
             context = {**(inherited or {}), **{k: v for k, v in row.items() if k in
-                ("company", "subject", "operator", "vendor", "entity", "period", "unit", "source_url", "publication_date", "fiscal_year", "year")}}
+                ("company", "subject", "operator", "vendor", "entity", "period", "period_end", "grain", "currency", "unit", "source_url", "publication_date", "fiscal_year", "year")}}
             if row.get("fiscal_year") is not None and not row.get("period"):
                 context["period"] = "FY" + str(row["fiscal_year"])
             name = context.get("company") or context.get("subject") or context.get("operator") or context.get("vendor") or context.get("entity")
-            company = aliases.get(name, name)
+            company = canonical_company(name)
             metric = metric_key(row.get("metric") or row.get("metric_key") or row.get("metric_zh"))
             # Overview focus IDs are domain-dependent (cloud revenue is not group revenue).
             domain = str(row.get("domain") or "")
@@ -98,13 +103,27 @@ def load_baseline(root: Path) -> dict:
                 elif focus == "profit" and domain in {"04", "cloud"}:
                     metric = "经营利润"
             value = row.get("value", row.get("analysis"))
-            if company and metric and value not in (None, ""):
+            if metric == "用户数" and company in {"中国移动", "中国电信", "中国联通", "中国广电"}:
+                metric = "移动客户数"
+            if company and metric:
                 item = {"period": context.get("period") or str(context.get("fiscal_year") or context.get("year") or ""), "value": value,
                         "unit": context.get("unit", ""), "source_url": context.get("source_url") or row.get("official_source_url") or row.get("primary_source_url") or next(iter(row.get("source_urls") or []), ""),
-                        "scope": row.get("scope") or row.get("scope_note", "")}
-                bucket = index.setdefault(company, {}).setdefault(metric, [])
-                if item not in bucket:
-                    bucket.append(item)
+                        "scope": row.get("scope") or row.get("scope_note", ""),
+                        "source_path": str(path.relative_to(root)), "field": row.get("metric_key", ""),
+                        "grain": context.get("grain", ""), "period_end": context.get("period_end", ""),
+                        "currency": context.get("currency", ""),
+                        "daily_research_run_id": row.get("daily_research_run_id", "")}
+                item.update({k: row.get(k) for k in ("daily_fact_id", "daily_crawl_row_ref", "daily_evidence_hash", "verification_method")})
+                if not item["period_end"] and row.get("fiscal_year"):
+                    import calendar
+                    from .research_kpi import FISCAL_END
+                    y, month = int(row["fiscal_year"]), FISCAL_END.get(company, 12)
+                    item["period_end"] = f"{y:04d}-{month:02d}-{calendar.monthrange(y, month)[1]}"
+                schema.setdefault(company, {}).setdefault(metric, []).append(item)
+                if value not in (None, ""):
+                    bucket = index.setdefault(company, {}).setdefault(metric, [])
+                    if item not in bucket:
+                        bucket.append(item)
             for key in ("rows", "facts", "reports", "metrics"):
                 if isinstance(row.get(key), list):
                     visit(row[key], context)
@@ -115,14 +134,24 @@ def load_baseline(root: Path) -> dict:
         # An unreadable existing database must not look like an empty baseline.
         visit(json.loads(path.read_text(encoding="utf-8")))
         loaded.append(str(path.relative_to(root)))
-    return {"policy": POLICY, "sources": loaded, "companies": index}
+    from .research_contracts import build_contract, VERSION
+    for company, metrics in schema.items():
+        index.setdefault(company, {})["_contracts"] = {
+            metric: build_contract(company, metric, rows) for metric, rows in metrics.items()}
+    return {"policy": POLICY, "contract_version": VERSION, "sources": loaded, "companies": index}
 
 
 def compare_candidate(item: dict, baseline: dict) -> dict:
     """Only a new metric/period qualifies. Preserve stored values at identical or older periods."""
     if item.get("status") != "verified":
         return item
-    existing = baseline.get(metric_key(item.get("metric")), [])
+    from .research_contracts import candidate_error, contract_for
+    error = candidate_error(item.get("company"), item.get("metric"), item.get("period"), baseline)
+    if error:
+        return {**item, "status": "out_of_scope", "freshness": "incompatible_series", "reason": error,
+                "storage_contract": contract_for(item.get("company"), item.get("metric"), baseline)}
+    from .research_contracts import matching_baseline
+    existing = matching_baseline(item.get("company"), item.get("metric"), baseline)
     period = period_key(item.get("period"))
     result = dict(item)
     result["baseline"] = existing

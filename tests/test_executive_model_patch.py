@@ -199,6 +199,7 @@ class ExecutiveModelPatchTests(unittest.TestCase):
             repair['response'] = {'choices': [{'message': {'content': json.dumps(packet, ensure_ascii=False)},
                                                'finish_reason': 'stop'}]}
         key = pipeline._content_hash({'format': pipeline.INSIGHT_FORMAT_VERSION,
+                                     'prompt_version': pipeline.STRATEGIC_PROMPT_VERSION,
                                      'checkpoint_protocol': 2, 'scope': self.scope})
         checkpoint.with_suffix('.drafts.json').write_text(json.dumps({key: {
             'evidence_hash': pipeline._content_hash(self.scope), 'repair': repair,
@@ -347,7 +348,7 @@ class ExecutiveModelPatchTests(unittest.TestCase):
                     ('revenue', '应优先扩大云收入底盘'), ('revenue', '云收入底盘主导披露更新')]
         for focus, title in accepted + rejected:
             with self.subTest(title=title):
-                self.assertEqual(not bool(pipeline._focus_headline_gate_error('cloud', focus, title)),
+                self.assertEqual(not bool(pipeline._focus_headline_style_note('cloud', focus, title)),
                                  (focus, title) in accepted)
 
     def test_revalidated_model_text_can_pass_spent_budget_without_another_http(self):
@@ -372,6 +373,29 @@ class ExecutiveModelPatchTests(unittest.TestCase):
                 self.assertEqual(stored['status'], 'passed')
                 self.assertEqual(stored['history'], history)
                 self.assertEqual(len(stored['history']), count)
+
+    def test_transport_cooldown_preserves_history_and_defers_without_spending_model_edits(self):
+        with tempfile.TemporaryDirectory() as td:
+            checkpoint = Path(td) / 'ai.json'
+            self.seed_repair(checkpoint)
+            draft_path = checkpoint.with_suffix('.drafts.json')
+            drafts = json.loads(draft_path.read_text())
+            entry = next(iter(drafts.values()))
+            old = {**entry['repair'], 'reported_model': None, 'error': 'APIKeyPoolUnavailable: shared cooldown', 'http_calls': 0}
+            entry['repair'] = {**old, 'history': [dict(old) for _ in range(3)]}
+            draft_path.write_text(json.dumps(drafts))
+            with patch.object(pipeline, 'open_llm_request', side_effect=TimeoutError('connection timed out')) as request:
+                with self.assertRaises(Exception):
+                    pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            self.assertEqual(request.call_count, 1)
+            history = next(iter(json.loads(draft_path.read_text()).values()))['repair']['history']
+            self.assertEqual(len(history), 4)
+            self.assertEqual(history[-1]['status'], 'deferred_transport')
+            with patch.object(pipeline, 'open_llm_request', return_value=model_response({'patches':[
+                    {'path':'/focuses/0/analysis','value':self.valid['focuses'][0]['analysis']}]}, model='actual-recovery')) as request:
+                result=pipeline.generate_model_domain_summaries(self.scope, checkpoint_path=checkpoint)
+            self.assertEqual(request.call_count, 1)
+            self.assertEqual(result['summaries'][0]['focuses'], self.valid['focuses'])
 
     def presentation_draft(self, body_length=138, title_length=29):
         candidate = copy.deepcopy(self.valid)

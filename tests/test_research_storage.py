@@ -23,16 +23,23 @@ def fact(**updates):
 
 
 class ResearchStorageTests(unittest.TestCase):
+    def seed_subscribers(self, root):
+        template = root / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
+        template.parent.mkdir(parents=True, exist_ok=True)
+        template.write_text(json.dumps({'reports':[{'company':'HKT','period':'H1 2024',
+             'metrics':[{'metric_key':'subscribers','value':100,'unit':'人'}]}]}))
+
     def test_pipeline_projection_and_api_readback_preserve_periods_zero_and_detect_drift(self):
         import executive_intelligence_pipeline as pipeline
         from data_curation.research_readback import research_snapshot
         from data_curation.research_plan import ARCHITECTURE_VERSION
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            self.seed_subscribers(root)
             run = root / "curation_data/research_runs/research_20260910"
             run.mkdir(parents=True)
-            facts = [fact(metric="用户数", value=0, unit="人", id="first"),
-                     fact(metric="用户数", value=1, unit="人", id="second", period="Q3 2026")]
+            facts = [fact(metric="用户数", value=0, unit="人", id="first", period="H1 2025"),
+                     fact(metric="用户数", value=1, unit="人", id="second", period="H1 2026")]
             verified = run / "verified_facts.jsonl"
             verified.write_text('\n'.join(json.dumps(item) for item in facts))
             manifest = {"architecture": ARCHITECTURE_VERSION, "research_policy": "latest_disclosure_incremental_v1",
@@ -95,6 +102,7 @@ class ResearchStorageTests(unittest.TestCase):
     def test_current_readback_detects_later_overwrite_and_missing_accepted_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
+            self.seed_subscribers(root)
             path = root / DOMAIN_PATHS["local"]
             raw = fact(metric="用户数", value=0, unit="人")
             self.merge(path, [raw])
@@ -135,7 +143,8 @@ class ResearchStorageTests(unittest.TestCase):
             verified.write_text('\n'.join(json.dumps(fact(period=p)) for p in ["H1 2026", "Q3 2026"]))
             args = dict(database_path=path, local_financial_path=root / "absent", verified_facts_path=verified, incremental_only=True)
             result = promote_daily_financial_facts(**args)
-            self.assertEqual(result["added_rows"], 1)
+            self.assertEqual(result["added_rows"], 0)
+            self.assertEqual(result["excluded_count"], 1, 'A quarter cannot enter a half-year series')
             payload = json.loads(path.read_text())
             self.assertEqual(payload["subjects"][0]["metrics"]["revenue"]["H1 2026"], 100)
             self.assertIn(old, payload["rows"])

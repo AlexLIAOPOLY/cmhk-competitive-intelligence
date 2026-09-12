@@ -339,6 +339,26 @@ def _promote_daily_financial_facts(*, database_path: Path, local_financial_path:
     local_payload = {} if incremental_only else read_object(local_financial_path, missing_ok=True)
     verified_lines = verified_facts_path.read_text(encoding="utf-8").splitlines()
     candidates = _incremental_rows(verified_lines) if incremental_only else _candidate_rows(local_payload, verified_lines)
+    # Both old/manual and incremental daily adapters must respect existing series.
+    from data_curation.research_freshness import load_baseline, metric_key
+    from data_curation.research_contracts import build_contract, formal_record_fact, formal_row_error, is_daily_row
+    root = next((p.parent for p in database_path.parents if p.name == "agent_knowledge"), None)
+    baseline = load_baseline(root).get("companies", {}) if root else {}
+    if root is None:
+        # Standalone callers still derive their contract from the supplied table.
+        for old in current_rows:
+            fact = formal_record_fact(old)
+            baseline.setdefault(fact["company"], {}).setdefault(metric_key(fact["metric"]), []).append(
+                {**old, "field": old.get("metric_key"), "period": fact["period"]})
+    excluded, eligible = [], []
+    for candidate in candidates:
+        fact = formal_record_fact(candidate)
+        error = formal_row_error(fact, candidate, baseline.get(fact["company"], {}))
+        if error:
+            excluded.append({**fact, "reason": error})
+        else:
+            eligible.append(candidate)
+    candidates = eligible
     keyed = {(str(row.get("subject") or ""), str(row.get("period") or ""), str(row.get("metric_key") or "")): row for row in current_rows}
     if len(keyed) != len(current_rows):
         raise ValueError("Duplicate primary keys in formal KPI table; refusing silent deletion")
@@ -394,5 +414,6 @@ def _promote_daily_financial_facts(*, database_path: Path, local_financial_path:
         if actual != (rows if changed or incremental_only else current_rows):
             raise ValueError("Formal KPI readback differs from intended rows")
     return {"ok": True, "changed": changed, "candidates": len(candidates), "added_rows": added,
+            "excluded": excluded, "excluded_count": len(excluded),
             "upgraded_rows": upgraded, "preserved_stronger_rows": preserved,
             "published_rows": len(rows), "dry_run": dry_run}

@@ -312,11 +312,22 @@ def prepare_facts(root, facts, run_id, *, allow_replay=False):
     from .research_freshness import load_baseline, metric_key, period_key
     indexes = formal_indexes(root)
     baseline = load_baseline(root).get("companies", {})
+    from .research_contracts import candidate_error, formal_row_error, contract_for
     seen, output, decisions = {}, [], []
     for original in facts:
         fact = dict(original)
         if allow_replay and fact.get("preflight_original"):
             fact.update(fact["preflight_original"])
+        company_baseline = baseline.get(fact.get("company"), {})
+        error = candidate_error(fact.get("company"), fact.get("metric"), fact.get("period"), company_baseline)
+        if error:
+            fact.update(decision="excluded", research_status="out_of_scope", status="unavailable",
+                        freshness="incompatible_series", reasons=[error],
+                        storage_contract=contract_for(fact.get("company"), fact.get("metric"), company_baseline),
+                        write_preflight={"status": "excluded", "reason": error})
+            output.append(fact)
+            decisions.append({"id": fact.get("id"), "company": fact.get("company"), "metric": fact.get("metric"), **fact["write_preflight"]})
+            continue
         if fact.get("decision") != "accepted":
             if fact.get("research_status") == "no_update":
                 previous = baseline.get(fact.get("company"), {}).get(metric_key(fact.get("metric")), [])
@@ -339,10 +350,14 @@ def prepare_facts(root, facts, run_id, *, allow_replay=False):
         fact["research_run_id"] = run_id
         fact["research_status"] = "verified"
         row, path, error = normalize_fact(fact)
+        series_error = ""
+        if row and not error:
+            series_error = formal_row_error(fact, row, company_baseline)
+            error = series_error
         state, reason = "ready", "终审通过，提交正式数据库写入"
         target = {"path": path}
         if error:
-            state, reason = "rejected", error
+            state, reason = "excluded" if series_error else "rejected", error
         else:
             key = (path, *row_key(row, path))
             current = indexes[path].get(row_key(row, path))
@@ -374,6 +389,8 @@ def prepare_facts(root, facts, run_id, *, allow_replay=False):
             fact.update(decision="unchanged", research_status="no_update", freshness="existing_period" if state == "existing" else "duplicate_in_batch", reasons=[reason])
         elif state == "rejected":
             fact.update(decision="review", research_status="conflict", status="unavailable", reasons=[reason])
+        elif state == "excluded":
+            fact.update(decision="excluded", research_status="out_of_scope", status="unavailable", reasons=[reason])
         fact["write_preflight"] = {**target, "status": state, "reason": reason}
         decisions.append({"id": fact.get("id"), "company": fact.get("company"), "metric": fact.get("metric"),
                           **fact["write_preflight"]})
@@ -396,7 +413,7 @@ def persist_preflight(directory, results, facts, preflight, summary, *, store=No
                                 reason=decision["write_preflight"]["reason"], write_preflight=decision["write_preflight"])
                     if decision.get("latest_baseline"):
                         item["latest_baseline"] = decision["latest_baseline"]
-            report["status"] = "partial" if any(i["status"] not in {"verified", "no_update", "not_applicable"} for i in report["items"]) else "completed"
+            report["status"] = "partial" if any(i["status"] not in {"verified", "no_update", "not_applicable", "out_of_scope"} for i in report["items"]) else "completed"
             if store:
                 store.save(report)
         agent["status"] = "completed" if all(r["status"] == "completed" for r in agent["reports"]) else "partial"
@@ -407,11 +424,12 @@ def persist_preflight(directory, results, facts, preflight, summary, *, store=No
     atomic_write_json(directory / "write_preflight.json", preflight)
     counts = Counter(f["research_status"] for f in facts)
     duplicates = sum(f.get("write_preflight", {}).get("status") == "duplicate" for f in facts)
-    failures = sum(n for state, n in counts.items() if state not in {"verified", "no_update"})
+    failures = sum(n for state, n in counts.items() if state not in {"verified", "no_update", "out_of_scope"})
     summary.update(write_preflight=preflight, accepted=len(accepted), review=failures, unchanged=counts["no_update"],
                    agents=[{k: v for k, v in a.items() if k != "reports"} for a in results],
                    tasks=len(facts), metric_status_counts=dict(counts),
-                   outcome_counts={"existing": counts["no_update"] - duplicates, "duplicate": duplicates, "updated": len(accepted), "failed": failures},
+                   excluded=counts["out_of_scope"],
+                   outcome_counts={"existing": counts["no_update"] - duplicates, "duplicate": duplicates, "updated": len(accepted), "failed": failures, "excluded": counts["out_of_scope"]},
                    business_status="updates_available" if accepted else "needs_review" if failures else "no_new_disclosures",
                    status="partial" if failures else "completed",
                    completed_companies=sum(r["status"] == "completed" for a in results for r in a["reports"]))
@@ -426,8 +444,13 @@ def write_formal_facts(root, facts, *, dry_run=False):
     from cmhk.data.daily_financial_promotion import _atomic_text, _write_csv
     written, rejected, domains = [], [], {}
     grouped = {CARRIER_PATH: [], CLOUD_PATH: []}
+    from .research_freshness import load_baseline
+    from .research_contracts import formal_row_error
+    baseline = load_baseline(root).get("companies", {})
     for fact in facts:
         row, relative, error = normalize_fact(fact)
+        if row and not error:
+            error = formal_row_error(fact, row, baseline.get(fact.get("company"), {}))
         if error:
             rejected.append({"id": fact.get("id"), "status": "not_written", "reason": error})
         else:

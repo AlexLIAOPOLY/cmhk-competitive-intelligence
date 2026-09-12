@@ -29,7 +29,8 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
     from .research_harness import ResearchHarness
 
     summary = json.loads((directory / "manifest.json").read_text())
-    if summary.get("final_review", {}).get("status") == "completed" and not retry_errors:
+    from .research_contracts import VERSION
+    if summary.get("final_review", {}).get("status") == "completed" and not retry_errors and summary.get("contract_version") == VERSION:
         return summary
     collector = collector or collect_sources
     harness_factory = harness_factory or ResearchHarness
@@ -39,6 +40,12 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
     companies = [r["company"] for agent in results for r in agent["reports"]]
     from .research_freshness import load_baseline
     baseline = load_baseline(directory.parent.parent.parent).get("companies", {})
+    prior_facts = {}
+    if (directory / "candidate_facts.jsonl").exists():
+        for line in (directory / "candidate_facts.jsonl").read_text().splitlines():
+            fact = json.loads(line)
+            if fact.get("decision") == "accepted" or fact.get("preflight_original", {}).get("decision") == "accepted":
+                prior_facts[(fact["company"], fact["metric"])] = fact
     store = ReviewStore(directory, task, summary["run_id"], companies, workers)
     trace_lock = threading.Lock()
     metric_plan = frontend_metric_plan()
@@ -68,6 +75,20 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             report["reviewed_metrics"] = []
             store.save(report, evidence_changed=True)
         restrict_report_metrics(report, company_metric_plan(company, metric_plan), reopen_missing=False)
+        from .research_contracts import VERSION, planning_outcome, candidate_error
+        if report.get("contract_version") != VERSION:
+            proven = [m for m in report.get("reviewed_metrics", []) if (company, m) in prior_facts]
+            report.update(review_completed=False, reviewed_metrics=proven, review_search_completed=False,
+                          contract_version=VERSION, baseline=baseline.get(company, {}))
+            for position, item in enumerate(report.get("items", [])):
+                outcome = planning_outcome(company, item["metric"], report["baseline"])
+                error = candidate_error(company, item["metric"], item.get("period"), report["baseline"])
+                if outcome or error:
+                    replacement = outcome or {"status": "missing", "value": "", "period": "",
+                        "freshness": "incompatible_candidate_excluded", "reason": error + "；按库内完整报告期重新搜索"}
+                    report["items"][position] = {**item, **replacement, "contract_original": item}
+                    if not outcome:
+                        report["reviewed_metrics"] = [m for m in report["reviewed_metrics"] if m != item["metric"]]
         if retry_errors:
             from .research_recovery import recoverable
             reopen = {i["metric"] for i in report.get("items", [])
@@ -96,7 +117,8 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             if item.get("status") == "verified" and not retry_errors:
                 report["items"][position] = compare_candidate(
                     validate_fact(item, company, report["metrics"], report["pages"]), report["baseline"])
-        metrics = [i["metric"] for i in report["items"] if i.get("status") not in {"verified", "no_update", "not_applicable"}]
+        metrics = [i["metric"] for i in report["items"] if i.get("status") not in {"verified", "no_update", "not_applicable", "out_of_scope"}
+                   and i["metric"] not in report.get("reviewed_metrics", [])]
         emit("review_start", f"{company}：最终审核并补查 {len(metrics)} 项指标", {"company": company, "metrics": metrics})
         # Persist collected pages separately before any inference; resume never repeats a completed search.
         if metrics and not report.get("review_search_completed"):
@@ -132,7 +154,7 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
                 if metric not in report["reviewed_metrics"]:
                     save({"company": company, "metric": metric, "status": "error", "value": "", "reason": str(exc)[:500]})
         report["review_completed"] = True
-        report["status"] = "partial" if any(i["status"] not in {"verified", "no_update", "not_applicable"} for i in report["items"]) else "completed"
+        report["status"] = "partial" if any(i["status"] not in {"verified", "no_update", "not_applicable", "out_of_scope"} for i in report["items"]) else "completed"
         store.save(report)
         return report
 
@@ -153,13 +175,19 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
         retained = {(f["company"], f["metric"]): f for f in
                     (json.loads(line) for line in (directory / "candidate_facts.jsonl").read_text().splitlines() if line.strip())
                     if f.get("decision") == "accepted" or f.get("preflight_original", {}).get("decision") == "accepted"}
-        facts = [retained.get((f["company"], f["metric"]), f) for f in facts]
+        # An old mismatched candidate must never overwrite the newly researched result.
+        from .research_contracts import candidate_error
+        retained = {key: f for key, f in retained.items()
+                    if not candidate_error(f['company'], f['metric'], f.get('period'), baseline.get(f['company'], {}))}
+        facts = [retained.get((f["company"], f["metric"]), f) if f.get("research_status") not in {"out_of_scope", "no_update"} else f for f in facts]
     facts, write_preflight = prepare_facts(directory.parent.parent.parent, facts, summary["run_id"], allow_replay=retry_errors)
     persist_preflight(directory, results, facts, write_preflight, summary, store=store)
     store.complete()
     from .research_recovery import retryable_metrics
     summary["retryable_metrics"] = retryable_metrics(directory)
     summary["completed_at"] = now()
+    from .research_contracts import VERSION
+    summary["contract_version"] = VERSION
     summary["final_review"].update(status="completed", completed_at=now(), retryable_metrics=summary["retryable_metrics"])
     atomic_write_json(directory / "manifest.json", summary)
     return summary

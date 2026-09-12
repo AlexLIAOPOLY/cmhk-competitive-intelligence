@@ -762,6 +762,20 @@ def publish_domain_fact_sidecars(
             and str(item.get("source_url") or "").startswith(("https://", "http://"))
         ]
         submitted_count = len(facts)
+        excluded_series = []
+        series_root = next((p.parent for p in path.parents if p.name == "agent_knowledge"), None)
+        if domain in UI_DOMAIN_IDS and series_root:
+            from data_curation.research_freshness import load_baseline
+            from data_curation.research_contracts import source_fact_error
+            series_baseline = load_baseline(series_root).get("companies", {})
+            eligible = []
+            for item in facts:
+                reason = source_fact_error(item, series_baseline)
+                if reason:
+                    excluded_series.append({"company": item.get("company"), "metric": item.get("metric"), "reason": reason})
+                else:
+                    eligible.append(item)
+            facts = eligible
         if analysis.get("architecture") == "six_research_agents_v1":
             def identity(item):
                 return tuple(str(item.get(key) or "") for key in ("company", "metric", "period", "unit"))
@@ -799,6 +813,7 @@ def publish_domain_fact_sidecars(
             "path": str(path),
             "facts": len(facts),
             "submitted_facts": submitted_count,
+            "excluded_series": excluded_series,
             "changed": changed,
             "published": bool(changed and not dry_run),
         }
@@ -1045,7 +1060,7 @@ def _strategic_focus_headline(
     return _OVERVIEW_STRATEGIC_HEADLINES.get((domain, focus_id), str(fallback or "").strip())
 
 
-def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str:
+def _focus_headline_style_note(domain: str, focus_id: str, headline: str) -> str:
     if len(headline) > MAX_FOCUS_HEADLINE_PUBLISH_CHARS:
         return f"AI分析标题超过{MAX_FOCUS_HEADLINE_PUBLISH_CHARS}字发布保护上限：{domain}.{focus_id}（当前{len(headline)}字）"
     normalized = headline.replace("营收", "收入")
@@ -1064,6 +1079,20 @@ def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str
         term in headline for term in ("披露", "发布", "数量", "密度", "完整度", "口径", "边界")
     ):
         return "财务战略解读标题不得以披露或口径说明为结论：local.financials"
+    return ""
+
+
+def _focus_headline_gate_error(domain: str, focus_id: str, headline: str) -> str:
+    # Vocabulary preference is advisory. Evidence, attribution and numeric
+    # validation still run for the entire focus and each entity below.
+    if not headline.strip():
+        return f"AI分析标题为空：{domain}.{focus_id}"
+    if _contains_action_advice(headline):
+        return f"AI分析标题含行动建议：{domain}.{focus_id}"
+    if len(headline) > MAX_FOCUS_HEADLINE_PUBLISH_CHARS:
+        return f"AI分析标题超过{MAX_FOCUS_HEADLINE_PUBLISH_CHARS}字发布保护上限：{domain}.{focus_id}（当前{len(headline)}字）"
+    if any(term in headline for term in ("入库", "数据维护", "待补", "重新判断", "按三来源", "披露完整", "披露更新")):
+        return f"AI分析标题缺少战略判断：{domain}.{focus_id}"
     return ""
 
 
@@ -1580,6 +1609,14 @@ def _canonical_annual_sources(obj, evidence_items):
 
 def _focus_presentation_warnings(domain, focus):
     warnings = []
+    note = _focus_headline_style_note(domain, focus['id'], str(focus.get("headline") or ""))
+    if note and not _focus_headline_gate_error(domain, focus['id'], str(focus.get("headline") or "")):
+        warnings.append({"code": "headline_style_advisory", "scope": f"{domain}.{focus['id']}",
+                         "field": "headline", "message": "标题可进一步精炼经营含义；事实校验通过，正常发布",
+                         "characters": len(str(focus.get("headline") or "")),
+                         "target_characters": MAX_FOCUS_HEADLINE_CHARS,
+                         "publication_max_characters": MAX_FOCUS_HEADLINE_PUBLISH_CHARS,
+                         "model_text_preserved": True})
     for field, target, maximum in (("headline", MAX_FOCUS_HEADLINE_CHARS, MAX_FOCUS_HEADLINE_PUBLISH_CHARS),
                                     ("analysis", MAX_FOCUS_INSIGHT_CHARS, MAX_FOCUS_INSIGHT_PUBLISH_CHARS)):
         characters = len(str(focus.get(field) or ""))
@@ -3205,6 +3242,10 @@ def generate_model_domain_summaries(
         if not entry or not draft_path:
             return None
         previous = entry.get("repair") or {}
+        def transport_deferred(attempt):
+            from data_curation.research_recovery import recoverable
+            return (not attempt.get("reported_model") and not attempt.get("response")
+                    and not attempt.get("submitted_patch") and recoverable(attempt.get("error", "")))
         history = previous.get("history")
         if not isinstance(history, list):
             history = [{k: v for k, v in previous.items() if k != "history"}] if previous.get("attempted") else []
@@ -3257,8 +3298,8 @@ def generate_model_domain_summaries(
                 return already_valid, "+".join(sorted(models))
             # A corrected gate may accept the saved model text with zero HTTP.
             # Revalidation never resets or extends a spent/stopped budget.
-            if previous.get("status") == "stopped" or len(history) >= 3:
-                raise ValueError("AI分析修订额度已使用或重复无进展，保留全部历史：" + str(previous.get("error") or previous.get("stop_reason") or "最多3次HTTP"))
+            if (previous.get("status") == "stopped" and not transport_deferred(previous)) or sum(not transport_deferred(h) for h in history) >= 3:
+                raise ValueError("AI分析修订额度已使用或重复无进展，保留全部历史：" + str(previous.get("error") or previous.get("stop_reason") or "最多3次模型修订"))
             if not options:
                 raise ValueError("失败稿没有可安全修订的现有字段：" + current_error)
             prior = history[-1] if history else {}
@@ -3283,6 +3324,14 @@ def generate_model_domain_summaries(
                 return repaired, "+".join(sorted(models))
             except Exception as exc:
                 attempt.update(getattr(exc, "model_patch_attempt", {}), status="failed", error=str(exc), completed_at_hkt=_now())
+                if transport_deferred(attempt):
+                    # A model that returned no response did not revise the prose.
+                    # Preserve the HTTP audit, then yield to the bounded durable
+                    # stage retry instead of spending all edits in a cooldown loop.
+                    attempt["status"] = "deferred_transport"
+                    entry["repair"] = {**attempt, "history": history, "max_attempts": 3}
+                    persist_drafts()
+                    raise
                 if attempt.get("reported_model"):
                     models.add(attempt["reported_model"])
                 next_candidate = attempt.get("candidate") or candidate
@@ -3301,7 +3350,7 @@ def generate_model_domain_summaries(
                     attempt.update(status="stopped", stop_reason="重复patch/hash或同错误无进展")
                 entry["repair"] = {**attempt, "history": history, "max_attempts": 3}
                 persist_drafts()
-                if repeated or len(history) >= 3:
+                if repeated or sum(not transport_deferred(h) for h in history) >= 3:
                     raise ValueError("AI分析修订额度已使用或重复无进展：" + str(exc)) from exc
                 candidate = next_candidate
 
@@ -5233,6 +5282,7 @@ def run_pipeline(
                 )
                 if model_analysis.get("presentation_warnings"):
                     warning_details = "；".join(
+                        f"{w['scope']}.{w['field']}：{w['message']}" if w.get('message') else
                         f"{w['scope']}.{w['field']} {w['characters']}字（写作目标{w['target_characters']}，发布上限{w['publication_max_characters']}）"
                         for w in model_analysis["presentation_warnings"])
                     _task_event(task_run_id, "AI样式提示", "已保留完整AI原文并通过全部事实门禁：" + warning_details,

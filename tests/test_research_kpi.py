@@ -12,6 +12,15 @@ from tests.test_research_storage import fact
 
 
 def tables(root, carrier=None):
+    baseline = root / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
+    baseline.parent.mkdir(parents=True, exist_ok=True)
+    baseline.write_text(json.dumps({"reports": [{"company": "HKT", "period": "H1 2025", "metrics": [
+        {"metric_key": "revenue", "value": 100, "unit": "millions HKD"},
+        {"metric_key": "net_income", "value": 20, "unit": "millions HKD"}]}]}))
+    cloud = root / "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2016_2025.json"
+    cloud.parent.mkdir(parents=True, exist_ok=True)
+    cloud.write_text(json.dumps({"rows": [{"vendor": "Microsoft Azure", "metric_key": "cloud_revenue",
+        "fiscal_year": "2025", "value": 100000, "currency": "USD", "unit": "millions"}]}))
     for relative, rows in [(CARRIER_PATH, carrier or []), (CLOUD_PATH, [])]:
         path = root / relative
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -152,7 +161,7 @@ class FormalResearchTests(unittest.TestCase):
             root = Path(tmp)
             tables(root)
             sidecar = root / DOMAIN_PATHS["local"]
-            sidecar.parent.mkdir(parents=True)
+            sidecar.parent.mkdir(parents=True, exist_ok=True)
             sidecar.write_text(json.dumps({"facts": [fact()]}))
             revised, _ = prepare_facts(root, [fact(decision="unchanged", research_status="no_update")], "research_test")
             self.assertEqual(revised[0]["decision"], "review")
@@ -191,7 +200,7 @@ class FormalResearchTests(unittest.TestCase):
             self.assertTrue(result["readback"]["ok"])
             self.assertEqual((result["readback"]["written"], result["readback"]["not_written"]), (1, 0))
             self.assertTrue((Path(result["backup_path"]) / "research-archive/manifest.json").exists())
-            self.assertEqual([i["write_preflight"]["status"] for i in load_review(directory)["reports"][0]["items"]], ["ready", "duplicate", "rejected"])
+            self.assertEqual([i["write_preflight"]["status"] for i in load_review(directory)["reports"][0]["items"]], ["ready", "duplicate", "excluded"])
             self.assertEqual(repair(root, "research_test", apply=True)["main_table"]["added_rows"], 0)
 
     def test_repair_reads_newer_archive_only_after_all_worker_locks(self):

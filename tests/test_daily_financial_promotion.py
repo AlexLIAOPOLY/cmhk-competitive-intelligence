@@ -16,7 +16,8 @@ class DailyFinancialPromotionTests(unittest.TestCase):
         database.write_text(
             json.dumps(
                 {
-                    "rows": [],
+                    "rows": [{"subject": s, "period": "H1 2025", "metric_key": "revenue", "value": 100,
+                              "unit": "millions " + currency} for s, currency in [("HKT / csl / 1O1O", "HKD"), ("中国移动", "CNY")]],
                     "subjects": [
                         {"subject": "HKT / csl / 1O1O", "periods": [], "metrics": {}},
                         {"subject": "中国移动", "periods": [], "metrics": {}},
@@ -92,7 +93,7 @@ class DailyFinancialPromotionTests(unittest.TestCase):
             self.assertTrue((database.with_suffix(".csv")).exists())
             self.assertTrue((database.with_name("quarterly_metrics_human_readable.csv")).exists())
             manifest = json.loads((database.with_name("manifest.json")).read_text(encoding="utf-8"))
-            self.assertEqual(manifest["row_count"], 2)
+            self.assertEqual(manifest["row_count"], 4)
             self.assertIn("H1 2026", {item["period"] for item in payload["subjects"][0]["periods"]})
 
     def test_existing_stronger_official_row_is_never_overwritten(self) -> None:

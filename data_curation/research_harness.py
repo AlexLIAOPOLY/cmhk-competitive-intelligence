@@ -130,7 +130,7 @@ class ResearchHarness:
                 item = compare_candidate(item, self.current["baseline"])
                 if status == "no_update" and not self.current["baseline"].get(metric_key(self.current["metric"])):
                     item.update(status="conflict", reason="库内没有该指标的已存数据，不能提交库内已有；请查找可信新披露，未找到则提交missing。")
-            if status in {"verified", "no_update"} and item["status"] not in {"verified", "no_update"}:
+            if status in {"verified", "no_update"} and item["status"] not in {"verified", "no_update", "out_of_scope"}:
                 self.current["last_rejected"] = item
                 self.emit("validation_rejected", "本条提交未通过原文校验，尚未入库", item)
                 self.current["format_attempts"] = self.current.get("format_attempts", 0) + 1
@@ -298,8 +298,12 @@ class ResearchHarness:
         payload = {
             "company": company, "metric": metric, "official_sources": catalog,
             "trusted_database_baseline": (baseline or {}).get(metric, []),
-            "research_objective": "查找比库内最新期间更新的披露或库内尚未收录的新指标。已有数据库默认正确，不重审已有值。如果只找到同期间或旧期间，直接提交no_update并说明库内已有，无需摘录和核验旧数据。优先最新公告和最新报告期；旧数据不能充当更新成果。未找到新披露说明本轮未发现更新，不声称库内缺失。" if baseline is not None else "按原文提取指标",
+            "research_objective": "仅查找storage_contract指定公司、指标口径、报告周期、币种的下一个完整期间。不得因为库内缺失就新增指标或跨季度/半年/全年/月份收录；集团与分部、地区与整体、单季与累计均不可替代。已有同口径同期间或旧期间直接提交no_update；只找到其他周期则提交missing并明确非目标周期。保留原文单位，由正式写入器作精确数量级归一。" if baseline is not None else "按原文提取指标",
             "relevant_passages": excerpts, "instruction": "已提供相关原文片段；证据充分可直接提交片段编号，无需重复读取。"}
+        if baseline is not None:
+            from .research_contracts import contract_for, matching_baseline
+            payload["storage_contract"] = contract_for(company, metric, baseline)
+            payload["trusted_database_baseline"] = matching_baseline(company, metric, baseline)[-4:]
         content = pack_context(payload)
         self.emit("model_context", "去除重复字段与完全相同预览；完整原文及指标范围保留", {
             "company": company, "metric": metric,

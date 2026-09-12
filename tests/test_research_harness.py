@@ -139,7 +139,8 @@ class ResearchHarnessTests(unittest.TestCase):
     def test_default_plan_survives_json_roundtrip_and_resumes(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)
-            manifest = {"run_id": "same", "plan": research_plan(), "status": "completed", "accepted": 2}
+            from data_curation.research_contracts import VERSION
+            manifest = {"run_id": "same", "plan": research_plan(), "status": "completed", "accepted": 2, "contract_version": VERSION}
             (path / "manifest.json").write_text(json.dumps(manifest))
             self.assertEqual(run_research(run_id="same", output_dir=path, resume=True)["accepted"], 2)
 

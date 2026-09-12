@@ -32,7 +32,7 @@ class FreshnessTests(unittest.TestCase):
         self.assertEqual(compare_candidate(item, baseline)['status'], 'no_update')
         self.assertEqual(baseline['收入'][0]['value'], '100')
         self.assertEqual(compare_candidate({**item, 'period': 'H1 2025'}, baseline)['freshness'], 'older_period')
-        self.assertEqual(compare_candidate({**item, 'period': 'Q3 2026'}, baseline)['freshness'], 'new_period')
+        self.assertEqual(compare_candidate({**item, 'period': 'Q3 2026'}, baseline)['status'], 'out_of_scope')
         self.assertEqual(compare_candidate({**item, 'period': 'unknown'}, baseline)['status'], 'conflict')
 
     def test_primary_rows_and_nested_reports_are_baselines_even_without_quality_flags(self):
@@ -58,7 +58,8 @@ class FreshnessTests(unittest.TestCase):
         with patch('data_curation.workflow._company_research_profile', return_value={'official_hosts':['official.test'],'seed_urls':[root_url]}), \
              patch('data_curation.workflow._public_web_search', return_value=([{'url':root_url,'title':'Latest results'}],'test')), \
              patch('data_curation.workflow._read_source_page', side_effect=lambda url, **kw: pages[url]):
-            read, searches = collect_sources('HKT', ['收入'], lambda *args: None)
+            read, searches = collect_sources('HKT', ['收入'], lambda *args: None,
+                                             {'收入':[{'period':'H1 2025','value':100}]})
         self.assertIn('https://official.test/2026-interim.pdf', read)
         self.assertNotIn('https://untrusted.test/report', read)
         self.assertIn('latest', searches[0]['query'])

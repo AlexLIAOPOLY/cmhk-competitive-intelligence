@@ -21,8 +21,9 @@ class HomepageScopeTests(unittest.TestCase):
             self.assertEqual(collect_sources('HKT', ['套餐', '促销', '券商观点', 'ARPU'], lambda *a: None), ({}, []))
             search.assert_not_called()
             read.assert_not_called()
-            _, records = collect_sources('HKT', ['收入', '套餐', '券商观点'], lambda *a: None)
-            self.assertEqual({r['metric'] for r in records}, {'最新披露', '收入'})
+            _, records = collect_sources('HKT', ['收入', '套餐', '券商观点'], lambda *a: None,
+                                          {'收入':[{'period':'H1 2025','value':100}]})
+            self.assertEqual({r['metric'] for r in records}, {'目标报告期', '收入'})
             self.assertTrue(all(not any(t in c.args[0] for t in ['套餐', '观点', '促销']) for c in search.call_args_list))
 
     def test_completed_checkpoint_cannot_restore_removed_topics(self):
@@ -48,7 +49,9 @@ class HomepageScopeTests(unittest.TestCase):
             def collector(company, metrics, *args):
                 calls.extend(metrics)
                 return {}, []
-            review_run(root, collector=collector, model_factory=lambda: object())
+            with patch('data_curation.research_freshness.load_baseline', return_value={'companies':{
+                    'HKT':{'收入':[{'period':'H1 2025','value':100}]}}}):
+                review_run(root, collector=collector, model_factory=lambda: object())
             self.assertEqual(calls, ['收入'])
             saved = json.loads((root / 'hong-kong.json').read_text())
             self.assertEqual([i['metric'] for i in saved['reports'][0]['items']], ['收入'])

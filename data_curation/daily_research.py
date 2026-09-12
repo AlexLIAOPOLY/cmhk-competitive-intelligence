@@ -281,7 +281,9 @@ def execute(root: Path, run_id: str) -> dict:
         previous = json.loads(manifest_path.read_text()) if manifest_path.exists() else {}
         if recovery.cancelled(previous):
             return previous
-        if previous.get("publication", {}).get("status") == "completed" and not recovery.retryable_metrics(directory):
+        from .research_contracts import VERSION
+        if (previous.get("publication", {}).get("status") == "completed"
+                and previous.get("contract_version") == VERSION and not recovery.retryable_metrics(directory)):
             previous["recovery"] = recovery.schedule(previous, directory, datetime.now(HKT))
             atomic_write_json(manifest_path, previous)
             _finish_research_task(root, task_run_id, task_started, ok=True,
@@ -307,7 +309,9 @@ def execute(root: Path, run_id: str) -> dict:
             _append_research_result_details(root, task_run_id, directory, summary)
             final_review = summary.get("final_review") if isinstance(summary.get("final_review"), dict) else {}
             retry_metrics = final_review.get("status") == "completed" and bool(recovery.retryable_metrics(directory))
-            if final_review.get("status") != "completed" or retry_metrics:
+            from .research_contracts import VERSION
+            contract_changed = summary.get("contract_version") != VERSION
+            if final_review.get("status") != "completed" or retry_metrics or contract_changed:
                 _task_heartbeat(root, task_run_id, "最终审核 Agent 联网核对", "六组研究结果已汇总，正在联网补查失败项并做最终审核。")
                 from .research_final_review import review_run
                 summary = (review_run(directory, retry_errors=True) if retry_metrics or previous.get("publication")
@@ -320,8 +324,8 @@ def execute(root: Path, run_id: str) -> dict:
                 f"待处理或未通过 {int(summary.get('review') or 0)} 项；"
                 f"完成时间：{final_review.get('completed_at') or '未记录'}。",
             )
-            if (summary.get("architecture") != ARCHITECTURE_VERSION
-                    and summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted")):
+            if (summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted")
+                    and not previous.get("publication") and not contract_changed):
                 summary["publication"] = {"status": "partial" if summary.get("review") else "completed", "completed_at": now(),
                     "database_updated": False, "insights": 0,
                     "result_status": "needs_review" if summary.get("review") else "no_new_disclosures",

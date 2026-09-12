@@ -36,8 +36,8 @@
     if (Number.isFinite(model.focuses_passed) && Number.isFinite(model.discoveries_passed)) return (model.fallback_used ? 0 : model.focuses_passed) + (model.discovery_fallback_used ? 0 : model.discoveries_passed);
     return publication?.result_status === "completed_with_fallback" ? "—" : model.insights_passed ?? "—";
   };
-  const aiNote = (publication) => fallbackNote(publication) || (publication?.model_analysis?.ok === false ? `AI 生成失败：${businessReason(publication.model_analysis.error || "未取得有效模型结果")}` : `AI 已生成 ${aiGeneratedCount(publication)} 项`);
-  const terms = { no_update: "库内已有", verified: "数据通过（入库另核对）", missing: "执行失败", conflict: "执行失败", not_applicable: "执行失败", error: "执行失败" };
+  const aiNote = (publication) => (fallbackNote(publication) || (publication?.model_analysis?.ok === false ? `AI 生成失败：${businessReason(publication.model_analysis.error || "未取得有效模型结果")}` : `AI 已生成 ${aiGeneratedCount(publication)} 项`)) + (publication?.model_analysis?.presentation_warnings?.length ? ` · ${publication.model_analysis.presentation_warnings.length} 项表达提示（不阻断发布）` : "");
+  const terms = { no_update: "库内已有", verified: "数据通过（入库另核对）", missing: "执行失败", conflict: "执行失败", not_applicable: "执行失败", out_of_scope: "不纳入本轮", error: "执行失败" };
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
   const childTitle = (title) => String(title || "").replace(/研究 Agent$/, "研究子 Agent");
@@ -58,7 +58,7 @@
     const items = Array.isArray(report?.items) ? report.items : [];
     const expected = new Set((Array.isArray(report?.metrics) ? report.metrics : []).map(String).filter(Boolean));
     items.forEach((item) => { if (item?.metric) expected.add(String(item.metric)); });
-    items.filter((item) => item?.status === "not_applicable").forEach((item) => expected.delete(String(item.metric || "")));
+    items.filter((item) => ["not_applicable", "out_of_scope"].includes(item?.status)).forEach((item) => expected.delete(String(item.metric || "")));
     const collected = new Set(items.filter((item) => item?.status === "verified" && item.metric).map((item) => String(item.metric)));
     return { collected: collected.size, total: expected.size };
   };
@@ -99,7 +99,7 @@
   const itemLabel = (value) => terms[value] || "执行失败";
   const resultCounts = (reports) => {
     const items = mergeSubmissions((reports || []).flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company }))));
-    return `库内已有 ${items.filter((item) => item.status === "no_update").length} 项 · ${items.filter((item) => item.status === "verified").length}组数据通过 · 执行失败 ${items.filter((item) => !["verified", "no_update"].includes(item.status)).length} 项`;
+    return `库内已有 ${items.filter((item) => item.status === "no_update").length} 项 · ${items.filter((item) => item.status === "verified").length}组数据通过 · 不纳入本轮 ${items.filter((item) => item.status === "out_of_scope").length} 项 · 执行失败 ${items.filter((item) => !["verified", "no_update", "out_of_scope"].includes(item.status)).length} 项`;
   };
   const researchHealth = (actual, run) => {
     const execution = actual?.status || (run?.status === "running" ? "running" : undefined);
@@ -107,7 +107,7 @@
     const reports = actual?.reports || [];
     if (reports.some((report) => report.status === "error" || (report.items || []).some((item) => item.status === "error"))) return status("error");
     if (isIncremental(run)) {
-      const needsReview = reports.some((report) => (report.items || []).some((item) => !["verified", "no_update"].includes(item.status)));
+      const needsReview = reports.some((report) => (report.items || []).some((item) => !["verified", "no_update", "out_of_scope"].includes(item.status)));
       return { key: needsReview ? "warning" : "healthy", label: needsReview ? "已完成·含失败项" : "已完成" };
     }
     return { key: "healthy", label: "历史核对记录" };
@@ -250,10 +250,11 @@
   }
   function finalReviewGroups(items) {
     const primary = mergeSubmissions(items);
-    const groups = { ready: [], existing: [], rejected: [] };
+    const groups = { ready: [], existing: [], rejected: [], excluded: [] };
     primary.forEach((item) => {
       const state = item.write_preflight?.status;
-      if (state === "ready" || state === "existing") groups[state].push(item);
+      if (state === "excluded" || (item.research_status || item.status) === "out_of_scope") groups.excluded.push(item);
+      else if (state === "ready" || state === "existing") groups[state].push(item);
       else if (!state && (item.research_status || item.status) === "no_update") groups.existing.push(item);
       else if (state === "pending" || (!state && ((item.research_status || item.status) === "verified" || item.decision === "accepted"))) {
         groups.rejected.push({ ...item, write_preflight: { ...item.write_preflight, status: "rejected", reason: "入库条件尚未核对完成，暂不可入库；不能仅凭数据通过确认可写入" } });
@@ -265,7 +266,7 @@
     const reports = data.final_reviewer?.reports || (data.agents || []).flatMap((agent) => agent.reports || []);
     const items = data.result_items || reports.flatMap((report) => (report.items || []).map((item) => ({ ...item, company: report.company })));
     const groups = finalReviewGroups(items);
-    return `可入库 ${groups.ready.length} 项 · 库内已有 ${groups.existing.length} 项 · 不可入库 ${groups.rejected.length} 项`;
+    return `可入库 ${groups.ready.length} 项 · 库内已有 ${groups.existing.length} 项 · 不可入库 ${groups.rejected.length} 项 · 不纳入 ${groups.excluded.length} 项`;
   }
   // Report periods describe the source data, never the crawler run date.
   function reportPeriod(item = {}) {
@@ -549,13 +550,13 @@
     const items = final ? (data.result_items || reports).map((i) => {
       return withReportEvidence(i, reports);
     }) : reports;
-    const groups = final ? finalReviewGroups(items) : { ready: [], existing: [], rejected: [], pending: [] };
+    const groups = final ? finalReviewGroups(items) : { ready: [], existing: [], rejected: [], excluded: [], pending: [] };
     if (!final) mergeSubmissions(items).forEach((item) => {
-      const state = item.write_preflight?.status || ((item.research_status || item.status) === "no_update" ? "existing" : (item.research_status || item.status) === "verified" || item.decision === "accepted" ? (final ? "pending" : "ready") : "rejected");
+      const state = item.write_preflight?.status || ((item.research_status || item.status) === "out_of_scope" ? "excluded" : (item.research_status || item.status) === "no_update" ? "existing" : (item.research_status || item.status) === "verified" || item.decision === "accepted" ? (final ? "pending" : "ready") : "rejected");
       (groups[state] || groups.rejected).push(item);
     });
-    const labels = { ready: final ? "可入库" : "数据通过", existing: "库内已有 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
-    const descriptions = { ready: final ? "字段、期间、单位与证据已核对；实际写入结果见四库更新节点。" : "展示本Agent提交的具体指标；最终判断及写入结果分别在下游节点查看。", existing: "已在Agent阶段识别，无需重复提交四库更新。", rejected: "逐项说明未通过的原因；这些记录不进入写入批次。", pending: "已取得候选数据，但尚无正式表入库检查结果。" };
+    const labels = { excluded: "不纳入本轮", ready: final ? "可入库" : "数据通过", existing: "库内已有 · 不提交", rejected: "不可入库", pending: "待入库条件核对" };
+    const descriptions = { excluded: "不符合该指标既有期间、字段或统计口径；不入库、不作为失败反复重抓。", ready: final ? "字段、期间、单位与证据已核对；实际写入结果见四库更新节点。" : "展示本Agent提交的具体指标；最终判断及写入结果分别在下游节点查看。", existing: "已在Agent阶段识别，无需重复提交四库更新。", rejected: "逐项说明未通过的原因；这些记录不进入写入批次。", pending: "已取得候选数据，但尚无正式表入库检查结果。" };
     const categories = Object.entries(groups).filter(([key]) => key !== "pending" || groups.pending.length);
     const shortLabels = { ...labels, existing: "库内已有" };
     const displayCount = categories.reduce((count, [, rows]) => count + rows.length, 0);
@@ -641,7 +642,7 @@
     const data = snapshot?.date === date ? snapshot : {};
     const run = data.run;
     const section = (title, note, rows) => `<section class="news-lineage-dialog-section research-actual-list"><header><h3>${esc(title)}</h3><span>${rows.length} 条明细</span></header><p>${esc(note)}</p><div class="news-lineage-preview-scroll" role="region" aria-label="本节点逐条明细" tabindex="0">${rows.join("") || "<p>本次未保存可展示明细；不以其他日期的数据补齐。</p>"}</div></section>`;
-    if (node.key === "research-dispatch") return section("本次分配的公司与指标", run ? "按公司分组查找最新披露，以正式表已有数据判断是否需要新增。" : "尚未执行；以下是计划任务", (run?.plan || data.plan || []).map((task, i) => `<article><strong>${i + 1}. ${esc(childTitle(task.title))}</strong><p>分配原因：${esc(plainText(task.purpose))}</p>${task.companies.map((company) => {
+    if (node.key === "research-dispatch") return section("本次分配的公司与指标", run ? "先读取正式库既有周期、单位和口径，只搜索下一个已结束的匹配期间；不新增其他格式。" : "尚未执行；以下是计划任务", (run?.plan || data.plan || []).map((task, i) => `<article><strong>${i + 1}. ${esc(childTitle(task.title))}</strong><p>分配原因：${esc(plainText(task.purpose))}</p>${task.companies.map((company) => {
       const report = (data.agents || []).flatMap((a) => a.reports || []).find((r) => r.company === company);
       return `<p><strong>${esc(company)}</strong>：${esc((report?.metrics || []).join("、") || "指标将在任务启动时按页面关注项展开")}</p>`;
     }).join("")}</article>`));

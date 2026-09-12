@@ -126,7 +126,8 @@ class ResearchEfficiencyTests(unittest.TestCase):
                  patch("data_curation.workflow._public_web_search", side_effect=search), \
                  patch("data_curation.workflow._read_source_page", side_effect=read):
                 result, searches = collect_sources("HKT", ["收入", "营业收入"],
-                                                  lambda *event: events.append((threading.get_ident(), event)))
+                                                  lambda *event: events.append((threading.get_ident(), event)),
+                                                  {'收入':[{'period':'H1 2025','value':100}]})
             self.assertEqual(len(queries), 4 if empty else 3)
             self.assertEqual(len(searches), 4)
             self.assertEqual([row["metric"] for row in searches][-2:], ["收入", "营业收入"])

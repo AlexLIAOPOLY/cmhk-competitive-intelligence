@@ -143,7 +143,7 @@ class RecoveryTests(unittest.TestCase):
             root = Path(td)
             directory = root / 'curation_data/research_runs/research_20260911'
             directory.mkdir(parents=True)
-            summary = dict(run_id='research_20260911', status='partial', architecture='six_research_agents_v1',
+            summary = dict(run_id='research_20260911', status='partial', architecture='six_research_agents_v1', contract_version='stored_series_only_v1',
                            final_review={'status':'completed'}, publication={'status':'error','error':'timeout'})
             (directory / 'manifest.json').write_text(json.dumps(summary))
             registry = Mock()

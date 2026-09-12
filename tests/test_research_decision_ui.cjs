@@ -20,7 +20,7 @@ const model = renderer.build({nodes: [], edges: []}, snapshot, snapshot.date);
 function detail(key) {return renderer.detail(model.nodes.find(n => n.key === key), snapshot, snapshot.date);}
 const review = detail('research-merge');
 for (const group of ['可入库', '库内已有 · 不提交', '不可入库']) assert.ok(review.includes(group));
-assert.equal((review.match(/data-research-filter=/g) || []).length, 3);
+assert.equal((review.match(/data-research-filter=/g) || []).length, 4);
 assert.ok(!review.includes('data-research-filter="duplicate"'));
 assert.ok(!review.includes('data-research-panel="duplicate"'));
 assert.ok(review.includes('共 3 项指标'));
@@ -56,7 +56,7 @@ assert.equal(renderer.decisionPage(list, {company: 'no match'}, 2).visible.lengt
 assert.equal(renderer.decisionPage(list, {company: 'no match'}, 2).current, 0);
 const archived = JSON.stringify(records);
 const groups = renderer.finalReviewGroups(records);
-assert.deepEqual(Object.keys(groups), ['ready', 'existing', 'rejected']);
+assert.deepEqual(Object.keys(groups), ['ready', 'existing', 'rejected', 'excluded']);
 assert.equal(groups.ready.length, 1);
 assert.equal(groups.ready[0].mergedSubmissions.length, 1);
 assert.equal(groups.existing.length, 1);
@@ -135,3 +135,16 @@ assert.ok(!childDetail.includes('data-research-filter="duplicate"'));
 assert.ok(!childDetail.includes('本轮重复'));
 assert.ok(childDetail.includes('同指标合并记录'));
 assert.ok(childDetail.includes('共 3 项指标'));
+
+const excludedSnapshot = JSON.parse(JSON.stringify(snapshot));
+const excluded = {company:'HKT', metric:'套餐', status:'out_of_scope', write_preflight:{status:'excluded',reason:'未配置此指标'}};
+excludedSnapshot.result_items.push(excluded);
+excludedSnapshot.final_reviewer.reports[0].items.push(excluded);
+const excludedReview = renderer.detail(model.nodes.find(n=>n.key==='research-merge'),excludedSnapshot,snapshot.date);
+assert.ok(excludedReview.includes('不纳入 1 项'));
+assert.equal(renderer.finalReviewGroups([excluded]).excluded.length,1);
+assert.equal(renderer.finalReviewGroups([excluded]).rejected.length,0);
+excludedSnapshot.run.publication={status:'completed',model_analysis:{ok:true,focuses_passed:15,discoveries_passed:4,
+  presentation_warnings:[{code:'headline_style_advisory'}]}};
+const advisoryNode=renderer.build({nodes:[],edges:[]},excludedSnapshot,snapshot.date).nodes.find(n=>n.key==='research-publish');
+assert.ok(advisoryNode.note.includes('表达提示（不阻断发布）'));

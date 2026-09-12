@@ -87,13 +87,20 @@ def merge_domain(path: Path, items: list[dict], *, domain: str, run_id: str,
             raise ValueError(f"Invalid fact list: {path}")
         merged = list(saved)
         receipts = []
+        from .research_contracts import source_fact_error
+        from .research_freshness import load_baseline
+        root = next((p.parent for p in path.parents if p.name == "agent_knowledge"), None)
+        baseline = load_baseline(root).get("companies", {}) if root else None
         for item in items:
             row = {"id": fact_id(item), "company": item.get("company"),
                    "metric": item.get("metric"), "period": item.get("period"), "path": str(path)}
             same = [old for old in merged if identity(old) == identity(item)]
+            series_error = source_fact_error(item, baseline) if baseline is not None else ""
             if (item.get("source_tier") != "official" or not item.get("evidence_hash")
                     or not str(item.get("source_url", "")).startswith(("https://", "http://"))):
                 row["status"] = "rejected_evidence"
+            elif series_error:
+                row.update(status="excluded_series", reason=series_error)
             elif any(equivalent(item, old) for old in same):
                 row["status"] = "already_saved"
             elif same:
@@ -109,7 +116,8 @@ def merge_domain(path: Path, items: list[dict], *, domain: str, run_id: str,
                 "method": "审核资料保留原报告期、单位及证据；正式指标主表单独审核写入。"})
         actual = read_object(path, missing_ok=True).get("facts", [])
         for item, row in zip(items, receipts):
-            row["readback_verified"] = any(equivalent(item, old) for old in actual)
+            row["readback_verified"] = (row["status"] in {"inserted", "already_saved"}
+                                        and any(equivalent(item, old) for old in actual))
         return {"path": str(path), "facts": len(actual), "submitted_facts": len(items),
                 "inserted_facts": sum(row["status"] == "inserted" for row in receipts),
                 "already_saved_facts": sum(row["status"] == "already_saved" for row in receipts),

@@ -213,8 +213,14 @@ def disclosure_recency(row: dict, year: int) -> int:
 def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: dict | None = None) -> tuple[dict, list[dict]]:
     from . import workflow as w
     from .research_freshness import metric_key
+    from .research_contracts import contract_for, planning_outcome, search_qualifier
+    if baseline is None:
+        from .research_freshness import load_baseline
+        baseline = load_baseline(Path(__file__).resolve().parent.parent).get("companies", {}).get(company, {})
     allowed = company_metric_plan(company)
     metrics = list(dict.fromkeys(metric for metric in metrics if metric in allowed))
+    if baseline is not None:
+        metrics = [metric for metric in metrics if planning_outcome(company, metric, baseline) is None]
     if not metrics:
         return {}, []
     started = time.monotonic()
@@ -224,16 +230,17 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
     search_subject = {"Microsoft Azure": "Microsoft", "AWS": "Amazon AWS", "Google Cloud": "Alphabet Google Cloud",
                       "Alibaba Cloud": "Alibaba", "Tencent Cloud": "Tencent", "Oracle Cloud": "Oracle"}.get(company, company)
     # Find the latest disclosure first. Old stored values never enter a search query.
-    queries = [("最新披露", f'"{search_subject}" {year} latest financial results earnings')]
+    qualifiers = list(dict.fromkeys(search_qualifier(contract_for(company, metric, baseline)) for metric in metrics)) if baseline is not None else [str(year)]
+    queries = [("目标报告期", f'"{search_subject}" {qualifier} latest financial results earnings') for qualifier in qualifiers]
     # Only homepage financial/operating metrics may reach external search.
-    queries += [("官方最新业绩", f'site:{host} {search_subject} {year} financial results earnings')
-                for host in profile["official_hosts"][:2]]
+    queries += [("官方目标报告", f'site:{host} {search_subject} {qualifier} financial results earnings')
+                for host in profile["official_hosts"][:1] for qualifier in qualifiers]
     for metric in metrics:
         terms = w._metric_evidence_terms(metric)
         english = next((term for term in terms if re.search(r"[a-z]", term)), "")
         terms = list(dict.fromkeys([metric_key(metric), english]))
-        qualifiers = f"{year}"
-        queries.append((metric, f'"{search_subject}" {qualifiers} {" ".join(filter(None, terms))}'.strip()))
+        qualifier = search_qualifier(contract_for(company, metric, baseline)) if baseline is not None else str(year)
+        queries.append((metric, f'"{search_subject}" {qualifier} {" ".join(filter(None, terms))}'.strip()))
     def search(entry):
         metric, query = entry
         started = time.monotonic()
@@ -339,6 +346,7 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     from . import workflow as w
     from .research_harness import ResearchHarness
     from .research_freshness import compare_candidate
+    from .research_contracts import planning_outcome, contract_for, VERSION
     from .research_plan import frontend_metric_plan
     ui_metrics = frontend_metric_plan()
     factory = model_factory or (lambda: w._build_supervisor_model(max_tokens=4096, max_retries=0))
@@ -346,6 +354,20 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
     reports = list((checkpoint or {}).get("reports") or [])
     for report in reports:
         restrict_report_metrics(report, company_metric_plan(report["company"], ui_metrics))
+        if baseline is not None and report.get("contract_version") != VERSION:
+            company_baseline = baseline.get(report["company"], {})
+            report["baseline"] = company_baseline
+            report["items"] = [planning_outcome(report["company"], item["metric"], company_baseline)
+                               or compare_candidate(item, company_baseline) for item in report.get("items", [])]
+            retry_scope = [i for i in report['items'] if i.get('status') == 'out_of_scope'
+                           and contract_for(report['company'], i['metric'], company_baseline)['enabled']]
+            if retry_scope:
+                report['contract_excluded_candidates'] = retry_scope
+                report['items'] = [i for i in report['items'] if i not in retry_scope]
+                report['contract_original_pages'] = report.get('pages', {})
+                report['pages'] = {}
+            report["contract_version"] = VERSION
+            report["status"] = "running"
         retry = [item for item in report.get("items", [])
                  if item.get("status") == "missing" and item.get("reason") in {NO_METRIC_EVIDENCE, LEGACY_NO_METRIC_EVIDENCE}
                  and page_mentions_metric(item["metric"], report.get("pages", {}))]
@@ -374,10 +396,17 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
             emit("metric_saved", f"{company}：{item['metric']}已独立保存", item)
             emit("checkpoint", "逐项保存研究进度", {"reports": reports})
         try:
-            if not report["pages"]:
-                report["pages"], report["searches"] = (collector(company, metrics, emit, company_baseline) if collector is collect_sources else collector(company, metrics, emit))
+            if baseline is not None:
+                for metric in metrics:
+                    outcome = planning_outcome(company, metric, company_baseline)
+                    if outcome:
+                        save(outcome)
+            pending_metrics = [m for m in metrics if m not in {i["metric"] for i in report["items"]}]
+            report["contract_version"] = VERSION
+            if pending_metrics and not report["pages"]:
+                report["pages"], report["searches"] = (collector(company, pending_metrics, emit, company_baseline) if collector is collect_sources else collector(company, pending_metrics, emit))
                 emit("checkpoint", "保存本轮原文；恢复时不重复抓取", {"reports": reports})
-            if baseline is not None and not any(page.get("opened") and page.get("official") for page in report["pages"].values()):
+            if pending_metrics and baseline is not None and not any(page.get("opened") and page.get("official") for page in report["pages"].values()):
                 raise RuntimeError("本轮官方披露页面读取全部失败，不能判断是否有更新；保留原库并记录执行失败")
             saved = {item["metric"] for item in report["items"]}
             for metric in metrics:
@@ -436,7 +465,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "value": rendered_value if accepted else "",
                     "period": item.get("period", ""), "unit": item.get("unit", ""),
                     "basis": "\n".join(filter(None, [item.get("quote", ""), item.get("context_quote", ""), item.get("period_quote", "")])) or item.get("basis", ""), "status": "ok" if accepted else "unavailable",
-                    "decision": "accepted" if accepted else "unchanged" if item["status"] == "no_update" and report.get("incremental") else "review", "row_ref": f"row_{row}",
+                    "decision": "accepted" if accepted else "excluded" if item["status"] == "out_of_scope" else "unchanged" if item["status"] == "no_update" and report.get("incremental") else "review", "row_ref": f"row_{row}",
                     "sources": [item["source_url"]] if item.get("source_url") else [],
                     "source_tier": "official" if accepted else "unknown", "source_score": 1.0 if accepted else 0,
                     "entity_supported": accepted, "metric_supported": accepted, "value_supported": accepted,
@@ -446,6 +475,7 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
                     "research_agent_id": agent["key"], "research_status": item["status"],
                     "freshness": item.get("freshness", ""), "baseline": item.get("baseline", []),
                     "source_diagnostics": item.get("source_diagnostics", {}),
+                    "storage_contract": item.get("storage_contract", {}),
                 })
     return facts
 
@@ -482,16 +512,16 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
         ownership = lambda tasks: [(task["key"], list(task["companies"])) for task in tasks]
         if not resume or previous.get("run_id") != run_id or ownership(previous.get("plan", [])) != ownership(plan):
             raise ValueError("已有研究记录；只能显式恢复相同运行编号和任务分配")
-        if previous.get("status") == "completed":
+        from .research_contracts import VERSION
+        if previous.get("status") == "completed" and previous.get("contract_version") == VERSION:
             return previous
         started_at = previous["started_at"]
     from .research_freshness import load_baseline, POLICY
     baseline_path = output_dir / "baseline.json"
-    if resume and baseline_path.exists():
-        baseline = json.loads(baseline_path.read_text())
-    else:
-        baseline = load_baseline(output_dir.parent.parent.parent)
-        atomic_write_json(baseline_path, baseline)
+    # Read the live tables on every resume; checkpoints do not own today's schema.
+    from .research_contracts import VERSION
+    baseline = load_baseline(output_dir.parent.parent.parent)
+    atomic_write_json(baseline_path, baseline)
     lock = threading.Lock()
     trace_path = output_dir / "trace.jsonl"
     def emit_for(task):
@@ -505,7 +535,7 @@ def _run_research_unlocked(*, run_id: str, output_dir: Path, resume: bool = Fals
                 handle.write(json.dumps(event, ensure_ascii=False) + "\n")
             print("RESEARCH_EVENT=" + json.dumps({k: v for k, v in event.items() if k != "data"}, ensure_ascii=False), flush=True)
         return emit
-    manifest = {"architecture": ARCHITECTURE_VERSION, "run_id": run_id, "started_at": started_at,
+    manifest = {"architecture": ARCHITECTURE_VERSION, "contract_version": VERSION, "run_id": run_id, "started_at": started_at,
                 "harness": {"name": "deepagents", "version": "0.7.13", "atomic_metric_submission": True},
                 "status": "running", "research_policy": POLICY, "plan": plan, "agent_count": len(plan), "company_count": len(companies)}
     atomic_write_json(output_dir / "manifest.json", manifest)

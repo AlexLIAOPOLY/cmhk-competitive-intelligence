@@ -139,7 +139,7 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
                 self.assertEqual(pipeline._focus_headline_gate_error("local", "revenue", headline), "")
         for headline in rejected:
             with self.subTest(headline=headline):
-                self.assertIn("战略判断", pipeline._focus_headline_gate_error("local", "revenue", headline))
+                self.assertIn("战略判断", pipeline._focus_headline_style_note("local", "revenue", headline))
 
     def test_attempt_trace_redacts_keys_and_keeps_model_gate_metadata(self):
         with tempfile.TemporaryDirectory() as td:
@@ -345,7 +345,7 @@ class ExecutiveAIRecoveryTests(unittest.TestCase):
         focus["id"] = "revenue"
         valid = summary_fixture({"domains": [{"id": "local", "focuses": [focus]}]})["focuses"][0]
         valid["headline"] = "客户基础分化"
-        invalid = {**valid, "headline": "营收规模不同"}
+        invalid = {**valid, "headline": "营收数据入库完成"}
         replies = [sse_response(item) for item in (invalid, valid)]
         with patch.object(pipeline, "open_llm_request", side_effect=replies) as request:
             result = pipeline.generate_model_focus_insight("local", focus)
@@ -398,7 +398,7 @@ class DiscoveryIncrementalEvidenceTests(unittest.TestCase):
 
         def request(req, **kwargs):
             body = json.loads(req.data)
-            scope = json.loads(body["messages"][1]["content"].split("输入：\n", 1)[1])
+            scope = json.loads(next(m["content"] for m in body["messages"] if "输入：\n" in m["content"]).split("输入：\n", 1)[1])
             seen.append(scope)
             return sse_response({"items": discoveries})
 

@@ -23,7 +23,8 @@ class PageScreeningTests(unittest.TestCase):
             save({'company': company, 'metric': metric, 'status': 'no_update', 'value': '', 'reason': 'Checked full disclosure'})
         with patch('data_curation.research_harness.ResearchHarness') as harness, patch('data_curation.research_plan.frontend_metric_plan', return_value={"international": ["收入", "净利润", "ARPU"]}), patch('data_curation.six_agent_research.collect_sources') as collect:
             harness.return_value.extract.side_effect = extract
-            result = run_assignment(task, lambda *args: None, checkpoint=checkpoint, model_factory=lambda: object(), baseline={})
+            result = run_assignment(task, lambda *args: None, checkpoint=checkpoint, model_factory=lambda: object(),
+                                    baseline={'Verizon':{m:[{'period':'FY2024','value':100}] for m in ['收入','净利润','ARPU']}})
             self.assertEqual(harness.return_value.extract.call_count, 1)
             self.assertEqual(harness.return_value.extract.call_args.args[1], '收入')
             collect.assert_not_called()
