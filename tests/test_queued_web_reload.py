@@ -123,6 +123,15 @@ class QueuedWebReloadTests(unittest.TestCase):
             worker.index('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"'),
         )
 
+    def test_worker_refreshes_coalesced_token_before_interrupt_check(self):
+        worker = (ROOT / "scripts/queued_web_app_reload_worker.sh").read_text(
+            encoding="utf-8"
+        )
+        refresh = worker.index('latest_token="$(cat "$REQUEST_FILE"')
+        interrupt = worker.index('if interrupt_requested "$requested_token"')
+        self.assertLess(refresh, interrupt)
+        self.assertIn('requested_token="$latest_token"', worker[refresh:interrupt])
+
     def test_resident_monitor_reload_is_required_before_activation(self):
         for monitor_loaded, reload_fails in ((True, False), (False, False), (True, True)):
             with self.subTest(loaded=monitor_loaded, fails=reload_fails), tempfile.TemporaryDirectory() as temporary_directory:

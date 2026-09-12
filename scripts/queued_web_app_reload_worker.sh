@@ -178,9 +178,15 @@ interrupt_requested() {
 }
 
 wait_until_idle_or_midnight() {
-  local requested_token="$1" deadline_epoch first_count second_count frequency_count personal_news_count
+  local requested_token="$1" latest_token deadline_epoch first_count second_count frequency_count personal_news_count
   deadline_epoch="$(next_midnight_epoch)"
   while true; do
+    latest_token="$(cat "$REQUEST_FILE" 2>/dev/null || true)"
+    if [[ -n "$latest_token" && "$latest_token" != "$requested_token" ]]; then
+      requested_token="$latest_token"
+      deadline_epoch="$(next_midnight_epoch)"
+      log "Reload request coalesced while waiting; now guarding $requested_token."
+    fi
     if interrupt_requested "$requested_token"; then
       log "Explicit strategic-task restart requested for $requested_token; activating the queued release now."
       return 0
