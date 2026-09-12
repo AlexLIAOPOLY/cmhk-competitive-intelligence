@@ -17,12 +17,23 @@ from cmhk.services.news_image_quality import policy_key, require_reviewed_images
 from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract, text_model
 from cmhk.services.news_preparation_budget import bounded_preparation, candidate_budget, expired
 from cmhk.services.news_text import simplified_news_text
-from cmhk.services.news_round_progress import excluded_items, remaining_count, record_attempt, item_key, finish_without_card
+from cmhk.services.news_round_progress import excluded_items, remaining_count, record_attempt, item_key, finish_without_card, stopped_reason
 from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news, prioritize_preparation
 
 
 class NewsNotPrepared(RuntimeError):
     """The sending lane must never wait for model work."""
+
+
+class NewsRoundStopped(RuntimeError):
+    """The user stopped this original round, including manual recovery."""
+
+
+def require_active_round(service, content_ref):
+    with closing(service._connect()) as db:
+        reason = stopped_reason(db, content_ref)
+    if reason:
+        raise NewsRoundStopped(reason)
 
 
 def preparation_key(*, body: str, title: str, history: list[dict], send_day: str, context: str = "") -> str:
@@ -58,6 +69,16 @@ def prepared_for(service, row, *, send_day: str) -> bool:
                           context=recipient_contract(service, row['open_id'], service.delivery_profile))
     try:
         return json.loads(receipt['audit_json']).get('preparation_key') == key
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
+def needs_more_preparation(service, row):
+    with closing(service._connect()) as db:
+        receipt = db.execute("SELECT audit_json FROM news_delivery_receipts WHERE open_id=? AND batch_id=? AND status='prepared'",
+                             (row['open_id'], row['batch_id'])).fetchone()
+    try:
+        return bool(receipt and json.loads(receipt[0]).get('can_prepare_more'))
     except (ValueError, TypeError, AttributeError):
         return False
 
@@ -123,7 +144,7 @@ def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
 @bounded_preparation
 def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: str,
                  batch_id: str, profile: str, prepare_only: bool = False,
-                 prepared_only: bool = False) -> list[str]:
+                 prepared_only: bool = False, continue_preparation: bool = False) -> list[str]:
     from cmhk.services.news_digest_editor import prepare_digest
     from cmhk.services.subscriptions import NEWS_DIGEST_PREFIX, _decode_strategic_news_digest, strategic_news_card
 
@@ -135,6 +156,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except BlockingIOError as exc:
             raise RuntimeError("该接收人的新闻正在发送，本条等待重试") from exc
+        require_active_round(service, content_ref)
         now = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
         send_day = now[:10]
         logical_day = content_ref[len("strategic-crawl:"):][:10] if content_ref.startswith("strategic-crawl:") else send_day
@@ -164,7 +186,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                               context=recipient_contract(service, open_id, profile))
         ready = (receipt and receipt['status'] == 'prepared'
                  and json.loads(receipt['audit_json']).get('preparation_key') == key)
-        if receipt and (receipt["status"] == "sending" or ready):
+        if receipt and (receipt["status"] == "sending" or (ready and not (prepare_only and continue_preparation))):
             # The request may have reached Feishu. Keep precisely the same content
             # and idempotency key on transport recovery, including across midnight.
             card = json.loads(receipt["card_json"])
@@ -207,18 +229,20 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 candidates = replacements[:wanted_count]
             selected, decisions = deduplicate_events(candidates, history, service.runtime_root)
             kept_keys = {item_key(item) for item in selected}
-            review_errors = {str(row.get('news_id')) for row in decisions if row.get('status') == 'skipped_review_error'}
+            review_errors = {str(row.get('news_id')): row for row in decisions if row.get('status') == 'skipped_review_error'}
             for item in candidates:
                 if item_key(item) not in kept_keys:
-                    failed = item_key(item) in review_errors
+                    failure = review_errors.get(item_key(item))
                     record_attempt(service, open_id, content_ref, item,
-                                   error='事件去重审核失败' if failed else '与已发或同卡事件重复', duplicate=not failed)
+                                   error=(f"事件去重审核失败: {failure.get('error_type', '')}: {failure.get('error', '')}"
+                                          if failure else '与已发或同卡事件重复'), duplicate=failure is None)
             subscriptions = service.config.get('subscriptions') or {}
             image_keys = subscriptions.get('news_image_keys') or {}
             period = 'afternoon' if '下午茶' in title else 'morning'
             banner = str(image_keys.get(period) or '')
             prepared_items = []
             summary_reviews = []
+            can_prepare_more = False
             preparation_issues = [row for row in decisions if row.get('status') == 'skipped_review_error']
             if structured:
                 from cmhk.services.news_delivery_assets import save
@@ -245,8 +269,11 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                                 checked, extra = deduplicate_events([item], history + prepared_items, service.runtime_root)
                                 decisions.extend(extra)
                                 if not checked:
+                                    failures = [r for r in extra if r.get('status') == 'skipped_review_error']
                                     record_attempt(service, open_id, content_ref, item,
-                                        error='补选事件去重审核未通过', duplicate=not any(r.get('status')=='skipped_review_error' for r in extra))
+                                        error=('补选事件去重审核失败: ' + '; '.join(
+                                            f"{r.get('error_type', '')}: {r.get('error', '')}" for r in failures)
+                                            if failures else '补选事件与已发或同卡事件重复'), duplicate=not failures)
                                     continue
                             asset = prepare_news_assets([item], service, profile=profile, fallback_image_key=banner)[0]
                             if not exact_unique([asset], history + prepared_items):
@@ -279,6 +306,15 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                     return []
                 # Only actually delivered stories enter recipient history.
                 selected = delivered_selected
+                with closing(service._connect()) as db:
+                    excluded = excluded_items(db, open_id, content_ref)
+                done = {item_key(i) for i in selected}
+                can_prepare_more = len(selected) < wanted_count and any(
+                    item_key(i) not in excluded | done for i in replacements)
+                # A retry that hits a temporary outage must not shrink an
+                # unchanged, still-valid prepared card before its due time.
+                if ready and continue_preparation and len(selected) < len(json.loads(receipt['items_json'])):
+                    return []
                 rendered_body = NEWS_DIGEST_PREFIX + json.dumps({'items': prepared_items}, ensure_ascii=False)
             elif selected:
                 rendered_body = body
@@ -287,6 +323,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             card = (build_card_pages(title=title, items=prepared_items, banner=banner) if structured
                     else strategic_news_card(title=title, body=rendered_body, image_key=banner))
             prepared_at = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
+            require_active_round(service, content_ref)
             with closing(service._connect()) as db, db:
                 db.execute(
                     """INSERT INTO news_delivery_receipts(open_id,batch_id,logical_day,send_day,items_json,
@@ -306,6 +343,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                          "image_source_url", "image_page_url", "image_sha256", "image_policy_key",
                          "image_review_status", "image_review")} for item in prepared_items],
                      "requested_count": requested_count if structured else input_count, "remaining_target": wanted_count if structured else input_count,
+                     "can_prepare_more": can_prepare_more,
                      "slice_budget_exhausted": expired(), "selected_count": len(selected), "history_count": len(history), "decisions": decisions,
                      "preparation_key": key, "prepared_at": prepared_at}, ensure_ascii=False), prepared_at),
                 )
@@ -322,6 +360,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
         for index, page in enumerate(pages):
             if index < len(message_ids):
                 continue
+            require_active_round(service, content_ref)
             # Keep the historic first-page key, and distinct short keys thereafter.
             token = f'{batch_id}-n-{open_id[-6:]}' if index == 0 else hashlib.sha256(
                 f'{batch_id}:{open_id}:page:{index}'.encode()).hexdigest()[:40]

@@ -17,12 +17,16 @@ def expired():
 
 
 @contextmanager
-def candidate_budget():
-    token = _DEADLINE.set(deadline(180))
+def preparation_window(seconds):
+    token = _DEADLINE.set(deadline(seconds))
     try:
         yield
     finally:
         _DEADLINE.reset(token)
+
+
+def candidate_budget():
+    return preparation_window(180)
 
 
 def bounded_preparation(function):

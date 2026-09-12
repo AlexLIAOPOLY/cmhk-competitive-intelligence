@@ -151,3 +151,27 @@ class DeliverySelectionTests(unittest.TestCase):
         with mock.patch("cmhk.services.subscriptions._now_hkt", return_value="2026-09-11T08:00:00+08:00"):
             selected = self.service.select_personal_news([old, article("new", "行业动态")], open_id="ou_test123")
         self.assertEqual([x["news_id"] for x in selected], ["new"])
+
+    def test_dedupe_transport_failures_keep_their_cause_and_remain_retryable(self):
+        from cmhk.services.news_delivery_guard import NewsNotPrepared
+        from cmhk.services.news_round_progress import excluded_items
+        item = article('temporarily-busy')
+        ref = 'strategic-crawl:2026-09-11@03:00'
+        self.service.dispatch_news_after_crawl(crawl_slot=ref.removeprefix('strategic-crawl:'),
+            slot_label='晨间扫描', completed_at='2026-09-11T06:00:00+08:00', items=[item])
+        with self.service._connect() as db:
+            row = dict(db.execute('SELECT p.*,d.batch_id FROM pending_subscription_deliveries p JOIN deliveries d ON d.id=p.delivery_id').fetchone())
+        def busy(items, history, root):
+            return [], [{'news_id': i['news_id'], 'status': 'skipped_review_error',
+                         'error_type': 'AIQueueBusy', 'error': 'timed out'} for i in items]
+        with mock.patch('cmhk.services.news_delivery_guard.deduplicate_events', side_effect=busy):
+            for _ in range(3):
+                with self.assertRaises(NewsNotPrepared):
+                    deliver_news(self.service, **{k:row[k] for k in ('open_id','content_ref','title','body','batch_id')},
+                                 profile=self.service.delivery_profile, prepare_only=True)
+        with self.service._connect() as db:
+            self.assertEqual(excluded_items(db, row['open_id'], ref), set())
+            failure = db.execute('SELECT status,error FROM news_candidate_attempts').fetchone()
+            self.assertEqual(failure['status'], 'deferred')
+            self.assertIn('AIQueueBusy', failure['error'])
+        self.send.assert_not_called()

@@ -19,6 +19,32 @@ from cmhk.services.subscriptions import SubscriptionService, subscription_entry_
 from tests.news_push_fixtures import prepared_assets
 
 class ReaderContractTests(unittest.TestCase):
+    def test_user_stop_survives_restart_without_changing_next_round_preferences(self):
+        from cmhk.services.news_round_progress import stop_round
+        from cmhk.services.news_delivery_guard import NewsRoundStopped
+        now=datetime.now(HKT);day=now.date().isoformat();ref='strategic-crawl:'+day+'@03:00'
+        item={'news_id':'stop-test','title':'企业公布实施计划','category':'公司动态','published_at':day,
+              'source_url':'https://example.test/stop-test','region':'香港本地','summary':'本次计划面向制造企业，提供具体的库存管理与操作培训服务。'}
+        with tempfile.TemporaryDirectory() as tmp:
+            service=SubscriptionService(runtime_root=Path(tmp))
+            service.save_subscriptions('ou_test','测试',['news'],frequency='twice_daily',news_item_limit=20,news_categories=['公司动态'])
+            service.dispatch_news_after_crawl(crawl_slot=day+'@03:00',slot_label='晨间扫描',items=[item],completed_at=day+'T06:00:00+08:00')
+            with closing(service._connect()) as db:
+                row=dict(db.execute('SELECT p.*,d.batch_id FROM pending_subscription_deliveries p JOIN deliveries d ON d.id=p.delivery_id').fetchone())
+            stop_round(service,ref,'用户要求停止本轮补发')
+            restarted=SubscriptionService(runtime_root=Path(tmp))
+            self.assertEqual(reconcile_round(restarted,'ou_test',ref,now=now)['status'],'stopped')
+            with patch.object(restarted,'_send_interactive_card') as send:
+                with self.assertRaises(NewsRoundStopped):
+                    deliver_news(restarted,**{k:row[k] for k in ('open_id','content_ref','title','body','batch_id')},profile=restarted.delivery_profile,prepare_only=True)
+                self.assertEqual(restarted.flush_due(now=now)['processed_count'],0)
+                send.assert_not_called()
+            restarted.dispatch_news_after_crawl(crawl_slot=day+'@14:00',slot_label='午后扫描',items=[item],completed_at=day+'T15:00:00+08:00')
+            with closing(restarted._connect()) as db:
+                queued=db.execute("SELECT content_ref FROM pending_subscription_deliveries WHERE status='queued'").fetchall()
+                self.assertEqual([r[0] for r in queued],['strategic-crawl:'+day+'@14:00'])
+                self.assertEqual(db.execute('SELECT news_item_limit FROM subscribers').fetchone()[0],20)
+
     def test_100_is_allowed_101_rewrites_once_and_cached_output_is_simplified(self):
         item={'title':'企業推出新方案', 'source_summary':'面向製造業，新增庫存管理、工單調度和員工培訓。'}
         good='企業首批服務製造業，提供庫存管理及員工培訓，並保留 iPhone API 專名。'

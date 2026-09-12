@@ -69,6 +69,7 @@ class SubscriptionClockTests(unittest.TestCase):
         with mock.patch('cmhk.services.news_delivery_guard.datetime') as guard_clock, \
                 mock.patch('cmhk.services.subscriptions.datetime') as send_clock:
             guard_clock.now.return_value = send_clock.now.return_value = now
+            guard_clock.fromisoformat.side_effect = send_clock.fromisoformat.side_effect = datetime.fromisoformat
             return self.worker.tick(now=now)
 
     def test_prepare_on_reviewed_batch_arrival_then_send_only_at_each_person_time(self):
@@ -102,6 +103,41 @@ class SubscriptionClockTests(unittest.TestCase):
                 mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=AssertionError('restarted AI')):
             self.tick('08:00:00')
         self.assertEqual(self.send.call_count, 1)
+
+    def test_partial_preparation_continues_before_due_and_sends_twenty_at_due(self):
+        self.service.save_subscriptions('ou_two','乙',['weekly'])
+        self.service.save_subscriptions('ou_one','甲',['news'],frequency='twice_daily',news_item_limit=20,
+                                        news_categories=['公司动态'],news_delivery_times=['08:00','18:30'])
+        with self.service._connect() as db, db:
+            for table in ('pending_subscription_deliveries','deliveries','news_crawl_dispatches','news_crawl_item_pool'):
+                db.execute('DELETE FROM '+table)
+        items=[{**self.item,'news_id':str(i),'title':f'独立企业{i}公布项目',
+                'source_url':f'https://example.test/{i}'} for i in range(20)]
+        self.service.dispatch_news_after_crawl(crawl_slot='2026-09-11@03:00',slot_label='晨间扫描',
+                                              items=items,completed_at='2026-09-11T05:23:00+08:00')
+        edited=[]
+        def editor(items,root):
+            edited.extend(items);return {'items':items,'summary_reviews':[]}
+        with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=editor), \
+             mock.patch('cmhk.services.news_delivery_guard.expired',side_effect=lambda:len(edited)>=6):
+            self.tick('07:00:00')
+        with self.service._connect() as db:
+            receipt=db.execute('SELECT items_json,audit_json FROM news_delivery_receipts').fetchone()
+            self.assertEqual(len(json.loads(receipt[0])),6)
+            self.assertTrue(json.loads(receipt[1])['can_prepare_more'])
+        self.send.assert_not_called()
+        # A ready partial receipt must not idle through the remaining lead time.
+        self.tick('07:10:00')
+        self.tick('07:59:59')
+        with self.service._connect() as db:
+            self.assertEqual(len(json.loads(db.execute('SELECT items_json FROM news_delivery_receipts').fetchone()[0])),20)
+        self.send.assert_not_called()
+        self.send.side_effect=['om_page1','om_page2']
+        with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=AssertionError('AI in send lane')):
+            self.tick('08:00:00')
+        self.assertEqual(self.send.call_count,2)
+        with self.service._connect() as db:
+            self.assertEqual(db.execute('SELECT delivered_count FROM news_round_progress').fetchone()[0],20)
 
     def test_new_template_invalidates_only_unsent_preparations(self):
         self.tick('07:00:00')

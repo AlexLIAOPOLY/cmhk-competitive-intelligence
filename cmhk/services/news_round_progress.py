@@ -13,6 +13,9 @@ MAX_CANDIDATE_ATTEMPTS = 2
 
 def initialize(db):
     db.executescript("""
+        CREATE TABLE IF NOT EXISTS news_round_controls (
+            content_ref TEXT PRIMARY KEY, status TEXT NOT NULL,
+            reason TEXT NOT NULL, updated_at TEXT NOT NULL);
         CREATE TABLE IF NOT EXISTS news_candidate_attempts (
             open_id TEXT NOT NULL, content_ref TEXT NOT NULL, item_key TEXT NOT NULL,
             attempts INTEGER NOT NULL DEFAULT 0, status TEXT NOT NULL, error TEXT NOT NULL,
@@ -23,6 +26,28 @@ def initialize(db):
             status TEXT NOT NULL, detail_json TEXT NOT NULL, updated_at TEXT NOT NULL,
             PRIMARY KEY(open_id, content_ref));
     """)
+
+
+def stopped_reason(db, content_ref):
+    row = db.execute("SELECT reason FROM news_round_controls WHERE content_ref=? AND status='stopped'",
+                     (content_ref,)).fetchone()
+    return str(row[0]) if row else ''
+
+
+def stop_round(service, content_ref, reason):
+    """Persist an explicit stop for this round; later crawl slots are unaffected."""
+    from cmhk.services.subscriptions import _now_hkt
+    with closing(service._connect()) as db, db:
+        db.execute('BEGIN IMMEDIATE')
+        db.execute("INSERT INTO news_round_controls VALUES(?,'stopped',?,?) ON CONFLICT(content_ref) DO UPDATE SET status='stopped',reason=excluded.reason,updated_at=excluded.updated_at",
+                   (content_ref, reason, _now_hkt()))
+        recipients = [r[0] for r in db.execute('SELECT DISTINCT open_id FROM pending_subscription_deliveries WHERE content_ref=?', (content_ref,))]
+        db.execute("UPDATE deliveries SET status='cancelled',error=? WHERE id IN (SELECT delivery_id FROM pending_subscription_deliveries WHERE content_ref=? AND status='queued') AND status NOT IN ('verified','sent','sending')",
+                   (reason, content_ref))
+        db.execute("UPDATE pending_subscription_deliveries SET status='cancelled',last_error=? WHERE content_ref=? AND status='queued'", (reason, content_ref))
+    for open_id in recipients:
+        reconcile_round(service, open_id, content_ref)
+    return {'content_ref': content_ref, 'status': 'stopped', 'recipients': len(recipients)}
 
 
 def item_key(item):
@@ -39,7 +64,7 @@ def record_attempt(service, open_id, content_ref, item, *, error='', duplicate=F
     from cmhk.services.subscriptions import _now_hkt
     if not content_ref.startswith('strategic-crawl:'):
         return
-    transient = any(x in error.lower() for x in ('timeouterror', 'timeout', 'connectionerror', '限流', '超时', '其他准备任务处理中', 'apikeypool', '429', 'temporarily', 'budget', '预算'))
+    transient = any(x in error.lower() for x in ('timeout', 'timed out', 'connectionerror', 'aiqueuebusy', '限流', '超时', '其他准备任务处理中', 'apikeypool', '429', 'temporarily', 'budget', '预算'))
     with closing(service._connect()) as db, db:
         db.execute('''INSERT INTO news_candidate_attempts VALUES(?,?,?,1,?,?,?)
             ON CONFLICT(open_id,content_ref,item_key) DO UPDATE SET attempts=attempts+1,
@@ -90,6 +115,7 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
     stamp = now.isoformat(timespec='seconds')
     with closing(service._connect()) as db, db:
         db.execute('BEGIN IMMEDIATE')
+        stop_reason = stopped_reason(db, content_ref)
         subscriber = db.execute('''SELECT s.* FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
             WHERE s.open_id=? AND s.status='active' AND x.service='news' AND x.active=1''', (open_id,)).fetchone()
         if not subscriber:
@@ -115,10 +141,10 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
             send_day=stamp[:10], seed=f'{open_id}:{content_ref}:continuation', region_preference=subscriber['news_region_preference'])
         issues = [dict(r) for r in db.execute('''SELECT item_key,attempts,status,error FROM news_candidate_attempts
             WHERE open_id=? AND content_ref=?''', (open_id, content_ref))]
-        status = 'complete' if not remaining else ('preparing' if pending else 'continuing' if candidates else 'exhausted')
+        status = 'stopped' if stop_reason else 'complete' if not remaining else ('preparing' if pending else 'continuing' if candidates else 'exhausted')
         # Retry only while original stories remain fresh, and use a new message
         # identity for an actual supplement. Serializes two workers/restarts.
-        if remaining and not pending and candidates:
+        if remaining and not pending and candidates and not stop_reason:
             part = db.execute('SELECT COUNT(*) FROM deliveries WHERE open_id=? AND content_ref=?', (open_id, content_ref)).fetchone()[0]
             batch = 'news-supp-' + hashlib.sha256(f'{open_id}:{content_ref}:{part}'.encode()).hexdigest()[:32]
             cur = db.execute("""INSERT INTO deliveries(batch_id,open_id,service,mode,content_ref,status,message_ids,error,created_at)
@@ -131,12 +157,14 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
         reason = (f'本轮已发送{len(sent)}/{wanted}条；继续准备剩余{remaining}条' if status in ('preparing','continuing')
                   else f'本轮已发送{len(sent)}/{wanted}条；当前原审核批次无更多符合兴趣、时效、去重及图文要求的候选，缺{remaining}条' if remaining
                   else f'本轮已发送{len(sent)}/{wanted}条')
+        if stop_reason:
+            reason = f'本轮已发送{len(sent)}/{wanted}条；{stop_reason}'
         detail = {'reason':reason,'eligible_remaining':len(candidates),'issues':issues}
         message_ids = list(dict.fromkeys(mid for r in db.execute(
             "SELECT message_ids FROM deliveries WHERE open_id=? AND content_ref=? AND status='verified'",
             (open_id,content_ref)) for mid in json.loads(r[0])))
         db.execute("""UPDATE news_crawl_dispatches SET status=?,message_ids=?,last_error=?,updated_at=?
-            WHERE open_id=? AND crawl_slot=?""", ('verified' if not remaining else 'partial' if sent else 'queued' if pending or candidates else 'exhausted',
+            WHERE open_id=? AND crawl_slot=?""", ('stopped' if stop_reason else 'verified' if not remaining else 'partial' if sent else 'queued' if pending or candidates else 'exhausted',
             json.dumps(message_ids),reason if remaining else '',stamp,open_id,content_ref.removeprefix('strategic-crawl:')))
         db.execute('''INSERT INTO news_round_progress VALUES(?,?,?,?,?,?,?,?)
             ON CONFLICT(open_id,content_ref) DO UPDATE SET requested_count=excluded.requested_count,

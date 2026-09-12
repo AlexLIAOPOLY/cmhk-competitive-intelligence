@@ -12,7 +12,8 @@ from contextlib import closing
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from cmhk.services.news_delivery_guard import deliver_news, prepared_for
+from cmhk.services.news_delivery_guard import deliver_news, prepared_for, needs_more_preparation
+from cmhk.services.news_preparation_budget import preparation_window
 from cmhk.services.subscriptions import HKT, SubscriptionService
 
 from cmhk.services.news_push_skill import PREPARATION_LEAD_MINUTES, TEMPLATE_VERSION, skill_contract, text_model
@@ -51,9 +52,11 @@ class SubscriptionDeliveryWorker:
 
     def _prepare(self, row):
         # This operation persists the exact card, without contacting Feishu IM.
-        deliver_news(self.service, open_id=row['open_id'], content_ref=row['content_ref'],
-                     title=row['title'], body=row['body'], batch_id=row['batch_id'],
-                     profile=self.service.delivery_profile, prepare_only=True)
+        with preparation_window(row.get('_preparation_seconds', 600)):
+            deliver_news(self.service, open_id=row['open_id'], content_ref=row['content_ref'],
+                         title=row['title'], body=row['body'], batch_id=row['batch_id'],
+                         profile=self.service.delivery_profile, prepare_only=True,
+                         continue_preparation=row.get('_continue_preparation', False))
 
     def tick(self, now=None):
         now = (now or datetime.now(HKT)).astimezone(HKT)
@@ -108,17 +111,20 @@ class SubscriptionDeliveryWorker:
                             and recipient and recipient['frequency'] == 'once_daily')
             allowed = enabled and recipient and not morning_only
             ready = not news or prepared_for(self.service, row, send_day=now.date().isoformat())
+            continue_early = news and ready and not is_due and needs_more_preparation(self.service, row)
             ready_count += int(news and ready)
             # Use all available lead time once a reviewed strategic round arrives.
             # The independent sending clock still honors each person's due_at.
             upcoming = (row['content_ref'].startswith('strategic-crawl:')
                         or due - now <= timedelta(minutes=PREPARATION_LEAD_MINUTES))
-            if news and allowed and not ready and upcoming:
+            if news and allowed and (not ready or continue_early) and upcoming:
                 late_unprepared += int(is_due)
                 if (identifier not in self.preparing and identifier not in self.sending
                         and len(self.preparing) < PREPARATION_WORKERS
                         and self.retry_after.get(identifier, 0) <= time.monotonic()):
-                    self.preparing[identifier] = self.preparers.submit(self._prepare, row)
+                    work = {**row, '_continue_preparation': continue_early,
+                            '_preparation_seconds': min(600, max(1, (due-now).total_seconds())) if not is_due else 600}
+                    self.preparing[identifier] = self.preparers.submit(self._prepare, work)
             if (is_due and (ready or (news and not allowed))
                     and identifier not in self.sending and identifier not in self.preparing
                     and len(self.sending) < 8):

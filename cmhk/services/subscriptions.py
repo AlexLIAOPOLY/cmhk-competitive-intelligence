@@ -3994,8 +3994,8 @@ class SubscriptionService:
                 error = str(exc)[:900]
             with closing(self._connect()) as db, db:
                 state = db.execute("SELECT status,last_error FROM pending_subscription_deliveries WHERE id=?", (row['id'],)).fetchone()
-                if not message_ids and state and state['status'] == 'exhausted':
-                    status, error = 'exhausted', state['last_error']
+                if not message_ids and state and state['status'] in ('exhausted', 'cancelled'):
+                    status, error = state['status'], state['last_error']
                 db.execute(
                     "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
                     (status, json.dumps(message_ids), error, int(row["delivery_id"])),
@@ -4007,7 +4007,7 @@ class SubscriptionService:
                            WHERE id=?""",
                         (_now_hkt(), int(row["id"])),
                     )
-                elif status != 'exhausted':
+                elif status not in ('exhausted', 'cancelled'):
                     # News preparation and transport failures must not impose a
                     # fifteen-minute delay on a card that becomes ready meanwhile.
                     retry_at = ((now or datetime.now(HKT)).astimezone(HKT) + timedelta(
