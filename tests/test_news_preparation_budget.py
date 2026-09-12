@@ -7,11 +7,22 @@ from pathlib import Path
 from unittest.mock import patch, Mock
 
 from cmhk.services.news_delivery_dedupe import deduplicate_for_delivery
-from cmhk.services.news_preparation_budget import bounded_preparation, candidate_budget, deadline, expired, acquire_story_lock
+from cmhk.services.news_preparation_budget import bounded_preparation, candidate_budget, deadline, expired, acquire_story_lock, preparation_window
 from cmhk.services.news_push_skill import compatible_skill_hashes, skill_contract
 
 
 class PreparationBudgetTests(unittest.TestCase):
+    def test_remaining_time_before_personal_due_caps_every_nested_step(self):
+        with patch('cmhk.services.news_preparation_budget.time.monotonic', return_value=100):
+            @bounded_preparation
+            def prepare():
+                self.assertEqual(deadline(600),160)
+                with candidate_budget():
+                    self.assertEqual(deadline(180),160)
+            with preparation_window(60):
+                prepare()
+            self.assertEqual(deadline(600),700)
+
     def test_nested_work_cannot_extend_total_deadline_and_context_is_reset(self):
         with patch('cmhk.services.news_preparation_budget.time.monotonic', return_value=100):
             @bounded_preparation
