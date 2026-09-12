@@ -1658,19 +1658,7 @@ def _validate_model_summaries(
         str(domain.get("id") or "") for domain in evidence.get("domains") or [] if str(domain.get("id") or "")
     }
     allowed_numbers = _numeric_tokens(evidence)
-    allowed_urls = {
-        str(item.get("source_url") or "")
-        for domain in evidence.get("domains") or []
-        for focus in domain.get("focuses") or []
-        for item in focus.get("items") or []
-        if str(item.get("source_url") or "").startswith(("https://", "http://"))
-    }
-    allowed_urls.update(
-        str(item.get("source_url") or "")
-        for domain in evidence.get("domains") or []
-        for item in domain.get("agent_verified_facts") or []
-        if str(item.get("source_url") or "").startswith(("https://", "http://"))
-    )
+    allowed_urls = set().union(*_evidence_urls_by_domain(evidence).values())
     result: list[dict[str, Any]] = []
     seen: set[str] = set()
     evidence_by_domain = {
@@ -1808,9 +1796,7 @@ def _validate_model_summaries(
                     unknown_labels = set(entity_summary["evidence_labels"]) - allowed_labels
                     if unknown_labels:
                         raise ValueError(f"AI分析实体引用未知明细：{domain}.{focus_id}.{name}.{sorted(unknown_labels)}")
-                    entity_allowed_urls = {
-                        str(evidence_entities[name].get("source_url") or "")
-                    } - {""}
+                    entity_allowed_urls = _entity_evidence_urls(evidence_entities[name])
                     unknown_entity_urls = set(entity_summary["source_urls"]) - entity_allowed_urls
                     if unknown_entity_urls:
                         raise ValueError(f"AI分析实体引用了输入之外的来源：{sorted(unknown_entity_urls)}")
@@ -1846,6 +1832,12 @@ def _validate_model_summaries(
     return sorted(result, key=lambda item: domain_order.get(item["domain"], len(domain_order)))
 
 
+def _entity_evidence_urls(entity: dict[str, Any]) -> set[str]:
+    """Use the exact source list supplied for this entity, including its primary."""
+    return {url for url in [entity.get("source_url"), *(entity.get("source_urls") or [])]
+            if isinstance(url, str) and url.startswith(("https://", "http://"))}
+
+
 def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
     urls: dict[str, set[str]] = {
         str(domain.get("id") or ""): set()
@@ -1857,9 +1849,7 @@ def _evidence_urls_by_domain(evidence: dict[str, Any]) -> dict[str, set[str]]:
             continue
         for focus in domain.get("focuses") or []:
             for item in focus.get("items") or []:
-                source_url = str(item.get("source_url") or "")
-                if source_url.startswith(("https://", "http://")):
-                    urls[domain_id].add(source_url)
+                urls[domain_id].update(_entity_evidence_urls(item))
         for item in domain.get("agent_verified_facts") or []:
             source_url = str(item.get("source_url") or "")
             if source_url.startswith(("https://", "http://")):
@@ -2977,7 +2967,7 @@ def _scope_patch_options(candidate: dict[str, Any], scope: dict[str, Any]) -> di
             add(prefix + "/evidence_labels", entity, "evidence_labels", "引用标签必须为字符串数组", entity=entity["name"], allowed_values=allowed)
         elif set(_canonical_entity_labels(labels, source)[0]) - set(allowed):
             add(prefix + "/evidence_labels", entity, "evidence_labels", "引用了该实体allowed_evidence_labels以外的标签", entity=entity["name"], allowed_values=allowed)
-        urls = {str(source.get("source_url") or "")} - {""}
+        urls = _entity_evidence_urls(source)
         if not isinstance(entity.get("source_urls"), list) or any(not isinstance(u, str) or u not in urls for u in entity["source_urls"]):
             add(prefix + "/source_urls", entity, "source_urls", "引用了其他实体或未知来源", entity=entity["name"], allowed_values=sorted(urls))
     for path, option in options.items():

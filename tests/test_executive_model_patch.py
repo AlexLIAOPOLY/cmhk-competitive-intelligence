@@ -24,6 +24,23 @@ def model_response(content, model='actual-source'):
 
 
 class ExecutiveModelPatchTests(unittest.TestCase):
+    def test_recorded_entity_source_list_matches_validation_and_repair(self):
+        scope = one_scope()
+        candidate = summary_fixture(scope)
+        alternate = 'https://example.test/recorded-annual-source'
+        source = scope['domains'][0]['focuses'][0]['items'][0]
+        source['source_urls'] = [source['source_url'], alternate]
+        candidate['source_urls'] = [alternate]
+        candidate['focuses'][0]['source_urls'] = [alternate]
+        candidate['focuses'][0]['entities'][0]['source_urls'] = [alternate]
+        self.assertEqual(pipeline._scope_patch_options(candidate, scope), {})
+        self.assertEqual(pipeline._validate_model_summaries([candidate], scope)[0]
+            ['focuses'][0]['entities'][0]['source_urls'], [alternate])
+        candidate['focuses'][0]['entities'][1]['source_urls'] = [alternate]
+        with self.assertRaisesRegex(ValueError, '实体引用'):
+            pipeline._validate_model_summaries([candidate], scope)
+        self.assertIn('/focuses/0/entities/1/source_urls', pipeline._scope_patch_options(candidate, scope))
+
     def setUp(self):
         self.scope = one_scope()
         self.valid = summary_fixture(self.scope)
