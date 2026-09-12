@@ -411,26 +411,40 @@ class SubscriptionChat:
                 db.execute("ALTER TABLE subscription_chat_inbox ADD COLUMN message_time INTEGER NOT NULL DEFAULT 0")
             if "parse_error_type" not in columns:
                 db.execute("ALTER TABLE subscription_chat_inbox ADD COLUMN parse_error_type TEXT NOT NULL DEFAULT ''")
+            if "chat_type" not in columns:
+                db.execute("ALTER TABLE subscription_chat_inbox ADD COLUMN chat_type TEXT NOT NULL DEFAULT 'p2p'")
             db.execute("CREATE INDEX IF NOT EXISTS chat_sender_order ON subscription_chat_inbox(profile,sender_id,id)")
 
     def enqueue(self, event: dict, profile: str):
         # Profile comes from the trusted consumer process, never from message content.
         if (profile != self.service.delivery_profile or event.get("type") != EVENT_KEY
-                or event.get("sender_type") != "user" or event.get("chat_type") != "p2p"):
+                or event.get("sender_type") != "user" or event.get("chat_type") not in {"p2p", "group"}):
             return {"status": "ignored"}
         if any(not pattern.fullmatch(str(event.get(key) or "")) for key, pattern in (
                 ("sender_id", OPEN_ID_RE), ("message_id", MESSAGE_ID_RE), ("chat_id", CHAT_ID_RE))):
             return {"status": "ignored"}
         content = str(event.get("content") or "")
-        if event.get("message_type") != "text" or not content.strip() or len(content) > 2000:
+        if event["chat_type"] == "group":
+            bot_id = str((self.service.config.get("subscriptions") or {}).get("delivery_bot_open_id") or "")
+            mentions = event.get("mentions")
+            own_mentions = [m for m in mentions if isinstance(m, dict) and m.get("id") == bot_id] if isinstance(mentions, list) else []
+            if not OPEN_ID_RE.fullmatch(bot_id) or not own_mentions:
+                return {"status": "ignored"}
+            # CLI delivers either the placeholder or the rendered @display name.
+            # Only server-supplied mentions of this configured bot are removed.
+            for mention in own_mentions:
+                for token in (mention.get("key"), '@' + str(mention.get("name") or '')):
+                    if isinstance(token, str) and len(token) > 1:
+                        content = content.replace(token, '').strip()
+        if event.get("message_type") not in {"text", "post"} or not content.strip() or len(content) > 2000:
             content = ""  # Reply with help without sending attachments/oversized input to AI.
         now = time.time()
         timestamp = str(event.get("create_time") or "")
         message_time = int(timestamp) if re.fullmatch(r"\d{13}", timestamp) else 0
         with closing(self.service._connect()) as db, db:
             added = db.execute("""INSERT OR IGNORE INTO subscription_chat_inbox
-                (profile,message_id,sender_id,chat_id,text,created,updated,message_time) VALUES(?,?,?,?,?,?,?,?)""",
-                (profile, event["message_id"], event["sender_id"], event["chat_id"], content, now, now, message_time)).rowcount
+                (profile,message_id,sender_id,chat_id,text,created,updated,message_time,chat_type) VALUES(?,?,?,?,?,?,?,?,?)""",
+                (profile, event["message_id"], event["sender_id"], event["chat_id"], content, now, now, message_time, event["chat_type"])).rowcount
         self.wake.set()
         return {"status": "chat_queued" if added else "chat_duplicate"}
 
@@ -550,7 +564,10 @@ class SubscriptionChat:
                     with closing(self.service._connect()) as db, db:
                         db.execute("UPDATE subscription_chat_inbox SET send_started=CASE WHEN send_started=0 THEN ? ELSE send_started END WHERE id=?", (time.time(), job["id"]))
                     key = "pref-" + hashlib.sha256((job["profile"] + job["message_id"]).encode()).hexdigest()[:40]
-                    reply_id = self.service._send_markdown(job["sender_id"], job["reply"], idempotency_key=key, profile=job["profile"])
+                    if job["chat_type"] == "group":
+                        reply_id = self.service._reply_markdown(job["message_id"], job["reply"], idempotency_key=key, profile=job["profile"])
+                    else:
+                        reply_id = self.service._send_markdown(job["sender_id"], job["reply"], idempotency_key=key, profile=job["profile"])
                     with closing(self.service._connect()) as db, db:
                         db.execute("UPDATE subscription_chat_inbox SET reply_id=? WHERE id=?", (reply_id, job["id"]))
                 else:

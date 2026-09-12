@@ -21,13 +21,14 @@ class SubscriptionChatTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         (self.root / 'config').mkdir()
-        (self.root / 'config/project_monitor.json').write_text(json.dumps({'subscriptions': {'delivery_profile': 'testbot'}}))
+        (self.root / 'config/project_monitor.json').write_text(json.dumps({'subscriptions': {'delivery_profile': 'testbot', 'delivery_bot_open_id':'ou_bot'}}))
         self.service = SubscriptionService(runtime_root=self.root)
         for user in ('ou_alice', 'ou_bob'):
             self.service.save_subscriptions(user, user, ['news', 'weekly'], frequency='twice_daily',
                 report_mode='pdf_audio', news_item_limit=20, news_categories=['公司动态', '竞对动态'],
                 news_delivery_times=['09:00', '19:00'], union_id='on_' + user)
         self.service._send_markdown = Mock(return_value='om_receipt')
+        self.service._reply_markdown = Mock(return_value='om_groupreceipt')
         self.service._verify_message = Mock()
         self.model = Mock(return_value=plan())
         self.chat = SubscriptionChat(self.service, interpreter=self.model)
@@ -87,6 +88,57 @@ class SubscriptionChatTests(unittest.TestCase):
         self.assertEqual(self.chat.enqueue(self.event(), 'anotherbot')['status'], 'ignored')
         self.assertFalse(self.chat.drain_one())
         self.model.assert_not_called()
+
+    def group_event(self, user='ou_alice', mid='om_group', text='我喜欢生活类内容', placeholder=False, **kw):
+        return self.event(user=user,mid=mid,chat_type='group',chat_id='oc_shared',
+            content=('@_user_1 ' if placeholder else '@科创及数智化 ') + text,
+            mentions=[{'id':'ou_bot','name':'科创及数智化','key':'@_user_1'}], **kw)
+
+    def test_group_requires_actual_mention_of_configured_bot(self):
+        for mentions in ([],None,[{'id':'ou_other','name':'科创及数智化','key':'@_user_1'}]):
+            event=self.group_event();event['mentions']=mentions
+            self.assertEqual(self.chat.enqueue(event,'testbot')['status'],'ignored')
+        self.model.assert_not_called();self.service._reply_markdown.assert_not_called()
+
+    def test_two_group_readers_save_and_confirm_only_own_requirements(self):
+        self.model.side_effect=[plan('news_personal_skill',['喜欢生活实用内容'],'add'),plan('news_personal_skill',['关注AI技术原理'],'add')]
+        bob=self.get('ou_bob')
+        self.run_event(self.group_event())
+        self.assertEqual(self.get('ou_bob'),bob)
+        self.run_event(self.group_event(user='ou_bob',mid='om_groupbob',text='我想看AI原理',placeholder=True))
+        self.assertEqual(self.get()['news_personal_skill'],['喜欢生活实用内容'])
+        self.assertEqual(self.get('ou_bob')['news_personal_skill'],['关注AI技术原理'])
+        self.assertEqual([c.args[0] for c in self.model.call_args_list],['我喜欢生活类内容','我想看AI原理'])
+        self.assertEqual(self.model.call_args_list[1].args[2],[])
+        self.run_event(self.group_event(mid='om_groupyes',text='行'))
+        self.assertEqual(self.job()['intent'],'confirm');self.assertEqual(self.job()['chat_type'],'group')
+        self.assertEqual([c.args[0] for c in self.service._reply_markdown.call_args_list],['om_group','om_groupbob','om_groupyes'])
+        self.service._send_markdown.assert_not_called()
+
+    def test_group_reply_retry_survives_restart_without_reapplying_or_private_send(self):
+        self.model.return_value=plan('news_personal_skill',['关注生活内容'],'add')
+        self.service._reply_markdown.side_effect=[TimeoutError('transport'), 'om_groupreceipt']
+        event=self.group_event();self.run_event(event);saved=self.get()
+        with closing(self.service._connect()) as db,db:db.execute('UPDATE subscription_chat_inbox SET retry_at=0')
+        resumed=SubscriptionChat(self.service,interpreter=self.model);self.assertTrue(resumed.drain_one())
+        self.assertEqual(self.get(),saved);self.model.assert_called_once()
+        self.assertEqual(self.job()['status'],'complete')
+        calls=self.service._reply_markdown.call_args_list
+        self.assertEqual(calls[0],calls[1]);self.service._send_markdown.assert_not_called()
+        self.assertEqual(resumed.enqueue(event,'testbot')['status'],'chat_duplicate')
+
+    def test_group_rich_text_mention_can_query_without_model(self):
+        self.run_event(self.group_event(text='看看我的阅读说明',message_type='post'))
+        self.assertEqual(self.job()['intent'],'show');self.model.assert_not_called()
+        self.service._reply_markdown.assert_called_once()
+
+    def test_group_reply_transport_uses_original_message_and_stable_idempotency(self):
+        self.service._lark=Mock(return_value={'data':{'message_id':'om_reply'}})
+        self.assertEqual(SubscriptionService._reply_markdown(self.service,'om_original','已保存',idempotency_key='stable-key',profile='testbot'),'om_reply')
+        argv=self.service._lark.call_args.args[0]
+        self.assertIn('+messages-reply',argv);self.assertEqual(argv[argv.index('--message-id')+1],'om_original')
+        self.assertEqual(argv[argv.index('--idempotency-key')+1],'stable-key')
+        self.assertNotIn('--user-id',argv)
 
     def test_unknown_user_does_not_create_or_change_subscriptions(self):
         self.run_event(self.event(user='ou_unknown'))

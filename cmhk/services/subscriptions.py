@@ -661,6 +661,8 @@ def subscription_entry_card(
                         {"type": "callback", "value": {"action": "cmhk_subscription_pause_all_v1"}}
                     ],
                 },
+                {"tag": "markdown", "text_size": "notation",
+                 "content": "<font color='grey'>您也可以选择直接回复我告诉我您的喜好\n群聊中请先 @科创及数智化。</font>"},
             ],
         },
     }
@@ -791,7 +793,7 @@ def subscription_confirmation_card(
                     "tag": "markdown",
                     "content": (
                         f"<font color='grey'>报告节奏：{REPORT_CADENCE_LABEL}。"
-                        "需要调整时，重新提交订阅卡片即可覆盖当前选择。</font>"
+                        "需要调整时，重新提交订阅卡片即可覆盖当前选择。\n您也可以选择直接回复我告诉我您的喜好</font>"
                     ),
                     "text_size": "notation",
                 },
@@ -3708,6 +3710,15 @@ class SubscriptionService:
     def _send_markdown(self, open_id: str, text: str, *, idempotency_key: str, profile: str = "") -> str:
         payload = self._lark([
             "lark-cli", "im", "+messages-send", "--user-id", open_id, "--markdown", text,
+            "--idempotency-key", idempotency_key[:50], "--as", "bot", "--profile", profile or self.delivery_profile, "--format", "json",
+        ])
+        return self._message_id(payload)
+
+    def _reply_markdown(self, message_id: str, text: str, *, idempotency_key: str, profile: str = "") -> str:
+        if not MESSAGE_ID_RE.fullmatch(message_id):
+            raise ValueError("原消息身份无效")
+        payload = self._lark([
+            "lark-cli", "im", "+messages-reply", "--message-id", message_id, "--markdown", text,
             "--idempotency-key", idempotency_key[:50], "--as", "bot", "--profile", profile or self.delivery_profile, "--format", "json",
         ])
         return self._message_id(payload)
