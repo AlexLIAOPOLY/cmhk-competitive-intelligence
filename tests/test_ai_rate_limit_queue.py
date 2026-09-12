@@ -101,6 +101,14 @@ def test_round_robin_between_users_overrides_batch_fifo(monkeypatch):
             alice.close()
 
 
+def test_completed_fast_workflow_keeps_fairness_charge_until_window_reset():
+    with dispatch.request_context('project-monitor', 'background'):
+        dispatch.wait_for_slot('project-monitor-resolution')
+    state = json.loads(dispatch.state_path().read_text())
+    expected = dispatch.hashlib.sha256(b'project-monitor').hexdigest()[:24]
+    assert expected in state['served']
+
+
 def test_async_cancel_does_not_consume_a_future_request():
     async def run():
         with dispatch.request_context('alice'), dispatch.model_call('one'), dispatch.model_call('two'):

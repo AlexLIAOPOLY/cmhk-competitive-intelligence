@@ -123,12 +123,15 @@ def _prune(state, now):
     state["active"] = [e for e in state.get("active", []) if live(e)]
     state["queue"] = [e for e in state.get("queue", []) if live(e) and e["expires"] > now]
     if int(state.get("window", -1)) != int(now // 60):
-        state.update(window=int(now // 60), count=0, background_count=0, interactive_count=0)
+        state.update(window=int(now // 60), count=0, background_count=0,
+                     interactive_count=0, served={})
     # Migrate the former counter conservatively; never grant extra capacity.
     state.setdefault("background_count", state.get("count", 0))
     state.setdefault("interactive_count", 0)
-    retained = {e["subject"] for e in state["queue"] + state["active"]}
-    state["served"] = {k: v for k, v in state.get("served", {}).items() if k in retained}
+    # Keep the round-robin charge for the whole rate window. Dropping it as
+    # soon as a fast request closes lets one polling workflow repeatedly jump
+    # ahead of an older waiter and consume the entire minute allowance.
+    state.setdefault("served", {})
 
 
 class _Ticket:
