@@ -45,7 +45,7 @@ def preparation_key(*, body: str, title: str, history: list[dict], send_day: str
 
 def recipient_contract(service, open_id: str, profile: str) -> str:
     with closing(service._connect()) as db:
-        recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,frequency,news_delivery_times '
+        recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,news_topics,frequency,news_delivery_times '
                                'FROM subscribers WHERE open_id=?', (open_id,)).fetchone()
     return json.dumps([profile, dict(recipient) if recipient else {},
                        (service.config.get('subscriptions') or {}).get('news_image_keys') or {}],
@@ -206,7 +206,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             if structured:
                 with closing(service._connect()) as db:
                     subscriber = db.execute(
-                        "SELECT news_categories,news_item_limit,news_region_preference FROM subscribers WHERE open_id=?",
+                        "SELECT news_categories,news_item_limit,news_region_preference,news_topics FROM subscribers WHERE open_id=?",
                         (open_id,),
                     ).fetchone()
                     # A prepared old card may have picked only exhausted sections.
@@ -224,6 +224,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 replacements = select_recent_news(
                     pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=500,
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
+                    topics=subscriber["news_topics"] if subscriber else None,
                 )
                 replacements = prioritize_preparation(replacements, runtime_root=service.runtime_root, attempts=attempts)
                 candidates = replacements[:wanted_count]

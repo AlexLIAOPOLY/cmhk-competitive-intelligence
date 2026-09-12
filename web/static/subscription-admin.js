@@ -132,6 +132,7 @@
     return {
       services: list(item.services),
       news_categories: list(item.news_categories),
+      news_topics: item.news_topics || [],
       report_mode: item.report_mode || "pdf",
       frequency: item.news_frequency || item.frequency || "once_daily",
       news_item_limit: Number(item.news_item_limit || 10),
@@ -330,6 +331,7 @@
       const labels = new Map((state.data?.news_categories || []).map((item) => [item.key, item.label]));
       return (value || []).map((item) => labels.get(item) || item).join("、") || "无";
     }
+    if (field === "news_topics") return (value || []).map((item) => item.name).join("、") || "未额外指定主题";
     if (field === "frequency") return frequencyLabels[value] || value || "-";
     if (field === "news_region_preference") return value === "international" ? "国际新闻优先" : "香港本地新闻优先";
     if (field === "news_item_limit") return `${number(value || 0)} 条`;
@@ -351,7 +353,7 @@
     const rows = submissions || [];
     if (!rows.length) return "";
     const fieldLabels = {
-      services: "订阅内容", report_mode: "报告接收方式", news_categories: "新闻兴趣板块",
+      services: "订阅内容", report_mode: "报告接收方式", news_categories: "新闻兴趣板块", news_topics: "优先关注主题",
       news_region_preference: "新闻地域偏好", frequency: "新闻推送频率", news_item_limit: "每次新闻条数", news_delivery_times: "新闻接收时间", status: "订阅状态",
     };
     return `<div class="preference-submission-list"><div class="preference-submission-title">用户提交记录 · ${number(rows.length)} 次</div>${rows.map((submission) => {

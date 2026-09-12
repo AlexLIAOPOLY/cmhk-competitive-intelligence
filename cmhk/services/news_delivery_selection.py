@@ -8,6 +8,7 @@ import random
 from zoneinfo import ZoneInfo
 
 from cmhk.services.news_delivery_dedupe import exact_unique
+from cmhk.services.news_topics import topic_score
 
 POLICY_VERSION = "recent-news-20260911-v1"
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -32,21 +33,28 @@ def fresh_news(items: list[dict], send_day: str) -> list[dict]:
 
 
 def select_recent_news(items: list[dict], categories, *, limit: int,
-                       history: list[dict], send_day: str, seed: str = "", region_preference: str | None = None) -> list[dict]:
+                       history: list[dict], send_day: str, seed: str = "", region_preference: str | None = None, topics=None) -> list[dict]:
     from cmhk.services.subscriptions import (
         NEWS_CATEGORIES_PER_PUSH, filter_news_by_categories, normalize_news_categories,
     )
     # Expire thousands of archived rows before identity checks or model work.
     candidates = exact_unique(fresh_news(items, send_day), history)
+    subscribed = normalize_news_categories(categories)
+    # A natural-language topic is an additional interest across editorial
+    # sections, not a translation back into the old category checklist.
+    extra_sections = {item.get("category") for item in candidates if topic_score(item, topics)}
+    candidates = [item for item in candidates
+                  if item.get("category") in subscribed or topic_score(item, topics)]
     available = {item.get("category") for item in candidates}
-    sections = [x for x in normalize_news_categories(categories) if x in available]
+    sections = list(dict.fromkeys([x for x in subscribed if x in available] +
+                                 [x for x in normalize_news_categories(list(extra_sections), default_all=False) if x in available]))
     coverage = Counter(item.get("category") for item in exact_unique(history))
     random.Random(seed).shuffle(sections)
-    sections.sort(key=lambda section: coverage[section])
+    sections.sort(key=lambda section: (-max((topic_score(item, topics) for item in candidates if item.get("category") == section), default=0), coverage[section]))
     sections = sections[:NEWS_CATEGORIES_PER_PUSH]
     if not sections:
         return []  # Empty must not be normalized back to all subscriptions.
-    return filter_news_by_categories(candidates, sections, limit=limit, selection_seed=seed, region_preference=region_preference)
+    return filter_news_by_categories(candidates, sections, limit=limit, selection_seed=seed, region_preference=region_preference, topics=topics)
 
 
 def original_crawl_pool(db, content_ref: str) -> list[dict]:
@@ -93,6 +101,6 @@ def prioritize_preparation(items: list[dict], *, runtime_root, attempts: dict[st
     def rank(item):
         key = str(item.get('news_id') or item.get('source_url') or item.get('title') or '')
         tried = attempts.get(key, 0)
-        return (tried, identity(item) not in ready)
+        return (tried, -int(item.get("subscription_topic_score") or 0), identity(item) not in ready)
 
     return sorted(items, key=rank)

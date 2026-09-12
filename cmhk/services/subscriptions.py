@@ -19,6 +19,7 @@ from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
 from cmhk.services.news_text import simplified_news_text
+from cmhk.services.news_topics import normalize_news_topics, topic_score
 from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
 from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 from cmhk.reporting.weekly_quality import weekly_text_has_navigation_noise
@@ -184,6 +185,7 @@ def filter_news_by_categories(
     limit: int | None = None,
     selection_seed: str = "",
     region_preference: str | None = None,
+    topics: Any = None,
 ) -> list[dict[str, Any]]:
     """Sample at most four subscribed sections; local news leads when sampled.
 
@@ -257,17 +259,31 @@ def filter_news_by_categories(
                     picked.append(active_buckets[section].pop(0))
         return picked
 
-    chosen = round_robin(primary_buckets, count)
-    if len(chosen) < count:
-        chosen.extend(round_robin(fallback_buckets, count - len(chosen)))
-    return [{**item, "subscription_preferred": str(item.get("category") or "").strip() in selected}
-            for item in chosen[:count]]
+    chosen = []
+    for tier in (primary_buckets, fallback_buckets):
+        # Topic priority is real selection behavior, within the saved region
+        # and subscribed sections. All candidates still pass normal quality gates.
+        focused = {section: sorted([item for item in rows if topic_score(item, topics)],
+                                  key=lambda item: topic_score(item, topics), reverse=True)
+                   for section, rows in tier.items()}
+        remaining = {section: [item for item in rows if not topic_score(item, topics)] for section, rows in tier.items()}
+        chosen.extend(round_robin(focused, count - len(chosen)))
+        chosen.extend(round_robin(remaining, count - len(chosen)))
+    result = []
+    for item in chosen[:count]:
+        item = {**item, "subscription_preferred": str(item.get("category") or "").strip() in selected}
+        item.pop("subscription_topic_score", None)
+        if normalize_news_topics(topics):
+            item["subscription_topic_score"] = topic_score(item, topics)
+        result.append(item)
+    return result
 
 
 PREFERENCE_FIELD_LABELS = {
     "services": "订阅内容",
     "report_mode": "报告接收方式",
     "news_categories": "新闻兴趣板块",
+    "news_topics": "优先关注主题",
     "frequency": "新闻推送频率",
     "news_item_limit": "每次新闻条数",
     "news_region_preference": "新闻地域偏好",
@@ -286,11 +302,13 @@ def _preference_snapshot(
     news_delivery_times: Any,
     status: Any = "active",
     news_region_preference: str = "hong_kong",
+    news_topics: Any = None,
 ) -> dict[str, Any]:
     return {
         "services": sorted(str(item) for item in (services or []) if str(item) in VALID_SERVICES),
         "report_mode": str(report_mode or "pdf"),
         "news_categories": normalize_news_categories(news_categories, default_all=False),
+        "news_topics": normalize_news_topics(news_topics),
         "frequency": _normalize_news_frequency(str(frequency or "once_daily")),
         "news_item_limit": int(news_item_limit or 10),
         "news_region_preference": news_region_preference,
@@ -306,6 +324,8 @@ def _preference_value_text(field: str, value: Any) -> str:
         return REPORT_MODE_LABELS.get(str(value), str(value))
     if field == "news_categories":
         return "、".join(NEWS_CATEGORY_LABELS.get(str(item), str(item)) for item in (value or [])) or "无"
+    if field == "news_topics":
+        return "、".join(t["name"] for t in normalize_news_topics(value)) or "未额外指定主题"
     if field == "frequency":
         return FREQUENCY_LABELS.get(str(value), str(value))
     if field == "news_region_preference":
@@ -1225,6 +1245,8 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN frequency TEXT NOT NULL DEFAULT 'immediate'")
             if "report_mode" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN report_mode TEXT NOT NULL DEFAULT 'pdf'")
+            if "news_topics" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN news_topics TEXT NOT NULL DEFAULT '[]'")
             if "news_region_preference" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_region_preference TEXT NOT NULL DEFAULT 'hong_kong'")
             if "news_item_limit" not in columns:
@@ -1247,6 +1269,7 @@ class SubscriptionService:
                 defaults.update(
                     services=services,
                     news_categories=normalize_news_categories(row["news_categories"]),
+                    news_topics=normalize_news_topics(row["news_topics"]),
                     news_delivery_times=_normalize_news_delivery_times(row["news_delivery_times"]),
                 )
                 db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), row["open_id"]))
@@ -1428,6 +1451,7 @@ class SubscriptionService:
         news_categories: Any = None,
         news_region_preference: str | None = None,
         news_delivery_times: Any = None,
+        news_topics: Any = None,
         record_original_categories: bool = True,
         submission_context: dict[str, str] | None = None,
     ) -> dict[str, Any]:
@@ -1490,12 +1514,15 @@ class SubscriptionService:
         submission_changes: list[dict[str, str]] = []
         submission_initial = False
         with closing(self._connect()) as db, db:
+            db.execute("BEGIN IMMEDIATE")
             existing = db.execute(
                 "SELECT * FROM subscribers WHERE open_id=?",
                 (open_id,),
             ).fetchone()
             news_region_preference = news_region_preference or (existing["news_region_preference"] if existing else "hong_kong")
             final_snapshot["news_region_preference"] = news_region_preference
+            normalized_topics = normalize_news_topics(news_topics if news_topics is not None else (existing["news_topics"] if existing else []), strict=True)
+            final_snapshot["news_topics"] = normalized_topics
             before_snapshot: dict[str, Any] | None = None
             if existing is not None:
                 before_services = [
@@ -1512,6 +1539,7 @@ class SubscriptionService:
                     frequency=existing["frequency"],
                     news_item_limit=existing["news_item_limit"],
                     news_region_preference=existing["news_region_preference"],
+                    news_topics=existing["news_topics"],
                     news_delivery_times=existing["news_delivery_times"],
                     status=existing["status"],
                 )
@@ -1531,7 +1559,8 @@ class SubscriptionService:
                     int(delivery_times_supplied),
                 ),
             )
-            db.execute("UPDATE subscribers SET news_region_preference=? WHERE open_id=?", (news_region_preference, open_id))
+            db.execute("UPDATE subscribers SET news_region_preference=?, news_topics=? WHERE open_id=?",
+                       (news_region_preference, json.dumps(normalized_topics, ensure_ascii=False), open_id))
             if record_original_categories and news_categories is not None:
                 db.execute("""UPDATE subscribers SET original_news_categories=?,
                            original_news_categories_source='submitted' WHERE open_id=?""",
@@ -1578,6 +1607,7 @@ class SubscriptionService:
             "news_item_limit": news_item_limit,
             "news_region_preference": news_region_preference,
             "news_categories": normalized_categories,
+            "news_topics": normalized_topics,
             "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in normalized_categories],
             "news_delivery_times": normalized_delivery_times,
             "news_delivery_times_text": " / ".join(normalized_delivery_times),
@@ -1967,7 +1997,7 @@ class SubscriptionService:
         )
         # A person's latest submission is their restore point; admin edits never replace it.
         with closing(self._connect()) as db, db:
-            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories", "news_delivery_times", "news_region_preference")}
+            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories", "news_delivery_times", "news_region_preference", "news_topics")}
             defaults["status"] = "active"
             db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), identity["open_id"]))
         record_invitation_response("accepted")
@@ -2021,7 +2051,7 @@ class SubscriptionService:
         with closing(self._connect()) as db, db:
             chat_history = admin_chat_history(db, self.delivery_profile)
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories, s.original_news_categories, s.original_news_categories_source, s.news_delivery_times, s.default_preferences,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories, s.news_topics, s.original_news_categories, s.original_news_categories_source, s.news_delivery_times, s.default_preferences,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -2097,6 +2127,7 @@ class SubscriptionService:
                         if service in VALID_SERVICES
                     ),
                     "news_categories": normalize_news_categories(default_preferences.get("news_categories")),
+                    "news_topics": normalize_news_topics(default_preferences.get("news_topics")),
                     "report_mode": str(default_preferences.get("report_mode") or "pdf"),
                     "frequency": _normalize_news_frequency(str(default_preferences.get("frequency") or "once_daily")),
                     "news_item_limit": int(default_preferences.get("news_item_limit") or 10),
@@ -2120,6 +2151,7 @@ class SubscriptionService:
                 "latest_news_round": next((r for r in news_rounds if r["open_id"] == row["open_id"]), None),
                 "default_preferences": default_preferences,
                 "news_categories": normalize_news_categories(row["news_categories"]),
+                "news_topics": normalize_news_topics(row["news_topics"]),
                 "original_news_categories": normalize_news_categories(row["original_news_categories"], default_all=False),
                 "news_category_labels": [
                     NEWS_CATEGORY_LABELS[item]
@@ -3478,6 +3510,7 @@ class SubscriptionService:
         news_categories: Any = None,
         news_region_preference: str | None = None,
         news_delivery_times: Any = None,
+        news_topics: Any = None,
     ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
             raise ValueError("订阅者状态只能是 active 或 paused")
@@ -3494,6 +3527,7 @@ class SubscriptionService:
                 defaults = {key: current[key] for key in ("status", "frequency", "report_mode", "news_item_limit", "news_region_preference")}
                 defaults["services"] = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (open_id,))]
                 defaults["news_categories"] = normalize_news_categories(current["news_categories"])
+                defaults["news_topics"] = normalize_news_topics(current["news_topics"])
                 defaults["news_delivery_times"] = _normalize_news_delivery_times(current["news_delivery_times"])
                 db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), open_id))
         result = self.save_subscriptions(
@@ -3508,6 +3542,7 @@ class SubscriptionService:
             news_item_limit=news_item_limit,
             news_region_preference=news_region_preference,
             record_original_categories=False,
+            news_topics=news_topics,
             news_categories=(
                 news_categories
                 if news_categories is not None
@@ -3827,7 +3862,7 @@ class SubscriptionService:
     def _subscribers_for(self, service: str) -> list[dict[str, str]]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
+                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories, s.news_topics FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service=? AND x.active=1 ORDER BY s.open_id""",
                 (service,),
             ).fetchall()
@@ -3841,6 +3876,7 @@ class SubscriptionService:
                 "news_item_limit": int(row["news_item_limit"] or 10),
                 "news_region_preference": row["news_region_preference"],
                 "news_categories": normalize_news_categories(row["news_categories"]),
+                "news_topics": normalize_news_topics(row["news_topics"]),
             }
             for row in rows
         ]
@@ -4075,13 +4111,13 @@ class SubscriptionService:
         day = _now_hkt()[:10]
         with closing(self._connect()) as db:
             subscriber = db.execute(
-                "SELECT news_categories,news_item_limit,news_region_preference FROM subscribers WHERE open_id=?", (open_id,),
+                "SELECT news_categories,news_item_limit,news_region_preference,news_topics FROM subscribers WHERE open_id=?", (open_id,),
             ).fetchone()
             if not subscriber:
                 return []
             history = delivered_history(db, open_id=open_id, batch_id="", logical_day=day, send_day=day)
         return select_recent_news(items, subscriber['news_categories'], limit=subscriber['news_item_limit'],
-                                  region_preference=subscriber["news_region_preference"], history=history, send_day=day, seed=f"{open_id}:{day}:manual")
+                                  region_preference=subscriber["news_region_preference"], topics=subscriber["news_topics"], history=history, send_day=day, seed=f"{open_id}:{day}:manual")
 
     def dispatch_news_after_crawl(
         self,
@@ -4138,7 +4174,7 @@ class SubscriptionService:
             db.commit()
         with closing(self._connect()) as db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_region_preference, s.news_categories, s.news_delivery_times FROM subscribers s
+                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_region_preference, s.news_categories, s.news_topics, s.news_delivery_times FROM subscribers s
                    JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service='news' AND x.active=1
                    ORDER BY s.open_id"""
@@ -4241,7 +4277,7 @@ class SubscriptionService:
                         excluded_keys=seen_keys)
                     recipient_items = select_recent_news(
                         candidates, news_categories, limit=news_item_limit, history=history,
-                        region_preference=news_region_preference,
+                        region_preference=news_region_preference, topics=row["news_topics"],
                         send_day=selection_day, seed=f"{open_id}:{crawl_date}:{content_ref}")
                     push_news_categories = list(dict.fromkeys(item['category'] for item in recipient_items))
                     body = encode_strategic_news_digest(recipient_items)
@@ -4299,6 +4335,7 @@ class SubscriptionService:
                 "news_item_limit": news_item_limit,
                 "news_region_preference": news_region_preference,
                 "news_categories": news_categories,
+                "news_topics": normalize_news_topics(row["news_topics"]),
                 "push_news_categories": push_news_categories,
                 "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in news_categories],
                 "local_item_count": local_item_count,
