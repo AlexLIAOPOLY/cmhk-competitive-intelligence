@@ -47,7 +47,15 @@ def recipient_contract(service, open_id: str, profile: str) -> str:
     with closing(service._connect()) as db:
         recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,news_topics,news_personal_skill,frequency,news_delivery_times '
                                'FROM subscribers WHERE open_id=?', (open_id,)).fetchone()
-    return json.dumps([profile, dict(recipient) if recipient else {},
+    values = dict(recipient) if recipient else {}
+    from cmhk.services.personal_news_skill import normalize_personal_skill
+    if normalize_personal_skill(values.get('news_personal_skill')):
+        from cmhk.services.personal_news_allocator import VERSION as PERSONAL_SELECTION_VERSION
+        values['personal_selection_version'] = PERSONAL_SELECTION_VERSION
+    else:
+        # Preserve already prepared cards for readers who have no personal brief.
+        values.pop('news_personal_skill', None)
+    return json.dumps([profile, values,
                        (service.config.get('subscriptions') or {}).get('news_image_keys') or {}],
                       ensure_ascii=False, sort_keys=True)
 

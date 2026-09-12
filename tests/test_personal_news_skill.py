@@ -116,6 +116,17 @@ class PersonalSkillTests(unittest.TestCase):
         self.assertEqual(select_recent_news(articles(),['公司动态'],limit=20,history=articles(),send_day='2026-09-10',personal_skill=self.points),[])
         self.assertEqual(select_recent_news(articles(),['公司动态'],limit=20,history=[],send_day='2026-09-12',personal_skill=self.points),[])
 
+    def test_empty_skill_preserves_legacy_preparation_contract_and_active_skill_is_versioned(self):
+        from cmhk.services.news_delivery_guard import recipient_contract
+        service=SubscriptionService(runtime_root=self.root)
+        service.save_subscriptions('ou_contract','Contract',['news'])
+        with closing(service._connect()) as db:
+            old=dict(db.execute('SELECT news_categories,news_item_limit,news_region_preference,news_topics,frequency,news_delivery_times FROM subscribers WHERE open_id=?',('ou_contract',)).fetchone())
+        expected=json.dumps(['bot',old,(service.config.get('subscriptions') or {}).get('news_image_keys') or {}],ensure_ascii=False,sort_keys=True)
+        self.assertEqual(recipient_contract(service,'ou_contract','bot'),expected)
+        service.save_subscriptions('ou_contract','Contract',['news'],news_personal_skill=self.points)
+        self.assertIn('personal_selection_version',json.loads(recipient_contract(service,'ou_contract','bot'))[1])
+
     def test_manual_intake_does_not_truncate_before_semantic_selection(self):
         from unittest.mock import patch
         service=SubscriptionService(runtime_root=self.root)
