@@ -2017,7 +2017,9 @@ class SubscriptionService:
         return {"status": "subscription_saved", "source_profile": source_profile, **saved}
 
     def list_summary(self, *, delivery_limit: int | None = None) -> dict[str, Any]:
+        from cmhk.services.subscription_chat import admin_chat_history, preference_points
         with closing(self._connect()) as db, db:
+            chat_history = admin_chat_history(db, self.delivery_profile)
             rows = db.execute(
                 """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories, s.original_news_categories, s.original_news_categories_source, s.news_delivery_times, s.default_preferences,
                           s.source_chat_id, s.created_at, s.updated_at,
@@ -2135,6 +2137,18 @@ class SubscriptionService:
                 "preference_source_label": "群卡本人提交" if is_group_card_submission else "当前配置",
                 "preference_message_id": str(response_evidence.get("message_id") or "") if is_group_card_submission else "",
             })
+        for subscriber in subscribers:
+            current_preferences = _preference_snapshot(**{
+                field: subscriber[field] for field in PREFERENCE_FIELD_LABELS
+            })
+            subscriber["preference_points"] = preference_points(current_preferences)
+            subscriber["chat_history"] = chat_history.get(subscriber["open_id"], [])
+            last_choice = next((item for item in subscriber["chat_history"]
+                                if item["intent"] in {"update", "confirm"}), None)
+            subscriber["preference_confirmed_at"] = (
+                last_choice["created_at"] if last_choice and last_choice["intent"] == "confirm"
+                and last_choice["points"] == subscriber["preference_points"] else None
+            )
         card_actions = self.config.get("card_actions") if isinstance(self.config.get("card_actions"), dict) else {}
         primary_name = str(card_actions.get("primary_handler_expected_name") or "").strip()
         primary_open_ids = {

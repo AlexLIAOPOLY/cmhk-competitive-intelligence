@@ -378,3 +378,11 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
 .subscriber-table td:nth-child(4) .subscriber-dependent-setting { flex-direction: column; align-items: stretch; gap: 9px; }
 .news-region-setting { display: grid; gap: 5px; width: 100%; }
 .subscriber-table .news-region-setting select { width: 100%; min-width: 180px; }
+/* Per-user history opens outside the horizontally scrolling settings table. */
+.chat-preferences { margin-top: 10px; border: 0; padding: 0; background: none; color: #7bd0e0; font-size: 12px; cursor: pointer; white-space: normal; text-align: left; }
+.chat-preference-drawer { width: min(580px, 100vw); grid-template-rows: auto minmax(0, 1fr); }
+.chat-preference-body { min-height: 0; padding: 18px; overflow: auto; color: #d7e6eb; font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.chat-preference-body ol { margin: 8px 0 14px; padding-left: 24px; }
+.chat-preference-body p { white-space: pre-wrap; margin: 8px 0; }
+.chat-preference-body small { display: block; color: #abbdc5; }
+.chat-preference-history article { margin-top: 18px; padding-top: 16px; border-top: 1px solid #345663; }

@@ -1,7 +1,7 @@
 """Handle CMHK incident and subscription Card 2.0 callbacks.
 
-This listener is intentionally separate from the project monitor.  It consumes
-only ``card.action.trigger`` events. Incident actions retain their strict
+This listener is intentionally separate from the project monitor. It consumes
+card callbacks and private preference messages. Incident actions retain their strict
 delivery-ledger verification; subscription form submissions are routed to the
 server-side subscription store and acknowledged to the clicking user.
 """
@@ -939,12 +939,19 @@ class CardActionHandler:
             ])))
         if not profiles:
             raise RuntimeError("card action listener has no configured profiles")
+        from cmhk.services.subscription_chat import EVENT_KEY, SubscriptionChat
+        chat = SubscriptionChat(self.subscription_service).start()
         selector = selectors.DefaultSelector()
         ready: set[str] = set()
-        for event_profile in profiles:
+        consumers = [(p, "card.action.trigger") for p in profiles]
+        consumers.append((chat.service.delivery_profile, EVENT_KEY))
+        consumer_info = {}
+        for event_profile, event_key in consumers:
+            consumer_id = event_profile if event_key == "card.action.trigger" else event_profile + ":chat"
+            consumer_info[consumer_id] = (event_profile, event_key)
             process = subprocess.Popen(
                 [
-                    "lark-cli", "event", "consume", "card.action.trigger",
+                    "lark-cli", "event", "consume", event_key,
                     "--as", "bot", "--profile", event_profile,
                 ],
                 cwd=self.runtime_root,
@@ -955,10 +962,10 @@ class CardActionHandler:
                 text=True,
                 bufsize=1,
             )
-            self._event_processes[event_profile] = process
+            self._event_processes[consumer_id] = process
             assert process.stdout is not None and process.stderr is not None
-            selector.register(process.stdout, selectors.EVENT_READ, ("stdout", event_profile))
-            selector.register(process.stderr, selectors.EVENT_READ, ("stderr", event_profile))
+            selector.register(process.stdout, selectors.EVENT_READ, ("stdout", consumer_id))
+            selector.register(process.stderr, selectors.EVENT_READ, ("stderr", consumer_id))
         try:
             while not self._stop_requested:
                 if all(process.poll() is not None for process in self._event_processes.values()) and not selector.get_map():
@@ -971,13 +978,14 @@ class CardActionHandler:
                         except KeyError:
                             pass
                         continue
-                    stream_name, event_profile = key.data
+                    stream_name, consumer_id = key.data
+                    event_profile, event_key = consumer_info[consumer_id]
                     if stream_name == "stderr":
                         print(f"[{event_profile}] {line.rstrip()}", file=sys.stderr, flush=True)
-                        if "[event] ready event_key=card.action.trigger" in line:
-                            ready.add(event_profile)
+                        if f"[event] ready event_key={event_key}" in line:
+                            ready.add(consumer_id)
                             listeners = self.state.setdefault("listener_profiles", {})
-                            listeners[event_profile] = {"ready_at_hkt": _iso(self.now())}
+                            listeners[consumer_id] = {"ready_at_hkt": _iso(self.now()), "event_key": event_key}
                             self.state["listener_ready_at_hkt"] = _iso(self.now())
                             _atomic_json(self.action_state_path, self.state)
                         continue
@@ -987,7 +995,8 @@ class CardActionHandler:
                         if not isinstance(event, dict):
                             raise ValueError("event line is not an object")
                         event["source_profile"] = event_profile
-                        result = self.handle_event_process_safe(event)
+                        result = (chat.enqueue(event, event_profile) if event_key == EVENT_KEY
+                                  else self.handle_event_process_safe(event))
                         print(json.dumps(result, ensure_ascii=False), flush=True)
                     except Exception as exc:
                         error = _redact(f"{type(exc).__name__}: {exc}", 900)
@@ -1005,6 +1014,8 @@ class CardActionHandler:
                                 "error": error,
                             },
                         )
+                if not self._stop_requested and any(p.poll() is not None for p in self._event_processes.values()):
+                    raise RuntimeError("A Feishu event consumer exited; supervisor will restart the listeners")
             return_codes = {
                 event_profile: process.wait(timeout=10)
                 for event_profile, process in self._event_processes.items()
@@ -1019,6 +1030,8 @@ class CardActionHandler:
                     f"card action event consumer exited before a healthy ready state: {unhealthy}"
                 )
         finally:
+            chat.stop.set()
+            chat.wake.set()
             selector.close()
             for event_profile, process in self._event_processes.items():
                 if process.poll() is None:

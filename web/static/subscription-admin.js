@@ -13,7 +13,7 @@
     openFilter: "", notice: "", noticeKind: "", activeView: "invite", drawerOpen: false, peopleOpen: false, drawerTab: "invitations",
     manualWeeklyPath: "", weeklyPickerOpen: false, weeklyPickerQuery: "", weeklyPickerBusy: false,
     manualPerformancePath: "", performancePickerOpen: false, performancePickerQuery: "", performancePickerBusy: false,
-    manualPushJob: null,
+    manualPushJob: null, chatUser: "",
     selectedInviteUsers: new Set(), selectedInviteGroups: new Set(),
   };
   const subscriberDrafts = new Map();
@@ -167,6 +167,29 @@
       <td><button class="button" type="button" data-save-subscriber>保存</button></td></tr>`).join("");
   }
 
+  function chatPreferenceDetails(item) {
+    return `<button type="button" class="chat-preferences" data-open-chat-preferences="${esc(item.open_id)}" aria-label="查看${esc(item.display_name)}的偏好与对话">偏好与对话${item.chat_history?.length ? `（${number(item.chat_history.length)}）` : ""}</button>`;
+  }
+
+  function chatPreferenceDrawer() {
+    const item = (state.data?.subscribers || []).find((person) => person.open_id === state.chatUser);
+    if (!item) return "";
+    const history = item.chat_history || [];
+    const states = { queued: "等待整理", reply_pending: "已处理，回执待确认", complete: "已回复并回读", delivery_unknown: "回执待核实" };
+    const points = (items) => `<ol>${(items || []).map((point) => `<li>${esc(point)}</li>`).join("")}</ol>`;
+    return `<div class="drawer-backdrop" data-chat-backdrop><aside class="management-drawer chat-preference-drawer" role="dialog" aria-modal="true" aria-label="${esc(item.display_name)}的偏好与对话"><header class="drawer-header"><div><h2>${esc(item.display_name)} · 偏好与对话</h2><p>个人设置与自然语言修改记录</p></div><button class="icon-button" type="button" data-close-chat-preferences aria-label="关闭偏好与对话">${icon("close")}</button></header>
+      <div class="chat-preference-body"><strong>当前已保存的偏好</strong>${points(item.preference_points)}
+      <small>${item.preference_confirmed_at ? `本人已确认 · ${esc(new Date(item.preference_confirmed_at * 1000).toLocaleString("zh-CN", { timeZone: "Asia/Hong_Kong", hour12: false }))}` : "已保存，可继续对话调整或回复“确认”。"}</small>
+      <small>后续推送按以上设置安排；未保存的表单修改不计入清单。</small>
+      <div class="chat-preference-history">${history.length ? history.map((entry) => `<article>
+        <strong>用户原话</strong><p>${esc(entry.request || "非文字消息")}</p>
+        <small>${esc(new Date(entry.created_at * 1000).toLocaleString("zh-CN", { timeZone: "Asia/Hong_Kong", hour12: false }))} · ${esc(states[entry.status] || entry.status)}</small>
+        ${entry.changes?.length ? `<strong>本次整理并保存</strong>${points(entry.changes.map((change) => `${change.label}：${change.before} → ${change.after}`))}` : ""}
+        ${entry.intent === "confirm" ? `<strong>本人确认的清单</strong>${points(entry.points)}` : ""}
+        ${entry.reply ? `<details><summary>查看机器人回复</summary><p>${esc(entry.reply)}</p></details>` : ""}
+      </article>`).join("") : "<p>尚无自然语言修改记录，可在飞书中私聊机器人调整偏好。</p>"}</div></div></aside></div>`;
+  }
+
   function compactSubscriberRows() {
     const rows = state.data?.subscribers || [];
     if (!rows.length) return '<tr><td colspan="11" class="empty">尚无订阅者</td></tr>';
@@ -185,7 +208,7 @@
         item.status, item.status === "paused" ? "暂停" : "启用",
       ].filter(Boolean).join(" ");
       return `<tr data-subscriber-row="${esc(item.open_id)}" data-subscriber-filter-row data-filter-services="${esc((item.services || []).join(" "))}" data-filter-status="${esc(item.status || "active")}" data-filter-frequency="${hasNews ? esc(item.news_frequency || item.frequency || "once_daily") : ""}" data-filter-text="${esc(filterText)}">
-      <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
+      <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div>${chatPreferenceDetails(savedItem)}</td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
       <td>${conditionalSetting("report", hasReport, `<select data-subscriber-report-mode${hasReport ? "" : " disabled"}>${reportModeOptions(item.report_mode)}</select>`, "未订阅报告")}</td>
       <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div><label class="news-region-setting">新闻地域偏好<select data-subscriber-news-region aria-label="新闻地域偏好">${newsRegionOptions(item.news_region_preference)}</select></label>${item.latest_news_round ? `<small class="muted" title="${esc(JSON.parse(item.latest_news_round.detail_json || '{}').reason || '')}">本轮 ${number(item.latest_news_round.delivered_count)}/${number(item.latest_news_round.requested_count)} 条 · ${item.latest_news_round.status === 'stopped' ? '已停止补发' : item.latest_news_round.status === 'complete' ? '已完成' : item.latest_news_round.status === 'exhausted' ? '候选不足' : '继续补选'}</small>` : ''}`, "未订阅新闻")}</td>
@@ -672,7 +695,7 @@
     if (!data) return;
     // Polling replaces these nodes every 15 seconds; keep each reader's position.
     const scrollPositions = new Map();
-    [".invite-list-main", ".subscriber-table"].forEach((selector) => {
+    [".invite-list-main", ".subscriber-table", ".chat-preference-body"].forEach((selector) => {
       const container = root.querySelector(selector);
       if (container) scrollPositions.set(selector, { top: container.scrollTop, left: container.scrollLeft });
     });
@@ -699,6 +722,7 @@
         <section class="surface version-surface"><header class="surface-header"><div><h2>推送版本</h2><p>分别选择周报和业绩摘要的推送版本；不选则自动使用最新正式版</p></div></header><div class="surface-body report-version-grid"><div>${weeklyReportPicker()}<p>${esc(weeklySelectionCopy())}</p></div><div>${performanceReportPicker()}<p>${esc(performanceSelectionCopy())}</p></div></div></section>
         <section class="surface push-surface"><header class="surface-header"><div><h2>定时推送</h2><p>仅当接收人已订阅对应内容且自动排期已启用时推送</p></div></header><div class="surface-body"><div class="manual-push-heading news-schedule-heading"><div><h3>战略新闻定时推送</h3><p>爬虫每日 ${esc(newsSchedule.times_text)}（${esc(newsSchedule.timezone_label)}）· ${esc(newsSchedule.dispatch_rule)}</p></div><div class="news-delivery-time-summary" aria-label="当前每日个人推送时间">个人推送 ${esc(newsSchedule.delivery_times_text || "08:00 / 18:30")}</div></div><form id="newsScheduleForm" class="news-schedule-form"><label>早间个人推送时间（香港，不早于08:00）<input name="morningTime" type="time" value="${esc((newsSchedule.delivery_times || ["08:00", "18:30"])[0])}" required></label><label>下午个人推送时间（香港，不早于14:00）<input name="afternoonTime" type="time" value="${esc((newsSchedule.delivery_times || ["08:00", "18:30"])[1])}" required></label><label>自动流程<select name="enabled"><option value="true"${newsSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${newsSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存新闻排期</button><p class="schedule-meta">${newsSchedule.enabled ? "已启用；只有对应爬虫完成后，才会在设定时间向有效订阅者推送" : "已暂停；爬虫和群内消息照常运行，但不会向个人订阅者自动推送"}</p></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>业绩摘要定时推送</h3><p>按排期推送上方选定的业绩摘要；未选时使用最新正式版</p></div><p class="report-schedule-countdown" data-performance-schedule-countdown title="${esc(scheduleSummary(performanceSchedule))}">${esc(countdownText(performanceSchedule))}</p></div><form id="performanceScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((performanceSchedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(performanceSchedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${performanceSchedule.enabled ? " selected" : ""}>启用</option><option value="false"${performanceSchedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存业绩摘要排期</button></form><div class="push-divider" role="separator"></div><div class="manual-push-heading weekly-schedule-heading"><div><h3>周报定时推送</h3><p>执行日先生成当天最新周报；成功后仅向已订阅周报且状态启用的人员推送</p></div><p class="report-schedule-countdown" data-report-schedule-countdown title="${esc(scheduleSummary(schedule))}">${esc(countdownText(schedule))}</p></div><form id="reportScheduleForm" class="schedule-form"><label>每月执行日期<input name="days" value="${esc((schedule.days || [15, 30]).join(", "))}" inputmode="numeric" placeholder="15, 30" required></label><label>执行时间（香港）<input name="time" type="time" value="${esc(schedule.time || "09:00")}" required></label><label>自动流程<select name="enabled"><option value="true"${schedule.enabled ? " selected" : ""}>启用</option><option value="false"${schedule.enabled ? "" : " selected"}>暂停</option></select></label><button class="button primary schedule-save" type="submit">保存周报排期</button></form></div></section>
       </main>
+      ${chatPreferenceDrawer()}
       <div class="drawer-backdrop" data-drawer-backdrop${state.drawerOpen ? "" : " hidden"}><aside class="management-drawer" role="dialog" aria-modal="true" aria-label="管理记录"><header class="drawer-header"><div><h2>记录</h2><p>邀请结果与推送回读</p></div><button class="icon-button" type="button" data-close-management aria-label="关闭记录">${icon("close")}</button></header><nav class="drawer-tabs" aria-label="记录分类"><button type="button" data-drawer-tab="invitations" class="${state.drawerTab === "invitations" ? "is-active" : ""}">邀请结果</button><button type="button" data-drawer-tab="deliveries" class="${state.drawerTab === "deliveries" ? "is-active" : ""}">推送记录</button></nav><div class="drawer-body">${drawerContent()}</div></aside></div>
       <div class="drawer-backdrop" data-people-backdrop${state.peopleOpen ? "" : " hidden"}><aside class="people-picker" role="dialog" aria-modal="true" aria-label="添加邀请人员"><header class="drawer-header"><div><h2>添加人员</h2><p>搜索飞书通讯录并加入待邀请名单</p></div><button class="icon-button" type="button" data-close-people aria-label="关闭人员选择">${icon("close")}</button></header><div class="people-picker-body"><form class="people-search" id="peopleSearchForm"><input name="query" value="${esc(state.searchQuery)}" maxlength="50" aria-label="飞书检索关键字" placeholder="搜索姓名或群聊" required><button class="icon-button primary" type="submit" aria-label="搜索飞书人员和群聊" title="搜索">${icon("search")}</button></form><div class="people-results">${searchResultRows()}</div></div></aside></div>
     </div>`;
@@ -965,6 +989,17 @@
   }
 
   document.addEventListener("click", async (event) => {
+    const chatTrigger = event.target.closest("[data-open-chat-preferences]");
+    if (chatTrigger) {
+      state.chatUser = chatTrigger.dataset.openChatPreferences;
+      render();
+      root.querySelector("[data-close-chat-preferences]")?.focus();
+      return;
+    }
+    if (event.target.closest("[data-close-chat-preferences]") || event.target.matches("[data-chat-backdrop]")) {
+      closeChatPreferences();
+      return;
+    }
     const weeklyPickerTrigger = event.target.closest("[data-weekly-picker-trigger]");
     if (weeklyPickerTrigger) {
       state.weeklyPickerOpen = !state.weeklyPickerOpen;
@@ -1310,7 +1345,26 @@
     applyPerformancePickerFilter(performanceSearch.value);
   });
 
+  function closeChatPreferences() {
+    const user = state.chatUser;
+    state.chatUser = "";
+    render();
+    Array.from(root.querySelectorAll("[data-open-chat-preferences]")).find((button) => button.dataset.openChatPreferences === user)?.focus();
+  }
+
   document.addEventListener("keydown", (event) => {
+    if (state.chatUser && event.key === "Escape") {
+      closeChatPreferences();
+      return;
+    }
+    if (state.chatUser && event.key === "Tab") {
+      const controls = Array.from(root.querySelectorAll(".chat-preference-drawer button, .chat-preference-drawer summary"));
+      const currentIndex = controls.indexOf(document.activeElement);
+      if (currentIndex < 0 || (event.shiftKey && currentIndex === 0) || (!event.shiftKey && currentIndex === controls.length - 1)) {
+        event.preventDefault();
+        controls[event.shiftKey ? controls.length - 1 : 0]?.focus();
+      }
+    }
     if (event.key === "Escape" && state.openFilter) {
       const section = state.openFilter;
       const panel = root.querySelector(`#${section}-filter-panel`);
