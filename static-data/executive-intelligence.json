@@ -19860,10 +19860,10 @@
       "ok": true,
       "attempts": 1,
       "status": "published",
-      "site_version": "1e67a220794fa31d23e89cc412012848a6f01f486cf9a39cab062ca5a74248ea",
+      "site_version": "8ca06cfe63f393cba3ea4a319dbc9b5997659a90c2da55754aabba4f0fbaf163",
       "item_count": 8,
       "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
-      "commit": "1860c5befccaeba0ef90550802cef5d6daf9923b",
+      "commit": "bfceab3bbf7df59b0c39b5999e53f47a20dac158",
       "workbench_sha256": "12240c93afdadc2ae5e51011e2172d0d85485b203b44ba3b6f1c00300cef439b",
       "snapshot_source_url": ""
     },
@@ -19892,7 +19892,29 @@
       "live_event_count": 108945,
       "event_index_sha256": "7ddbd15d9734a4c2e3c5c8e0cc2c3e81958a7990e3d4cf2e94499240d9446a6f",
       "write_recovered_by_readback": false
-    }
+    },
+    "pages_publish_history": [
+      {
+        "ok": true,
+        "attempts": 1,
+        "status": "published",
+        "site_version": "1e67a220794fa31d23e89cc412012848a6f01f486cf9a39cab062ca5a74248ea",
+        "item_count": 8,
+        "public_url": "https://alexliaopoly.github.io/cmhk-competitive-intelligence/",
+        "commit": "1860c5befccaeba0ef90550802cef5d6daf9923b",
+        "workbench_sha256": "12240c93afdadc2ae5e51011e2172d0d85485b203b44ba3b6f1c00300cef439b",
+        "snapshot_source_url": ""
+      }
+    ],
+    "post_publish_verification": {
+      "desktop_width": 1440,
+      "mobile_width": 390,
+      "status": 200,
+      "page_errors": [],
+      "published_titles_visible": 4,
+      "regeneration_disabled": true
+    },
+    "post_publish_verified_at_hkt": "2026-09-12T12:37:49.164143+08:00"
   },
   "ui_contract": {
     "domain_ids": [

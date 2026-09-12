@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "checked_at_hkt": "2026-09-12T12:34:15+08:00",
+  "checked_at_hkt": "2026-09-13T00:04:48+08:00",
   "timezone": "Asia/Hong_Kong",
   "configured_rows": 44,
   "frequency_counts": {
@@ -45,20 +45,20 @@
       "03:00",
       "14:00"
     ],
-    "next_scan_at": "2026-09-12T14:00:00+08:00",
-    "next_group_check_at": "2026-09-12T13:00:00+08:00",
-    "last_scan_at": "2026-09-12T07:09:52+08:00",
-    "last_group_check_at": "2026-09-12T12:00:53+08:00",
-    "last_cycle_at": "2026-09-12T12:33:52+08:00",
+    "next_scan_at": "2026-09-13T03:00:00+08:00",
+    "next_group_check_at": "2026-09-13T01:00:00+08:00",
+    "last_scan_at": "2026-09-12T14:41:34+08:00",
+    "last_group_check_at": "2026-09-13T00:00:14+08:00",
+    "last_cycle_at": "2026-09-13T00:04:19+08:00",
     "latest_scan_slot": {
-      "slot": "2026-09-12@03:00",
+      "slot": "2026-09-12@14:00",
       "status": "completed",
-      "at": "2026-09-12T07:09:52+08:00",
-      "candidate_count": 223,
-      "message_id": "om_x100b657ceae76ca0b49b3b015ada4aa",
+      "at": "2026-09-12T14:41:34+08:00",
+      "candidate_count": 23,
+      "message_id": "om_x100b657b0cd920acb290af101689462",
       "recovered_from_archive": true
     },
-    "last_candidate_count": 223,
+    "last_candidate_count": 23,
     "feishu_identity": "bot",
     "last_error": "",
     "active_task_kind": "",
@@ -3198,53 +3198,53 @@
       }
     },
     "strategic_news": {
-      "crawl_run_id": "20260912_030013_226210",
+      "crawl_run_id": "20260912_140054_833314",
       "trigger": "战略新闻定时爬虫",
-      "scope": "晨间扫描（2026-09-12@03:00）",
+      "scope": "午后扫描（2026-09-12@14:00）",
       "task_kind": "strategic-news",
       "parent_crawl_run_id": "",
       "run_status": "completed",
-      "backend_pid": 50622,
+      "backend_pid": 7258,
       "worker_pid": 0,
       "phase": "已完成",
-      "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 683 条，AI保留 256 条，历史重复 33 条，新增 223 条。",
-      "heartbeat_at_hkt": "2026-09-12T07:27:54+08:00",
-      "started_at_hkt": "2026-09-12T03:00:13+08:00",
-      "completed_at_hkt": "2026-09-12T07:27:54+08:00",
+      "progress_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 102 条，AI保留 34 条，历史重复 10 条，新增 23 条。",
+      "heartbeat_at_hkt": "2026-09-12T15:05:36+08:00",
+      "started_at_hkt": "2026-09-12T14:00:54+08:00",
+      "completed_at_hkt": "2026-09-12T15:05:36+08:00",
       "crawl_return_code": 0,
-      "duration_ms": 16061169,
+      "duration_ms": 3882203,
       "feishu": {},
       "local_files": {
-        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260912_030013_226210.jsonl"
+        "stream_log": "agent_knowledge/crawl_run_logs/runs/20260912_140054_833314.jsonl"
       },
       "stream_log": {
-        "bytes": 103940,
-        "lines": 588
+        "bytes": 25453,
+        "lines": 143
       },
       "final_audit": {},
       "run_log": {},
       "curation": {},
       "metrics_refresh": {},
-      "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 683 条，AI保留 256 条，历史重复 33 条，新增 223 条。",
+      "status_detail": "扫描、AI审核、历史去重、飞书候选写入、选材逐格回读和群通知均已完成；发现 102 条，AI保留 34 条，历史重复 10 条，新增 23 条。",
       "failure_stage": "",
       "operational_summary": {
-        "slot": "2026-09-12@03:00",
-        "discovered": 683,
-        "ai_retained": 256,
-        "history_duplicates": 33,
-        "new_count": 223,
+        "slot": "2026-09-12@14:00",
+        "discovered": 102,
+        "ai_retained": 34,
+        "history_duplicates": 10,
+        "new_count": 23,
         "readback_verified": true,
         "notification_status": "sent",
-        "message_id": "om_x100b657ceae76ca0b49b3b015ada4aa",
+        "message_id": "om_x100b657b0cd920acb290af101689462",
         "message_ids": [
-          "om_x100b657ceae76ca0b49b3b015ada4aa",
-          "om_x100b657ceaf518a0b3d536b131dbf84"
+          "om_x100b657b0cd920acb290af101689462",
+          "om_x100b657b0cfbecb8b24d9d71b4470f9"
         ],
         "notification_destination_count": 2,
         "selection_agent_status": "completed",
-        "selection_agent_changed": 446
+        "selection_agent_changed": 46
       },
-      "amended_at_hkt": "2026-09-12T07:09:55+08:00"
+      "amended_at_hkt": "2026-09-12T14:41:39+08:00"
     },
     "four_database_refresh": {
       "crawl_run_id": "20260910_073905_947611",
