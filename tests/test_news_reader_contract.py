@@ -63,6 +63,17 @@ class ReaderContractTests(unittest.TestCase):
             self.assertEqual(filter_news_by_categories(pool,[category],limit=1,region_preference='international')[0]['news_id'],'world')
             self.assertEqual(filter_news_by_categories(pool,[category],limit=1,region_preference='hong_kong')[0]['news_id'],'hk')
 
+    def test_transient_failures_are_not_misreported_as_exhausted_candidates(self):
+        from cmhk.services.news_round_progress import excluded_items
+        with tempfile.TemporaryDirectory() as tmp:
+            service=SubscriptionService(runtime_root=Path(tmp))
+            ref='strategic-crawl:2026-09-12@03:00'
+            for _ in range(3):
+                record_attempt(service,'ou_test',ref,{'news_id':'busy'},error='assets: TimeoutError: 其他准备任务处理中')
+                record_attempt(service,'ou_test',ref,{'news_id':'wrong'},error='assets: ValueError: 图片属于另一家公司')
+            with closing(service._connect()) as db:
+                self.assertEqual(excluded_items(db,'ou_test',ref),{'wrong'})
+
     def test_six_of_twenty_resumes_after_restart_and_concurrent_reconcile_never_duplicates(self):
         now=datetime.now(HKT); day=now.date().isoformat(); ref='strategic-crawl:'+day+'@03:00'
         pool=[{'news_id':f'event{i}', 'title':f'独立企业{i}发布服务', 'category':'公司动态','published_at':day,
@@ -84,10 +95,12 @@ class ReaderContractTests(unittest.TestCase):
                 state=reconcile_round(service,'ou_test',ref,now=now)
                 self.assertEqual((state['delivered_count'],state['remaining_count']),(6,14))
                 self.assertEqual(len(queued()),1)
+                stable_supplement_id = queued()[0]["id"]
                 # A fresh service/parallel recovery sees the same unique queued supplement.
                 with ThreadPoolExecutor(max_workers=3) as workers:
                     list(workers.map(lambda _:reconcile_round(SubscriptionService(runtime_root=Path(tmp)),'ou_test',ref,now=now),range(3)))
                 self.assertEqual(len(queued()),1)
+                self.assertEqual(queued()[0]['id'], stable_supplement_id)
                 supplement=queued()[0];prepare(supplement);service.flush_due(pending_id=supplement['id'],now=now)
                 final=reconcile_round(service,'ou_test',ref,now=now)
                 self.assertEqual((final['status'],final['delivered_count'],final['remaining_count']),('complete',20,0))

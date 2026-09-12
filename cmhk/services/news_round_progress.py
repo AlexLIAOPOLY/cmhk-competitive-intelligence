@@ -127,7 +127,7 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
                 (delivery_id,open_id,service,mode,content_ref,title,body,frequency,due_at,status,created_at)
                 VALUES(?,?,'news','text',?,?,?,?,?,'queued',?)''',
                 (cur.lastrowid,open_id,content_ref,original['title']+'（补充）',encode_strategic_news_digest(candidates),
-                 subscriber['frequency'],max(stamp,original['due_at']),stamp))
+                 'crawl_retry',max(stamp,original['due_at']),stamp))
         reason = (f'本轮已发送{len(sent)}/{wanted}条；继续准备剩余{remaining}条' if status in ('preparing','continuing')
                   else f'本轮已发送{len(sent)}/{wanted}条；当前原审核批次无更多符合兴趣、时效、去重及图文要求的候选，缺{remaining}条' if remaining
                   else f'本轮已发送{len(sent)}/{wanted}条')
