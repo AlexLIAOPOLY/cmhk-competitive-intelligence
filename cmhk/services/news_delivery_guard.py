@@ -43,6 +43,40 @@ def preparation_key(*, body: str, title: str, history: list[dict], send_day: str
     return hashlib.sha256(encoded.encode()).hexdigest()
 
 
+def preparation_content_key(*, body: str, title: str, history: list[dict], send_day: str,
+                            context: str = "") -> str:
+    """Fingerprint reviewed content independently from presentation-only templates."""
+    encoded = json.dumps([POLICY_VERSION, DEDUPE_VERSION, EDITOR_VERSION, SUMMARY_VERSION,
+        text_model(), policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
+        json.dumps(item, ensure_ascii=False, sort_keys=True) for item in history
+    )], ensure_ascii=False)
+    return hashlib.sha256(encoded.encode()).hexdigest()
+
+
+def _prepared_items_from_receipt(receipt) -> tuple[list[dict], list[dict]]:
+    """Restore an additive checkpoint without network, model, or upload calls."""
+    audit = json.loads(receipt['audit_json'])
+    reviews = audit.get('summary_reviews') or []
+    saved = audit.get('prepared_items')
+    if isinstance(saved, list) and saved and all(isinstance(item, dict) for item in saved):
+        return [dict(item) for item in saved], list(reviews)
+    # Compatibility for receipts created before prepared_items was persisted.
+    selected = json.loads(receipt['items_json'])
+    assets = {item.get('news_id'): item for item in audit.get('assets', [])
+              if isinstance(item, dict) and item.get('news_id')}
+    restored = []
+    for index, item in enumerate(selected):
+        review = reviews[index] if index < len(reviews) and isinstance(reviews[index], dict) else {}
+        asset = assets.get(item.get('news_id')) or {}
+        summary = review.get('summary_detail')
+        if not summary or not asset.get('image_key'):
+            return [], []
+        restored.append({**item, **asset, 'digest_summary': summary})
+    if len(restored) != len(selected):
+        return [], []
+    return restored, list(reviews)
+
+
 def recipient_contract(service, open_id: str, profile: str) -> str:
     with closing(service._connect()) as db:
         recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,news_topics,news_personal_skill,frequency,news_delivery_times '
@@ -190,10 +224,16 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             return message_ids
         if uncertain:
             raise RuntimeError("该接收人有待确认的新闻发送，请先恢复原消息回执")
+        contract = recipient_contract(service, open_id, profile)
         key = preparation_key(body=body, title=title, history=history, send_day=send_day,
-                              context=recipient_contract(service, open_id, profile))
+                              context=contract)
+        content_key = preparation_content_key(body=body, title=title, history=history,
+                                              send_day=send_day, context=contract)
+        receipt_audit = json.loads(receipt['audit_json']) if receipt else {}
         ready = (receipt and receipt['status'] == 'prepared'
-                 and json.loads(receipt['audit_json']).get('preparation_key') == key)
+                 and receipt_audit.get('preparation_key') == key)
+        content_ready = (receipt and receipt['status'] == 'prepared'
+                         and receipt_audit.get('preparation_content_key') == content_key)
         if receipt and (receipt["status"] == "sending" or (ready and not (prepare_only and continue_preparation))):
             # The request may have reached Feishu. Keep precisely the same content
             # and idempotency key on transport recovery, including across midnight.
@@ -243,8 +283,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                         profile=profile, open_id=open_id, points=personal_skill,
                         region_preference=subscriber['news_region_preference'])
                     # A slow model cannot authorize a send under a now-stale brief.
-                    if preparation_key(body=body,title=title,history=history,send_day=send_day,
-                                       context=recipient_contract(service,open_id,profile)) != key:
+                    if preparation_content_key(body=body,title=title,history=history,send_day=send_day,
+                                               context=recipient_contract(service,open_id,profile)) != content_key:
                         raise NewsNotPrepared('个人阅读要求刚有更新，按最新说明重新选稿')
                 replacements = prioritize_preparation(replacements, runtime_root=service.runtime_root, attempts=attempts)
                 candidates = replacements[:wanted_count]
@@ -273,6 +313,20 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 delivered_selected = []
                 wanted = wanted_count
                 tried = {row.get('news_id') for row in preparation_issues}
+                # Preparation is additive across bounded slices. A presentation-
+                # only template change also reuses the exact reviewed content and
+                # rebuilds only the card JSON.
+                if receipt and (ready or content_ready):
+                    carried_items, carried_reviews = _prepared_items_from_receipt(receipt)
+                    carried_selected = json.loads(receipt['items_json'])
+                    if carried_items and len(carried_items) == len(carried_selected):
+                        prepared_items.extend(carried_items[:wanted])
+                        delivered_selected.extend(carried_selected[:wanted])
+                        summary_reviews.extend(carried_reviews[:wanted])
+                        tried.update(
+                            item.get('news_id') or item.get('source_url') or item.get('title')
+                            for item in carried_selected[:wanted]
+                        )
                 for item in [*original_selected, *replacements]:
                     identity = item.get('news_id') or item.get('source_url') or item.get('title')
                     if identity in tried:
@@ -358,6 +412,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                      "selection_policy": POLICY_VERSION, "template_version": TEMPLATE_VERSION,
                      "editor_version": EDITOR_VERSION, "summary_policy": SUMMARY_VERSION,
                      "summary_reviews": summary_reviews,
+                     "prepared_items": prepared_items,
                      "preparation_issues": preparation_issues, "text_model": text_model(),
                      "skill_hash": skill_contract()[1],
                      "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind",
@@ -366,7 +421,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                      "requested_count": requested_count if structured else input_count, "remaining_target": wanted_count if structured else input_count,
                      "can_prepare_more": can_prepare_more,
                      "slice_budget_exhausted": expired(), "selected_count": len(selected), "history_count": len(history), "decisions": decisions,
-                     "preparation_key": key, "prepared_at": prepared_at}, ensure_ascii=False), prepared_at),
+                     "preparation_key": key, "preparation_content_key": content_key,
+                     "prepared_at": prepared_at}, ensure_ascii=False), prepared_at),
                 )
         if prepare_only:
             return []

@@ -37,5 +37,15 @@
       "6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4"
     ],
     "reason": "Stop control, fair retry ordering and continued preparation before due time change delivery scheduling only. Reuse only source-exact accepted reviews under current simplified 100-character, information-gain and image validators."
+  },
+  "5afa9bf696bc9466b43fcceaa29dab660ae7cf9582fe4942eac69c85b5ff14a1": {
+    "compatible_hashes": [
+      "91323fe32abd108d5a8fa0753cc23487714545daacc2671fb88c92a0c874b925",
+      "d00ab2062eedcf3707f1111c7f0cf7b3069fda542c32a3dda1b1de4fdd6154e4",
+      "899b7ceedb30dc2bd746ac9eeb806b57cfae1281f50cd42406afa0dedf8bb679",
+      "f05fc1032d72d1eb676f2e11004133782e364e1631cb2795491cb5e8984ada41",
+      "6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4"
+    ],
+    "reason": "Additive preparation checkpoints and presentation-only local rerender change recovery mechanics only. Existing source-exact accepted image and prose evidence remains subject to all current validators before reuse."
   }
 }

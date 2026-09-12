@@ -127,10 +127,17 @@ class SubscriptionClockTests(unittest.TestCase):
             self.assertTrue(json.loads(receipt[1])['can_prepare_more'])
         self.send.assert_not_called()
         # A ready partial receipt must not idle through the remaining lead time.
-        self.tick('07:10:00')
+        continued=[]
+        def continuation_editor(items,root):
+            continued.extend(items);return {'items':items,'summary_reviews':[]}
+        with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=continuation_editor):
+            self.tick('07:10:00')
         self.tick('07:59:59')
         with self.service._connect() as db:
             self.assertEqual(len(json.loads(db.execute('SELECT items_json FROM news_delivery_receipts').fetchone()[0])),20)
+        self.assertEqual(len(edited), 6)
+        self.assertEqual(len(continued), 14)
+        self.assertEqual(len({item['news_id'] for item in edited + continued}), 20)
         self.send.assert_not_called()
         self.send.side_effect=['om_page1','om_page2']
         with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=AssertionError('AI in send lane')):
@@ -139,13 +146,19 @@ class SubscriptionClockTests(unittest.TestCase):
         with self.service._connect() as db:
             self.assertEqual(db.execute('SELECT delivered_count FROM news_round_progress').fetchone()[0],20)
 
-    def test_new_template_invalidates_only_unsent_preparations(self):
+    def test_new_template_rerenders_unsent_checkpoint_without_ai_or_asset_work(self):
         self.tick('07:00:00')
         with mock.patch('cmhk.services.news_delivery_guard.TEMPLATE_VERSION', 'next-version'), \
-                mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=TimeoutError('must rebuild')):
+                mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=AssertionError('AI must not rerun')), \
+                mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets', side_effect=AssertionError('assets must not rerun')):
             self.tick('07:10:00')
             self.tick('07:10:01')
-        self.assertTrue(self.worker.state['preparation_errors'])
+        with self.service._connect() as db:
+            audit = json.loads(db.execute(
+                "SELECT audit_json FROM news_delivery_receipts WHERE open_id='ou_one'"
+            ).fetchone()[0])
+        self.assertEqual(audit['template_version'], 'next-version')
+        self.assertFalse(self.worker.state['preparation_errors'])
         self.send.assert_not_called()
 
     def test_preference_change_rebuilds_prepared_card_before_sending(self):
