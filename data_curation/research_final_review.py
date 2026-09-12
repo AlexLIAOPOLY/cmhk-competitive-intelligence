@@ -75,6 +75,13 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             report["reviewed_metrics"] = []
             store.save(report, evidence_changed=True)
         restrict_report_metrics(report, company_metric_plan(company, metric_plan), reopen_missing=False)
+        # Older quotation/unit failures can still refer to an already stored
+        # period. Read the trusted baseline before attempting another repair.
+        for position, item in enumerate(report.get('items', [])):
+            if item.get('status') == 'conflict' and item.get('period'):
+                known = compare_candidate({**item, 'company': company, 'status': 'verified'}, baseline.get(company, {}))
+                if known['status'] in {'no_update', 'out_of_scope'}:
+                    report['items'][position] = {**known, 'contract_original': item}
         from .research_contracts import VERSION, planning_outcome, candidate_error
         if report.get("contract_version") != VERSION:
             proven = [m for m in report.get("reviewed_metrics", []) if (company, m) in prior_facts]

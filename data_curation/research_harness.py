@@ -123,8 +123,17 @@ class ResearchHarness:
                         "status": status, "value": value, "period": period, "unit": unit,
                         "source_url": source_url, "quote": quote, "context_quote": context_quote,
                         "reason": reason}
-            item = self.validator(proposed, self.current["company"],
-                                  [self.current["metric"]], self.current["pages"])
+            # An existing period or a disallowed series will not be written.
+            # Decide that first, so imperfect quotation of an old value cannot
+            # start three pointless evidence-format repairs.
+            early = None
+            if self.current.get("baseline") is not None and status == "verified":
+                from .research_freshness import compare_candidate
+                compared = compare_candidate(proposed, self.current["baseline"])
+                if compared["status"] in {"no_update", "out_of_scope"}:
+                    early = compared
+            item = early or self.validator(proposed, self.current["company"],
+                                           [self.current["metric"]], self.current["pages"])
             if self.current.get("baseline") is not None:
                 from .research_freshness import compare_candidate, metric_key
                 item = compare_candidate(item, self.current["baseline"])

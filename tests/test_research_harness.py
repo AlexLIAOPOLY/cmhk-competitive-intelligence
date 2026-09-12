@@ -44,6 +44,18 @@ def submission(reason="未找到"):
 
 
 class ResearchHarnessTests(unittest.TestCase):
+    def test_existing_period_does_not_retry_quotation_or_unit_format(self):
+        proposed=AIMessage(content='',tool_calls=[{'name':'submit_metric','args':{
+            'status':'verified','period':'H1 2026','value':'999','unit':'ambiguous'},'id':'existing','type':'tool_call'}],
+            response_metadata={'finish_reason':'tool_calls'})
+        model=ToolModel(responses=[proposed]);saved=[]
+        with patch('data_curation.six_agent_research.validate_fact',side_effect=AssertionError('do not reverify old value')) as validator:
+            harness=ResearchHarness(TASK,model,lambda *a:None,validator)
+            harness.extract('HKT','收入',{},saved.append,baseline={'收入':[{'period':'H1 2026','value':100,'unit':'millions HKD'}]})
+        self.assertEqual(saved[0]['status'],'no_update')
+        self.assertEqual(saved[0]['baseline'][0]['value'],100)
+        self.assertEqual(len(model.requested_budgets),1)
+
     def test_no_update_cannot_claim_a_nonexistent_baseline(self):
         claimed = submission('沿用库内数据')
         claimed.tool_calls[0]['args']['status'] = 'no_update'
