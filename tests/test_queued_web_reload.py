@@ -1,4 +1,5 @@
 import os
+import sqlite3
 import subprocess
 import tempfile
 import unittest
@@ -97,6 +98,7 @@ class QueuedWebReloadTests(unittest.TestCase):
         self.assertIn('kickstart -k "$DOMAIN/$SCHEDULER_LABEL"', worker)
         self.assertIn("running_frequency_pipeline_tasks", worker)
         self.assertIn("running_protected_tasks", worker)
+        self.assertIn("pending_personal_news_deliveries", worker)
         self.assertIn('"news-selection-agent"', worker)
         self.assertIn('for _bootstrap_attempt in {1..5}', worker)
         self.assertIn('launchctl remove "$QUEUE_LABEL"', worker)
@@ -131,6 +133,13 @@ class QueuedWebReloadTests(unittest.TestCase):
                 release.mkdir(parents=True)
                 request = state / "web-reload-requested"
                 request.write_text(token + "\n")
+                subscriptions_db = root / "runtime" / "var" / "subscriptions" / "subscriptions.sqlite3"
+                subscriptions_db.parent.mkdir(parents=True)
+                with sqlite3.connect(subscriptions_db) as connection:
+                    connection.execute(
+                        """CREATE TABLE pending_subscription_deliveries(
+                               service TEXT, content_ref TEXT, status TEXT)"""
+                    )
                 trace = root / "trace"
                 mocks = {
                     "launchctl": '''#!/bin/bash
@@ -218,6 +227,63 @@ printf '{"tasks":[]}\\n'
                 text=True,
             )
             self.assertEqual(result.stdout.strip(), "2")
+
+    def test_worker_counts_only_unfinished_strategic_personal_news(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            runtime = Path(temporary_directory)
+            database = runtime / "var" / "subscriptions" / "subscriptions.sqlite3"
+            database.parent.mkdir(parents=True)
+            with sqlite3.connect(database) as connection:
+                connection.execute(
+                    """CREATE TABLE pending_subscription_deliveries(
+                           service TEXT, content_ref TEXT, status TEXT)"""
+                )
+                connection.executemany(
+                    "INSERT INTO pending_subscription_deliveries VALUES(?,?,?)",
+                    [
+                        ("news", "strategic-crawl:2026-09-12@14:00", "queued"),
+                        ("news", "strategic-crawl:2026-09-12@14:00", "sending"),
+                        ("news", "strategic-crawl:2026-09-12@03:00", "verified"),
+                        ("weekly", "report", "queued"),
+                    ],
+                )
+            result = subprocess.run(
+                [
+                    "bash",
+                    "scripts/queued_web_app_reload_worker.sh",
+                    "--count-pending-personal-news",
+                ],
+                cwd=ROOT,
+                env={
+                    "HOME": temporary_directory,
+                    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+                    "CMHK_WEB_RUNTIME": temporary_directory,
+                },
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            self.assertEqual(result.stdout.strip(), "2")
+
+    def test_worker_personal_news_count_fails_closed_without_database(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            result = subprocess.run(
+                [
+                    "bash",
+                    "scripts/queued_web_app_reload_worker.sh",
+                    "--count-pending-personal-news",
+                ],
+                cwd=ROOT,
+                env={
+                    "HOME": temporary_directory,
+                    "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+                    "CMHK_WEB_RUNTIME": temporary_directory,
+                },
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
 
     def test_worker_fallback_fails_closed_for_missing_registry(self):
         with tempfile.TemporaryDirectory() as temporary_directory:

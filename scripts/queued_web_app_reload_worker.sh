@@ -14,6 +14,7 @@ INTERRUPT_FILE="$STATE_DIR/web-reload-interrupt-strategic"
 STAGE_ROOT="$STATE_DIR/web-reload-releases"
 QUEUE_LOCK_DIR="$STATE_DIR/web-reload-queue.lock"
 RUNTIME="${CMHK_WEB_RUNTIME:-/Users/liaowang/cmhk_public_crawl_app}"
+RELOAD_PYTHON="${CMHK_RELOAD_PYTHON:-/opt/homebrew/bin/python3}"
 WEB_PLIST="$HOME/Library/LaunchAgents/$WEB_LABEL.plist"
 SCHEDULER_PLIST="$HOME/Library/LaunchAgents/$SCHEDULER_LABEL.plist"
 LOG_FILE="$HOME/Library/Logs/cmhk_public_crawl/queued-web-reload.log"
@@ -120,9 +121,42 @@ running_frequency_pipeline_tasks() {
   fi
 }
 
+pending_personal_news_deliveries() {
+  local subscriptions_db="$RUNTIME/var/subscriptions/subscriptions.sqlite3"
+  # A resident scheduler restart invalidates unsent prepared cards when code,
+  # templates, or the delivery skill changes. Treat the durable personal-news
+  # outbox as protected work so a release cannot erase hours of preparation
+  # immediately before the reader's send time. Missing/corrupt state fails
+  # closed; the midnight cutoff remains the bounded recovery path.
+  [[ -x "$RELOAD_PYTHON" ]] || return 1
+  "$RELOAD_PYTHON" - "$subscriptions_db" <<'PY'
+import sqlite3
+import sys
+from pathlib import Path
+
+database = Path(sys.argv[1])
+if not database.is_file():
+    raise FileNotFoundError(database)
+with sqlite3.connect(f"file:{database}?mode=ro", uri=True) as connection:
+    row = connection.execute(
+        """SELECT COUNT(*)
+           FROM pending_subscription_deliveries
+           WHERE service='news'
+             AND content_ref LIKE 'strategic-crawl:%'
+             AND status IN ('queued','sending')"""
+    ).fetchone()
+print(int(row[0] if row else 0))
+PY
+}
+
 if [[ "${1:-}" == "--count-running-strategic" ]] \
   || [[ "${1:-}" == "--count-running-protected" ]]; then
   running_protected_tasks
+  exit
+fi
+
+if [[ "${1:-}" == "--count-pending-personal-news" ]]; then
+  pending_personal_news_deliveries
   exit
 fi
 
@@ -144,7 +178,7 @@ interrupt_requested() {
 }
 
 wait_until_idle_or_midnight() {
-  local requested_token="$1" deadline_epoch first_count second_count frequency_count
+  local requested_token="$1" deadline_epoch first_count second_count frequency_count personal_news_count
   deadline_epoch="$(next_midnight_epoch)"
   while true; do
     if interrupt_requested "$requested_token"; then
@@ -169,13 +203,28 @@ wait_until_idle_or_midnight() {
       sleep "$CHECK_INTERVAL_SECONDS"
       continue
     fi
+    if ! personal_news_count="$(pending_personal_news_deliveries)"; then
+      log "Personal-news outbox unavailable; preserving the current Web and scheduler processes."
+      sleep "$CHECK_INTERVAL_SECONDS"
+      continue
+    fi
+    if (( personal_news_count > 0 )); then
+      sleep "$CHECK_INTERVAL_SECONDS"
+      continue
+    fi
     sleep "$CHECK_INTERVAL_SECONDS"
     if ! second_count="$(running_protected_tasks)"; then
       continue
     fi
     if (( second_count == 0 )); then
       frequency_count="$(running_frequency_pipeline_tasks)"
-      if (( frequency_count == 0 )); then
+      if (( frequency_count > 0 )); then
+        continue
+      fi
+      if ! personal_news_count="$(pending_personal_news_deliveries)"; then
+        continue
+      fi
+      if (( personal_news_count == 0 )); then
         return 0
       fi
     fi
