@@ -14,6 +14,32 @@ from tests.ai_stream_fixture import sse_response
 
 
 class RecoveryTests(unittest.TestCase):
+    def test_empty_slot_wrong_target_reopens_saved_missing_conclusion(self):
+        from data_curation.research_final_review import review_run
+        from data_curation.research_contracts import VERSION
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / 'agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json'
+            source.parent.mkdir(parents=True)
+            source.write_text(json.dumps({'reports': [{'company': 'HKT', 'period': 'FY2025',
+                'metrics': [{'metric_key': 'revenue', 'value': None, 'unit': 'millions HKD'}]}]}))
+            run = root / 'curation_data/research_runs/test'
+            run.mkdir(parents=True)
+            task = {'key': 'hong-kong', 'title': '香港', 'companies': ['HKT']}
+            report = {'company': 'HKT', 'metrics': ['收入'], 'status': 'partial', 'contract_version': VERSION,
+                'review_completed': True, 'reviewed_metrics': ['收入'], 'review_search_completed': True,
+                'baseline': {'_contracts': {'收入': {'enabled': True, 'has_baseline': False, 'target_period_end': '2026-12-31'}}},
+                'pages': {}, 'items': [{'company': 'HKT', 'metric': '收入', 'status': 'missing', 'reason': '未来全年未发布'}]}
+            (run / 'manifest.json').write_text(json.dumps({'run_id': 'test', 'plan': [task]}))
+            (run / 'hong-kong.json').write_text(json.dumps({**task, 'reports': [report]}))
+            collector = Mock(return_value=({'official': {'opened': True, 'official': True, 'text': 'HKT annual revenue'}}, []))
+            harness = Mock()
+            harness.extract.side_effect = lambda c,m,p,save,**kw: save({'company':c,'metric':m,'status':'missing','reason':'已检查正确年度'})
+            review_run(run, model_factory=lambda: None, collector=collector, harness_factory=lambda *args: harness)
+            collector.assert_called_once()
+            self.assertEqual(collector.call_args.args[3]['_contracts']['收入']['target_period_end'], '2025-12-31')
+            harness.extract.assert_called_once()
+
     def test_incomplete_model_output_remains_pending_with_a_finite_budget(self):
         with tempfile.TemporaryDirectory() as td:
             directory = Path(td)

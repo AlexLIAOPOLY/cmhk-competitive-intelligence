@@ -88,6 +88,9 @@ class SeriesContractsTests(unittest.TestCase):
         baseline={'收入':[{'period':'FY2025','value':None,'field':'revenue'}]}
         c=build_contract('中国广电','收入',baseline['收入'])
         self.assertTrue(c['enabled']);self.assertFalse(c['has_baseline'])
+        self.assertEqual(c['target_period_end'], '2025-12-31')
+        self.assertIn('2025', search_qualifier(c))
+        self.assertNotIn('2026', search_qualifier(c))
         self.assertIsNone(planning_outcome('中国广电','收入',baseline,today=date(2026,9,12)))
 
     def test_policy_migration_rechecks_old_no_update_when_target_period_is_due(self):

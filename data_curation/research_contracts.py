@@ -111,7 +111,9 @@ def build_contract(company, metric, rows):
             "metric_label": next((r["metric_label"] for r in rows if r.get("metric_label")), ""),
             "fields": fields,
             "template_periods": list(dict.fromkeys(str(r.get("period")) for r in matching))[-4:]}
-    end = next_period_end(contract)
+    # A configured but empty slot still needs its own period researched. It
+    # must not advance as if a value had already been stored there.
+    end = next_period_end(contract) if populated else row_end(newest)
     contract["target_period_end"] = end.isoformat() if end else ""
     return contract
 
@@ -208,7 +210,8 @@ def source_fact_error(item, baseline):
 
 
 def search_qualifier(contract):
-    end = next_period_end(contract)
+    end = (date.fromisoformat(contract["target_period_end"]) if contract.get("target_period_end")
+           else next_period_end(contract))
     if not contract.get("enabled"):
         return ""
     year = end.year if end else date.today().year

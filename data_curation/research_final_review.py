@@ -82,7 +82,22 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
                 known = compare_candidate({**item, 'company': company, 'status': 'verified'}, baseline.get(company, {}))
                 if known['status'] in {'no_update', 'out_of_scope'}:
                     report['items'][position] = {**known, 'contract_original': item}
-        from .research_contracts import VERSION, planning_outcome, candidate_error
+        from .research_contracts import VERSION, planning_outcome, candidate_error, contract_for
+        # Old empty-slot searches incorrectly advanced a year without a stored
+        # value. Reopen only those unfinished conclusions with changed targets.
+        changed_targets = set()
+        for item in report.get("items", []):
+            old_contract = (report.get("baseline", {}).get("_contracts", {}).get(item["metric"]) or {})
+            current_contract = contract_for(company, item["metric"], baseline.get(company, {}))
+            if (item.get("status") in {"missing", "error"} and old_contract.get("enabled")
+                    and not old_contract.get("has_baseline") and current_contract.get("enabled")
+                    and not current_contract.get("has_baseline")
+                    and old_contract.get("target_period_end") != current_contract.get("target_period_end")):
+                changed_targets.add(item["metric"])
+        if changed_targets:
+            report["review_completed"] = False
+            report["review_search_completed"] = False
+            report["reviewed_metrics"] = [m for m in report.get("reviewed_metrics", []) if m not in changed_targets]
         if report.get("contract_version") != VERSION:
             proven = [m for m in report.get("reviewed_metrics", []) if (company, m) in prior_facts]
             report.update(review_completed=False, reviewed_metrics=proven, review_search_completed=False,
