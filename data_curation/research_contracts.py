@@ -6,7 +6,7 @@ from collections import Counter
 from datetime import date, datetime
 import re
 
-VERSION = "stored_series_only_v1"
+VERSION = "stored_series_only_v2"
 GRAINS = {"annual": "year", "year": "year", "half_year": "half", "semiannual": "half",
           "half": "half", "quarter": "quarter", "quarterly": "quarter"}
 LABELS = {"year": "全年/原生财年", "half": "完整半年", "quarter": "独立单季"}

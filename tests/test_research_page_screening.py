@@ -14,7 +14,8 @@ class PageScreeningTests(unittest.TestCase):
     def test_resume_recovers_only_program_skipped_metrics_without_recrawl(self):
         task = {'key': 'test', 'title': 'test', 'purpose': 'test', 'companies': ['Verizon']}
         pages = {'official': {'opened': True, 'official': True, 'text': 'Navigation ' * 300 + 'revenue net income ARPU'}}
-        checkpoint = {'reports': [{'company': 'Verizon', 'status': 'completed', 'metrics': ['收入', '净利润', 'ARPU'], 'pages': pages, 'items': [
+        from data_curation.research_contracts import VERSION
+        checkpoint = {'reports': [{'company': 'Verizon', 'contract_version': VERSION, 'status': 'completed', 'metrics': ['收入', '净利润', 'ARPU'], 'pages': pages, 'items': [
             {'metric': '收入', 'status': 'missing', 'reason': NO_METRIC_EVIDENCE},
             {'metric': '净利润', 'status': 'missing', 'reason': 'Model found no applicable period'},
             {'metric': 'ARPU', 'status': 'no_update', 'reason': 'Already in baseline'},

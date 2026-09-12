@@ -110,6 +110,7 @@ class RecoveryTests(unittest.TestCase):
             self.assertTrue(recovery.due(saved, now + timedelta(minutes=11)))
 
     def test_retry_keeps_original_model_proof_rejected_by_old_preflight(self):
+        from data_curation.research_contracts import VERSION
         from data_curation.research_final_review import review_run
         from data_curation.review_store import ReviewStore
         from tests.test_research_kpi import tables
@@ -127,7 +128,7 @@ class RecoveryTests(unittest.TestCase):
             (directory / 'manifest.json').write_text(json.dumps(summary))
             (directory / 'candidate_facts.jsonl').write_text(json.dumps(original))
             report = {'company':'HKT','status':'partial','metrics':['收入'],'items':[{'company':'HKT','metric':'收入','status':'conflict'}],
-                      'pages':{},'review_completed':True,'reviewed_metrics':['收入']}
+                      'pages':{},'review_completed':True,'reviewed_metrics':['收入'], 'contract_version': VERSION}
             (directory / 'hong-kong.json').write_text(json.dumps({**task,'reports':[report]}))
             store = ReviewStore(directory, {'key':'final-review'}, 'research_test', ['HKT'], 1)
             store.save(report, evidence_changed=True)
@@ -139,11 +140,12 @@ class RecoveryTests(unittest.TestCase):
             self.assertEqual(saved['value'], original['value'])
 
     def test_publication_only_retry_does_not_repeat_research(self):
+        from data_curation.research_contracts import VERSION
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
             directory = root / 'curation_data/research_runs/research_20260911'
             directory.mkdir(parents=True)
-            summary = dict(run_id='research_20260911', status='partial', architecture='six_research_agents_v1', contract_version='stored_series_only_v1',
+            summary = dict(run_id='research_20260911', status='partial', architecture='six_research_agents_v1', contract_version=VERSION,
                            final_review={'status':'completed'}, publication={'status':'error','error':'timeout'})
             (directory / 'manifest.json').write_text(json.dumps(summary))
             registry = Mock()

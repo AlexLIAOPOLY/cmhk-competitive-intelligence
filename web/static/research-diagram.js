@@ -357,6 +357,7 @@
         return { key: "rejected", label: "合并待核对" };
       }
       if (state === "existing" || (!state && (item.research_status || item.status) === "no_update")) return { key: "existing", label: "库内已有" };
+      if (state === "excluded" || (item.research_status || item.status) === "out_of_scope") return { key: "excluded", label: "不纳入本轮" };
       if (state === "rejected") return { key: "rejected", label: "不可入库" };
       if (state === "ready") {
         const saved = (receiptIndex.get(identity(item)) || []).filter((receipt) => samePeriod(item, receipt));

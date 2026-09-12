@@ -88,6 +88,22 @@ class SeriesContractsTests(unittest.TestCase):
         self.assertTrue(c['enabled']);self.assertFalse(c['has_baseline'])
         self.assertIsNone(planning_outcome('中国广电','收入',baseline,today=date(2026,9,12)))
 
+    def test_policy_migration_rechecks_old_no_update_when_target_period_is_due(self):
+        from data_curation.six_agent_research import run_assignment
+        task={'key':'hong-kong','title':'香港','purpose':'研究','companies':['HKT']}
+        checkpoint={'reports':[{'company':'HKT','status':'completed','metrics':['收入'],
+            'items':[{'company':'HKT','metric':'收入','status':'no_update','period':'H1 2025'}],
+            'pages':{'old':{'opened':True,'official':True,'text':'broad old search'}}}]}
+        collector=Mock(return_value=({'new':{'opened':True,'official':True,'text':'revenue'}},[]))
+        with patch('data_curation.research_plan.frontend_metric_plan',return_value={'local':['收入']}), \
+             patch('data_curation.research_harness.ResearchHarness') as harness:
+            harness.return_value.extract.side_effect=lambda c,m,p,save,**kw:save({'company':c,'metric':m,'status':'missing','reason':'target period not yet disclosed'})
+            run_assignment(task,lambda *a:None,checkpoint=checkpoint,model_factory=lambda:object(),collector=collector,
+                           baseline={'HKT':{'收入':[{'period':'H1 2025','value':100}]}})
+        collector.assert_called_once()
+        self.assertEqual(collector.call_args.args[1],['收入'])
+        harness.return_value.extract.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()

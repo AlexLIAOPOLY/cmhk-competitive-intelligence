@@ -357,13 +357,11 @@ def run_assignment(task: dict, emit: Callable, checkpoint: dict | None = None,
         if baseline is not None and report.get("contract_version") != VERSION:
             company_baseline = baseline.get(report["company"], {})
             report["baseline"] = company_baseline
-            report["items"] = [planning_outcome(report["company"], item["metric"], company_baseline)
-                               or compare_candidate(item, company_baseline) for item in report.get("items", [])]
-            retry_scope = [i for i in report['items'] if i.get('status') == 'out_of_scope'
-                           and contract_for(report['company'], i['metric'], company_baseline)['enabled']]
-            if retry_scope:
-                report['contract_excluded_candidates'] = retry_scope
-                report['items'] = [i for i in report['items'] if i not in retry_scope]
+            prior_items = report.get('items', [])
+            outcomes = [planning_outcome(report['company'], i['metric'], company_baseline) for i in prior_items]
+            report['contract_previous_items'] = prior_items
+            report['items'] = [i for i in outcomes if i]
+            if any(i is None for i in outcomes):
                 report['contract_original_pages'] = report.get('pages', {})
                 report['pages'] = {}
             report["contract_version"] = VERSION

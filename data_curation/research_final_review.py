@@ -83,12 +83,11 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             for position, item in enumerate(report.get("items", [])):
                 outcome = planning_outcome(company, item["metric"], report["baseline"])
                 error = candidate_error(company, item["metric"], item.get("period"), report["baseline"])
-                if outcome or error:
-                    replacement = outcome or {"status": "missing", "value": "", "period": "",
-                        "freshness": "incompatible_candidate_excluded", "reason": error + "；按库内完整报告期重新搜索"}
-                    report["items"][position] = {**item, **replacement, "contract_original": item}
-                    if not outcome:
-                        report["reviewed_metrics"] = [m for m in report["reviewed_metrics"] if m != item["metric"]]
+                replacement = outcome or {"status": "missing", "value": "", "period": "",
+                    "freshness": "series_search_required", "reason": (error or "旧搜索结论未按当前序列生成") + "；按库内完整报告期重新搜索"}
+                report["items"][position] = {**item, **replacement, "contract_original": item}
+                if not outcome:
+                    report["reviewed_metrics"] = [m for m in report["reviewed_metrics"] if m != item["metric"]]
         if retry_errors:
             from .research_recovery import recoverable
             reopen = {i["metric"] for i in report.get("items", [])
