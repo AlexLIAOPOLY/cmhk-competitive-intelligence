@@ -109,11 +109,6 @@
           "period": "Q2 2026",
           "grain": "quarter",
           "period_end": "Jun '26 Jun 30, 2026"
-        },
-        {
-          "period": "H1 2026",
-          "grain": "half_year",
-          "period_end": "Jun '26 Jun 30, 2026"
         }
       ],
       "metrics": {
@@ -137,8 +132,7 @@
           "Q2 2022": "44,651",
           "Q1 2022": "25,624",
           "Q4 2021": "28,975",
-          "Q3 2021": "27,844",
-          "H1 2026": 78934
+          "Q3 2021": "27,844"
         },
         "operating_cash_flow": {
           "Q2 2026": "43,407",
@@ -206,12 +200,8 @@
           "Q4 2021": "1,806,027",
           "Q3 2021": "-"
         },
-        "revenue": {
-          "H1 2026": 538035
-        },
-        "service_revenue": {
-          "H1 2026": 452663
-        }
+        "revenue": {},
+        "service_revenue": {}
       },
       "sources": [
         {
@@ -1822,11 +1812,6 @@
           "period": "H2 2025",
           "grain": "half_year",
           "period_end": "Dec '25 Dec 31, 2025"
-        },
-        {
-          "period": "FY 2025",
-          "grain": "quarter",
-          "period_end": "FY 2025"
         }
       ],
       "metrics": {
@@ -1840,8 +1825,7 @@
           "H2 2022": "-",
           "H1 2022": "-225.87",
           "H2 2021": "-188.44",
-          "H1 2021": "-175.22",
-          "FY 2025": -490
+          "H1 2021": "-175.22"
         },
         "operating_cash_flow": {
           "H2 2025": "-118.76",
@@ -1879,9 +1863,7 @@
           "H2 2021": "1,486",
           "H1 2021": "1,664"
         },
-        "revenue": {
-          "FY 2025": 539
-        }
+        "revenue": {}
       },
       "sources": [
         {
@@ -22326,33 +22308,6 @@
     {
       "subject": "i-CABLE",
       "category": "carrier",
-      "legal_name": "i-CABLE",
-      "ticker": "",
-      "period": "FY 2025",
-      "period_end": "FY 2025",
-      "grain": "quarter",
-      "metric_key": "net_income",
-      "metric_zh": "净利润",
-      "value": -490,
-      "unit": "millions HKD",
-      "disclosure_frequency": "quarterly",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": -490,
-      "official_unit": "millions HKD",
-      "official_source_label": "2025 Annual Report",
-      "official_source_url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf",
-      "official_evidence": "recorded a loss for the year of approximately HK$490 million",
-      "verification_count": 2,
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"每日爬虫核验的官方披露\", \"url\": \"https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf\", \"evidence\": \"recorded a loss for the year of approximately HK$490 million\"}, {\"label\": \"发行人官方财报入口\", \"url\": \"https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=en\", \"evidence\": \"用于核对发行人、披露期间与官方文件归属。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_17",
-      "daily_evidence_hash": "19c76e115deb193d7525e4dfc106d6cbc8047e040505799f5e23ed13a6eee889"
-    },
-    {
-      "subject": "i-CABLE",
-      "category": "carrier",
       "legal_name": "i-CABLE Communications Limited",
       "ticker": "1097.HK",
       "period": "H1 2021",
@@ -23599,33 +23554,6 @@
       "verification_method": "official_interim_or_annual_minus_interim_reconciliation",
       "verification_sources": "[{\"label\": \"i-CABLE 2020 Interim Report - company site\", \"url\": \"https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/646a66adffc7d3ef56dd4389_e01097%20IR2020.pdf\", \"evidence\": \"H1 2020累计值，用于从FY2020全年披露复算H2。\"}, {\"label\": \"i-CABLE 2020 Annual Report - company site\", \"url\": \"https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/646a6fe80500c46bb85d24c6_(07)%202020%20Annual%20Report%20of%20the%20Company%20(Eng).pdf\", \"evidence\": \"2020年报损益表披露FY2020收入和年度亏损。\"}, {\"label\": \"i-CABLE 2020 Annual Report - HKEX\", \"url\": \"https://www.hkexnews.hk/listedco/listconews/sehk/2021/0426/2021042601938.pdf\", \"evidence\": \"HKEX披露同一份2020年报，用于交叉核验。\"}]",
       "verification_note": "官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。"
-    },
-    {
-      "subject": "i-CABLE",
-      "category": "carrier",
-      "legal_name": "i-CABLE",
-      "ticker": "",
-      "period": "FY 2025",
-      "period_end": "FY 2025",
-      "grain": "quarter",
-      "metric_key": "revenue",
-      "metric_zh": "营业收入",
-      "value": 539,
-      "unit": "millions HKD",
-      "disclosure_frequency": "quarterly",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": 539,
-      "official_unit": "millions HKD",
-      "official_source_label": "2025 Annual Report",
-      "official_source_url": "https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf",
-      "official_evidence": "revenues 11%，儘管本年度充滿挑戰，本集團收入減少約 of the Group decreasing by approximately HK$45 million or 8% 45,000,000 港 元 或 8% 至 約 539,000,000 港 元（二 零 to approximately HK$539 million",
-      "verification_count": 2,
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"每日爬虫核验的官方披露\", \"url\": \"https://cdn.prod.website-files.com/6435c91757d4732e4d55d786/69f09c083e84ce9effada94a_2025%20Annual%20Report%20(ENG).pdf\", \"evidence\": \"revenues 11%，儘管本年度充滿挑戰，本集團收入減少約 of the Group decreasing by approximately HK$45 million or 8% 45,000,000 港 元 或 8% 至 約 539,000,000 港 元（二 零 to approximately HK$539 million\"}, {\"label\": \"发行人官方财报入口\", \"url\": \"https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=en\", \"evidence\": \"用于核对发行人、披露期间与官方文件归属。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_17",
-      "daily_evidence_hash": "19c76e115deb193d7525e4dfc106d6cbc8047e040505799f5e23ed13a6eee889"
     },
     {
       "subject": "i-CABLE",
@@ -40105,33 +40033,6 @@
     {
       "subject": "中国移动",
       "category": "carrier",
-      "legal_name": "中国移动",
-      "ticker": "",
-      "period": "H1 2026",
-      "period_end": "Jun '26 Jun 30, 2026",
-      "grain": "half_year",
-      "metric_key": "net_income",
-      "metric_zh": "净利润",
-      "value": 78934,
-      "unit": "millions CNY",
-      "disclosure_frequency": "semiannual",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": 78934,
-      "official_unit": "millions CNY",
-      "official_source_label": "每日Agent核验官方披露",
-      "official_source_url": "https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf",
-      "official_evidence": "片段中明确列出'归属于母公司股东的净利润 78,934'（2026年上半年）。",
-      "verification_count": 3,
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"官方披露1\", \"url\": \"https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf\", \"evidence\": \"片段中明确列出'归属于母公司股东的净利润 78,934'（2026年上半年）。\"}, {\"label\": \"官方披露2\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf\", \"evidence\": \"片段中明确列出'归属于母公司股东的净利润 78,934'（2026年上半年）。\"}, {\"label\": \"官方披露3\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports.php\", \"evidence\": \"片段中明确列出'归属于母公司股东的净利润 78,934'（2026年上半年）。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_49",
-      "daily_evidence_hash": "2096a1d36a1b084b562c21425da1a500c4d99ebe29e29ef5e11d5f361553484c"
-    },
-    {
-      "subject": "中国移动",
-      "category": "carrier",
       "legal_name": "China Mobile Limited",
       "ticker": "0941.HK",
       "period": "Q2 2016",
@@ -43782,33 +43683,6 @@
     {
       "subject": "中国移动",
       "category": "carrier",
-      "legal_name": "中国移动",
-      "ticker": "",
-      "period": "H1 2026",
-      "period_end": "Jun '26 Jun 30, 2026",
-      "grain": "half_year",
-      "metric_key": "revenue",
-      "metric_zh": "营业收入",
-      "value": 538035,
-      "unit": "millions CNY",
-      "disclosure_frequency": "semiannual",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": 538035,
-      "official_unit": "millions CNY",
-      "official_source_label": "每日Agent核验官方披露",
-      "official_source_url": "https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf",
-      "official_evidence": "片段中明确列出'营业收入 538,035'（2026年上半年）。",
-      "verification_count": 3,
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"官方披露1\", \"url\": \"https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf\", \"evidence\": \"片段中明确列出'营业收入 538,035'（2026年上半年）。\"}, {\"label\": \"官方披露2\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf\", \"evidence\": \"片段中明确列出'营业收入 538,035'（2026年上半年）。\"}, {\"label\": \"官方披露3\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports.php\", \"evidence\": \"片段中明确列出'营业收入 538,035'（2026年上半年）。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_49",
-      "daily_evidence_hash": "5e78e9aec124093f73a0a89290d6aa72736c4a3aeaf3c264f933832599b9ff87"
-    },
-    {
-      "subject": "中国移动",
-      "category": "carrier",
       "legal_name": "China Mobile Limited",
       "ticker": "0941.HK",
       "period": "Q2 2016",
@@ -45205,33 +45079,6 @@
       "verification_method": "official_quarterly_operating_data_with_h1_fy_reconciliation",
       "verification_sources": "[{\"label\": \"中国移动官网2024单季度经营数据\", \"url\": \"https://www.chinamobileltd.com/en/ir/operation_q.php?year=2024\", \"evidence\": \"官网直接列示2024/1Q和2024/2Q Operating Revenue、Revenue from Telecommunications Services、EBITDA和Profit Attributable to Equity Shareholders。\"}, {\"label\": \"中国移动2024中期报告\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports/ir2024.pdf\", \"evidence\": \"2024中期报告披露H1 2024 Operating Revenue 546,744、Revenue from Telecommunications Services 463,589、EBITDA 182,270和股东应占利润80,201百万元，用于交叉核验Q1+Q2。\"}, {\"label\": \"中国移动2024年报\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports/ar2024.pdf\", \"evidence\": \"2024年报披露全年Operating revenue 1,040,759、Revenue from telecommunications services 889,468、EBITDA 333,691和股东应占利润138,373百万元。\"}]",
       "verification_note": "官方报告披露该口径，但标准化在线表未提供同名字段；作为官方独有口径补入。"
-    },
-    {
-      "subject": "中国移动",
-      "category": "carrier",
-      "legal_name": "中国移动",
-      "ticker": "",
-      "period": "H1 2026",
-      "period_end": "Jun '26 Jun 30, 2026",
-      "grain": "half_year",
-      "metric_key": "service_revenue",
-      "metric_zh": "通信服务收入",
-      "value": 452663,
-      "unit": "millions CNY",
-      "disclosure_frequency": "semiannual",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": 452663,
-      "official_unit": "millions CNY",
-      "official_source_label": "每日Agent核验官方披露",
-      "official_source_url": "https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf",
-      "official_evidence": "片段中明确列出'主营业务收入 452,663'（2026年上半年）。",
-      "verification_count": 3,
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"官方披露1\", \"url\": \"https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf\", \"evidence\": \"片段中明确列出'主营业务收入 452,663'（2026年上半年）。\"}, {\"label\": \"官方披露2\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports/ar2025.pdf\", \"evidence\": \"片段中明确列出'主营业务收入 452,663'（2026年上半年）。\"}, {\"label\": \"官方披露3\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports.php\", \"evidence\": \"片段中明确列出'主营业务收入 452,663'（2026年上半年）。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_49",
-      "daily_evidence_hash": "783f3766283a2f4fc3cf1c0765732482a7d270a4c3e21e06577c0182eb915fb3"
     },
     {
       "subject": "中国移动",
@@ -80813,60 +80660,6 @@
       "value": "529",
       "unit": "millions HKD",
       "disclosure_frequency": "quarterly_or_standardized_quarterly"
-    },
-    {
-      "subject": "i-CABLE",
-      "category": "carrier",
-      "legal_name": "i-CABLE",
-      "ticker": "",
-      "period": "FY 2025",
-      "period_end": "FY 2025",
-      "grain": "quarter",
-      "metric_key": "capital_expenditures",
-      "metric_zh": "资本开支",
-      "value": "52",
-      "unit": "millions HKD",
-      "disclosure_frequency": "quarterly",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": "52",
-      "official_unit": "millions HKD",
-      "official_source_label": "PDF extracted by pdftotext",
-      "official_source_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf",
-      "official_evidence": "capital expenditure on property, plant and equipment amounted to approximately HK$52 million",
-      "verification_count": "2",
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"每日爬虫核验的官方披露\", \"url\": \"https://www1.hkexnews.hk/listedco/listconews/sehk/2026/0327/2026032703354.pdf\", \"evidence\": \"capital expenditure on property, plant and equipment amounted to approximately HK$52 million\"}, {\"label\": \"发行人官方财报入口\", \"url\": \"https://www1.hkexnews.hk/search/titlesearch.xhtml?lang=en\", \"evidence\": \"用于核对发行人、披露期间与官方文件归属。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_17",
-      "daily_evidence_hash": "1a394bf9f12f069125d395a50be9040921947320127a460c17b20a7871628f6b"
-    },
-    {
-      "subject": "中国移动",
-      "category": "carrier",
-      "legal_name": "中国移动",
-      "ticker": "",
-      "period": "H1 2026",
-      "period_end": "Jun '26 Jun 30, 2026",
-      "grain": "half_year",
-      "metric_key": "ebitda",
-      "metric_zh": "EBITDA",
-      "value": "173626",
-      "unit": "millions CNY",
-      "disclosure_frequency": "semiannual",
-      "quality_status": "daily_official_crawl_promoted",
-      "verification_status": "official_only",
-      "official_value": "173626",
-      "official_unit": "millions CNY",
-      "official_source_label": "每日Agent核验官方披露",
-      "official_source_url": "https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf",
-      "official_evidence": "片段中明确列出 'EBITDA' 为 '173,626' 百万元人民币，并标注变化为 '-6.6%'。",
-      "verification_count": "3",
-      "verification_method": "daily_agent_gate_plus_issuer_report_index",
-      "verification_sources": "[{\"label\": \"官方披露1\", \"url\": \"https://www.chinamobileltd.com/sc/ir/reports/ir2026_ashare.pdf\", \"evidence\": \"片段中明确列出 'EBITDA' 为 '173,626' 百万元人民币，并标注变化为 '-6.6%'。\"}, {\"label\": \"官方披露2\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports/ir2026.pdf\", \"evidence\": \"片段中明确列出 'EBITDA' 为 '173,626' 百万元人民币，并标注变化为 '-6.6%'。\"}, {\"label\": \"官方披露3\", \"url\": \"https://www.chinamobileltd.com/en/ir/reports.php\", \"evidence\": \"片段中明确列出 'EBITDA' 为 '173,626' 百万元人民币，并标注变化为 '-6.6%'。\"}]",
-      "verification_note": "每日03:00爬虫经Agent实体、指标、数值、期间和官方来源门禁后晋升。",
-      "daily_crawl_row_ref": "row_49",
-      "daily_evidence_hash": "8e5f0aa410da4c7b674a784c39ebc8f1b6aca08c08c1d05f24fc62160966e975"
     },
     {
       "category": "carrier",

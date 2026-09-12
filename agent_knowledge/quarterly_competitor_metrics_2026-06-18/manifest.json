@@ -75,7 +75,7 @@
   "updated_at": "2026-08-18T00:00:00+08:00",
   "quality": {
     "status": "official_verified_with_documented_source_gaps",
-    "row_count": 3051,
+    "row_count": 3044,
     "notes": [
       "全表保留 official_value、verification_status、verification_count 字段。",
       "当前严格审计显示 verification_count < 2 为 0。",
@@ -94,5 +94,5 @@
       "below_three_source_rows": 65
     }
   },
-  "row_count": 3051
+  "row_count": 3044
 }
