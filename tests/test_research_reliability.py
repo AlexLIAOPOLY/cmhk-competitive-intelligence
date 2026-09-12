@@ -11,6 +11,29 @@ from data_curation.research_final_review import review_run
 
 
 class ResearchReliabilityTests(unittest.TestCase):
+    def test_completed_checkpoint_recovers_exact_quarter_table_without_model(self):
+        from tests.test_research_tables import URL, TEXT
+        from data_curation.research_contracts import VERSION
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            target = root / 'agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json'
+            target.parent.mkdir(parents=True)
+            target.write_text(json.dumps({'rows': [{'subject': '中国联通', 'metric_key': 'ebitda',
+                'period': 'Q1 2026', 'grain': 'quarter', 'value': 24331, 'unit': 'millions CNY'}]}))
+            directory = root / 'curation_data/research_runs/test'; directory.mkdir(parents=True)
+            task = {'key': 'mainland', 'title': '内地', 'companies': ['中国联通']}
+            report = {'company': '中国联通', 'metrics': ['EBITDA'], 'status': 'partial',
+                'contract_version': VERSION, 'review_completed': True, 'reviewed_metrics': ['EBITDA'],
+                'pages': {URL: {'opened': True, 'official': True, 'text': TEXT}},
+                'items': [{'company': '中国联通', 'metric': 'EBITDA', 'status': 'out_of_scope',
+                    'period': 'H1 2026', 'value': '', 'reason': 'wrong period'}]}
+            (directory / 'manifest.json').write_text(json.dumps({'run_id': 'test', 'plan': [task]}))
+            (directory / 'mainland.json').write_text(json.dumps({**task, 'reports': [report]}))
+            with patch('data_curation.research_final_review.company_metric_plan', return_value=['EBITDA']):
+                result = review_run(directory, model_factory=lambda: self.fail('no model needed'),
+                    collector=lambda *args: self.fail('no repeated search'))
+            self.assertEqual(result['accepted'], 1)
+
     def configured_run(self, temp):
         root = Path(temp)
         template = root / 'agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json'

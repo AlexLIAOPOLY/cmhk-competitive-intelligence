@@ -184,7 +184,11 @@ different companies, search snippets and invented URLs becoming database facts.
             w._company_alias_mentions_text(alias, quote) for alias in profile["aliases"])
         if not w._evidence_mentions_metric(item["metric"], quote) and not cloud_sales:
             errors.append("引用原文没有对应指标")
-        if not metric_value_is_bound(item["metric"], item["value"], quote):
+        from .research_tables import table_value_is_bound, quarterly_cells
+        table_cells = quarterly_cells(company, item["metric"], item["source_url"], body)
+        binding_ok = (table_value_is_bound(item, body) if table_cells else
+                      metric_value_is_bound(item["metric"], item["value"], quote))
+        if not binding_ok:
             errors.append("数值所在原文句段没有对应指标标签；不得用总收入替代服务收入等子指标")
         group_bound = bool(group_entity and group_entity.casefold() in (grounded + " " + issuer_header).casefold()
             and re.search(r"consolidated|group|集团|集團", grounded, re.I)

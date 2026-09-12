@@ -44,6 +44,20 @@ def submission(reason="未找到"):
 
 
 class ResearchHarnessTests(unittest.TestCase):
+    def test_wrong_period_gets_one_bounded_correction_before_exclusion(self):
+        wrong = AIMessage(content='', tool_calls=[{'name': 'submit_metric', 'args': {
+            'status': 'verified', 'period': 'FY2026', 'value': '99', 'unit': 'millions HKD'},
+            'id': 'wrong-period', 'type': 'tool_call'}], response_metadata={'finish_reason': 'tool_calls'})
+        repeated = wrong.model_copy(deep=True)
+        repeated.tool_calls[0]['id'] = 'wrong-period-again'
+        model = ToolModel(responses=[wrong, repeated]); saved = []
+        harness = ResearchHarness(TASK, model, lambda *args: None, validate_fact)
+        harness.extract('HKT', '收入', {}, saved.append,
+            baseline={'收入': [{'period': 'H1 2025', 'value': 100, 'unit': 'millions HKD'}]})
+        self.assertEqual(len(model.requested_budgets), 2)
+        self.assertEqual(len(saved), 1)
+        self.assertEqual(saved[0]['status'], 'out_of_scope')
+
     def test_existing_period_does_not_retry_quotation_or_unit_format(self):
         proposed=AIMessage(content='',tool_calls=[{'name':'submit_metric','args':{
             'status':'verified','period':'H1 2026','value':'999','unit':'ambiguous'},'id':'existing','type':'tool_call'}],

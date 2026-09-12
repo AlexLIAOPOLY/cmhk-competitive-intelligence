@@ -129,7 +129,16 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
                 report["reviewed_metrics"] = [m for m in report.get("reviewed_metrics", []) if m not in reopen]
                 if not any(p.get("opened") and p.get("official") for p in report.get("pages", {}).values()):
                     report["review_search_completed"] = False
+        from .research_tables import extract_configured_table
+        for position, item in enumerate(report.get("items", [])):
+            if item.get("status") in {"missing", "conflict", "out_of_scope"}:
+                table_item = extract_configured_table(company, item["metric"], report.get("pages", {}), baseline.get(company, {}))
+                if table_item:
+                    report["items"][position] = {**table_item, "final_reviewed": True, "table_original": item}
+                    report["baseline"] = baseline.get(company, {})
+                    emit("table_evidence", f"{company}：{item['metric']}已按官方表格列核验", table_item)
         if report.get("review_completed"):
+            report["status"] = "partial" if any(i["status"] not in {"verified", "no_update", "not_applicable", "out_of_scope"} for i in report["items"]) else "completed"
             store.save(report)
             return report
         report.setdefault("reviewed_metrics", [])
