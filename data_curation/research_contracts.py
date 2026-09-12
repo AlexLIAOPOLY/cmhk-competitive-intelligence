@@ -86,8 +86,7 @@ def build_contract(company, metric, rows):
                 break
     counts = Counter(GRAINS.get(r.get("grain")) or (period_key(r.get("period")) or (None, None, None))[2]
                      for r in rows)
-    counts.pop(None, None)
-    counts.pop("date", None)
+    counts = Counter({grain: count for grain, count in counts.items() if grain in LABELS})
     ordered = counts.most_common()
     if not ordered or (len(ordered) > 1 and ordered[0][1] == ordered[1][1]):
         return {"version": VERSION, "enabled": False, "company": company, "metric": metric,

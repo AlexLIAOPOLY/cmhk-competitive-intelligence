@@ -25,6 +25,10 @@ class FreshnessTests(unittest.TestCase):
         self.assertEqual(period_key('the six months ended 28 February 2026'), (2026, 2, 'half'))
         self.assertEqual(period_key('second quarter ended June 30, 2026'), period_key('2Q 2026'))
         self.assertIsNone(period_key('In the first half of the year'))
+        self.assertEqual(period_key('FY2026 (Twelve Months Ended June 30, 2026)'), (2026, 6, 'year'))
+        self.assertEqual(period_key('12 months ended June 30, 2026'), (2026, 6, 'year'))
+        self.assertEqual(period_key('Q4 FY26'), (2026, 12, 'quarter'))
+        self.assertEqual(period_key('trailing twelve months ended June 30, 2026')[2], 'rolling')
 
     def test_existing_values_are_trusted_and_never_replaced(self):
         baseline = {'收入': [{'period': 'H1 2026', 'value': '100', 'unit': 'HKD million'}]}

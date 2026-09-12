@@ -83,6 +83,16 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
                 if known['status'] in {'no_update', 'out_of_scope'}:
                     report['items'][position] = {**known, 'contract_original': item}
         from .research_contracts import VERSION, planning_outcome, candidate_error, contract_for
+        for position, item in enumerate(report.get("items", [])):
+            if (item.get("status") == "out_of_scope" and item.get("period")
+                    and not candidate_error(company, item["metric"], item["period"], baseline.get(company, {}))):
+                checked = compare_candidate(validate_fact({**item, "status": "verified"}, company,
+                    report["metrics"], report.get("pages", {}),
+                    storage_contract=contract_for(company, item["metric"], baseline.get(company, {}))), baseline.get(company, {}))
+                report["items"][position] = checked
+                if checked["status"] not in {"verified", "no_update"}:
+                    report["review_completed"] = False
+                    report["reviewed_metrics"] = [m for m in report.get("reviewed_metrics", []) if m != item["metric"]]
         # Old empty-slot searches incorrectly advanced a year without a stored
         # value. Reopen only those unfinished conclusions with changed targets.
         changed_targets = set()

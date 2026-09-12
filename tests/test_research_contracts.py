@@ -26,6 +26,7 @@ class SeriesContractsTests(unittest.TestCase):
         self.assertTrue(formal_row_error(item, {'metric_key':'organic_revenue', 'unit':'millions HKD'}, baseline))
         self.assertTrue(formal_row_error(item, {'metric_key':'revenue', 'unit':'millions USD'}, baseline))
         self.assertFalse(formal_row_error(item, {'metric_key':'revenue', 'unit':'millions HKD'}, baseline))
+        self.assertFalse(build_contract('HKT', '收入', [{'period': 'trailing twelve months ended June 30, 2026', 'value': 1}])['enabled'])
 
     def test_native_fiscal_half_and_year_use_actual_end(self):
         rows = [{'period':'H1 2026', 'period_end':"Dec '25 Dec 31, 2025", 'grain':'half_year', 'value':1}]

@@ -28,10 +28,13 @@ def metric_key(value):
 def period_key(value):
     text = str(value or "").lower().replace("’", "'")
     text = re.sub(r"([hq][1-4])[' ’]?(\d{2})(?!\d)", lambda m: m[1] + " 20" + m[2], text)
+    text = re.sub(r"\bfy\s*['’]?\s*(\d{2})(?!\d)", r"fy20\1", text)
     years = re.findall(r"20\d{2}", text)
     if not years:
         return None
     year = int(years[-1])
+    if re.search(r"trailing|rolling|last twelve months|\bttm\b|\bltm\b", text):
+        return year, 12, "rolling"
     if re.search(r"nine months|year.to.date|九个月|首三季|前三季", text):
         return year, 9, "ytd"
     if re.search(r"month ended|月份|20\d{2}年\d{1,2}月$", text):
@@ -44,7 +47,7 @@ def period_key(value):
     if ended and ended[1] in month_words:
         year = int(ended[2])
         month = month_words.index(ended[1]) + 1
-        grain = "half" if "six months" in text else "quarter" if "quarter" in text or "three months" in text or "three-month" in text else "year" if "year" in text else "date"
+        grain = "half" if "six months" in text else "quarter" if "quarter" in text or "three months" in text or "three-month" in text else "year" if "year" in text or re.search(r"\b(?:twelve|12)[ -]months?\b", text) else "date"
         return year, month, grain
     text = re.sub(r"(first|second|third|fourth) quarter", lambda m: "q" + str(["first", "second", "third", "fourth"].index(m[1])+1), text)
     q = re.search(r"q([1-4])|([1-4])q|第([一二三四1-4])季", text)

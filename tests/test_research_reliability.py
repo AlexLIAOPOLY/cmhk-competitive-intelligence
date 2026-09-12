@@ -21,6 +21,25 @@ class ResearchReliabilityTests(unittest.TestCase):
         directory.mkdir(parents=True)
         return directory
 
+    def test_saved_twelve_month_exclusion_recovers_real_proof_without_model_or_search(self):
+        from data_curation.research_contracts import VERSION
+        with tempfile.TemporaryDirectory() as temp:
+            directory = self.configured_run(temp)
+            task = {'key': 'hong-kong', 'title': '香港', 'companies': ['HKT']}
+            period = 'Twelve Months Ended December 31, 2025'
+            text = f'HKT reported revenue of HK$ 123 million for {period}.'
+            url = 'https://www.hkt.com/report'
+            report = {'company': 'HKT', 'metrics': ['收入'], 'status': 'partial', 'incremental': True,
+                'contract_version': VERSION, 'review_completed': True, 'reviewed_metrics': ['收入'],
+                'pages': {url: {'opened': True, 'official': True, 'text': text}},
+                'items': [{'company': 'HKT', 'metric': '收入', 'status': 'out_of_scope',
+                    'period': period, 'value': '123', 'unit': 'HK$ million', 'quote': text, 'source_url': url}]}
+            (directory / 'manifest.json').write_text(json.dumps({'run_id': 'test', 'plan': [task]}))
+            (directory / 'hong-kong.json').write_text(json.dumps({**task, 'reports': [report]}))
+            result = review_run(directory, model_factory=lambda: self.fail('must reuse source proof'),
+                collector=lambda *args: self.fail('must not repeat search'))
+            self.assertEqual(result['accepted'], 1)
+
     def test_parent_group_amount_cannot_become_subsidiary_amount(self):
         self.assertFalse(company_value_is_bound('CMHK','RMB538.0 billion','China Mobile Hong Kong Treasury Company Limited. The Company recorded operating revenue of RMB538.0 billion.','https://www.chinamobileltd.com/en/ir/reports/ir2026.pdf'))
         self.assertTrue(company_value_is_bound('CMHK','HK$100 million','China Mobile Hong Kong recorded revenue of HK$100 million.','https://www.chinamobileltd.com/report.pdf'))
