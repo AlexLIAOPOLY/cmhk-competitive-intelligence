@@ -17,13 +17,15 @@ from cmhk.services.subscriptions import HKT, SubscriptionService
 
 from cmhk.services.news_push_skill import PREPARATION_LEAD_MINUTES, TEMPLATE_VERSION, skill_contract, text_model
 POLL_SECONDS = 1
+PREPARATION_WORKERS = 8
 
 
 class SubscriptionDeliveryWorker:
     def __init__(self, runtime_root):
         self.service = SubscriptionService(runtime_root=runtime_root)
-        # Slow AI calls and slow recipients cannot occupy the sending lane.
-        self.preparers = ThreadPoolExecutor(max_workers=3, thread_name_prefix="news-prepare")
+        # Recipients can reuse shared reviewed stories concurrently. The global
+        # ai_dispatch model limits remain unchanged; these are not AI slots.
+        self.preparers = ThreadPoolExecutor(max_workers=PREPARATION_WORKERS, thread_name_prefix="news-prepare")
         self.senders = ThreadPoolExecutor(max_workers=8, thread_name_prefix="subscription-send")
         self.preparing = {}
         self.sending = {}
@@ -109,7 +111,7 @@ class SubscriptionDeliveryWorker:
             if news and allowed and not ready and upcoming:
                 late_unprepared += int(is_due)
                 if (identifier not in self.preparing and identifier not in self.sending
-                        and len(self.preparing) < 3
+                        and len(self.preparing) < PREPARATION_WORKERS
                         and self.retry_after.get(identifier, 0) <= time.monotonic()):
                     self.preparing[identifier] = self.preparers.submit(self._prepare, row)
             if (is_due and (ready or (news and not allowed))
@@ -123,7 +125,8 @@ class SubscriptionDeliveryWorker:
             'prepare_as_soon_as_queued': True, 'template_version': TEMPLATE_VERSION, 'text_model': text_model(),
             'skill_hash': skill_contract()[1], 'queued_count': len(rows),
             'prepared_count': ready_count, 'due_count': due_count,
-            'preparing_count': len(self.preparing), 'sending_count': len(self.sending),
+            'preparing_count': len(self.preparing), 'preparation_workers': PREPARATION_WORKERS,
+            'sending_count': len(self.sending),
             'deadline_unprepared_count': late_unprepared,
             'preparation_errors': dict(self.errors),
             'failure_counts': dict(self.failure_counts), 'retry_at': dict(self.retry_at),
