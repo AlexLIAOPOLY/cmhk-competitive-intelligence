@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from collections import Counter
 from datetime import date, datetime, timedelta
+import json
 import random
 from zoneinfo import ZoneInfo
 
@@ -59,3 +60,39 @@ def original_crawl_pool(db, content_ref: str) -> list[dict]:
            WHERE crawl_date=? AND crawl_slot<=?
            ORDER BY sort_timestamp DESC, crawl_slot DESC""", (slot[:10], slot),
     )]
+
+
+def prioritize_preparation(items: list[dict], *, runtime_root, attempts: dict[str, int]) -> list[dict]:
+    """Move costly retries behind unused alternatives without dropping either.
+
+    A positive cache is only a scheduling hint. The delivery guard still runs
+    every source, summary, image and recipient-history check before sending.
+    Original order retains region preference and section variety within tiers.
+    """
+    from cmhk.services.news_text import simplified_news_text
+
+    def identity(item):
+        return (str(item.get('source_url') or ''), simplified_news_text(item.get('title')),
+                str(item.get('summary') or ''))
+
+    ready = set()
+    directory = runtime_root / 'var/subscriptions/news-editor'
+    for path in sorted(directory.glob('*.json'), key=lambda p: p.stat().st_mtime, reverse=True)[:300]:
+        try:
+            cached = json.loads(path.read_text())
+            rows, reviews = cached.get('items', []), cached.get('summary_reviews', [])
+            if not rows or len(rows) != len(reviews) or not all(r.get('accepted') is True for r in reviews):
+                continue
+            for row in rows:
+                summary = simplified_news_text(row.get('digest_summary'))
+                if row.get('source_url') and row.get('image_key') and 20 <= len(summary) <= 100:
+                    ready.add(identity(row))
+        except (OSError, ValueError, TypeError, AttributeError):
+            continue
+
+    def rank(item):
+        key = str(item.get('news_id') or item.get('source_url') or item.get('title') or '')
+        tried = attempts.get(key, 0)
+        return (tried, identity(item) not in ready)
+
+    return sorted(items, key=rank)

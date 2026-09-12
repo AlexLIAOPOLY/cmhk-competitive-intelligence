@@ -18,7 +18,7 @@ from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract, text
 from cmhk.services.news_preparation_budget import bounded_preparation, candidate_budget, expired
 from cmhk.services.news_text import simplified_news_text
 from cmhk.services.news_round_progress import excluded_items, remaining_count, record_attempt, item_key, finish_without_card
-from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news
+from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news, prioritize_preparation
 
 
 class NewsNotPrepared(RuntimeError):
@@ -191,19 +191,20 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                     # Re-select from the original reviewed pool, never a later batch.
                     candidates = candidates + original_crawl_pool(db, content_ref)
                     exhausted = excluded_items(db, open_id, content_ref)
+                    attempts = {r[0]: r[1] for r in db.execute(
+                        'SELECT item_key,attempts FROM news_candidate_attempts WHERE open_id=? AND content_ref=?',
+                        (open_id, content_ref))}
                     candidates = [item for item in candidates if item_key(item) not in exhausted]
                     requested_count = int(subscriber['news_item_limit']) if subscriber else len(candidates)
                     wanted_count = remaining_count(db, open_id, content_ref, requested_count)
                 categories = subscriber['news_categories'] if subscriber else list({item.get('category') for item in candidates})
                 pool = candidates
-                candidates = select_recent_news(
-                    pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=wanted_count,
-                    history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
-                )
                 replacements = select_recent_news(
                     pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=500,
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
                 )
+                replacements = prioritize_preparation(replacements, runtime_root=service.runtime_root, attempts=attempts)
+                candidates = replacements[:wanted_count]
             selected, decisions = deduplicate_events(candidates, history, service.runtime_root)
             kept_keys = {item_key(item) for item in selected}
             review_errors = {str(row.get('news_id')) for row in decisions if row.get('status') == 'skipped_review_error'}

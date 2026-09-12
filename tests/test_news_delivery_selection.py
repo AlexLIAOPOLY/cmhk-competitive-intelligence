@@ -8,7 +8,7 @@ from unittest import mock
 
 from cmhk.services.news_delivery_dedupe import identity_keys
 from cmhk.services.news_delivery_guard import delivered_history, deliver_news, prepared_for
-from cmhk.services.news_delivery_selection import fresh_news, select_recent_news, POLICY_VERSION
+from cmhk.services.news_delivery_selection import fresh_news, select_recent_news, prioritize_preparation, POLICY_VERSION
 from cmhk.services.subscriptions import SubscriptionService, NEWS_CATEGORY_LABELS, encode_strategic_news_digest
 
 
@@ -19,6 +19,32 @@ def article(identifier, category="公司动态", published="2026-09-11T06:00:00+
 
 
 class SelectionTests(unittest.TestCase):
+    def test_retry_rotation_preserves_alternatives_and_region_order_within_each_tier(self):
+        with tempfile.TemporaryDirectory() as temp:
+            items = [article('hk-timeout'), article('hk-new'),
+                     {**article('global-new'), 'region': '国际/行业'}, article('hk-retry')]
+            selected = prioritize_preparation(items, runtime_root=Path(temp),
+                attempts={'hk-timeout': 8, 'hk-retry': 1})
+        self.assertEqual([i['news_id'] for i in selected], ['hk-new', 'global-new', 'hk-retry', 'hk-timeout'])
+        self.assertEqual({id(i) for i in selected}, {id(i) for i in items})
+
+    def test_only_matching_short_reviewed_cache_is_a_preparation_hint(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp); directory = root / 'var/subscriptions/news-editor'
+            directory.mkdir(parents=True)
+            items = [article('unready'), article('long'), article('ready'), article('rejected')]
+            for item in items[1:]:
+                summary = '这条简介提供了原文支持的具体措施和实施范围，便于了解新闻事实。'
+                if item['news_id'] == 'long': summary *= 8
+                cached = {'items': [{**item, 'digest_summary': summary, 'image_key': 'img_test'}],
+                          'summary_reviews': [{'accepted': item['news_id'] != 'rejected'}]}
+                (directory / (item['news_id']+'.json')).write_text(json.dumps(cached))
+            (directory / 'broken.json').write_text('{')
+            selected = prioritize_preparation(items, runtime_root=root, attempts={})
+            self.assertEqual([i['news_id'] for i in selected], ['ready', 'unready', 'long', 'rejected'])
+            changed = {**items[2], 'summary': '来源证据已经改变'}
+            self.assertEqual(prioritize_preparation([items[0], changed], runtime_root=root, attempts={}), [items[0], changed])
+
     def test_hong_kong_calendar_age_uses_publication_not_discovery(self):
         items = [article("today"), article("yesterday", published="2026-09-10"),
                  article("old", published="2026-09-09T23:59:59+08:00"),
