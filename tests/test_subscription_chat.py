@@ -118,11 +118,13 @@ class SubscriptionChatTests(unittest.TestCase):
         validate_grounding({'news_delivery_times': ['09:00', '18:15']}, self.get(), '下午六点一刻收', [])
 
     def test_model_response_is_bound_to_current_request_and_exact_source(self):
-        for stale in ('token', 'original', ''):
+        for stale in ('original', ''):
             def transport(request, **kwargs):
                 body = json.loads(request.data)
                 request_data = json.loads(body['messages'][-1]['content'])
-                result = {**plan(), 'token': request_data['token'], 'original': request_data['original']}
+                self.assertNotIn('current', request_data)
+                self.assertEqual(set(request_data), {'original'})
+                result = {**plan(), 'original': request_data['original']}
                 if stale:
                     result[stale] = 'some other request'
                 response = MagicMock()
@@ -142,6 +144,28 @@ class SubscriptionChatTests(unittest.TestCase):
             self.run_event(self.event(mid='om_guard' + str(i), content=text))
             self.assertEqual(self.get(), before)
         self.model.assert_not_called()
+
+    def test_same_stateless_time_result_merges_each_person_without_copying_saved_values(self):
+        source = '上午八点半收'
+        result = {**plan('news_delivery_times', '["08:30","19:00"]'), 'original': source}
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps({'choices': [
+            {'finish_reason': 'stop', 'message': {'content': json.dumps(result)}}]}).encode()
+        with mock_patch('ai_config.load_ai_config', return_value={'base_url': 'https://example.invalid/v1'}), mock_patch('ai_key_rotation.open_llm_request', return_value=response):
+            for afternoon in ('18:30', '19:00', '21:00'):
+                current = {**self.get(), 'news_delivery_times': ['09:00', afternoon]}
+                proposal = interpret(source, current, [])
+                self.assertEqual(validated_patch(proposal, current)['news_delivery_times'], ['08:30', afternoon])
+
+    def test_time_slot_omitted_by_parser_preserves_own_saved_time(self):
+        current = {**self.get(), 'news_delivery_times': ['10:15', '22:00']}
+        self.assertEqual(validated_patch(plan('news_delivery_times', '["09:30",""]'), current)['news_delivery_times'], ['09:30', '22:00'])
+
+    def test_missing_explicit_fields_or_unchanged_wrong_time_are_rejected(self):
+        with self.assertRaises(ValueError):
+            validate_grounding({'news_region_preference': 'international'}, self.get(), '国际新闻优先，每次5条，上午八点半', [])
+        with self.assertRaises(ValueError):
+            validate_grounding({'news_delivery_times': ['09:00', '19:00']}, self.get(), '上午八点半收', [])
 
     def test_delayed_older_message_cannot_overwrite_newer_request(self):
         self.run_event(self.event(create_time='1800000001000'))

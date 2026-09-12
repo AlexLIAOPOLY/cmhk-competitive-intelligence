@@ -51,10 +51,36 @@ def _small_number(value: str) -> int:
     return digits[value]
 
 
+def _requested_times(evidence):
+    numbers = r"\d{1,2}|[零一二两三四五六七八九十]{1,3}"
+    requested = {}
+    for match in re.finditer(rf"(上午|早上|早晨|早间|下午|晚间|晚上|早|晚)?\s*({numbers})\s*[:：点时時]\s*(半|一刻|三刻|{numbers})?", evidence):
+        period, hour_text, minute_text = match.groups()
+        hour = _small_number(hour_text)
+        minute = {"半": 30, "一刻": 15, "三刻": 45}.get(minute_text)
+        if minute is None:
+            minute = _small_number(minute_text) if minute_text else 0
+        if period in {"下午", "晚间", "晚上", "晚"} and hour < 12:
+            hour += 12
+        requested[0 if hour < 12 else 1] = f"{hour:02d}:{minute:02d}"
+    return requested
+
+
 def validate_grounding(patch: dict, current: dict, text: str, context: list):
     """Reject legal-looking numbers/times that contradict the user's actual words."""
+    if not patch:
+        return
     evidence = "\n".join([str(v["text"]) for v in context[-1:]] + [text])
     numbers = r"\d{1,2}|[零一二两三四五六七八九十]{1,3}"
+    required = set()
+    if re.search(rf"({numbers})\s*条", text):
+        required.add("news_item_limit")
+    if re.search(r"(?:每天|每日|一天).{0,5}[一二两12]\s*次", text):
+        required.add("frequency")
+    if _requested_times(text):
+        required.add("news_delivery_times")
+    if not required.issubset(patch):
+        raise ValueError("Explicit count, frequency or time was omitted")
     if "news_item_limit" in patch:
         values = re.findall(rf"({numbers})\s*条", evidence)
         if context and re.fullmatch(numbers, text.strip()):
@@ -67,24 +93,14 @@ def validate_grounding(patch: dict, current: dict, text: str, context: list):
         if not values or _small_number(values[-1]) != expected:
             raise ValueError("Frequency is not grounded in this request")
     if "news_delivery_times" in patch:
-        requested = {}
-        for match in re.finditer(rf"(上午|早上|早晨|早间|下午|晚间|晚上|早|晚)?\s*({numbers})\s*[:：点时時]\s*(半|一刻|三刻|{numbers})?", evidence):
-            period, hour_text, minute_text = match.groups()
-            hour = _small_number(hour_text)
-            minute = {"半": 30, "一刻": 15, "三刻": 45}.get(minute_text)
-            if minute is None:
-                minute = _small_number(minute_text) if minute_text else 0
-            if period in {"下午", "晚间", "晚上", "晚"} and hour < 12:
-                hour += 12
-            slot = 0 if hour < 12 else 1
-            requested[slot] = f"{hour:02d}:{minute:02d}"
+        requested = _requested_times(evidence)
         for slot, value in enumerate(patch["news_delivery_times"]):
-            if value != current["news_delivery_times"][slot] and requested.get(slot) != value:
+            if value != requested.get(slot, current["news_delivery_times"][slot]):
                 raise ValueError("Delivery time is not grounded in this request")
 
 
 def interpret(text: str, current: dict, context: list) -> dict:
-    """The model proposes data only; it never receives identity, tools or database access."""
+    """Stateless extraction: personal identity and saved settings stay in the server."""
     from ai_config import load_ai_config
     from ai_key_rotation import open_llm_request
     from cmhk.services.news_push_skill import text_model
@@ -94,8 +110,9 @@ def interpret(text: str, current: dict, context: list) -> dict:
     request_id = uuid.uuid4().hex
     prompt = (
         "Extract a personal subscription preference proposal. You are a data parser, not a customer-service agent. "
-        "Return one JSON object with exactly these keys: token, original, intent, changes, question. "
-        "Copy token and original EXACTLY from this input, including every character. Never omit either key. "
+        "Return one JSON object with exactly these keys: original, intent, changes, question. "
+        "Copy original EXACTLY from this input, including every character and clarification context. Never omit it. "
+        "You do not know the user's saved settings. Extract only explicitly requested operations, never invent saved values. "
         "intent is update, show, confirm, clarify, or help. confirm means accepting the current saved list without changes. "
         "changes is an array of objects with EXACTLY field, operation, value; "
         "value is always a string (JSON-encoded arrays for categories and times). question is simplified Chinese, <=150 characters. "
@@ -110,7 +127,7 @@ def interpret(text: str, current: dict, context: list) -> dict:
         "Hong Kong priority means hong_kong. Exclusive regions, fixed percentages, arbitrary keywords/blacklists/weights are unsupported. "
         "Categories: add for increase/focus, remove for exclusion, set ONLY for explicit replace/only/all. Other fields: set only. "
         "Count is exactly 5/10/15/20; never round or substitute a number. "
-        "Time is a two-string HH:MM array [morning,afternoon]. Preserve the unmentioned time. "
+        "Time is a two-string array [morning,afternoon]: HH:MM for explicitly requested slots, empty string for unmentioned slots. "
         "Morning range 08:00-11:59, afternoon 14:00-23:59; Hong Kong time. "
         "Once per day means once_daily, morning only; retain stored afternoon time. Twice means twice_daily. "
         "Never change frequency merely because time is mentioned. Do not claim that anything was saved. "
@@ -121,13 +138,17 @@ def interpret(text: str, current: dict, context: list) -> dict:
     )
     config = load_ai_config(include_key=True)
     model = text_model()
+    source = text if not context else ("上一轮要求：" + context[-1]["text"] + "\n上一轮澄清："
+                                       + context[-1]["reply"] + "\n本次回答：" + text)
     messages = [{"role": "system", "content": prompt}, {"role": "user", "content": json.dumps({
-        "token": request_id, "original": text, "current": current, "previous_clarification": context[-1:]
+        "original": source
     }, ensure_ascii=False)}]
     body = prepare_structured_chat_body({"model": model, "temperature": 0, "max_tokens": 2000,
-            "cache": {"no-cache": True, "no-store": True}, "messages": messages})
+            "cache": {"no-cache": True, "no-store": True, "s-maxage": 0,
+                      "namespace": "subscription-chat-" + request_id}, "messages": messages})
     request = Request(config["base_url"].rstrip("/") + "/chat/completions",
-                      data=json.dumps(body).encode(), headers={"Content-Type": "application/json"})
+                      data=json.dumps(body).encode(), headers={"Content-Type": "application/json",
+                      "Cache-Control": "no-cache, no-store", "Pragma": "no-cache"})
     deadline = time.monotonic() + 75
     with open_llm_request(request, timeout=35, config=config, model=model,
                           opener=build_opener(ProxyHandler({})), deadline_monotonic=deadline,
@@ -136,8 +157,22 @@ def interpret(text: str, current: dict, context: list) -> dict:
     content = final_chat_message_text(result, operation="subscription-chat").strip()
     content = re.sub(r'^```(?:json)?\s*|\s*```$', '', content)
     plan = json.loads(content)
-    if not isinstance(plan, dict) or plan.pop("token", None) != request_id or plan.pop("original", None) != text:
+    if not isinstance(plan, dict) or plan.pop("original", None) != source:
         raise ValueError("Preference response does not match this request")
+    # Legacy upstream cache metadata never authorizes an account write. Only the
+    # exact source is reusable; saved values are always merged on this server.
+    plan.pop("token", None)
+    for change in plan.get("changes", []):
+        if (isinstance(change, dict) and change.get("field") == "news_categories"
+                and change.get("operation") == "set"
+                and not re.search(r"只(?:要|关注|看|收)|仅(?:要|关注|看|收)|替换|改为|改成|设为|设置为|换成|换为|全部|所有", source)):
+            raise ValueError("Replacing categories requires an explicit replacement request")
+        if isinstance(change, dict) and change.get("field") == "news_delivery_times":
+            requested = _requested_times("\n".join([str(v["text"]) for v in context[-1:]] + [text]))
+            value = json.loads(change["value"])
+            if not requested or not isinstance(value, list) or len(value) != 2:
+                raise ValueError("No explicitly requested delivery time")
+            change["value"] = json.dumps([value[slot] if slot in requested else "" for slot in (0, 1)])
     validate_grounding(validated_patch(plan, current), current, text, context)
     return plan
 
@@ -178,6 +213,8 @@ def validated_patch(plan: dict, current: dict) -> dict:
             value = list(dict.fromkeys(value))
         elif field == "news_delivery_times":
             value = json.loads(raw)
+            if isinstance(value, list) and len(value) == 2 and any(value):
+                value = [item if item != "" else current[field][slot] for slot, item in enumerate(value)]
             if (not isinstance(value, list) or len(value) != 2
                     or any(not isinstance(v, str) or not re.fullmatch(r"[0-2]\d:[0-5]\d", v) for v in value)
                     or not "08:00" <= value[0] <= "11:59" or not "14:00" <= value[1] <= "23:59"):
