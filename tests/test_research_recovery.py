@@ -119,6 +119,42 @@ class RecoveryTests(unittest.TestCase):
             self.assertEqual(result['attempts'], 4)
             self.assertEqual(result['next_retry_at'], '')
 
+    def test_next_day_starts_once_without_inheriting_old_retry_exhaustion(self):
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            old = root / 'curation_data/research_runs/research_20260912'
+            old.mkdir(parents=True)
+            old_manifest = json.dumps({'publication': {'status': 'error'},
+                'recovery': {'status': 'exhausted', 'attempts': 6, 'next_retry_at': ''}})
+            (old / 'manifest.json').write_text(old_manifest)
+            new = old.with_name('research_20260913')
+            with (patch.object(daily, 'running_worker', side_effect=lambda pid, root: pid == 12345),
+                  patch.object(daily, 'worker_python', return_value='/test/python'),
+                  patch.object(daily, '_start_research_task', return_value={'crawl_run_id': 'next-parent'}) as parent,
+                  patch.object(daily, '_task_heartbeat'),
+                  patch.object(daily.subprocess, 'Popen', return_value=Mock(pid=12345)) as launch):
+                before = daily.dispatch(root, datetime(2026, 9, 13, 2, 59, tzinfo=daily.HKT))
+                self.assertFalse(before['due'])
+                self.assertFalse(new.exists())
+                launch.assert_not_called()
+                first = daily.dispatch(root, datetime(2026, 9, 13, 3, 0, tzinfo=daily.HKT))
+                second = daily.dispatch(root, datetime(2026, 9, 13, 3, 1, tzinfo=daily.HKT))
+                self.assertEqual(first['run_id'], 'research_20260913')
+                self.assertEqual(second['task_run_id'], 'next-parent')
+                self.assertEqual(second['status'], 'running')
+                parent.assert_called_once()
+                launch.assert_called_once()
+                self.assertEqual(launch.call_args.args[0][-2:], ['--run-id', 'research_20260913'])
+                self.assertEqual(json.loads((new / 'process.json').read_text())['pid'], 12345)
+                (new / 'manifest.json').write_text(json.dumps({'publication': {'status': 'completed'},
+                    'recovery': {'status': 'completed', 'attempts': 0, 'next_retry_at': ''}}))
+                with patch.object(daily, 'running_worker', return_value=False):
+                    finished = daily.dispatch(root, datetime(2026, 9, 13, 9, 0, tzinfo=daily.HKT))
+                self.assertFalse(finished['due'])
+                self.assertEqual(finished['status'], 'completed')
+                launch.assert_called_once()
+            self.assertEqual((old / 'manifest.json').read_text(), old_manifest)
+
     def test_dead_worker_is_delayed_then_resumed_with_the_same_budget(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
