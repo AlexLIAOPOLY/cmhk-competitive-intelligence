@@ -81,7 +81,8 @@ def prioritize_preparation(items: list[dict], *, runtime_root, attempts: dict[st
 
     A positive cache is only a scheduling hint. The delivery guard still runs
     every source, summary, image and recipient-history check before sending.
-    Original order retains region preference and section variety within tiers.
+    Within the same retry tier, reuse fully reviewed candidates before costly
+    uncached ones, then retain the personal semantic ranking within each group.
     """
     from cmhk.services.news_text import simplified_news_text
 
@@ -107,6 +108,7 @@ def prioritize_preparation(items: list[dict], *, runtime_root, attempts: dict[st
     def rank(item):
         key = str(item.get('news_id') or item.get('source_url') or item.get('title') or '')
         tried = attempts.get(key, 0)
-        return (tried, -int(item.get("subscription_semantic_score", item.get("subscription_topic_score")) or 0), identity(item) not in ready)
+        return (tried, identity(item) not in ready,
+                -int(item.get("subscription_semantic_score", item.get("subscription_topic_score")) or 0))
 
     return sorted(items, key=rank)

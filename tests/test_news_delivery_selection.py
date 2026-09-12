@@ -33,6 +33,8 @@ class SelectionTests(unittest.TestCase):
             root = Path(temp); directory = root / 'var/subscriptions/news-editor'
             directory.mkdir(parents=True)
             items = [article('unready'), article('long'), article('ready'), article('rejected')]
+            items[0]['subscription_semantic_score'] = 99
+            items[2]['subscription_semantic_score'] = 1
             for item in items[1:]:
                 summary = '这条简介提供了原文支持的具体措施和实施范围，便于了解新闻事实。'
                 if item['news_id'] == 'long': summary *= 8
