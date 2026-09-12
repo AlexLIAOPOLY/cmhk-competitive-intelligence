@@ -35,6 +35,16 @@ class FreshnessTests(unittest.TestCase):
         self.assertEqual(compare_candidate({**item, 'period': 'Q3 2026'}, baseline)['status'], 'out_of_scope')
         self.assertEqual(compare_candidate({**item, 'period': 'unknown'}, baseline)['status'], 'conflict')
 
+    def test_native_half_uses_actual_end_without_confusing_next_half_with_existing(self):
+        baseline = {'收入': [{'period': 'H1 2026', 'period_end': "Dec '25 Dec 31, 2025",
+            'grain': 'half_year', 'value': 100, 'field': 'revenue'}]}
+        item = {'company': 'SmarTone', 'status': 'verified', 'metric': '收入', 'value': 200}
+        self.assertEqual(compare_candidate({**item, 'period': 'six months ended 31 December 2025'}, baseline)['status'], 'no_update')
+        self.assertEqual(compare_candidate({**item, 'period': 'six months ended 30 June 2026'}, baseline)['freshness'], 'new_period')
+        baseline = {'收入': [{'period': 'H1 2026', 'period_end': '2026-02-28',
+            'grain': 'half_year', 'value': 100, 'field': 'revenue'}]}
+        self.assertEqual(compare_candidate({**item, 'company': 'HKBN', 'period': 'six months ended 31 August 2026'}, baseline)['freshness'], 'new_period')
+
     def test_primary_rows_and_nested_reports_are_baselines_even_without_quality_flags(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

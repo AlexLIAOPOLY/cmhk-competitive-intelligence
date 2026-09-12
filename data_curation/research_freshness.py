@@ -150,7 +150,7 @@ def compare_candidate(item: dict, baseline: dict) -> dict:
     if error:
         return {**item, "status": "out_of_scope", "freshness": "incompatible_series", "reason": error,
                 "storage_contract": contract_for(item.get("company"), item.get("metric"), baseline)}
-    from .research_contracts import matching_baseline
+    from .research_contracts import matching_baseline, row_end
     existing = matching_baseline(item.get("company"), item.get("metric"), baseline)
     period = period_key(item.get("period"))
     result = dict(item)
@@ -162,7 +162,28 @@ def compare_candidate(item: dict, baseline: dict) -> dict:
         else:
             result["freshness"] = "new_metric"
         return result
-    known = [period_key(row.get("period")) for row in existing]
+    # Native fiscal labels must compare on their actual closing dates. For
+    # example SmarTone H1 FY2026 ended in December 2025, not June 2026.
+    contract = contract_for(item.get("company"), item.get("metric"), baseline)
+    anchor = period_key(contract.get("latest_period"))
+    anchor_end = row_end({"period_end": contract.get("latest_period_end")})
+    def closing_rank(raw, explicit_end=None):
+        rank = period_key(raw)
+        if rank is None:
+            return None
+        end = row_end({"period_end": explicit_end}) if explicit_end else None
+        if end:
+            return end.year, end.month, rank[2]
+        # Explicit closing dates in source text already refer to calendar time.
+        if re.search(r"ended|ending|截至|20\d{2}-\d{2}-\d{2}", str(raw), re.I):
+            return rank
+        if anchor and anchor_end and rank[2] == anchor[2]:
+            offset = anchor_end.year * 12 + anchor_end.month - (anchor[0] * 12 + anchor[1])
+            year, month0 = divmod(rank[0] * 12 + rank[1] - 1 + offset, 12)
+            return year, month0 + 1, rank[2]
+        return rank
+    period = closing_rank(item.get("period"), item.get("period_end"))
+    known = [closing_rank(row.get("period"), row.get("period_end")) for row in existing]
     same = any(str(row.get("period", "")).casefold() == str(item.get("period", "")).casefold()
                or (period is not None and rank == period) for row, rank in zip(existing, known))
     if same:
