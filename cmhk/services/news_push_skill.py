@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[1] / 'skills/cmhk-strategic-news-push'
-TEMPLATE_VERSION = 'direct-source-list-v4-no-image-captions'
+TEMPLATE_VERSION = 'direct-source-list-v5-chat-preference-footer'
 PREPARATION_LEAD_MINUTES = 60
 
 

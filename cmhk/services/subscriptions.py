@@ -931,6 +931,8 @@ def strategic_news_card(
                 ("取消订阅", "cmhk_news_unsubscribe_v1"),
             ]
         ]},
+        {"tag": "markdown", "text_size": "notation",
+         "content": "<font color='grey'>您也可以选择直接回复我告诉我您的喜好</font>"},
     ])
     return {
         "schema": "2.0",
