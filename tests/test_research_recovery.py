@@ -175,11 +175,17 @@ class RecoveryTests(unittest.TestCase):
                            final_review={'status':'completed'}, publication={'status':'error','error':'timeout'})
             (directory / 'manifest.json').write_text(json.dumps(summary))
             registry = Mock()
+            def publish_current_phase(**kwargs):
+                live = json.loads((directory / 'manifest.json').read_text())
+                self.assertEqual(live['recovery']['phase'], 'publication')
+                self.assertEqual(live['recovery']['error'], '')
+                self.assertEqual(live['final_review']['status'], 'completed')
+                return {'ok': True, 'status': 'completed'}
             with (patch.object(daily, 'ROOT', root), patch.object(daily, '_live_registry', return_value=registry),
                   patch.object(daily, '_research_task_id', return_value='original'),
                   patch.object(daily, 'run_research', side_effect=AssertionError('must not replay research')),
                   patch('data_curation.research_final_review.review_run', side_effect=AssertionError('must not replay review')),
-                  patch.object(pipeline, 'run_pipeline_with_recovery', return_value={'ok':True,'status':'completed'}) as publish):
+                  patch.object(pipeline, 'run_pipeline_with_recovery', side_effect=publish_current_phase) as publish):
                 result = daily.execute(root, summary['run_id'])
             self.assertEqual(result['recovery']['status'], 'completed')
             self.assertEqual(result['recovery']['attempts'], 1)

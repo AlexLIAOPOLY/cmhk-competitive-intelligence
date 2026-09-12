@@ -337,6 +337,8 @@ def execute(root: Path, run_id: str) -> dict:
                                       detail="研究与最终审核已完成；本轮无可写入的新资料，现有四库和页面保持不变。", summary=summary)
                 return summary
             summary["publication"] = {"status": "running", "started_at": now()}
+            summary["recovery"] = {**(summary.get("recovery") or {}), "status": "running",
+                                   "phase": "publication", "error": "", "next_retry_at": ""}
             atomic_write_json(manifest_path, summary)
             _task_heartbeat(root, task_run_id, "四库写入与页面发布", "最终审核已完成，正在写入四库并更新分析页面。")
             _append_task_detail(
