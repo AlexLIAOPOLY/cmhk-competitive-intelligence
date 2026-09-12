@@ -471,6 +471,7 @@ def subscription_operation_audit_payload(
             "news_categories": [str(item)[:40] for item in (payload.get("newsCategories") or [])[:20]],
             "news_frequency": str(payload.get("newsFrequency") or "")[:40],
             "news_item_limit": payload.get("newsItemLimit"),
+            "news_region_preference": str(payload.get("newsRegionPreference") or "")[:40],
             "news_delivery_times": [str(item)[:20] for item in (payload.get("newsDeliveryTimes") or [])[:2]],
             "report_mode": str(payload.get("reportMode") or "")[:40],
             "status": str(payload.get("status") or "")[:40],
@@ -8171,6 +8172,7 @@ class AppHandler(BaseHTTPRequestHandler):
                         report_mode=str(payload.get("reportMode") or "pdf"),
                         news_item_limit=int(payload.get("newsItemLimit") or 10),
                         news_categories=payload.get("newsCategories"),
+                        news_region_preference=payload.get("newsRegionPreference"),
                         news_delivery_times=payload.get("newsDeliveryTimes"),
                     )
                 elif action == "resetSubscriber":

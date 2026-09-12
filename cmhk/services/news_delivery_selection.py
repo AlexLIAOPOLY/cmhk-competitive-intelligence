@@ -31,7 +31,7 @@ def fresh_news(items: list[dict], send_day: str) -> list[dict]:
 
 
 def select_recent_news(items: list[dict], categories, *, limit: int,
-                       history: list[dict], send_day: str, seed: str = "") -> list[dict]:
+                       history: list[dict], send_day: str, seed: str = "", region_preference: str | None = None) -> list[dict]:
     from cmhk.services.subscriptions import (
         NEWS_CATEGORIES_PER_PUSH, filter_news_by_categories, normalize_news_categories,
     )
@@ -45,7 +45,7 @@ def select_recent_news(items: list[dict], categories, *, limit: int,
     sections = sections[:NEWS_CATEGORIES_PER_PUSH]
     if not sections:
         return []  # Empty must not be normalized back to all subscriptions.
-    return filter_news_by_categories(candidates, sections, limit=limit, selection_seed=seed)
+    return filter_news_by_categories(candidates, sections, limit=limit, selection_seed=seed, region_preference=region_preference)
 
 
 def original_crawl_pool(db, content_ref: str) -> list[dict]:

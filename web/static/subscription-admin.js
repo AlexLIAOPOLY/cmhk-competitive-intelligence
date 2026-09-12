@@ -83,6 +83,11 @@
     return [5, 10, 15, 20].map((count) => `<option value="${count}"${Number(selected) === count ? " selected" : ""}>${count} 条</option>`).join("");
   }
 
+  function newsRegionOptions(selected = "hong_kong") {
+    return [{key: "hong_kong", label: "香港本地新闻优先"}, {key: "international", label: "国际新闻优先"}]
+      .map(item => `<option value="${item.key}"${item.key === selected ? " selected" : ""}>${item.label}</option>`).join("");
+  }
+
   function newsCategoryChecks(selected = []) {
     const categories = state.data?.news_categories || [];
     const selectedSet = new Set(selected || []);
@@ -130,6 +135,7 @@
       report_mode: item.report_mode || "pdf",
       frequency: item.news_frequency || item.frequency || "once_daily",
       news_item_limit: Number(item.news_item_limit || 10),
+      news_region_preference: item.news_region_preference || "hong_kong",
       news_delivery_times: Array.isArray(item.news_delivery_times) ? item.news_delivery_times : ["08:00", "18:30"],
       status: item.status || "active",
     };
@@ -156,7 +162,7 @@
       <td class="name">${esc(item.display_name)}</td><td class="muted">${esc(item.open_id.slice(0, 8))}…</td>
       ${["weekly", "performance", "news"].map((service) => `<td><label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label></td>`).join("")}
       <td><select data-subscriber-report-mode>${reportModeOptions(item.report_mode)}</select></td>
-      <td><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
+      <td><select data-subscriber-news-region aria-label="新闻地域偏好">${newsRegionOptions(item.news_region_preference)}</select><select data-subscriber-news-frequency>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select><select data-subscriber-news-limit aria-label="每次新闻条数">${newsItemLimitOptions(item.news_item_limit)}</select></td>
       <td><select data-subscriber-status><option value="active"${item.status === "active" ? " selected" : ""}>启用</option><option value="paused"${item.status === "paused" ? " selected" : ""}>暂停</option></select></td>
       <td><button class="button" type="button" data-save-subscriber>保存</button></td></tr>`).join("");
   }
@@ -173,6 +179,7 @@
       const filterText = [
         item.display_name, item.open_id, ...(item.services || []).flatMap((service) => [service, serviceLabel(service)]),
         ...(item.news_categories || []).flatMap((category) => [category, categoryLabels.get(category)]),
+        item.news_region_preference === "international" ? "国际新闻优先" : "香港本地新闻优先",
         item.report_mode, modeLabel(item.report_mode), item.news_frequency || item.frequency,
         ...(item.news_delivery_times || ["08:00", "18:30"]),
         item.status, item.status === "paused" ? "暂停" : "启用",
@@ -181,7 +188,7 @@
       <td><div class="table-person">${avatar(item, true)}<span class="table-person-copy"><strong class="table-person-name">${esc(item.display_name)}</strong><small class="table-person-id">${esc(item.open_id.slice(0, 8))}…</small>${item.preference_source === "group_card" ? `<small class="preference-source" title="${esc(item.preference_message_id)}">群卡本人提交 · ${esc(item.updated_at)}</small>` : ""}</span></div></td>
       <td><div class="service-group">${["weekly", "performance", "news"].map((service) => `<label class="service-check"><input type="checkbox" value="${service}"${item.services.includes(service) ? " checked" : ""}><span>${service === "weekly" ? "周报" : service === "performance" ? "业绩" : "新闻"}</span></label>`).join("")}</div></td>
       <td>${conditionalSetting("report", hasReport, `<select data-subscriber-report-mode${hasReport ? "" : " disabled"}>${reportModeOptions(item.report_mode)}</select>`, "未订阅报告")}</td>
-      <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div>`, "未订阅新闻")}</td>
+      <td>${conditionalSetting("news", hasNews, `<div class="news-interest-group" aria-label="${esc(item.display_name)}的战略新闻兴趣板块">${newsCategoryChecks(item.news_categories)}</div><label class="news-region-setting">新闻地域偏好<select data-subscriber-news-region aria-label="新闻地域偏好">${newsRegionOptions(item.news_region_preference)}</select></label>${item.latest_news_round ? `<small class="muted" title="${esc(JSON.parse(item.latest_news_round.detail_json || '{}').reason || '')}">本轮 ${number(item.latest_news_round.delivered_count)}/${number(item.latest_news_round.requested_count)} 条 · ${item.latest_news_round.status === 'complete' ? '已完成' : item.latest_news_round.status === 'exhausted' ? '候选不足' : '继续补选'}</small>` : ''}`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-frequency${hasNews ? "" : " disabled"}>${newsFrequencyOptions(item.news_frequency || item.frequency)}</select>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<select data-subscriber-news-limit aria-label="每次新闻条数"${hasNews ? "" : " disabled"}>${newsItemLimitOptions(item.news_item_limit)}</select>`, "未订阅新闻")}</td>
       <td>${conditionalSetting("news", hasNews, `<div class="news-delivery-times" aria-label="${esc(item.display_name)}的个人期待收到信息时间"><input data-subscriber-news-time="0" type="time" min="08:00" max="11:59" title="香港时间，上午08:00至11:59" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[0])}" aria-label="第一次期待收到时间"${hasNews ? "" : " disabled"}><input data-subscriber-news-time="1" type="time" title="香港时间，不早于14:00；仅每天两次使用" value="${esc((item.news_delivery_times || ["08:00", "18:30"])[1])}" aria-label="第二次期待收到时间"${hasNews ? "" : " disabled"}><span class="news-delivery-time-not-applicable" data-subscriber-news-time-afternoon-empty aria-label="下午不推送" hidden>—</span></div>`, "未订阅新闻")}</td>
@@ -301,6 +308,7 @@
       return (value || []).map((item) => labels.get(item) || item).join("、") || "无";
     }
     if (field === "frequency") return frequencyLabels[value] || value || "-";
+    if (field === "news_region_preference") return value === "international" ? "国际新闻优先" : "香港本地新闻优先";
     if (field === "news_item_limit") return `${number(value || 0)} 条`;
     if (field === "news_delivery_times") return (value || []).join(" / ") || "无";
     if (field === "status") return value === "active" ? "启用" : value === "paused" ? "暂停" : value || "-";
@@ -321,7 +329,7 @@
     if (!rows.length) return "";
     const fieldLabels = {
       services: "订阅内容", report_mode: "报告接收方式", news_categories: "新闻兴趣板块",
-      frequency: "新闻推送频率", news_item_limit: "每次新闻条数", news_delivery_times: "新闻接收时间", status: "订阅状态",
+      news_region_preference: "新闻地域偏好", frequency: "新闻推送频率", news_item_limit: "每次新闻条数", news_delivery_times: "新闻接收时间", status: "订阅状态",
     };
     return `<div class="preference-submission-list"><div class="preference-submission-title">用户提交记录 · ${number(rows.length)} 次</div>${rows.map((submission) => {
       const changes = submission.changes || [];
@@ -1169,7 +1177,7 @@
       const row = save.closest("[data-subscriber-row]");
       const services = Array.from(row.querySelectorAll('.service-check input[type="checkbox"]:checked')).map((input) => input.value);
       const newsCategories = Array.from(row.querySelectorAll('[data-news-category]:checked')).map((input) => input.value);
-      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, newsCategories, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), newsDeliveryTimes: Array.from(row.querySelectorAll("[data-subscriber-news-time]"), (input) => input.value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
+      try { await post({ action: "update", openId: row.dataset.subscriberRow, services, newsCategories, reportMode: row.querySelector("[data-subscriber-report-mode]").value, newsFrequency: row.querySelector("[data-subscriber-news-frequency]").value, newsRegionPreference: row.querySelector("[data-subscriber-news-region]")?.value || "hong_kong", newsItemLimit: Number(row.querySelector("[data-subscriber-news-limit]").value), newsDeliveryTimes: Array.from(row.querySelectorAll("[data-subscriber-news-time]"), (input) => input.value), status: row.querySelector("[data-subscriber-status]").value }, "正在保存订阅者设置…"); }
       catch (error) { state.notice = `保存失败：${error.message}`; state.noticeKind = "error"; render(); }
     }
   });
@@ -1260,6 +1268,7 @@
         news_categories: Array.from(row.querySelectorAll('[data-news-category]:checked'), input => input.value),
         report_mode: row.querySelector('[data-subscriber-report-mode]').value,
         news_frequency: row.querySelector('[data-subscriber-news-frequency]').value,
+        news_region_preference: row.querySelector('[data-subscriber-news-region]')?.value || 'hong_kong',
         news_item_limit: Number(row.querySelector('[data-subscriber-news-limit]').value),
         news_delivery_times: Array.from(row.querySelectorAll('[data-subscriber-news-time]'), input => input.value),
         status: row.querySelector('[data-subscriber-status]').value,

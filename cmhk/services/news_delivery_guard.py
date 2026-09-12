@@ -11,11 +11,13 @@ from zoneinfo import ZoneInfo
 
 from cmhk.services.news_delivery_dedupe import VERSION as DEDUPE_VERSION, deduplicate_for_delivery as deduplicate_events, exact_unique
 from cmhk.services.news_digest_editor import EDITOR_VERSION
-from cmhk.services.news_summary_quality import VERSION as SUMMARY_VERSION
+from cmhk.services.news_summary_quality import VERSION as SUMMARY_VERSION, MAX_SUMMARY_CHARS, SummaryQualityError, repeats_title
 from cmhk.services.news_delivery_assets import prepare_news_assets
 from cmhk.services.news_image_quality import policy_key, require_reviewed_images
 from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract, text_model
 from cmhk.services.news_preparation_budget import bounded_preparation, candidate_budget, expired
+from cmhk.services.news_text import simplified_news_text
+from cmhk.services.news_round_progress import excluded_items, remaining_count, record_attempt, item_key, finish_without_card
 from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news
 
 
@@ -32,7 +34,7 @@ def preparation_key(*, body: str, title: str, history: list[dict], send_day: str
 
 def recipient_contract(service, open_id: str, profile: str) -> str:
     with closing(service._connect()) as db:
-        recipient = db.execute('SELECT news_categories,news_item_limit,frequency,news_delivery_times '
+        recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,frequency,news_delivery_times '
                                'FROM subscribers WHERE open_id=?', (open_id,)).fetchone()
     return json.dumps([profile, dict(recipient) if recipient else {},
                        (service.config.get('subscriptions') or {}).get('news_image_keys') or {}],
@@ -97,6 +99,10 @@ def delivered_history(db, *, open_id: str, batch_id: str, logical_day: str, send
 def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
     from cmhk.services.subscriptions import NEWS_DIGEST_PREFIX, strategic_news_card
     require_reviewed_images(items, banner)
+    for item in items:
+        summary = simplified_news_text(item.get('digest_summary') or item.get('summary')).strip()
+        if not summary or len(summary) > MAX_SUMMARY_CHARS or repeats_title(item.get('title', ''), summary):
+            raise SummaryQualityError('待发简介超100字或重复标题，需要重新生成或换稿')
     groups = [items[start:start + 10] for start in range(0, len(items), 10)] or [[]]
     while True:
         pages = []
@@ -178,24 +184,34 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             if structured:
                 with closing(service._connect()) as db:
                     subscriber = db.execute(
-                        "SELECT news_categories,news_item_limit FROM subscribers WHERE open_id=?",
+                        "SELECT news_categories,news_item_limit,news_region_preference FROM subscribers WHERE open_id=?",
                         (open_id,),
                     ).fetchone()
                     # A prepared old card may have picked only exhausted sections.
                     # Re-select from the original reviewed pool, never a later batch.
                     candidates = candidates + original_crawl_pool(db, content_ref)
+                    exhausted = excluded_items(db, open_id, content_ref)
+                    candidates = [item for item in candidates if item_key(item) not in exhausted]
+                    requested_count = int(subscriber['news_item_limit']) if subscriber else len(candidates)
+                    wanted_count = remaining_count(db, open_id, content_ref, requested_count)
                 categories = subscriber['news_categories'] if subscriber else list({item.get('category') for item in candidates})
-                wanted_count = int(subscriber['news_item_limit']) if subscriber else len(candidates)
                 pool = candidates
                 candidates = select_recent_news(
-                    pool, categories, limit=wanted_count,
+                    pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=wanted_count,
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
                 )
                 replacements = select_recent_news(
-                    pool, categories, limit=min(60, wanted_count * 3),
+                    pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=500,
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
                 )
             selected, decisions = deduplicate_events(candidates, history, service.runtime_root)
+            kept_keys = {item_key(item) for item in selected}
+            review_errors = {str(row.get('news_id')) for row in decisions if row.get('status') == 'skipped_review_error'}
+            for item in candidates:
+                if item_key(item) not in kept_keys:
+                    failed = item_key(item) in review_errors
+                    record_attempt(service, open_id, content_ref, item,
+                                   error='事件去重审核失败' if failed else '与已发或同卡事件重复', duplicate=not failed)
             subscriptions = service.config.get('subscriptions') or {}
             image_keys = subscriptions.get('news_image_keys') or {}
             period = 'afternoon' if '下午茶' in title else 'morning'
@@ -203,21 +219,21 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             prepared_items = []
             summary_reviews = []
             preparation_issues = [row for row in decisions if row.get('status') == 'skipped_review_error']
-            if structured and (selected or preparation_issues):
+            if structured:
                 from cmhk.services.news_delivery_assets import save
                 progress_path = service.db_path.parent / 'news-preparation-progress' / (hashlib.sha256(
                     f'{open_id}:{batch_id}'.encode()).hexdigest() + '.json')
                 original_selected = list(selected)
                 delivered_selected = []
-                wanted = min(wanted_count, len(original_selected) or len(candidates))
+                wanted = wanted_count
                 tried = {row.get('news_id') for row in preparation_issues}
                 for item in [*original_selected, *replacements]:
                     identity = item.get('news_id') or item.get('source_url') or item.get('title')
                     if identity in tried:
                         continue
-                    tried.add(identity)
                     if len(prepared_items) >= wanted or expired():
                         break
+                    tried.add(identity)
                     stage = 'assets'
                     started = time.time()
                     try:
@@ -228,9 +244,12 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                                 checked, extra = deduplicate_events([item], history + prepared_items, service.runtime_root)
                                 decisions.extend(extra)
                                 if not checked:
+                                    record_attempt(service, open_id, content_ref, item,
+                                        error='补选事件去重审核未通过', duplicate=not any(r.get('status')=='skipped_review_error' for r in extra))
                                     continue
                             asset = prepare_news_assets([item], service, profile=profile, fallback_image_key=banner)[0]
                             if not exact_unique([asset], history + prepared_items):
+                                record_attempt(service, open_id, content_ref, item, error='原文地址与已发重复', duplicate=True)
                                 continue
                             stage = 'summary'
                             prepared = prepare_digest([asset], service.runtime_root)
@@ -238,6 +257,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                             delivered_selected.append(item)
                             summary_reviews.extend(prepared.get('summary_reviews', []))
                     except Exception as exc:
+                        record_attempt(service, open_id, content_ref, item, error=f'{stage}: {type(exc).__name__}: {exc}')
                         # The 2026-09-12 recovery policy permits replacement or
                         # fewer reviewed stories, never fabricated text/images.
                         preparation_issues.append({'news_id': identity, 'title': item.get('title'),
@@ -247,8 +267,15 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                         'model': text_model(), 'prepared_count': len(prepared_items), 'target_count': wanted,
                         'updated_at': datetime.now(ZoneInfo('Asia/Hong_Kong')).isoformat(timespec='seconds'),
                         'issues': preparation_issues})
-                if not prepared_items and (preparation_issues or expired()):
-                    raise NewsNotPrepared('本轮新闻暂无完成审核的图文，原批次保留：' + (preparation_issues[-1]['error'] if preparation_issues else '准备预算已用完，稍后恢复'))
+                if not prepared_items:
+                    with closing(service._connect()) as db:
+                        excluded = excluded_items(db, open_id, content_ref)
+                    retryable = [i for i in replacements if item_key(i) not in excluded]
+                    if (preparation_issues or expired()) and retryable and wanted_count:
+                        raise NewsNotPrepared('原轮次仍有候选，继续补选：' + (preparation_issues[-1].get('error', '审核失败') if preparation_issues else '本次准备预算已用完'))
+                    finish_without_card(service, open_id, content_ref, batch_id,
+                                        '原批次暂无更多合格新事件；保存真实缺额，未发送空卡')
+                    return []
                 # Only actually delivered stories enter recipient history.
                 selected = delivered_selected
                 rendered_body = NEWS_DIGEST_PREFIX + json.dumps({'items': prepared_items}, ensure_ascii=False)
@@ -277,7 +304,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                      "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind",
                          "image_source_url", "image_page_url", "image_sha256", "image_policy_key",
                          "image_review_status", "image_review")} for item in prepared_items],
-                     "selected_count": len(selected), "history_count": len(history), "decisions": decisions,
+                     "requested_count": requested_count if structured else input_count, "remaining_target": wanted_count if structured else input_count,
+                     "slice_budget_exhausted": expired(), "selected_count": len(selected), "history_count": len(history), "decisions": decisions,
                      "preparation_key": key, "prepared_at": prepared_at}, ensure_ascii=False), prepared_at),
                 )
         if prepare_only:

@@ -51,6 +51,28 @@ class PreparationBudgetTests(unittest.TestCase):
         self.assertEqual(len(calls[-1]['history']),4)
         self.assertEqual(sum(x.get('status')=='skipped_review_error' for x in audit),4)
 
+    def test_one_contradictory_row_does_not_discard_three_valid_reviews(self):
+        items=[{'news_id':str(i),'title':'独立新闻 '+str(i),'summary':'各个不同企业分别发布产品 '+str(i)} for i in range(4)]
+        rows=[{'id':'c'+str(i),'duplicate_of':'','reason':'不同事件'} for i in range(4)]
+        rows[1].update(duplicate_of='c0',reason='不同事件，不应合并',evidence=items[1]['summary'],matched_evidence=items[0]['summary'])
+        with tempfile.TemporaryDirectory() as root, patch('strategic_briefing._call_internal_ai_transport',return_value={'decisions':rows}) as model:
+            kept,audit=deduplicate_for_delivery(items,[],Path(root))
+        self.assertEqual(kept,[items[0],items[2],items[3]])
+        self.assertEqual(audit[1]['status'],'skipped_review_error')
+        self.assertEqual(audit[1]['news_id'],'1')
+        model.assert_called_once()
+
+    def test_fully_quoted_decisions_are_decoded_without_rewriting_or_model_retry(self):
+        from strategic_briefing import AIInvalidStructuredResponse
+        items=[{'title':'公司甲推出新产品','summary':'新产品首批覆盖工厂客户'}, {'title':'机场新增运输航线','summary':'航线每日执行两班'}]
+        rows=[{'id':'c0','duplicate_of':'','reason':'不同事件'},{'id':'c1','duplicate_of':'','reason':'不同事件'}]
+        error=AIInvalidStructuredResponse(json.dumps({'decisions':json.dumps(rows,ensure_ascii=False)},ensure_ascii=False),'decisions 应为 array')
+        with tempfile.TemporaryDirectory() as root, patch('strategic_briefing._call_internal_ai_transport',side_effect=error) as model:
+            kept,audit=deduplicate_for_delivery(items,[],Path(root))
+        self.assertEqual(kept,items)
+        self.assertEqual(audit,rows)
+        model.assert_called_once()
+
     def test_quality_compatibility_is_exact_and_unknown_edits_invalidate(self):
         self.assertIn('6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4',compatible_skill_hashes())
         with patch('cmhk.services.news_push_skill.skill_contract', return_value=('changed substantive rules','unknown')):

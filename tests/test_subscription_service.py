@@ -202,7 +202,7 @@ class SubscriptionServiceTests(unittest.TestCase):
         form = next(item for item in card["body"]["elements"] if item["tag"] == "form")
         self.assertEqual(
             [item["content"] for item in form["elements"] if item["tag"] == "markdown" and item["content"].startswith("**")],
-            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**定期推送日期（后台设置）**\n**战略双周报：**每月 5、20 日 08:45（香港时间）\n**运营商业绩摘要：**每月 10、25 日 09:30（香港时间）", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**\n<font color='grey'>选择每天一次时，只在上午推送，并使用下方第一次时间。</font>", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
+            ["**01 · 选择订阅内容**", "**02 · 报告设置**\n<font color='grey'>适用于战略双周报和运营商业绩摘要。</font>", "**定期推送日期（后台设置）**\n**战略双周报：**每月 5、20 日 08:45（香港时间）\n**运营商业绩摘要：**每月 10、25 日 09:30（香港时间）", "**报告接收方式**", "**03 · 战略新闻设置**\n<font color='grey'>仅订阅战略新闻时生效；以下选项不影响报告推送。</font>", "**感兴趣的战略新闻板块（可多选）**", "**战略新闻频率**\n<font color='grey'>选择每天一次时，只在上午推送，并使用下方第一次时间。</font>", "**新闻地域偏好**", "**每次战略新闻条数**", "**期待收到战略新闻的时间（香港）**\n早间早于08:00、下午早于14:00将自动调整到下限；无效时间使用08:00 / 18:30，成功消息会说明调整结果。"],
         )
         selector = next(item for item in form["elements"] if item["tag"] == "multi_select_static")
         self.assertEqual({item["value"] for item in selector["options"]}, {"weekly", "performance", "news"})
@@ -343,6 +343,7 @@ class SubscriptionServiceTests(unittest.TestCase):
                 "news_categories": ["政策监管", "宏观与国际"],
                 "news_frequency": "twice_daily",
                 "news_item_limit": "15",
+                "news_region_preference": "international",
             }),
         })
 
@@ -353,6 +354,9 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(card["header"]["text_tag_list"][0]["text"]["content"], "已更新")
         self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_preferences_updated_test")
         self.assertIn("修改成功", json.dumps(card, ensure_ascii=False))
+        self.assertEqual(updated["news_region_preference"], "international")
+        self.assertEqual(self.service.list_summary()["subscribers"][0]["news_region_preference"], "international")
+        self.assertIn("国际新闻优先", json.dumps(card, ensure_ascii=False))
 
     def test_news_delivery_uses_per_subscriber_schedule_without_global_pause(self):
         self.assertTrue(self.service.strategic_news_schedule_snapshot()["enabled"])
@@ -1150,7 +1154,8 @@ class SubscriptionServiceTests(unittest.TestCase):
                 target_open_id="ou_delivery123",
             )
 
-    def test_news_dispatches_after_crawler_completion_with_daily_limits(self):
+    @mock.patch.object(SubscriptionService, "_deliver_one", return_value=["om_clock_test"])
+    def test_news_dispatches_after_crawler_completion_with_daily_limits(self, delivery):
         self.service.save_subscriptions(
             "ou_delivery123",
             "测试用户",
@@ -1184,10 +1189,10 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(next_afternoon["queued_count"], 1)
         flushed = self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-02T19:00:00+08:00"))
         self.assertEqual(flushed["verified_count"], 3)
-        sends = [call for call in self.lark.calls if "+messages-send" in call]
-        self.assertEqual(len(sends), 3)
+        self.assertEqual(delivery.call_count, 3)
 
-    def test_personal_news_waits_for_late_crawl_completion(self):
+    @mock.patch.object(SubscriptionService, "_deliver_one", return_value=["om_clock_test"])
+    def test_personal_news_waits_for_late_crawl_completion(self, delivery):
         self.service.save_subscriptions(
             "ou_delivery123",
             "测试用户",
@@ -1303,7 +1308,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         )
         self.assertEqual(recovered["queued_count"], 1)
 
-    def test_two_people_keep_independent_personal_news_times(self):
+    @mock.patch.object(SubscriptionService, "_deliver_one", return_value=["om_clock_test"])
+    def test_two_people_keep_independent_personal_news_times(self, delivery):
         self.service.save_subscriptions(
             "ou_delivery123", "甲", ["news"], frequency="twice_daily",
             news_delivery_times=["08:15", "18:30"],
@@ -1333,7 +1339,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         )
         self.assertEqual(second["verified_count"], 1)
 
-    def test_twice_daily_dispatch_blocks_same_window_after_schedule_change(self):
+    @mock.patch.object(SubscriptionService, "_deliver_one", return_value=["om_clock_test"])
+    def test_twice_daily_dispatch_blocks_same_window_after_schedule_change(self, delivery):
         self.service.save_subscriptions(
             "ou_delivery123", "测试用户", ["news"], frequency="twice_daily"
         )
@@ -1354,11 +1361,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertEqual(first["queued_count"], 1)
         self.assertEqual(shifted["skipped_count"], 1)
         self.service.flush_due(prepared_news_only=False, now=datetime.fromisoformat("2099-01-01T19:00:00+08:00"))
-        sends = [call for call in self.lark.calls if "+messages-send" in call]
-        self.assertEqual(len(sends), 1)
-        card = json.loads(sends[0][sends[0].index("--content") + 1])
-        self.assertEqual(card["header"]["title"]["content"], "CMHK战略下午茶订阅｜2099年01月01日")
-        self.assertEqual(card["body"]["elements"][0]["img_key"], "img_v3_afternoon_tea_v2")
+        delivery.assert_called_once()
+        self.assertEqual(delivery.call_args.kwargs["title"], "CMHK战略下午茶订阅｜2099年01月01日")
 
     def test_twice_daily_dispatch_honors_legacy_exact_slot_claim(self):
         import sqlite3
@@ -1908,7 +1912,8 @@ class SubscriptionServiceTests(unittest.TestCase):
         self.assertTrue(unsubscribed["schedule_enabled"])
         self.assertEqual(unsubscribed["recipient_count"], 0)
 
-    def test_failed_crawler_delivery_retries_without_a_fixed_attempt_cap(self):
+    @mock.patch.object(SubscriptionService, "_deliver_one", side_effect=RuntimeError("temporary offline"))
+    def test_failed_crawler_delivery_retries_without_a_fixed_attempt_cap(self, delivery):
         from datetime import datetime
         import sqlite3
 

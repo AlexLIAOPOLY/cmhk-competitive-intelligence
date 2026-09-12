@@ -4,5 +4,20 @@
       "6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4"
     ],
     "reason": "2026-09-12 user authorized replacing failed candidates. Quality facts, evidence and reviewed image requirements remain valid; duplicate wording removed. Only accepted, source-exact results may be reused."
+  },
+  "899b7ceedb30dc2bd746ac9eeb806b57cfae1281f50cd42406afa0dedf8bb679": {
+    "compatible_hashes": [
+      "f05fc1032d72d1eb676f2e11004133782e364e1631cb2795491cb5e8984ada41",
+      "6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4"
+    ],
+    "reason": "Image facts and review rules unchanged. New 100-character summary hard gate validates all cached prose before reuse; overlength prose cannot pass."
+  },
+  "d00ab2062eedcf3707f1111c7f0cf7b3069fda542c32a3dda1b1de4fdd6154e4": {
+    "compatible_hashes": [
+      "899b7ceedb30dc2bd746ac9eeb806b57cfae1281f50cd42406afa0dedf8bb679",
+      "f05fc1032d72d1eb676f2e11004133782e364e1631cb2795491cb5e8984ada41",
+      "6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4"
+    ],
+    "reason": "Regional preference and round continuation affect selection, not original image facts. All prose revalidates <=100 characters, simplified conversion and source-backed information gain before reuse."
   }
 }

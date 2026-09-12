@@ -12,7 +12,9 @@ from pathlib import Path
 from typing import Any, Callable
 
 from cmhk.services.news_push_skill import skill_contract, text_model, compatible_skill_hashes
-from cmhk.services.news_summary_quality import SummaryQualityError, enrich_source, repeats_title, review_summaries
+from cmhk.services.news_summary_quality import MAX_SUMMARY_CHARS, SummaryQualityError, enrich_source, repeats_title, review_summaries
+
+from cmhk.services.news_text import simplified_news_text
 
 EDITOR_VERSION = 10
 
@@ -29,8 +31,10 @@ def _validate(result: Any, items: list[dict]) -> dict:
         if not isinstance(row, dict) or row.get('id') != str(index):
             raise ValueError('新闻编辑返回标识不匹配')
         summary = row.get('summary')
-        if not isinstance(summary, str) or not 20 <= len(summary.strip()) <= 500:
-            raise ValueError('新闻摘要缺失或超长')
+        if isinstance(summary, str):
+            summary = simplified_news_text(summary)
+        if not isinstance(summary, str) or not 20 <= len(summary.strip()) <= MAX_SUMMARY_CHARS:
+            raise SummaryQualityError('新闻简介须为20至100字；超长必须重新生成或换稿')
         # Keep editorial instructions out of the reader-facing news introduction.
         editorial_markers = (
             '不能写成', '应分开看', '应把团体倡议', '阅读这类观点',
@@ -42,7 +46,7 @@ def _validate(result: Any, items: list[dict]) -> dict:
             raise SummaryQualityError('新闻简介混入编辑提醒，须依据事件事实重写')
         if repeats_title(item.get('title', ''), summary):
             raise SummaryQualityError('新闻简介与标题重复，须补充原文中的具体事实')
-        enriched.append({**item, 'digest_summary': summary.strip()})
+        enriched.append({**item, 'title': simplified_news_text(item.get('title')), 'digest_summary': summary.strip()})
     return {'skill_hash': skill_contract()[1], 'items': enriched, 'editor_version': EDITOR_VERSION, 'status': 'model_generated'}
 
 
@@ -172,7 +176,7 @@ def _prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | 
     if not reused:
         from strategic_briefing import AIInvalidStructuredResponse, AIUnstructuredResponse
         from cmhk.intelligence.agent_harness import TruncatedModelOutput
-        task = '按少样本示例的字段分工重新撰写：新闻简介直接交代事件事实，不输出编辑提醒、阅读建议或材料缺失清单；不输出综述或AI解析。示例只是写法，不是本次事实。'
+        task = '全部输出简体中文，保留英文专名的大小写。每条简介硬性不超过100字（标点、数字、英文均计入），建议60至90字；必须与标题有区别，补充来源支持的细节。超长须重新生成，不直接截断。按少样本示例的字段分工重新撰写：新闻简介直接交代事件事实，不输出编辑提醒、阅读建议或材料缺失清单；不输出综述或AI解析。示例只是写法，不是本次事实。'
         system = skill_contract()[0]
         payload = {'editorial_version': EDITOR_VERSION, 'task': task, 'items': inputs}
         if _single_response:
@@ -187,7 +191,7 @@ def _prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | 
         try:
             if len(items) > 1 and recovery.exists():
                 raise ValueError('继续已记录的逐条编辑恢复')
-            for attempt in range(2 if _single_response else 1):
+            for attempt in range(2):
                 try:
                     result = model_call(system, json.dumps(payload, ensure_ascii=False),
                                         max_tokens=max(16000, len(items) * 1200), response_format=response_format,
@@ -210,24 +214,24 @@ def _prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | 
                         result = wrapped['items'][0]
                     except (ValueError, KeyError, TypeError):
                         raise exc
-                if _single_response:
+                if _single_response or (len(items) == 1 and isinstance(result, dict) and set(result) == {'id', 'summary'}):
                     result = {'items': [result]}
                 try:
                     _validate(result, items)
                     review_summaries(inputs, result['items'], runtime_root)
                     break
                 except SummaryQualityError as exc:
-                    if not _single_response or attempt:
+                    if attempt:
                         raise
                     payload['revision_required'] = str(exc)
                     payload['rejected_summary'] = result['items'][0]['summary']
-                    payload['task'] += ' 上次简介未通过事实增量审核；从原文选具体措施、数据、对象或进展重写，禁止换词复述标题或编造。'
+                    payload['task'] += ' 上次简介未通过长度或事实增量审核；必须控制在100字以内。从原文选具体措施、数据、对象或进展重写，禁止换词复述标题或编造。'
         except (ValueError, AIInvalidStructuredResponse, AIUnstructuredResponse, TruncatedModelOutput) as exc:
             if isinstance(exc, ValueError) and not isinstance(exc, SummaryQualityError) and str(exc) not in {
                     '继续已记录的逐条编辑恢复', '新闻编辑结果无效',
                     '新闻编辑返回条数不完整', '新闻编辑返回标识不匹配'}:
                 raise
-            if _single_response:
+            if _single_response or isinstance(exc, SummaryQualityError):
                 if isinstance(exc, SummaryQualityError):
                     save(failure_path, {'error': str(exc), 'retry_at': time.time() + 900,
                                         'status': 'source_or_summary_rejected'})

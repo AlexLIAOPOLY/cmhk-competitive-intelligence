@@ -10,9 +10,11 @@ from pathlib import Path
 
 from cmhk.services.news_delivery_dedupe import normalized_text
 from cmhk.services.news_preparation_budget import deadline
+from cmhk.services.news_text import simplified_news_text
 
 VERSION = 'summary-information-gain-v4-fewshot'
 SOURCE_EXTRACTOR_VERSION = 3
+MAX_SUMMARY_CHARS = 100
 SOURCE_FIELDS = ('source_content', 'source_summary', 'snippet', 'description', 'content',
                  'source_page_title', 'source_page_description')
 
@@ -168,7 +170,9 @@ def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *
         raise SummaryQualityError('新闻简介事实审核条数不完整')
     reviews = []
     for source, row in zip(inputs, rows):
-        summary = row['summary']
+        summary = simplified_news_text(row['summary']).strip()
+        if not summary or len(summary) > MAX_SUMMARY_CHARS:
+            raise SummaryQualityError('新闻简介超过100字或为空，须重写或换稿')
         if repeats_title(source['title'], summary):
             raise SummaryQualityError('新闻简介与标题重复，须补充原文中的具体事实')
         details = [text for text in quote_options(summary, 300) if compact(text) not in compact(source['title'])]

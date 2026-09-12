@@ -18,6 +18,7 @@ from typing import Any, Callable
 from xml.etree import ElementTree
 from zoneinfo import ZoneInfo
 
+from cmhk.services.news_text import simplified_news_text
 from cmhk.integrations.feishu_runtime import lark_cli_env, portable_lark_argv
 from cmhk.integrations.feishu_card_text import without_markdown_bold_markers
 from cmhk.reporting.weekly_quality import weekly_text_has_navigation_noise
@@ -38,6 +39,7 @@ FREQUENCY_LABELS = {
 }
 VALID_FREQUENCIES = frozenset(FREQUENCY_LABELS)
 VALID_NEWS_ITEM_LIMITS = frozenset({5, 10, 15, 20})
+NEWS_REGION_LABELS = {"hong_kong": "香港本地新闻优先", "international": "国际新闻优先"}
 NEWS_CATEGORY_LABELS = {
     "公司动态": "公司动态",
     "竞对动态": "竞对动态",
@@ -181,6 +183,7 @@ def filter_news_by_categories(
     *,
     limit: int | None = None,
     selection_seed: str = "",
+    region_preference: str | None = None,
 ) -> list[dict[str, Any]]:
     """Sample at most four subscribed sections; local news leads when sampled.
 
@@ -230,7 +233,10 @@ def filter_news_by_categories(
             item for item in section_items
             if str(item.get("region") or "").strip() not in {"香港本地", "国际/行业"}
         ]
-        if section == macro_category:
+        if region_preference in NEWS_REGION_LABELS:
+            primary_buckets[section] = local if region_preference == "hong_kong" else international
+            fallback_buckets[section] = [*(international if region_preference == "hong_kong" else local), *unclassified]
+        elif section == macro_category:
             # This section is intentionally international-facing. Preserve
             # freshness inside each region while allowing international news
             # to lead and occupy more of this section's personal selection.
@@ -264,6 +270,7 @@ PREFERENCE_FIELD_LABELS = {
     "news_categories": "新闻兴趣板块",
     "frequency": "新闻推送频率",
     "news_item_limit": "每次新闻条数",
+    "news_region_preference": "新闻地域偏好",
     "news_delivery_times": "新闻接收时间",
     "status": "订阅状态",
 }
@@ -278,6 +285,7 @@ def _preference_snapshot(
     news_item_limit: Any,
     news_delivery_times: Any,
     status: Any = "active",
+    news_region_preference: str = "hong_kong",
 ) -> dict[str, Any]:
     return {
         "services": sorted(str(item) for item in (services or []) if str(item) in VALID_SERVICES),
@@ -285,6 +293,7 @@ def _preference_snapshot(
         "news_categories": normalize_news_categories(news_categories, default_all=False),
         "frequency": _normalize_news_frequency(str(frequency or "once_daily")),
         "news_item_limit": int(news_item_limit or 10),
+        "news_region_preference": news_region_preference,
         "news_delivery_times": _normalize_news_delivery_times(news_delivery_times),
         "status": str(status or "active"),
     }
@@ -299,6 +308,8 @@ def _preference_value_text(field: str, value: Any) -> str:
         return "、".join(NEWS_CATEGORY_LABELS.get(str(item), str(item)) for item in (value or [])) or "无"
     if field == "frequency":
         return FREQUENCY_LABELS.get(str(value), str(value))
+    if field == "news_region_preference":
+        return NEWS_REGION_LABELS.get(str(value), "香港本地新闻优先")
     if field == "news_item_limit":
         return f"{int(value or 0)} 条"
     if field == "news_delivery_times":
@@ -547,7 +558,7 @@ def subscription_entry_card(
                                 for category, label in NEWS_CATEGORY_LABELS.items()
                             ],
                         },
-                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块；竞对动态入选后优先展示。只选今天或昨天发布的新闻，排除近期已发内容，不足设定条数就少发。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
+                        {"tag": "markdown", "content": "<font color='grey'>所选板块全部保存。每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块；竞对动态入选后优先展示。只选今天或昨天发布的新闻，排除近期已发内容，按设置条数持续补选；确实无足够合格新闻时显示缺额原因。按你选择的地域偏好优先推荐，优先地域不足时用另一地域的合格新闻补足。缺少已审核新闻时可能少于4个板块。未选则使用默认4个。</font>", "text_size": "notation"},
                         {"tag": "markdown", "content": "**战略新闻频率**\n<font color='grey'>选择每天一次时，只在上午推送，并使用下方第一次时间。</font>"},
                         {
                             "tag": "select_static",
@@ -560,6 +571,11 @@ def subscription_entry_card(
                                 {"text": {"tag": "plain_text", "content": "每天一次（上午）"}, "value": "once_daily"},
                             ],
                         },
+                        {"tag": "markdown", "content": "**新闻地域偏好**"},
+                        {"tag": "select_static", "name": "news_region_preference", "width": "fill",
+                         "initial_option": "hong_kong", "required": False,
+                         "options": [{"text": {"tag": "plain_text", "content": label}, "value": key}
+                                     for key, label in NEWS_REGION_LABELS.items()]},
                         {"tag": "markdown", "content": "**每次战略新闻条数**"},
                         {
                             "tag": "select_static",
@@ -633,6 +649,7 @@ def subscription_confirmation_card(
     frequency_label: str,
     category_labels: str,
     news_item_limit: int,
+    news_region_preference: str = "hong_kong",
     news_delivery_times: Any = None,
     adjustments: list[str] | None = None,
 ) -> dict[str, Any]:
@@ -731,13 +748,13 @@ def subscription_confirmation_card(
                                             "is_short": True,
                                             "text": {
                                                 "tag": "lark_md",
-                                                "content": f"**战略新闻**\n{frequency} · 最新 {item_limit} 条",
+                                                "content": f"**战略新闻**\n{frequency} · 最新 {item_limit} 条\n{NEWS_REGION_LABELS.get(news_region_preference, NEWS_REGION_LABELS['hong_kong'])}",
                                             },
                                         },
                                     ],
                                 },
                                 {"tag": "markdown", "content": f"**已订阅兴趣板块**\n{categories}"},
-                                {"tag": "markdown", "content": "所选板块全部保留；每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块。只选今天或昨天发布的新闻，排除近期已发内容，不足设定条数就少发。个人战略新闻除“宏观与国际”板块外均优先香港本地；本地新闻不足时再用国际新闻补足。抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
+                                {"tag": "markdown", "content": "所选板块全部保留；每次从有新内容的已选板块中挑选最多4个，优先近期较少推送的板块。只选今天或昨天发布的新闻，排除近期已发内容，按设置条数持续补选；确实无足够合格新闻时显示缺额原因。按你选择的地域偏好优先推荐，优先地域不足时用另一地域的合格新闻补足。抽中板块缺少已审核新闻时，实际覆盖可能少于4个。"},
                                 {"tag": "markdown", "content": f"**期待收到时间（香港）**\n{' / '.join(delivery_times)}"},
                             ],
                         }
@@ -822,9 +839,9 @@ def strategic_news_card(
             for item_index, item in enumerate(category_items):
                 if item_index:
                     group_elements.append({"tag": "hr"})
-                item_title = re.sub(r"\s+", " ", str(item.get("title") or "未命名动态")).strip()[:180]
-                summary = str(item.get("digest_summary") or item.get("summary") or "").strip()[:500]
-                source = str(item.get("source") or "来源待核").strip()[:100]
+                item_title = re.sub(r"\s+", " ", simplified_news_text(item.get("title") or "未命名动态")).strip()[:180]
+                summary = simplified_news_text(item.get("digest_summary") or item.get("summary")).strip()
+                source = simplified_news_text(item.get("source") or "来源待核").strip()[:100]
                 published = str(item.get("published_at") or item.get("source_date") or "").strip()
                 try:
                     published_text = datetime.fromisoformat(published.replace("Z", "+00:00")).astimezone(HKT).strftime("%m月%d日 %H:%M")
@@ -833,7 +850,7 @@ def strategic_news_card(
                 from cmhk.services.news_delivery_assets import article_url
                 import html
                 def prose(value):
-                    return re.sub(r"([\\*\[\]`])", r"\\\1", html.escape(value, quote=False))
+                    return re.sub(r"([\\*\[\]`])", r"\\\1", html.escape(simplified_news_text(value), quote=False))
                 url = article_url(item.get('news_url') or item.get('source_url') or item.get('url'))
                 thumbnail = str(item.get('image_key') or '')
                 if (thumbnail == image_key or item.get('image_kind') not in ('source', 'related')
@@ -1197,6 +1214,8 @@ class SubscriptionService:
                    ) VALUES('news', 0, '[]', '00:00', 'Asia/Hong_Kong', ?)""",
                 (_now_hkt(),),
             )
+            from cmhk.services.news_round_progress import initialize as initialize_news_rounds
+            initialize_news_rounds(db)
             columns = {str(row[1]) for row in db.execute("PRAGMA table_info(subscribers)").fetchall()}
             if "callback_open_id" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN callback_open_id TEXT NOT NULL DEFAULT ''")
@@ -1206,6 +1225,8 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN frequency TEXT NOT NULL DEFAULT 'immediate'")
             if "report_mode" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN report_mode TEXT NOT NULL DEFAULT 'pdf'")
+            if "news_region_preference" not in columns:
+                db.execute("ALTER TABLE subscribers ADD COLUMN news_region_preference TEXT NOT NULL DEFAULT 'hong_kong'")
             if "news_item_limit" not in columns:
                 db.execute("ALTER TABLE subscribers ADD COLUMN news_item_limit INTEGER NOT NULL DEFAULT 10")
             if "news_categories" not in columns:
@@ -1222,7 +1243,7 @@ class SubscriptionService:
                 db.execute("ALTER TABLE subscribers ADD COLUMN default_preferences TEXT NOT NULL DEFAULT '{}'")
             for row in db.execute("SELECT * FROM subscribers WHERE default_preferences='{}'").fetchall():
                 services = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (row["open_id"],))]
-                defaults = {key: row[key] for key in ("status", "frequency", "report_mode", "news_item_limit")}
+                defaults = {key: row[key] for key in ("status", "frequency", "report_mode", "news_item_limit", "news_region_preference")}
                 defaults.update(
                     services=services,
                     news_categories=normalize_news_categories(row["news_categories"]),
@@ -1405,10 +1426,13 @@ class SubscriptionService:
         report_mode: str = "pdf",
         news_item_limit: int = 10,
         news_categories: Any = None,
+        news_region_preference: str | None = None,
         news_delivery_times: Any = None,
         record_original_categories: bool = True,
         submission_context: dict[str, str] | None = None,
     ) -> dict[str, Any]:
+        if news_region_preference is not None and news_region_preference not in NEWS_REGION_LABELS:
+            raise ValueError("新闻地域偏好必须为香港本地或国际新闻")
         adjustments: list[str] = []
         normalized = sorted({str(item) for item in services if str(item) in VALID_SERVICES})
         if not normalized:
@@ -1459,6 +1483,7 @@ class SubscriptionService:
             news_categories=normalized_categories,
             frequency=frequency,
             news_item_limit=news_item_limit,
+            news_region_preference=news_region_preference,
             news_delivery_times=normalized_delivery_times,
             status="active",
         )
@@ -1469,6 +1494,8 @@ class SubscriptionService:
                 "SELECT * FROM subscribers WHERE open_id=?",
                 (open_id,),
             ).fetchone()
+            news_region_preference = news_region_preference or (existing["news_region_preference"] if existing else "hong_kong")
+            final_snapshot["news_region_preference"] = news_region_preference
             before_snapshot: dict[str, Any] | None = None
             if existing is not None:
                 before_services = [
@@ -1484,6 +1511,7 @@ class SubscriptionService:
                     news_categories=existing["news_categories"],
                     frequency=existing["frequency"],
                     news_item_limit=existing["news_item_limit"],
+                    news_region_preference=existing["news_region_preference"],
                     news_delivery_times=existing["news_delivery_times"],
                     status=existing["status"],
                 )
@@ -1503,6 +1531,7 @@ class SubscriptionService:
                     int(delivery_times_supplied),
                 ),
             )
+            db.execute("UPDATE subscribers SET news_region_preference=? WHERE open_id=?", (news_region_preference, open_id))
             if record_original_categories and news_categories is not None:
                 db.execute("""UPDATE subscribers SET original_news_categories=?,
                            original_news_categories_source='submitted' WHERE open_id=?""",
@@ -1547,6 +1576,7 @@ class SubscriptionService:
             "news_frequency": frequency,
             "news_frequency_label": FREQUENCY_LABELS[frequency],
             "news_item_limit": news_item_limit,
+            "news_region_preference": news_region_preference,
             "news_categories": normalized_categories,
             "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in normalized_categories],
             "news_delivery_times": normalized_delivery_times,
@@ -1592,7 +1622,8 @@ class SubscriptionService:
             card["header"]["title"]["content"] = "修改兴趣偏好"
             values = {"services": services, "news_categories": normalize_news_categories(subscriber["news_categories"]),
                       "report_mode": subscriber["report_mode"], "news_frequency": subscriber["frequency"],
-                      "news_item_limit": str(subscriber["news_item_limit"])}
+                      "news_item_limit": str(subscriber["news_item_limit"]),
+                      "news_region_preference": subscriber["news_region_preference"]}
             times = _normalize_news_delivery_times(subscriber["news_delivery_times"])
             def fill(node):
                 if isinstance(node, dict):
@@ -1762,6 +1793,7 @@ class SubscriptionService:
         frequency = "once_daily"
         report_mode = "pdf"
         news_item_limit = 10
+        news_region_preference = None
         news_categories = list(NEWS_CATEGORY_LABELS)
         news_delivery_times = list(NEWS_DELIVERY_TIMES_DEFAULT)
         if not is_pause:
@@ -1795,6 +1827,7 @@ class SubscriptionService:
                 )
                 report_mode = _card_form_scalar(form.get("report_mode")) or "pdf"
             news_item_limit = _card_form_scalar(form.get("news_item_limit")) or 10
+            news_region_preference = _card_form_scalar(form.get("news_region_preference")) or None
             news_delivery_times = [
                 _card_time_scalar(form.get("news_delivery_time_morning")) if "news_delivery_time_morning" in form else NEWS_DELIVERY_TIMES_DEFAULT[0],
                 _card_time_scalar(form.get("news_delivery_time_afternoon")) if "news_delivery_time_afternoon" in form else NEWS_DELIVERY_TIMES_DEFAULT[1],
@@ -1920,6 +1953,7 @@ class SubscriptionService:
             frequency=frequency,
             report_mode=report_mode,
             news_item_limit=news_item_limit,
+            news_region_preference=news_region_preference,
             news_categories=news_categories,
             news_delivery_times=news_delivery_times,
             submission_context={
@@ -1933,7 +1967,7 @@ class SubscriptionService:
         )
         # A person's latest submission is their restore point; admin edits never replace it.
         with closing(self._connect()) as db, db:
-            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories", "news_delivery_times")}
+            defaults = {key: saved[key] for key in ("services", "frequency", "report_mode", "news_item_limit", "news_categories", "news_delivery_times", "news_region_preference")}
             defaults["status"] = "active"
             db.execute("UPDATE subscribers SET default_preferences=? WHERE open_id=?", (json.dumps(defaults, ensure_ascii=False), identity["open_id"]))
         record_invitation_response("accepted")
@@ -1970,6 +2004,7 @@ class SubscriptionService:
                 frequency_label=saved["frequency_label"],
                 category_labels=category_labels,
                 news_item_limit=saved["news_item_limit"],
+                news_region_preference=saved["news_region_preference"],
                 news_delivery_times=saved["news_delivery_times"],
                 adjustments=saved["adjustments"],
             ),
@@ -1984,7 +2019,7 @@ class SubscriptionService:
     def list_summary(self, *, delivery_limit: int | None = None) -> dict[str, Any]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_categories, s.original_news_categories, s.original_news_categories_source, s.news_delivery_times, s.default_preferences,
+                """SELECT s.open_id, s.callback_open_id, s.union_id, s.display_name, s.status, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories, s.original_news_categories, s.original_news_categories_source, s.news_delivery_times, s.default_preferences,
                           s.source_chat_id, s.created_at, s.updated_at,
                           GROUP_CONCAT(CASE WHEN x.active=1 THEN x.service END) AS services
                    FROM subscribers s LEFT JOIN subscriptions x ON x.open_id=s.open_id
@@ -2027,6 +2062,7 @@ class SubscriptionService:
                 """SELECT * FROM subscription_preference_submissions
                    ORDER BY submitted_at DESC, id DESC"""
             ).fetchall()
+            news_rounds = [dict(r) for r in db.execute("SELECT * FROM news_round_progress ORDER BY updated_at DESC")]
             directory_people = db.execute(
                 """SELECT directory_open_id, union_id, display_name, en_name, avatar_url,
                           job_title, department_names, source_profile
@@ -2062,6 +2098,7 @@ class SubscriptionService:
                     "report_mode": str(default_preferences.get("report_mode") or "pdf"),
                     "frequency": _normalize_news_frequency(str(default_preferences.get("frequency") or "once_daily")),
                     "news_item_limit": int(default_preferences.get("news_item_limit") or 10),
+                    "news_region_preference": default_preferences.get("news_region_preference", "hong_kong"),
                     "news_delivery_times": _normalize_news_delivery_times(default_preferences.get("news_delivery_times")),
                     "status": str(default_preferences.get("status") or "active"),
                 }
@@ -2078,6 +2115,7 @@ class SubscriptionService:
             subscribers.append({
                 **dict(row),
                 "services": services,
+                "latest_news_round": next((r for r in news_rounds if r["open_id"] == row["open_id"]), None),
                 "default_preferences": default_preferences,
                 "news_categories": normalize_news_categories(row["news_categories"]),
                 "original_news_categories": normalize_news_categories(row["original_news_categories"], default_all=False),
@@ -3424,6 +3462,7 @@ class SubscriptionService:
         report_mode: str = "pdf",
         news_item_limit: int = 10,
         news_categories: Any = None,
+        news_region_preference: str | None = None,
         news_delivery_times: Any = None,
     ) -> dict[str, Any]:
         if status not in {"active", "paused"}:
@@ -3438,7 +3477,7 @@ class SubscriptionService:
         with closing(self._connect()) as db, db:
             current = db.execute("SELECT * FROM subscribers WHERE open_id=?", (open_id,)).fetchone()
             if current["default_preferences"] == "{}":
-                defaults = {key: current[key] for key in ("status", "frequency", "report_mode", "news_item_limit")}
+                defaults = {key: current[key] for key in ("status", "frequency", "report_mode", "news_item_limit", "news_region_preference")}
                 defaults["services"] = [r[0] for r in db.execute("SELECT service FROM subscriptions WHERE open_id=? AND active=1", (open_id,))]
                 defaults["news_categories"] = normalize_news_categories(current["news_categories"])
                 defaults["news_delivery_times"] = _normalize_news_delivery_times(current["news_delivery_times"])
@@ -3453,6 +3492,7 @@ class SubscriptionService:
             frequency=frequency,
             report_mode=report_mode,
             news_item_limit=news_item_limit,
+            news_region_preference=news_region_preference,
             record_original_categories=False,
             news_categories=(
                 news_categories
@@ -3773,7 +3813,7 @@ class SubscriptionService:
     def _subscribers_for(self, service: str) -> list[dict[str, str]]:
         with closing(self._connect()) as db, db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit, s.news_categories FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
+                """SELECT s.open_id, s.frequency, s.report_mode, s.news_item_limit, s.news_region_preference, s.news_categories FROM subscribers s JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service=? AND x.active=1 ORDER BY s.open_id""",
                 (service,),
             ).fetchall()
@@ -3785,6 +3825,7 @@ class SubscriptionService:
                 "frequency": _normalize_news_frequency(str(row["frequency"] or "once_daily")) if service == "news" else "immediate",
                 "report_mode": str(row["report_mode"] or "pdf"),
                 "news_item_limit": int(row["news_item_limit"] or 10),
+                "news_region_preference": row["news_region_preference"],
                 "news_categories": normalize_news_categories(row["news_categories"]),
             }
             for row in rows
@@ -3952,6 +3993,9 @@ class SubscriptionService:
                 status = "retrying"
                 error = str(exc)[:900]
             with closing(self._connect()) as db, db:
+                state = db.execute("SELECT status,last_error FROM pending_subscription_deliveries WHERE id=?", (row['id'],)).fetchone()
+                if not message_ids and state and state['status'] == 'exhausted':
+                    status, error = 'exhausted', state['last_error']
                 db.execute(
                     "UPDATE deliveries SET status=?, message_ids=?, error=? WHERE id=?",
                     (status, json.dumps(message_ids), error, int(row["delivery_id"])),
@@ -3963,7 +4007,7 @@ class SubscriptionService:
                            WHERE id=?""",
                         (_now_hkt(), int(row["id"])),
                     )
-                else:
+                elif status != 'exhausted':
                     # News preparation and transport failures must not impose a
                     # fifteen-minute delay on a card that becomes ready meanwhile.
                     retry_at = ((now or datetime.now(HKT)).astimezone(HKT) + timedelta(
@@ -3990,6 +4034,9 @@ class SubscriptionService:
                             crawl_slot,
                         ),
                     )
+            if status == "verified" and service == "news":
+                from cmhk.services.news_round_progress import reconcile_round
+                reconcile_round(self, open_id, content_ref, now=now)
             results.append({
                 "pending_id": int(row["id"]),
                 "open_id": str(row["open_id"]),
@@ -4014,13 +4061,13 @@ class SubscriptionService:
         day = _now_hkt()[:10]
         with closing(self._connect()) as db:
             subscriber = db.execute(
-                "SELECT news_categories,news_item_limit FROM subscribers WHERE open_id=?", (open_id,),
+                "SELECT news_categories,news_item_limit,news_region_preference FROM subscribers WHERE open_id=?", (open_id,),
             ).fetchone()
             if not subscriber:
                 return []
             history = delivered_history(db, open_id=open_id, batch_id="", logical_day=day, send_day=day)
         return select_recent_news(items, subscriber['news_categories'], limit=subscriber['news_item_limit'],
-                                  history=history, send_day=day, seed=f"{open_id}:{day}:manual")
+                                  region_preference=subscriber["news_region_preference"], history=history, send_day=day, seed=f"{open_id}:{day}:manual")
 
     def dispatch_news_after_crawl(
         self,
@@ -4077,7 +4124,7 @@ class SubscriptionService:
             db.commit()
         with closing(self._connect()) as db:
             rows = db.execute(
-                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_categories, s.news_delivery_times FROM subscribers s
+                """SELECT s.open_id, s.frequency, s.news_item_limit, s.news_region_preference, s.news_categories, s.news_delivery_times FROM subscribers s
                    JOIN subscriptions x ON x.open_id=s.open_id
                    WHERE s.status='active' AND x.service='news' AND x.active=1
                    ORDER BY s.open_id"""
@@ -4101,6 +4148,7 @@ class SubscriptionService:
             if news_item_limit not in VALID_NEWS_ITEM_LIMITS:
                 news_item_limit = 10
             news_categories = normalize_news_categories(row["news_categories"])
+            news_region_preference = row["news_region_preference"]
             push_news_categories = []
             delivery_times = _normalize_news_delivery_times(row["news_delivery_times"])
             delivery_time = delivery_times[0] if delivery_window == "morning" else delivery_times[1]
@@ -4179,6 +4227,7 @@ class SubscriptionService:
                         excluded_keys=seen_keys)
                     recipient_items = select_recent_news(
                         candidates, news_categories, limit=news_item_limit, history=history,
+                        region_preference=news_region_preference,
                         send_day=selection_day, seed=f"{open_id}:{crawl_date}:{content_ref}")
                     push_news_categories = list(dict.fromkeys(item['category'] for item in recipient_items))
                     body = encode_strategic_news_digest(recipient_items)
@@ -4234,6 +4283,7 @@ class SubscriptionService:
                 "open_id": open_id,
                 "frequency": frequency,
                 "news_item_limit": news_item_limit,
+                "news_region_preference": news_region_preference,
                 "news_categories": news_categories,
                 "push_news_categories": push_news_categories,
                 "news_category_labels": [NEWS_CATEGORY_LABELS[item] for item in news_categories],

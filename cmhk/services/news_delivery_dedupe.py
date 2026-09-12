@@ -174,7 +174,11 @@ def deduplicate_events(items: list[dict], history: list[dict], runtime_root: Pat
         return [], [{'news_id': item.get('news_id') or item.get('title'), 'stage': 'dedupe',
                      'status': 'skipped_review_error', 'error_type': type(exc).__name__,
                      'error': str(exc)[:500]} for item in candidates]
-    return [item for item, decision in zip(candidates, decisions) if not decision["duplicate_of"]], decisions
+    decisions = [{**row, 'news_id': item.get('news_id') or item.get('title')}
+                 if row.get('status') == 'skipped_review_error' else row
+                 for item, row in zip(candidates, decisions)]
+    return [item for item, decision in zip(candidates, decisions)
+            if not decision.get('duplicate_of') and decision.get('status') != 'skipped_review_error'], decisions
 
 
 def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | None = None) -> list[dict]:
@@ -239,8 +243,16 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
             result = None
             try:
                 from cmhk.services.news_push_skill import text_model
-                result = model_call(system, prompt, max_tokens=max(8000, len(candidates) * 900), model_override=text_model(),
-                                    response_format=response_format, deadline_monotonic=deadline)
+                try:
+                    result = model_call(system, prompt, max_tokens=max(8000, len(candidates) * 900), model_override=text_model(),
+                                        response_format=response_format, deadline_monotonic=deadline)
+                except AIInvalidStructuredResponse as exc:
+                    # Some gateways quote a complete decisions array as a string.
+                    # Decode only the container, retaining every model-written
+                    # field; full event/evidence validation still runs below.
+                    result = _decode_complete_decisions(exc.content, len(candidates))
+                    if result is None:
+                        raise
                 if single_response and isinstance(result, dict) and 'id' in result:
                     result = {'decisions': [result]}
                 decisions = _validate(result, inputs["candidates"], inputs["history"])
@@ -254,6 +266,9 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                                                 "status": "rejected", "error": str(exc)}, ensure_ascii=False, indent=2))
                 _checkpoint_valid_rows(inputs, result, runtime_root)
                 if _REPLACE_FAILURES.get():
+                    partial = _valid_partial_decisions(inputs, result, exc)
+                    if partial is not None:
+                        return partial
                     raise
                 if attempt:
                     if len(candidates) == 1:
@@ -268,6 +283,45 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                     {"validation_error": str(exc), "rejected_output": result}, ensure_ascii=False)
         _save_review(target, inputs, result)
     return decisions
+
+
+def _decode_complete_decisions(content: str, count: int) -> dict | None:
+    try:
+        result = json.loads(content)
+        if not isinstance(result, dict) or set(result) != {'decisions'}:
+            return None
+        rows = result['decisions']
+        if isinstance(rows, str):
+            rows = json.loads(rows)
+        if count == 1 and isinstance(rows, dict):
+            rows = [rows]
+        if not isinstance(rows, list) or len(rows) != count or any(not isinstance(x, dict) for x in rows):
+            return None
+        return {'decisions': rows}
+    except (ValueError, TypeError):
+        return None
+
+
+def _valid_partial_decisions(inputs: dict, result: Any, error: Exception) -> list[dict] | None:
+    """Retain independently validated rows when another row rejects the batch."""
+    raw = result.get('decisions') if isinstance(result, dict) else None
+    if not isinstance(raw, list):
+        return None
+    references = list(inputs['history'])
+    decisions, valid = [], 0
+    for candidate in inputs['candidates']:
+        rows = [row for row in raw if isinstance(row, dict) and row.get('id') == candidate['id']]
+        try:
+            if len(rows) != 1:
+                raise ValueError('missing or duplicate decision')
+            decision = _validate({'decisions': rows}, [candidate], references)[0]
+            valid += 1
+        except ValueError:
+            decision = {'id': candidate['id'], 'status': 'skipped_review_error', 'stage': 'dedupe',
+                        'error_type': type(error).__name__, 'error': str(error)[:500]}
+        decisions.append(decision)
+        references.append(candidate)
+    return decisions if valid else None
 
 
 def _evidence_options(items: list[dict]) -> list[str]:

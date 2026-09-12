@@ -40,6 +40,7 @@ class SubscriptionDeliveryWorker:
             self.retry_after = {k: time.monotonic() + max(0, v - time.time()) for k, v in self.retry_at.items()}
         except (OSError, ValueError, TypeError):
             pass
+        self.next_round_reconcile = 0
         self.state = {"status": "starting"}
         self.stop = threading.Event()
         self.thread = threading.Thread(target=self.run, name="subscription-clock", daemon=True)
@@ -80,6 +81,10 @@ class SubscriptionDeliveryWorker:
                             db.execute("UPDATE deliveries SET error=? WHERE id=(SELECT delivery_id FROM pending_subscription_deliveries WHERE id=? AND status='queued')",
                                        (self.errors[identifier], identifier))
                         logging.warning("个人新闻准备失败，保留原批次重试：id=%s %s", identifier, exc)
+        if time.monotonic() >= self.next_round_reconcile:
+            from cmhk.services.news_round_progress import reconcile_recent_rounds
+            reconcile_recent_rounds(self.service, now)
+            self.next_round_reconcile = time.monotonic() + 60
         with closing(self.service._connect()) as db:
             rows = [dict(row) for row in db.execute(
                 """SELECT p.*, d.batch_id FROM pending_subscription_deliveries p

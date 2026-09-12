@@ -373,3 +373,8 @@ th, .status, .result-section-label, .result-type { font-size: 10px; }
   * { scroll-behavior: auto !important; }
   .notice, .notice.is-leaving { animation: none; }
 }
+
+/* Region and coverage stay below interests, with readable options at every width. */
+.subscriber-table td:nth-child(4) .subscriber-dependent-setting { flex-direction: column; align-items: stretch; gap: 9px; }
+.news-region-setting { display: grid; gap: 5px; width: 100%; }
+.subscriber-table .news-region-setting select { width: 100%; min-width: 180px; }

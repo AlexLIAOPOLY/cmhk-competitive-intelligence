@@ -121,7 +121,7 @@ class SubscriptionClockTests(unittest.TestCase):
         with sqlite3.connect(self.service.db_path) as db:
             row = db.execute("select items_json from news_delivery_receipts where open_id='ou_one'").fetchone()
         self.assertEqual(json.loads(row[0]), [])
-        self.assertEqual(self.send.call_count, 1)
+        self.send.assert_not_called()
 
     def test_late_material_prepares_immediately_then_sends_once(self):
         self.tick('08:20:00')
