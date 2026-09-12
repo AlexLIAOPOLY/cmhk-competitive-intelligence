@@ -3897,7 +3897,8 @@ def push_latest_subscription_content(
             result = service.push(
                 service="news",
                 mode="text",
-                title=f"CMHK战略新闻｜最新{len(news_items)}条｜{news_category_summary(news_categories)}",
+                title=("CMHK个人新闻精选" if subscriber.get("news_personal_skill") else
+                       f"CMHK战略新闻｜最新{len(news_items)}条｜{news_category_summary(news_categories)}"),
                 body=encode_strategic_news_digest(news_items),
                 target_open_id=str(subscriber.get("open_id") or ""),
             )

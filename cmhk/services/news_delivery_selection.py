@@ -9,6 +9,7 @@ from zoneinfo import ZoneInfo
 
 from cmhk.services.news_delivery_dedupe import exact_unique
 from cmhk.services.news_topics import topic_score
+from cmhk.services.personal_news_skill import normalize_personal_skill
 
 POLICY_VERSION = "recent-news-20260911-v1"
 HKT = ZoneInfo("Asia/Hong_Kong")
@@ -33,12 +34,17 @@ def fresh_news(items: list[dict], send_day: str) -> list[dict]:
 
 
 def select_recent_news(items: list[dict], categories, *, limit: int,
-                       history: list[dict], send_day: str, seed: str = "", region_preference: str | None = None, topics=None) -> list[dict]:
+                       history: list[dict], send_day: str, seed: str = "", region_preference: str | None = None, topics=None, personal_skill=None) -> list[dict]:
     from cmhk.services.subscriptions import (
         NEWS_CATEGORIES_PER_PUSH, filter_news_by_categories, normalize_news_categories,
     )
     # Expire thousands of archived rows before identity checks or model work.
     candidates = exact_unique(fresh_news(items, send_day), history)
+    if normalize_personal_skill(personal_skill):
+        # This is an intake queue only. The preparation Agent judges the full
+        # original pool before sending; no old section checklist limits it.
+        preferred = '国际/行业' if region_preference == 'international' else '香港本地'
+        return sorted(candidates, key=lambda item:item.get('region') != preferred)[:limit]
     subscribed = normalize_news_categories(categories)
     # A natural-language topic is an additional interest across editorial
     # sections, not a translation back into the old category checklist.
@@ -101,6 +107,6 @@ def prioritize_preparation(items: list[dict], *, runtime_root, attempts: dict[st
     def rank(item):
         key = str(item.get('news_id') or item.get('source_url') or item.get('title') or '')
         tried = attempts.get(key, 0)
-        return (tried, -int(item.get("subscription_topic_score") or 0), identity(item) not in ready)
+        return (tried, -int(item.get("subscription_semantic_score", item.get("subscription_topic_score")) or 0), identity(item) not in ready)
 
     return sorted(items, key=rank)

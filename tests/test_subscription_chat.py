@@ -123,7 +123,7 @@ class SubscriptionChatTests(unittest.TestCase):
                 body = json.loads(request.data)
                 request_data = json.loads(body['messages'][-1]['content'])
                 self.assertNotIn('current', request_data)
-                self.assertEqual(set(request_data), {'本次要求', '本人近期对话', '可选角度', '本人已保存主题'})
+                self.assertEqual(set(request_data), {'本次要求', '本人近期对话', '自主安排', '本人已保存主题', '本人阅读要求'})
                 result = {**plan(), 'request_context': request_data}
                 if stale:
                     result[stale] = 'some other request'
@@ -302,7 +302,7 @@ class SubscriptionChatTests(unittest.TestCase):
     def test_confirm_numbered_list_then_revise_marks_only_latest_version(self):
         self.run_event()
         self.assertIn('1. 订阅内容', self.job()['reply'])
-        self.assertIn('9. 订阅状态', self.job()['reply'])
+        self.assertIn('10. 订阅状态', self.job()['reply'])
         self.run_event(self.event(mid='om_confirm', content='行'))
         self.assertEqual(self.job()['intent'], 'confirm')
         self.assertIn('已确认你的喜好', self.job()['reply'])
@@ -451,7 +451,7 @@ class SubscriptionChatTests(unittest.TestCase):
         with mock_patch('ai_config.load_ai_config',return_value={'base_url':'https://example.invalid/v1'}),mock_patch('ai_key_rotation.open_llm_request',side_effect=transport):
             interpret('你定',self.get(),context)
         self.assertNotIn('SECRET',json.dumps(captured))
-        self.assertEqual(len(captured[0]['可选角度']),3)
+        self.assertTrue(captured[0]['自主安排'])
         self.assertEqual(captured[0]['本人近期对话'][0]['text'],'多看AI新闻')
 
     def test_equivalent_single_topic_object_is_accepted_but_foreign_fields_rejected(self):

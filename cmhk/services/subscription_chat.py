@@ -5,13 +5,13 @@ import fcntl
 import hashlib
 import json
 import logging
-import random
 import re
 import threading
 import time
 from contextlib import closing
 from urllib.request import ProxyHandler, Request, build_opener
 from cmhk.services.news_topics import normalize_news_topics, topic_key
+from cmhk.services.personal_news_skill import normalize_personal_skill, export_personal_skill, legacy_topic_skill
 
 from cmhk.services.subscriptions import (
     CHAT_ID_RE, MESSAGE_ID_RE, OPEN_ID_RE, FREQUENCY_LABELS, NEWS_CATEGORY_LABELS,
@@ -22,7 +22,7 @@ from cmhk.services.subscriptions import (
 
 EVENT_KEY = "im.message.receive_v1"
 FIELDS = ("news_region_preference", "news_categories", "frequency", "news_item_limit",
-          "news_delivery_times", "report_mode", "news_topics")
+          "news_delivery_times", "report_mode", "news_topics", "news_personal_skill")
 HELP = ("你好，我可以帮你记住想看的内容。直接说‘多看AI新闻’、‘更关注AI在医疗中的应用’，"
         "或告诉我想调整的接收时间就好；不用先挑栏目。我会整理成清单，保存后告诉你。")
 
@@ -54,6 +54,18 @@ def _requested_times(evidence):
     requested = {}
     for match in re.finditer(rf"(上午|早上|早晨|早间|下午|晚间|晚上|早|晚)?\s*({numbers})\s*[:：点时時]\s*(半|一刻|三刻|{numbers})?", evidence):
         period, hour_text, minute_text = match.groups()
+        token = match.group(0).strip()
+        prefix = evidence[:match.start()].rstrip()
+        # “少一点生活资讯”“说三点理由” are content preferences, not clock times.
+        if token in {'早一点', '晚一点'} or (prefix and prefix[-1] in '多少第这那每'):
+            continue
+        clock_context = period or ':' in token or '：' in token or re.search(r'接收|发送|推送|时间|每天|每日|[收发]', evidence)
+        standalone = re.fullmatch(r'(?:改成|改为|设为|换成)?\s*' + re.escape(token) + r'[。!！\s]*', evidence)
+        if not clock_context and not standalone:
+            continue
+        if (hour_text == '一' and not period and '点' in token and not standalone
+                and not re.match(r'(?:左右|钟|整|准时)?(?:收|发|接收|发送|推送)', evidence[match.end():].strip())):
+            continue
         hour = _small_number(hour_text)
         minute = {"半": 30, "一刻": 15, "三刻": 45}.get(minute_text)
         if minute is None:
@@ -108,11 +120,19 @@ def interpret(text: str, current: dict, context: list) -> dict:
 
     prompt = (
         "你是个人新闻偏好助理。根据本人当前要求及本人上下文，提出需要保存的偏好操作。"
-        "自由理解主题，不要要求用户选择新闻栏目。更多AI新闻应增加人工智能关注主题，不增加数量、不改时段。"
+        "自由理解需求，不要要求用户选择新闻栏目。更多AI新闻应记入个人阅读说明，不增加数量、不改时段。"
         "‘你定/都行/随便/随机安排/你看着办’表示授权你在先前提及的兴趣内选择2至3个具体关注方向，"
-        "参考可选角度安排，立即提出保存操作；不要再次追问，也不能当作确认或空修改。"
+        "根据具体兴趣自主安排，不局限预设方向，立即提出保存操作；不要再次追问，也不能当作确认或空修改。"
         "每个方向名称都要包含父主题，如人工智能行业应用。没有任何兴趣上下文时才问一个简短的问题。"
-        "返回JSON对象，字段只有 request_context（原样返回完整输入对象，包含本人上下文和可选角度，"
+        "内容偏好以news_personal_skill为主，value为简短中文要求的字符串数组，逐条保留用户真实意图。"
+        "可以是任何主题、生活方式、关注目的、正向偏好、排除项、希望的多样性或深浅，不需要对应栏目或关键词字典。"
+        "忠实保留程度：少看、别总给我表示降低优先级，不等于完全排除；不要、不看、排除才记录为禁止该类内容。"
+        "例如‘我喜欢生活类东西’记录‘优先关注生活类内容。’，不用先问生活属于哪个栏目，不必自行写死生活的定义。"
+        "下游是大模型逐篇读文章、按这些要求判断，不是按关键词勾选，因此说明写清意图即可。"
+        "查看个人skill/阅读说明/偏好是show。增加需求用add；移除用remove原说明文本；只有明确替换/清空才用set。"
+        "细化或纠正要求时remove旧条目再add新条目，保留其他有效要求。‘你定’在已知兴趣内补充2至3个有用方向。"
+        "本次偏好更新优先只使用news_personal_skill；news_topics只用于兼容旧主题的显式修改，不能代替记录阅读要求。"
+        "返回JSON对象，字段只有 request_context（原样返回完整输入对象，包含本人上下文和自主安排标记，"
         "以便服务器核对当前会话）、intent（update/show/confirm/clarify/help）、changes（列表）、"
         "question（需要澄清时的问题否则空串）、reply（仅寒暄或帮助回应，否则空串）。"
         "changes元素字段只有 field、operation、value。update必须有changes，question为空；其他intent不能有changes。"
@@ -135,6 +155,7 @@ def interpret(text: str, current: dict, context: list) -> dict:
         "允许的字段及值：" + json.dumps({"news_region_preference": NEWS_REGION_LABELS,
             "news_categories": NEWS_CATEGORY_LABELS, "frequency": FREQUENCY_LABELS,
             "news_topics": [{"name": "自由主题", "terms": ["匹配词"]}],
+            "news_personal_skill": ["个人自由表达的阅读需求，无固定选项"],
             "news_item_limit": sorted(VALID_NEWS_ITEM_LIMITS), "report_mode": REPORT_MODE_LABELS,
             "news_delivery_times": "[上午HH:MM,下午HH:MM]"}, ensure_ascii=False)
     )
@@ -144,15 +165,14 @@ def interpret(text: str, current: dict, context: list) -> dict:
                      "question": c.get("reply", "") if c.get("intent", "clarify") == "clarify" else ""}
                     for c in context]
     delegated = bool(re.search(r"你(?:来)?定|你(?:来)?选|你(?:来)?安排|你看着办|随便|随机|都行", text))
-    angles = random.SystemRandom().sample(["产品与工具进展", "研究与技术突破", "行业实际应用", "商业化与投资", "政策和治理", "基础设施"], 3) if delegated else []
     saved_topics = [t['name'] for t in current.get('news_topics', [])]
     # Bind the complete semantic context, not just an ambiguous "你定" or nonce.
     # Older/incompatible responses fail closed instead of applying another topic.
-    request_context = {"本次要求": text, "本人已保存主题": saved_topics,
-                       "本人近期对话": conversation, "可选角度": angles}
+    request_context = {"本次要求": text, "本人已保存主题": saved_topics, "本人阅读要求": current.get("news_personal_skill", []),
+                       "本人近期对话": conversation, "自主安排": delegated}
     messages = [{"role": "system", "content": prompt},
                 {"role": "user", "content": json.dumps(request_context, ensure_ascii=False)}]
-    body = prepare_structured_chat_body({"model": model, "temperature": 0, "max_tokens": 6000,
+    body = prepare_structured_chat_body({"model": model, "temperature": 0.5 if delegated else 0, "max_tokens": 6000,
                                        "messages": messages})
     request = Request(config["base_url"].rstrip("/") + "/chat/completions",
                       data=json.dumps(body).encode(), headers={"Content-Type": "application/json",
@@ -202,13 +222,23 @@ def validated_patch(plan: dict, current: dict) -> dict:
         if not isinstance(change, dict) or set(change) != {"field", "operation", "value"}:
             raise ValueError("修改内容无效，请重新描述。")
         field, operation, raw = (change[k] for k in ("field", "operation", "value"))
-        if field == "news_topics" and isinstance(raw, (dict, list)):
+        if field in {"news_topics", "news_personal_skill"} and isinstance(raw, (dict, list)):
             raw = json.dumps(raw, ensure_ascii=False)
-        if field not in FIELDS or (field in patch and field != "news_topics") or not isinstance(raw, str):
+        if field not in FIELDS or (field in patch and field not in {"news_topics", "news_personal_skill"}) or not isinstance(raw, str):
             raise ValueError("修改内容超出支持范围。")
-        if field not in {"news_categories", "news_topics"} and operation != "set":
+        if field not in {"news_categories", "news_topics", "news_personal_skill"} and operation != "set":
             raise ValueError("请明确希望设置的选项。")
-        if field == "news_topics":
+        if field == "news_personal_skill":
+            value = normalize_personal_skill(raw, strict=True)
+            old = patch.get(field, current.get(field, []) or legacy_topic_skill(current.get("news_topics", [])))
+            if operation == "add":
+                value = list(dict.fromkeys(old + value))
+            elif operation == "remove":
+                value = [p for p in old if p not in value]
+            elif operation != "set":
+                raise ValueError("个人阅读要求操作无效")
+            value = normalize_personal_skill(value, strict=True)
+        elif field == "news_topics":
             old = patch.get(field, current.get(field, []))
             try:
                 decoded = json.loads(raw)
@@ -267,6 +297,8 @@ def validated_patch(plan: dict, current: dict) -> dict:
         patch[field] = value
     if not patch:
         raise ValueError("请告诉我具体想修改哪项偏好。")
+    if "news_personal_skill" in patch:
+        patch["news_topics"] = []  # Retire old keyword hints; clearing the brief must not resurrect them.
     return patch
 
 
@@ -280,10 +312,11 @@ def snapshot(db, open_id):
 
 
 def receipt(current, changes, *, confirmed=False):
-    if current.get("news_topics") and (confirmed or any(c['field'] == 'news_topics' for c in changes)):
+    reading_points = current.get("news_personal_skill") or [t['name'] for t in current.get('news_topics', [])]
+    if reading_points and (confirmed or any(c['field'] in {'news_topics','news_personal_skill'} for c in changes)):
         lines = ["已确认，我会记住这份喜好：" if confirmed else "已成功更新你的喜好，帮你记下了这些关注方向："]
-        lines.extend(f"{i}. {t['name']}" for i, t in enumerate(current['news_topics'], 1))
-        lines.append("后续会跨栏目优先关注这些内容，安排会一直保留；想换方向时再告诉我。")
+        lines.extend(f"{i}. {p}" for i, p in enumerate(reading_points, 1))
+        lines.append("我会记住这份阅读要求，下次由选稿Agent按文章内容为你挑选；想调整时再告诉我。")
         lines.append("其他推送设置：" + "；".join(
             _preference_value_text(field, current[field]) for field in
             ('frequency', 'news_item_limit', 'news_delivery_times', 'news_region_preference')) + "（香港时间）。")
@@ -305,11 +338,18 @@ def receipt(current, changes, *, confirmed=False):
 
 
 def preference_points(current):
-    points = []
+    personal = current.get('news_personal_skill', [])
+    points = [f"个人阅读要求：{p}" for p in personal]
     for field, label in PREFERENCE_FIELD_LABELS.items():
+        if field == "news_personal_skill" and personal:
+            continue
+        if field == "news_topics" and personal:
+            continue
         if field == "news_topics" and current.get(field):
             points.extend(f"关注主题：{t['name']}" for t in current[field])
         else:
+            if field == "news_categories" and personal:
+                label = "默认栏目（未设个人阅读要求时使用）"
             points.append(f"{label}：{_preference_value_text(field, current[field])}")
     return points
 
@@ -455,6 +495,12 @@ class SubscriptionChat:
             db.execute("UPDATE subscription_chat_inbox SET status='reply_pending',intent=?,reply=?,points=?,changes=?,updated=?,parse_error_type=? WHERE id=?",
                        (intent, reply, json.dumps(preference_points(current) if current else [], ensure_ascii=False),
                         json.dumps(changes, ensure_ascii=False), time.time(), parse_error, job["id"]))
+
+        if current:
+            try:
+                export_personal_skill(self.service.runtime_root, job['profile'], job['sender_id'], current.get('news_personal_skill', []))
+            except OSError:
+                logging.warning('个人阅读说明文件暂未导出；数据库已保存，选稿时重新导出')
 
     def drain_one(self):
         lock_file = self.service.db_path.parent / "subscription-chat.lock"

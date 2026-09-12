@@ -138,7 +138,13 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
         excluded = excluded_items(db, open_id, content_ref)
         pool = [i for i in original_crawl_pool(db, content_ref) if item_key(i) not in excluded]
         candidates = select_recent_news(pool, subscriber['news_categories'], limit=500, history=history,
-            send_day=stamp[:10], seed=f'{open_id}:{content_ref}:continuation', region_preference=subscriber['news_region_preference'])
+            send_day=stamp[:10], seed=f'{open_id}:{content_ref}:continuation', region_preference=subscriber['news_region_preference'], topics=subscriber['news_topics'], personal_skill=subscriber['news_personal_skill'])
+        from cmhk.services.personal_news_skill import normalize_personal_skill
+        points = normalize_personal_skill(subscriber['news_personal_skill'])
+        if points:
+            from cmhk.services.personal_news_allocator import cached_eligible
+            candidates = cached_eligible(candidates, root=service.runtime_root,
+                profile=service.delivery_profile, open_id=open_id, points=points)
         issues = [dict(r) for r in db.execute('''SELECT item_key,attempts,status,error FROM news_candidate_attempts
             WHERE open_id=? AND content_ref=?''', (open_id, content_ref))]
         status = 'stopped' if stop_reason else 'complete' if not remaining else ('preparing' if pending else 'continuing' if candidates else 'exhausted')

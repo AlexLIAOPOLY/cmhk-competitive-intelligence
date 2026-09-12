@@ -45,7 +45,7 @@ def preparation_key(*, body: str, title: str, history: list[dict], send_day: str
 
 def recipient_contract(service, open_id: str, profile: str) -> str:
     with closing(service._connect()) as db:
-        recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,news_topics,frequency,news_delivery_times '
+        recipient = db.execute('SELECT news_categories,news_item_limit,news_region_preference,news_topics,news_personal_skill,frequency,news_delivery_times '
                                'FROM subscribers WHERE open_id=?', (open_id,)).fetchone()
     return json.dumps([profile, dict(recipient) if recipient else {},
                        (service.config.get('subscriptions') or {}).get('news_image_keys') or {}],
@@ -206,7 +206,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             if structured:
                 with closing(service._connect()) as db:
                     subscriber = db.execute(
-                        "SELECT news_categories,news_item_limit,news_region_preference,news_topics FROM subscribers WHERE open_id=?",
+                        "SELECT news_categories,news_item_limit,news_region_preference,news_topics,news_personal_skill FROM subscribers WHERE open_id=?",
                         (open_id,),
                     ).fetchone()
                     # A prepared old card may have picked only exhausted sections.
@@ -222,10 +222,22 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 categories = subscriber['news_categories'] if subscriber else list({item.get('category') for item in candidates})
                 pool = candidates
                 replacements = select_recent_news(
-                    pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=500,
+                    pool, categories, region_preference=subscriber["news_region_preference"] if subscriber else None, limit=len(pool) if subscriber and json.loads(subscriber["news_personal_skill"]) else 500,
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
                     topics=subscriber["news_topics"] if subscriber else None,
+                    personal_skill=subscriber["news_personal_skill"] if subscriber else None,
                 )
+                from cmhk.services.personal_news_skill import normalize_personal_skill
+                personal_skill = normalize_personal_skill(subscriber['news_personal_skill']) if subscriber else []
+                if personal_skill:
+                    from cmhk.services.personal_news_allocator import allocate_news
+                    replacements = allocate_news(replacements, root=service.runtime_root,
+                        profile=profile, open_id=open_id, points=personal_skill,
+                        region_preference=subscriber['news_region_preference'])
+                    # A slow model cannot authorize a send under a now-stale brief.
+                    if preparation_key(body=body,title=title,history=history,send_day=send_day,
+                                       context=recipient_contract(service,open_id,profile)) != key:
+                        raise NewsNotPrepared('个人阅读要求刚有更新，按最新说明重新选稿')
                 replacements = prioritize_preparation(replacements, runtime_root=service.runtime_root, attempts=attempts)
                 candidates = replacements[:wanted_count]
             selected, decisions = deduplicate_events(candidates, history, service.runtime_root)
