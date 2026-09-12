@@ -567,15 +567,16 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         good = "HKT FY2025营收36553百万港元，3HK为5448百万港元；这表明HKT经营资源底盘更厚，3HK资源容错较窄，但营收不等同盈利能力。"
         self.assertEqual(pipeline._focus_gate_error("local", "revenue", good, focus), "")
 
-    def test_current_focus_bundle_rejects_disclosure_headline_without_rewriting(self):
+    def test_current_focus_bundle_warns_on_disclosure_headline_without_rewriting(self):
         evidence = pipeline._analysis_input_snapshot()
         summaries = pipeline._deterministic_domain_summaries(evidence)
         local = next(item for item in summaries if item["domain"] == "local")
         revenue = next(item for item in local["focuses"] if item["id"] == "revenue")
         for title in ("财报披露密度分层", "营收口径边界显现"):
             revenue["headline"] = title
-            with self.assertRaisesRegex(ValueError, "标题"):
-                pipeline._validate_model_summaries(summaries, evidence)
+            pipeline._validate_model_summaries(summaries, evidence)
+            warnings = pipeline._focus_presentation_warnings("local", revenue)
+            self.assertTrue(any(w['code'] == 'headline_style_advisory' for w in warnings))
             self.assertEqual(revenue["headline"], title)
 
     def test_focus_generation_preserves_valid_model_title_without_template_rewrite(self):
@@ -1518,6 +1519,7 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 "focuses": [
                     {
                         "id": focus_id,
+                        "headline": "收入与客户结构分层",
                         "analysis": f"{index + 1}项证据显示竞争差距主要来自收入与客户结构分层。",
                         "risk": "保持口径边界。",
                         "source_urls": [],
