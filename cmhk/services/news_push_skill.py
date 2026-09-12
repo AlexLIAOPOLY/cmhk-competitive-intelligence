@@ -1,5 +1,6 @@
 """The runtime reads the same installed skill used by the interactive agent."""
 from functools import lru_cache
+import json
 import hashlib
 import os
 from pathlib import Path
@@ -19,3 +20,14 @@ def skill_contract() -> tuple[str, str]:
     content = (SKILL_DIR / 'SKILL.md').read_text(encoding='utf-8')
     content += '\n\n' + (SKILL_DIR / 'references/editorial.md').read_text(encoding='utf-8')
     return content, hashlib.sha256(content.encode()).hexdigest()
+
+
+def compatible_skill_hashes() -> tuple[str, ...]:
+    """Exact release mapping only; an unknown skill edit invalidates old reviews."""
+    current = skill_contract()[1]
+    try:
+        mapping = json.loads((SKILL_DIR / 'references/cache-compatibility.json').read_text())
+        compatible = mapping.get(current, {}).get('compatible_hashes', [])
+    except (OSError, ValueError, AttributeError):
+        compatible = []
+    return tuple(dict.fromkeys([current, *compatible]))

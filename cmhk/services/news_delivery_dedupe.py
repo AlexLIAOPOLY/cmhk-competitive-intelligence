@@ -8,11 +8,14 @@ import re
 import time
 import unicodedata
 import uuid
+from contextvars import ContextVar
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from opencc import OpenCC
+
+_REPLACE_FAILURES = ContextVar("news_dedupe_replace_failures", default=False)
 
 VERSION = 5
 REVIEW_BATCH_SIZE = 4
@@ -134,6 +137,15 @@ def _validate(result: Any, candidates: list[dict], history: list[dict]) -> list[
     return validated
 
 
+def deduplicate_for_delivery(items, history, runtime_root):
+    """A failed semantic batch is replaceable, never implicitly approved."""
+    token = _REPLACE_FAILURES.set(True)
+    try:
+        return deduplicate_events(items, history, runtime_root)
+    finally:
+        _REPLACE_FAILURES.reset(token)
+
+
 def deduplicate_events(items: list[dict], history: list[dict], runtime_root: Path,
                        *, model_call: Callable | None = None) -> tuple[list[dict], list[dict]]:
     """Fail closed on an incomplete review; no unreviewed fallback on model failure."""
@@ -154,7 +166,14 @@ def deduplicate_events(items: list[dict], history: list[dict], runtime_root: Pat
         return selected, audit
     inputs = {"version": VERSION, "candidates": [_evidence(x, f"c{i}") for i, x in enumerate(candidates)],
               "history": [_evidence(x, f"h{i}") for i, x in enumerate(prior)]}
-    decisions = _review_inputs(inputs, runtime_root, model_call=model_call)
+    try:
+        decisions = _review_inputs(inputs, runtime_root, model_call=model_call)
+    except Exception as exc:
+        if not _REPLACE_FAILURES.get():
+            raise
+        return [], [{'news_id': item.get('news_id') or item.get('title'), 'stage': 'dedupe',
+                     'status': 'skipped_review_error', 'error_type': type(exc).__name__,
+                     'error': str(exc)[:500]} for item in candidates]
     return [item for item, decision in zip(candidates, decisions) if not decision["duplicate_of"]], decisions
 
 
@@ -177,7 +196,7 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
             decisions = _review_history_chunks(inputs, runtime_root, model_call=model_call)
             _save_review(target, inputs, {"decisions": decisions})
             return decisions
-        if len(candidates) > 1 and recovery.exists():
+        if len(candidates) > 1 and recovery.exists() and not _REPLACE_FAILURES.get():
             decisions = _review_individually(inputs, runtime_root, model_call=model_call)
             _save_review(target, inputs, {"decisions": decisions})
             return decisions
@@ -213,9 +232,10 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                 '禁止输出decisions数组或转义后的JSON字符串。id必须是' + candidates[0]['id'] + '。'
                 '重复引用必须原样选择schema内的证据选项，禁止改写字词、空格和引号；不重复时两个证据字段为空。')
         prompt = encoded
-        deadline = time.monotonic() + 180
+        from cmhk.services.news_preparation_budget import deadline as review_deadline
+        deadline = review_deadline(90 if _REPLACE_FAILURES.get() else 180)
         from strategic_briefing import AIInvalidStructuredResponse, AIUnstructuredResponse
-        for attempt in range(2):
+        for attempt in range(1 if _REPLACE_FAILURES.get() else 2):
             result = None
             try:
                 from cmhk.services.news_push_skill import text_model
@@ -233,6 +253,8 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
                 rejected.write_text(json.dumps({"inputs": inputs, "model_output": result,
                                                 "status": "rejected", "error": str(exc)}, ensure_ascii=False, indent=2))
                 _checkpoint_valid_rows(inputs, result, runtime_root)
+                if _REPLACE_FAILURES.get():
+                    raise
                 if attempt:
                     if len(candidates) == 1:
                         raise

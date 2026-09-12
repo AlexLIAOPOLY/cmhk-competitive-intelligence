@@ -9,6 +9,7 @@ from difflib import SequenceMatcher
 from pathlib import Path
 
 from cmhk.services.news_delivery_dedupe import normalized_text
+from cmhk.services.news_preparation_budget import deadline
 
 VERSION = 'summary-information-gain-v4-fewshot'
 SOURCE_EXTRACTOR_VERSION = 3
@@ -162,7 +163,7 @@ def quote_options(text: str, limit: int) -> list[str]:
 
 def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *, model_call=None) -> list[dict]:
     from cmhk.services.news_delivery_assets import fingerprint, load, save
-    from cmhk.services.news_push_skill import skill_contract, text_model
+    from cmhk.services.news_push_skill import skill_contract, text_model, compatible_skill_hashes
     if len(inputs) != len(rows):
         raise SummaryQualityError('新闻简介事实审核条数不完整')
     reviews = []
@@ -179,6 +180,16 @@ def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *
         target = runtime_root / 'var/subscriptions/news-summary-reviews' / (
             fingerprint([VERSION, text_model(), skill_contract()[1], evidence, summary]) + '.json')
         cached = load(target)
+        if not cached:
+            for prior_hash in compatible_skill_hashes()[1:]:
+                previous = load(target.parent / (fingerprint([VERSION, text_model(), prior_hash, evidence, summary]) + '.json'))
+                try:
+                    validate_review(previous['result'], source, summary)
+                except (KeyError, ValueError, TypeError):
+                    continue
+                cached = previous
+                save(target, previous)
+                break
         try:
             reviews.append(validate_review(cached['result'], source, summary))
             continue
@@ -213,7 +224,7 @@ def review_summaries(inputs: list[dict], rows: list[dict], runtime_root: Path, *
             '下标均为从0开始的整数，不通过时填-1。reason说明具体增量及依据。只输出下标，不输出或改写任何引文。'
             '证据不充分则拒绝，不补写新闻，不用语义相近的伪造引文。\n' + examples,
             json.dumps(request, ensure_ascii=False),
-            max_tokens=3000, model_override=text_model(), deadline_monotonic=time.monotonic() + 180, _structured_response_retries=1,
+            max_tokens=3000, model_override=text_model(), deadline_monotonic=deadline(), _structured_response_retries=1,
             response_format={'type': 'json_schema', 'json_schema': {'name': 'news_summary_quality', 'strict': True,
                 'schema': {'type': 'object', 'additionalProperties': False,
                     'required': ['summary_detail_index', 'source_quote_index', 'reason', 'verdict'],

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import fcntl
+from cmhk.services.news_preparation_budget import acquire_story_lock, deadline as preparation_deadline
 import json
 import os
 import time
@@ -10,7 +11,7 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable
 
-from cmhk.services.news_push_skill import skill_contract, text_model
+from cmhk.services.news_push_skill import skill_contract, text_model, compatible_skill_hashes
 from cmhk.services.news_summary_quality import SummaryQualityError, enrich_source, repeats_title, review_summaries
 
 EDITOR_VERSION = 10
@@ -57,7 +58,7 @@ def _reuse_cached_items(inputs: list[dict], cache_dir: Path) -> list[dict] | Non
     for path in paths:
         try:
             cached = json.loads(path.read_text())
-            if (cached.get('editor_version') != EDITOR_VERSION or cached.get('skill_hash') != skill_contract()[1]):
+            if (cached.get('editor_version') != EDITOR_VERSION or cached.get('skill_hash') not in compatible_skill_hashes()):
                 continue
             sources, rows = cached['inputs'], cached['model_output']['items']
             if len(sources) != len(rows):
@@ -87,7 +88,7 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
     directory = runtime_root / 'var/subscriptions/news-editor-locks'
     directory.mkdir(parents=True, exist_ok=True)
     with (directory / (key + '.lock')).open('a') as lock:
-        fcntl.flock(lock, fcntl.LOCK_EX)
+        acquire_story_lock(lock)
         return _prepare_digest(payload, runtime_root, model_call=model_call, _single_response=_single_response)
 
 
@@ -190,7 +191,7 @@ def _prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | 
                 try:
                     result = model_call(system, json.dumps(payload, ensure_ascii=False),
                                         max_tokens=max(16000, len(items) * 1200), response_format=response_format,
-                                        model_override=text_model(), deadline_monotonic=time.monotonic() + 180,
+                                        model_override=text_model(), deadline_monotonic=preparation_deadline(),
                                         _structured_response_retries=1)
                 except AIInvalidStructuredResponse as exc:
                     # Some gateways retain the skill's items envelope even when

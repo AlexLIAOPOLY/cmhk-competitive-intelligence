@@ -9,12 +9,13 @@ from contextlib import closing
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from cmhk.services.news_delivery_dedupe import VERSION as DEDUPE_VERSION, deduplicate_events, exact_unique
+from cmhk.services.news_delivery_dedupe import VERSION as DEDUPE_VERSION, deduplicate_for_delivery as deduplicate_events, exact_unique
 from cmhk.services.news_digest_editor import EDITOR_VERSION
 from cmhk.services.news_summary_quality import VERSION as SUMMARY_VERSION
 from cmhk.services.news_delivery_assets import prepare_news_assets
 from cmhk.services.news_image_quality import policy_key, require_reviewed_images
 from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract, text_model
+from cmhk.services.news_preparation_budget import bounded_preparation, candidate_budget, expired
 from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news
 
 
@@ -113,6 +114,7 @@ def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
             return pages[0] if len(pages) == 1 else {'cards': pages}
 
 
+@bounded_preparation
 def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: str,
                  batch_id: str, profile: str, prepare_only: bool = False,
                  prepared_only: bool = False) -> list[str]:
@@ -200,40 +202,41 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             banner = str(image_keys.get(period) or '')
             prepared_items = []
             summary_reviews = []
-            preparation_issues = []
-            if selected and structured:
+            preparation_issues = [row for row in decisions if row.get('status') == 'skipped_review_error']
+            if structured and (selected or preparation_issues):
                 from cmhk.services.news_delivery_assets import save
                 progress_path = service.db_path.parent / 'news-preparation-progress' / (hashlib.sha256(
                     f'{open_id}:{batch_id}'.encode()).hexdigest() + '.json')
                 original_selected = list(selected)
                 delivered_selected = []
-                wanted = min(wanted_count, len(original_selected))
-                tried = set()
+                wanted = min(wanted_count, len(original_selected) or len(candidates))
+                tried = {row.get('news_id') for row in preparation_issues}
                 for item in [*original_selected, *replacements]:
                     identity = item.get('news_id') or item.get('source_url') or item.get('title')
                     if identity in tried:
                         continue
                     tried.add(identity)
-                    if len(prepared_items) >= wanted:
+                    if len(prepared_items) >= wanted or expired():
                         break
                     stage = 'assets'
                     started = time.time()
                     try:
-                        # Replacements use the same reviewed round/preferences
-                        # and must pass semantic history checks too.
-                        if item not in original_selected:
-                            checked, extra = deduplicate_events([item], history + prepared_items, service.runtime_root)
-                            decisions.extend(extra)
-                            if not checked:
+                        with candidate_budget():
+                            # Replacements use the same reviewed round/preferences
+                            # and must pass semantic history checks too.
+                            if item not in original_selected:
+                                checked, extra = deduplicate_events([item], history + prepared_items, service.runtime_root)
+                                decisions.extend(extra)
+                                if not checked:
+                                    continue
+                            asset = prepare_news_assets([item], service, profile=profile, fallback_image_key=banner)[0]
+                            if not exact_unique([asset], history + prepared_items):
                                 continue
-                        asset = prepare_news_assets([item], service, profile=profile, fallback_image_key=banner)[0]
-                        if not exact_unique([asset], history + prepared_items):
-                            continue
-                        stage = 'summary'
-                        prepared = prepare_digest([asset], service.runtime_root)
-                        prepared_items.extend(prepared['items'])
-                        delivered_selected.append(item)
-                        summary_reviews.extend(prepared.get('summary_reviews', []))
+                            stage = 'summary'
+                            prepared = prepare_digest([asset], service.runtime_root)
+                            prepared_items.extend(prepared['items'])
+                            delivered_selected.append(item)
+                            summary_reviews.extend(prepared.get('summary_reviews', []))
                     except Exception as exc:
                         # The 2026-09-12 recovery policy permits replacement or
                         # fewer reviewed stories, never fabricated text/images.
@@ -244,8 +247,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                         'model': text_model(), 'prepared_count': len(prepared_items), 'target_count': wanted,
                         'updated_at': datetime.now(ZoneInfo('Asia/Hong_Kong')).isoformat(timespec='seconds'),
                         'issues': preparation_issues})
-                if not prepared_items and preparation_issues:
-                    raise NewsNotPrepared('本轮新闻暂无完成审核的图文，原批次保留：' + preparation_issues[-1]['error'])
+                if not prepared_items and (preparation_issues or expired()):
+                    raise NewsNotPrepared('本轮新闻暂无完成审核的图文，原批次保留：' + (preparation_issues[-1]['error'] if preparation_issues else '准备预算已用完，稍后恢复'))
                 # Only actually delivered stories enter recipient history.
                 selected = delivered_selected
                 rendered_body = NEWS_DIGEST_PREFIX + json.dumps({'items': prepared_items}, ensure_ascii=False)

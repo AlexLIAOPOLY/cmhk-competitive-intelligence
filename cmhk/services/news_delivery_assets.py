@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import fcntl
+from cmhk.services.news_preparation_budget import acquire_story_lock, deadline as preparation_deadline
 import hashlib
 import ipaddress
 import json
@@ -16,7 +17,7 @@ from urllib.parse import urljoin, urlsplit
 
 import httpx
 from cmhk.services.news_image_quality import (
-    NewsImageUnavailable, extract_candidates, policy_key, rank_candidates,
+    NewsImageUnavailable, extract_candidates, policy_key, compatible_policy_keys, rank_candidates,
     require_reviewed_images, review_image, search_image_candidates, validate_image,
 )
 
@@ -171,9 +172,22 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
         key = fingerprint([policy_key(), original, item.get('published_at'), profile,
                            item.get('title'), item.get('summary'), item.get('source_summary')])
         with (cache / (key + '.lock')).open('a') as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
+            acquire_story_lock(lock)
             target = cache / (key + '.json')
             asset = load(target)
+            if not asset:
+                for prior_policy in compatible_policy_keys()[1:]:
+                    prior_key = fingerprint([prior_policy, original, item.get('published_at'), profile,
+                                             item.get('title'), item.get('summary'), item.get('source_summary')])
+                    prior = load(cache / (prior_key + '.json'))
+                    try:
+                        require_reviewed_images([prior], fallback_image_key)
+                    except NewsImageUnavailable:
+                        continue
+                    if prior.get('news_url'):
+                        asset = prior
+                        save(target, asset)
+                        break
             if not asset.get('news_url') or (not asset.get('image_key') and
                     time.time() - asset.get('fetched_at', 0) > 600):
                 direct = resolve_source(original, cache)
@@ -194,7 +208,7 @@ def prepare_news_assets(items: list[dict], service, *, profile: str, fallback_im
                 save(target, asset)
             article_url(asset['news_url'])
             if not asset.get('image_key'):
-                deadline = time.monotonic() + 360
+                deadline = preparation_deadline(360)
                 attempts = []
                 seen = set()
                 rejected_families = set()

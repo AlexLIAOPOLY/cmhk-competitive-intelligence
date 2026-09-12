@@ -43,6 +43,12 @@ def policy_key() -> str:
     return _policy_key(IMAGE_POLICY_VERSION)
 
 
+def compatible_policy_keys() -> tuple[str, ...]:
+    from cmhk.services.news_push_skill import compatible_skill_hashes
+    return tuple(hashlib.sha256(json.dumps([IMAGE_POLICY_VERSION, image_model(), value]).encode()).hexdigest()
+                 for value in compatible_skill_hashes())
+
+
 def visual_policy_key() -> str:
     return _policy_key(VISUAL_POLICY_VERSION)
 
@@ -401,5 +407,5 @@ def require_reviewed_images(items: list[dict], banner: str = '') -> None:
                 or item.get('image_key') == banner or item.get('image_kind') not in ('source', 'related')
                 or not item.get('image_source_url') or not item.get('image_page_url')
                 or not re.fullmatch(r'[0-9a-f]{64}', str(item.get('image_sha256') or ''))
-                or item.get('image_policy_key') != policy_key() or item.get('image_review_status') != 'accepted'):
+                or item.get('image_policy_key') not in compatible_policy_keys() or item.get('image_review_status') != 'accepted'):
             raise NewsImageUnavailable('新闻配图尚未全部完成核验，保留原批次继续补图')
