@@ -105,6 +105,20 @@ class SummaryQualityTests(unittest.TestCase):
         html += '<article><h2>Restaurant news</h2><p>' + 'Food tourism. ' * 100 + '</p></article>'
         self.assertEqual(extract_article_text(html.encode()), 'Sanctions apply to five banks.')
 
+    def test_hk_publishers_body_containers_and_empty_cache_recovery(self):
+        for container in ['newsDetail', 'xlCon']:
+            html = '<title>公司发布服务</title><div class="' + container + '"><p>' + SOURCE + '</p></div><article><h2>美食推荐</h2>无关</article>'
+            self.assertEqual(extract_article_text(html.encode()), SOURCE)
+        from cmhk.services.news_delivery_assets import save, fingerprint
+        from cmhk.services.news_summary_quality import VERSION
+        url = 'https://publisher.example/recover'
+        target = self.root / 'var/subscriptions/news-editor-sources' / (fingerprint([VERSION, url]) + '.json')
+        import time
+        save(target, {'source_content': '', 'fetched_at': time.time()})
+        with patch('cmhk.services.news_delivery_assets.fetch', return_value=(html.encode(), url, 'text/html')) as fetch:
+            self.assertEqual(enrich_source({'news_url': url}, {}, self.root)['source_content'], SOURCE)
+        fetch.assert_called_once()
+
     def test_rereview_does_not_replay_cached_rejection_and_prefers_pro(self):
         requests = []
         def model(system, user, **kwargs):

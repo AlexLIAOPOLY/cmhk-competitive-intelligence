@@ -11,6 +11,7 @@ from pathlib import Path
 from cmhk.services.news_delivery_dedupe import normalized_text
 
 VERSION = 'summary-information-gain-v4-fewshot'
+SOURCE_EXTRACTOR_VERSION = 3
 SOURCE_FIELDS = ('source_content', 'source_summary', 'snippet', 'description', 'content',
                  'source_page_title', 'source_page_description')
 
@@ -70,7 +71,7 @@ def extract_article_text(data: bytes) -> str:
     # No whole-page fallback: menus and recommended articles are not source facts.
     # Publisher-specific body containers outrank generic article cards. A longer
     # recommended article must never replace the actual story (Macau Business).
-    for node in page.select('[itemprop="articleBody"],.td-post-content,.tdb_single_content,.prose,'
+    for node in page.select('[itemprop="articleBody"],.td-post-content,.tdb_single_content,.prose,.newsDetail,.xlCon,'
                             '.article-content,.article-body,'
                             '.article__body,.news-content,.entry-content,.post-content,'
                             '.rich_media_content,.ck-content,.article .content'):
@@ -85,7 +86,21 @@ def extract_article_text(data: bytes) -> str:
             if heading and not belongs(heading.get_text(' ', strip=True)):
                 continue
             texts.append(node.get_text(' ', strip=True))
-    return max(texts, key=len, default='')[:16000]
+    extracted = max(texts, key=len, default='')
+    if len(extracted) < 100:
+        # Precision mode handles publisher layouts beyond our known containers.
+        # Remove off-topic story cards first; the independent model still checks
+        # that every claimed fact belongs to the requested event.
+        for node in list(page.select('article')):
+            heading = node.find(['h1', 'h2', 'h3'])
+            if heading and not belongs(heading.get_text(' ', strip=True)):
+                node.decompose()
+        from trafilatura import extract
+        generic = extract(str(page), favor_precision=True, include_comments=False,
+                          include_tables=False, include_links=False) or ''
+        if len(generic) >= 100:
+            extracted = generic
+    return extracted[:16000]
 
 
 def enrich_source(item: dict, evidence: dict, runtime_root: Path) -> dict:
@@ -99,7 +114,8 @@ def enrich_source(item: dict, evidence: dict, runtime_root: Path) -> dict:
     from cmhk.services.news_delivery_assets import fetch, fingerprint, load, save
     target = runtime_root / 'var/subscriptions/news-editor-sources' / (fingerprint([VERSION, url]) + '.json')
     cached = load(target)
-    if time.time() - cached.get('fetched_at', 0) > 43200:
+    if (time.time() - cached.get('fetched_at', 0) > (43200 if cached.get('source_content') else 600)
+            or (not cached.get('source_content') and cached.get('extraction_version') != SOURCE_EXTRACTOR_VERSION)):
         try:
             data, final_url, mime = fetch(url)
             text = extract_article_text(data) if 'html' in mime else ''
@@ -111,6 +127,7 @@ def enrich_source(item: dict, evidence: dict, runtime_root: Path) -> dict:
             cached = {'source_content': text, 'source_evidence_url': final_url,
                       'source_page_title': title,
                       'source_page_description': str(description.get('content') or '') if description else '',
+                      'extraction_version': SOURCE_EXTRACTOR_VERSION,
                       'fetched_at': time.time()}
             save(target, cached)
         except (httpx.HTTPError, OSError, ValueError):
