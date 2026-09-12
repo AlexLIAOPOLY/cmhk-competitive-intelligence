@@ -73,6 +73,15 @@ class PreparationBudgetTests(unittest.TestCase):
         self.assertEqual(audit,rows)
         model.assert_called_once()
 
+    def test_delivery_replacement_checks_all_history_in_one_bounded_request(self):
+        item={'news_id':'new','title':'新的机场建设计划','summary':'新机场计划新建两条跑道'}
+        history=[{'news_id':str(i),'title':f'企业{i}独立项目','summary':f'第{i}个已发历史事件'} for i in range(25)]
+        with tempfile.TemporaryDirectory() as root, patch('strategic_briefing._call_internal_ai_transport',return_value={'id':'c0','duplicate_of':'','reason':'新的独立事件','evidence':'','matched_evidence':''}) as model:
+            kept,audit=deduplicate_for_delivery([item],history,Path(root))
+        self.assertEqual(kept,[item])
+        model.assert_called_once()
+        self.assertEqual(len(json.loads(model.call_args.args[1])['history']),25)
+
     def test_quality_compatibility_is_exact_and_unknown_edits_invalidate(self):
         self.assertIn('6b9f1b4144950450749a9b85b9cd54ea1e6546dc2aaf5b4f202e3253dd228eb4',compatible_skill_hashes())
         with patch('cmhk.services.news_push_skill.skill_contract', return_value=('changed substantive rules','unknown')):

@@ -196,7 +196,7 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
         decisions = _validate(result, inputs["candidates"], inputs["history"])
     except (OSError, ValueError, KeyError, TypeError):
         recovery = target.with_suffix('.single-items')
-        if len(candidates) == 1 and len(inputs['history']) > HISTORY_REVIEW_SIZE:
+        if len(candidates) == 1 and len(inputs['history']) > HISTORY_REVIEW_SIZE and not _REPLACE_FAILURES.get():
             decisions = _review_history_chunks(inputs, runtime_root, model_call=model_call)
             _save_review(target, inputs, {"decisions": decisions})
             return decisions
