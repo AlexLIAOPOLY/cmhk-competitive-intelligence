@@ -313,8 +313,9 @@ def snapshot(db, open_id):
 
 def receipt(current, changes, *, confirmed=False):
     reading_points = current.get("news_personal_skill") or [t['name'] for t in current.get('news_topics', [])]
-    if reading_points and (confirmed or any(c['field'] in {'news_topics','news_personal_skill'} for c in changes)):
-        lines = ["已确认，我会记住这份喜好：" if confirmed else "已成功更新你的喜好，帮你记下了这些关注方向："]
+    if reading_points:
+        lines = ["已确认，我会记住这份喜好：" if confirmed else
+                 "已成功更新你的喜好，帮你记下了这些关注方向：" if changes else "你当前已保存的喜好："]
         lines.extend(f"{i}. {p}" for i, p in enumerate(reading_points, 1))
         lines.append("我会记住这份阅读要求，下次由选稿Agent按文章内容为你挑选；想调整时再告诉我。")
         lines.append("其他推送设置：" + "；".join(
