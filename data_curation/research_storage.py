@@ -130,6 +130,8 @@ def audit_storage(root: Path, facts: list[dict], *, expected: int | None = None)
     """No writes. Re-read current domain files and formal KPI rows on every call."""
     from .research_kpi import POLICY, CARRIER_PATH, CLOUD_PATH, normalize_fact, formal_indexes, row_key, row_matches
     from .six_agent_research import now
+    from .research_freshness import load_baseline
+    from .research_contracts import contract_for
     errors, stores = [], {}
     for domain, relative in DOMAIN_PATHS.items():
         try:
@@ -142,9 +144,11 @@ def audit_storage(root: Path, facts: list[dict], *, expected: int | None = None)
             stores[domain] = []
     try:
         indexes = formal_indexes(root)
+        baseline = load_baseline(root).get("companies", {})
     except (OSError, ValueError) as exc:
         errors.append(f"main_table: {type(exc).__name__}")
         indexes = {CARRIER_PATH: {}, CLOUD_PATH: {}}
+        baseline = {}
     items = []
     for raw in facts:
         fact = project_fact(raw)
@@ -154,7 +158,7 @@ def audit_storage(root: Path, facts: list[dict], *, expected: int | None = None)
                "period": fact.get("period"), "domain": domain, "destination": DOMAIN_LABELS.get(domain, "未识别资料库"),
                "evidence_path": DOMAIN_PATHS.get(domain, ""), "evidence_saved": found is not None,
                "value": raw.get("value"), "unit": raw.get("unit")}
-        candidate, destination, error = normalize_fact(raw)
+        candidate, destination, error = normalize_fact(raw, storage_contract=contract_for(raw.get("company"), raw.get("metric"), baseline.get(raw.get("company"), {})))
         if candidate:
             key = row_key(candidate, destination)
             current = indexes[destination].get(key)

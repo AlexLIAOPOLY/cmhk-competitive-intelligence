@@ -140,6 +140,20 @@ class ResearchHarnessTests(unittest.TestCase):
         self.assertEqual(result["status"], "conflict")
         self.assertIn("数量级", result["reason"])
 
+    def test_explicit_group_capex_template_does_not_turn_group_revenue_into_cloud_revenue(self):
+        text = "Microsoft Corporation consolidated group capital expenditures were USD 50 million for year ended June 30, 2026."
+        url = "https://www.microsoft.com/investor/report"
+        pages = {url: {"opened": True, "official": True, "text": text}}
+        item = {"company": "Microsoft Azure", "metric": "资本开支", "status": "verified", "value": "50",
+            "period": "year ended June 30, 2026", "unit": "USD million", "source_url": url, "quote": text}
+        contract = {"company": "Microsoft Azure", "fields": ["group_capex"], "legal_name": "Microsoft Corporation"}
+        self.assertEqual(validate_fact(item, item['company'], ['资本开支'], pages)['status'], 'conflict')
+        self.assertEqual(validate_fact(item, item['company'], ['资本开支'], pages, storage_contract=contract)['status'], 'verified')
+        self.assertEqual(validate_fact({**item, 'metric': '云收入'}, item['company'], ['云收入'], pages, storage_contract=contract)['status'], 'conflict')
+        segment = text.replace('group capital', 'Azure segment capital')
+        self.assertEqual(validate_fact({**item, 'quote': segment}, item['company'], ['资本开支'],
+            {url: {"opened": True, "official": True, "text": segment}}, storage_contract=contract)['status'], 'conflict')
+
     def test_existing_run_cannot_be_overwritten_or_resumed_with_other_identity(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory)

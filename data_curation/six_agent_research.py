@@ -107,7 +107,7 @@ def company_value_is_bound(company: str, value: str, quote: str, source_url: str
     return False
 
 
-def validate_fact(proposed: dict, company: str, metrics: list[str], pages: dict[str, dict]) -> dict:
+def validate_fact(proposed: dict, company: str, metrics: list[str], pages: dict[str, dict], *, storage_contract=None) -> dict:
     """Bind a proposed value to an actually opened official passage and period.
 
 The model supplies interpretation. This boundary prevents unsupported claims,
@@ -133,10 +133,14 @@ different companies, search snippets and invented URLs becoming database facts.
         context = item["context_quote"]
         grounded = quote + " " + context
         profile = w._company_research_profile(company)
+        contract = storage_contract or {}
+        group_entity = str(contract.get("legal_name") or "") if (contract.get("company") == company
+            and contract.get("fields") == ["group_capex"] and item["metric"] == "资本开支") else ""
+        identity_aliases = [*profile["aliases"], *([group_entity] if group_entity else [])]
         # Issuer identity is often in a filing header, not in every financial
         # sentence (which says "the Company"). Bind to the archived header too.
         issuer_header = body[:1500] if re.search(r"\.pdf(?:[?#]|$)|/Archives/edgar/", item["source_url"], re.I) else ""
-        if issuer_header and any(w._company_alias_mentions_text(alias, issuer_header) for alias in profile["aliases"]):
+        if issuer_header and any(w._company_alias_mentions_text(alias, issuer_header) for alias in identity_aliases):
             item["entity_quote"] = issuer_header
         if not page.get("opened") or not page.get("official"):
             errors.append("未成功读取该官方原文")
@@ -144,7 +148,7 @@ different companies, search snippets and invented URLs becoming database facts.
             errors.append("原文摘录不在实际读取的页面中")
         if context and context not in body:
             errors.append("期间或单位的上下文摘录不在同一原文中")
-        if not any(w._company_alias_mentions_text(alias, grounded + " " + item.get("entity_quote", "")) for alias in profile["aliases"]):
+        if not any(w._company_alias_mentions_text(alias, grounded + " " + item.get("entity_quote", "")) for alias in identity_aliases):
             errors.append("摘录没有明确对应公司主体")
         if not item["value"] or item["value"] not in quote:
             errors.append("数值或描述不在引用原文中")
@@ -182,7 +186,10 @@ different companies, search snippets and invented URLs becoming database facts.
             errors.append("引用原文没有对应指标")
         if not metric_value_is_bound(item["metric"], item["value"], quote):
             errors.append("数值所在原文句段没有对应指标标签；不得用总收入替代服务收入等子指标")
-        if not company_value_is_bound(company, item["value"], quote, item["source_url"]):
+        group_bound = bool(group_entity and group_entity.casefold() in (grounded + " " + issuer_header).casefold()
+            and re.search(r"consolidated|group|集团|集團", grounded, re.I)
+            and not re.search(r"Azure|Google Cloud|Oracle Cloud|Mobile Cloud|移动云|分部|segment", quote, re.I))
+        if (group_entity and not group_bound) or (not group_entity and not company_value_is_bound(company, item["value"], quote, item["source_url"])):
             errors.append("数值所在句段没有明确归属目标子公司或业务；集团总额不能作为该公司指标")
         if not w._passes_metric_gate(item["metric"], f"{item['value']} {item['unit']}"):
             errors.append("值不符合指标类型")
@@ -240,6 +247,9 @@ def collect_sources(company: str, metrics: list[str], emit: Callable, baseline: 
         english = next((term for term in terms if re.search(r"[a-z]", term)), "")
         terms = list(dict.fromkeys([metric_key(metric), english]))
         qualifier = search_qualifier(contract_for(company, metric, baseline)) if baseline is not None else str(year)
+        contract = contract_for(company, metric, baseline)
+        if contract.get("fields") == ["group_capex"]:
+            terms = ["集团资本开支", "consolidated capital expenditures", contract.get("legal_name", "")]
         queries.append((metric, f'"{search_subject}" {qualifier} {" ".join(filter(None, terms))}'.strip()))
     def search(entry):
         metric, query = entry
@@ -447,7 +457,9 @@ def merge_results(results: list[dict], run_id: str) -> list[dict]:
             for item in report["items"]:
                 item = attach_source_audit(item, report)
                 if item.get("status") == "verified":
-                    checked = validate_fact(item, report["company"], report["metrics"], report.get("pages", {}))
+                    from .research_contracts import contract_for
+                    checked = validate_fact(item, report["company"], report["metrics"], report.get("pages", {}),
+                        storage_contract=contract_for(report["company"], item["metric"], report.get("baseline", {})))
                     item.update(checked)
                 key = (item["company"], item["metric"])
                 if key in seen:

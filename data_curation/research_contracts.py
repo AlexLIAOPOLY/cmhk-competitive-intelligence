@@ -102,13 +102,18 @@ def build_contract(company, metric, rows):
                  and (not fields or field_key(r.get("field")) in fields)]
     populated = [r for r in matching if r.get("value") not in (None, "")]
     newest = max(populated or matching, key=lambda r: row_end(r) or date.min)
-    return {"version": VERSION, "enabled": True, "company": company, "metric": metric,
+    contract = {"version": VERSION, "enabled": True, "company": company, "metric": metric,
             "grain": grain, "has_baseline": bool(populated), "period_label": LABELS[grain], "latest_period": newest.get("period"),
             "latest_period_end": (row_end(newest).isoformat() if row_end(newest) else ""),
             "unit": newest.get("unit", ""), "currency": newest.get("currency", ""),
             "scope": newest.get("scope", ""), "source_path": rows[0].get("source_path", ""),
+            "legal_name": next((r["legal_name"] for r in rows if r.get("legal_name")), ""),
+            "metric_label": next((r["metric_label"] for r in rows if r.get("metric_label")), ""),
             "fields": fields,
             "template_periods": list(dict.fromkeys(str(r.get("period")) for r in matching))[-4:]}
+    end = next_period_end(contract)
+    contract["target_period_end"] = end.isoformat() if end else ""
+    return contract
 
 
 def contract_for(company, metric, baseline):
@@ -198,7 +203,7 @@ def source_fact_error(item, baseline):
               "metric_supported": True, "value_supported": True,
               "evidence_hash": item.get("evidence_hash") or "format-check-only",
               "sources": item.get("sources") or [item.get("source_url", "")]}
-    row, _, error = normalize_fact(parsed)
+    row, _, error = normalize_fact(parsed, storage_contract=contract_for(company, item.get("metric"), baseline.get(company, {})))
     return error or formal_row_error(parsed, row, baseline.get(company, {}))
 
 
@@ -211,4 +216,5 @@ def search_qualifier(contract):
     period = {"half": '"six months" interim half-year -"full year"',
               "quarter": '"three months" quarterly -"nine months"',
               "year": '"full year" annual -quarterly -interim'}[contract["grain"]]
-    return f"{year}{native} {period}"
+    month = calendar.month_name[end.month] + " " if end and contract["grain"] != "year" else ""
+    return f"{month}{year}{native} {period}"

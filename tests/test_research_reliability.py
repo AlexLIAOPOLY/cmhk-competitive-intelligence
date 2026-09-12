@@ -11,6 +11,16 @@ from data_curation.research_final_review import review_run
 
 
 class ResearchReliabilityTests(unittest.TestCase):
+    def configured_run(self, temp):
+        root = Path(temp)
+        template = root / 'agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json'
+        template.parent.mkdir(parents=True)
+        template.write_text(json.dumps({'reports': [{'company': 'HKT', 'period': 'FY2024',
+            'metrics': [{'metric_key': 'revenue', 'value': 100, 'unit': 'millions HKD'}]}]}))
+        directory = root / 'curation_data/research_runs/test'
+        directory.mkdir(parents=True)
+        return directory
+
     def test_parent_group_amount_cannot_become_subsidiary_amount(self):
         self.assertFalse(company_value_is_bound('CMHK','RMB538.0 billion','China Mobile Hong Kong Treasury Company Limited. The Company recorded operating revenue of RMB538.0 billion.','https://www.chinamobileltd.com/en/ir/reports/ir2026.pdf'))
         self.assertTrue(company_value_is_bound('CMHK','HK$100 million','China Mobile Hong Kong recorded revenue of HK$100 million.','https://www.chinamobileltd.com/report.pdf'))
@@ -67,7 +77,7 @@ class ResearchReliabilityTests(unittest.TestCase):
 
     def test_final_reviewer_searches_missing_then_saves_without_replaying(self):
         with tempfile.TemporaryDirectory() as temp:
-            directory = Path(temp)
+            directory = self.configured_run(temp)
             task = dict(key='hong-kong', title='香港', purpose='研究', companies=['HKT'])
             summary = dict(run_id='test', plan=[task], research_policy='latest_disclosure_incremental_v1')
             (directory/'manifest.json').write_text(json.dumps(summary))
@@ -83,14 +93,14 @@ class ResearchReliabilityTests(unittest.TestCase):
                 def extract(self, company, metric, pages, save, **kw):
                     save(dict(company=company, metric=metric, status='verified', value='123', period='2026', unit='HK$ million', quote=text, source_url=url))
             result = review_run(directory, model_factory=lambda: None, collector=collect, harness_factory=Harness)
-            self.assertEqual(result['outcome_counts'], dict(existing=0, duplicate=0, updated=1, failed=0))
+            self.assertEqual(result['outcome_counts'], dict(existing=0, duplicate=0, updated=1, failed=0, excluded=0))
             self.assertEqual(len((directory/'verified_facts.jsonl').read_text().splitlines()), 1)
             review_run(directory, model_factory=lambda: self.fail('must not create model'), collector=collect, harness_factory=Harness)
             self.assertEqual(calls, ['HKT'])
 
     def test_failed_review_fetch_keeps_archived_evidence(self):
         with tempfile.TemporaryDirectory() as temp:
-            directory = Path(temp)
+            directory = self.configured_run(temp)
             task = dict(key='hong-kong', title='香港', companies=['HKT'])
             url = 'https://www.hkt.com/report'
             text = 'HKT reported revenue of HK$ 123 million in 2026.'
@@ -104,7 +114,7 @@ class ResearchReliabilityTests(unittest.TestCase):
                     save(dict(company=company,metric=metric,status='verified',value='123',period='2026',unit='HK$ million',quote=text,source_url=url))
             self_test = self
             result = review_run(directory,model_factory=lambda:None,collector=lambda *args:({url:dict(opened=False,error='timeout')},[]),harness_factory=Harness)
-            self.assertEqual(result['outcome_counts'],dict(existing=0,duplicate=0,updated=1,failed=0))
+            self.assertEqual(result['outcome_counts'],dict(existing=0,duplicate=0,updated=1,failed=0,excluded=0))
 
     def test_model_timeout_enters_bounded_retry_not_immediate_fallback(self):
         import executive_intelligence_pipeline as p

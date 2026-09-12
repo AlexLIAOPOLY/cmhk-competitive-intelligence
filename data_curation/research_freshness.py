@@ -109,6 +109,7 @@ def load_baseline(root: Path) -> dict:
                 item = {"period": context.get("period") or str(context.get("fiscal_year") or context.get("year") or ""), "value": value,
                         "unit": context.get("unit", ""), "source_url": context.get("source_url") or row.get("official_source_url") or row.get("primary_source_url") or next(iter(row.get("source_urls") or []), ""),
                         "scope": row.get("scope") or row.get("scope_note", ""),
+                        "legal_name": row.get("legal_name", ""), "metric_label": row.get("metric_zh", ""),
                         "source_path": str(path.relative_to(root)), "field": row.get("metric_key", ""),
                         "grain": context.get("grain", ""), "period_end": context.get("period_end", ""),
                         "currency": context.get("currency", ""),

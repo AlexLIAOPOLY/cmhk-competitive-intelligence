@@ -11,6 +11,29 @@ from data_curation.repair_research_storage import repair
 from tests.test_research_storage import fact
 
 
+class ExistingCloudFieldTests(unittest.TestCase):
+    def test_group_capex_roundtrip_preserves_existing_field_and_scope(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            target = root / CLOUD_PATH
+            target.parent.mkdir(parents=True)
+            target.write_text(json.dumps({'rows': [{'vendor': 'Microsoft Azure', 'legal_name': 'Microsoft Corporation',
+                'fiscal_year': '2025', 'metric_key': 'group_capex', 'metric_zh': '集团资本开支',
+                'value': 100, 'currency': 'USD', 'unit': 'millions'}]}))
+            candidate = fact(company='Microsoft Azure', metric='资本开支', period='year ended June 30, 2026',
+                value='USD 200 million', unit='USD million', basis='Microsoft Corporation consolidated group capital expenditures USD 200 million',
+                sources=['https://www.microsoft.com/investor/report'])
+            prepared, summary = prepare_facts(root, [candidate], 'research_test')
+            self.assertEqual(prepared[0]['write_preflight']['status'], 'ready')
+            result = write_formal_facts(root, prepared)
+            self.assertFalse(result.get('rejected'))
+            rows = json.loads(target.read_text())['rows']
+            self.assertEqual([(r['fiscal_year'], r['metric_key'], r['value']) for r in rows],
+                [('2025', 'group_capex', 100), ('2026', 'group_capex', 200)])
+            audit = audit_storage(root, prepared)
+            self.assertEqual(audit['items'][0]['main_table']['status'], 'written')
+
+
 def tables(root, carrier=None):
     baseline = root / "agent_knowledge/hk_competitor_product_tariffs/local_financial_results.json"
     baseline.parent.mkdir(parents=True, exist_ok=True)

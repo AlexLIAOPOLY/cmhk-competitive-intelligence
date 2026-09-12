@@ -121,8 +121,10 @@ def _review_run(directory: Path, *, model_factory, collector, harness_factory, w
             if item.get("status") == "no_update" and (not current_rows or newest([item, *old_rows]) > newest(current_rows)):
                 item.update(status="conflict", value="", reason="库内未找到该指标相应期间的正式记录，最终审核须继续补查，不能标记库内已有")
             if item.get("status") == "verified" and not retry_errors:
+                from .research_contracts import contract_for
                 report["items"][position] = compare_candidate(
-                    validate_fact(item, company, report["metrics"], report["pages"]), report["baseline"])
+                    validate_fact(item, company, report["metrics"], report["pages"],
+                        storage_contract=contract_for(company, item["metric"], report["baseline"])), report["baseline"])
         metrics = [i["metric"] for i in report["items"] if i.get("status") not in {"verified", "no_update", "not_applicable", "out_of_scope"}
                    and i["metric"] not in report.get("reviewed_metrics", [])]
         emit("review_start", f"{company}：最终审核并补查 {len(metrics)} 项指标", {"company": company, "metrics": metrics})

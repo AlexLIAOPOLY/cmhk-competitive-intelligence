@@ -161,7 +161,7 @@ def _postpaid_count_supported(value, basis):
                           + token + r"(?!\d|\.\d)", basis, re.I))
 
 
-def normalize_fact(fact):
+def normalize_fact(fact, *, storage_contract=None):
     """Return (formal row, destination, error). Never guess an amount or a scope."""
     from .research_plan import ASSIGNMENTS
     from .research_freshness import metric_key
@@ -189,7 +189,12 @@ def normalize_fact(fact):
         mapped = ("cloud_revenue", "云收入")
     elif metric in {"经营利润", "营业利润"}:
         mapped = ("operating_income", "经营利润")
-    elif metric in {"ARPU", "移动ARPU"}:
+    fields = (storage_contract or {}).get("fields", [])
+    if destination == CLOUD_PATH and fields == ["group_capex"] and metric == "资本开支":
+        mapped = ("group_capex", "集团资本开支")
+    elif destination == CLOUD_PATH and fields == ["cloud_operating_profit"] and metric == "经营利润":
+        mapped = ("cloud_operating_profit", "云业务经营利润")
+    if metric in {"ARPU", "移动ARPU"}:
         mapped, kind = ("arpu", "ARPU（原文口径）"), "arpu"
     elif metric in {"客户数/用户数", "用户数", "客户数", "移动客户数"}:
         mapped, kind = ("subscribers", "用户数（原文口径）"), "count"
@@ -349,7 +354,7 @@ def prepare_facts(root, facts, run_id, *, allow_replay=False):
                         ("decision", "status", "research_status", "freshness", "reasons")})
         fact["research_run_id"] = run_id
         fact["research_status"] = "verified"
-        row, path, error = normalize_fact(fact)
+        row, path, error = normalize_fact(fact, storage_contract=contract_for(fact.get("company"), fact.get("metric"), company_baseline))
         series_error = ""
         if row and not error:
             series_error = formal_row_error(fact, row, company_baseline)
@@ -445,10 +450,10 @@ def write_formal_facts(root, facts, *, dry_run=False):
     written, rejected, domains = [], [], {}
     grouped = {CARRIER_PATH: [], CLOUD_PATH: []}
     from .research_freshness import load_baseline
-    from .research_contracts import formal_row_error
+    from .research_contracts import formal_row_error, contract_for
     baseline = load_baseline(root).get("companies", {})
     for fact in facts:
-        row, relative, error = normalize_fact(fact)
+        row, relative, error = normalize_fact(fact, storage_contract=contract_for(fact.get("company"), fact.get("metric"), baseline.get(fact.get("company"), {})))
         if row and not error:
             error = formal_row_error(fact, row, baseline.get(fact.get("company"), {}))
         if error:

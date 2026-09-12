@@ -32,6 +32,8 @@ class SeriesContractsTests(unittest.TestCase):
         contract = build_contract('SmarTone', '收入', rows)
         self.assertEqual(row_end(rows[0]), date(2025, 12, 31))
         self.assertEqual(next_period_end(contract), date(2026, 6, 30))
+        self.assertEqual(contract['target_period_end'], '2026-06-30')
+        self.assertIn('June 2026', search_qualifier(contract))
         self.assertIsNone(planning_outcome('SmarTone', '收入', {'收入':rows}, today=date(2026, 9, 12)))
         rows = [{'period':'FY2026', 'period_end':'2026-03-31', 'grain':'annual', 'value':1}]
         self.assertEqual(next_period_end(build_contract('NTT','收入',rows)), date(2027,3,31))

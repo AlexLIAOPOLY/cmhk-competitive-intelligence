@@ -132,8 +132,11 @@ class ResearchHarness:
                 compared = compare_candidate(proposed, self.current["baseline"])
                 if compared["status"] in {"no_update", "out_of_scope"}:
                     early = compared
+            from .six_agent_research import validate_fact
+            from .research_contracts import contract_for
+            options = {"storage_contract": contract_for(self.current["company"], self.current["metric"], self.current.get("baseline") or {})} if self.validator is validate_fact else {}
             item = early or self.validator(proposed, self.current["company"],
-                                           [self.current["metric"]], self.current["pages"])
+                                           [self.current["metric"]], self.current["pages"], **options)
             if self.current.get("baseline") is not None:
                 from .research_freshness import compare_candidate, metric_key
                 item = compare_candidate(item, self.current["baseline"])
@@ -313,6 +316,9 @@ class ResearchHarness:
             from .research_contracts import contract_for, matching_baseline
             payload["storage_contract"] = contract_for(company, metric, baseline)
             payload["trusted_database_baseline"] = matching_baseline(company, metric, baseline)[-4:]
+            payload["research_objective"] += " target_period_end是程序按库内真实截止日计算的下一个目标截止日，不要自行把Q2误判为Q3或把原生财年当自然年。"
+            if payload["storage_contract"].get("fields") == ["group_capex"]:
+                payload["research_objective"] += " 本序列明确存储集团资本开支：按storage_contract.legal_name查集团合并全年资本开支，引用集团全名及consolidated/group上下文，不使用云分部资本开支。"
         content = pack_context(payload)
         self.emit("model_context", "去除重复字段与完全相同预览；完整原文及指标范围保留", {
             "company": company, "metric": metric,
