@@ -4117,6 +4117,13 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
             _trace_model_attempt(attempt_trace_path, "discoveries", discovery_model,
                                  attempt_started, payload, attempt_error, config)
     if discoveries is None:
+        # A bounded local repair already exists for resumed runs. Use it in
+        # the same invocation too, instead of reporting failure and requiring
+        # a manual retry just to reach the remaining two repair attempts.
+        if draft_path:
+            repaired = _repair_saved_discoveries(entry, prompt_evidence, config, persist, attempt_trace_path)
+            if repaired:
+                return repaired
         raise ValueError(f"AI跨库发现可用模型路由已用完；相同证据不重复请求：{last_error}")
     return {
         "generated_at_hkt": _now(),

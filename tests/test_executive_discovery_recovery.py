@@ -11,6 +11,23 @@ from tests.test_executive_ai_recovery import DiscoveryIncrementalEvidenceTests
 
 
 class DiscoveryRecoveryTests(unittest.TestCase):
+    def test_initial_route_failures_enter_bounded_patch_without_manual_retry(self):
+        invalid = copy.deepcopy(self.items)
+        invalid[0]['source_urls'] = []
+        packet = {'patches': [{'index': 0, **{k: self.items[0][k] for k in ('title', 'detail', 'source_urls')}}]}
+        with tempfile.TemporaryDirectory() as td:
+            trace = Path(td) / 'attempts.jsonl'
+            with patch.object(pipeline, 'open_llm_request', side_effect=[
+                sse_response({'items': invalid}), sse_response({'items': invalid}), sse_response(packet)]) as http:
+                result = pipeline.generate_model_discoveries(self.evidence, attempt_trace_path=trace)
+            self.assertEqual(http.call_count, 3)
+            self.assertEqual(result['discoveries'], self.items)
+            state = next(iter(json.loads(trace.with_suffix('.discoveries.json').read_text()).values()))
+            self.assertEqual(len(state['repair_history']), 1)
+            with patch.object(pipeline, 'open_llm_request') as no_http:
+                pipeline.generate_model_discoveries(self.evidence, attempt_trace_path=trace)
+            no_http.assert_not_called()
+
     def setUp(self):
         self.evidence, self.items = DiscoveryIncrementalEvidenceTests().fixture()
         self.enterContext(patch('ai_config.load_ai_config', return_value={'api_key': 'test-secret'}))
@@ -31,7 +48,7 @@ class DiscoveryRecoveryTests(unittest.TestCase):
                  patch.object(pipeline, 'open_llm_request', side_effect=lambda *_a, **_k: sse_response({'items': items}, model='actual')) as request:
                 with self.assertRaises(ValueError):
                     pipeline.generate_model_discoveries(self.evidence, attempt_trace_path=trace)
-            self.assertEqual(request.call_count, 2)
+            self.assertEqual(request.call_count, 4)  # Two initial routes and at most two local repairs.
             saved_path = trace.with_suffix('.discoveries.json')
             saved = json.loads(saved_path.read_text())
             entry = next(iter(saved.values()))
@@ -83,7 +100,7 @@ class DiscoveryRecoveryTests(unittest.TestCase):
             changed['domains'][0]['agent_verified_facts'][0]['period'] = 'H1 2027'
             with self.assertRaises(ValueError):
                 pipeline.generate_model_discoveries(changed, attempt_trace_path=trace)
-            self.assertEqual(request.call_count, 6)
+            self.assertEqual(request.call_count, 8)
 
     def test_style_never_bypasses_cause_sources_numbers_or_complete_sentences(self):
         for detail, accepted in [
@@ -114,7 +131,7 @@ class DiscoveryRecoveryTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             trace = Path(td) / 'attempts.jsonl'
             compact = pipeline._compact_discovery_evidence(self.evidence)
-            key = pipeline._content_hash({'schema': 'four_discoveries_v1', 'evidence': compact})
+            key = pipeline._content_hash({'schema': 'four_discoveries_v1', 'prompt_version': pipeline.STRATEGIC_PROMPT_VERSION, 'evidence': compact})
             trace.with_suffix('.discoveries.json').write_text(json.dumps({key: {
                 'protocol': 1, 'evidence_hash': key, 'model_route_counts': {'primary': 1},
                 'attempts': [{'requested_model': 'primary', 'status': 'running', 'http_calls': 0}]}}))
@@ -144,7 +161,7 @@ class DiscoveryRecoveryTests(unittest.TestCase):
         items = copy.deepcopy(self.items)
         items[0]['detail'] = items[0]['detail'][:-1] + '，主要来自市场需求。'
         compact = pipeline._compact_discovery_evidence(self.evidence)
-        key = pipeline._content_hash({'schema': 'four_discoveries_v1', 'evidence': compact})
+        key = pipeline._content_hash({'schema': 'four_discoveries_v1', 'prompt_version': pipeline.STRATEGIC_PROMPT_VERSION, 'evidence': compact})
         entry = {'protocol': 1, 'evidence_hash': key, 'model_route_counts': {'primary': 1},
                  'selected': {'attempt_index': 0},
                  'attempts': [{'requested_model': 'primary', 'reported_model': 'actual-source',
