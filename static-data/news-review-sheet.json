@@ -25,17 +25,17 @@
     "不接受",
     "暂缓"
   ],
-  "updatedAt": "2026-09-12T07:31:27+08:00",
+  "updatedAt": "2026-09-12T12:20:11+08:00",
   "rows": [
     {
       "rowNumber": 2,
       "originalRowNumber": 2,
       "recordId": "NEWS-5DD38E1DF77EAB",
       "values": [
-        "",
-        "待审核",
-        "待审核",
-        "未同步",
+        "新闻自动初筛机器人",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-09-12",
         "国际/行业",
         "基础设施/网络/技术类",
@@ -52,12 +52,35 @@
       "sourceSheetId": "BYK3u",
       "readOnly": false,
       "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-09-12T07:33:00+08:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-09-12T07:33:00+08:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-09-12T07:33:00+08:00"
+        }
+      },
       "screening": {
-        "kind": "pending",
-        "label": "待筛选",
+        "kind": "machine",
+        "label": "机器筛选",
         "fields": {
-          "纳入滚动栏": "pending",
-          "纳入周报": "pending"
+          "纳入滚动栏": "machine",
+          "纳入周报": "machine"
         }
       }
     },
@@ -66,10 +89,10 @@
       "originalRowNumber": 3,
       "recordId": "NEWS-627B69E03076CE",
       "values": [
-        "",
-        "待审核",
-        "待审核",
-        "未同步",
+        "新闻自动初筛机器人",
+        "不接受",
+        "不接受",
+        "已移除",
         "2026-09-12",
         "国际/行业",
         "竞对动态",
@@ -86,12 +109,35 @@
       "sourceSheetId": "BYK3u",
       "readOnly": false,
       "feishuVisible": true,
+      "reviewer": {
+        "id": "news-auto-screening-bot",
+        "name": "新闻自动初筛机器人",
+        "avatarUrl": "",
+        "role": "SYSTEM",
+        "reviewedAt": "2026-09-12T07:33:00+08:00"
+      },
+      "reviewers": {
+        "纳入滚动栏": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-09-12T07:33:00+08:00"
+        },
+        "纳入周报": {
+          "id": "news-auto-screening-bot",
+          "name": "新闻自动初筛机器人",
+          "avatarUrl": "",
+          "role": "SYSTEM",
+          "reviewedAt": "2026-09-12T07:33:00+08:00"
+        }
+      },
       "screening": {
-        "kind": "pending",
-        "label": "待筛选",
+        "kind": "machine",
+        "label": "机器筛选",
         "fields": {
-          "纳入滚动栏": "pending",
-          "纳入周报": "pending"
+          "纳入滚动栏": "machine",
+          "纳入周报": "machine"
         }
       }
     },
