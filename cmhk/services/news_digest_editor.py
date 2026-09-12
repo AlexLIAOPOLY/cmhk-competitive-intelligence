@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import fcntl
 import json
 import os
 import time
@@ -9,10 +10,10 @@ import uuid
 from pathlib import Path
 from typing import Any, Callable
 
-from cmhk.services.news_push_skill import skill_contract
+from cmhk.services.news_push_skill import skill_contract, text_model
 from cmhk.services.news_summary_quality import SummaryQualityError, enrich_source, repeats_title, review_summaries
 
-EDITOR_VERSION = 9
+EDITOR_VERSION = 10
 
 
 
@@ -34,10 +35,10 @@ def _validate(result: Any, items: list[dict]) -> dict:
             '不能写成', '应分开看', '应把团体倡议', '阅读这类观点',
             '本条现有摘录', '现有材料未提供', '原始报道未披露',
             '原始报道未提供', '原始来源未提供', '原文未披露',
-            '不能据此视为', '需要区分两层含义',
+            '不能据此视为', '需要区分两层含义', 'source_content', '无法补充',
         )
         if any(marker in summary for marker in editorial_markers):
-            raise ValueError('新闻简介混入编辑提醒，须依据事件事实重写')
+            raise SummaryQualityError('新闻简介混入编辑提醒，须依据事件事实重写')
         if repeats_title(item.get('title', ''), summary):
             raise SummaryQualityError('新闻简介与标题重复，须补充原文中的具体事实')
         enriched.append({**item, 'digest_summary': summary.strip()})
@@ -75,6 +76,23 @@ def _reuse_cached_items(inputs: list[dict], cache_dir: Path) -> list[dict] | Non
 
 def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | None = None,
                    _single_response: bool = False) -> dict:
+    # One publisher story is edited once across recipients and processes. Do not
+    # include recipient category/interest fields in this shared work identity.
+    items = payload.get('items', []) if isinstance(payload, dict) else payload
+    if not isinstance(items, list) or not items:
+        return _prepare_digest(payload, runtime_root, model_call=model_call, _single_response=_single_response)
+    identity = [{k: item.get(k) for k in ('title', 'news_url', 'source_url', 'summary', 'source_summary', 'source_content')}
+                for item in items if isinstance(item, dict)]
+    key = hashlib.sha256(json.dumps([EDITOR_VERSION, text_model(), identity], ensure_ascii=False, sort_keys=True).encode()).hexdigest()
+    directory = runtime_root / 'var/subscriptions/news-editor-locks'
+    directory.mkdir(parents=True, exist_ok=True)
+    with (directory / (key + '.lock')).open('a') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        return _prepare_digest(payload, runtime_root, model_call=model_call, _single_response=_single_response)
+
+
+def _prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | None = None,
+                    _single_response: bool = False) -> dict:
     items = payload.get('items', []) if isinstance(payload, dict) else payload
     if not isinstance(items, list) or any(not isinstance(i, dict) for i in items):
         raise ValueError('新闻推送数据格式无效')
@@ -107,11 +125,12 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
         record = by_url.get(item.get('source_url')) or by_url.get(item.get('url')) or {}
         evidence = {k: str(item.get(k) or record.get(k) or '')[:5000]
                     for k in ('title', 'summary', 'source_summary', 'snippet', 'description', 'source_url', 'news_url',
-                              'content', 'source', 'published_at', 'category', 'inclusion_reason')}
+                              'content', 'source', 'published_at', 'source_content', 'source_evidence_url',
+                              'source_page_title', 'source_page_description')}
         evidence = enrich_source(item, evidence, runtime_root)
         inputs.append({'id': str(index), **evidence,
                        'supporting_sources': item.get('supporting_sources') or record.get('supporting_sources') or []})
-    encoded = json.dumps({'version': EDITOR_VERSION, 'skill_hash': skill_contract()[1], 'items': inputs}, ensure_ascii=False, sort_keys=True)
+    encoded = json.dumps({'version': EDITOR_VERSION, 'model': text_model(), 'skill_hash': skill_contract()[1], 'items': inputs}, ensure_ascii=False, sort_keys=True)
     key = hashlib.sha256(encoded.encode()).hexdigest()
     target = runtime_root / 'var/subscriptions/news-editor' / f'{key}.json'
     try:
@@ -122,6 +141,11 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
         return prepared
     except (OSError, ValueError, KeyError, TypeError):
         pass
+    from cmhk.services.news_delivery_assets import load, save
+    failure_path = target.with_suffix('.failed')
+    failure = load(failure_path)
+    if failure.get('retry_at', 0) > time.time():
+        raise SummaryQualityError(failure['error'])
     if model_call is None:
         from strategic_briefing import _call_internal_ai
         model_call = _call_internal_ai
@@ -157,6 +181,8 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
                     'properties': {'id': {'type': 'string', 'enum': ['0']}, 'summary': {'type': 'string'}}}}}
             system += '\n本次只编辑唯一一条新闻。输出单个对象，字段 id、summary。禁止输出items数组或转义后的JSON字符串。'
             payload = {'editorial_version': EDITOR_VERSION, 'task': task, 'article': inputs[0]}
+        if failure:
+            payload.update(revision_attempt=uuid.uuid4().hex, revision_required=failure.get('error', ''))
         try:
             if len(items) > 1 and recovery.exists():
                 raise ValueError('继续已记录的逐条编辑恢复')
@@ -164,7 +190,8 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
                 try:
                     result = model_call(system, json.dumps(payload, ensure_ascii=False),
                                         max_tokens=max(16000, len(items) * 1200), response_format=response_format,
-                                        deadline_monotonic=time.monotonic() + 360, _structured_response_retries=1)
+                                        model_override=text_model(), deadline_monotonic=time.monotonic() + 180,
+                                        _structured_response_retries=1)
                 except AIInvalidStructuredResponse as exc:
                     # Some gateways retain the skill's items envelope even when
                     # asked for a single object. Accept only a complete one-row
@@ -200,6 +227,9 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
                     '新闻编辑返回条数不完整', '新闻编辑返回标识不匹配'}:
                 raise
             if _single_response:
+                if isinstance(exc, SummaryQualityError):
+                    save(failure_path, {'error': str(exc), 'retry_at': time.time() + 900,
+                                        'status': 'source_or_summary_rejected'})
                 raise
             # A live gateway returned a quoted, malformed items array repeatedly.
             # Regenerate each source as a real model result, never repair prose or
@@ -208,7 +238,7 @@ def prepare_digest(payload: Any, runtime_root: Path, *, model_call: Callable | N
             recovery.touch()
             rows = []
             for index, item in enumerate(items):
-                one = prepare_digest([item], runtime_root, model_call=model_call, _single_response=True)
+                one = _prepare_digest([item], runtime_root, model_call=model_call, _single_response=True)
                 rows.append({'id': str(index), 'summary': one['items'][0]['digest_summary']})
             result = {'items': rows}
     prepared = _validate(result, items)

@@ -4,6 +4,7 @@ from __future__ import annotations
 import fcntl
 import hashlib
 import json
+import time
 from contextlib import closing
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
@@ -13,7 +14,7 @@ from cmhk.services.news_digest_editor import EDITOR_VERSION
 from cmhk.services.news_summary_quality import VERSION as SUMMARY_VERSION
 from cmhk.services.news_delivery_assets import prepare_news_assets
 from cmhk.services.news_image_quality import policy_key, require_reviewed_images
-from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract
+from cmhk.services.news_push_skill import TEMPLATE_VERSION, skill_contract, text_model
 from cmhk.services.news_delivery_selection import POLICY_VERSION, original_crawl_pool, select_recent_news
 
 
@@ -22,7 +23,7 @@ class NewsNotPrepared(RuntimeError):
 
 
 def preparation_key(*, body: str, title: str, history: list[dict], send_day: str, context: str = "") -> str:
-    encoded = json.dumps([POLICY_VERSION, DEDUPE_VERSION, EDITOR_VERSION, SUMMARY_VERSION, TEMPLATE_VERSION, policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
+    encoded = json.dumps([POLICY_VERSION, DEDUPE_VERSION, EDITOR_VERSION, SUMMARY_VERSION, text_model(), TEMPLATE_VERSION, policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
         json.dumps(item, ensure_ascii=False, sort_keys=True) for item in history
     )], ensure_ascii=False)
     return hashlib.sha256(encoded.encode()).hexdigest()
@@ -171,6 +172,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             candidates = _decode_strategic_news_digest(body) if structured else [
                 {"news_id": "text:" + hashlib.sha256(body.encode()).hexdigest(), "title": body[:240], "summary": body}]
             input_count = len(candidates)
+            replacements = []
             if structured:
                 with closing(service._connect()) as db:
                     subscriber = db.execute(
@@ -180,10 +182,15 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                     # A prepared old card may have picked only exhausted sections.
                     # Re-select from the original reviewed pool, never a later batch.
                     candidates = candidates + original_crawl_pool(db, content_ref)
+                categories = subscriber['news_categories'] if subscriber else list({item.get('category') for item in candidates})
+                wanted_count = int(subscriber['news_item_limit']) if subscriber else len(candidates)
+                pool = candidates
                 candidates = select_recent_news(
-                    candidates, subscriber['news_categories'] if subscriber else
-                    list({item.get('category') for item in candidates}),
-                    limit=int(subscriber['news_item_limit']) if subscriber else len(candidates),
+                    pool, categories, limit=wanted_count,
+                    history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
+                )
+                replacements = select_recent_news(
+                    pool, categories, limit=min(60, wanted_count * 3),
                     history=history, send_day=send_day, seed=f"{open_id}:{logical_day}:{content_ref}",
                 )
             selected, decisions = deduplicate_events(candidates, history, service.runtime_root)
@@ -193,17 +200,55 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             banner = str(image_keys.get(period) or '')
             prepared_items = []
             summary_reviews = []
+            preparation_issues = []
             if selected and structured:
-                assets = prepare_news_assets(selected, service, profile=profile, fallback_image_key=banner)
-                # Canonical URLs become available only after publisher resolution.
-                unique_assets = exact_unique(assets, history)
-                kept = {id(item) for item in unique_assets}
-                selected = [item for item, asset in zip(selected, assets) if id(asset) in kept]
-                assets = unique_assets
-                prepared = prepare_digest(assets, service.runtime_root)
-                prepared_items = prepared['items']
-                summary_reviews = prepared.get('summary_reviews', [])
-                rendered_body = NEWS_DIGEST_PREFIX + json.dumps(prepared, ensure_ascii=False)
+                from cmhk.services.news_delivery_assets import save
+                progress_path = service.db_path.parent / 'news-preparation-progress' / (hashlib.sha256(
+                    f'{open_id}:{batch_id}'.encode()).hexdigest() + '.json')
+                original_selected = list(selected)
+                delivered_selected = []
+                wanted = min(wanted_count, len(original_selected))
+                tried = set()
+                for item in [*original_selected, *replacements]:
+                    identity = item.get('news_id') or item.get('source_url') or item.get('title')
+                    if identity in tried:
+                        continue
+                    tried.add(identity)
+                    if len(prepared_items) >= wanted:
+                        break
+                    stage = 'assets'
+                    started = time.time()
+                    try:
+                        # Replacements use the same reviewed round/preferences
+                        # and must pass semantic history checks too.
+                        if item not in original_selected:
+                            checked, extra = deduplicate_events([item], history + prepared_items, service.runtime_root)
+                            decisions.extend(extra)
+                            if not checked:
+                                continue
+                        asset = prepare_news_assets([item], service, profile=profile, fallback_image_key=banner)[0]
+                        if not exact_unique([asset], history + prepared_items):
+                            continue
+                        stage = 'summary'
+                        prepared = prepare_digest([asset], service.runtime_root)
+                        prepared_items.extend(prepared['items'])
+                        delivered_selected.append(item)
+                        summary_reviews.extend(prepared.get('summary_reviews', []))
+                    except Exception as exc:
+                        # The 2026-09-12 recovery policy permits replacement or
+                        # fewer reviewed stories, never fabricated text/images.
+                        preparation_issues.append({'news_id': identity, 'title': item.get('title'),
+                            'stage': stage, 'error_type': type(exc).__name__, 'error': str(exc)[:500],
+                            'elapsed_seconds': round(time.time() - started, 1)})
+                    save(progress_path, {'batch_id': batch_id, 'content_ref': content_ref,
+                        'model': text_model(), 'prepared_count': len(prepared_items), 'target_count': wanted,
+                        'updated_at': datetime.now(ZoneInfo('Asia/Hong_Kong')).isoformat(timespec='seconds'),
+                        'issues': preparation_issues})
+                if not prepared_items and preparation_issues:
+                    raise NewsNotPrepared('本轮新闻暂无完成审核的图文，原批次保留：' + preparation_issues[-1]['error'])
+                # Only actually delivered stories enter recipient history.
+                selected = delivered_selected
+                rendered_body = NEWS_DIGEST_PREFIX + json.dumps({'items': prepared_items}, ensure_ascii=False)
             elif selected:
                 rendered_body = body
             else:
@@ -224,6 +269,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                      "selection_policy": POLICY_VERSION, "template_version": TEMPLATE_VERSION,
                      "editor_version": EDITOR_VERSION, "summary_policy": SUMMARY_VERSION,
                      "summary_reviews": summary_reviews,
+                     "preparation_issues": preparation_issues, "text_model": text_model(),
                      "skill_hash": skill_contract()[1],
                      "assets": [{k: item.get(k) for k in ("news_id", "news_url", "image_key", "image_kind",
                          "image_source_url", "image_page_url", "image_sha256", "image_policy_key",

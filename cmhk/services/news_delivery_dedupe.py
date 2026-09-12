@@ -218,7 +218,8 @@ def _review_inputs(inputs: dict, runtime_root: Path, *, model_call: Callable | N
         for attempt in range(2):
             result = None
             try:
-                result = model_call(system, prompt, max_tokens=max(8000, len(candidates) * 900),
+                from cmhk.services.news_push_skill import text_model
+                result = model_call(system, prompt, max_tokens=max(8000, len(candidates) * 900), model_override=text_model(),
                                     response_format=response_format, deadline_monotonic=deadline)
                 if single_response and isinstance(result, dict) and 'id' in result:
                     result = {'decisions': [result]}

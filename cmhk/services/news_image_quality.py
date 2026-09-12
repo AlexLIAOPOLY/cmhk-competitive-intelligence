@@ -229,6 +229,7 @@ def _vision_call(item: dict, candidate: dict, data: bytes, *, deadline: float | 
 
 def _identity_review(item: dict, candidate: dict, visual: dict, *, deadline: float | None = None) -> dict:
     from strategic_briefing import _call_internal_ai
+    from cmhk.services.news_push_skill import text_model
     result = _call_internal_ai(
         '你是独立的新闻配图事实复核员。前一道看图模型可能把不同公司或事件强行解释为同一件事。'
         '只依据新闻事实、图片实际可见文字、出处页信息判断，不接受前一道的结论或置信度作为证据。'
@@ -252,7 +253,7 @@ def _identity_review(item: dict, candidate: dict, visual: dict, *, deadline: flo
         '输出JSON {"accepted":true或false,"reason":"具体对照依据"}。证据不足或冲突就false。',
         json.dumps({'news': {k: item.get(k) for k in ('title','summary','source_summary','published_at')},
                     'source': candidate, 'visual_observations': visual}, ensure_ascii=False),
-        max_tokens=3000, deadline_monotonic=min(deadline or float('inf'), time.monotonic() + 120),
+        max_tokens=3000, model_override=text_model(), deadline_monotonic=min(deadline or float('inf'), time.monotonic() + 120),
         _structured_response_retries=1)
     if (not isinstance(result, dict) or type(result.get('accepted')) is not bool
             or not isinstance(result.get('reason'), str) or not result['reason'].strip()):
@@ -298,6 +299,7 @@ def review_image(item: dict, candidate: dict, data: bytes, cache, *, deadline: f
 
 def search_queries(item: dict, *, previous_queries: list[str] = ()) -> list[str]:
     from strategic_briefing import _call_internal_ai_transport
+    from cmhk.services.news_push_skill import text_model
     result = _call_internal_ai_transport(
         '你是新闻配图搜索员。只输出JSON {"queries":["English same-event query","繁體中文同一事件查詢","主体相关资料图查询"]}。'
         '依据新闻提取具体双方公司/人物/地点和事件，查询简短，优先官方来源。'
@@ -308,7 +310,7 @@ def search_queries(item: dict, *, previous_queries: list[str] = ()) -> list[str]
         'previous_queries 是已耗尽且没有找到合格图片的查询；改用不同具体关键词，优先主体办公楼、门店或官方技术资料，不能重复同一组。',
         json.dumps({**{k: item.get(k) for k in ('title', 'summary', 'source', 'source_url', 'news_url', 'published_at')},
                     'previous_queries': list(previous_queries)}, ensure_ascii=False),
-        max_tokens=3000, deadline_monotonic=time.monotonic() + 120)
+        max_tokens=3000, model_override=text_model(), deadline_monotonic=time.monotonic() + 120)
     queries = result.get('queries') if isinstance(result, dict) else None
     if not isinstance(queries, list) or not queries or any(not isinstance(q, str) or not q.strip() for q in queries):
         raise NewsImageUnavailable('新闻补图关键词未准备完成，等待重试')

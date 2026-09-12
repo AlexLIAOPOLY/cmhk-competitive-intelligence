@@ -71,15 +71,15 @@ class SubscriptionClockTests(unittest.TestCase):
             guard_clock.now.return_value = send_clock.now.return_value = now
             return self.worker.tick(now=now)
 
-    def test_prepare_exactly_one_hour_before_each_person_then_send_without_ai(self):
+    def test_prepare_on_reviewed_batch_arrival_then_send_only_at_each_person_time(self):
         self.tick('05:24:00')
         self.tick('06:59:59')
         with sqlite3.connect(self.service.db_path) as db:
-            self.assertEqual(db.execute('select count(*) from news_delivery_receipts').fetchone()[0], 0)
+            self.assertEqual(db.execute('select count(*) from news_delivery_receipts').fetchone()[0], 2)
         self.tick('07:00:00')
         self.send.assert_not_called()
         with sqlite3.connect(self.service.db_path) as db:
-            self.assertEqual(db.execute("select open_id from news_delivery_receipts where status='prepared'").fetchall(), [('ou_one',)])
+            self.assertEqual(db.execute("select open_id from news_delivery_receipts where status='prepared' order by open_id").fetchall(), [('ou_one',), ('ou_two',)])
         self.tick('07:59:59')
         self.send.assert_not_called()
         # At 08:00 one person's sending lane and another's preparation coexist.
@@ -91,7 +91,7 @@ class SubscriptionClockTests(unittest.TestCase):
             self.tick('09:00:00')
             self.assertEqual(self.send.call_count, 2)
         self.assertEqual(self.worker.state['preparation_lead_minutes'], 60)
-        self.assertFalse(self.worker.state['prepare_as_soon_as_queued'])
+        self.assertTrue(self.worker.state['prepare_as_soon_as_queued'])
 
     def test_persisted_preparation_survives_restart(self):
         self.tick('07:30:00')
@@ -162,6 +162,24 @@ class SubscriptionClockTests(unittest.TestCase):
         with sqlite3.connect(self.service.db_path) as db:
             row = db.execute("select status,content_ref,due_at from pending_subscription_deliveries where open_id='ou_two'").fetchone()
         self.assertEqual(row, ('queued', 'strategic-crawl:2026-09-11@03:00', '2026-09-11T09:00:00+08:00'))
+
+    def test_preparation_failure_is_durable_and_restart_retains_backoff(self):
+        with mock.patch.object(self.worker, '_prepare', side_effect=TimeoutError('model unavailable')):
+            self.tick('07:00:00')
+            self.tick('07:00:01')
+        with sqlite3.connect(self.service.db_path) as db:
+            rows = db.execute('select attempts,last_error,due_at from pending_subscription_deliveries order by id').fetchall()
+        self.assertTrue(all(row[0] == 1 and row[1] == 'model unavailable' for row in rows))
+        self.assertEqual(rows[0][2], '2026-09-11T08:00:00+08:00')
+        restarted = SubscriptionDeliveryWorker(self.root)
+        try:
+            self.assertEqual(restarted.failure_counts, self.worker.failure_counts)
+            self.assertEqual(restarted.retry_at, self.worker.retry_at)
+            with mock.patch.object(restarted, '_prepare') as prepare:
+                restarted.tick(datetime.fromisoformat('2026-09-11T07:00:02+08:00'))
+                prepare.assert_not_called()
+        finally:
+            restarted.preparers.shutdown(); restarted.senders.shutdown()
 
     def test_changed_history_invalidates_preparation_before_sending(self):
         self.tick('07:30:00')

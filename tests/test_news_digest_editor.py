@@ -128,5 +128,7 @@ class NewsDigestEditorTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             with self.assertRaisesRegex(ValueError, '编辑提醒'):
-                prepare_digest([{'title': '创科教育倡议'}], root, model_call=Mock(return_value=output))
-            self.assertFalse((root / 'var/subscriptions/news-editor').exists())
+                prepare_digest([{'title': '创科教育倡议'}], root, model_call=Mock(side_effect=[output,
+                    {k:v for k,v in output['items'][0].items() if k in ('id','summary')},
+                    {k:v for k,v in output['items'][0].items() if k in ('id','summary')}]))
+            self.assertFalse(list((root / 'var/subscriptions/news-editor').glob('*.json')))

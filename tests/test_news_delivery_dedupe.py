@@ -419,6 +419,21 @@ class DeliveryGuardTests(unittest.TestCase):
             self.assertEqual(db.execute('SELECT count(*) FROM news_delivery_receipts').fetchone()[0], 0)
             self.assertEqual(db.execute('SELECT status FROM pending_subscription_deliveries').fetchone()[0], 'queued')
 
+    def test_one_bad_story_does_not_block_good_news_or_enter_sent_history(self):
+        from cmhk.services.news_summary_quality import SummaryQualityError
+        def editor(items, root):
+            if items[0]['news_id'] == MEETING['news_id']:
+                raise SummaryQualityError('原文正文属于另一事件')
+            return {'items': items, 'summary_reviews': []}
+        with mock.patch('cmhk.services.news_digest_editor.prepare_digest', side_effect=editor):
+            self.send_news('partial-good', [MEETING, DISTINCT])
+        self.assertEqual(self.receipt_items('partial-good'), [DISTINCT])
+        self.send.assert_called_once()
+        with sqlite3.connect(self.service.db_path) as db:
+            audit = json.loads(db.execute("SELECT audit_json FROM news_delivery_receipts WHERE batch_id='partial-good'").fetchone()[0])
+        self.assertEqual(audit['preparation_issues'][0]['news_id'], MEETING['news_id'])
+        self.assertEqual(audit['preparation_issues'][0]['stage'], 'summary')
+
     def test_failed_review_queues_without_sending_and_survives_service_restart(self):
         with mock.patch("cmhk.services.news_delivery_guard.deduplicate_events", side_effect=TimeoutError("review failed")):
             result = self.service.push(service="news", mode="text", target_open_id="ou_test123",

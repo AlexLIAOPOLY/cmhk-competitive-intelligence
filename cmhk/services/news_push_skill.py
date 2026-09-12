@@ -1,11 +1,17 @@
 """The runtime reads the same installed skill used by the interactive agent."""
 from functools import lru_cache
 import hashlib
+import os
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[1] / 'skills/cmhk-strategic-news-push'
 TEMPLATE_VERSION = 'direct-source-list-v4-no-image-captions'
 PREPARATION_LEAD_MINUTES = 60
+
+
+def text_model() -> str:
+    """Personal-news prose, review and dedupe prefer the user's V4 Pro route."""
+    return os.environ.get('CMHK_NEWS_TEXT_MODEL', 'DeepSeek-V4-Pro').strip() or 'DeepSeek-V4-Pro'
 
 
 @lru_cache(maxsize=1)

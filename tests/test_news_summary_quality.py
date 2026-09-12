@@ -15,7 +15,7 @@ TITLE = '香港宽频企业方案与博云国际达成战略合作 推动AI Agen
 ECHO = '香港宽频企业方案与博云国际达成战略合作，共同推动AI Agent解决方案落地。'
 SOURCE = '双方计划首批向制造企业提供库存管理服务，并提供员工操作培训。'
 SUMMARY = '香港宽频企业方案与博云国际达成合作，计划首批向制造企业提供库存管理服务，并提供员工操作培训。'
-REVIEW = {'accepted': True, 'summary_detail': '计划首批向制造企业提供库存管理服务',
+REVIEW = {'accepted': True, 'verdict': 'accept', 'summary_detail': '计划首批向制造企业提供库存管理服务',
           'source_quote': '双方计划首批向制造企业提供库存管理服务', 'reason': '具体客户对象和服务内容均来自原文，标题未包含。'}
 # Synthetic source for tests only; never used in live editorial evidence.
 
@@ -23,7 +23,7 @@ REVIEW = {'accepted': True, 'summary_detail': '计划首批向制造企业提供
 def indexed(review):
     def respond(system, user, **kwargs):
         payload = json.loads(user)
-        return {'accepted': review['accepted'], 'reason': review['reason'],
+        return {'verdict': 'accept' if review['accepted'] else 'rewrite', 'reason': review['reason'],
                 'summary_detail_index': payload['summary_details'].index(review['summary_detail']) if review['accepted'] else -1,
                 'source_quote_index': payload['source_quotes'].index(review['source_quote']) if review['accepted'] else -1}
     return respond
@@ -53,7 +53,7 @@ class SummaryQualityTests(unittest.TestCase):
         source = {'title': '瑞银将中国联通评级从中性上调至买入',
                   'source_summary': '瑞银将中国联通评级从中性上调至买入，目标价7.10港元。'}
         summary = source['source_summary']
-        result = {'accepted': True, 'summary_detail': '目标价7.10港元',
+        result = {'accepted': True, 'verdict': 'accept', 'summary_detail': '目标价7.10港元',
                   'source_quote': '目标价7.10港元', 'reason': '新增来源明确的目标价'}
         model = Mock(side_effect=indexed(result))
         for _ in range(2):
@@ -99,6 +99,43 @@ class SummaryQualityTests(unittest.TestCase):
                 self.assertEqual(enriched['source_content'], SOURCE)
                 self.assertEqual(enriched['source_evidence_url'], url)
             fetch.assert_called_once_with(url)
+
+    def test_publisher_prose_wins_over_longer_unrelated_article_cards(self):
+        html = '<title>Sanctions announced</title><h1>Sanctions announced</h1><div class="wp prose"><p>Sanctions apply to five banks.</p></div>'
+        html += '<article><h2>Restaurant news</h2><p>' + 'Food tourism. ' * 100 + '</p></article>'
+        self.assertEqual(extract_article_text(html.encode()), 'Sanctions apply to five banks.')
+
+    def test_rereview_does_not_replay_cached_rejection_and_prefers_pro(self):
+        requests = []
+        def model(system, user, **kwargs):
+            requests.append(json.loads(user))
+            self.assertEqual(kwargs['model_override'], 'DeepSeek-V4-Pro')
+            self.assertIn('<examples>', system)
+            schema = kwargs['response_format']['json_schema']['schema']['properties']
+            self.assertNotIn('accepted', schema)
+            if len(requests) == 1:
+                return {'verdict': 'rewrite', 'reason': '须重新确认事实', 'summary_detail_index': -1, 'source_quote_index': -1}
+            self.assertIn('review_attempt', requests[-1])
+            return indexed(REVIEW)(system, user, **kwargs)
+        with self.assertRaises(SummaryQualityError):
+            review_summaries([self.source], [{'summary': SUMMARY}], self.root, model_call=model)
+        result = review_summaries([self.source], [{'summary': SUMMARY}], self.root, model_call=model)
+        self.assertTrue(result[0]['accepted'])
+        self.assertNotEqual(requests[0], requests[1])
+
+    def test_untrusted_ai_summary_cannot_be_its_own_source_evidence(self):
+        model = Mock()
+        with self.assertRaises(SummaryQualityError):
+            review_summaries([{'title': TITLE, 'summary': SUMMARY}], [{'summary': SUMMARY}], self.root, model_call=model)
+        model.assert_not_called()
+
+    def test_metadata_excerpt_is_available_to_review_without_inventing_body(self):
+        url = 'https://publisher.example/original'
+        html = '<meta property="og:title" content="服务在香港开放 支援图片输入"><meta name="description" content="用户可从独立应用使用服务。">'
+        with patch('cmhk.services.news_delivery_assets.fetch', return_value=(html.encode(), url, 'text/html')):
+            source = enrich_source({'news_url': url}, {}, self.root)
+        self.assertEqual(source['source_page_description'], '用户可从独立应用使用服务。')
+        self.assertNotIn('source_content', source)
 
     def test_editor_rewrites_rejected_title_echo_then_checks_and_caches_real_result(self):
         editor = Mock(side_effect=[{'items': [{'id': '0', 'summary': ECHO}]},
