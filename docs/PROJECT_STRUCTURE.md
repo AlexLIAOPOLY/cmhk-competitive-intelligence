@@ -9,6 +9,7 @@
 | 公共 AI 配置、并发、密钥轮换、响应兼容 | `cmhk/ai/` |
 | Agent、认证、采集、数据、集成、研判、报告和订阅 | `cmhk/agent/`、`auth/`、`crawl/`、`data/`、`integrations/`、`intelligence/`、`reporting/`、`services/` |
 | 数据研究流程 | `data_curation/` |
+| Web HTTP 接口和业务实现 | `cmhk/web/`，详见 [Web 后端规范](WEB_BACKEND.md) |
 | Web 页面与静态资源 | `web/`、`web/static/` |
 | Go 工具与第三方依赖 | `cmd/`、`vendor/` |
 | Python / JavaScript 自动回归 | `tests/test_*.py`、`tests/test_*.cjs` |

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from tests.web_source import read_web_source
+
 import base64
 import os
 import re
@@ -1168,7 +1170,7 @@ class HomepageTickerAndTabRegressionTests(unittest.TestCase):
     def test_all_homepage_delivery_paths_revalidate_changed_ui_assets(self) -> None:
         root = Path(__file__).resolve().parents[1]
         html = (root / "web/static/index.html").read_text(encoding="utf-8")
-        server = (root / "web_app.py").read_text(encoding="utf-8")
+        server = read_web_source(root)
         snapshot_builder = (root / "scripts/build_intelligence_static_snapshot.js").read_text(encoding="utf-8")
 
         self.assertIn('href="/static/leadership-board.css?v=23"', html)
@@ -1804,7 +1806,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         for international_example in ("中国联通", "中国电信", "AWS", "Azure", "Google Cloud"):
             self.assertNotIn(international_example, starter_copy)
         self.assertTrue(all("香港" in item["title"] for item in starters))
-        self.assertNotIn("SystemRandom", web_app.ROOT.joinpath("web_app.py").read_text(encoding="utf-8"))
+        self.assertNotIn("SystemRandom", read_web_source(web_app.ROOT))
         self.assertIn('fetch("/api/chat-starters", { cache: "no-store" })', app)
         self.assertIn("loadChatStarters({ render: true })", app)
         self.assertIn("await loadChatStarters()", app)
@@ -2158,7 +2160,7 @@ class FrontendCitationRenderingTests(unittest.TestCase):
         markup = (web_app.ROOT / "web/static/index.html").read_text(encoding="utf-8")
         app = (web_app.ROOT / "web/static/app.js").read_text(encoding="utf-8")
         styles = (web_app.ROOT / "web/static/styles.css").read_text(encoding="utf-8")
-        backend = (web_app.ROOT / "web_app.py").read_text(encoding="utf-8")
+        backend = read_web_source(web_app.ROOT)
 
         self.assertIn('id="reportLibraryNewDot"', markup)
         self.assertNotIn('data-signal-filter="competitor"', markup)
@@ -4474,7 +4476,7 @@ class IntelligenceEntityScrollTests(unittest.TestCase):
 
     def test_domain_title_is_display_only_and_relation_title_regenerates_discovery(self) -> None:
         app = (Path(__file__).resolve().parents[1] / "web/static/app.js").read_text(encoding="utf-8")
-        server = (Path(__file__).resolve().parents[1] / "web_app.py").read_text(encoding="utf-8")
+        server = read_web_source(Path(__file__).resolve().parents[1])
 
         self.assertIn('<span class="intelligence-domain-heading">', app)
         self.assertNotIn('<button type="button" class="intelligence-domain-heading', app)

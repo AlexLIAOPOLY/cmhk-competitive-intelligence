@@ -1,3 +1,4 @@
+from tests.web_source import read_web_source
 from pathlib import Path
 import shutil
 import subprocess
@@ -14,7 +15,7 @@ AUTH_SCRIPT = (ROOT / "web" / "static" / "auth-client.js").read_text(encoding="u
 ORGANIZATION_SCRIPT = (ROOT / "web" / "static" / "organization-admin.js").read_text(encoding="utf-8")
 ORGANIZATION_STYLE = (ROOT / "web" / "static" / "organization-admin.css").read_text(encoding="utf-8")
 NEWS_REVIEW_STYLE = (ROOT / "web" / "static" / "news-review-sheet.css").read_text(encoding="utf-8")
-WEB_APP = (ROOT / "web_app.py").read_text(encoding="utf-8")
+WEB_APP = read_web_source(ROOT)
 
 
 class WorkspaceTabsTests(unittest.TestCase):

@@ -28,3 +28,5 @@ make test
 make test-all
 make check
 ```
+
+Web 后端的职责划分、兼容入口和新增功能规则见 [Web 后端模块维护规范](docs/WEB_BACKEND.md)。

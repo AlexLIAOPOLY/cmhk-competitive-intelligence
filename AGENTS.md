@@ -73,3 +73,7 @@ The `Codex/` directory is a persistent context vault. Follow `Codex/AGENTS.md` w
 - 完成任务前检查新增文件列表与目录归属，只提交本任务文件，保留其他人的修改；文档中的历史路径注明迁移去向，不删除业务数据或凭证。
 
 本项目的具体归属、根目录清单和检查方式见 [目录规范](docs/PROJECT_STRUCTURE.md)。执行 `make layout-check`；根目录新增项必须通过 `config/workspace_layout.json` 的明确登记。
+
+### Web 后端拆分约束
+
+`web_app.py` 仅保留既有入口、共享配置/状态和装配；新增 Web 业务写入 `cmhk/web/` 对应职责模块。必须遵守 [docs/WEB_BACKEND.md](docs/WEB_BACKEND.md)：使用显式应用上下文，保留原有公开调用、统一鉴权和任务生命周期，禁止重复创建服务或锁。测试放 `tests/`，不能再把实现或测试散落到根目录。

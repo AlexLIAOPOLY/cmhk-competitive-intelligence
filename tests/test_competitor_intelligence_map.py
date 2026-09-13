@@ -1,3 +1,4 @@
+from tests.web_source import read_web_source
 import json
 import tempfile
 import unittest
@@ -11,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 INDEX = (ROOT / "web" / "static" / "index.html").read_text(encoding="utf-8")
 SCRIPT = (ROOT / "web" / "static" / "intelligence-map.js").read_text(encoding="utf-8")
 STYLE = (ROOT / "web" / "static" / "intelligence-map.css").read_text(encoding="utf-8")
-WEB_APP = (ROOT / "web_app.py").read_text(encoding="utf-8")
+WEB_APP = read_web_source(ROOT)
 
 
 class CompetitorIntelligenceMapTests(unittest.TestCase):
@@ -99,7 +100,7 @@ class CompetitorIntelligenceMapTests(unittest.TestCase):
         self.assertIn('/static/intelligence-map.css?v=14', INDEX)
         self.assertIn('fetch(`/api/competitor-intelligence-map?_', SCRIPT)
         self.assertIn('if path == "/api/competitor-intelligence-map":', WEB_APP)
-        self.assertIn("build_competitor_intelligence_map(ROOT)", WEB_APP)
+        self.assertIn("build_competitor_intelligence_map(app.ROOT)", WEB_APP)
         self.assertIn('parsed.path == "/api/competitor-intelligence-map/insights-stream"', WEB_APP)
 
     def test_backend_shapes_only_dated_approved_records(self):
