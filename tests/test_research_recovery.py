@@ -201,6 +201,39 @@ class RecoveryTests(unittest.TestCase):
             self.assertEqual(saved['evidence_hash'], original['evidence_hash'])
             self.assertEqual(saved['value'], original['value'])
 
+    def test_zero_new_disclosures_still_verify_ai_and_publication(self):
+        from data_curation.research_contracts import VERSION
+        for review_count, prior_publication in [(0, False), (34, False), (34, True)]:
+            with self.subTest(review=review_count, resume=prior_publication), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                directory = root / 'curation_data/research_runs/research_20260913'
+                directory.mkdir(parents=True)
+                summary = dict(run_id=directory.name, status='partial', accepted=0, review=review_count,
+                    contract_version=VERSION, research_policy='latest_disclosure_incremental_v1',
+                    final_review={'status': 'completed'})
+                if prior_publication:
+                    summary['publication'] = {'status': 'partial', 'result_status': 'needs_review'}
+                    (directory / 'manifest.json').write_text(json.dumps(summary))
+                with (patch.object(daily, 'ROOT', root),
+                      patch.object(daily, '_live_registry', return_value=Mock()),
+                      patch.object(daily, '_research_task_id', return_value='original'),
+                      patch.object(daily, 'run_research', return_value=summary) as research,
+                      patch('data_curation.research_final_review.review_run', side_effect=AssertionError('review already complete')),
+                      patch.object(pipeline, 'run_pipeline_with_recovery', return_value={
+                          'ok': True, 'status': 'completed', 'storage_readback': {'ok': True, 'written': 0},
+                          'model_analysis': {'ok': True, 'reused': True, 'insights_passed': 19},
+                          'pages_publish': {'ok': True, 'status': 'verified'}}) as publish):
+                    result = daily.execute(root, directory.name)
+                self.assertEqual(research.call_count, 0 if prior_publication else 1)
+                publish.assert_called_once()
+                self.assertEqual(publish.call_args.kwargs['task_run_id'], 'original')
+                self.assertEqual(result['publication']['status'], 'completed')
+                self.assertFalse(result['publication']['database_updated'])
+                self.assertEqual(result['publication']['insights'], 19)
+                self.assertTrue(result['publication']['model_analysis']['reused'])
+                self.assertEqual(result['recovery']['status'], 'completed')
+                self.assertEqual(result['review'], review_count)
+
     def test_publication_only_retry_does_not_repeat_research(self):
         from data_curation.research_contracts import VERSION
         with tempfile.TemporaryDirectory() as td:

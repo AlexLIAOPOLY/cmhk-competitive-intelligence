@@ -41,6 +41,17 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertIn('无新增·沿用页面', str(result['nodes']))
         self.assertNotIn('历史核对通过', result['detail'])
 
+    def test_reused_ai_is_counted_as_rechecked_not_newly_generated(self):
+        result = self.render(publication={'status': 'completed', 'database_updated': False,
+            'model_analysis': {'ok': True, 'reused': True, 'focuses_passed': 15,
+                               'discoveries_passed': 4, 'insights_passed': 19}})
+        node = next(n for n in result['nodes'] if n['key'] == 'research-publish')
+        self.assertEqual(node['value'], 19)
+        self.assertEqual(node['unit'], '项AI复核')
+        self.assertIn('已复核并沿用 19 项AI分析', node['note'])
+        self.assertNotIn('AI 已生成', node['note'])
+        self.assertEqual(node['health']['key'], 'healthy')
+
     def test_pending_search_has_no_fake_zero(self):
         result = self.render(state='pending', items=[])
         node = next(n for n in result['nodes'] if n['key'] == 'research-asia')
@@ -110,7 +121,10 @@ console.log(JSON.stringify({nodes:m.nodes,detail:window.CmhkResearchDiagram.deta
         self.assertEqual(f"{update['value']}{update['unit']}", '3组数据已入库')
 
     def test_research_asset_cache_version_is_bumped(self):
-        self.assertIn('/static/research-diagram.js?v=33', (ROOT / 'web/static/index.html').read_text())
+        import re
+        version = re.search(r'/static/research-diagram\.js\?v=(\d+)', (ROOT / 'web/static/index.html').read_text())
+        self.assertIsNotNone(version)
+        self.assertGreaterEqual(int(version.group(1)), 38)
 
     def test_saved_materials_explain_all_destinations_and_tooltip_explains_role(self):
         receipts = [{'readback_verified': True, 'main_table': {'status': state}}

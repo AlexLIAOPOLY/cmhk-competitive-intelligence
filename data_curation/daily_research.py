@@ -324,18 +324,12 @@ def execute(root: Path, run_id: str) -> dict:
                 f"待处理或未通过 {int(summary.get('review') or 0)} 项；"
                 f"完成时间：{final_review.get('completed_at') or '未记录'}。",
             )
-            if (summary.get("research_policy") == "latest_disclosure_incremental_v1" and not summary.get("accepted")
-                    and not previous.get("publication") and not contract_changed):
-                summary["publication"] = {"status": "partial" if summary.get("review") else "completed", "completed_at": now(),
-                    "database_updated": False, "insights": 0,
-                    "result_status": "needs_review" if summary.get("review") else "no_new_disclosures",
-                    "note": "本轮未形成可写入的新披露，保留现有数据库和页面；待处理或失败记录见研究结果，未重复生成洞察。"}
-                summary["recovery"] = recovery.schedule(summary, directory, datetime.now(HKT))
-                atomic_write_json(manifest_path, summary)
-                _append_task_detail(root, task_run_id, "发布判定", summary["publication"]["note"])
-                _finish_research_task(root, task_run_id, task_started, ok=not bool(summary.get("review")),
-                                      detail="研究与最终审核已完成；本轮无可写入的新资料，现有四库和页面保持不变。", summary=summary)
-                return summary
+            if not summary.get("accepted"):
+                # Zero accepted disclosures is a valid daily outcome. Still verify
+                # storage and publication; the pipeline reuses AI only when its
+                # evidence hash and all factual validators pass for the live data.
+                _append_task_detail(root, task_run_id, "零新增核验",
+                                    "本轮没有通过审核的新披露，保留资料缺口；继续核验现有四库、AI分析和公开页面。")
             summary["publication"] = {"status": "running", "started_at": now()}
             summary["recovery"] = {**(summary.get("recovery") or {}), "status": "running",
                                    "phase": "publication", "error": "", "next_retry_at": ""}
