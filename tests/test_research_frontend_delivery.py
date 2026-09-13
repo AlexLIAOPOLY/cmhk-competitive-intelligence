@@ -12,6 +12,52 @@ import executive_intelligence_pipeline as pipeline
 
 
 class FrontendDeliveryTests(unittest.TestCase):
+    def test_unchanged_facts_rebind_to_new_run_without_regenerating_ai(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            directory = Path(tmp)
+            source, output = directory / 'facts.jsonl', directory / 'analysis.json'
+            source.write_text('')
+            pipeline.publish_ai_analysis(agent_run_id='research_20260913', verified_facts_path=source, output_path=output)
+            prior = json.loads(output.read_text())
+            prior['model_analysis'] = {'original_model_text': 'preserved'}
+            output.write_text(json.dumps(prior))
+            result = pipeline.publish_ai_analysis(agent_run_id='research_20260914', verified_facts_path=source, output_path=output)
+            current = json.loads(output.read_text())
+            self.assertFalse(result['changed'])
+            self.assertEqual(current['agent_run_id'], 'research_20260914')
+            self.assertEqual(current['model_analysis'], prior['model_analysis'])
+
+    def test_reused_analysis_details_bind_to_verified_run_archive(self):
+        from data_curation.research_readback import research_snapshot
+        from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            directory = root / 'curation_data/research_runs/research_20260913'
+            directory.mkdir(parents=True)
+            model = {'generation_policy': AI_ONLY_POLICY, 'model': 'model-a', 'discovery_model': 'model-b',
+                'generated_at_hkt': '2026-09-12T12:33:21+08:00', 'evidence_hash': 'same-evidence', 'reused': True,
+                'summaries': [{'domain': 'local', 'focuses': [{'headline': f'focus-{i}'} for i in range(15)]}],
+                'discoveries': [{'title': f'cross-{i}'} for i in range(4)]}
+            digest = pipeline.archive_model_analysis(directory, directory.name, model)
+            manifest = {'run_id': directory.name, 'architecture': 'six_research_agents_v1',
+                'started_at': '2026-09-13T03:00:00+08:00',
+                'status': 'partial', 'publication': {'status': 'completed', 'model_analysis': {
+                    'ok': True, 'reused': True, 'generated_at_hkt': model['generated_at_hkt'],
+                    'evidence_hash': model['evidence_hash'], 'snapshot_sha256': digest}}}
+            path = directory / 'manifest.json'; path.write_text(json.dumps(manifest))
+            latest = root / 'agent_knowledge/executive_intelligence_refresh/ai_analysis.json'
+            latest.parent.mkdir(parents=True)
+            latest.write_text(json.dumps({'agent_run_id': 'research_20260914', 'model_analysis': model}))
+            self.assertEqual(len(research_snapshot(root, '2026-09-13')['insight_items']), 19)
+            for key, value in [('snapshot_sha256', 'tampered'), ('evidence_hash', 'other-evidence'), ('reused', False)]:
+                invalid = json.loads(json.dumps(manifest)); invalid['publication']['model_analysis'][key] = value
+                path.write_text(json.dumps(invalid))
+                self.assertEqual(research_snapshot(root, '2026-09-13')['insight_items'], [], key)
+            path.write_text(json.dumps(manifest))
+            archive = directory / 'published_ai_analysis.json'
+            archive.write_text(archive.read_text().replace('focus-0', 'unreviewed-text'))
+            self.assertEqual(research_snapshot(root, '2026-09-13')['insight_items'], [])
+
     def test_latest_frontend_sources_are_trusted_baselines(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

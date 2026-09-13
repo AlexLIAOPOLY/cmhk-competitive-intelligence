@@ -1,6 +1,7 @@
 """Read-only, date-scoped evidence for the six-agent process diagram."""
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -164,13 +165,23 @@ def research_snapshot(root: Path, date: str = "") -> dict:
         from .research_storage import fact_id
         for item in payload.get("accepted_items") or []:
             item["storage"] = receipts.get(fact_id(item))
-    # A latest analysis belongs to this date only when the research run ID matches.
+    # A reused bundle keeps its original generation date. Bind its archived bytes
+    # to this run's successful validation instead of borrowing another day's output.
     payload["insight_items"] = []
     try:
-        analysis = json.loads((root / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json").read_text(encoding="utf-8"))
+        recorded = (manifest.get("publication") or {}).get("model_analysis") or {}
+        archive = directory / "published_ai_analysis.json"
+        archived = archive.exists()
+        encoded = (archive if archived else root / "agent_knowledge/executive_intelligence_refresh/ai_analysis.json").read_bytes()
+        archive_verified = archived and bool(recorded.get("snapshot_sha256")) and hashlib.sha256(encoded).hexdigest() == recorded["snapshot_sha256"]
+        analysis = json.loads(encoded)
+        model = analysis.get("model_analysis") or {}
+        validated_reuse = (archive_verified and recorded.get("ok") is True and recorded.get("reused") is True
+                           and bool(recorded.get("evidence_hash")) and recorded["evidence_hash"] == model.get("evidence_hash")
+                           and recorded.get("generated_at_hkt") == model.get("generated_at_hkt"))
         if (analysis.get("agent_run_id") == manifest.get("run_id")
-                and str((analysis.get("model_analysis") or {}).get("generated_at_hkt", "")) >= str(manifest.get("started_at", ""))):
-            model = analysis.get("model_analysis") or {}
+                and (not archived or archive_verified)
+                and (validated_reuse or str(model.get("generated_at_hkt", "")) >= str(manifest.get("started_at", "")))):
             # Legacy template bundles remain archived, never reclassified as AI.
             if model_generated_only(model):
                 payload["insight_items"] = [dict(item, domain=summary.get("domain"))

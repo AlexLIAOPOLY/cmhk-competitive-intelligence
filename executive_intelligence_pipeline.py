@@ -723,7 +723,7 @@ def publish_ai_analysis(
     comparable = _fact_content(payload)
     old_comparable = _fact_content(previous)
     changed = _content_hash(comparable) != _content_hash(old_comparable)
-    if changed or not output_path.exists():
+    if changed or previous.get("agent_run_id") != agent_run_id or not output_path.exists():
         _atomic_write_json(output_path, payload)
     return {"ok": True, "changed": changed, "path": str(output_path), **payload}
 
@@ -4375,6 +4375,15 @@ def _ai_only_bundle(evidence: dict[str, Any], previous: dict[str, Any], *, check
     return bundle
 
 
+def archive_model_analysis(directory: Path, agent_run_id: str, model: dict[str, Any]) -> str:
+    """Keep this run's validated AI prose, including its original generation time."""
+    if not model_generated_only(model):
+        raise ValueError("仅可归档通过发布流程的真实AI分析")
+    target = directory / "published_ai_analysis.json"
+    _atomic_write_json(target, {"agent_run_id": agent_run_id, "validated_at_hkt": _now(), "model_analysis": model})
+    return hashlib.sha256(target.read_bytes()).hexdigest()
+
+
 def publish_model_domain_summaries(path: Path = AI_ANALYSIS_PATH) -> dict[str, Any]:
     analysis = _read_json(path, {}) or {}
     generated = _ai_only_bundle(_analysis_input_snapshot(), analysis.get("model_analysis") or {},
@@ -5246,6 +5255,9 @@ def run_pipeline(
                     "discovery_fallback_used": bool(model_analysis.get("discovery_fallback_used")),
                     "discovery_fallback_reason": str(model_analysis.get("discovery_fallback_reason") or ""),
                 }
+                if six_agent_run:
+                    state["model_analysis"]["snapshot_sha256"] = archive_model_analysis(
+                        facts_path.parent, agent_run_id, model_analysis)
                 state["ui_contract"].update(
                     {
                         "focuses_expected": expected_focus_count,
