@@ -29,6 +29,46 @@ HELP = ("你好，我可以帮你记住想看的内容。直接说‘多看AI新
         "你也可以发送‘加入订阅名单’或‘退出订阅名单’自助开启或停止本人订阅。")
 
 
+def _markdown_text(value) -> str:
+    """Keep model/user-derived values from changing the surrounding reply layout."""
+    return re.sub(r"([\\`*_{}\[\]()<>#+\-.!|])", r"\\\1", str(value))
+
+
+def _reply_title(intent: str, reply: str, *, parse_error: str = "") -> str:
+    if parse_error or "未保存" in reply or "没有改变" in reply or "尚未修改" in reply:
+        return "偏好暂未更新"
+    if intent == "clarify":
+        return "需要你再确认"
+    if intent == "subscribe":
+        return "订阅名单已更新"
+    if intent == "unsubscribe":
+        return "订阅已停止"
+    if intent == "help":
+        return "偏好助手说明"
+    return "偏好助手回复"
+
+
+def format_reply_markdown(reply: str, intent: str, *, parse_error: str = "") -> str:
+    """Give every conversational reply one predictable, mobile-friendly hierarchy."""
+    text = str(reply or "").strip()
+    if not text or re.match(r"^#{1,6}\s", text):
+        return text
+    lines = [line.strip() for line in text.splitlines() if line.strip()]
+    body = []
+    for line in lines:
+        if line in {"本次尚未修改。", "订阅名单没有改变。", "偏好没有改变。"}:
+            body.extend(["", f"**当前状态：** {_markdown_text(line)}"])
+        elif line.startswith("当前已启用："):
+            body.extend(["", "**当前已启用**", _markdown_text(line.removeprefix("当前已启用："))])
+        elif line.startswith("你的原设置已保留"):
+            body.extend(["", "**设置保留**", _markdown_text(line)])
+        elif line.startswith(("如需停止", "如需开启", "请稍后", "可以接着", "你也可以")):
+            body.extend(["", "**下一步**", _markdown_text(line)])
+        else:
+            body.append(_markdown_text(line))
+    return "\n".join([f"## {_reply_title(intent, text, parse_error=parse_error)}", "", *body])
+
+
 def request_constraint(text: str) -> dict | None:
     """Hard product limits; these guards can only decline or clarify, never write."""
     # Exact read-only requests use the trusted sender's saved brief directly.
@@ -461,27 +501,47 @@ def _apply_membership(db, job, intent, before, identity=None):
 def receipt(current, changes, *, confirmed=False):
     reading_points = current.get("news_personal_skill") or [t['name'] for t in current.get('news_topics', [])]
     if reading_points:
-        lines = ["已确认，我会记住这份喜好：" if confirmed else
-                 "已成功更新你的喜好，帮你记下了这些关注方向：" if changes else "你当前已保存的喜好："]
-        lines.extend(f"{i}. {p}" for i, p in enumerate(reading_points, 1))
-        lines.append("我会记住这份阅读要求，下次由选稿Agent按文章内容为你挑选；想调整时再告诉我。")
-        lines.append("其他推送设置：" + "；".join(
-            _preference_value_text(field, current[field]) for field in
-            ('frequency', 'news_item_limit', 'news_delivery_times', 'news_region_preference')) + "（香港时间）。")
-        lines.extend(f"同时已调整{c['label']}：{c['after']}" for c in changes
-                     if c['field'] in ('news_categories', 'report_mode'))
-        lines.append("需要调整，直接告诉我即可。" if confirmed else "觉得合适回复‘行’就好；不合适继续告诉我怎么改。")
+        title = "喜好已确认" if confirmed else "兴趣偏好已更新" if changes else "当前已保存的喜好"
+        lead = ("已确认，我会记住这份喜好：" if confirmed else
+                "已成功更新你的喜好，帮你记下了这些关注方向：" if changes else "这是你当前生效的关注方向：")
+        lines = [f"## {title}", "", lead, "", "**关注方向**", ""]
+        lines.extend(f"{i}. {_markdown_text(p)}" for i, p in enumerate(reading_points, 1))
+        lines.extend(["", "**选稿方式**",
+                      "我会记住这份阅读要求，下次由选稿 Agent 按文章内容为你挑选；想调整时再告诉我。",
+                      "", "**推送设置**", ""])
+        for field, label in (
+            ('frequency', '频率'),
+            ('news_item_limit', '每次条数'),
+            ('news_delivery_times', '接收时间'),
+            ('news_region_preference', '地域偏好'),
+        ):
+            value = _markdown_text(_preference_value_text(field, current[field]))
+            suffix = "（香港时间）" if field == 'news_delivery_times' else ""
+            lines.append(f"- **{label}：** {value}{suffix}")
+        related_changes = [c for c in changes if c['field'] in ('news_categories', 'report_mode')]
+        if related_changes:
+            lines.extend(["", "**同时已调整**", ""])
+            lines.extend(f"- **{_markdown_text(c['label'])}：** {_markdown_text(c['after'])}" for c in related_changes)
+        lines.extend(["", "**下一步**",
+                      "需要调整，直接告诉我即可。" if confirmed else
+                      "觉得合适回复 **“行”** 就好；不合适继续告诉我怎么改。"])
         return "\n".join(lines)
-    lines = ["已确认你的喜好，后续会按这份清单整理信息。" if confirmed else
-             "已成功更新你的喜好。" if changes else "你当前已保存的喜好："]
-    lines.extend(f"• {v['label']}：{v['before']} → {v['after']}" for v in changes)
+    title = "喜好已确认" if confirmed else "兴趣偏好已更新" if changes else "当前已保存的喜好"
+    lines = [f"## {title}", "",
+             "已确认你的喜好，后续会按这份清单整理信息。" if confirmed else
+             "已成功更新你的喜好。" if changes else "这是你当前生效的完整喜好清单。"]
     if changes:
-        lines.append("完整喜好清单：")
-    lines.extend(f"{index}. {point}" for index, point in enumerate(preference_points(current), 1))
-    lines.append("接收时间按香港时间；每天一次仅使用上午时间。")
+        lines.extend(["", "**本次变更**", ""])
+    lines.extend(f"- **{_markdown_text(v['label'])}：** {_markdown_text(v['before'])} → {_markdown_text(v['after'])}" for v in changes)
+    lines.extend(["", "**完整喜好清单**", ""])
+    lines.extend(f"{index}. {_markdown_text(point)}" for index, point in enumerate(preference_points(current), 1))
+    lines.extend(["", "> 接收时间按香港时间；每天一次仅使用上午时间。"])
     if current.get("news_topics"):
-        lines.append("我会跨栏目关注这些主题，沿用你的地域偏好；其他内容继续参考原有兴趣板块。")
-    lines.append("需要调整，直接告诉我即可。" if confirmed else "觉得合适可回复“行”或“确认”；需要调整，继续告诉我即可。")
+        lines.extend(["", "**选稿方式**",
+                      "我会跨栏目关注这些主题，沿用你的地域偏好；其他内容继续参考原有兴趣板块。"])
+    lines.extend(["", "**下一步**",
+                  "需要调整，直接告诉我即可。" if confirmed else
+                  "觉得合适可回复 **“行”** 或 **“确认”**；需要调整，继续告诉我即可。"])
     return "\n".join(lines)
 
 
@@ -676,6 +736,7 @@ class SubscriptionChat:
                          job["sender_id"], job["sender_id"], latest_user["union_id"], latest_user["display_name"],
                          json.dumps(current, ensure_ascii=False), json.dumps(changes, ensure_ascii=False), _now_hkt()))
                 reply = receipt(current, changes)
+            reply = format_reply_markdown(reply, intent, parse_error=parse_error)
             db.execute("UPDATE subscription_chat_inbox SET status='reply_pending',intent=?,reply=?,points=?,changes=?,updated=?,parse_error_type=? WHERE id=?",
                        (intent, reply, json.dumps(preference_points(current) if current else [], ensure_ascii=False),
                         json.dumps(changes, ensure_ascii=False), time.time(), parse_error, job["id"]))

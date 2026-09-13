@@ -7,7 +7,10 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch as mock_patch
 
-from cmhk.services.subscription_chat import EVENT_KEY, SubscriptionChat, snapshot, validated_patch, validate_grounding, interpret
+from cmhk.services.subscription_chat import (
+    EVENT_KEY, SubscriptionChat, format_reply_markdown, receipt, snapshot,
+    validated_patch, validate_grounding, interpret,
+)
 from cmhk.services.subscriptions import SubscriptionService
 from cmhk.services.news_delivery_guard import recipient_contract
 
@@ -75,6 +78,38 @@ class SubscriptionChatTests(unittest.TestCase):
         self.assertEqual(self.service._send_markdown.call_args.args[0], 'ou_alice')
         self.assertIn('已成功更新你的喜好', self.job()['reply'])
         self.assertEqual(self.job()['status'], 'complete')
+
+    def test_receipt_uses_mobile_friendly_markdown_hierarchy(self):
+        current = self.get()
+        current['news_personal_skill'] = [
+            '优先关注人工智能商业化与投资相关内容。',
+            '优先关注人工智能研究与技术突破相关内容。',
+        ]
+        rendered = receipt(current, [{'field': 'news_personal_skill', 'label': '个人阅读要求',
+                                      'before': '—', 'after': '两项'}])
+        self.assertTrue(rendered.startswith('## 兴趣偏好已更新\n'))
+        self.assertIn('**关注方向**', rendered)
+        self.assertIn('1. 优先关注人工智能商业化与投资相关内容。', rendered)
+        self.assertIn('**推送设置**', rendered)
+        self.assertIn('- **频率：** 每天两次', rendered)
+        self.assertIn('- **接收时间：** 09:00 / 19:00（香港时间）', rendered)
+        self.assertIn('**下一步**', rendered)
+        self.assertIn('回复 **“行”**', rendered)
+
+    def test_every_non_receipt_reply_gets_a_heading_and_status_hierarchy(self):
+        rendered = format_reply_markdown(
+            '每天一次还是两次？\n本次尚未修改。', 'clarify',
+        )
+        self.assertTrue(rendered.startswith('## 偏好暂未更新\n'))
+        self.assertIn('**当前状态：** 本次尚未修改。', rendered)
+
+        self.model.return_value = {'intent': 'help', 'changes': [], 'question': '',
+                                   'reply': '我只能处理本人的偏好。'}
+        self.run_event(self.event(mid='om_formattedhelp'))
+        self.assertTrue(self.job()['reply'].startswith('## 偏好助手说明\n'))
+        sent = self.service._send_markdown.call_args.kwargs
+        self.assertTrue(self.service._send_markdown.call_args.args[1].startswith('## 偏好助手说明\n'))
+        self.assertIn('idempotency_key', sent)
 
     def test_repeat_event_and_new_event_id_do_not_reapply_or_resend(self):
         self.run_event()
