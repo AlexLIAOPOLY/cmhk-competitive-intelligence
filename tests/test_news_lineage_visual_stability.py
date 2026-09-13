@@ -171,7 +171,7 @@ class NewsLineageVisualStabilityTests(unittest.TestCase):
 
     def test_cache_versions_publish_the_fixed_assets(self):
         self.assertRegex(INDEX, r'/static/workspace-tabs\.css\?v=\d+')
-        self.assertIn('/static/research-diagram.js?v=39', INDEX)
+        self.assertIn('/static/research-diagram.js?v=40', INDEX)
         self.assertRegex(INDEX, r'/static/workspace-tabs\.js\?v=\d+')
 
 

@@ -2387,6 +2387,11 @@ body.dashboard-page.workspace-ai-active #workspace-panel-ai .workspace-inline-su
 .research-sheet-scroll tbody tr.is-run-new td { background: rgba(35,119,89,.18); }
 .research-sheet-scroll tbody tr.is-run-new td.is-run-new-cell { color: #e8fff7; background: rgba(44,151,111,.45); box-shadow: inset 0 0 0 1px rgba(88,210,166,.45); font-weight: 650; }
 .research-sheet-missing { color: #617f89; }
+.research-sheet-cell-detail { min-width: 230px; }
+.research-sheet-cell-detail summary { max-width: 360px; overflow: hidden; color: #a9c5ce; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.research-sheet-cell-detail summary::marker { color: #63b9c8; }
+.research-sheet-cell-detail[open] summary { margin-bottom: 7px; color: #d8eaee; white-space: normal; }
+.research-sheet-cell-detail > div { max-width: 390px; max-height: 210px; padding: 7px 8px; overflow: auto; border: 1px solid #355765; border-radius: 4px; color: #c5dbe1; background: #061a23; white-space: pre-wrap; }
 .research-sheet-empty { min-width: 420px !important; padding: 40px !important; color: #91aeb8; text-align: center; }
 .research-sheet-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 14px; border-top: 1px solid #34505e; background: #0d2a37; }
 .research-sheet-footer > span { color: #9ab7c1; font-size: 11px; font-variant-numeric: tabular-nums; }

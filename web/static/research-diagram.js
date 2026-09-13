@@ -758,6 +758,13 @@
     });
   }
 
+  function formalTableCell(value) {
+    if (value === null || value === "") return '<span class="research-sheet-missing">—</span>';
+    const text = String(value);
+    if (text.length <= 120) return esc(text);
+    return `<details class="research-sheet-cell-detail"><summary title="点击查看完整内容">${esc(text.slice(0, 88))}…</summary><div>${esc(text)}</div></details>`;
+  }
+
   function openFormalTableViewer(opener) {
     const dialog = document.querySelector("#researchFormalTableDialog");
     const root = dialog?.querySelector("[data-research-sheet-root]");
@@ -805,7 +812,7 @@
           const rowNumber = (summary.page - 1) * summary.page_size + index + 1;
           return `<tr${row.is_new ? ' class="is-run-new"' : ""}><th scope="row">${rowNumber}${row.is_new ? "<span>新增</span>" : ""}</th>${payload.columns.map((column) => {
             const value = row.values[column.key];
-            return `<td${highlighted.has(column.key) ? ' class="is-run-new-cell"' : ""}>${value === null || value === "" ? '<span class="research-sheet-missing">—</span>' : esc(value)}</td>`;
+            return `<td${highlighted.has(column.key) ? ' class="is-run-new-cell"' : ""}>${formalTableCell(value)}</td>`;
           }).join("")}</tr>`;
         }).join("") || `<tr><td colspan="${payload.columns.length + 1}" class="research-sheet-empty">当前条件没有数据${state.highlightOnly ? "；本轮没有可高亮的新增行" : ""}。</td></tr>`;
         pageButtons[0].disabled = summary.page <= 1;
