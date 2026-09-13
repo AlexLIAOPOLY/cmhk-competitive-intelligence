@@ -41,9 +41,9 @@ def bind(app) -> None:
             for task in app.load_unified_task_index(limit=1000)
             if str(task.get("run_status") or "") == "running"
         ]
-    
+
         outputs = [app.file_info(path) for path in app.current_report_files()]
-    
+
         ok_count = 0
         partial_count = 0
         quality_rejected_count = 0
@@ -56,7 +56,7 @@ def bind(app) -> None:
         field_total = 0
         missing_total = 0
         raw_total = 0
-    
+
         valid_results_count = 0
         for path in result_files:
             valid_results_count += 1
@@ -105,16 +105,16 @@ def bind(app) -> None:
                 jurisdiction_counts[jurisdiction] = jurisdiction_counts.get(jurisdiction, 0) + 1
                 method = str(record.get("method") or "unknown")
                 method_counts[method] = method_counts.get(method, 0) + 1
-            
+
         # Calculate latest timestamp from crawler output rather than HTML reports
         latest_crawl_time = max((path.stat().st_mtime for path in result_files if path.exists()), default=None)
         settings = app.build_settings_payload()
         latest_news_funnel = app.build_latest_news_funnel()
         today_news_rounds = app.build_today_news_rounds()
-    
+
         # Sort outputs by mtime descending
         outputs.sort(key=lambda x: x["mtime"], reverse=True)
-        
+
         return {
             "template": {
                 "path": str(app.TEMPLATE_PATH),
@@ -328,4 +328,3 @@ def bind(app) -> None:
             return dict(payload)
 
     publish(app, build_scheduler_overview)
-

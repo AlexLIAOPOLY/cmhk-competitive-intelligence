@@ -561,4 +561,3 @@ def bind(app) -> None:
         )
 
     publish(app, stream_report_generation)
-

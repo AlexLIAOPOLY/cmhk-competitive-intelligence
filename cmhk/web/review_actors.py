@@ -578,4 +578,3 @@ def bind(app) -> None:
         return overrides
 
     publish(app, refresh_news_review_actor_overrides)
-

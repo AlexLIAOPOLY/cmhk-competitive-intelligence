@@ -405,4 +405,3 @@ def bind(app) -> None:
         return updated
 
     publish(app, set_chat_thread_pinned)
-

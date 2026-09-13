@@ -100,4 +100,3 @@ def bind(app) -> None:
             return
 
     publish(app, stream_agent_with_approvals)
-

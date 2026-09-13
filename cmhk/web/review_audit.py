@@ -890,4 +890,3 @@ def bind(app) -> None:
         }
 
     publish(app, news_review_editor_tracking_status)
-

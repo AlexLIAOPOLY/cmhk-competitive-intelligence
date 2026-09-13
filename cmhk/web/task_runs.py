@@ -887,4 +887,3 @@ def bind(app) -> None:
             return {"status": "failed", "changes": 0, "error": str(exc)[:240]}
 
     publish(app, sync_project_monitor_sheet_handlers)
-

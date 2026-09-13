@@ -608,4 +608,3 @@ def bind(app) -> None:
         }
 
     publish(app, build_latest_news_funnel)
-

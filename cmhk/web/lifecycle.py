@@ -56,4 +56,3 @@ def bind(app) -> None:
             handler._general_task_run_id = ""
 
     publish(app, stream_report_generation)
-

@@ -534,4 +534,3 @@ def bind(app) -> None:
         return app._task_public_record(task), True
 
     publish(app, start_audio_generation_task)
-

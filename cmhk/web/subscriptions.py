@@ -278,4 +278,3 @@ def bind(app) -> None:
             return None
 
     publish(app, record_subscription_operation_footprint)
-

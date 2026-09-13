@@ -547,4 +547,3 @@ def bind(app) -> None:
         }
 
     publish(app, load_curation_quality_records)
-

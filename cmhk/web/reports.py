@@ -425,4 +425,3 @@ def bind(app) -> None:
         return None
 
     publish(app, check_local_action)
-

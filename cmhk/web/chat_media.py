@@ -560,4 +560,3 @@ def bind(app) -> None:
         return {"text": transcript, "model": app.CHAT_STT_MODEL}
 
     publish(app, transcribe_chat_audio)
-

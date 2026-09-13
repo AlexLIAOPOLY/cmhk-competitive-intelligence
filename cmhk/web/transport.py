@@ -142,4 +142,3 @@ def bind(app) -> None:
         return {"type": "log", "text": text}
 
     publish(app, sse_payload_from_process_line)
-

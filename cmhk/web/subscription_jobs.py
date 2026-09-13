@@ -358,4 +358,3 @@ def bind(app) -> None:
         return dict(job)
 
     publish(app, start_subscription_push_job)
-
