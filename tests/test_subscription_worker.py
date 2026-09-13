@@ -174,6 +174,28 @@ class SubscriptionClockTests(unittest.TestCase):
         self.assertIn('个人选稿格式错误',own['reason'])
         self.send.assert_not_called()
 
+    def test_consolidated_policy_migration_preserves_prepared_content_without_model_work(self):
+        from cmhk.services.news_delivery_guard import preparation_content_key, recipient_contract
+        old_hash='5afa9bf696bc9466b43fcceaa29dab660ae7cf9582fe4942eac69c85b5ff14a1'
+        self.tick('07:00:00')
+        with sqlite3.connect(self.service.db_path) as db:
+            db.row_factory=sqlite3.Row
+            row=db.execute("SELECT p.*,d.batch_id,r.audit_json FROM pending_subscription_deliveries p JOIN deliveries d ON d.id=p.delivery_id JOIN news_delivery_receipts r ON r.open_id=d.open_id AND r.batch_id=d.batch_id WHERE p.open_id='ou_one'").fetchone()
+            audit=json.loads(row['audit_json'])
+            audit.update(skill_hash=old_hash,preparation_key='old-template',
+                preparation_content_key=preparation_content_key(body=row['body'],title=row['title'],
+                    history=[],send_day='2026-09-11',context=recipient_contract(self.service,'ou_one',self.service.delivery_profile),
+                    content_skill_hash=old_hash))
+            db.execute("UPDATE news_delivery_receipts SET audit_json=? WHERE open_id='ou_one'",(json.dumps(audit),))
+        with mock.patch('cmhk.services.news_delivery_guard.prepare_news_assets',side_effect=AssertionError('must reuse images')), \
+             mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=AssertionError('must reuse reviewed prose')):
+            self.tick('07:10:00');self.tick('07:10:01')
+        self.assertFalse(self.worker.errors)
+        with sqlite3.connect(self.service.db_path) as db:
+            items=db.execute("SELECT items_json FROM news_delivery_receipts WHERE open_id='ou_one'").fetchone()[0]
+        self.assertEqual(len(json.loads(items)),1)
+        self.send.assert_not_called()
+
     def test_partial_personal_selection_sends_valid_items_then_closes_without_supplements(self):
         from cmhk.services.personal_news_allocator import allocate_news
         from cmhk.services.news_round_progress import reconcile_recent_rounds
