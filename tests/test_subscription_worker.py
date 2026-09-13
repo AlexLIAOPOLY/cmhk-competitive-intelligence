@@ -105,7 +105,7 @@ class SubscriptionClockTests(unittest.TestCase):
             self.tick('08:00:00')
         self.assertEqual(self.send.call_count, 1)
 
-    def test_partial_preparation_continues_before_due_and_sends_twenty_at_due(self):
+    def test_partial_preparation_continues_after_due_then_sends_ten_plus_ten_once(self):
         self.service.save_subscriptions('ou_two','乙',['weekly'])
         self.service.save_subscriptions('ou_one','甲',['news'],frequency='twice_daily',news_item_limit=20,
                                         news_categories=['公司动态'],news_delivery_times=['08:00','18:30'])
@@ -127,23 +127,22 @@ class SubscriptionClockTests(unittest.TestCase):
             self.assertEqual(len(json.loads(receipt[0])),6)
             self.assertTrue(json.loads(receipt[1])['can_prepare_more'])
         self.send.assert_not_called()
-        # A ready partial receipt must not idle through the remaining lead time.
+        # A ready partial receipt must not be sent merely because due_at has
+        # arrived. The same batch finishes and is then sent once as 10+10.
         continued=[]
         def continuation_editor(items,root):
             continued.extend(items);return {'items':items,'summary_reviews':[]}
+        self.send.side_effect=['om_page1','om_page2']
         with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=continuation_editor):
-            self.tick('07:10:00')
-        self.tick('07:59:59')
+            self.tick('08:00:00')
+        self.send.assert_not_called()
+        self.tick('08:00:01')
         with self.service._connect() as db:
             self.assertEqual(len(json.loads(db.execute('SELECT items_json FROM news_delivery_receipts').fetchone()[0])),20)
         self.assertEqual(len(edited), 6)
         self.assertEqual(len(continued), 14)
         self.assertEqual(len({item['news_id'] for item in edited + continued}), 20)
-        self.send.assert_not_called()
-        self.send.side_effect=['om_page1','om_page2']
-        with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=AssertionError('AI in send lane')):
-            self.tick('08:00:00')
-        self.assertEqual(self.send.call_count,1)
+        self.assertEqual(self.send.call_count,2)
         with self.service._connect() as db:
             self.assertEqual(db.execute('SELECT delivered_count FROM news_round_progress').fetchone()[0],20)
 
@@ -196,7 +195,7 @@ class SubscriptionClockTests(unittest.TestCase):
         self.assertEqual(len(json.loads(items)),1)
         self.send.assert_not_called()
 
-    def test_partial_personal_selection_sends_valid_items_then_closes_without_supplements(self):
+    def test_partial_personal_selection_waits_in_original_batch_without_supplements(self):
         from cmhk.services.personal_news_allocator import allocate_news
         from cmhk.services.news_round_progress import reconcile_recent_rounds
         points=['关注行业中的新进展。']
@@ -216,18 +215,20 @@ class SubscriptionClockTests(unittest.TestCase):
                        ('2026-09-11@03:00','2026-09-11','morning','two',json.dumps(second),0,'2026-09-11T05:23:00+08:00'))
         with mock.patch('cmhk.services.personal_news_allocator._model',side_effect=TimeoutError('unavailable')):
             self.tick('08:00:00');self.tick('08:00:01')
-        self.assertEqual(self.send.call_count,1)
+        self.assertEqual(self.send.call_count,0)
         with sqlite3.connect(self.service.db_path) as db:
             receipt=db.execute("SELECT items_json,audit_json,status FROM news_delivery_receipts WHERE open_id='ou_one'").fetchone()
         self.assertEqual([i['news_id'] for i in json.loads(receipt[0])],['one'])
         self.assertTrue(json.loads(receipt[1])['can_prepare_more'])
-        self.assertEqual(receipt[2],'verified')
+        self.assertEqual(receipt[2],'prepared')
         progress=reconcile_recent_rounds(self.service,datetime.fromisoformat('2026-09-11T08:01:00+08:00'))
         own=next(row for row in progress if row['open_id']=='ou_one')
-        self.assertEqual(own['delivered_count'],1)
+        self.assertEqual(own['delivered_count'],0)
         self.assertGreater(own['remaining_count'],0)
-        self.assertEqual(own['status'],'closed')
-        self.assertIn('不再连续补发',own['reason'])
+        self.assertEqual(own['status'],'preparing')
+        self.assertIn('继续准备',own['reason'])
+        with sqlite3.connect(self.service.db_path) as db:
+            self.assertEqual(db.execute("SELECT count(*) FROM deliveries WHERE open_id='ou_one'").fetchone()[0],1)
 
     def test_preference_change_rebuilds_prepared_card_before_sending(self):
         self.tick('07:00:00')

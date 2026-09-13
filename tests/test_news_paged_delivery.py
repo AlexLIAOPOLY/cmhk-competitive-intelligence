@@ -23,13 +23,15 @@ class NewsPagedDeliveryTests(unittest.TestCase):
         return [{**item, 'source_url': item['source_url'] + '?details=' + 'x' * 850}
                 for item in self.items()]
 
-    def test_twenty_short_items_use_one_card_when_they_fit(self):
+    def test_twenty_short_items_are_sent_as_ten_plus_ten(self):
         items = self.items()
+        self.send.side_effect = ['om_page1', 'om_page2']
         self.send_news('single', items)
-        self.assertEqual(self.send.call_count, 1)
-        card = self.send.call_args.args[1]
-        self.assertNotIn('（1/2）', card['header']['title']['content'])
-        text = '\n'.join(_card_text(card))
+        self.assertEqual(self.send.call_count, 2)
+        cards = [call.args[1] for call in self.send.call_args_list]
+        self.assertEqual([card['header']['title']['content'][-5:] for card in cards], ['（1/2）', '（2/2）'])
+        self.assertTrue(all(json.dumps(card, ensure_ascii=False).count('80px 80px') == 10 for card in cards))
+        text = '\n'.join(_card_text({'cards': cards}))
         self.assertTrue(all(item['summary'] in text for item in items))
 
     def test_twenty_items_split_without_truncating_prose_or_repeating_sent_page(self):

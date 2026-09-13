@@ -1,6 +1,5 @@
 """Count actual deliveries per reviewed round and resume shortages durably."""
 from __future__ import annotations
-import hashlib
 import json
 from contextlib import closing
 from datetime import datetime
@@ -132,7 +131,7 @@ def finish_without_card(service, open_id, content_ref, batch_id, reason):
 
 def reconcile_round(service, open_id, content_ref, *, now=None):
     """Atomic recovery after a send or restart. No AI or external calls here."""
-    from cmhk.services.subscriptions import HKT, encode_strategic_news_digest
+    from cmhk.services.subscriptions import HKT
     from cmhk.services.news_delivery_guard import delivered_history
     if not content_ref.startswith('strategic-crawl:'):
         return {}
@@ -175,19 +174,8 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
                 profile=service.delivery_profile, open_id=open_id, points=points)
         issues = [dict(r) for r in db.execute('''SELECT item_key,attempts,status,error FROM news_candidate_attempts
             WHERE open_id=? AND content_ref=?''', (open_id, content_ref))]
-        status = 'stopped' if stop_reason else 'complete' if not remaining else 'closed' if dispatch_closed else ('preparing' if pending else 'continuing' if candidates else 'exhausted')
-        # Retry only while original stories remain fresh, and use a new message
-        # identity for an actual supplement. Serializes two workers/restarts.
-        if remaining and not pending and candidates and not stop_reason and not dispatch_closed:
-            part = db.execute('SELECT COUNT(*) FROM deliveries WHERE open_id=? AND content_ref=?', (open_id, content_ref)).fetchone()[0]
-            batch = 'news-supp-' + hashlib.sha256(f'{open_id}:{content_ref}:{part}'.encode()).hexdigest()[:32]
-            cur = db.execute("""INSERT INTO deliveries(batch_id,open_id,service,mode,content_ref,status,message_ids,error,created_at)
-                VALUES(?,?,'news','text',?,'queued','[]','',?)""", (batch,open_id,content_ref,stamp))
-            db.execute('''INSERT INTO pending_subscription_deliveries
-                (delivery_id,open_id,service,mode,content_ref,title,body,frequency,due_at,status,created_at)
-                VALUES(?,?,'news','text',?,?,?,?,?,'queued',?)''',
-                (cur.lastrowid,open_id,content_ref,original['title']+'（补充）',encode_strategic_news_digest(candidates),
-                 'crawl_retry',max(stamp,original['due_at']),stamp))
+        status = ('stopped' if stop_reason else 'complete' if not remaining else
+                  'closed' if dispatch_closed else 'preparing' if pending else 'exhausted')
         reason = (f'本轮已发送{len(sent)}/{wanted}条；继续准备剩余{remaining}条' if status in ('preparing','continuing')
                   else f'本轮已发送{len(sent)}/{wanted}条；当前原审核批次无更多符合兴趣、时效、去重及图文要求的候选，缺{remaining}条' if remaining
                   else f'本轮已发送{len(sent)}/{wanted}条')

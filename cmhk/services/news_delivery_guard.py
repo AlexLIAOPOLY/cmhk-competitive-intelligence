@@ -35,6 +35,10 @@ class NewsCardCapacityError(ValueError):
         super().__init__('本轮最多两张卡片，保留可容纳的完整新闻')
 
 
+MAX_NEWS_ITEMS_PER_CARD = 10
+MAX_NEWS_CARD_BYTES = 30000
+
+
 def require_active_round(service, content_ref):
     with closing(service._connect()) as db:
         reason = stopped_reason(db, content_ref)
@@ -180,14 +184,14 @@ def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
         return strategic_news_card(title=label, body=NEWS_DIGEST_PREFIX + json.dumps({'items': group}, ensure_ascii=False), image_key=banner)
 
     def fits(page):
-        return len(json.dumps(page, ensure_ascii=False, separators=(',', ':')).encode()) <= 30000
+        return len(json.dumps(page, ensure_ascii=False, separators=(',', ':')).encode()) <= MAX_NEWS_CARD_BYTES
 
     whole = render(items, title)
-    if fits(whole):
+    if len(items) <= MAX_NEWS_ITEMS_PER_CARD and fits(whole):
         return whole
 
     def largest_prefix(group, label):
-        low, high = 0, len(group)
+        low, high = 0, min(len(group), MAX_NEWS_ITEMS_PER_CARD)
         while low < high:
             middle = (low + high + 1) // 2
             if fits(render(group[:middle], label)):
@@ -277,6 +281,9 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 content_ready = receipt_audit.get('preparation_content_key') == preparation_content_key(
                     body=body,title=title,history=history,send_day=send_day,context=contract,
                     content_skill_hash=previous_hash)
+        if (receipt and ready and receipt_audit.get('can_prepare_more')
+                and not prepare_only and content_ref.startswith('strategic-crawl:')):
+            raise NewsNotPrepared('本轮尚未达到订阅目标，仍有原审核候选；继续准备后只集中发送一次')
         if receipt and (receipt["status"] == "sending" or (ready and not (prepare_only and continue_preparation))):
             # The request may have reached Feishu. Keep precisely the same content
             # and idempotency key on transport recovery, including across midnight.

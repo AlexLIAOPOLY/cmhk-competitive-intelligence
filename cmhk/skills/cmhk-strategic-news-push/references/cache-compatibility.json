@@ -77,5 +77,18 @@
       "937da4e1f8dde9784dcc649dd1392f8b63ad73f0d2b6fb22976e0e11d634a3a1",
       "5afa9bf696bc9466b43fcceaa29dab660ae7cf9582fe4942eac69c85b5ff14a1"
     ]
+  },
+  "df707067c59e36516bb28686cbd01e8b144e72f8df96a99dd9deca731e579d23": {
+    "compatible_hashes": [
+      "c204f3c8d431a7435cf2e56b22aaea160c4aea127f421d3feb2b6d9bc3003d8f",
+      "937da4e1f8dde9784dcc649dd1392f8b63ad73f0d2b6fb22976e0e11d634a3a1",
+      "5afa9bf696bc9466b43fcceaa29dab660ae7cf9582fe4942eac69c85b5ff14a1"
+    ],
+    "reason": "2026-09-13 delivery control now waits for the configured target while reviewed candidates remain and renders at most ten items per card. News facts, summaries and reviewed image evidence are unchanged.",
+    "preparation_compatible_hashes": [
+      "c204f3c8d431a7435cf2e56b22aaea160c4aea127f421d3feb2b6d9bc3003d8f",
+      "937da4e1f8dde9784dcc649dd1392f8b63ad73f0d2b6fb22976e0e11d634a3a1",
+      "5afa9bf696bc9466b43fcceaa29dab660ae7cf9582fe4942eac69c85b5ff14a1"
+    ]
   }
 }

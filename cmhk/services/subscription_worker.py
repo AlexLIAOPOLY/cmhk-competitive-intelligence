@@ -114,22 +114,25 @@ class SubscriptionDeliveryWorker:
                             and recipient and recipient['frequency'] == 'once_daily')
             allowed = enabled and recipient and not morning_only
             ready = not news or prepared_for(self.service, row, send_day=now.date().isoformat())
-            continue_early = news and ready and not is_due and needs_more_preparation(self.service, row)
+            # A partial checkpoint is not a sendable round while the original
+            # reviewed pool still has candidates. Keep preparing the same
+            # durable batch after due_at if necessary, then send it once.
+            continue_preparation = news and ready and needs_more_preparation(self.service, row)
             ready_count += int(news and ready)
             # Use all available lead time once a reviewed strategic round arrives.
             # The independent sending clock still honors each person's due_at.
             upcoming = (row['content_ref'].startswith('strategic-crawl:')
                         or due - now <= timedelta(minutes=PREPARATION_LEAD_MINUTES))
-            if news and allowed and (not ready or continue_early) and upcoming:
+            if news and allowed and (not ready or continue_preparation) and upcoming:
                 late_unprepared += int(is_due)
                 if (identifier not in self.preparing and identifier not in self.sending
                         and len(self.preparing) < PREPARATION_WORKERS
                         and self.retry_after.get(identifier, 0) <= time.monotonic()):
-                    work = {**row, '_continue_preparation': continue_early,
+                    work = {**row, '_continue_preparation': continue_preparation,
                             '_ai_priority': 'interactive' if is_due else 'background',
                             '_preparation_seconds': min(600, max(1, (due-now).total_seconds())) if not is_due else 600}
                     self.preparing[identifier] = self.preparers.submit(self._prepare, work)
-            if (is_due and (ready or (news and not allowed))
+            if (is_due and ((ready and not continue_preparation) or (news and not allowed))
                     and identifier not in self.sending and identifier not in self.preparing
                     and len(self.sending) < 8):
                 self.sending[identifier] = self.senders.submit(
