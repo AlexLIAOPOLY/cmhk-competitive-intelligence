@@ -36,7 +36,7 @@
     if (Number.isFinite(model.focuses_passed) && Number.isFinite(model.discoveries_passed)) return (model.fallback_used ? 0 : model.focuses_passed) + (model.discovery_fallback_used ? 0 : model.discoveries_passed);
     return publication?.result_status === "completed_with_fallback" ? "—" : model.insights_passed ?? "—";
   };
-  const aiNote = (publication) => (fallbackNote(publication) || (publication?.model_analysis?.ok === false ? `AI 生成失败：${businessReason(publication.model_analysis.error || "未取得有效模型结果")}` : `AI 已生成 ${aiGeneratedCount(publication)} 项`)) + (publication?.model_analysis?.presentation_warnings?.length ? ` · ${publication.model_analysis.presentation_warnings.length} 项表达提示（不阻断发布）` : "");
+  const aiNote = (publication) => (fallbackNote(publication) || (publication?.model_analysis?.ok === false ? `AI 生成失败：${businessReason(publication.model_analysis.error || "未取得有效模型结果")}` : publication?.model_analysis?.reused ? `已复核并沿用 ${aiGeneratedCount(publication)} 项AI分析，证据未变化` : `AI 已生成 ${aiGeneratedCount(publication)} 项`)) + (publication?.model_analysis?.presentation_warnings?.length ? ` · ${publication.model_analysis.presentation_warnings.length} 项表达提示（不阻断发布）` : "");
   const terms = { no_update: "库内已有", verified: "数据通过（入库另核对）", missing: "执行失败", conflict: "执行失败", not_applicable: "执行失败", out_of_scope: "不纳入本轮", error: "执行失败" };
   const reportTerms = { completed: "研究已完成", running: "研究中", partial: "部分完成", error: "执行失败", pending: "待执行" };
   // Presentation only: keep persisted assignments unchanged for same-run resume.
@@ -182,7 +182,7 @@
       publication: run?.publication,
       note: incremental && run ? updateSummary(run, true) : "统一写入本地、国际、内地运营商和全球云厂商四库",
     });
-    add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], aiGeneratedCount(run?.publication), "项AI生成", "使用四库最新数据调用AI生成分析；全部通过校验后才更新页面", [
+    add("research-publish", "AI 分析与页面更新", [canvasWidth - researchInset - researchCardWidth, 820], aiGeneratedCount(run?.publication), run?.publication?.model_analysis?.reused ? "项AI复核" : "项AI生成", "核验四库最新数据及AI分析，证据未变化时复核沿用；全部通过校验后才更新页面", [
       "读取更新后的四库数据，生成分库分析和跨库分析",
       "校验分析引用的数据与公司，更新主页数据和公开页面",
       "发布后读取实际版本，只有成功读取后才记录为发布完成",
