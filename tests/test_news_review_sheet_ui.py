@@ -11,6 +11,7 @@ from unittest import mock
 import cmhk.intelligence.news_review_sheet as news_review_sheet
 from cmhk.auth.service import AuthService
 import web_app
+from tests.web_source import read_web_source
 
 
 def sheet_row(*values: str) -> list[str]:
@@ -438,7 +439,7 @@ class NewsReviewSheetStaticUiTests(unittest.TestCase):
         css = (web_app.STATIC_DIR / "news-review-sheet.css").read_text(encoding="utf-8")
         organization_script = (web_app.STATIC_DIR / "organization-admin.js").read_text(encoding="utf-8")
         organization_css = (web_app.STATIC_DIR / "organization-admin.css").read_text(encoding="utf-8")
-        web_app_source = Path(web_app.__file__).read_text(encoding="utf-8")
+        web_app_source = read_web_source(Path(web_app.__file__).resolve().parent)
 
         self.assertIn('id="openNewsReviewSheetButton"', html)
         self.assertIn('id="newsReviewWorkspace"', html)
