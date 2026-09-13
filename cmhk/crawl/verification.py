@@ -2,9 +2,9 @@ import json
 import os
 import re
 from langchain_core.messages import SystemMessage, HumanMessage
-from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
-from ai_config import load_ai_config
-from ai_response_compat import deepseek_nonthinking_parameters, load_json_response
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
+from cmhk.ai.ai_config import load_ai_config
+from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters, load_json_response
 
 _llm = None
 

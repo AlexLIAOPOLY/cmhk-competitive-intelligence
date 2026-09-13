@@ -61,3 +61,15 @@ Uncommitted files are included only in the private complete snapshot. They are n
 - For an exact rollback of private `main`, use the newest applicable `backup/main-before-sync-*` branch and require explicit user confirmation before any force-with-lease operation.
 
 The `Codex/` directory is a persistent context vault. Follow `Codex/AGENTS.md` when updating its people, project, agent, notes and TODO records.
+
+## 文件归位规则（2026-09-13，持续适用）
+
+- **禁止随意在项目根目录新增任何文件或目录**，包括测试脚本、临时 Python/JS/Shell、草稿、截图、日志、报告、导出数据和备份；忽略文件也适用。
+- 新建文件前先阅读本文件及项目目录说明，查找已有同类文件，按职责放入现有分类目录；不得为了省事放到根目录，也不得新建同义的平行目录。
+- 根目录现有服务入口、构建清单、仓库级配置和兼容运行文件属于明确的历史契约，不代表允许继续追加。确有根目录技术约束时，必须在目录说明记录用途、调用方、不能放入子目录的原因，并同步更新检查清单；普通产物不能作为例外。
+- 自动化测试和人工诊断均归入测试目录；人工诊断、联网压测和可能写入外部系统的脚本必须与自动发现的回归测试隔离。测试输入放 fixtures，测试产物放忽略的产物目录。
+- 脚本必须显式确定项目根目录与输出目录，不能默认把产物写进当前工作目录；新增路径应随输出目录自动创建，文档、调用方和测试一起更新。
+- 整理文件时先检查服务、定时任务、导入、资源路径、部署和同步引用，保留正在运行的入口与状态契约。验证迁移后的导入、测试发现、读写及服务可用性，再交付。
+- 完成任务前检查新增文件列表与目录归属，只提交本任务文件，保留其他人的修改；文档中的历史路径注明迁移去向，不删除业务数据或凭证。
+
+本项目的具体归属、根目录清单和检查方式见 [目录规范](docs/PROJECT_STRUCTURE.md)。执行 `make layout-check`；根目录新增项必须通过 `config/workspace_layout.json` 的明确登记。

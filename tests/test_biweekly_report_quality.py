@@ -1246,7 +1246,7 @@ class QualitySidecarTests(unittest.TestCase):
                 patch.object(report, "load_results", return_value=[]),
                 patch.object(report, "build_weekly_model", return_value=model),
                 patch.object(report, "dated_weekly_docx_path", return_value=output_path),
-                patch("report_audio_pipeline.generate_report_audio") as generate_audio,
+                patch("cmhk.reporting.report_audio_pipeline.generate_report_audio") as generate_audio,
             ):
                 report.main()
 

@@ -139,6 +139,8 @@ def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Run unittest discovery without allowing tests to write into the working tree."
     )
+    parser.add_argument("--pytest", action="store_true", help="Run pytest, including function-style tests.")
+    parser.add_argument("--javascript", action="store_true", help="Also run all automated Node tests.")
     parser.add_argument(
         "--keep",
         action="store_true",
@@ -176,7 +178,7 @@ def main() -> int:
     if unittest_args[:1] == ["--"]:
         unittest_args = unittest_args[1:]
     if not unittest_args:
-        unittest_args = ["discover", "-s", "tests", "-t", "."]
+        unittest_args = ["-c", "config/pytest.ini", "--rootdir=.", "tests"] if args.pytest else ["discover", "-s", "tests", "-t", "."]
 
     environment = os.environ.copy()
     environment.update(
@@ -185,16 +187,27 @@ def main() -> int:
             "CMHK_INTERNAL_AI_API_KEY": "cmhk-test-placeholder",
             "CMHK_RUNTIME_ROOT": str(isolated_root),
             "PYTHONDONTWRITEBYTECODE": "1",
+            "CMHK_INTERNAL_AI_KEY_STATE_PATH": str(isolated_root / "runtime/local/test-key-health.json"),
+            "CMHK_INTERNAL_AI_RATE_STATE_PATH": str(isolated_root / "runtime/local/test-rate-limit.json"),
             "PYTHONPATH": str(isolated_root),
         }
     )
     try:
         completed = subprocess.run(
-            [sys.executable, "-m", "unittest", *unittest_args],
+            [sys.executable, "-m", "pytest" if args.pytest else "unittest", *unittest_args],
             cwd=isolated_root,
             env=environment,
         )
-        return completed.returncode
+        result = completed.returncode
+        if args.javascript:
+            node = shutil.which("node")
+            if not node:
+                print("Node.js is required for the JavaScript regression suite.")
+                return result or 1
+            js_tests = sorted(str(path.relative_to(isolated_root)) for path in (isolated_root / "tests").glob("test_*.cjs"))
+            js_result = subprocess.run([node, "--test", *js_tests], cwd=isolated_root, env=environment)
+            result = result or js_result.returncode
+        return result
     finally:
         if args.keep:
             print(f"Isolated workspace kept at: {isolated_root}")

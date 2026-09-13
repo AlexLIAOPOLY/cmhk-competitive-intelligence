@@ -11,10 +11,10 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import Callable
 
-from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config
-from ai_key_rotation import open_llm_request
-from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
-from ai_response_compat import deepseek_nonthinking_parameters, final_chat_message_text
+from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config
+from cmhk.ai.ai_key_rotation import open_llm_request
+from cmhk.ai.ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
+from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters, final_chat_message_text
 from cmhk.intelligence.agent_harness import assert_finish_reason, run_durable_agent
 
 

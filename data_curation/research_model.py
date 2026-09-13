@@ -8,8 +8,8 @@ import uuid
 from langchain_core.messages import AIMessageChunk
 from langchain_core.outputs import ChatGenerationChunk
 
-from ai_key_rotation import APIKeyPoolUnavailable, is_transient_llm_error
-from ai_rate_limit import RateLimitedChatDeepSeek
+from cmhk.ai.ai_key_rotation import APIKeyPoolUnavailable, is_transient_llm_error
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek
 from cmhk.intelligence.agent_harness import TruncatedModelOutput
 
 
@@ -130,7 +130,7 @@ def _completed_chunks(chunks, tracker):
 
 
 def configured_research_models(primary):
-    from ai_config import load_ai_config
+    from cmhk.ai.ai_config import load_ai_config
     config = load_ai_config(include_key=False)
     return list(dict.fromkeys([primary, *(
         name for name in (config.get("model_api_keys") or {})

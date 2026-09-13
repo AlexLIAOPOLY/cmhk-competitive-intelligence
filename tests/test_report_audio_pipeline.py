@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import Mock, patch
 from concurrent.futures import ThreadPoolExecutor
 
-import report_audio_pipeline as pipeline
+from cmhk.reporting import report_audio_pipeline as pipeline
 import tts_service as tts
 
 

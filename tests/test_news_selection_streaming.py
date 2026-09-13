@@ -31,7 +31,7 @@ class NewsSelectionStreamingTests(unittest.TestCase):
         token = agent._MODEL_SESSION.set(self.session)
         self.addCleanup(agent._MODEL_SESSION.reset, token)
         for name in ('wait_for_internal_ai_slot', 'api_key_retry_after'):
-            patcher = mock.patch('ai_rate_limit.' + name, return_value=0)
+            patcher = mock.patch('cmhk.ai.ai_rate_limit.' + name, return_value=0)
             patcher.start()
             self.addCleanup(patcher.stop)
 

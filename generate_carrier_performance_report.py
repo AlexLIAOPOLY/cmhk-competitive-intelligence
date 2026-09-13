@@ -28,12 +28,12 @@ from docx.shared import Pt
 from docx.text.paragraph import Paragraph
 from opencc import OpenCC
 
-from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-from ai_key_rotation import open_llm_request
-from ai_rate_limit import wait_for_internal_ai_slot
-from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from cmhk.ai.ai_key_rotation import open_llm_request
+from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+from cmhk.ai.ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
 from cmhk.data.company_metrics import build_company_metrics_payload
-from network_utils import urlopen_with_local_proxy_fallback
+from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 from cmhk.reporting.web_research import public_web_search, run_web_research
 
 
@@ -1873,7 +1873,7 @@ def main() -> None:
     sidecar_path = performance_quality_sidecar_path(output_path)
     if sidecar_path.exists():
         print(" ->", sidecar_path)
-    from report_audio_pipeline import generate_report_audio
+    from cmhk.reporting.report_audio_pipeline import generate_report_audio
     generate_report_audio(output_path)
     print("==================================================")
 

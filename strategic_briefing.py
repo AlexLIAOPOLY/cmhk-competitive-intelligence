@@ -22,15 +22,15 @@ from zoneinfo import ZoneInfo
 
 from opencc import OpenCC
 
-from ai_config import api_key_candidates, load_ai_config
-from ai_key_rotation import (
+from cmhk.ai.ai_config import api_key_candidates, load_ai_config
+from cmhk.ai.ai_key_rotation import (
     is_key_unavailable_error, available_key_routes, api_key_retry_after,
     mark_api_key_unavailable, APIKeyPoolUnavailable, is_transient_llm_error,
     api_key_resource_id,
 )
-from ai_rate_limit import wait_for_internal_ai_slot
-from ai_dispatch import model_call, order_resources
-from ai_response_compat import load_json_response
+from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+from cmhk.ai.ai_dispatch import model_call, order_resources
+from cmhk.ai.ai_response_compat import load_json_response
 from cmhk.intelligence.agent_harness import (
     TruncatedModelOutput, assert_finish_reason, run_durable_agent,
 )

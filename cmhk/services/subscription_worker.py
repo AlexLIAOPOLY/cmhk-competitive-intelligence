@@ -52,7 +52,7 @@ class SubscriptionDeliveryWorker:
 
     def _prepare(self, row):
         # This operation persists the exact card, without contacting Feishu IM.
-        from ai_dispatch import request_context
+        from cmhk.ai.ai_dispatch import request_context
         with request_context('personal-news:' + row['open_id'],
                              priority=row.get('_ai_priority', 'background')):
             with preparation_window(row.get('_preparation_seconds', 600)):

@@ -3,7 +3,7 @@ import io
 import json
 import unittest
 
-from ai_response_compat import StructuredAIResponseError, final_chat_message_text, read_chat_completion_sse
+from cmhk.ai.ai_response_compat import StructuredAIResponseError, final_chat_message_text, read_chat_completion_sse
 from tests.ai_stream_fixture import sse_response
 
 

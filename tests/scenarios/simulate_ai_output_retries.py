@@ -10,11 +10,11 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ai_response_compat import (  # noqa: E402
+from cmhk.ai.ai_response_compat import (  # noqa: E402
     final_chat_message_text,
     load_json_response,
     prepare_structured_chat_body,

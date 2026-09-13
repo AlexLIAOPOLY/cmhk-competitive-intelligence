@@ -9,8 +9,8 @@ from unittest.mock import patch
 import httpx
 from langchain_core.messages import HumanMessage
 
-from ai_key_rotation import APIKeyPoolUnavailable, api_key_resource_id
-from ai_rate_limit import RateLimitedChatDeepSeek
+from cmhk.ai.ai_key_rotation import APIKeyPoolUnavailable, api_key_resource_id
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek
 from cmhk.intelligence.agent_harness import TruncatedModelOutput, assert_complete
 from data_curation.research_model import ResearchChatDeepSeek
 
@@ -51,10 +51,10 @@ def sse(events):
 def quota_isolation():
     with ExitStack() as stack:
         stack.enter_context(patch.object(RateLimitedChatDeepSeek, "_keys", return_value=["fixture-key"]))
-        stack.enter_context(patch("ai_rate_limit.api_key_retry_after", return_value=0))
-        from ai_dispatch import model_call, async_model_call
-        reserve = stack.enter_context(patch("ai_rate_limit.model_call", wraps=model_call))
-        async_reserve = stack.enter_context(patch("ai_rate_limit.async_model_call", wraps=async_model_call))
+        stack.enter_context(patch("cmhk.ai.ai_rate_limit.api_key_retry_after", return_value=0))
+        from cmhk.ai.ai_dispatch import model_call, async_model_call
+        reserve = stack.enter_context(patch("cmhk.ai.ai_rate_limit.model_call", wraps=model_call))
+        async_reserve = stack.enter_context(patch("cmhk.ai.ai_rate_limit.async_model_call", wraps=async_model_call))
         reserve.async_reserve = async_reserve
         stack.enter_context(patch("data_curation.research_model.configured_research_models", return_value=["primary", "backup"]))
         yield reserve

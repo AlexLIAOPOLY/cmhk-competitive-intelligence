@@ -10,9 +10,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlsplit, urlunsplit
 
-from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-from ai_key_rotation import open_llm_request
-from ai_rate_limit import wait_for_internal_ai_slot
+from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from cmhk.ai.ai_key_rotation import open_llm_request
+from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
 from cmhk.data.source_identity import canonical_source_document_identity, is_derived_value
 
 
@@ -2504,7 +2504,7 @@ def ask_llm_with_rag(question: str) -> dict[str, Any]:
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
     if provider != "openai":
-        from ai_response_compat import deepseek_nonthinking_parameters
+        from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
         body = deepseek_nonthinking_parameters(body)
 
     req = urllib.request.Request(
@@ -2631,7 +2631,7 @@ def stream_llm_with_rag(question: str):
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
     if provider != "openai":
-        from ai_response_compat import deepseek_nonthinking_parameters
+        from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
         body = deepseek_nonthinking_parameters(body)
 
     req = urllib.request.Request(

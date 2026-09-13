@@ -22,7 +22,7 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from unittest.mock import patch
 
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 CONTENT = ('战略指标｜【客户留存差距】持续收窄，后续需要关注服务体验变化\n'
            '竞争格局｜两家公司流失率差距由0.2个百分点收窄至0.1个百分点，竞争呈收敛趋势。\n'
@@ -31,8 +31,8 @@ CONTENT = ('战略指标｜【客户留存差距】持续收窄，后续需要�
 
 
 def run(users=50, delay=.4):
-    import ai_dispatch
-    import ai_rate_limit
+    from cmhk.ai import ai_dispatch
+    from cmhk.ai import ai_rate_limit
     import web_app
     import generate_weekly_report as weekly
 
@@ -78,6 +78,8 @@ def run(users=50, delay=.4):
             'CMHK_INTERNAL_AI_RATE_STATE_PATH':str(Path(directory)/'rate.json'),
             'CMHK_INTERNAL_AI_KEY_STATE_PATH':str(Path(directory)/'keys.json'),
             'CMHK_INTERNAL_AI_REQUESTS_PER_MINUTE':'6000',
+            'CMHK_INTERNAL_AI_KEY_REQUESTS_PER_MINUTE':'6000',
+            'CMHK_INTERNAL_AI_KEY_MAX_CONCURRENT':'8',
             'CMHK_INTERNAL_AI_MAX_CONCURRENT':'8',
             'CMHK_INTERNAL_AI_MAX_QUEUED':'200',
         }))

@@ -170,8 +170,8 @@ def validate_image(data: bytes) -> str:
 
 
 def _vision_call(item: dict, candidate: dict, data: bytes, *, deadline: float | None = None) -> dict:
-    from ai_config import load_ai_config
-    from ai_key_rotation import open_llm_request
+    from cmhk.ai.ai_config import load_ai_config
+    from cmhk.ai.ai_key_rotation import open_llm_request
     from cmhk.services.news_push_skill import skill_contract
     config = load_ai_config(include_key=True)
     with Image.open(io.BytesIO(data)) as picture:

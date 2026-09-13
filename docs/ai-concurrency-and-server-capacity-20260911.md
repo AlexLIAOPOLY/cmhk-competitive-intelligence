@@ -63,7 +63,7 @@
 可复跑的应用侧混合压测：
 
 ```bash
-python scripts/load_test_ai_concurrency.py --users 50 --output /tmp/cmhk-ai-load-50.json
+python tests/load/load_test_ai_concurrency.py --users 50 --output /tmp/cmhk-ai-load-50.json
 ```
 
 证据：本地 `artifacts/ai-concurrency-20260911/load-50.json`、`live-smoke.json`。压测默认只启动隔离的本地模拟服务，不改变正式额度、不发正式消息。测试成功要求请求全部完成、模型峰值不超过上限、前后台重叠且计数/占位无遗漏。

@@ -30,8 +30,8 @@ class DiscoveryRecoveryTests(unittest.TestCase):
 
     def setUp(self):
         self.evidence, self.items = DiscoveryIncrementalEvidenceTests().fixture()
-        self.enterContext(patch('ai_config.load_ai_config', return_value={'api_key': 'test-secret'}))
-        self.enterContext(patch('ai_rate_limit.wait_for_internal_ai_slot'))
+        self.enterContext(patch('cmhk.ai.ai_config.load_ai_config', return_value={'api_key': 'test-secret'}))
+        self.enterContext(patch('cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot'))
         self.enterContext(patch.object(pipeline, '_executive_model_route', return_value=['primary', 'backup']))
 
     def stretch(self, count=140):

@@ -8,8 +8,8 @@ from typing import Any, Iterator
 
 from langchain_deepseek import ChatDeepSeek as _ChatDeepSeek
 
-from ai_config import load_ai_config
-from ai_key_rotation import (
+from cmhk.ai.ai_config import load_ai_config
+from cmhk.ai.ai_key_rotation import (
     is_key_unavailable_error,
     mark_api_key_unavailable,
     ordered_api_keys,
@@ -22,7 +22,7 @@ from ai_key_rotation import (
 )
 
 
-from ai_dispatch import AIQueueBusy, PRIORITY as _REQUEST_PRIORITY, model_call, async_model_call, wait_for_slot
+from cmhk.ai.ai_dispatch import AIQueueBusy, PRIORITY as _REQUEST_PRIORITY, model_call, async_model_call, wait_for_slot
 
 def set_internal_ai_priority(priority: str = "interactive"):
     return _REQUEST_PRIORITY.set(str(priority or "background"))

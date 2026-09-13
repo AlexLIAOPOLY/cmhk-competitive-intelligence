@@ -23,10 +23,10 @@ try:
 except ImportError:  # pragma: no cover - deployment fallback
     OpenCC = None
 
-from ai_config import api_key_candidates, load_ai_config
-from ai_key_rotation import is_key_unavailable_error, mark_api_key_unavailable
-from ai_rate_limit import RateLimitedChatDeepSeek
-from ai_response_compat import deepseek_nonthinking_parameters
+from cmhk.ai.ai_config import api_key_candidates, load_ai_config
+from cmhk.ai.ai_key_rotation import is_key_unavailable_error, mark_api_key_unavailable
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek
+from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
 from cmhk.intelligence.agent_harness import (
     TruncatedModelOutput, assert_complete, run_durable_agent,
 )
@@ -65,7 +65,7 @@ class ChatDeepSeek(RateLimitedChatDeepSeek):
     def _keys(self) -> list[str]:
         return [self.openai_api_key.get_secret_value()]
 
-    def _handle_attempt_error(self, api_key, error, index, keys, attempt, *, emitted=False):
+    def _handle_attempt_error(self, api_key, error, keys, attempt, *, emitted=False):
         # The durable news ledger owns retries, including failures before the
         # first token. SDK and rate-limiter retries must not multiply one entry.
         if is_key_unavailable_error(error):

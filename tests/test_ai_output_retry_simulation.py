@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from scripts.simulate_ai_output_retries import ROOT, WORKFLOWS, run_matrix
+from tests.scenarios.simulate_ai_output_retries import ROOT, WORKFLOWS, run_matrix
 
 
 def test_complete_internal_ai_retry_matrix_is_fail_closed_and_side_effect_free():

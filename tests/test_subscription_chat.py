@@ -356,7 +356,7 @@ class SubscriptionChatTests(unittest.TestCase):
                 response.__enter__.return_value.read.return_value = json.dumps({'choices': [
                     {'finish_reason': 'stop', 'message': {'content': json.dumps(result)}}]}).encode()
                 return response
-            with self.subTest(stale=stale), mock_patch('ai_config.load_ai_config', return_value={'base_url': 'https://example.invalid/v1'}), mock_patch('ai_key_rotation.open_llm_request', side_effect=transport):
+            with self.subTest(stale=stale), mock_patch('cmhk.ai.ai_config.load_ai_config', return_value={'base_url': 'https://example.invalid/v1'}), mock_patch('cmhk.ai.ai_key_rotation.open_llm_request', side_effect=transport):
                 if stale:
                     with self.assertRaises(ValueError):
                         interpret('我希望多收一些国际新闻', self.get(), [])
@@ -373,7 +373,7 @@ class SubscriptionChatTests(unittest.TestCase):
             response.__enter__.return_value.read.return_value = json.dumps({'choices': [
                 {'finish_reason':'stop','message':{'content':json.dumps(result)}}]}).encode()
             return response
-        with mock_patch('ai_config.load_ai_config', return_value={'base_url':'https://example.invalid/v1'}), mock_patch('ai_key_rotation.open_llm_request', side_effect=transport):
+        with mock_patch('cmhk.ai.ai_config.load_ai_config', return_value={'base_url':'https://example.invalid/v1'}), mock_patch('cmhk.ai.ai_key_rotation.open_llm_request', side_effect=transport):
             with self.assertRaises(ValueError):
                 interpret('你定', {**self.get(), 'news_topics':[{'name':'人工智能','terms':['AI']}]}, [])
 
@@ -393,7 +393,7 @@ class SubscriptionChatTests(unittest.TestCase):
             response.__enter__.return_value.read.return_value = json.dumps({'choices': [
                 {'finish_reason': 'stop', 'message': {'content': json.dumps(result)}}]}).encode()
             return response
-        with mock_patch('ai_config.load_ai_config', return_value={'base_url': 'https://example.invalid/v1'}), mock_patch('ai_key_rotation.open_llm_request', side_effect=transport):
+        with mock_patch('cmhk.ai.ai_config.load_ai_config', return_value={'base_url': 'https://example.invalid/v1'}), mock_patch('cmhk.ai.ai_key_rotation.open_llm_request', side_effect=transport):
             for afternoon in ('18:30', '19:00', '21:00'):
                 current = {**self.get(), 'news_delivery_times': ['09:00', afternoon]}
                 proposal = interpret(source, current, [])
@@ -681,7 +681,7 @@ class SubscriptionChatTests(unittest.TestCase):
             result={'request_context':data,'intent':'help','changes':[],'question':'','reply':'明白，我可以继续帮你安排。'}
             response=MagicMock();response.__enter__.return_value.read.return_value=json.dumps({'choices':[{'finish_reason':'stop','message':{'content':json.dumps(result)}}]}).encode();return response
         context=[{'text':'旧请求','intent':'clarify','reply':'过时的栏目菜单'}, {'text':'多看AI新闻','intent':'update','reply':'本人旧设置SECRET 09:30'}, {'text':'怎么选','intent':'clarify','reply':'想侧重AI产品还是应用？'}, {'text':'看看偏好','intent':'show','reply':'旧清单'}]
-        with mock_patch('ai_config.load_ai_config',return_value={'base_url':'https://example.invalid/v1'}),mock_patch('ai_key_rotation.open_llm_request',side_effect=transport):
+        with mock_patch('cmhk.ai.ai_config.load_ai_config',return_value={'base_url':'https://example.invalid/v1'}),mock_patch('cmhk.ai.ai_key_rotation.open_llm_request',side_effect=transport):
             interpret('你定',self.get(),context)
         self.assertNotIn('SECRET',json.dumps(captured))
         self.assertTrue(captured[0]['自主安排'])

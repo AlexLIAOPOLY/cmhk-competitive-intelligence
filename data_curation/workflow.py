@@ -20,13 +20,13 @@ from urllib.parse import unquote, urlencode, urlparse
 
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
-from ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek as ChatDeepSeek
 from langgraph.checkpoint.memory import MemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import RetryPolicy
 
-from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-from ai_response_compat import deepseek_nonthinking_parameters
+from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
 from cmhk.agent.rag import estimate_tokens
 from cmhk.data.company_metrics import (
     AI_CACHE_PATH,

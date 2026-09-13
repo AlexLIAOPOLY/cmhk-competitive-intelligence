@@ -8,10 +8,10 @@ from unittest import mock
 
 from langchain_core.messages import HumanMessage
 
-import ai_key_rotation
-import ai_config
-from ai_config import api_key_candidates
-from ai_rate_limit import RateLimitedChatDeepSeek, _ChatDeepSeek
+from cmhk.ai import ai_key_rotation
+from cmhk.ai import ai_config
+from cmhk.ai.ai_config import api_key_candidates
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek, _ChatDeepSeek
 
 
 class _Response(io.BytesIO):
@@ -154,10 +154,10 @@ def test_langchain_client_rotates_authorization_header() -> None:
 
     with (
         mock.patch(
-            "ai_rate_limit.load_ai_config",
+            "cmhk.ai.ai_rate_limit.load_ai_config",
             return_value={"api_key": "primary", "strategy_api_keys": ["backup"]},
         ),
-        mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+        mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
         mock.patch.object(
             _ChatDeepSeek,
             "_generate",
@@ -241,7 +241,7 @@ def test_all_three_fail_then_cooldown_stops_calls_and_expiry_recovers(monkeypatc
 
 def test_cooldown_survives_process_restart_without_storing_credentials():
     ai_key_rotation.mark_api_key_unavailable(POOL["api_keys"][0], _budget(), raw_body=b"budget_exceeded")
-    code = "from ai_key_rotation import ordered_api_keys; print(len(ordered_api_keys({'api_keys':['first-test-key','second-test-key','third-test-key']})))"
+    code = "from cmhk.ai.ai_key_rotation import ordered_api_keys; print(len(ordered_api_keys({'api_keys':['first-test-key','second-test-key','third-test-key']})))"
     result = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, check=True)
     assert result.stdout.strip() == "2"
     state = Path(os.environ["CMHK_INTERNAL_AI_KEY_STATE_PATH"]).read_text()
@@ -330,7 +330,7 @@ def _model():
 
 def test_langchain_sync_transport_retries_same_key():
     model = _model()
-    with mock.patch("ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("ai_rate_limit.wait_for_internal_ai_slot"), mock.patch("ai_rate_limit.time.sleep"), mock.patch.object(_ChatDeepSeek, "_generate", side_effect=[TimeoutError(), "done"]) as invoke:
+    with mock.patch("cmhk.ai.ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"), mock.patch("cmhk.ai.ai_rate_limit.time.sleep"), mock.patch.object(_ChatDeepSeek, "_generate", side_effect=[TimeoutError(), "done"]) as invoke:
         assert model._generate([]) == "done"
     assert invoke.call_count == 2
     assert invoke.call_args_list[0].kwargs == invoke.call_args_list[1].kwargs
@@ -340,7 +340,7 @@ def test_langchain_async_rotates_all_three_and_tracks_final_failure():
     model = _model()
     async def fail(*args, **kwargs):
         raise RuntimeError("budget_exceeded")
-    with mock.patch("ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("ai_rate_limit.wait_for_internal_ai_slot"), mock.patch.object(_ChatDeepSeek, "_agenerate", side_effect=fail) as invoke:
+    with mock.patch("cmhk.ai.ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"), mock.patch.object(_ChatDeepSeek, "_agenerate", side_effect=fail) as invoke:
         with pytest.raises(ai_key_rotation.APIKeyPoolUnavailable):
             asyncio.run(model._agenerate([]))
     assert invoke.call_count == 3
@@ -362,7 +362,7 @@ def test_partial_langchain_stream_never_retries(asynchronous):
             emitted.append(item)
     emitted = []
     method = "_astream" if asynchronous else "_stream"
-    with mock.patch("ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("ai_rate_limit.wait_for_internal_ai_slot"), mock.patch.object(_ChatDeepSeek, method, side_effect=astream if asynchronous else stream) as invoke:
+    with mock.patch("cmhk.ai.ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"), mock.patch.object(_ChatDeepSeek, method, side_effect=astream if asynchronous else stream) as invoke:
         with pytest.raises(TimeoutError):
             if asynchronous:
                 asyncio.run(collect())
@@ -417,13 +417,13 @@ def test_langchain_stream_before_first_chunk_retries_without_duplicate(asynchron
     async def collect():
         return [item async for item in model._astream([])]
     method = "_astream" if asynchronous else "_stream"
-    with mock.patch("ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("ai_rate_limit.wait_for_internal_ai_slot"), mock.patch("ai_rate_limit.time.sleep"), mock.patch("ai_rate_limit.asyncio.sleep", new_callable=mock.AsyncMock), mock.patch.object(_ChatDeepSeek, method, side_effect=astream if asynchronous else stream):
+    with mock.patch("cmhk.ai.ai_rate_limit.load_ai_config", return_value=POOL), mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"), mock.patch("cmhk.ai.ai_rate_limit.time.sleep"), mock.patch("cmhk.ai.ai_rate_limit.asyncio.sleep", new_callable=mock.AsyncMock), mock.patch.object(_ChatDeepSeek, method, side_effect=astream if asynchronous else stream):
         assert (asyncio.run(collect()) if asynchronous else list(model._stream([]))) == ["complete"]
     assert attempts == ["Bearer first-test-key"] * 2
 
 
 def test_simultaneous_workers_preserve_each_others_cooldowns():
-    code = "from ai_key_rotation import mark_api_key_unavailable; import sys; mark_api_key_unavailable(sys.argv[1], RuntimeError('budget_exceeded'))"
+    code = "from cmhk.ai.ai_key_rotation import mark_api_key_unavailable; import sys; mark_api_key_unavailable(sys.argv[1], RuntimeError('budget_exceeded'))"
     processes = [subprocess.Popen([sys.executable, "-c", code, key], stdout=subprocess.PIPE, stderr=subprocess.PIPE) for key in POOL["api_keys"]]
     for process in processes:
         _, error = process.communicate(timeout=15)

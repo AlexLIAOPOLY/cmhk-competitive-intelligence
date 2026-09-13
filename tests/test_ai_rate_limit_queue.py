@@ -9,8 +9,8 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-import ai_dispatch as dispatch
-from ai_key_rotation import open_llm_request
+from cmhk.ai import ai_dispatch as dispatch
+from cmhk.ai.ai_key_rotation import open_llm_request
 
 
 @pytest.fixture(autouse=True)
@@ -155,7 +155,7 @@ def test_50_threads_share_capacity_and_all_complete():
 
 
 def test_process_death_releases_lease_but_retains_rate_charge():
-    code = 'from ai_dispatch import model_call; import os; c=model_call("report"); c.__enter__(); os._exit(0)'
+    code = 'from cmhk.ai.ai_dispatch import model_call; import os; c=model_call("report"); c.__enter__(); os._exit(0)'
     subprocess.run([sys.executable, '-c', code], check=True, timeout=15)
     status = dispatch.capacity_status()
     assert status['active'] == 0
@@ -164,7 +164,7 @@ def test_process_death_releases_lease_but_retains_rate_charge():
 
 def test_multiple_processes_do_not_multiply_global_capacity(monkeypatch):
     monkeypatch.setenv('CMHK_INTERNAL_AI_MAX_CONCURRENT', '4')
-    code = '''from ai_dispatch import model_call,request_context,capacity_status
+    code = '''from cmhk.ai.ai_dispatch import model_call,request_context,capacity_status
 import os,time,json
 with request_context(str(os.getpid())), model_call('insight'):
  print(json.dumps(capacity_status()),flush=True)
@@ -313,7 +313,7 @@ def test_chat_background_thread_keeps_authenticated_subject():
 
 def test_sdk_retries_cannot_bypass_shared_accounting(monkeypatch):
     import httpx
-    import ai_rate_limit
+    from cmhk.ai import ai_rate_limit
     calls = []
     def reply(request):
         calls.append(request)

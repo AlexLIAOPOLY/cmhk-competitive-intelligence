@@ -27,8 +27,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from ai_config import load_ai_config  # noqa: E402
-from ai_key_rotation import open_llm_request  # noqa: E402
+from cmhk.ai.ai_config import load_ai_config  # noqa: E402
+from cmhk.ai.ai_key_rotation import open_llm_request  # noqa: E402
 from cmhk.integrations.feishu_runtime import lark_cli_env, resolve_lark_cli  # noqa: E402
 
 
@@ -664,7 +664,7 @@ def _extract_json_object(text: str) -> dict[str, Any]:
 
 
 def validate_with_model(markdown: str, rows: list[dict[str, Any]], group_count: int, model: str) -> None:
-    from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+    from cmhk.ai.ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
 
     ai = load_ai_config(include_key=True)
     api_key = str(ai.get("api_key") or "").strip()

@@ -34,8 +34,8 @@ def _typed_discovery_fixture(evidence):
 class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def setUp(self):
         # Unit tests must not spend model quota or wait on the live global queue.
-        self.enterContext(patch("ai_rate_limit.wait_for_internal_ai_slot", return_value=None))
-        self.enterContext(patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=AssertionError("Unexpected live model request")))
+        self.enterContext(patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot", return_value=None))
+        self.enterContext(patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", side_effect=AssertionError("Unexpected live model request")))
 
     def test_period_rank_understands_half_year_and_canonical_named_month(self):
         self.assertEqual(pipeline._period_rank("H1 2026"), (2026, 6, 30))
@@ -142,10 +142,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
     def test_four_database_model_route_prefers_v4_pro(self):
         source = Path(pipeline.__file__).read_text(encoding="utf-8")
 
-        with patch("ai_config.load_ai_config", return_value={}):
+        with patch("cmhk.ai.ai_config.load_ai_config", return_value={}):
             self.assertEqual(pipeline._executive_model_route(),
                              ["DeepSeek-V4-Pro", "GLM", "Qwen3-30B-A3B-Instruct-2507"])
-        with patch("ai_config.load_ai_config", return_value={"model_api_keys": {"deepseek-v4-free": ["masked"]}}):
+        with patch("cmhk.ai.ai_config.load_ai_config", return_value={"model_api_keys": {"deepseek-v4-free": ["masked"]}}):
             self.assertEqual(pipeline._executive_model_route()[:2], ["DeepSeek-V4-Pro", "deepseek-v4-free"])
         self.assertNotIn(
             'list(dict.fromkeys(["Qwen3-30B-A3B-Instruct-2507", "GLM", configured_model]))',
@@ -226,11 +226,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
                 patch("executive_intelligence_pipeline._content_hash", return_value="evidence-hash"),
                 patch("executive_intelligence_pipeline._compact_discovery_evidence", return_value={"domains": []}),
                 patch("executive_intelligence_pipeline._validate_model_discoveries", side_effect=lambda items, _evidence: items),
-                patch("ai_config.load_ai_config", return_value={
+                patch("cmhk.ai.ai_config.load_ai_config", return_value={
                     "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
                 }),
-                patch("ai_rate_limit.wait_for_internal_ai_slot"),
-                patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+                patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+                patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
             ):
                 result = pipeline.regenerate_model_discovery(
                     0, "mainland", "international", path=output_path
@@ -268,8 +268,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             path.write_text("{}")
             with (
                 patch.object(pipeline, "_ai_only_bundle", return_value=fixture),
-                patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
-                patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
+                patch("cmhk.ai.ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
+                patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response),
             ):
                 for index, item in enumerate(discoveries):
                     with self.assertRaisesRegex(ValueError, "AI本次未返回"):
@@ -320,11 +320,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             return sse_response(content, model="DeepSeek-V4-Pro")
 
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=response) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", side_effect=response) as request,
         ):
             pipeline.generate_model_focus_insight("local", focus)
             pipeline.generate_model_focus_insight("local", focus)
@@ -368,11 +368,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": content}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
         ):
             pipeline.generate_model_focus_insight("local", focus)
 
@@ -411,11 +411,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             })
             responses.append(response)
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
@@ -458,11 +458,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             })
             responses.append(response)
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
@@ -479,8 +479,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": ""}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response),
             patch.object(pipeline, "_safe_focus_regeneration_fallback") as fallback,
             patch.object(pipeline, "_final_grounded_focus_repair") as repair,
         ):
@@ -517,11 +517,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             })
             responses.append(response)
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", side_effect=responses) as request,
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
@@ -542,11 +542,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": content}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
@@ -597,11 +597,11 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
         })
 
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "test-key", "base_url": "https://example.test/v1", "model": "deepseek-v4"
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response) as request,
         ):
             result = pipeline.generate_model_focus_insight("local", focus)
 
@@ -616,8 +616,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": ""}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response),
             patch.object(pipeline, "_safe_focus_regeneration_fallback") as fallback,
             patch.object(pipeline, "_final_grounded_focus_repair") as repair,
         ):
@@ -633,8 +633,8 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": ""}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
-            patch("network_utils.urlopen_with_local_proxy_fallback", return_value=response),
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={"api_key": "test-key", "base_url": "https://example.test/v1"}),
+            patch("cmhk.integrations.network_utils.urlopen_with_local_proxy_fallback", return_value=response),
             patch.object(pipeline, "_safe_focus_regeneration_fallback") as fallback,
             patch.object(pipeline, "_final_grounded_focus_repair") as repair,
         ):
@@ -1961,10 +1961,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": json.dumps(discoveries, ensure_ascii=False)}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
             patch("urllib.request.urlopen", side_effect=[TimeoutError("slow"), response]) as open_url,
             # Isolate model rotation from the independently tested key/transport
             # retry layer, whose persistent cooldown state is time-dependent.
@@ -2022,10 +2022,10 @@ class ExecutiveIntelligencePipelineTests(unittest.TestCase):
             "choices": [{"message": {"content": json.dumps(discoveries, ensure_ascii=False)}}]
         })
         with (
-            patch("ai_config.load_ai_config", return_value={
+            patch("cmhk.ai.ai_config.load_ai_config", return_value={
                 "api_key": "secret", "model": "deepseek-v4", "base_url": "http://model.local/v1",
             }),
-            patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
             patch("urllib.request.urlopen", return_value=response) as open_url,
         ):
             with self.assertRaisesRegex(ValueError, "跨库发现"):

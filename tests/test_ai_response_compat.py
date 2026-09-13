@@ -1,6 +1,6 @@
 import unittest
 
-from ai_response_compat import (
+from cmhk.ai.ai_response_compat import (
     StructuredAIResponseError,
     final_chat_message_text,
     load_json_response,

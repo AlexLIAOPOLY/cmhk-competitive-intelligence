@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -eu
 
+python3 scripts/check_workspace_layout.py --staged
+
 blocked="$(git diff --cached --name-only --diff-filter=ACMR | awk '
   /^tmp\// { print; next }
   /^agent_runs\// { print; next }

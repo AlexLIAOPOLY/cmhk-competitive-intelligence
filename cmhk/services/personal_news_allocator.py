@@ -49,9 +49,9 @@ def cached_eligible(items, *, root, profile, open_id, points):
 
 
 def _model(context):
-    from ai_config import load_ai_config
-    from ai_key_rotation import open_llm_request
-    from ai_response_compat import prepare_structured_chat_body, final_chat_message_text
+    from cmhk.ai.ai_config import load_ai_config
+    from cmhk.ai.ai_key_rotation import open_llm_request
+    from cmhk.ai.ai_response_compat import prepare_structured_chat_body, final_chat_message_text
     from cmhk.services.news_push_skill import text_model
     config=load_ai_config(); model=text_model()
     prompt = (

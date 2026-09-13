@@ -16,9 +16,9 @@ from pathlib import Path
 from urllib.parse import quote
 
 from docx import Document
-from network_utils import urlopen_with_local_proxy_fallback
-from ai_key_rotation import open_llm_request
-from ai_rate_limit import wait_for_internal_ai_slot
+from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
+from cmhk.ai.ai_key_rotation import open_llm_request
+from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
 
 
 ROOT = Path(__file__).resolve().parent
@@ -363,7 +363,7 @@ def _internal_asr_timing_payload(audio_path: Path) -> dict:
     import urllib.error
     import urllib.request
 
-    from ai_config import is_internal_ai_base_url, load_ai_config
+    from cmhk.ai.ai_config import is_internal_ai_base_url, load_ai_config
 
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").strip().rstrip("/")
@@ -597,7 +597,7 @@ def normalize_for_speech(value: str) -> str:
 
 
 def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> str | None:
-    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
     import urllib.request
     import json
     import os
@@ -653,7 +653,7 @@ def _generate_audio_summary_with_llm(text: str, report_kind: str = "weekly") -> 
         url = f"{base_url}/chat/completions"
     body.update(config.get("extra_parameters") or {})
     if provider != "openai":
-        from ai_response_compat import deepseek_nonthinking_parameters
+        from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
         body = deepseek_nonthinking_parameters(body)
 
     req = urllib.request.Request(
@@ -1343,7 +1343,7 @@ def _synthesize_with_internal_tts(
     import urllib.error
     import urllib.request
 
-    from ai_config import is_internal_ai_base_url, load_ai_config
+    from cmhk.ai.ai_config import is_internal_ai_base_url, load_ai_config
 
     config = load_ai_config(include_key=True)
     base_url = str(config.get("base_url") or "").rstrip("/")

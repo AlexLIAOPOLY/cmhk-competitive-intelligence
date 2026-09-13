@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 AI_CONFIG_PATH = ROOT / "ai_config.json"
 INTERNAL_AI_BASE_URL = (
     os.environ.get("CMHK_INTERNAL_AI_BASE_URL") or "http://10.0.62.177:4000/v1"

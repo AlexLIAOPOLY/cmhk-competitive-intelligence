@@ -21,15 +21,15 @@ from urllib.request import Request
 
 from langchain_core.messages import AIMessage, AIMessageChunk, HumanMessage, SystemMessage, ToolMessage
 from langchain_core.tools import tool
-from ai_rate_limit import (
+from cmhk.ai.ai_rate_limit import (
     RateLimitedChatDeepSeek as ChatDeepSeek,
     reset_internal_ai_priority,
     set_internal_ai_priority,
 )
 from langgraph.prebuilt import create_react_agent
 
-from ai_config import load_ai_config
-from ai_response_compat import deepseek_nonthinking_parameters, load_json_response
+from cmhk.ai.ai_config import load_ai_config
+from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters, load_json_response
 from cmhk.agent.memory import add_memory, auto_capture_user_memory, load_memories, memory_context, search_memories
 from cmhk.agent.production import (
     AgentRunRecorder,
@@ -41,7 +41,7 @@ from cmhk.agent.production import (
     rolling_backtest,
 )
 from cmhk.crawl.run_registry import latest_crawl_run_summary
-from network_utils import urlopen_with_local_proxy_fallback
+from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 from cmhk.agent.rag import _cloud_vendor_exact_metric_chunks, _global_operator_exact_metric_chunks, _local_hk_operator_exact_metric_chunks, build_context_package, default_background_dataset_ids, effective_dataset_ids, list_knowledge_datasets, resolve_dataset_ids, retrieve_context
 from cmhk.reporting.charts import render_chart
 
@@ -2657,7 +2657,7 @@ def get_agent(
     base_url = config.get("base_url", "")
     model_name = _agent_model_name(thinking_enabled=thinking_enabled)
 
-    from network_utils import _available_proxy_urls
+    from cmhk.integrations.network_utils import _available_proxy_urls
     proxies = _available_proxy_urls()
     if proxies and not os.environ.get("HTTP_PROXY"):
         os.environ["HTTP_PROXY"] = proxies[0]

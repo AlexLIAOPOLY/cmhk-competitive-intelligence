@@ -45,7 +45,7 @@ def _number(name, default, minimum=1):
 def _configured_key_count():
     """Count the global pool without ever exposing a credential."""
     try:
-        from ai_config import api_key_candidates, load_ai_config
+        from cmhk.ai.ai_config import api_key_candidates, load_ai_config
         return max(1, len(api_key_candidates(load_ai_config(include_key=True))))
     except Exception:
         return 1

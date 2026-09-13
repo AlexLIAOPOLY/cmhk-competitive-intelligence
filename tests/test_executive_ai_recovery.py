@@ -10,7 +10,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import executive_intelligence_pipeline as pipeline
-from ai_key_rotation import APIKeyPoolUnavailable
+from cmhk.ai.ai_key_rotation import APIKeyPoolUnavailable
 from tests.ai_stream_fixture import sse_response
 
 
@@ -48,8 +48,8 @@ def response(candidate):
 
 class ExecutiveAIRecoveryTests(unittest.TestCase):
     def setUp(self):
-        self.enterContext(patch("ai_config.load_ai_config", return_value={"api_key": "fixture"}))
-        self.enterContext(patch("ai_rate_limit.wait_for_internal_ai_slot"))
+        self.enterContext(patch("cmhk.ai.ai_config.load_ai_config", return_value={"api_key": "fixture"}))
+        self.enterContext(patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"))
         self.enterContext(patch.object(pipeline, "_executive_model_route", return_value=["primary", "backup"]))
 
     def test_partial_focus_resumes_without_repeating_valid_focus(self):
@@ -406,8 +406,8 @@ class DiscoveryIncrementalEvidenceTests(unittest.TestCase):
             self.assertEqual(scope, seen[0])
             return original_validate(raw, scope)
 
-        with patch("ai_config.load_ai_config", return_value={"api_key": "fixture"}), \
-             patch("ai_rate_limit.wait_for_internal_ai_slot"), \
+        with patch("cmhk.ai.ai_config.load_ai_config", return_value={"api_key": "fixture"}), \
+             patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"), \
              patch.object(pipeline, "open_llm_request", side_effect=request), \
              patch.object(pipeline, "_validate_model_discoveries", side_effect=validate):
             result = pipeline.generate_model_discoveries(evidence)

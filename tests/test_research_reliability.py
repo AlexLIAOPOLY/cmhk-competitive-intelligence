@@ -161,6 +161,6 @@ class ResearchReliabilityTests(unittest.TestCase):
     def test_model_timeout_enters_bounded_retry_not_immediate_fallback(self):
         import executive_intelligence_pipeline as p
         # No domain payload required: all three primary attempts time out before validation.
-        with patch('ai_config.load_ai_config', return_value={'api_key': 'test', 'base_url': 'https://example.test'}), patch('ai_rate_limit.wait_for_internal_ai_slot'), patch.object(p, 'open_llm_request', side_effect=TimeoutError('timed out')) as call, patch.object(p, '_validate_model_summaries', return_value=[]), patch.object(p, '_repair_model_summaries', side_effect=lambda s,e:s), patch.object(p, '_drop_unsupported_numeric_clauses', side_effect=lambda s,e:s):
+        with patch('cmhk.ai.ai_config.load_ai_config', return_value={'api_key': 'test', 'base_url': 'https://example.test'}), patch('cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot'), patch.object(p, 'open_llm_request', side_effect=TimeoutError('timed out')) as call, patch.object(p, '_validate_model_summaries', return_value=[]), patch.object(p, '_repair_model_summaries', side_effect=lambda s,e:s), patch.object(p, '_drop_unsupported_numeric_clauses', side_effect=lambda s,e:s):
             p.generate_model_domain_summaries({'domains': []})
             self.assertEqual(call.call_count, 3)

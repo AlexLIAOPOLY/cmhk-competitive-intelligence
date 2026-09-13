@@ -7,8 +7,8 @@ from pathlib import Path
 from typing import Any
 
 
-ROOT = Path(__file__).resolve().parents[1]
-OUT_DIR = ROOT / "agent_evals"
+ROOT = Path(__file__).resolve().parents[2]
+OUT_DIR = ROOT / "artifacts" / "generated" / "agent_evals"
 sys.path.insert(0, str(ROOT))
 
 from agent import search_local_reports, trigger_full_crawl  # noqa: E402

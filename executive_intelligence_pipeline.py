@@ -28,10 +28,10 @@ from cmhk.data.daily_financial_promotion import promote_daily_financial_facts
 from cmhk.data.local_financial_results import DATABASE_PATH as CANONICAL_LOCAL_FINANCIAL_PATH
 from cmhk.data_releases import default_release_root, publish_quarterly_release_task
 
-from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, read_chat_completion_sse, unwrap_items_payload
-from ai_key_rotation import APIKeyPoolUnavailable, open_llm_request
+from cmhk.ai.ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body, read_chat_completion_sse, unwrap_items_payload
+from cmhk.ai.ai_key_rotation import APIKeyPoolUnavailable, open_llm_request
 from cmhk.intelligence.ai_provenance import AI_ONLY_POLICY, model_generated_only
-from executive_intelligence_prompts import STRATEGIC_PROMPT_VERSION, STRATEGIC_WRITING_GUIDE, discovery_few_shot_messages
+from cmhk.intelligence.executive_intelligence_prompts import STRATEGIC_PROMPT_VERSION, STRATEGIC_WRITING_GUIDE, discovery_few_shot_messages
 
 
 ROOT = Path(__file__).resolve().parent
@@ -76,7 +76,7 @@ def _uncached_model_body(body: dict[str, Any], request_id: str | None = None) ->
 
 
 def _model_request(config, api_key, body, request_id=None):
-    from ai_config import INTERNAL_AI_BASE_URL
+    from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL
 
     request_id = request_id or uuid4().hex
     return urllib.request.Request(
@@ -112,7 +112,7 @@ def _trace_model_attempt(path, scope, model, started, payload, error, config):
 def _write_model_attempt_trace(path, scope, model, started, payload, error, config):
     if path is None:
         return
-    from ai_config import api_key_candidates
+    from cmhk.ai.ai_config import api_key_candidates
 
     message = str(error or "")
     for key in api_key_candidates(config, model=model):
@@ -2812,9 +2812,9 @@ def generate_model_focus_insight(
     domain_id: str, focus: dict[str, Any], *, temperature: float = 0.25,
 ) -> dict[str, Any]:
     """Generate a single focus with model retries, never template substitutions."""
-    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-    from ai_rate_limit import wait_for_internal_ai_slot
-    from network_utils import urlopen_with_local_proxy_fallback
+    from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+    from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
     config = load_ai_config(include_key=True)
     api_key = str(config.get("api_key") or "").strip()
@@ -3012,7 +3012,7 @@ def _apply_scope_model_patch(candidate, patch, options):
 
 
 def _request_scope_model_patch(scope, candidate, options, config, *, trace_path=None, repair_feedback=None):
-    from ai_rate_limit import wait_for_internal_ai_slot
+    from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
 
     model = _executive_model_route()[0]
     api_key = str(config.get("api_key") or "")
@@ -3092,9 +3092,9 @@ def generate_model_domain_summaries(
     allow_partial_domains: bool = False,
     checkpoint_path: Path | None = None,
 ) -> dict[str, Any]:
-    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-    from ai_rate_limit import wait_for_internal_ai_slot
-    from network_utils import urlopen_with_local_proxy_fallback
+    from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+    from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
     evidence = evidence or _analysis_input_snapshot()
     config = load_ai_config(include_key=True)
@@ -3190,7 +3190,7 @@ def generate_model_domain_summaries(
 
     def persist_drafts():
         if draft_path:
-            from ai_config import api_key_candidates
+            from cmhk.ai.ai_config import api_key_candidates
             encoded = json.dumps(drafts, ensure_ascii=False)
             for route in ("", *_executive_model_route()):
                 for secret in api_key_candidates(config, model=route):
@@ -3827,7 +3827,7 @@ def _apply_discovery_model_patch(candidate, packet, options):
 
 
 def _repair_saved_discoveries(entry, evidence, config, persist, trace_path):
-    from ai_rate_limit import wait_for_internal_ai_slot
+    from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
     history = entry.setdefault("repair_history", [])
     selected = (entry.get("selected") or {}).get("attempt_index")
     source = (entry["attempts"][selected] if isinstance(selected, int) and selected < len(entry["attempts"]) else None)
@@ -3921,8 +3921,8 @@ def _repair_saved_discoveries(entry, evidence, config, persist, trace_path):
 
 
 def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attempt_trace_path: Path | None = None) -> dict[str, Any]:
-    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-    from ai_rate_limit import wait_for_internal_ai_slot
+    from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
 
     evidence = evidence or _analysis_input_snapshot()
     prompt_evidence = _compact_discovery_evidence(evidence)
@@ -3950,7 +3950,7 @@ def generate_model_discoveries(evidence: dict[str, Any] | None = None, *, attemp
 
     def persist():
         if draft_path:
-            from ai_config import api_key_candidates
+            from cmhk.ai.ai_config import api_key_candidates
             text = json.dumps(saved, ensure_ascii=False)
             for route in ("", *_executive_model_route()):
                 for secret in api_key_candidates(config, model=route):
@@ -4143,9 +4143,9 @@ def regenerate_model_discovery(
     progress: Callable[[str], None] | None = None,
 ) -> dict[str, Any]:
     """Regenerate one cross-library discovery while preserving the other three."""
-    from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-    from ai_rate_limit import wait_for_internal_ai_slot
-    from network_utils import urlopen_with_local_proxy_fallback
+    from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+    from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+    from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
     def report(message: str) -> None:
         if progress:

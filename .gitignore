@@ -89,3 +89,7 @@ weekly_report_fact_usage.json
 !*template.docx
 !weekly_report_template.docx
 !carrier_performance_template.docx
+
+# Private document drafts and reference inputs; keep out of public source commits.
+/data/reporting/drafts/
+/data/reporting/reference_reports/

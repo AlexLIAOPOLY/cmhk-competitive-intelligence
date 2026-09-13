@@ -12,10 +12,10 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
-from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-from ai_key_rotation import open_llm_request
-from ai_rate_limit import wait_for_internal_ai_slot
-from ai_response_compat import (
+from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+from cmhk.ai.ai_key_rotation import open_llm_request
+from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+from cmhk.ai.ai_response_compat import (
     StructuredAIResponseError,
     final_chat_message_text,
     load_json_response,
@@ -23,7 +23,7 @@ from ai_response_compat import (
     unwrap_items_payload,
 )
 from cmhk.agent.rag import estimate_tokens
-from network_utils import urlopen_with_local_proxy_fallback
+from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 from cmhk.data.company_metrics import (
     AI_CACHE_PATH,
     AI_CACHE_SCHEMA_VERSION,

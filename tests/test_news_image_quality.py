@@ -258,8 +258,8 @@ class NewsImageQualityTests(unittest.TestCase):
     def test_visual_response_truncation_retries_once_without_approving_partial_output(self):
         first = {'choices': [{'finish_reason': 'length', 'message': {'content': '{"relation":"event"'}}]}
         second = {'choices': [{'finish_reason': 'stop', 'message': {'content': json.dumps(self.verdict)}}]}
-        with patch('ai_config.load_ai_config', return_value={'base_url': 'https://model.example/v1'}), \
-                patch('ai_key_rotation.open_llm_request', side_effect=[
+        with patch('cmhk.ai.ai_config.load_ai_config', return_value={'base_url': 'https://model.example/v1'}), \
+                patch('cmhk.ai.ai_key_rotation.open_llm_request', side_effect=[
                     io.BytesIO(json.dumps(first).encode()), io.BytesIO(json.dumps(second).encode())]) as call:
             result = _vision_call(self.item, self.candidate, self.data)
         self.assertEqual(result, self.verdict)

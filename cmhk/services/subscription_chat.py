@@ -180,11 +180,11 @@ def validate_grounding(patch: dict, current: dict, text: str, context: list):
 
 def interpret(text: str, current: dict, context: list) -> dict:
     """Extract operations; only own topic names are shared for follow-up references."""
-    from ai_config import load_ai_config
-    from ai_key_rotation import open_llm_request
+    from cmhk.ai.ai_config import load_ai_config
+    from cmhk.ai.ai_key_rotation import open_llm_request
     from cmhk.services.news_push_skill import text_model
 
-    from ai_response_compat import prepare_structured_chat_body, final_chat_message_text
+    from cmhk.ai.ai_response_compat import prepare_structured_chat_body, final_chat_message_text
 
     prompt = (
         "你是个人新闻偏好助理。根据本人当前要求及本人上下文，提出需要保存的偏好操作。"

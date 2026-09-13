@@ -36,11 +36,11 @@ from cmhk.crawl.run_registry import (
     register_crawl_run,
     start_crawl_run,
 )
-from ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
+from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, is_internal_ai_base_url, load_ai_config, save_ai_config
 from contextvars import copy_context
-from ai_dispatch import AIQueueBusy, AIRequestCancelled, WAIT_CALLBACK, capacity_status, request_context
-from ai_key_rotation import open_llm_request
-from ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
+from cmhk.ai.ai_dispatch import AIQueueBusy, AIRequestCancelled, WAIT_CALLBACK, capacity_status, request_context
+from cmhk.ai.ai_key_rotation import open_llm_request
+from cmhk.ai.ai_rate_limit import reset_internal_ai_priority, set_internal_ai_priority, wait_for_internal_ai_slot
 from cmhk.data.company_metrics import build_company_metrics_payload
 from cmhk.data_releases import default_release_root, resolve_release_request
 from cmhk.intranet import intranet_access_urls
@@ -679,7 +679,7 @@ def analyze_chat_image(payload: dict) -> dict:
         "max_tokens": 900,
         "stream": False,
     }
-    from ai_response_compat import deepseek_nonthinking_parameters
+    from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
     body.update(config.get("extra_parameters") or {})
     body = deepseek_nonthinking_parameters(body)
     request = urllib.request.Request(
@@ -697,7 +697,7 @@ def analyze_chat_image(payload: dict) -> dict:
         operation="chat-image-analyze",
     ) as response:
         result = json.loads(response.read().decode("utf-8"))
-    from ai_response_compat import final_chat_message_text
+    from cmhk.ai.ai_response_compat import final_chat_message_text
     content = final_chat_message_text(result, operation="图片识别")
     if isinstance(content, list):
         content = "\n".join(str(item.get("text") or "") for item in content if isinstance(item, dict))
@@ -933,7 +933,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
         "chat_template_kwargs": {"enable_thinking": False},
         "stream": stream_callback is not None,
     }
-    from ai_response_compat import deepseek_nonthinking_parameters
+    from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
     body.update(config.get("extra_parameters") or {})
     body = deepseek_nonthinking_parameters(body)
     # Per-feature completion headroom is a correctness gate.  A smaller global
@@ -1010,7 +1010,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                             # Preserve the real response text, but never expose
                             # a non-streaming browser path.
                             result = json.loads(b"".join(non_sse_parts).decode("utf-8"))
-                            from ai_response_compat import final_chat_message_text
+                            from cmhk.ai.ai_response_compat import final_chat_message_text
                             complete_text = final_chat_message_text(result, operation="竞争指标AI洞察")
                             complete_text = _competitor_insight_content(complete_text)
                             content_parts.append(complete_text)
@@ -1046,7 +1046,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                                 operation="competitor-insight",
                             ) as fallback_response:
                                 fallback_result = json.loads(fallback_response.read().decode("utf-8"))
-                            from ai_response_compat import final_chat_message_text
+                            from cmhk.ai.ai_response_compat import final_chat_message_text
                             complete_text = final_chat_message_text(
                                 fallback_result,
                                 operation="竞争指标AI洞察",
@@ -1057,7 +1057,7 @@ def generate_competitor_insight(payload: dict, stream_callback=None) -> dict:
                         raw_content = "".join(content_parts)
                     else:
                         result = json.loads(response.read().decode("utf-8"))
-                        from ai_response_compat import final_chat_message_text
+                        from cmhk.ai.ai_response_compat import final_chat_message_text
                         raw_content = final_chat_message_text(result, operation="竞争指标AI洞察")
                 break
             except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError) as exc:
@@ -1378,7 +1378,7 @@ def generate_chat_thread_title(first_user: str) -> str:
         "temperature": 0.1,
         "max_tokens": 48,
     }
-    from ai_response_compat import deepseek_nonthinking_parameters
+    from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
     body.update(config.get("extra_parameters") or {})
     body = deepseek_nonthinking_parameters(body)
     req = urllib.request.Request(
@@ -3664,7 +3664,7 @@ def run_report_generation() -> dict:
         timeout=2400,
     )
     status = build_status()
-    from report_audio_pipeline import audio_result_from_output
+    from cmhk.reporting.report_audio_pipeline import audio_result_from_output
     audio_result = audio_result_from_output(proc.stdout or "") if proc.returncode == 0 else None
     if proc.returncode == 0 and audio_result is None:
         try:
@@ -3697,7 +3697,7 @@ def run_carrier_performance_generation() -> dict:
         timeout=2400,
     )
     status = build_status()
-    from report_audio_pipeline import audio_result_from_output
+    from cmhk.reporting.report_audio_pipeline import audio_result_from_output
     audio_result = audio_result_from_output(proc.stdout or "") if proc.returncode == 0 else None
     if proc.returncode == 0 and audio_result is None:
         try:
@@ -4166,7 +4166,7 @@ def stream_report_generation(
     handler._task_worker_pid = proc.pid
     handler._task_monitor_phase = "报告生成"
     handler._task_monitor_detail = "报告生成进程正在执行。"
-    from report_audio_pipeline import audio_result_from_output, RESULT_PREFIX
+    from cmhk.reporting.report_audio_pipeline import audio_result_from_output, RESULT_PREFIX
     audio_result = None
     created_path = None
     if proc.stdout:
@@ -4900,7 +4900,7 @@ def _run_recovered_general_task(original: dict) -> None:
                 worker_pid=proc.pid,
                 append_log=True,
             )
-            from report_audio_pipeline import audio_result_from_output, RESULT_PREFIX
+            from cmhk.reporting.report_audio_pipeline import audio_result_from_output, RESULT_PREFIX
             recovered_audio = None
             if proc.stdout:
                 for line in proc.stdout:
@@ -9110,7 +9110,7 @@ class AppHandler(BaseHTTPRequestHandler):
                     }
                 body.update(config.get("extra_parameters") or {})
                 if provider != "openai":
-                    from ai_response_compat import deepseek_nonthinking_parameters
+                    from cmhk.ai.ai_response_compat import deepseek_nonthinking_parameters
                     body = deepseek_nonthinking_parameters(body)
                 request = urllib.request.Request(
                     url,

@@ -20,8 +20,8 @@ from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any, Callable
 
-from ai_config import api_key_candidates, load_ai_config
-from ai_dispatch import AIQueueBusy, model_call
+from cmhk.ai.ai_config import api_key_candidates, load_ai_config
+from cmhk.ai.ai_dispatch import AIQueueBusy, model_call
 
 _STATE_LOCK = threading.RLock()
 # Kept for compatibility; authoritative cooldowns live in the shared state file.

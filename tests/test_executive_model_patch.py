@@ -47,8 +47,8 @@ class ExecutiveModelPatchTests(unittest.TestCase):
         self.draft = copy.deepcopy(self.valid)
         self.draft['focuses'][0]['analysis'] *= 5
         self.config = {'api_key': 'test-secret-never-save'}
-        self.enterContext(patch('ai_config.load_ai_config', return_value=self.config))
-        self.enterContext(patch('ai_rate_limit.wait_for_internal_ai_slot'))
+        self.enterContext(patch('cmhk.ai.ai_config.load_ai_config', return_value=self.config))
+        self.enterContext(patch('cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot'))
         self.enterContext(patch.object(pipeline, '_executive_model_route', return_value=['requested-primary', 'requested-patch']))
 
     def test_only_invalid_existing_fields_are_exposed(self):

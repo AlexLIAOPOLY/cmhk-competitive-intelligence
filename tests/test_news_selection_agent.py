@@ -770,7 +770,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
 
     def test_empty_json_mode_recovers_through_real_sdk_serialization(self):
         import httpx
-        from ai_rate_limit import RateLimitedChatDeepSeek
+        from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek
 
         target = {"news_id": "NEWS-1"}
         answer = {
@@ -841,7 +841,7 @@ class NewsSelectionAgentTests(unittest.TestCase):
                         mock.patch.object(
                             RateLimitedChatDeepSeek, "_keys", return_value=["secret"]
                         ),
-                        mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+                        mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
                         self.assertLogs(
                             agent.logging.getLogger(), level="WARNING"
                         ) as logs,
@@ -2005,7 +2005,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
                     "ChatDeepSeek",
                     side_effect=lambda **kw: model_class(**kw, http_client=client),
                 ),
-                mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+                mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
             ):
                 with self.assertRaisesRegex(agent._ModelRoundLimit, "10轮"):
                     agent._invoke_langchain_batches([], self.targets())
@@ -2072,7 +2072,7 @@ class ModelBatchCheckpointTests(unittest.TestCase):
             mock.patch.object(agent, "load_ai_config", return_value={"base_url": "https://example.com/v1"}),
             mock.patch.object(agent, "_model_routes", return_value=[(f"bad-{i}", "key") for i in range(3)] + [("working", "key")]),
             mock.patch.object(agent, "ChatDeepSeek", side_effect=lambda **kw: model_class(**kw, http_client=client)),
-            mock.patch("ai_rate_limit.wait_for_internal_ai_slot"),
+            mock.patch("cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot"),
         ):
             payload, _ = agent._invoke_langchain_batches([], targets, request_callback=notices.append)
         self.assertEqual(len(payload["decisions"]), 330)

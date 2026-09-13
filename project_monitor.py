@@ -35,8 +35,8 @@ from pathlib import Path
 from typing import Any, Callable, Iterable
 from zoneinfo import ZoneInfo
 
-from ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
-from ai_key_rotation import open_llm_request
+from cmhk.ai.ai_response_compat import final_chat_message_text, load_json_response, prepare_structured_chat_body
+from cmhk.ai.ai_key_rotation import open_llm_request
 from cmhk.integrations.feishu_sheet_rollover import (
     active_part,
     capacity_decision,
@@ -2357,9 +2357,9 @@ class ProjectMonitor:
         if self.ai_diagnoser is not None:
             payload = self.ai_diagnoser(dict(incident))
             return self._validate_diagnosis(payload, model="test-injected", incident=incident)
-        from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-        from ai_rate_limit import wait_for_internal_ai_slot
-        from network_utils import urlopen_with_local_proxy_fallback
+        from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+        from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+        from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
         config = load_ai_config(include_key=True)
         api_key = str(config.get("api_key") or "").strip()
@@ -2539,9 +2539,9 @@ class ProjectMonitor:
                 "route_assessed_at_hkt": _iso(self.now()),
             }
 
-        from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-        from ai_rate_limit import wait_for_internal_ai_slot
-        from network_utils import urlopen_with_local_proxy_fallback
+        from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+        from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+        from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
         config = load_ai_config(include_key=True)
         api_key = str(config.get("api_key") or "").strip()
@@ -2942,9 +2942,9 @@ class ProjectMonitor:
             request_id = f"cmhk-resolution-{incident.get('incident_id')}-test"
             raw = json.dumps(payload, ensure_ascii=False)
         else:
-            from ai_config import INTERNAL_AI_BASE_URL, load_ai_config
-            from ai_rate_limit import wait_for_internal_ai_slot
-            from network_utils import urlopen_with_local_proxy_fallback
+            from cmhk.ai.ai_config import INTERNAL_AI_BASE_URL, load_ai_config
+            from cmhk.ai.ai_rate_limit import wait_for_internal_ai_slot
+            from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
             config = load_ai_config(include_key=True)
             api_key = str(config.get("api_key") or "").strip()

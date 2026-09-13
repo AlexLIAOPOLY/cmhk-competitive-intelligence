@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from unittest import mock
 
-import ai_config
+from cmhk.ai import ai_config
 
 
 class AIConfigTests(unittest.TestCase):

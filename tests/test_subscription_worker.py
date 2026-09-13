@@ -241,7 +241,7 @@ class SubscriptionClockTests(unittest.TestCase):
         self.send.assert_not_called()
 
     def test_late_material_prepares_immediately_then_sends_once(self):
-        with mock.patch('ai_dispatch.request_context', return_value=nullcontext()) as admission:
+        with mock.patch('cmhk.ai.ai_dispatch.request_context', return_value=nullcontext()) as admission:
             self.tick('08:20:00')
         self.assertIn('interactive', [call.kwargs['priority'] for call in admission.call_args_list])
         self.send.assert_not_called()

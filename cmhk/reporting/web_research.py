@@ -9,7 +9,7 @@ from urllib.request import Request
 
 from bs4 import BeautifulSoup
 
-from network_utils import urlopen_with_local_proxy_fallback
+from cmhk.integrations.network_utils import urlopen_with_local_proxy_fallback
 
 
 SearchResult = dict[str, object]

@@ -7,8 +7,8 @@ from unittest.mock import Mock, patch
 
 from data_curation import daily_research as daily, research_recovery as recovery
 from data_curation.research_model import ResearchChatDeepSeek
-from ai_rate_limit import RateLimitedChatDeepSeek
-from ai_key_rotation import APIKeyPoolUnavailable
+from cmhk.ai.ai_rate_limit import RateLimitedChatDeepSeek
+from cmhk.ai.ai_key_rotation import APIKeyPoolUnavailable
 import executive_intelligence_pipeline as pipeline
 from tests.ai_stream_fixture import sse_response
 
@@ -328,8 +328,8 @@ class RecoveryTests(unittest.TestCase):
             ]}, model=body['model'])
         with tempfile.TemporaryDirectory() as td:
             checkpoint = Path(td) / 'ai.json'
-            with (patch('ai_config.load_ai_config', return_value={'api_key':'test'}),
-                  patch('ai_rate_limit.wait_for_internal_ai_slot'), patch.object(pipeline, 'open_llm_request', side_effect=request)):
+            with (patch('cmhk.ai.ai_config.load_ai_config', return_value={'api_key':'test'}),
+                  patch('cmhk.ai.ai_rate_limit.wait_for_internal_ai_slot'), patch.object(pipeline, 'open_llm_request', side_effect=request)):
                 with self.assertRaisesRegex(ValueError, 'temporary timeout'):
                     pipeline.generate_model_domain_summaries(evidence, checkpoint_path=checkpoint)
                 fail = False

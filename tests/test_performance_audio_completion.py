@@ -87,8 +87,8 @@ class PerformanceAudioCompletionTests(unittest.TestCase):
             return io.BytesIO(b"audio" * 400)
 
         with tempfile.TemporaryDirectory() as tmp, \
-             patch("ai_config.load_ai_config", return_value={"base_url": "https://test.invalid", "api_key": "test-only"}), \
-             patch("ai_config.is_internal_ai_base_url", return_value=True), \
+             patch("cmhk.ai.ai_config.load_ai_config", return_value={"base_url": "https://test.invalid", "api_key": "test-only"}), \
+             patch("cmhk.ai.ai_config.is_internal_ai_base_url", return_value=True), \
              patch.object(tts, "wait_for_internal_ai_slot"), \
              patch.object(tts, "open_llm_request", side_effect=request_audio), \
              patch.object(tts.shutil, "which", return_value="ffmpeg"), \
