@@ -9,6 +9,31 @@ from cmhk.services.news_delivery_dedupe import exact_unique
 from cmhk.services.news_delivery_selection import original_crawl_pool, select_recent_news
 
 MAX_CANDIDATE_ATTEMPTS = 2
+CONSOLIDATED_DELIVERY_REASON = '本轮已集中发送，不再连续补发；未满足条数保留为真实缺额'
+
+
+def previously_sent_round(db, open_id, content_ref, batch_id=''):
+    if not content_ref.startswith('strategic-crawl:'):
+        return False
+    return db.execute('''SELECT 1 FROM news_delivery_receipts r JOIN deliveries d
+        ON d.open_id=r.open_id AND d.batch_id=r.batch_id
+        WHERE d.open_id=? AND d.content_ref=? AND d.batch_id<>?
+        AND r.status IN ('sent','verified') LIMIT 1''', (open_id,content_ref,batch_id)).fetchone() is not None
+
+
+def cancel_unsent_supplements(db, open_id, content_ref, stamp):
+    # Keep uncertain or partially sent original requests available for receipt
+    # recovery. Only wholly unsent follow-up batches are cancelled.
+    pending = db.execute('''SELECT p.id,p.delivery_id FROM pending_subscription_deliveries p
+        JOIN deliveries d ON d.id=p.delivery_id LEFT JOIN news_delivery_receipts r
+        ON r.open_id=d.open_id AND r.batch_id=d.batch_id
+        WHERE p.open_id=? AND p.content_ref=? AND p.status='queued'
+        AND (r.status IS NULL OR r.status NOT IN ('sending','sent','verified'))''',
+        (open_id,content_ref)).fetchall()
+    for row in pending:
+        db.execute("UPDATE pending_subscription_deliveries SET status='cancelled',last_error=?,dispatched_at=? WHERE id=?",
+                   (CONSOLIDATED_DELIVERY_REASON,stamp,row[0]))
+        db.execute("UPDATE deliveries SET status='cancelled',error=? WHERE id=?",(CONSOLIDATED_DELIVERY_REASON,row[1]))
 
 
 def initialize(db):
@@ -130,6 +155,9 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
         if not original:
             return {}
         sent = delivered_items(db, open_id, content_ref)
+        dispatch_closed = previously_sent_round(db, open_id, content_ref)
+        if dispatch_closed:
+            cancel_unsent_supplements(db, open_id, content_ref, stamp)
         wanted = int(subscriber['news_item_limit'])
         remaining = max(0, wanted-len(sent))
         pending = db.execute("SELECT 1 FROM pending_subscription_deliveries WHERE open_id=? AND content_ref=? AND status='queued'",
@@ -147,10 +175,10 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
                 profile=service.delivery_profile, open_id=open_id, points=points)
         issues = [dict(r) for r in db.execute('''SELECT item_key,attempts,status,error FROM news_candidate_attempts
             WHERE open_id=? AND content_ref=?''', (open_id, content_ref))]
-        status = 'stopped' if stop_reason else 'complete' if not remaining else ('preparing' if pending else 'continuing' if candidates else 'exhausted')
+        status = 'stopped' if stop_reason else 'complete' if not remaining else 'closed' if dispatch_closed else ('preparing' if pending else 'continuing' if candidates else 'exhausted')
         # Retry only while original stories remain fresh, and use a new message
         # identity for an actual supplement. Serializes two workers/restarts.
-        if remaining and not pending and candidates and not stop_reason:
+        if remaining and not pending and candidates and not stop_reason and not dispatch_closed:
             part = db.execute('SELECT COUNT(*) FROM deliveries WHERE open_id=? AND content_ref=?', (open_id, content_ref)).fetchone()[0]
             batch = 'news-supp-' + hashlib.sha256(f'{open_id}:{content_ref}:{part}'.encode()).hexdigest()[:32]
             cur = db.execute("""INSERT INTO deliveries(batch_id,open_id,service,mode,content_ref,status,message_ids,error,created_at)
@@ -165,12 +193,20 @@ def reconcile_round(service, open_id, content_ref, *, now=None):
                   else f'本轮已发送{len(sent)}/{wanted}条')
         if stop_reason:
             reason = f'本轮已发送{len(sent)}/{wanted}条；{stop_reason}'
+        elif dispatch_closed and remaining:
+            reason = f'本轮已发送{len(sent)}/{wanted}条，缺{remaining}条；{CONSOLIDATED_DELIVERY_REASON}'
         detail = {'reason':reason,'eligible_remaining':len(candidates),'issues':issues}
+        failures = [dict(r) for r in db.execute(
+            "SELECT id,attempts,last_error FROM pending_subscription_deliveries WHERE open_id=? AND content_ref=? AND status='queued' AND last_error<>''",
+            (open_id, content_ref))]
+        if failures:
+            detail['preparation_errors'] = failures
+            detail['reason'] += '；准备受阻：' + failures[-1]['last_error'][:300]
         message_ids = list(dict.fromkeys(mid for r in db.execute(
             "SELECT message_ids FROM deliveries WHERE open_id=? AND content_ref=? AND status='verified'",
             (open_id,content_ref)) for mid in json.loads(r[0])))
         db.execute("""UPDATE news_crawl_dispatches SET status=?,message_ids=?,last_error=?,updated_at=?
-            WHERE open_id=? AND crawl_slot=?""", ('stopped' if stop_reason else 'verified' if not remaining else 'partial' if sent else 'queued' if pending or candidates else 'exhausted',
+                            WHERE open_id=? AND crawl_slot=?""", ('stopped' if stop_reason else 'verified' if not remaining else 'closed' if dispatch_closed else 'partial' if sent else 'queued' if pending or candidates else 'exhausted',
             json.dumps(message_ids),reason if remaining else '',stamp,open_id,content_ref.removeprefix('strategic-crawl:')))
         db.execute('''INSERT INTO news_round_progress VALUES(?,?,?,?,?,?,?,?)
             ON CONFLICT(open_id,content_ref) DO UPDATE SET requested_count=excluded.requested_count,
@@ -186,6 +222,6 @@ def reconcile_recent_rounds(service, now=None):
     now = (now or datetime.now(HKT)).astimezone(HKT)
     with closing(service._connect()) as db:
         rounds = db.execute('''SELECT DISTINCT open_id,content_ref FROM pending_subscription_deliveries
-            WHERE service='news' AND substr(content_ref,17,10)=? AND status IN ('verified','exhausted')''',
+            WHERE service='news' AND substr(content_ref,17,10)=? AND status IN ('queued','verified','exhausted')''',
             (now.date().isoformat(),)).fetchall()
     return [reconcile_round(service,*row,now=now) for row in rounds]

@@ -94,6 +94,52 @@ class PersonalSkillTests(unittest.TestCase):
             with self.assertRaises(ValueError):allocate_news(articles(),model_call=bad,**self.args)
             self.assertIsNone(last_allocation(self.root,'bot','ou_a'))
 
+    def test_exact_redundant_news_id_is_normalized_but_conflicts_rejected(self):
+        from cmhk.services.personal_news_allocator import validate_decisions, evidence, evidence_id
+        context={'reader_requirements':self.points,'batch_id':'test',
+                 'candidates':[{'id':evidence_id(i)[:16],**evidence(i)} for i in articles()]}
+        response=verdict(context)
+        response['items'][0]['news_id']='0'
+        normalized=validate_decisions(response,context)
+        self.assertNotIn('news_id',next(iter(normalized.values())))
+        for value in ('wrong',None):
+            response['items'][0]['news_id']=value
+            with self.assertRaises(ValueError):validate_decisions(response,context)
+        del response['items'][0]['news_id']
+        response['items'][0]['untrusted_instruction']='send'
+        with self.assertRaises(ValueError):validate_decisions(response,context)
+
+    def test_partial_selection_releases_checkpoints_and_resumes_only_unknown(self):
+        def flaky(ctx):
+            if ctx['candidates'][0]['news_id']=='2':raise TimeoutError('upstream timeout')
+            return verdict(ctx)
+        with patch('cmhk.services.personal_news_allocator.BATCH_SIZE',2):
+            selected=allocate_news(articles(),model_call=flaky,allow_partial=True,**self.args)
+            self.assertEqual([i['news_id'] for i in selected],['0','1'])
+            report=last_allocation(self.root,'bot','ou_a')
+            self.assertEqual(report['pending_count'],4)
+            self.assertEqual(report['status'],'partial')
+            self.assertEqual(len(cached_eligible(articles(),**self.args)),6)
+            resumed=Mock(side_effect=verdict)
+            selected=allocate_news(articles(),model_call=resumed,allow_partial=True,**self.args)
+            self.assertEqual(resumed.call_count,2)
+            self.assertEqual([i['news_id'] for i in selected],['0','1','2','4','5'])
+            self.assertEqual(last_allocation(self.root,'bot','ou_a')['pending_count'],0)
+
+    def test_schema_failure_has_one_changed_repair_then_uses_valid_checkpoint(self):
+        allocate_news(articles()[:2],model_call=verdict,**self.args)
+        contexts=[]
+        def invalid(ctx):
+            contexts.append(copy.deepcopy(ctx))
+            output=verdict(ctx);output['items'][0].pop('score');return output
+        selected=allocate_news(articles(),model_call=invalid,allow_partial=True,**self.args)
+        self.assertEqual([i['news_id'] for i in selected],['0','1'])
+        self.assertEqual(len(contexts),2)
+        self.assertNotIn('format_repair',contexts[0])
+        self.assertIn('format_repair',contexts[1])
+        with self.assertRaises(ValueError):
+            allocate_news(articles()[2:],model_call=invalid,allow_partial=True,**{**self.args,'open_id':'other'})
+
     def test_completed_batches_resume_and_exclusions_apply_only_to_this_skill(self):
         counter=0
         def fails_second(context):

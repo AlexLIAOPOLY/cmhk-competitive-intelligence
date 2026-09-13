@@ -17,7 +17,7 @@ class NewsPagedDeliveryTests(unittest.TestCase):
                                         news_categories=['公司动态'], news_item_limit=20)
         return [{'news_id': str(i), 'title': f'独立新闻 {i}', 'category': '公司动态',
                  'published_at': '2026-09-10', 'source_url': f'https://publisher.example/{i}',
-                 'summary': f'企业{i}推出新服务。' + '介绍已经审核的具体措施。' * 15} for i in range(20)]
+                 'summary': f'企业{i}推出新服务，首批面向制造业客户开放，并安排专门团队提供部署支持。'} for i in range(20)]
 
     def test_twenty_items_split_without_truncating_prose_or_repeating_sent_page(self):
         items = self.items()
@@ -55,13 +55,18 @@ class NewsPagedDeliveryTests(unittest.TestCase):
 
     def test_oversized_rows_are_split_at_article_boundaries(self):
         from tests.news_push_fixtures import prepared_assets
-        items = [{**item, 'image_kind': 'related', 'summary': '事实。' * 160,
-                  'news_url': item['source_url'] + '?long=' + 'a' * 1000}
+        items = [{**item, 'image_kind': 'related',
+                  'news_url': item['source_url'] + '?long=' + 'a' * 3000}
                  for item in prepared_assets(self.items())]
-        bundle = build_card_pages(title='战略下午茶', items=items, banner='img_banner')
-        self.assertGreaterEqual(len(bundle['cards']), 3)
+        from cmhk.services.news_delivery_guard import NewsCardCapacityError
+        with self.assertRaises(NewsCardCapacityError) as raised:
+            build_card_pages(title='战略下午茶', items=items, banner='img_banner')
+        kept=items[:raised.exception.item_count]
+        self.assertLess(len(kept),len(items))
+        bundle = build_card_pages(title='战略下午茶', items=kept, banner='img_banner')
+        self.assertLessEqual(len(bundle['cards']), 2)
         for card in bundle['cards']:
             self.assertLessEqual(len(json.dumps(card, ensure_ascii=False, separators=(',', ':')).encode()), 30000)
         text = '\n'.join(_card_text(bundle))
         self.assertNotIn('相关资料图', text)
-        self.assertTrue(all(item['title'] in text for item in items))
+        self.assertTrue(all(item['title'] in text for item in kept))

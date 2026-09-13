@@ -29,6 +29,12 @@ class NewsRoundStopped(RuntimeError):
     """The user stopped this original round, including manual recovery."""
 
 
+class NewsCardCapacityError(ValueError):
+    def __init__(self, item_count):
+        self.item_count = item_count
+        super().__init__('本轮最多两张卡片，保留可容纳的完整新闻')
+
+
 def require_active_round(service, content_ref):
     with closing(service._connect()) as db:
         reason = stopped_reason(db, content_ref)
@@ -44,10 +50,14 @@ def preparation_key(*, body: str, title: str, history: list[dict], send_day: str
 
 
 def preparation_content_key(*, body: str, title: str, history: list[dict], send_day: str,
-                            context: str = "") -> str:
+                            context: str = "", content_skill_hash: str = "") -> str:
     """Fingerprint reviewed content independently from presentation-only templates."""
+    image_policy = policy_key()
+    if content_skill_hash:
+        from cmhk.services.news_image_quality import IMAGE_POLICY_VERSION, image_model
+        image_policy = hashlib.sha256(json.dumps([IMAGE_POLICY_VERSION, image_model(), content_skill_hash]).encode()).hexdigest()
     encoded = json.dumps([POLICY_VERSION, DEDUPE_VERSION, EDITOR_VERSION, SUMMARY_VERSION,
-        text_model(), policy_key(), skill_contract()[1], context, body, title, send_day, sorted(
+        text_model(), image_policy, content_skill_hash or skill_contract()[1], context, body, title, send_day, sorted(
         json.dumps(item, ensure_ascii=False, sort_keys=True) for item in history
     )], ensure_ascii=False)
     return hashlib.sha256(encoded.encode()).hexdigest()
@@ -180,6 +190,8 @@ def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
                 break
             pages.append(page)
         else:
+            if len(pages) > 2:
+                raise NewsCardCapacityError(sum(len(group) for group in groups[:2]))
             return pages[0] if len(pages) == 1 else {'cards': pages}
 
 
@@ -224,6 +236,13 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
             return message_ids
         if uncertain:
             raise RuntimeError("该接收人有待确认的新闻发送，请先恢复原消息回执")
+        from cmhk.services.news_round_progress import previously_sent_round, cancel_unsent_supplements, CONSOLIDATED_DELIVERY_REASON
+        with closing(service._connect()) as db, db:
+            closed = previously_sent_round(db, open_id, content_ref, batch_id)
+            if closed:
+                cancel_unsent_supplements(db, open_id, content_ref, now)
+        if closed:
+            raise NewsRoundStopped(CONSOLIDATED_DELIVERY_REASON)
         contract = recipient_contract(service, open_id, profile)
         key = preparation_key(body=body, title=title, history=history, send_day=send_day,
                               context=contract)
@@ -234,6 +253,18 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                  and receipt_audit.get('preparation_key') == key)
         content_ready = (receipt and receipt['status'] == 'prepared'
                          and receipt_audit.get('preparation_content_key') == content_key)
+        if receipt and receipt['status'] == 'prepared' and not content_ready:
+            from cmhk.services.news_push_skill import SKILL_DIR
+            try:
+                mapping = json.loads((SKILL_DIR / 'references/cache-compatibility.json').read_text())
+                compatible = mapping.get(skill_contract()[1], {}).get('preparation_compatible_hashes', [])
+            except (OSError, ValueError, AttributeError):
+                compatible = []
+            previous_hash = receipt_audit.get('skill_hash')
+            if previous_hash in compatible:
+                content_ready = receipt_audit.get('preparation_content_key') == preparation_content_key(
+                    body=body,title=title,history=history,send_day=send_day,context=contract,
+                    content_skill_hash=previous_hash)
         if receipt and (receipt["status"] == "sending" or (ready and not (prepare_only and continue_preparation))):
             # The request may have reached Feishu. Keep precisely the same content
             # and idempotency key on transport recovery, including across midnight.
@@ -251,6 +282,7 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 {"news_id": "text:" + hashlib.sha256(body.encode()).hexdigest(), "title": body[:240], "summary": body}]
             input_count = len(candidates)
             replacements = []
+            allocation_pending = False
             if structured:
                 with closing(service._connect()) as db:
                     subscriber = db.execute(
@@ -281,7 +313,9 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                     from cmhk.services.personal_news_allocator import allocate_news
                     replacements = allocate_news(replacements, root=service.runtime_root,
                         profile=profile, open_id=open_id, points=personal_skill,
-                        region_preference=subscriber['news_region_preference'])
+                        region_preference=subscriber['news_region_preference'], allow_partial=True)
+                    from cmhk.services.personal_news_skill import last_allocation
+                    allocation_pending = bool((last_allocation(service.runtime_root, profile, open_id) or {}).get('pending_count'))
                     # A slow model cannot authorize a send under a now-stale brief.
                     if preparation_content_key(body=body,title=title,history=history,send_day=send_day,
                                                context=recipient_contract(service,open_id,profile)) != content_key:
@@ -371,6 +405,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                         'updated_at': datetime.now(ZoneInfo('Asia/Hong_Kong')).isoformat(timespec='seconds'),
                         'issues': preparation_issues})
                 if not prepared_items:
+                    if allocation_pending:
+                        raise NewsNotPrepared('个人选稿仍有待审核候选，已保存通过项，稍后继续')
                     with closing(service._connect()) as db:
                         excluded = excluded_items(db, open_id, content_ref)
                     retryable = [i for i in replacements if item_key(i) not in excluded]
@@ -384,8 +420,8 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 with closing(service._connect()) as db:
                     excluded = excluded_items(db, open_id, content_ref)
                 done = {item_key(i) for i in selected}
-                can_prepare_more = len(selected) < wanted_count and any(
-                    item_key(i) not in excluded | done for i in replacements)
+                can_prepare_more = len(selected) < wanted_count and (allocation_pending or any(
+                    item_key(i) not in excluded | done for i in replacements))
                 # A retry that hits a temporary outage must not shrink an
                 # unchanged, still-valid prepared card before its due time.
                 if ready and continue_preparation and len(selected) < len(json.loads(receipt['items_json'])):
@@ -395,8 +431,16 @@ def deliver_news(service, *, open_id: str, content_ref: str, title: str, body: s
                 rendered_body = body
             else:
                 rendered_body = NEWS_DIGEST_PREFIX + json.dumps({'items': []}, ensure_ascii=False)
-            card = (build_card_pages(title=title, items=prepared_items, banner=banner) if structured
-                    else strategic_news_card(title=title, body=rendered_body, image_key=banner))
+            try:
+                card = (build_card_pages(title=title, items=prepared_items, banner=banner) if structured
+                        else strategic_news_card(title=title, body=rendered_body, image_key=banner))
+            except NewsCardCapacityError as exc:
+                prepared_items = prepared_items[:exc.item_count]
+                selected = selected[:exc.item_count]
+                summary_reviews = summary_reviews[:exc.item_count]
+                can_prepare_more = False
+                preparation_issues.append({'stage':'card_capacity','error':str(exc)})
+                card = build_card_pages(title=title, items=prepared_items, banner=banner)
             prepared_at = datetime.now(ZoneInfo("Asia/Hong_Kong")).isoformat(timespec="seconds")
             require_active_round(service, content_ref)
             with closing(service._connect()) as db, db:

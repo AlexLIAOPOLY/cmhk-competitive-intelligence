@@ -100,7 +100,7 @@ class ReaderContractTests(unittest.TestCase):
             with closing(service._connect()) as db:
                 self.assertEqual(excluded_items(db,'ou_test',ref),{'wrong'})
 
-    def test_six_of_twenty_resumes_after_restart_and_concurrent_reconcile_never_duplicates(self):
+    def test_partial_delivery_closes_round_and_restart_never_creates_supplements(self):
         now=datetime.now(HKT); day=now.date().isoformat(); ref='strategic-crawl:'+day+'@03:00'
         pool=[{'news_id':f'event{i}', 'title':f'独立企业{i}发布服务', 'category':'公司动态','published_at':day,
                'source_url':f'https://example.test/{i}', 'region':'香港本地', 'summary':f'首批服务覆盖制造企业，新增仓储调度和员工培训，第{i}项独立项目已启动。'} for i in range(20)]
@@ -120,19 +120,19 @@ class ReaderContractTests(unittest.TestCase):
                 first=queued()[0];service.flush_due(pending_id=first['id'],now=now)
                 state=reconcile_round(service,'ou_test',ref,now=now)
                 self.assertEqual((state['delivered_count'],state['remaining_count']),(6,14))
-                self.assertEqual(len(queued()),1)
-                stable_supplement_id = queued()[0]["id"]
-                # A fresh service/parallel recovery sees the same unique queued supplement.
+                self.assertEqual(queued(),[])
+                self.assertEqual(state['status'],'closed')
+                # Restart and concurrent recovery cannot reopen a sent round.
                 with ThreadPoolExecutor(max_workers=3) as workers:
                     list(workers.map(lambda _:reconcile_round(SubscriptionService(runtime_root=Path(tmp)),'ou_test',ref,now=now),range(3)))
-                self.assertEqual(len(queued()),1)
-                self.assertEqual(queued()[0]['id'], stable_supplement_id)
-                supplement=queued()[0];prepare(supplement);service.flush_due(pending_id=supplement['id'],now=now)
                 final=reconcile_round(service,'ou_test',ref,now=now)
-                self.assertEqual((final['status'],final['delivered_count'],final['remaining_count']),('complete',20,0))
-                self.assertEqual(len(edited),20)
-                self.assertEqual(len({x['news_id'] for x in edited}),20)
-                self.assertEqual(send.call_count,3) # 6 + 10 + 4, per-card limit preserved
+                self.assertEqual((final['status'],final['delivered_count'],final['remaining_count']),('closed',6,14))
+                self.assertEqual(len(edited),6)
+                self.assertEqual(send.call_count,1)
+                from cmhk.services.news_delivery_guard import NewsRoundStopped
+                with self.assertRaises(NewsRoundStopped):
+                    deliver_news(service,open_id='ou_test',content_ref=ref,title=first['title'],
+                        body=first['body'],batch_id='manual-supplement',profile=service.delivery_profile)
                 self.assertEqual(queued(),[])
                 with closing(service._connect()) as db:
                     old=db.execute('SELECT message_ids FROM deliveries WHERE id=?',(first['delivery_id'],)).fetchone()[0]
