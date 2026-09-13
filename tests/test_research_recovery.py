@@ -234,6 +234,29 @@ class RecoveryTests(unittest.TestCase):
                 self.assertEqual(result['recovery']['status'], 'completed')
                 self.assertEqual(result['review'], review_count)
 
+    def test_completed_zero_accepted_run_repairs_legacy_business_status(self):
+        from data_curation.research_contracts import VERSION
+        for review_count, expected in [(0, 'no_new_disclosures'), (34, 'needs_review')]:
+            with self.subTest(review=review_count), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                directory = root / 'curation_data/research_runs/research_20260913'
+                directory.mkdir(parents=True)
+                manifest = {
+                    'status': 'partial', 'accepted': 0, 'review': review_count,
+                    'contract_version': VERSION, 'final_review': {'status': 'completed'},
+                    'publication': {'status': 'completed', 'result_status': 'completed'},
+                }
+                (directory / 'manifest.json').write_text(json.dumps(manifest))
+                with (patch.object(daily, 'ROOT', root),
+                      patch.object(daily, '_research_task_id', return_value='original'),
+                      patch.object(daily, '_finish_research_task'),
+                      patch.object(pipeline, 'run_pipeline_with_recovery') as publish):
+                    result = daily.execute(root, directory.name)
+                publish.assert_not_called()
+                self.assertEqual(result['publication']['result_status'], expected)
+                saved = json.loads((directory / 'manifest.json').read_text())
+                self.assertEqual(saved['publication']['result_status'], expected)
+
     def test_publication_only_retry_does_not_repeat_research(self):
         from data_curation.research_contracts import VERSION
         with tempfile.TemporaryDirectory() as td:

@@ -284,6 +284,10 @@ def execute(root: Path, run_id: str) -> dict:
         from .research_contracts import VERSION
         if (previous.get("publication", {}).get("status") == "completed"
                 and previous.get("contract_version") == VERSION and not recovery.retryable_metrics(directory)):
+            if not previous.get("accepted"):
+                previous["publication"]["result_status"] = (
+                    "needs_review" if previous.get("review") else "no_new_disclosures"
+                )
             previous["recovery"] = recovery.schedule(previous, directory, datetime.now(HKT))
             atomic_write_json(manifest_path, previous)
             _finish_research_task(root, task_run_id, task_started, ok=True,
@@ -344,6 +348,15 @@ def execute(root: Path, run_id: str) -> dict:
                 agent_run_id=run_id, curation_summary=summary,
                 task_run_id=task_run_id, max_attempts=1, finalize_task=False,
             )
+            if result.get("skipped"):
+                result_status = result.get("reason", "")
+            elif result.get("ok") and not summary.get("accepted"):
+                # Completion of storage/page verification is separate from the
+                # business result. Unresolved metrics must remain visible even
+                # though no unsafe value was written and publication completed.
+                result_status = "needs_review" if summary.get("review") else "no_new_disclosures"
+            else:
+                result_status = result.get("status", "")
             summary["publication"] = {
                 "status": "completed" if result.get("ok") and not result.get("skipped") else "error",
                 "task_run_id": task_run_id, "completed_at": now(),
@@ -353,10 +366,13 @@ def execute(root: Path, run_id: str) -> dict:
                 "model_analysis": result.get("model_analysis", {}),
                 "domains": result.get("domains", {}), "changes": result.get("ui_value_changes", {}),
                 "pages": result.get("pages_publish", {}), "error": result.get("error", ""),
-                "result_status": result.get("reason") if result.get("skipped") else result.get("status", ""),
+                "result_status": result_status,
             }
         except Exception as exc:
-            summary["publication"] = {"status": "error", "completed_at": now(), "error": str(exc)[:1000]}
+            summary["publication"] = {
+                "status": "error", "task_run_id": task_run_id, "completed_at": now(),
+                "result_status": "error", "error": str(exc)[:1000],
+            }
             _append_task_detail(root, task_run_id, "任务异常", f"执行链路异常：{str(exc)[:1000]}")
         summary["recovery"] = recovery.schedule(summary, directory, datetime.now(HKT))
         if summary["recovery"]["status"] == "retry_pending":

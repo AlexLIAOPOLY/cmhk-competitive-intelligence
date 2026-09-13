@@ -177,8 +177,9 @@ class SixAgentPipelineTests(unittest.TestCase):
             self.assertEqual(len(rows), 2)
             self.assertEqual(next(row for row in rows if row["period"] == "H1 2026")["analysis"], "100")
 
-    def test_no_new_disclosure_does_not_rebuild_or_publish(self):
+    def test_zero_accepted_disclosures_still_publish_with_truthful_business_status(self):
         import data_curation.daily_research as daily
+        from data_curation.research_contracts import VERSION
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             run_id = "research_20260905"
@@ -186,17 +187,24 @@ class SixAgentPipelineTests(unittest.TestCase):
             run.mkdir(parents=True)
             (run / "manifest.json").write_text(json.dumps({"status": "completed", "accepted": 0,
                 "final_review": {"status": "completed"},
-                "research_policy": "latest_disclosure_incremental_v1"}))
-            with patch.object(daily, "ROOT", root), patch.object(pipeline, "_start_refresh_task", side_effect=AssertionError("must not publish")):
+                "research_policy": "latest_disclosure_incremental_v1", "contract_version": VERSION}))
+            publication = {"ok": True, "status": "completed", "storage_readback": {"ok": True},
+                           "model_analysis": {"ok": True, "reused": True, "insights_passed": 19},
+                           "pages_publish": {"ok": True, "status": "published"}}
+            with (patch.object(daily, "ROOT", root),
+                  patch.object(pipeline, "run_pipeline_with_recovery", return_value=publication) as publish):
                 result = daily.execute(root, run_id)
             self.assertEqual(result["publication"]["result_status"], "no_new_disclosures")
             self.assertFalse(result["publication"]["database_updated"])
+            publish.assert_called_once()
             (run / "manifest.json").write_text(json.dumps({"status": "partial", "accepted": 0, "review": 1,
                 "final_review": {"status": "completed"},
-                "research_policy": "latest_disclosure_incremental_v1"}))
-            with patch.object(daily, "ROOT", root):
+                "research_policy": "latest_disclosure_incremental_v1", "contract_version": VERSION}))
+            with (patch.object(daily, "ROOT", root),
+                  patch.object(pipeline, "run_pipeline_with_recovery", return_value=publication) as publish):
                 result = daily.execute(root, run_id)
             self.assertEqual(result["publication"]["result_status"], "needs_review")
+            publish.assert_called_once()
 
     def test_daily_research_reuses_parent_task_for_publication(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -207,6 +215,8 @@ class SixAgentPipelineTests(unittest.TestCase):
             initial = {"status": "completed", "accepted": 1, "review": 0,
                        "final_review": {"status": "completed"},
                        "research_policy": "latest_disclosure_incremental_v1"}
+            from data_curation.research_contracts import VERSION
+            initial["contract_version"] = VERSION
             (run / "manifest.json").write_text(json.dumps(initial))
             publication = {"ok": True, "domains": {"local": {"ok": True}},
                            "failed_domains": [], "model_analysis": {}, "pages_publish": {"ok": True}}
