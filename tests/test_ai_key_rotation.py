@@ -208,6 +208,19 @@ def test_third_key_succeeds_and_future_requests_skip_both_failed_keys():
     assert seen == POOL["api_keys"] + [POOL["api_keys"][2]]
 
 
+def test_sequential_requests_are_balanced_across_all_available_keys():
+    seen = []
+    def invoke(req, **kwargs):
+        seen.append(req.get_header("Authorization").removeprefix("Bearer "))
+        return _Response(b'{"ok":true}')
+    for _ in POOL["api_keys"]:
+        with ai_key_rotation.open_llm_request(
+            _request(), timeout=10, config=POOL, open_func=invoke,
+        ) as response:
+            assert json.load(response) == {"ok": True}
+    assert seen == POOL["api_keys"]
+
+
 def test_all_three_fail_then_cooldown_stops_calls_and_expiry_recovers(monkeypatch):
     invoke = mock.Mock(side_effect=lambda *a, **k: (_ for _ in ()).throw(_budget()))
     with pytest.raises(ai_key_rotation.APIKeyPoolUnavailable) as failed:

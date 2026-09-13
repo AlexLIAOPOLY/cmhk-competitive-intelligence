@@ -42,11 +42,28 @@ def _number(name, default, minimum=1):
         return default
 
 
+def _configured_key_count():
+    """Count the global pool without ever exposing a credential."""
+    try:
+        from ai_config import api_key_candidates, load_ai_config
+        return max(1, len(api_key_candidates(load_ai_config(include_key=True))))
+    except Exception:
+        return 1
+
+
 def limits():
-    rpm = _number("REQUESTS_PER_MINUTE", 14)
+    key_count = _configured_key_count()
+    per_key_rpm = _number("KEY_REQUESTS_PER_MINUTE", 14)
+    # An explicit legacy aggregate override remains authoritative. Otherwise the
+    # safe single-key allowance scales with the configured global key pool.
+    aggregate_default = per_key_rpm * key_count
+    rpm = _number("REQUESTS_PER_MINUTE", aggregate_default)
     concurrent = _number("MAX_CONCURRENT", 8)
     return {
         "requestsPerMinute": rpm,
+        "configuredKeyCount": key_count,
+        "keyRequestsPerMinute": per_key_rpm,
+        "keyMaxConcurrent": _number("KEY_MAX_CONCURRENT", 3),
         "maxConcurrent": concurrent,
         "backgroundConcurrent": max(1, concurrent - min(concurrent - 1, _number("INTERACTIVE_CONCURRENT_RESERVE", 2))),
         "interactiveConcurrent": max(1, concurrent - min(concurrent - 1, _number("BACKGROUND_CONCURRENT_RESERVE", 1))),
@@ -124,7 +141,8 @@ def _prune(state, now):
     state["queue"] = [e for e in state.get("queue", []) if live(e) and e["expires"] > now]
     if int(state.get("window", -1)) != int(now // 60):
         state.update(window=int(now // 60), count=0, background_count=0,
-                     interactive_count=0, served={})
+                     interactive_count=0, served={}, resource_counts={},
+                     resource_served={})
     # Migrate the former counter conservatively; never grant extra capacity.
     state.setdefault("background_count", state.get("count", 0))
     state.setdefault("interactive_count", 0)
@@ -132,10 +150,13 @@ def _prune(state, now):
     # soon as a fast request closes lets one polling workflow repeatedly jump
     # ahead of an older waiter and consume the entire minute allowance.
     state.setdefault("served", {})
+    state.setdefault("resource_counts", {})
+    state.setdefault("resource_served", {})
 
 
 class _Ticket:
-    def __init__(self, operation, *, hold, deadline_monotonic=None, wait_callback=None):
+    def __init__(self, operation, *, hold, deadline_monotonic=None,
+                 wait_callback=None, resources=None):
         self.path = state_path()
         self.started = time.monotonic()
         lane = "interactive" if PRIORITY.get() == "interactive" else "background"
@@ -146,12 +167,15 @@ class _Ticket:
         self.hold = hold
         self.registered = False
         self.admitted = False
+        self.resource = ""
+        resources = list(dict.fromkeys(str(value) for value in (resources or []) if value))
         # Group batch fan-out under one workflow; UI requests use verified actor.
         family = operation.split("-")[0]
         self.entry = {"id": uuid.uuid4().hex, "pid": os.getpid(), "lane": lane,
                       "subject": SUBJECT.get() or "workflow:" + family,
                       "operation": operation[:120], "created": time.time(),
-                      "expires": time.time() + max(0, self.deadline - self.started), "hold": hold}
+                      "expires": time.time() + max(0, self.deadline - self.started),
+                      "hold": hold, "resources": resources}
 
     def try_acquire(self):
         if time.monotonic() >= self.deadline:
@@ -169,30 +193,62 @@ class _Ticket:
                     raise AIQueueBusy("您的 AI 待处理请求较多，请等待已有请求完成后重试")
                 queue.append(self.entry)
                 self.registered = True
+            def available_resource(entry):
+                resources = entry.get("resources") or []
+                if not resources:
+                    return ""
+                counts = state["resource_counts"]
+                active_counts = {
+                    resource: sum(e.get("resource") == resource for e in active)
+                    for resource in resources
+                }
+                available = [
+                    resource for resource in resources
+                    if counts.get(resource, 0) < cfg["keyRequestsPerMinute"]
+                    and (not entry["hold"] or active_counts[resource] < cfg["keyMaxConcurrent"])
+                ]
+                return min(
+                    available,
+                    key=lambda resource: (
+                        active_counts[resource], counts.get(resource, 0),
+                        state["resource_served"].get(resource, 0), resources.index(resource),
+                    ),
+                    default=None,
+                )
+
             def eligible(entry):
                 lane = entry["lane"]
                 reserve = cfg["interactiveReserve"] if lane == "background" else cfg["backgroundReserve"]
                 if state.get("count", 0) >= cfg["requestsPerMinute"] or state[lane + "_count"] >= cfg["requestsPerMinute"] - reserve:
-                    return False
+                    return None
                 if not entry["hold"]:
-                    return True
+                    return available_resource(entry)
                 if len(active) >= cfg["maxConcurrent"]:
-                    return False
+                    return None
                 if sum(e["lane"] == lane for e in active) >= cfg[lane + "Concurrent"]:
-                    return False
+                    return None
                 cap = cfg["perUserConcurrent"] if lane == "interactive" else cfg["perWorkflowConcurrent"]
-                return sum(e["subject"] == entry["subject"] for e in active) < cap
-            candidates = [e for e in queue if eligible(e)]
+                if sum(e["subject"] == entry["subject"] for e in active) >= cap:
+                    return None
+                return available_resource(entry)
+            candidates = [(e, eligible(e)) for e in queue]
+            candidates = [(e, resource) for e, resource in candidates if resource is not None]
             # Round robin between subjects, FIFO within a subject. A batch cannot
             # jump ahead just because it has more waiting threads.
-            selected = min(candidates, key=lambda e: (state["served"].get(e["subject"], 0), e["created"]), default=None)
-            if selected and selected["id"] == self.entry["id"]:
+            selected = min(candidates, key=lambda item: (state["served"].get(item[0]["subject"], 0), item[0]["created"]), default=None)
+            if selected and selected[0]["id"] == self.entry["id"]:
+                selected, resource = selected
                 queue.remove(selected)
+                selected["resource"] = resource
                 if self.hold:
                     active.append(selected)
                 state["count"] = state.get("count", 0) + 1
                 state[self.entry["lane"] + "_count"] += 1
                 state["served"][self.entry["subject"]] = now
+                if resource:
+                    state["resource_counts"][resource] = state["resource_counts"].get(resource, 0) + 1
+                    state["resource_served"][resource] = now
+                self.resource = resource
                 state.update(updated_at=now, last_operation=self.entry["operation"])
                 self.admitted = True
                 return True
@@ -211,8 +267,10 @@ class _Ticket:
 
 
 @contextmanager
-def model_call(operation="internal-model", *, deadline_monotonic=None, wait_callback=None):
-    ticket = _Ticket(operation, hold=True, deadline_monotonic=deadline_monotonic, wait_callback=wait_callback)
+def model_call(operation="internal-model", *, deadline_monotonic=None,
+               wait_callback=None, resources=None):
+    ticket = _Ticket(operation, hold=True, deadline_monotonic=deadline_monotonic,
+                     wait_callback=wait_callback, resources=resources)
     try:
         while not ticket.try_acquire():
             time.sleep(0.2)
@@ -222,8 +280,8 @@ def model_call(operation="internal-model", *, deadline_monotonic=None, wait_call
 
 
 @asynccontextmanager
-async def async_model_call(operation="internal-model"):
-    ticket = _Ticket(operation, hold=True)
+async def async_model_call(operation="internal-model", *, resources=None):
+    ticket = _Ticket(operation, hold=True, resources=resources)
     try:
         # Only short local accounting is synchronous. Waiting is cancellable and
         # does not leave an asyncio.to_thread sleeper to consume a ghost slot.
@@ -245,9 +303,35 @@ def wait_for_slot(operation="internal-model", *, deadline_monotonic=None, wait_c
         ticket.close()
 
 
+def order_resources(resources):
+    """Least-loaded ordering for callers that must build a route-specific body."""
+    resources = list(dict.fromkeys(str(value) for value in resources if value))
+    with _state(state_path()) as state:
+        _prune(state, time.time())
+        active = state["active"]
+        return sorted(
+            resources,
+            key=lambda resource: (
+                sum(entry.get("resource") == resource for entry in active),
+                state["resource_counts"].get(resource, 0),
+                state["resource_served"].get(resource, 0),
+                resources.index(resource),
+            ),
+        )
+
+
 def capacity_status():
     with _state(state_path()) as state:
         _prune(state, time.time())
+        resource_ids = sorted(set(state["resource_counts"]) | {
+            entry.get("resource") for entry in state["active"] if entry.get("resource")
+        })
+        key_usage = [
+            {"route": resource, "usedThisMinute": state["resource_counts"].get(resource, 0),
+             "active": sum(entry.get("resource") == resource for entry in state["active"])}
+            for resource in resource_ids
+        ]
         return {"backend": "single-host-file", **limits(), "active": len(state["active"]),
                 "queued": len(state["queue"]), "usedThisMinute": state.get("count", 0),
-                "backgroundActive": sum(e["lane"] == "background" for e in state["active"])}
+                "backgroundActive": sum(e["lane"] == "background" for e in state["active"]),
+                "keyUsage": key_usage}

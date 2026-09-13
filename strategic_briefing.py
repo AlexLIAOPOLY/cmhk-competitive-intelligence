@@ -26,9 +26,10 @@ from ai_config import api_key_candidates, load_ai_config
 from ai_key_rotation import (
     is_key_unavailable_error, available_key_routes, api_key_retry_after,
     mark_api_key_unavailable, APIKeyPoolUnavailable, is_transient_llm_error,
+    api_key_resource_id,
 )
 from ai_rate_limit import wait_for_internal_ai_slot
-from ai_dispatch import model_call
+from ai_dispatch import model_call, order_resources
 from ai_response_compat import load_json_response
 from cmhk.intelligence.agent_harness import (
     TruncatedModelOutput, assert_finish_reason, run_durable_agent,
@@ -3924,6 +3925,13 @@ def _call_internal_ai_transport(
                 if (normalized_key := _clean_text(value, 500))
             )
     routes = available_key_routes(list(dict.fromkeys(routes)))
+    if routes:
+        resource_order = {
+            resource: index for index, resource in enumerate(order_resources(
+                [api_key_resource_id(api_key) for _, api_key in routes if api_key]
+            ))
+        }
+        routes.sort(key=lambda route: resource_order.get(api_key_resource_id(route[1]), len(resource_order)))
     opener = build_opener(ProxyHandler({}))
     timeout_seconds = max(
         30,
@@ -3967,7 +3975,11 @@ def _call_internal_ai_transport(
             try:
                 if deadline_monotonic is not None and time.monotonic() >= deadline_monotonic:
                     raise TimeoutError("AI逐条补审已达到30分钟上限")
-                with model_call("strategic-news-review", deadline_monotonic=deadline_monotonic):
+                with model_call(
+                    "strategic-news-review",
+                    deadline_monotonic=deadline_monotonic,
+                    resources=[api_key_resource_id(api_key)] if api_key else None,
+                ):
                     request_timeout = timeout_seconds
                     if deadline_monotonic is not None:
                         remaining = deadline_monotonic - time.monotonic()

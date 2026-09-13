@@ -9,7 +9,7 @@ from unittest.mock import patch
 import httpx
 from langchain_core.messages import HumanMessage
 
-from ai_key_rotation import APIKeyPoolUnavailable
+from ai_key_rotation import APIKeyPoolUnavailable, api_key_resource_id
 from ai_rate_limit import RateLimitedChatDeepSeek
 from cmhk.intelligence.agent_harness import TruncatedModelOutput, assert_complete
 from data_curation.research_model import ResearchChatDeepSeek
@@ -99,7 +99,9 @@ class ResearchModelStreamingTests(unittest.TestCase):
         self.assertEqual(audit["finish_reason"], "tool_calls")
         self.assertEqual(len(audit["content_sha256"]), 64)
         self.assertEqual(len(requests), 1)
-        reserve.assert_called_once_with("langchain-stream")
+        reserve.assert_called_once_with(
+            "langchain-stream", resources=[api_key_resource_id("fixture-key")],
+        )
         self.assertTrue(requests[0]["payload"]["stream"])
         self.assertEqual(requests[0]["payload"]["max_tokens"], 8192)
         self.assertEqual(requests[0]["payload"]["tool_choice"], CHOICE)
@@ -188,7 +190,9 @@ class ResearchModelStreamingTests(unittest.TestCase):
         self.assertEqual(requests[0]["payload"]["model"], "backup")
         self.assertEqual(result.tool_calls[0]["args"], HISTORICAL["arguments"])
         self.assertEqual(model.model_name, "primary")
-        reserve.assert_called_once_with("langchain-stream")
+        reserve.assert_called_once_with(
+            "langchain-stream", resources=[api_key_resource_id("fixture-key")],
+        )
 
     def test_async_sdk_tool_reconstruction_and_route_fallback(self):
         async def run():
@@ -213,7 +217,9 @@ class ResearchModelStreamingTests(unittest.TestCase):
             self.assertEqual(len(requests), 1)
             self.assertEqual(result.tool_calls[0]["args"], HISTORICAL["arguments"])
             self.assertEqual(result.response_metadata["research_stream_audit"]["response_id"], "actual-response-1")
-            reserve.async_reserve.assert_called_once_with("langchain-astream")
+            reserve.async_reserve.assert_called_once_with(
+                "langchain-astream", resources=[api_key_resource_id("fixture-key")],
+            )
         asyncio.run(run())
 
     def test_factory_enables_sdk_streaming_and_preserves_request_budget(self):

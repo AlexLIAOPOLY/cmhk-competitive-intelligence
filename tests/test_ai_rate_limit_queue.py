@@ -197,6 +197,57 @@ def test_large_configured_capacity_is_not_silently_clamped_to_15(monkeypatch):
     assert dispatch.limits()['requestsPerMinute'] == 120
 
 
+def test_default_minute_capacity_scales_with_configured_key_pool(monkeypatch):
+    monkeypatch.delenv('CMHK_INTERNAL_AI_REQUESTS_PER_MINUTE', raising=False)
+    monkeypatch.setenv('CMHK_INTERNAL_AI_KEY_REQUESTS_PER_MINUTE', '14')
+    monkeypatch.setattr(dispatch, '_configured_key_count', lambda: 3)
+    limits = dispatch.limits()
+    assert limits['configuredKeyCount'] == 3
+    assert limits['keyRequestsPerMinute'] == 14
+    assert limits['requestsPerMinute'] == 42
+
+
+def test_requests_choose_least_used_key_and_enforce_each_minute_limit(monkeypatch):
+    monkeypatch.setenv('CMHK_INTERNAL_AI_REQUESTS_PER_MINUTE', '100')
+    monkeypatch.setenv('CMHK_INTERNAL_AI_KEY_REQUESTS_PER_MINUTE', '2')
+    resources = ['key:one', 'key:two', 'key:three']
+    selected = []
+    for _ in range(6):
+        with dispatch.model_call('balanced', resources=resources) as ticket:
+            selected.append(ticket.resource)
+    assert selected == resources * 2
+    status = dispatch.capacity_status()
+    assert [item['usedThisMinute'] for item in status['keyUsage']] == [2, 2, 2]
+    with pytest.raises(dispatch.AIQueueBusy, match='排队超时'):
+        with dispatch.model_call('balanced', resources=resources,
+                                 deadline_monotonic=time.monotonic() + .03):
+            pass
+
+
+def test_simultaneous_calls_spread_across_key_concurrency_slots(monkeypatch):
+    monkeypatch.setenv('CMHK_INTERNAL_AI_MAX_CONCURRENT', '4')
+    monkeypatch.setenv('CMHK_INTERNAL_AI_KEY_MAX_CONCURRENT', '1')
+    resources = ['key:one', 'key:two', 'key:three']
+    entered = threading.Barrier(4)
+    release = threading.Event()
+
+    def invoke(index):
+        with dispatch.request_context(f'user-{index}'), dispatch.model_call(
+            'parallel', resources=resources,
+        ) as ticket:
+            entered.wait(timeout=5)
+            assert release.wait(5)
+            return ticket.resource
+
+    with ThreadPoolExecutor(max_workers=3) as pool:
+        futures = [pool.submit(invoke, index) for index in range(3)]
+        entered.wait(timeout=5)
+        assert dispatch.capacity_status()['active'] == 3
+        release.set()
+        selected = [future.result(5) for future in futures]
+    assert sorted(selected) == sorted(resources)
+
+
 def test_streaming_lease_lasts_through_eof_and_partial_close():
     import io
     import urllib.request

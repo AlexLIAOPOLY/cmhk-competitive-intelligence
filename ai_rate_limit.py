@@ -3,8 +3,8 @@ from __future__ import annotations
 import asyncio
 import logging
 import time
-from contextlib import contextmanager
-from typing import Any, Callable, Iterator
+from contextlib import asynccontextmanager, contextmanager
+from typing import Any, Iterator
 
 from langchain_deepseek import ChatDeepSeek as _ChatDeepSeek
 
@@ -18,13 +18,11 @@ from ai_key_rotation import (
     api_key_retry_after,
     is_transient_llm_error,
     transport_retry_delay,
+    api_key_resource_id,
 )
 
 
 from ai_dispatch import AIQueueBusy, PRIORITY as _REQUEST_PRIORITY, model_call, async_model_call, wait_for_slot
-
-DEFAULT_REQUESTS_PER_MINUTE = 14
-
 
 def set_internal_ai_priority(priority: str = "interactive"):
     return _REQUEST_PRIORITY.set(str(priority or "background"))
@@ -39,9 +37,17 @@ def wait_for_internal_ai_slot(operation="internal-model", *, deadline_monotonic=
 
 
 @contextmanager
-def _reserved_model_call(operation: str) -> Iterator[None]:
-    with model_call(operation):
-        yield
+def _reserved_model_call(operation: str, keys: list[str]) -> Iterator[str]:
+    resources = {api_key_resource_id(key): key for key in keys}
+    with model_call(operation, resources=list(resources)) as ticket:
+        yield resources[ticket.resource]
+
+
+@asynccontextmanager
+async def _reserved_async_model_call(operation: str, keys: list[str]):
+    resources = {api_key_resource_id(key): key for key in keys}
+    async with async_model_call(operation, resources=list(resources)) as ticket:
+        yield resources[ticket.resource]
 
 
 class RateLimitedChatDeepSeek(_ChatDeepSeek):
@@ -77,14 +83,14 @@ class RateLimitedChatDeepSeek(_ChatDeepSeek):
             raise
         raise APIKeyPoolUnavailable(1, len(keys))
 
-    def _handle_attempt_error(self, api_key, error, index, keys, attempt, *, emitted=False):
+    def _handle_attempt_error(self, api_key, error, keys, attempt, *, emitted=False):
         if isinstance(error, AIQueueBusy):
             raise error
         if is_key_unavailable_error(error):
             mark_api_key_unavailable(api_key, error, model=str(self.model_name or ""))
             if emitted:
                 raise error
-            if index < len(keys) - 1:
+            if len(keys) > 1:
                 return "next", 0
             self._pool_exhausted(keys, error)
         if emitted or not is_transient_llm_error(error) or attempt >= 2:
@@ -99,80 +105,118 @@ class RateLimitedChatDeepSeek(_ChatDeepSeek):
         if self.streaming:
             return super()._generate(*args, **kwargs)  # _stream owns recovery.
         keys = self._keys()
-        for index, api_key in enumerate(keys):
-            if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
-                continue
-            for attempt in range(3):
-                try:
-                    with _reserved_model_call("langchain-generate"):
-                        return super()._generate(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)})
-                except Exception as exc:
-                    action, delay = self._handle_attempt_error(api_key, exc, index, keys, attempt)
-                    if action == "next":
-                        break
-                    time.sleep(delay)
+        remaining = list(keys)
+        api_key = ""
+        attempt = 0
+        while remaining:
+            candidates = [api_key] if api_key else remaining
+            try:
+                with _reserved_model_call("langchain-generate", candidates) as selected:
+                    api_key = selected
+                    if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
+                        remaining = [key for key in remaining if key != api_key]
+                        api_key = ""
+                        attempt = 0
+                        continue
+                    return super()._generate(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)})
+            except Exception as exc:
+                action, delay = self._handle_attempt_error(api_key, exc, remaining, attempt)
+                if action == "next":
+                    remaining = [key for key in remaining if key != api_key]
+                    api_key = ""
+                    attempt = 0
+                    continue
+                attempt += 1
+                time.sleep(delay)
         self._pool_exhausted(keys)
 
     def _stream(self, *args: Any, **kwargs: Any) -> Iterator[Any]:
         keys = self._keys()
-        for index, api_key in enumerate(keys):
-            if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
-                continue
-            for attempt in range(3):
-                emitted = False
-                try:
-                    with _reserved_model_call("langchain-stream"):
-                        for item in super()._stream(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)}):
-                            emitted = True
-                            yield item
-                    return
-                except Exception as exc:
-                    action, delay = self._handle_attempt_error(api_key, exc, index, keys, attempt, emitted=emitted)
-                    if action == "next":
-                        break
-                    time.sleep(delay)
+        remaining = list(keys)
+        api_key = ""
+        attempt = 0
+        while remaining:
+            emitted = False
+            candidates = [api_key] if api_key else remaining
+            try:
+                with _reserved_model_call("langchain-stream", candidates) as selected:
+                    api_key = selected
+                    if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
+                        remaining = [key for key in remaining if key != api_key]
+                        api_key = ""
+                        attempt = 0
+                        continue
+                    for item in super()._stream(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)}):
+                        emitted = True
+                        yield item
+                return
+            except Exception as exc:
+                action, delay = self._handle_attempt_error(api_key, exc, remaining, attempt, emitted=emitted)
+                if action == "next":
+                    remaining = [key for key in remaining if key != api_key]
+                    api_key = ""
+                    attempt = 0
+                    continue
+                attempt += 1
+                time.sleep(delay)
         self._pool_exhausted(keys)
 
     async def _agenerate(self, *args: Any, **kwargs: Any) -> Any:
         if self.streaming:
             return await super()._agenerate(*args, **kwargs)
         keys = self._keys()
-        for index, api_key in enumerate(keys):
-            if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
-                continue
-            for attempt in range(3):
-                lease = async_model_call("langchain-agenerate")
-                await lease.__aenter__()
-                try:
+        remaining = list(keys)
+        api_key = ""
+        attempt = 0
+        while remaining:
+            candidates = [api_key] if api_key else remaining
+            try:
+                async with _reserved_async_model_call("langchain-agenerate", candidates) as selected:
+                    api_key = selected
+                    if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
+                        remaining = [key for key in remaining if key != api_key]
+                        api_key = ""
+                        attempt = 0
+                        continue
                     return await super()._agenerate(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)})
-                except Exception as exc:
-                    action, delay = self._handle_attempt_error(api_key, exc, index, keys, attempt)
-                finally:
-                    await lease.__aexit__(None, None, None)
+            except Exception as exc:
+                action, delay = self._handle_attempt_error(api_key, exc, remaining, attempt)
                 if action == "next":
-                    break
+                    remaining = [key for key in remaining if key != api_key]
+                    api_key = ""
+                    attempt = 0
+                    continue
+                attempt += 1
                 await asyncio.sleep(delay)
         self._pool_exhausted(keys)
 
     async def _astream(self, *args: Any, **kwargs: Any) -> Any:
         keys = self._keys()
-        for index, api_key in enumerate(keys):
-            if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
-                continue
-            for attempt in range(3):
-                emitted = False
-                lease = async_model_call("langchain-astream")
-                await lease.__aenter__()
-                try:
+        remaining = list(keys)
+        api_key = ""
+        attempt = 0
+        while remaining:
+            emitted = False
+            candidates = [api_key] if api_key else remaining
+            try:
+                async with _reserved_async_model_call("langchain-astream", candidates) as selected:
+                    api_key = selected
+                    if api_key_retry_after(api_key, model=str(self.model_name or "")) > 0:
+                        remaining = [key for key in remaining if key != api_key]
+                        api_key = ""
+                        attempt = 0
+                        continue
                     async for item in super()._astream(*args, **{**kwargs, "extra_headers": self._headers(api_key, kwargs)}):
                         emitted = True
                         yield item
-                    return
-                except Exception as exc:
-                    action, delay = self._handle_attempt_error(api_key, exc, index, keys, attempt, emitted=emitted)
-                finally:
-                    await lease.__aexit__(None, None, None)
+                return
+            except Exception as exc:
+                action, delay = self._handle_attempt_error(api_key, exc, remaining, attempt, emitted=emitted)
                 if action == "next":
-                    break
+                    remaining = [key for key in remaining if key != api_key]
+                    api_key = ""
+                    attempt = 0
+                    continue
+                attempt += 1
                 await asyncio.sleep(delay)
         self._pool_exhausted(keys)

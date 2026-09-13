@@ -48,6 +48,11 @@ def _fingerprint(api_key: str) -> str:
     return hashlib.sha256(api_key.encode("utf-8")).hexdigest()[:12]
 
 
+def api_key_resource_id(api_key: str) -> str:
+    """Opaque dispatcher identity; shared state never contains the key itself."""
+    return "key:" + _fingerprint(api_key)
+
+
 def _cooldown_seconds() -> float:
     try:
         return max(30.0, float(os.environ.get("CMHK_INTERNAL_AI_KEY_COOLDOWN_SECONDS", "600")))
@@ -322,55 +327,86 @@ def open_llm_request(request: urllib.request.Request, *, timeout: float,
         buffer_response = bool(buffer_response)
     # Existing timeout is a per-attempt socket timeout. Bound extra transport work.
     deadline = deadline_monotonic if deadline_monotonic is not None else time.monotonic() + timeout * (1 + min(2, max_transport_retries))
-    for api_key in keys:
-        # A different worker may have marked a key since this request was queued.
-        if api_key_retry_after(api_key, model=model) > 0:
-            continue
-        for attempt in range(max(0, min(2, max_transport_retries)) + 1):
-            lease = model_call(operation, deadline_monotonic=min(deadline, queue_deadline_monotonic or float("inf")), wait_callback=wait_callback)
-            leased = False
-            try:
-                lease.__enter__()
-                leased = True
-                remaining = deadline - time.monotonic()
-                if remaining <= 0:
-                    raise TimeoutError("内部模型重试已达到本轮时间上限")
-                response = open_request(_clone_request(request, api_key), timeout=min(timeout, remaining))
-                if not buffer_response:
-                    result = _LeasedResponse(response, lease)
-                    leased = False  # The response now owns release, through EOF.
-                    return result
-                with response as opened:
-                    return _BufferedResponse(opened.read(), opened)
-            except Exception as exc:
-                # Release before recovery/backoff, so failures never occupy a
-                # slot needed by another user. Queue pressure is not key failure.
-                if leased:
-                    lease.__exit__(None, None, None)
-                    leased = False
-                if isinstance(exc, AIQueueBusy):
-                    raise
-                raw_body = b""
-                if isinstance(exc, urllib.error.HTTPError):
-                    raw_body = exc.read()
-                    # HTTPError caches delegated read methods. Replacing fp alone
-                    # leaves callers reading the exhausted original stream.
-                    exc = urllib.error.HTTPError(
-                        exc.url, exc.code, exc.reason, exc.headers, io.BytesIO(raw_body),
-                    )
-                if is_key_unavailable_error(exc, raw_body=raw_body):
-                    mark_api_key_unavailable(api_key, exc, model=model, raw_body=raw_body)
-                    break
-                if not is_transient_llm_error(exc) or attempt >= min(2, max_transport_retries):
-                    raise exc
-                delay = transport_retry_delay(exc, attempt)
-                if time.monotonic() + delay >= deadline:
-                    raise TimeoutError("内部模型重试已达到本轮时间上限") from exc
-                logging.warning("内部模型连接暂时中断（%s），%.1f 秒后重试 %s/%s。", type(exc).__name__, delay, attempt + 1, min(2, max_transport_retries))
-                time.sleep(delay)
-            finally:
-                if leased:
-                    lease.__exit__(None, None, None)
+    remaining_keys = list(keys)
+    api_key = ""
+    attempt = 0
+    max_retries = max(0, min(2, max_transport_retries))
+    while remaining_keys:
+        # First attempt chooses the least-loaded usable key atomically. A
+        # transport retry stays on the same key; a quota/permission failure
+        # removes only that key and immediately chooses from the rest.
+        candidates = [api_key] if api_key else remaining_keys
+        try:
+            candidates = [key for _, key in available_key_routes([(model, key) for key in candidates])]
+        except APIKeyPoolUnavailable:
+            if api_key and len(remaining_keys) > 1:
+                remaining_keys = [key for key in remaining_keys if key != api_key]
+                api_key = ""
+                attempt = 0
+                continue
+            raise
+        resources = {api_key_resource_id(key): key for key in candidates}
+        lease = model_call(
+            operation,
+            deadline_monotonic=min(deadline, queue_deadline_monotonic or float("inf")),
+            wait_callback=wait_callback,
+            resources=list(resources),
+        )
+        leased = False
+        try:
+            ticket = lease.__enter__()
+            leased = True
+            api_key = resources[ticket.resource]
+            # A different worker may have cooled the selected route while this
+            # request was queued. Do not send a known-bad request.
+            if api_key_retry_after(api_key, model=model) > 0:
+                remaining_keys = [key for key in remaining_keys if key != api_key]
+                api_key = ""
+                attempt = 0
+                continue
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise TimeoutError("内部模型重试已达到本轮时间上限")
+            response = open_request(_clone_request(request, api_key), timeout=min(timeout, remaining))
+            if not buffer_response:
+                result = _LeasedResponse(response, lease)
+                leased = False  # The response now owns release, through EOF.
+                return result
+            with response as opened:
+                return _BufferedResponse(opened.read(), opened)
+        except Exception as exc:
+            # Release before recovery/backoff, so failures never occupy a
+            # slot needed by another user. Queue pressure is not key failure.
+            if leased:
+                lease.__exit__(None, None, None)
+                leased = False
+            if isinstance(exc, AIQueueBusy):
+                raise
+            raw_body = b""
+            if isinstance(exc, urllib.error.HTTPError):
+                raw_body = exc.read()
+                # HTTPError caches delegated read methods. Replacing fp alone
+                # leaves callers reading the exhausted original stream.
+                exc = urllib.error.HTTPError(
+                    exc.url, exc.code, exc.reason, exc.headers, io.BytesIO(raw_body),
+                )
+            if is_key_unavailable_error(exc, raw_body=raw_body):
+                mark_api_key_unavailable(api_key, exc, model=model, raw_body=raw_body)
+                remaining_keys = [key for key in remaining_keys if key != api_key]
+                api_key = ""
+                attempt = 0
+                continue
+            if not is_transient_llm_error(exc) or attempt >= max_retries:
+                raise exc
+            delay = transport_retry_delay(exc, attempt)
+            if time.monotonic() + delay >= deadline:
+                raise TimeoutError("内部模型重试已达到本轮时间上限") from exc
+            attempt += 1
+            logging.warning("内部模型连接暂时中断（%s），%.1f 秒后重试 %s/%s。", type(exc).__name__, delay, attempt, max_retries)
+            time.sleep(delay)
+        finally:
+            if leased:
+                lease.__exit__(None, None, None)
     # Re-read shared cooldowns, including the final key and concurrent failures.
     available_key_routes([(model, key) for key in keys])
     raise APIKeyPoolUnavailable(1, len(keys))
