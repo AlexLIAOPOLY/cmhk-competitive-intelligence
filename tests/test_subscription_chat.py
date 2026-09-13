@@ -3,6 +3,7 @@ import tempfile
 import time
 import unittest
 from contextlib import closing
+from datetime import datetime
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch as mock_patch
 
@@ -144,7 +145,129 @@ class SubscriptionChatTests(unittest.TestCase):
         self.run_event(self.event(user='ou_unknown'))
         self.assertIsNone(self.get('ou_unknown'))
         self.model.assert_not_called()
-        self.assertIn('先打开订阅邀请卡', self.job()['reply'])
+        self.assertIn('加入订阅名单', self.job()['reply'])
+        self.assertIn('订阅邀请卡', self.job()['reply'])
+
+    def test_first_time_private_join_uses_news_defaults_and_verified_sender_identity(self):
+        identity = {
+            'display_name': 'New Reader', 'callback_open_id': 'ou_newreader',
+            'union_id': 'on_newreader', 'open_id': 'ou_newreader',
+            'source_profile': 'testbot', 'avatar_url': '', 'job_title': '',
+        }
+        with mock_patch.object(self.service, 'resolve_user', return_value=identity) as resolve:
+            self.run_event(self.event(user='ou_newreader', mid='om_joinfirst', content='加入订阅名单'))
+        current = self.get('ou_newreader')
+        self.assertEqual(current['services'], ['news'])
+        self.assertEqual(current['status'], 'active')
+        self.assertEqual(current['frequency'], 'once_daily')
+        self.assertEqual(current['news_item_limit'], 10)
+        self.assertEqual(current['news_delivery_times'], ['08:00', '18:30'])
+        resolve.assert_called_once_with('ou_newreader', source_profile='testbot')
+        self.model.assert_not_called()
+        self.assertEqual(self.job()['intent'], 'subscribe')
+        self.assertIn('已把你加入订阅名单', self.job()['reply'])
+        with closing(self.service._connect()) as db:
+            subscriber = db.execute("SELECT default_preferences FROM subscribers WHERE open_id='ou_newreader'").fetchone()
+            audit = db.execute("SELECT * FROM subscription_preference_submissions WHERE delivery_open_id='ou_newreader'").fetchone()
+        self.assertEqual(json.loads(subscriber['default_preferences'])['services'], ['news'])
+        self.assertEqual(audit['event_id'], 'chat:testbot:om_joinfirst')
+        self.assertEqual(audit['is_initial'], 1)
+
+    def test_first_time_join_identity_mismatch_fails_closed(self):
+        identity = {
+            'display_name': 'Wrong Reader', 'callback_open_id': 'ou_someoneelse',
+            'union_id': 'on_someoneelse', 'open_id': 'ou_someoneelse',
+            'source_profile': 'testbot', 'avatar_url': '', 'job_title': '',
+        }
+        with mock_patch.object(self.service, 'resolve_user', return_value=identity):
+            self.run_event(self.event(user='ou_newreader', mid='om_badidentity', content='加入订阅名单'))
+        self.assertIsNone(self.get('ou_newreader'))
+        self.assertEqual(self.job()['intent'], 'subscribe')
+        self.assertEqual(self.job()['parse_error_type'], 'identity_unavailable')
+        self.assertIn('身份', self.job()['reply'])
+        self.model.assert_not_called()
+
+    def test_private_exit_and_rejoin_restore_all_previous_services_and_preferences(self):
+        before = self.get()
+        self.run_event(self.event(mid='om_exit', content='把我从订阅名单里移除'))
+        removed = self.get()
+        self.assertEqual(removed['services'], [])
+        self.assertEqual(removed['status'], 'unsubscribed')
+        self.assertEqual(removed['news_categories'], before['news_categories'])
+        self.assertEqual(removed['news_delivery_times'], before['news_delivery_times'])
+        self.assertIn('已把你移出订阅名单', self.job()['reply'])
+
+        self.run_event(self.event(mid='om_rejoin', content='重新加入订阅名单'))
+        restored = self.get()
+        self.assertEqual(restored, before)
+        self.assertEqual(restored['services'], ['news', 'weekly'])
+        self.assertIn('已把你加入订阅名单', self.job()['reply'])
+        self.model.assert_not_called()
+
+    def test_exit_cancels_already_queued_news_without_any_delivery(self):
+        queued = self.service.dispatch_news_after_crawl(
+            crawl_slot='2099-01-01@03:00', slot_label='晨间扫描',
+            completed_at='2099-01-01T07:30:00+08:00',
+            items=[{'news_id': 'queued', 'title': '已排队新闻', 'summary': '已完成审核'}],
+        )
+        self.assertEqual(queued['queued_count'], 2)
+        self.run_event(self.event(mid='om_exitqueued', content='退出订阅名单'))
+        with mock_patch.object(self.service, '_deliver_one', return_value=['om_active']) as deliver:
+            flushed = self.service.flush_due(
+                now=datetime.fromisoformat('2099-01-01T20:00:00+08:00'),
+                prepared_news_only=False,
+            )
+        own = next(item for item in flushed['results'] if item['open_id'] == 'ou_alice')
+        self.assertEqual(own['status'], 'cancelled')
+        self.assertIn('已取消该项订阅', own['error'])
+        self.assertNotIn('ou_alice', {item['open_id'] for item in self.service._subscribers_for('news')})
+        deliver.assert_called_once()  # Bob remains active; Alice is never delivered.
+
+    def test_group_join_and_exit_reply_only_under_actual_mention(self):
+        self.run_event(self.group_event(mid='om_groupexit', text='退出订阅名单', placeholder=True))
+        self.assertEqual(self.get()['status'], 'unsubscribed')
+        self.run_event(self.group_event(mid='om_groupjoin', text='加入订阅名单'))
+        self.assertEqual(self.get()['status'], 'active')
+        self.assertEqual(self.get()['services'], ['news', 'weekly'])
+        self.assertEqual(
+            [call.args[0] for call in self.service._reply_markdown.call_args_list],
+            ['om_groupexit', 'om_groupjoin'],
+        )
+        self.service._send_markdown.assert_not_called()
+        self.model.assert_not_called()
+
+    def test_membership_repeats_are_idempotent_and_other_people_never_change(self):
+        alice_before = self.get()
+        bob_before = self.get('ou_bob')
+        for index in range(20):
+            command = '退出订阅名单' if index % 2 == 0 else '加入订阅名单'
+            self.run_event(self.event(mid=f'om_cycle{index}', content=command))
+            self.assertEqual(self.get('ou_bob'), bob_before)
+        self.assertEqual(self.get(), alice_before)
+        sent_before = self.service._send_markdown.call_count
+        event = self.event(mid='om_duplicatejoin', content='加入订阅名单')
+        self.run_event(event)
+        self.assertEqual(self.chat.enqueue(event, 'testbot')['status'], 'chat_duplicate')
+        self.assertFalse(self.chat.drain_one())
+        self.assertEqual(self.service._send_markdown.call_count, sent_before + 1)
+        self.assertIn('已经在订阅名单', self.job()['reply'])
+
+    def test_other_person_or_bulk_membership_request_is_rejected_without_mutation(self):
+        before = self.get()
+        bob = self.get('ou_bob')
+        for index, text in enumerate(('把他加入订阅名单', '把同事们移出订阅名单', '把所有人加入订阅名单')):
+            self.run_event(self.event(mid=f'om_forbidden{index}', content=text))
+            self.assertIn('不能替其他人操作', self.job()['reply'])
+        self.assertEqual(self.get(), before)
+        self.assertEqual(self.get('ou_bob'), bob)
+        self.model.assert_not_called()
+
+    def test_membership_command_variants_are_deterministic_and_never_use_model(self):
+        from cmhk.services.subscription_chat import request_constraint
+        for text in ('请把我添加到订阅名单', '我要订阅战略新闻', '恢复订阅'):
+            self.assertEqual(request_constraint(text)['intent'], 'subscribe')
+        for text in ('取消我的全部订阅', '我要退订', '把我从订阅列表中删除'):
+            self.assertEqual(request_constraint(text)['intent'], 'unsubscribe')
 
     def test_model_failure_leaves_all_preferences_unchanged_and_replies(self):
         before = self.get()
@@ -261,6 +384,14 @@ class SubscriptionChatTests(unittest.TestCase):
         # Another person's clock does not suppress this person's request.
         self.run_event(self.event(user='ou_bob', mid='om_other', create_time='1800000000000'))
         self.assertEqual(self.model.call_count, 2)
+
+    def test_delayed_older_membership_command_cannot_reverse_latest_choice(self):
+        self.run_event(self.event(mid='om_latestjoin', content='加入订阅名单', create_time='1800000001000'))
+        self.run_event(self.event(mid='om_oldexit', content='退出订阅名单', create_time='1800000000000'))
+        self.assertEqual(self.get()['status'], 'active')
+        self.assertEqual(self.get()['services'], ['news', 'weekly'])
+        self.assertIn('较早的消息', self.job()['reply'])
+        self.model.assert_not_called()
 
     def test_worker_does_not_process_inbox_belonging_to_another_application(self):
         self.chat.enqueue(self.event(), 'testbot')

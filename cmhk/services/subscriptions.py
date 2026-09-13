@@ -342,7 +342,7 @@ def _preference_value_text(field: str, value: Any) -> str:
     if field == "news_delivery_times":
         return " / ".join(str(item) for item in (value or [])) or "无"
     if field == "status":
-        return {"active": "启用", "paused": "暂停"}.get(str(value), str(value))
+        return {"active": "启用", "paused": "暂停", "unsubscribed": "已退订"}.get(str(value), str(value))
     return str(value or "")
 
 
@@ -662,7 +662,9 @@ def subscription_entry_card(
                     ],
                 },
                 {"tag": "markdown", "text_size": "notation",
-                 "content": "<font color='grey'>您也可以选择直接回复我告诉我您的喜好\n群聊中请先 @科创及数智化。</font>"},
+                 "content": ("<font color='grey'>您也可以直接私聊我，或在群里 @科创及数智化，"
+                             "发送“加入订阅名单”或“退出订阅名单”，随时自助开启或停止本人订阅；"
+                             "您也可以直接告诉我您的喜好。</font>")},
             ],
         },
     }

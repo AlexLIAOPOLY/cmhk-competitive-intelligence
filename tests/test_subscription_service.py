@@ -232,6 +232,11 @@ class SubscriptionServiceTests(unittest.TestCase):
         pause = next(item for item in card["body"]["elements"] if item.get("behaviors"))
         self.assertEqual(pause["type"], "text")
         self.assertEqual(pause["behaviors"][0]["value"]["action"], "cmhk_subscription_pause_all_v1")
+        footer = card["body"]["elements"][-1]["content"]
+        self.assertIn("私聊我", footer)
+        self.assertIn("群里 @科创及数智化", footer)
+        self.assertIn("加入订阅名单", footer)
+        self.assertIn("退出订阅名单", footer)
 
     def test_server_profiles_can_be_overridden_by_environment(self):
         service = SubscriptionService(

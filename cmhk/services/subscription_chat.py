@@ -14,23 +14,45 @@ from cmhk.services.news_topics import normalize_news_topics, topic_key
 from cmhk.services.personal_news_skill import normalize_personal_skill, export_personal_skill, legacy_topic_skill
 
 from cmhk.services.subscriptions import (
-    CHAT_ID_RE, MESSAGE_ID_RE, OPEN_ID_RE, FREQUENCY_LABELS, NEWS_CATEGORY_LABELS,
+    CHAT_ID_RE, MESSAGE_ID_RE, OPEN_ID_RE, DEFAULT_NEWS_CATEGORIES,
+    FREQUENCY_LABELS, NEWS_CATEGORY_LABELS, NEWS_DELIVERY_TIMES_DEFAULT,
     NEWS_REGION_LABELS, PREFERENCE_FIELD_LABELS, REPORT_MODE_LABELS,
-    VALID_NEWS_ITEM_LIMITS, SubscriptionService, _now_hkt, _preference_changes,
-    _preference_snapshot, _preference_value_text,
+    SERVICE_LABELS, VALID_NEWS_ITEM_LIMITS, VALID_SERVICES, SubscriptionService,
+    _now_hkt, _preference_changes, _preference_snapshot, _preference_value_text,
 )
 
 EVENT_KEY = "im.message.receive_v1"
 FIELDS = ("news_region_preference", "news_categories", "frequency", "news_item_limit",
           "news_delivery_times", "report_mode", "news_topics", "news_personal_skill")
 HELP = ("你好，我可以帮你记住想看的内容。直接说‘多看AI新闻’、‘更关注AI在医疗中的应用’，"
-        "或告诉我想调整的接收时间就好；不用先挑栏目。我会整理成清单，保存后告诉你。")
+        "或告诉我想调整的接收时间就好；不用先挑栏目。我会整理成清单，保存后告诉你。"
+        "你也可以发送‘加入订阅名单’或‘退出订阅名单’自助开启或停止本人订阅。")
 
 
 def request_constraint(text: str) -> dict | None:
     """Hard product limits; these guards can only decline or clarify, never write."""
     # Exact read-only requests use the trusted sender's saved brief directly.
     query = text.strip().rstrip('。.!！?？').strip()
+    courtesy = r"(?:请|麻烦|帮忙|帮我)?"
+    subscribe = (
+        rf"{courtesy}(?:把我)?(?:加入|加进|添加到|加到|放进|恢复|重新加入|重新开启)"
+        r"(?:战略情报|战略新闻)?订阅(?:名单|列表)?(?:里|中)?"
+        rf"|{courtesy}(?:我要|我想|给我)?(?:重新)?订阅(?:战略情报|战略新闻)?"
+    )
+    unsubscribe = (
+        rf"{courtesy}(?:把我)?(?:从)?(?:战略情报|战略新闻)?订阅(?:名单|列表)?(?:里|中)?"
+        r"(?:删除|移除|移出|踢出|退出)"
+        rf"|{courtesy}(?:我要|我想)?(?:取消(?:我的)?(?:全部)?订阅|退订|"
+        r"退出(?:战略情报|战略新闻)?订阅(?:名单|列表)?)"
+    )
+    if re.fullmatch(subscribe, query):
+        return {"intent": "subscribe", "changes": [], "question": ""}
+    if re.fullmatch(unsubscribe, query):
+        return {"intent": "unsubscribe", "changes": [], "question": ""}
+    if re.search(r"订阅(?:名单|列表)?", query) and re.search(
+            r"(?:他|她|他们|她们|别人|同事|所有人|全员|大家)", query):
+        return {"intent": "help", "changes": [], "question": "",
+                "reply": "我只能按真实发言者的身份加入或退出本人订阅名单，不能替其他人操作。"}
     noun = r"(?:个人)?(?:阅读要求|阅读说明|阅读偏好|兴趣偏好|偏好|喜好|skill)"
     if (re.fullmatch(r"(?:请|麻烦|帮我)?(?:看看|看下|看一下|查看|查询|展示|显示|列出)(?:我)?(?:当前|现在)?(?:的)?" + noun, query, re.I)
             or re.fullmatch(r"(?:我)?(?:当前|现在)?(?:的)?" + noun + r"(?:是什么|有哪些)", query, re.I)):
@@ -328,6 +350,114 @@ def snapshot(db, open_id):
     return dict(row), current
 
 
+def _membership_receipt(intent, before, current, *, created=False):
+    services = "、".join(SERVICE_LABELS[item] for item in current.get("services", [])) if current else ""
+    if intent == "subscribe":
+        lead = ("你已经在订阅名单中，本次没有重复添加。" if before == current
+                else "已把你加入订阅名单。")
+        detail = f"当前已启用：{services or '战略新闻'}。"
+        if created:
+            detail += "首次加入按战略新闻默认设置开启，之后可继续告诉我喜好，或用订阅卡调整具体内容。"
+        return lead + "\n" + detail + "\n如需停止，直接发送‘退出订阅名单’。"
+    if before is None:
+        return "你目前不在订阅名单中，无需删除。如需开启，发送‘加入订阅名单’即可。"
+    if before == current:
+        return "你已经退出订阅名单，本次没有重复删除。原设置仍已保留。"
+    return ("已把你移出订阅名单，后续将停止向你推送所有战略情报内容。\n"
+            "你的原设置已保留；以后发送‘加入订阅名单’即可恢复。")
+
+
+def _apply_membership(db, job, intent, before, identity=None):
+    """Atomically change only the trusted sender's reversible membership state."""
+    user, current = snapshot(db, job["sender_id"])
+    created = False
+    if user is None and intent == "subscribe":
+        if not isinstance(identity, dict) or identity.get("open_id") != job["sender_id"]:
+            raise ValueError("无法核对订阅者身份")
+        now = _now_hkt()
+        defaults = _preference_snapshot(
+            services=["news"], report_mode="pdf", news_categories=DEFAULT_NEWS_CATEGORIES,
+            frequency="once_daily", news_item_limit=10,
+            news_region_preference="hong_kong", news_delivery_times=NEWS_DELIVERY_TIMES_DEFAULT,
+            news_topics=[], news_personal_skill=[], status="active",
+        )
+        inserted = db.execute(
+            """INSERT OR IGNORE INTO subscribers(
+                   open_id,callback_open_id,union_id,display_name,status,frequency,report_mode,
+                   news_item_limit,news_categories,news_delivery_times,source_chat_id,created_at,updated_at,
+                   news_region_preference,news_topics,news_personal_skill,original_news_categories,
+                   original_news_categories_source,default_preferences
+               ) VALUES(?,?,?,?,'active','once_daily','pdf',10,?,?,?, ?,?,'hong_kong','[]','[]',?,'chat_default',?)""",
+            (
+                job["sender_id"], job["sender_id"], str(identity.get("union_id") or ""),
+                str(identity.get("display_name") or "飞书用户")[:120],
+                json.dumps(list(DEFAULT_NEWS_CATEGORIES), ensure_ascii=False),
+                json.dumps(list(NEWS_DELIVERY_TIMES_DEFAULT), separators=(",", ":")),
+                job["chat_id"], now, now,
+                json.dumps(list(DEFAULT_NEWS_CATEGORIES), ensure_ascii=False),
+                json.dumps(defaults, ensure_ascii=False),
+            ),
+        ).rowcount
+        created = bool(inserted)
+        if created:
+            for service in VALID_SERVICES:
+                db.execute(
+                    "INSERT INTO subscriptions(open_id,service,active,updated_at) VALUES(?,?,?,?)",
+                    (job["sender_id"], service, int(service == "news"), now),
+                )
+        user, current = snapshot(db, job["sender_id"])
+    if user is None:
+        return None, [], _membership_receipt(intent, None, None), False
+    if current != before and before is not None:
+        return current, [], "你的订阅刚有更新，本条尚未修改，请重新发送一次要求。", created
+
+    now = _now_hkt()
+    if intent == "subscribe":
+        services = list(current.get("services") or [])
+        if not services:
+            try:
+                defaults = json.loads(str(user.get("default_preferences") or "{}"))
+            except (TypeError, ValueError, json.JSONDecodeError):
+                defaults = {}
+            services = sorted({item for item in defaults.get("services", []) if item in VALID_SERVICES}) or ["news"]
+            for service in VALID_SERVICES:
+                db.execute(
+                    """INSERT INTO subscriptions(open_id,service,active,updated_at) VALUES(?,?,?,?)
+                       ON CONFLICT(open_id,service) DO UPDATE SET active=excluded.active,updated_at=excluded.updated_at""",
+                    (job["sender_id"], service, int(service in services), now),
+                )
+        db.execute("UPDATE subscribers SET status='active',updated_at=? WHERE open_id=?", (now, job["sender_id"]))
+    else:
+        try:
+            defaults = json.loads(str(user.get("default_preferences") or "{}"))
+        except (TypeError, ValueError, json.JSONDecodeError):
+            defaults = {}
+        if current.get("services") and not [item for item in defaults.get("services", []) if item in VALID_SERVICES]:
+            restore_point = {**current, "status": "active"}
+            db.execute(
+                "UPDATE subscribers SET default_preferences=? WHERE open_id=?",
+                (json.dumps(restore_point, ensure_ascii=False), job["sender_id"]),
+            )
+        db.execute("UPDATE subscriptions SET active=0,updated_at=? WHERE open_id=?", (now, job["sender_id"]))
+        db.execute("UPDATE subscribers SET status='unsubscribed',updated_at=? WHERE open_id=?", (now, job["sender_id"]))
+
+    user, current = snapshot(db, job["sender_id"])
+    changes = _preference_changes(before, current)
+    db.execute(
+        """INSERT OR IGNORE INTO subscription_preference_submissions(
+               event_id,message_id,chat_id,target_type,callback_open_id,delivery_open_id,union_id,
+               display_name,preferences,changes,is_initial,submitted_at
+           ) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)""",
+        (
+            "chat:" + job["profile"] + ":" + job["message_id"], job["message_id"], job["chat_id"],
+            "user", job["sender_id"], job["sender_id"], str(user.get("union_id") or ""),
+            str(user.get("display_name") or ""), json.dumps(current, ensure_ascii=False),
+            json.dumps(changes, ensure_ascii=False), int(created), now,
+        ),
+    )
+    return current, changes, _membership_receipt(intent, before, current, created=created), created
+
+
 def receipt(current, changes, *, confirmed=False):
     reading_points = current.get("news_personal_skill") or [t['name'] for t in current.get('news_topics', [])]
     if reading_points:
@@ -452,7 +582,7 @@ class SubscriptionChat:
         with closing(self.service._connect()) as db:
             user, before = snapshot(db, job["sender_id"])
             stale = job["message_time"] and db.execute("""SELECT 1 FROM subscription_chat_inbox
-                WHERE profile=? AND sender_id=? AND message_time>? AND intent IN ('update','confirm') LIMIT 1""",
+                WHERE profile=? AND sender_id=? AND message_time>? AND intent IN ('update','confirm','subscribe','unsubscribe') LIMIT 1""",
                 (job["profile"], job["sender_id"], job["message_time"])).fetchone()
             previous = db.execute("""SELECT text,reply,intent,points,reply_id FROM subscription_chat_inbox
                 WHERE profile=? AND sender_id=? AND id<? AND created>?
@@ -460,24 +590,36 @@ class SubscriptionChat:
                 (job["profile"], job["sender_id"], job["id"], time.time() - 86400)).fetchall()
             last_shown = previous[0] if previous else None
             previous = [{k: v[k] for k in ('text', 'reply', 'intent')} for v in reversed(previous)]
-        patch, intent, parse_error = {}, "help", ""
-        if not user:
-            reply = "你还没有订阅记录，请先打开订阅邀请卡选择内容并确认订阅，再告诉我你的偏好。"
-        elif stale:
+        patch, intent, parse_error, identity = {}, "help", "", None
+        constraint = request_constraint(job["text"]) if job["text"] else None
+        if stale:
             reply = "这条较早的消息延迟到达，为保留你的最新设置，本条未修改。请重发仍需调整的内容。"
         elif not job["text"]:
             reply = "请发送2000字以内的文字来修改偏好。\n" + HELP
+        elif not user and not (constraint and constraint.get("intent") in {"subscribe", "unsubscribe"}):
+            reply = ("你还没有订阅记录。发送‘加入订阅名单’可按默认战略新闻设置开启，"
+                     "也可打开订阅邀请卡先选择具体内容。")
         else:
             try:
-                plan = request_constraint(job["text"]) or self.interpreter(job["text"], before, [dict(v) for v in previous])
-                patch = validated_patch(plan, before)
+                plan = constraint or self.interpreter(job["text"], before, [dict(v) for v in previous])
                 intent = plan["intent"]
+                if intent == "subscribe" and not user:
+                    identity = self.service.resolve_user(job["sender_id"], source_profile=job["profile"])
+                    if identity.get("open_id") != job["sender_id"]:
+                        raise ValueError("飞书身份回读不一致")
+                    reply = ""
+                elif intent in {"subscribe", "unsubscribe"}:
+                    reply = ""
+                else:
+                    patch = validated_patch(plan, before)
                 if intent == "clarify":
                     question = plan.get("question")
                     reply = (question if isinstance(question, str) and 0 < len(question) <= 180 else "你希望具体修改哪项偏好？") + "\n本次尚未修改。"
                 elif intent == "help":
                     answer = plan.get("reply")
                     reply = answer if isinstance(answer, str) and 0 < len(answer) <= 350 else HELP
+                elif intent in {"subscribe", "unsubscribe"}:
+                    pass
                 elif intent == "confirm" and not (last_shown and last_shown['reply_id']
                         and last_shown['intent'] in {'update', 'show', 'confirm'}
                         and json.loads(last_shown['points']) == preference_points(before)):
@@ -487,21 +629,31 @@ class SubscriptionChat:
                     reply = receipt(before, [], confirmed=intent == "confirm")
             except (ValueError, TypeError, KeyError) as exc:
                 # Parser/schema failures never echo model or raw transport payloads.
-                intent, patch = "clarify", {}
-                parse_error = ("context_mismatch" if str(exc).startswith("Preference response") else
-                               "topic_schema" if "关注主题" in str(exc) else "proposal_validation")
-                reply = "刚才这句我还没理解稳妥，未保存修改。可以接着说你想多看或少关注的内容，例如‘更关注AI的实际应用’。"
+                if intent == "subscribe" and not user:
+                    patch, parse_error = {}, "identity_unavailable"
+                    reply = "这次暂时无法核对你的飞书身份，订阅名单没有改变。请稍后再发一次。"
+                else:
+                    intent, patch = "clarify", {}
+                    parse_error = ("context_mismatch" if str(exc).startswith("Preference response") else
+                                   "topic_schema" if "关注主题" in str(exc) else "proposal_validation")
+                    reply = "刚才这句我还没理解稳妥，未保存修改。可以接着说你想多看或少关注的内容，例如‘更关注AI的实际应用’。"
                 logging.info("subscription chat parse rejected: %s", type(exc).__name__)
             except Exception as exc:
                 parse_error = "model_unavailable"
-                reply = "这次智能理解暂时不可用，偏好没有改变。请稍后再发一次，或点击卡片的“修改兴趣偏好”。"
+                reply = ("这次暂时无法核对你的飞书身份，订阅名单没有改变。请稍后再发一次。"
+                         if intent == "subscribe" and not user else
+                         "这次智能理解暂时不可用，偏好没有改变。请稍后再发一次，或点击卡片的“修改兴趣偏好”。")
                 logging.warning("subscription chat model unavailable: %s", type(exc).__name__)
         with closing(self.service._connect()) as db, db:
             db.execute("BEGIN IMMEDIATE")
             latest_user, current = snapshot(db, job["sender_id"])
-            if (patch or intent == "confirm") and current != before:
-                reply, patch, intent = "你的设置刚有更新，本条尚未修改，请重新发送一次要求。", {}, "help"
             changes = []
+            if intent in {"subscribe", "unsubscribe"} and not reply:
+                current, changes, reply, _created = _apply_membership(
+                    db, job, intent, before, identity=identity,
+                )
+            elif (patch or intent == "confirm") and current != before:
+                reply, patch, intent = "你的设置刚有更新，本条尚未修改，请重新发送一次要求。", {}, "help"
             if patch:
                 current = {**current, **patch}
                 changes = _preference_changes(before, current)
