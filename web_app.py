@@ -7852,6 +7852,27 @@ class AppHandler(BaseHTTPRequestHandler):
             except ValueError as exc:
                 json_response(self, {"ok": False, "error": str(exc)}, 400)
             return
+        if path == "/api/research-formal-table":
+            from data_curation.research_table_view import formal_table_view
+
+            query = parse_qs(parsed.query)
+            try:
+                result = formal_table_view(
+                    ROOT,
+                    run_id=str(query.get("runId", [""])[0]),
+                    table_id=str(query.get("table", [""])[0]),
+                    page=int(query.get("page", ["1"])[0]),
+                    page_size=int(query.get("pageSize", ["100"])[0]),
+                    query=str(query.get("query", [""])[0]),
+                    highlight_only=str(query.get("highlightOnly", [""])[0]).lower()
+                    in {"1", "true", "yes"},
+                )
+                json_response(self, result)
+            except (TypeError, ValueError) as exc:
+                json_response(self, {"ok": False, "error": str(exc)}, 400)
+            except FileNotFoundError:
+                json_response(self, {"ok": False, "error": "正式表或研究批次档案不存在"}, 404)
+            return
         if path == "/api/fixed-source-summary":
             json_response(self, fixed_source_summary())
             return

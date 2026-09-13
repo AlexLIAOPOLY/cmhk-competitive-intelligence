@@ -35,6 +35,7 @@ assert.ok(detail('research-hong-kong').includes('本Agent指标与判断'));
 assert.ok(detail('research-dispatch').includes('收入、用户数'));
 const storage = detail('research-update');
 for (const text of ['正式表入库结果', '已入库', '未入库', '<table>', '实际表文件', 'revenue', 'H1 2026', '<td>0', '正式表数值和来源回读一致']) assert.ok(storage.includes(text), text);
+for (const text of ['最终写入文件', '在 APP 内查看完整表格', 'data-research-table-view="carrier"', 'data-research-table-view="cloud"', '本轮新增 1 行', '本轮新增 0 行']) assert.ok(storage.includes(text), text);
 assert.ok(storage.indexOf('<table>') < storage.indexOf('本节点结果'));
 assert.ok(!storage.includes('仅保存为资料'));
 records[3].write_preflight.reason = 'budget_exceeded: raw diagnostic';

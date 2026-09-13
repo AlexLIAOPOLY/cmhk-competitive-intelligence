@@ -589,6 +589,7 @@
   }
   function mount(root) {
     mountMatrix(root);
+    mountFormalTableViewer(root);
     const section = root.querySelector(".research-decisions");
     if (!section || section.dataset.mounted) return;
     section.dataset.mounted = "true";
@@ -726,17 +727,106 @@
   }
   function storageDetails(run) {
     const check = run?.publication?.storage_readback;
-    if (!check) return '<section class="news-lineage-dialog-section"><p>尚无逐项回读证据，不能仅凭审核通过数确认入库。</p></section>';
-    const written = writtenCount(check);
+    const written = check ? writtenCount(check) : 0;
     const rowWritten = (item) => ["written", "saved"].includes(item.main_table?.status);
     const tableName = (path) => path?.includes("cloud_vendor_metrics") ? "云厂商年度指标表" : path?.includes("quarterly_metrics") ? "运营商正式指标表（香港／内地／国际）" : "目标表尚未明确";
-    return `<section class="news-lineage-dialog-section research-storage-results"><header><h3>正式表入库结果</h3><span>回读 ${esc(check.checked_at)}</span></header><p>${esc(updateSummary(run))}</p>${run?.publication?.storage_replay ? `<p>本轮修复累计补写 ${esc(run.publication.storage_replay.total_added_rows ?? run.publication.storage_replay.added_rows)} 行；最近一次重跑新增 ${esc(run.publication.storage_replay.added_rows)} 行。已入库数量包含本轮先前写入且回读一致的记录，重跑不重复加行。</p>` : ""}${[true, false].map((success) => {
+    const files = [
+      { id: "carrier", label: "运营商正式指标表（香港／内地／国际）", scope: "香港、内地、国际运营商", path: "agent_knowledge/quarterly_competitor_metrics_2026-06-18/quarterly_metrics.json", match: "quarterly_metrics" },
+      { id: "cloud", label: "云厂商正式指标表", scope: "全球云厂商", path: "agent_knowledge/cloud_vendor_metrics_2026-06-17/cloud_vendor_metrics_2023_2025.json", match: "cloud_vendor_metrics" },
+    ];
+    const fileCards = `<section class="news-lineage-dialog-section research-storage-files"><header><h3>最终写入文件</h3><span>本地完整数据 · APP 内查看</span></header><p>打开真实正式表的完整行列；绿色高亮表示所选批次新增且仍能在正式表中回读一致的数据。</p><div class="research-storage-file-grid">${files.map((file) => {
+      const added = (check?.items || []).filter((item) => rowWritten(item) && String(item.main_table?.path || item.path || "").includes(file.match)).length;
+      return `<article><div><strong>${esc(file.label)}</strong><span>${esc(file.scope)}</span><code>${esc(file.path)}</code></div><div class="research-storage-file-action"><b>${added ? `本轮新增 ${added} 行` : "本轮新增 0 行"}</b><button type="button" data-research-table-view="${file.id}" data-research-run-id="${esc(run?.run_id || "")}"${run?.run_id ? "" : " disabled"}>在 APP 内查看完整表格</button></div></article>`;
+    }).join("")}</div></section>`;
+    if (!check) return `${fileCards}<section class="news-lineage-dialog-section"><p>尚无逐项回读证据，不能仅凭审核通过数确认入库；完整正式表仍可读取，本轮不会标记新增行。</p></section>`;
+    return `${fileCards}<section class="news-lineage-dialog-section research-storage-results"><header><h3>正式表入库结果</h3><span>回读 ${esc(check.checked_at)}</span></header><p>${esc(updateSummary(run))}</p>${run?.publication?.storage_replay ? `<p>本轮修复累计补写 ${esc(run.publication.storage_replay.total_added_rows ?? run.publication.storage_replay.added_rows)} 行；最近一次重跑新增 ${esc(run.publication.storage_replay.added_rows)} 行。已入库数量包含本轮先前写入且回读一致的记录，重跑不重复加行。</p>` : ""}${[true, false].map((success) => {
       const rows = (check.items || []).filter((item) => rowWritten(item) === success);
       const tables = new Map();
       rows.forEach((item) => { const path = item.main_table?.path || item.path || "未记录"; if (!tables.has(path)) tables.set(path, []); tables.get(path).push(item); });
       const count = success ? written : Math.max(0, check.accepted - written);
       return `<details class="research-storage-group ${success ? "is-written" : "is-not-written"}" open><summary>${success ? "已入库" : "未入库"} <b>${count} 项</b></summary>${[...tables.entries()].map(([path, items]) => `<section class="research-formal-table"><h4>${esc(tableName(path))} · ${items.length} 项</h4><p class="research-table-path">实际表文件：<code>${esc(path)}</code></p><div class="research-table-scroll" role="region" aria-label="${success ? "已入库" : "未入库"}的具体表格" tabindex="0"><table><caption>${success ? "正式表当前记录" : "写入失败或未确认的记录"}</caption><thead><tr><th>公司／报告期</th><th>新增指标字段</th><th>提交值</th><th>正式表回读值</th><th>结果与原因</th></tr></thead><tbody>${items.map((item) => { const row = item.main_table || {}; return `<tr data-research-storage-row data-period="${esc(reportPeriod(item).key)}" data-company="${esc(item.company)}" data-metric="${esc(item.metric)}"><th scope="row">${esc(item.company)}<small>${esc(row.period || item.period || "期间未明确")}${row.period_end ? `<br>截至 ${esc(row.period_end)}` : ""}</small></th><td>${esc(row.metric_zh || item.metric)}<code>${esc(row.metric_key || "未形成字段映射")}</code></td><td>${esc(row.candidate_value ?? item.value ?? "—")}<small>${esc(row.unit || item.unit || "")}${row.currency ? ` · ${esc(row.currency)}` : ""}</small></td><td>${esc(row.current_value ?? "未找到匹配记录")}<small>${esc(row.unit || "")}</small></td><td><strong>${success ? "已入库" : "未入库"}</strong><p>${esc(row.reason || item.reason || "未保存写入结果")}</p>${row.source_url ? link(row.source_url, "官方来源") : ""}</td></tr>`; }).join("")}</tbody></table></div></section>`).join("") || `<p class="research-empty">${count ? "提交档案未完整读取，不能确认入库；请查看任务日志。" : success ? "本次没有已入库记录。" : "本次提交项均已入库，无未入库项。"}</p>`}</details>`;
     }).join("")}</section>`;
+  }
+
+  function mountFormalTableViewer(root) {
+    const buttons = [...root.querySelectorAll("[data-research-table-view]")];
+    if (!buttons.length) return;
+    buttons.forEach((button) => {
+      if (button.dataset.mounted) return;
+      button.dataset.mounted = "true";
+      button.addEventListener("click", () => openFormalTableViewer(button));
+    });
+  }
+
+  function openFormalTableViewer(opener) {
+    const dialog = document.querySelector("#researchFormalTableDialog");
+    const root = dialog?.querySelector("[data-research-sheet-root]");
+    if (!dialog || !root || !opener.dataset.researchRunId) return;
+    const state = { runId: opener.dataset.researchRunId, table: opener.dataset.researchTableView, page: 1, query: "", highlightOnly: false, controller: null };
+    root.innerHTML = `<header class="research-sheet-header"><div><span>最终写入文件 · Excel 视图</span><h2 data-research-sheet-title>正在读取正式表</h2><p data-research-sheet-path>正在连接本地数据文件…</p></div><form method="dialog"><button type="submit" aria-label="关闭完整数据表">×</button></form></header>
+      <form class="research-sheet-toolbar" data-research-sheet-search><label><span>搜索整张表</span><input type="search" data-research-sheet-query placeholder="公司、指标、报告期、数值或来源" autocomplete="off"></label><button type="submit">搜索</button><button type="button" data-research-sheet-clear disabled>清除</button><label class="research-sheet-new-only"><input type="checkbox" data-research-sheet-new-only> 只看本轮新增</label><div class="research-sheet-legend"><i aria-hidden="true"></i><span>绿色高亮 = 本轮新增且正式表回读一致</span></div></form>
+      <div class="research-sheet-status" data-research-sheet-status role="status" aria-live="polite">正在读取完整表格…</div>
+      <div class="research-sheet-scroll" role="region" aria-label="本地完整正式数据表，可横向和纵向滚动" tabindex="0"><table><thead data-research-sheet-head></thead><tbody data-research-sheet-body></tbody></table></div>
+      <footer class="research-sheet-footer"><span data-research-sheet-page-status></span><div><button type="button" data-research-sheet-page="-1" aria-label="上一页正式表数据">上一页</button><button type="button" data-research-sheet-page="1" aria-label="下一页正式表数据">下一页</button></div></footer>`;
+    const title = root.querySelector("[data-research-sheet-title]");
+    const path = root.querySelector("[data-research-sheet-path]");
+    const status = root.querySelector("[data-research-sheet-status]");
+    const head = root.querySelector("[data-research-sheet-head]");
+    const body = root.querySelector("[data-research-sheet-body]");
+    const pageStatus = root.querySelector("[data-research-sheet-page-status]");
+    const search = root.querySelector("[data-research-sheet-search]");
+    const query = root.querySelector("[data-research-sheet-query]");
+    const clear = root.querySelector("[data-research-sheet-clear]");
+    const onlyNew = root.querySelector("[data-research-sheet-new-only]");
+    const pageButtons = [...root.querySelectorAll("[data-research-sheet-page]")];
+    const load = async () => {
+      state.controller?.abort();
+      const controller = new AbortController();
+      state.controller = controller;
+      status.textContent = "正在读取本地完整表格…";
+      root.classList.add("is-loading");
+      pageButtons.forEach((button) => { button.disabled = true; });
+      try {
+        const params = new URLSearchParams({ runId: state.runId, table: state.table, page: state.page, pageSize: 100, query: state.query, highlightOnly: state.highlightOnly ? "1" : "0" });
+        const response = await fetch(`/api/research-formal-table?${params}`, { cache: "no-store", signal: controller.signal });
+        const payload = await response.json();
+        if (!response.ok || !payload.ok) throw new Error(payload.error || `正式表读取失败 ${response.status}`);
+        const summary = payload.summary;
+        state.page = summary.page;
+        title.textContent = payload.table.label;
+        path.textContent = `本地文件：${payload.table.path} · ${payload.run_id}`;
+        const rangeStart = summary.filtered ? (summary.page - 1) * summary.page_size + 1 : 0;
+        const rangeEnd = Math.min(summary.page * summary.page_size, summary.filtered);
+        status.textContent = `完整表 ${summary.total} 行 · 当前条件 ${summary.filtered} 行 · 本轮高亮 ${summary.new_total} 行${summary.highlight_mismatch ? ` · ${summary.highlight_mismatch} 条历史写入凭证已无法与当前表一致匹配` : ""}`;
+        pageStatus.textContent = `显示 ${rangeStart}–${rangeEnd} 行 · 第 ${summary.page} / ${summary.pages} 页`;
+        head.innerHTML = `<tr><th scope="col">#</th>${payload.columns.map((column) => `<th scope="col" title="字段：${esc(column.key)}">${esc(column.label)}<code>${esc(column.key)}</code></th>`).join("")}</tr>`;
+        body.innerHTML = payload.rows.map((row, index) => {
+          const highlighted = new Set(row.highlighted_cells || []);
+          const rowNumber = (summary.page - 1) * summary.page_size + index + 1;
+          return `<tr${row.is_new ? ' class="is-run-new"' : ""}><th scope="row">${rowNumber}${row.is_new ? "<span>新增</span>" : ""}</th>${payload.columns.map((column) => {
+            const value = row.values[column.key];
+            return `<td${highlighted.has(column.key) ? ' class="is-run-new-cell"' : ""}>${value === null || value === "" ? '<span class="research-sheet-missing">—</span>' : esc(value)}</td>`;
+          }).join("")}</tr>`;
+        }).join("") || `<tr><td colspan="${payload.columns.length + 1}" class="research-sheet-empty">当前条件没有数据${state.highlightOnly ? "；本轮没有可高亮的新增行" : ""}。</td></tr>`;
+        pageButtons[0].disabled = summary.page <= 1;
+        pageButtons[1].disabled = summary.page >= summary.pages;
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        status.textContent = `读取失败：${error.message}`;
+        head.innerHTML = "";
+        body.innerHTML = '<tr><td class="research-sheet-empty">无法读取本地正式表，请稍后重试或查看任务日志。</td></tr>';
+        pageStatus.textContent = "";
+      } finally {
+        if (state.controller === controller) root.classList.remove("is-loading");
+      }
+    };
+    search.addEventListener("submit", (event) => { event.preventDefault(); state.query = query.value.trim(); state.page = 1; clear.disabled = !state.query; load(); });
+    clear.addEventListener("click", () => { query.value = state.query = ""; state.page = 1; clear.disabled = true; load(); query.focus(); });
+    onlyNew.addEventListener("change", () => { state.highlightOnly = onlyNew.checked; state.page = 1; load(); });
+    pageButtons.forEach((button) => button.addEventListener("click", () => { state.page += Number(button.dataset.researchSheetPage); root.querySelector(".research-sheet-scroll").scrollTo({ top: 0, behavior: "instant" }); load(); }));
+    dialog.addEventListener("close", () => { state.controller?.abort(); opener.focus(); }, { once: true });
+    dialog.showModal();
+    load();
   }
   window.CmhkResearchDiagram = { build, detail, mount, decisionPage, finalReviewGroups, matrixModel, reportPeriod };
 })();

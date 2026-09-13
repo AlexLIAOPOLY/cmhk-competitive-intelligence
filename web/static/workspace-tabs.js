@@ -3451,6 +3451,7 @@
         ${renderNewsItems(runs)}
         <div class="news-lineage-purpose-tooltip" id="newsLineagePurposeTooltip" role="tooltip" hidden><span></span></div>
         <dialog class="news-stage-dialog news-lineage-dialog" id="newsLineageDialog"><div id="newsLineageDialogBody"></div></dialog>
+        <dialog class="research-sheet-dialog" id="researchFormalTableDialog" aria-label="本地完整正式数据表"><div data-research-sheet-root></div></dialog>
       </section>
     </div>`;
     bindNewsLineageInteractions(panel);
