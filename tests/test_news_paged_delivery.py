@@ -19,8 +19,21 @@ class NewsPagedDeliveryTests(unittest.TestCase):
                  'published_at': '2026-09-10', 'source_url': f'https://publisher.example/{i}',
                  'summary': f'企业{i}推出新服务，首批面向制造业客户开放，并安排专门团队提供部署支持。'} for i in range(20)]
 
-    def test_twenty_items_split_without_truncating_prose_or_repeating_sent_page(self):
+    def large_items(self):
+        return [{**item, 'source_url': item['source_url'] + '?details=' + 'x' * 850}
+                for item in self.items()]
+
+    def test_twenty_short_items_use_one_card_when_they_fit(self):
         items = self.items()
+        self.send_news('single', items)
+        self.assertEqual(self.send.call_count, 1)
+        card = self.send.call_args.args[1]
+        self.assertNotIn('（1/2）', card['header']['title']['content'])
+        text = '\n'.join(_card_text(card))
+        self.assertTrue(all(item['summary'] in text for item in items))
+
+    def test_twenty_items_split_without_truncating_prose_or_repeating_sent_page(self):
+        items = self.large_items()
         self.send.side_effect = ['om_page1', TimeoutError('page two timeout')]
         with self.assertRaises(TimeoutError):
             self.send_news('twenty', items)
@@ -43,7 +56,7 @@ class NewsPagedDeliveryTests(unittest.TestCase):
         self.assertTrue(all(item['summary'] in text for item in items))
 
     def test_all_page_ids_are_recovered_after_final_readback_failure(self):
-        items = self.items()
+        items = self.large_items()
         self.send.side_effect = ['om_page1', 'om_page2']
         self.verify.side_effect = [None, RuntimeError('readback failed')]
         with self.assertRaises(RuntimeError):

@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 SKILL_DIR = Path(__file__).resolve().parents[1] / 'skills/cmhk-strategic-news-push'
-TEMPLATE_VERSION = 'direct-source-list-v6-consolidated-two-cards'
+TEMPLATE_VERSION = 'direct-source-list-v7-prefer-single-card'
 PREPARATION_LEAD_MINUTES = 60
 
 

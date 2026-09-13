@@ -176,23 +176,35 @@ def build_card_pages(*, title: str, items: list[dict], banner: str) -> dict:
         summary = simplified_news_text(item.get('digest_summary') or item.get('summary')).strip()
         if not summary or len(summary) > MAX_SUMMARY_CHARS or repeats_title(item.get('title', ''), summary):
             raise SummaryQualityError('待发简介超100字或重复标题，需要重新生成或换稿')
-    groups = [items[start:start + 10] for start in range(0, len(items), 10)] or [[]]
-    while True:
-        pages = []
-        for index, group in enumerate(groups):
-            label = title if len(groups) == 1 else f'{title}（{index + 1}/{len(groups)}）'
-            page = strategic_news_card(title=label, body=NEWS_DIGEST_PREFIX + json.dumps({'items': group}, ensure_ascii=False), image_key=banner)
-            if len(json.dumps(page, ensure_ascii=False, separators=(',', ':')).encode()) > 30000:
-                if len(group) < 2:
-                    raise ValueError('单条新闻超过卡片大小上限，保留批次重试')
-                middle = len(group) // 2
-                groups[index:index + 1] = [group[:middle], group[middle:]]
-                break
-            pages.append(page)
-        else:
-            if len(pages) > 2:
-                raise NewsCardCapacityError(sum(len(group) for group in groups[:2]))
-            return pages[0] if len(pages) == 1 else {'cards': pages}
+    def render(group, label):
+        return strategic_news_card(title=label, body=NEWS_DIGEST_PREFIX + json.dumps({'items': group}, ensure_ascii=False), image_key=banner)
+
+    def fits(page):
+        return len(json.dumps(page, ensure_ascii=False, separators=(',', ':')).encode()) <= 30000
+
+    whole = render(items, title)
+    if fits(whole):
+        return whole
+
+    def largest_prefix(group, label):
+        low, high = 0, len(group)
+        while low < high:
+            middle = (low + high + 1) // 2
+            if fits(render(group[:middle], label)):
+                low = middle
+            else:
+                high = middle - 1
+        if not low:
+            raise ValueError('单条新闻超过卡片大小上限，保留批次重试')
+        return low
+
+    first_label, second_label = f'{title}（1/2）', f'{title}（2/2）'
+    first_count = largest_prefix(items, first_label)
+    rest = items[first_count:]
+    second_count = largest_prefix(rest, second_label)
+    if second_count < len(rest):
+        raise NewsCardCapacityError(first_count + second_count)
+    return {'cards': [render(items[:first_count], first_label), render(rest, second_label)]}
 
 
 @bounded_preparation

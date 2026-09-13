@@ -143,7 +143,7 @@ class SubscriptionClockTests(unittest.TestCase):
         self.send.side_effect=['om_page1','om_page2']
         with mock.patch('cmhk.services.news_digest_editor.prepare_digest',side_effect=AssertionError('AI in send lane')):
             self.tick('08:00:00')
-        self.assertEqual(self.send.call_count,2)
+        self.assertEqual(self.send.call_count,1)
         with self.service._connect() as db:
             self.assertEqual(db.execute('SELECT delivered_count FROM news_round_progress').fetchone()[0],20)
 
